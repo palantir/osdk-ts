@@ -1,0 +1,11 @@
+{
+  "name": "tsconfig",
+  "private": true,
+  "license": "UNLICENSED",
+  "exports": {
+    "./base": "./tsconfig.base.json"
+  },
+  "scripts": {},
+  "dependencies": {},
+  "devDependencies": {}
+}

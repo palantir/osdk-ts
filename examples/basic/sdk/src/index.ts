@@ -1,0 +1,1 @@
+export { Ontology } from "./Ontology";

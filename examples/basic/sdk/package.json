@@ -1,0 +1,49 @@
+{
+  "name": "@osdk/examples.basic.sdk",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "license": "UNLICENSED",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./src/public/*.ts",
+      "import": "./dist/public/*.mjs",
+      "require": "./dist/public/*.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf lib dist tsconfig.tsbuildinfo",
+    "dev": "tsup --watch",
+    "lint": "eslint .",
+    "prettier": "prettier .",
+    "typecheck": "tsc-absolute"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:*"
+  },
+  "devDependencies": {
+    "eslint-config-sane": "workspace:*",
+    "mytsup": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.2.2"
+  },
+  "publishConfig": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./*": {
+      "types": "./lib/public/*.d.ts",
+      "import": "./dist/public/*.mjs",
+      "require": "./dist/public/*.js"
+    }
+  },
+  "keywords": []
+}

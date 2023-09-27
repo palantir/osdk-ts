@@ -1,0 +1,45 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+
+    "lint": {
+      "inputs": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        ".eslintrc.cjs",
+        "tsconfig.json"
+      ],
+      "outputs": [],
+      "dependsOn": ["eslint-config-sane#lint"]
+    },
+    "eslint-config-sane#lint": {
+      "inputs": ["library.cjs"]
+    },
+
+    "clean": {},
+    "prettier": {},
+
+    "typecheck": {
+      "inputs": ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json"],
+      "outputs": [],
+      "dependsOn": ["mytsup#typecheck", "^typecheck"]
+    },
+    "mytsup#typecheck": {
+      "inputs": ["tsup.mjs"]
+    },
+    "tsconfig#typecheck": {
+      "inputs": ["tsconfig.base.json"]
+    },
+
+    "build": {
+      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "^build"],
+      "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
+      "outputs": ["dist/**", "lib/**"]
+    }
+  },
+  "globalDependencies": ["config/tsconfig.base.json"]
+}

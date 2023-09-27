@@ -1,0 +1,2 @@
+export FOUNDRY_SDK_AUTH_TOKEN=
+export FOUNDRY_USER_TOKEN=myhost.mydomain.com

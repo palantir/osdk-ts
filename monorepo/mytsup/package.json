@@ -1,0 +1,23 @@
+{
+  "name": "mytsup",
+  "private": true,
+  "license": "UNLICENSED",
+  "exports": {
+    ".": {
+      "import": "./tsup.mjs"
+    },
+    "./tsconfig/base": "./tsconfig.base.json"
+  },
+  "scripts": {},
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "@typescript-eslint/parser": "^6.7.0",
+    "eslint": "^8.49.0",
+    "eslint-config-turbo": "^1.10.13",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-import": "^2.28.1"
+  },
+  "devDependencies": {
+    "tsup": "^7.2.0"
+  }
+}
