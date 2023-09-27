@@ -2,7 +2,7 @@
   "name": "@osdk/api",
   "version": "0.1.0",
   "description": "",
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "exports": {
     ".": {
       "types": "./src/index.ts",

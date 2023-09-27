@@ -1,7 +1,7 @@
 {
   "name": "tsconfig",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
   "exports": {
     "./base": "./tsconfig.base.json"
   },
