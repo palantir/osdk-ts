@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ObjectTypesFrom } from "#ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import type { Client } from "./Client";
 import type { ObjectSet } from "./objectSet/ObjectSet";
 

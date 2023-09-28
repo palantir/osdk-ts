@@ -15,11 +15,11 @@
  */
 
 import type {
-  OntologyDefinition,
   ObjectTypesFrom,
-  PropertyKeysFrom,
+  OntologyDefinition,
   OsdkObjectPropertyType,
   PropertyDefinitionFrom,
+  PropertyKeysFrom,
 } from "#ontology";
 import type { StringArrayToUnion } from "#util";
 import type { AggregationClause } from "./AggregationsClause";
@@ -29,11 +29,9 @@ export type AggregationResultsWithoutGroups<
   K extends ObjectTypesFrom<O>,
   AC extends AggregationClause<O, K>,
 > = {
-  [P in PropertyKeysFrom<O, K>]: AC[P] extends readonly string[] | string
-    ? {
-        [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct"
-          ? number
-          : OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>;
-      }
+  [P in PropertyKeysFrom<O, K>]: AC[P] extends readonly string[] | string ? {
+      [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
+        : OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>;
+    }
     : never;
 };

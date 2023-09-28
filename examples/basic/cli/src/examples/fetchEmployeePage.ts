@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { expectType } from "ts-expect";
 import type { Client } from "@osdk/api";
+import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchEmployeePage(client: Client<OntologyType>) {

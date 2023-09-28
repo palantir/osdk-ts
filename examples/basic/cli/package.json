@@ -18,7 +18,7 @@
     "build": "tsup",
     "clean": "rm -rf lib dist tsconfig.tsbuildinfo",
     "dev": "tsup --watch",
-    "lint": "eslint . && prettier . --check --ignore-path $(find-up .prettierignore)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "prettier": "prettier .",
     "typecheck": "tsc-absolute"
   },

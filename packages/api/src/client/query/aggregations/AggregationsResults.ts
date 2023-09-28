@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ObjectTypesFrom } from "#ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import type { AggregateOpts } from "./AggregateOpts";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
@@ -26,5 +26,5 @@ export type AggregationsResults<
 > = unknown extends AO["groupBy"] // groupBy is missing
   ? AggregationResultsWithoutGroups<T, K, AO["select"]>
   : Exclude<AO["groupBy"], undefined> extends never // groupBy is explicitly undefined
-  ? AggregationResultsWithoutGroups<T, K, AO["select"]>
+    ? AggregationResultsWithoutGroups<T, K, AO["select"]>
   : AggregationResultsWithGroups<T, K, AO["select"], AO["groupBy"]>;

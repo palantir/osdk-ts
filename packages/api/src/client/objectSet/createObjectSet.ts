@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
+import { modernToLegacyWhereClause } from "#client/converters";
 import type {
   AggregationClause,
   AggregationsResults,
   GroupByClause,
   WhereClause,
 } from "#client/query";
+import type { Wire } from "#net";
 import type {
   ObjectInfoFrom,
-  PropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
+  PropertyKeysFrom,
 } from "#ontology";
-import { modernToLegacyWhereClause } from "#client/converters";
-import type { Wire } from "#net";
-import type { ThinClient } from "../ThinClient";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
+import type { ThinClient } from "../ThinClient";
 import type { LinkTypesFrom } from "./LinkTypesFrom";
 import type { BaseObjectSet, ObjectSet, ObjectSetOptions } from "./ObjectSet";
 
@@ -96,7 +96,7 @@ export function createObjectSet<
       throw "";
     },
 
-    pivotTo: function <T extends LinkTypesFrom<O, K>>(
+    pivotTo: function<T extends LinkTypesFrom<O, K>>(
       type: T,
       opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
     ): ObjectSet<O, O["objects"][K]["links"][T]["targetType"]> {

@@ -15,8 +15,8 @@
  */
 
 import type {
-  OntologyDefinition,
   ObjectTypesFrom,
+  OntologyDefinition,
   PropertyDefinitionFrom,
 } from "#ontology";
 import type { AggregatableKeys } from "./AggregatableKeys";

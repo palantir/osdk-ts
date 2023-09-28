@@ -15,8 +15,8 @@
  */
 
 import type {
-  OntologyDefinition,
   ObjectTypesFrom,
+  OntologyDefinition,
   PropertyDefinitionsFrom,
 } from "#ontology";
 import type { AggregatableKeys } from "./AggregatableKeys";
@@ -39,6 +39,6 @@ export type AggregationClause<
   >[P]["type"] extends "string"
     ? StringAggregateOption | StringAggregateOption[]
     : PropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
-    ? NumericAggregateOption | NumericAggregateOption[]
+      ? NumericAggregateOption | NumericAggregateOption[]
     : PropertyDefinitionsFrom<O, K>[P]["type"];
 };

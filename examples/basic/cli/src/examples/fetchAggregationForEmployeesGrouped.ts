@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
 import type { Client } from "@osdk/api";
+import invariant from "tiny-invariant";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchAggregationForEmployeesGrouped(
@@ -79,9 +79,9 @@ fetchAggregationForEmployeesGrouped()
   invariant(Array.isArray(result), "groups means we should get an array");
   invariant(Object.keys(result).length >= 1, "there should be one group");
   invariant(
-    "employeeNumber" in result[0].values &&
-      "locationName" in result[0].values &&
-      "locationCity" in result[0].values,
+    "employeeNumber" in result[0].values
+      && "locationName" in result[0].values
+      && "locationCity" in result[0].values,
     "The keys should be the expected ones",
   );
   invariant(Object.keys(result[0].values.employeeNumber).length === 3);

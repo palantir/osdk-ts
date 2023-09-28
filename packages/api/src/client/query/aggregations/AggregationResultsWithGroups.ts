@@ -15,11 +15,11 @@
  */
 
 import type {
-  OntologyDefinition,
   ObjectTypesFrom,
-  PropertyKeysFrom,
+  OntologyDefinition,
   OsdkObjectPropertyType,
   PropertyDefinitionFrom,
+  PropertyKeysFrom,
 } from "#ontology";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
 import type { AggregationClause } from "./AggregationsClause";

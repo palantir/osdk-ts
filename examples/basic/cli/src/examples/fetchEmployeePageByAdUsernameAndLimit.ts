@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import invariant from "tiny-invariant";
 import type { Client } from "@osdk/api";
+import invariant from "tiny-invariant";
 import type { OntologyType } from "../OntologyType";
 
 /**
@@ -51,5 +51,5 @@ fetchEmployeePageByAdUsernameAndLimit('fish')
 ├─────────┼────────────┼───────────────────────────────────────────────────────────────────────────┼────────────┼──────────────┤
 │    0    │ 'Employee' │ 'ri.phonograph2-objects.main.object.c8f229e6-bdb7-49ee-a096-74ed1fd28c46' │   'fish'   │    10001     │
 └─────────┴────────────┴───────────────────────────────────────────────────────────────────────────┴────────────┴──────────────┘
-*/
+  */
 }
