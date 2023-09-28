@@ -61,7 +61,7 @@ function standardPackageRules(shared) {
         scripts: {
           clean: "rm -rf lib dist tsconfig.tsbuildinfo",
           typecheck: "tsc-absolute",
-          lint: "eslint .",
+          lint: "eslint . && prettier . --check --ignore-path $(find-up .prettierignore)",
           prettier: "prettier .",
           build: "tsup",
           dev: "tsup --watch",
@@ -120,7 +120,7 @@ function standardPackageRules(shared) {
            * See the License for the specific language governing permissions and
            * limitations under the License.
            */
-          
+
             import { defineConfig } from "tsup";
 
             export default defineConfig(async (options) =>

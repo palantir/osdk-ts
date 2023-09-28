@@ -19,7 +19,7 @@
     "build": "tsup",
     "clean": "rm -rf lib dist tsconfig.tsbuildinfo",
     "dev": "tsup --watch",
-    "lint": "eslint .",
+    "lint": "eslint . && prettier . --check --ignore-path $(find-up .prettierignore)",
     "prettier": "prettier .",
     "typecheck": "tsc-absolute"
   },

@@ -1,7 +1,12 @@
 {
   "name": "workspace-root",
   "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
   "devDependencies": {
+    "@babel/core": "^7.23.0",
     "@babel/preset-typescript": "^7.22.15",
     "@monorepolint/cli": "0.5.0-alpha.108",
     "@monorepolint/config": "0.5.0-alpha.108",
@@ -10,6 +15,7 @@
     "babel-plugin-dev-expression": "^0.2.3",
     "esbuild-plugin-babel": "^0.2.3",
     "eslint": "^8.49.0",
+    "find-up-cli": "^5.0.0",
     "prettier": "^3.0.3",
     "tsc-absolute": "^1.0.1",
     "tsup": "^7.2.0",
