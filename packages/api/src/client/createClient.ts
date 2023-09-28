@@ -15,11 +15,11 @@
  */
 
 import type { OntologyDefinition } from "#ontology";
-import { createObjectSetCreator } from "./ObjectSetCreator";
-import { createObjectSet } from "./objectSet/createObjectSet";
-import type { ObjectSetFactory } from "./objectSet/ObjectSet";
 import type { Client } from "./Client";
 import { createThinClient } from "./createThinClient";
+import { createObjectSet } from "./objectSet/createObjectSet";
+import type { ObjectSetFactory } from "./objectSet/ObjectSet";
+import { createObjectSetCreator } from "./ObjectSetCreator";
 
 export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
@@ -37,10 +37,13 @@ export function createClient<O extends OntologyDefinition<any>>(
   const objectSetFactory: ObjectSetFactory<O> = (type, opts) =>
     createObjectSet(type, thinClient, opts);
 
-  const client: Client<O> = Object.defineProperties({} as Client<O>, {
-    objectSet: { get: () => objectSetFactory },
-    objects: { get: () => createObjectSetCreator(client) },
-  } satisfies Record<keyof Client<any>, PropertyDescriptor>);
+  const client: Client<O> = Object.defineProperties(
+    {} as Client<O>,
+    {
+      objectSet: { get: () => objectSetFactory },
+      objects: { get: () => createObjectSetCreator(client) },
+    } satisfies Record<keyof Client<any>, PropertyDescriptor>,
+  );
 
   return client;
 }

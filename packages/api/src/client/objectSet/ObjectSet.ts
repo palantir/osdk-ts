@@ -16,16 +16,16 @@
 
 import type { AggregationsResults, WhereClause } from "#client/query";
 import type {
-  OntologyDefinition,
-  ObjectTypesFrom,
-  PropertyKeysFrom,
-  OsdkObjectFrom,
   ObjectInfoFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+  OsdkObjectFrom,
+  PropertyKeysFrom,
 } from "#ontology";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
+import type { PageResult } from "../PageResult";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { ResultOrError } from "../ResultOrError";
-import type { PageResult } from "../PageResult";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
 import type { LinkTypesFrom } from "./LinkTypesFrom";
 
 export type ObjectSet<
@@ -89,4 +89,4 @@ export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
 >(
   type: K,
   opts?: ObjectSetOptions<O, K>,
-) => ObjectSet<O, K>; //FIXME
+) => ObjectSet<O, K>; // FIXME

@@ -16,7 +16,6 @@
 
 import { createClient, createThinClient } from "@osdk/api";
 import { Ontology } from "@osdk/examples.basic.sdk";
-import type { OntologyType } from "./OntologyType";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped";
 import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin";
@@ -25,6 +24,7 @@ import { fetchEmployeePage } from "./examples/fetchEmployeePage";
 import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit";
 import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin";
+import type { OntologyType } from "./OntologyType";
 
 declare global {
   namespace NodeJS {

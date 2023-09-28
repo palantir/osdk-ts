@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ObjectTypesFrom } from "#ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 
 export type LinkTypesFrom<
   O extends OntologyDefinition<string>,

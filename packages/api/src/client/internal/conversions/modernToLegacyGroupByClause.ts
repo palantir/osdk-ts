@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ObjectTypesFrom } from "#ontology";
 import type { AllGroupByValues, GroupByClause } from "#client/query";
 import type { Wire } from "#net";
+import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 
 export function modernToLegacyGroupByClause<
   O extends OntologyDefinition<any>,

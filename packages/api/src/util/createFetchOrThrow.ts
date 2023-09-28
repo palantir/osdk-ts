@@ -47,8 +47,8 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       }
 
       throw new PalantirApiError(
-        body?.message ??
-          `Failed to fetch ${response.status} ${response.statusText}`,
+        body?.message
+          ?? `Failed to fetch ${response.status} ${response.statusText}`,
         body?.errorName,
         body?.errorCode,
         response.status,

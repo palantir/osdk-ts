@@ -15,8 +15,8 @@
  */
 
 import type { FetchAsJsonFn } from "#util";
-import { V2_BASE } from "./V2_BASE";
 import type { AggregateObjectsV2Body, AggregationAPIResponse } from "./types";
+import { V2_BASE } from "./V2_BASE";
 
 export default async function aggregateObjectsV2(
   fetchAsJson: FetchAsJsonFn,

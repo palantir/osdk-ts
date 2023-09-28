@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { Wire } from "#net";
-import { aggregateObjectsV2 } from "#net";
-import type { OntologyDefinition, ObjectTypesFrom } from "#ontology";
 import {
   legacyToModernSingleAggregationResult,
   modernToLegacyAggregationClause,
@@ -27,9 +24,12 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "#client/query";
+import type { Wire } from "#net";
+import { aggregateObjectsV2 } from "#net";
+import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import invariant from "tiny-invariant";
-import type { ThinClient } from "../ThinClient";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
+import type { ThinClient } from "../ThinClient";
 
 export async function aggregateOrThrow<
   T extends OntologyDefinition<any>,
@@ -75,8 +75,8 @@ export async function aggregateOrThrow<
     ) as any;
   }
 
-  const ret: AggregationResultsWithGroups<T, K, AO["select"], any> =
-    result.data.map((entry) => {
+  const ret: AggregationResultsWithGroups<T, K, AO["select"], any> = result.data
+    .map((entry) => {
       return {
         group: entry.group as any,
         values: legacyToModernSingleAggregationResult(entry),

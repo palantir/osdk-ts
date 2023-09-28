@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition, ObjectDefinition } from "#ontology";
+import type { ObjectDefinition, PropertyDefinition } from "#ontology";
 
 export type PossibleWhereClauseFilters =
   | "gt"
@@ -26,8 +26,9 @@ export type PossibleWhereClauseFilters =
   | "lte";
 
 // We need to conditional here to force the union to be distributed
-type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string
-  ? Omit<{ [k in PossibleWhereClauseFilters]?: undefined }, K> & {
+type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ?
+    & Omit<{ [k in PossibleWhereClauseFilters]?: undefined }, K>
+    & {
       [k in K]: V;
     }
   : never;
@@ -63,5 +64,5 @@ export type WhereClause<T extends ObjectDefinition<any, any>> =
   | AndWhereClause<T>
   | NotWhereClause<T>
   | {
-      [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
-    };
+    [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
+  };

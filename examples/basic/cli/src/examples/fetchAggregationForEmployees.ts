@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import type { Client } from "@osdk/api";
 import invariant from "tiny-invariant";
 import { expectType } from "ts-expect";
-import type { Client } from "@osdk/api";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchAggregationForEmployees(
@@ -75,9 +75,9 @@ fetchAggregationForEmployees()
     `the result should have 3 keys, got: ${Object.keys(result)}`,
   );
   invariant(
-    "employeeNumber" in result &&
-      "locationName" in result &&
-      "locationCity" in result,
+    "employeeNumber" in result
+      && "locationName" in result
+      && "locationCity" in result,
     "The keys should be the expected ones",
   );
   invariant(Object.keys(result.employeeNumber).length === 3);

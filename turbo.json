@@ -14,14 +14,19 @@
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["eslint-config-sane#lint"]
+      "dependsOn": ["eslint-config-sane#lint", "//#dprint"]
     },
+
     "eslint-config-sane#lint": {
       "inputs": ["library.cjs"]
     },
 
+    /* Psuedo task to let us depend on deprint config */
+    "//#dprint": {
+      "inputs": ["dprint.json"]
+    },
+
     "clean": {},
-    "prettier": {},
 
     "typecheck": {
       "inputs": ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json"],

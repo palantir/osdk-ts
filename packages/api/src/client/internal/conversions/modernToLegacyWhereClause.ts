@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition } from "#ontology";
 import type {
   AndWhereClause,
   NotWhereClause,
@@ -23,6 +22,7 @@ import type {
   WhereClause,
 } from "#client/query";
 import type { Wire } from "#net";
+import type { ObjectDefinition } from "#ontology";
 import invariant from "tiny-invariant";
 
 export function modernToLegacyWhereClause<T extends ObjectDefinition<any, any>>(

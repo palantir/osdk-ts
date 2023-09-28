@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregationsResults } from "./AggregationsResults";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
+import type { AggregationsResults } from "./AggregationsResults";
 
 type T_AGG_RESULTS_TEST_1 = AggregationsResults<
   {

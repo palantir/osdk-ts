@@ -31,9 +31,9 @@ export function createRetryingFetch(fetch: typeof globalThis.fetch) {
     retryOn(attempt, error, response) {
       const status = response?.status ?? 0;
       return (
-        !(status >= 200 && status < 300) &&
-        isRetryable(error) &&
-        attempt < MAX_RETRIES
+        !(status >= 200 && status < 300)
+        && isRetryable(error)
+        && attempt < MAX_RETRIES
       );
     },
   });
@@ -42,8 +42,8 @@ export function createRetryingFetch(fetch: typeof globalThis.fetch) {
 function isRetryable(e: any): boolean {
   if (e instanceof PalantirApiError) {
     if (
-      e.statusCode !== SERVICE_UNAVAILABLE &&
-      e.statusCode !== TOO_MANY_REQUESTS
+      e.statusCode !== SERVICE_UNAVAILABLE
+      && e.statusCode !== TOO_MANY_REQUESTS
     ) {
       return false;
     }

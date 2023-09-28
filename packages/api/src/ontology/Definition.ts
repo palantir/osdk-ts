@@ -22,7 +22,8 @@ export type ObjectInfoFrom<
 > = O["objects"][K];
 
 export type ObjectTypesFrom<O extends OntologyDefinition<string>> =
-  keyof O["objects"] & string;
+  & keyof O["objects"]
+  & string;
 
 export type PropertyKeysFrom<
   O extends OntologyDefinition<any>,
@@ -70,22 +71,19 @@ interface ValidPropertyTypes {
 }
 
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  T["nullable"] extends false
-    ? ValidPropertyTypes[T["type"]]
+  T["nullable"] extends false ? ValidPropertyTypes[T["type"]]
     : ValidPropertyTypes[T["type"]] | undefined;
 
 export type OsdkObjectLink<
   K extends string,
   O extends OntologyDefinition<K>,
   T extends LinkDefinition<any>,
-> = T["multiplicity"] extends true
-  ? Array<OsdkObjectLink_Inner<K, O, T>>
+> = T["multiplicity"] extends true ? Array<OsdkObjectLink_Inner<K, O, T>>
   : OsdkObjectLink_Inner<K, O, T>;
 
 type OsdkObjectLink_Inner<
   K extends string,
   O extends OntologyDefinition<K>,
   T extends LinkDefinition<any>,
-> = T["targetType"] extends keyof O["objects"]
-  ? O["objects"][T["targetType"]]
+> = T["targetType"] extends keyof O["objects"] ? O["objects"][T["targetType"]]
   : never;

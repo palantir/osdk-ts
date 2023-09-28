@@ -1,5 +1,0 @@
-lib/
-dist/
-.turbo/
-pnpm-lock.yaml
-.vscode/settings.json

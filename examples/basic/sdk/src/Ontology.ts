@@ -15,9 +15,9 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { OntologyMetadata } from "./OntologyMetadata";
 import { Employee } from "./objects/Employee";
 import { Todo } from "./objects/Todo";
+import { OntologyMetadata } from "./OntologyMetadata";
 
 export const Ontology = {
   metadata: OntologyMetadata,

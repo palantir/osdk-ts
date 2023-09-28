@@ -15,14 +15,14 @@
  */
 
 import { listObjectsFromObjectSetV2 } from "#net";
+import type { Wire } from "#net";
 import type {
-  OntologyDefinition,
   ObjectTypesFrom,
-  PropertyKeysFrom,
+  OntologyDefinition,
   OsdkObjectFrom,
+  PropertyKeysFrom,
 } from "#ontology";
 import type { NOOP } from "#util";
-import type { Wire } from "#net";
 import type { PageResult } from "../PageResult";
 import type { ThinClient } from "../ThinClient";
 
@@ -53,8 +53,7 @@ export async function fetchPageOrThrow<
       OsdkObjectFrom<
         T,
         O,
-        A["select"] extends readonly string[]
-          ? A["select"][number]
+        A["select"] extends readonly string[] ? A["select"][number]
           : PropertyKeysFrom<O, T>
       >
     >

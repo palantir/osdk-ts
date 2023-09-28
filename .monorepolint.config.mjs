@@ -1,41 +1,49 @@
 // @ts-check
 import {
-  packageEntry,
-  packageScript,
   alphabeticalDependencies,
   alphabeticalScripts,
   fileContents,
-  requireDependency,
+  packageEntry,
   packageOrder,
+  packageScript,
+  requireDependency,
 } from "@monorepolint/rules";
-import { format, resolveConfig } from "prettier";
+import * as child_process from "node:child_process";
 
 const nonStandardPackages = ["eslint-config-sane", "mytsup", "tsconfig"];
 
+const cache = new Map();
+
 /**
  * @param {string} contents
- * @param {Parameters<import("prettier").format>[1]["parser"]} parser
  */
-const formatedGeneratorHelper =
-  (contents, parser) =>
-  /**
-   *
-   * @param {import("@monorepolint/config").Context} context
-   * @returns
-   */
-  async (context) => {
-    return format(contents, {
-      ...(await resolveConfig(context.packageDir)),
-      parser,
-    });
-  };
+const formatedGeneratorHelper = (contents, ext) => async (context) => {
+  if (cache.has(contents)) {
+    return cache.get(contents);
+  }
+  const result = child_process.spawnSync(
+    `pnpm exec dprint fmt --stdin foo.${ext}`,
+    {
+      input: contents,
+      encoding: "utf8",
+      shell: true,
+    },
+  );
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  cache.set(contents, result.stdout);
+
+  return result.stdout;
+};
 
 function generateFormattedJson(o) {
   return formatedGeneratorHelper(JSON.stringify(o), "json");
 }
 
 /**
- *
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  */
 function standardPackageRules(shared) {
@@ -61,7 +69,7 @@ function standardPackageRules(shared) {
         scripts: {
           clean: "rm -rf lib dist tsconfig.tsbuildinfo",
           typecheck: "tsc-absolute",
-          lint: "eslint . && prettier . --check --ignore-path $(find-up .prettierignore)",
+          lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           prettier: "prettier .",
           build: "tsup",
           dev: "tsup --watch",
@@ -121,13 +129,13 @@ function standardPackageRules(shared) {
            * limitations under the License.
            */
 
-            import { defineConfig } from "tsup";
+          import { defineConfig } from "tsup";
 
-            export default defineConfig(async (options) =>
-              (await import("mytsup")).default(options),
-            );          
+          export default defineConfig(async (options) =>
+            (await import("mytsup")).default(options)
+          );     
           `,
-          "babel",
+          "js",
         ),
       },
     }),
@@ -137,11 +145,11 @@ function standardPackageRules(shared) {
         file: ".eslintrc.cjs",
         generator: formatedGeneratorHelper(
           `module.exports = {
-                extends: ["sane/library"],
-                root: true,
-              };
+              extends: ["sane/library"],
+              root: true,
+            };
             `,
-          "babel",
+          "js",
         ),
       },
     }),

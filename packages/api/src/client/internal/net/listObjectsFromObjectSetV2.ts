@@ -15,12 +15,12 @@
  */
 
 import type { FetchAsJsonFn } from "#util";
-import { V2_BASE } from "./V2_BASE";
 import type {
   LoadObjectSetRequestV2,
   OntologyObjectV2,
   PagedResponse,
 } from "./types";
+import { V2_BASE } from "./V2_BASE";
 
 export default async function listObjectsFromObjectSetV2(
   fetchAsJson: FetchAsJsonFn,
