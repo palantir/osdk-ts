@@ -200,6 +200,7 @@ export default {
           "private",
           "version",
           "description",
+          "access",
           "author",
           "license",
           "exports",
