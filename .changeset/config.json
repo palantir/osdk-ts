@@ -7,7 +7,7 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": [],
+  "ignore": ["@osdk/examples.basic.sdk", "@osdk/examples.basic.cli"],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
     "useCalculatedVersion": true

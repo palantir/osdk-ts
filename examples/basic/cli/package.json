@@ -1,5 +1,6 @@
 {
   "name": "@osdk/examples.basic.cli",
+  "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
   "exports": {
