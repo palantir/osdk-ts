@@ -8,8 +8,7 @@
   "toml": {},
   "excludes": [
     "**/*-lock.json",
-    "**/lib",
-    "**/dist",
+    "**/build",
     "**/.turbo",
     "pnpm-lock.yaml",
     ".vscode/settings.json"

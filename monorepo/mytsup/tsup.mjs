@@ -7,13 +7,17 @@ export default async (options) => {
   return {
     entry: ["src/index.ts", "src/public/*.ts"],
     format: ["cjs", "esm"],
+    outDir: "build/js",
     clean: true,
+    silent: true,
     sourcemap: true,
     splitting: true,
     minify: !options.watch,
+    onSuccess: () => {
+      console.log("👍");
+    },
     treeshake: true,
     target: "es2022",
-    onSuccess: `tsc-absolute ${options.watch ? "--declarationMap" : ""}`,
     esbuildPlugins: [
       babel({
         config: {

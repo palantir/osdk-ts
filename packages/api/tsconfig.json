@@ -1,5 +1,13 @@
 {
   "extends": "tsconfig/base",
-  "compilerOptions": { "rootDir": "src", "outDir": "lib" },
-  "include": ["./src/**/*", ".eslintrc.cjs"]
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/types",
+    "composite": true
+  },
+  "include": [
+    "./src/**/*",
+    ".eslintrc.cjs"
+  ],
+  "references": []
 }
