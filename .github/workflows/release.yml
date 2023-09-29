@@ -18,14 +18,14 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 8.7.4
-
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
+
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.7.4
 
       - run: pnpm install
 
@@ -37,3 +37,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish prerelease possibly
+        if: steps.changesets.outputs.published == 'false'
+        run: pnpm run ci:publishSnapshot
