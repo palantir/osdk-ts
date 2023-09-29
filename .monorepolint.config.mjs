@@ -93,16 +93,7 @@ function standardPackageRules(shared) {
             },
           },
           publishConfig: {
-            ".": {
-              types: "./lib/index.d.ts",
-              import: "./dist/index.mjs",
-              require: "./dist/index.js",
-            },
-            "./*": {
-              types: "./lib/public/*.d.ts",
-              import: "./dist/public/*.mjs",
-              require: "./dist/public/*.js",
-            },
+            "access": "public",
           },
         },
       },
