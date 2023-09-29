@@ -81,18 +81,9 @@ importers:
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
-      eslint-config-sane:
-        specifier: workspace:*
-        version: link:../../../monorepo/eslint-config-sane
-      mytsup:
-        specifier: workspace:*
-        version: link:../../../monorepo/mytsup
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../../monorepo/tsconfig
 
   examples/basic/sdk:
     dependencies:
@@ -100,15 +91,6 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/api
     devDependencies:
-      eslint-config-sane:
-        specifier: workspace:*
-        version: link:../../../monorepo/eslint-config-sane
-      mytsup:
-        specifier: workspace:*
-        version: link:../../../monorepo/mytsup
-      tsconfig:
-        specifier: workspace:*
-        version: link:../../../monorepo/tsconfig
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
