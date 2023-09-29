@@ -6,23 +6,24 @@
   "license": "Apache-2.0",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.js"
     },
     "./*": {
-      "types": "./src/public/*.ts",
-      "import": "./dist/public/*.mjs",
-      "require": "./dist/public/*.js"
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.js"
     }
   },
   "scripts": {
-    "build": "tsup",
-    "clean": "rm -rf lib dist tsconfig.tsbuildinfo",
-    "dev": "tsup --watch",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev:transpile": "tsup --watch",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "prettier": "prettier .",
-    "typecheck": "tsc-absolute"
+    "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
     "fetch-retry": "^5.0.6",
@@ -42,5 +43,11 @@
     "#client/converters": "./src/client/internal/conversions/index.ts",
     "#client/query": "./src/client/query/index.ts"
   },
-  "keywords": []
+  "keywords": [],
+  "files": [
+    "dist",
+    "types",
+    "CHANGELOG.md",
+    "package.json"
+  ]
 }

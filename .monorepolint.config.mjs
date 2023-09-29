@@ -7,9 +7,11 @@ import {
   packageOrder,
   packageScript,
   requireDependency,
+  standardTsconfig,
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
+const DELETE_SCRIPT_ENTRTY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = ["eslint-config-sane", "mytsup", "tsconfig"];
 
 const cache = new Map();
@@ -48,31 +50,32 @@ function generateFormattedJson(o) {
  */
 function standardPackageRules(shared) {
   return [
-    fileContents({
+    standardTsconfig({
       ...shared,
       options: {
         file: "tsconfig.json",
-        generator: generateFormattedJson({
+        template: {
           extends: "tsconfig/base",
 
           compilerOptions: {
             rootDir: "src",
-            outDir: "lib",
+            outDir: "build/types",
+            composite: true,
           },
           include: ["./src/**/*", ".eslintrc.cjs"],
-        }),
+        },
       },
     }),
     packageScript({
       ...shared,
       options: {
         scripts: {
-          clean: "rm -rf lib dist tsconfig.tsbuildinfo",
-          typecheck: "tsc-absolute",
+          "dev:transpile": "tsup --watch",
+          clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           prettier: "prettier .",
-          build: "tsup",
-          dev: "tsup --watch",
+          transpile: "tsup",
+          typecheck: "tsc-absolute --build",
         },
       },
     }),
@@ -82,19 +85,20 @@ function standardPackageRules(shared) {
         entries: {
           exports: {
             ".": {
-              types: "./src/index.ts",
-              import: "./dist/index.mjs",
-              require: "./dist/index.js",
+              types: "./build/types/index.d.ts",
+              import: "./build/js/index.mjs",
+              require: "./build/js/index.js",
             },
             "./*": {
-              types: "./src/public/*.ts",
-              import: "./dist/public/*.mjs",
-              require: "./dist/public/*.js",
+              types: "./build/types/public/*.d.ts",
+              import: "./build/js/public/*.mjs",
+              require: "./build/js/public/*.js",
             },
           },
           publishConfig: {
             "access": "public",
           },
+          files: ["dist", "types", "CHANGELOG.md", "package.json"],
         },
       },
     }),
@@ -185,6 +189,7 @@ export default {
           "author",
           "license",
           "exports",
+          "file",
           "scripts",
           "dependencies",
           "devDependencies",

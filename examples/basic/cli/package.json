@@ -4,23 +4,24 @@
   "license": "Apache-2.0",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.js"
     },
     "./*": {
-      "types": "./src/public/*.ts",
-      "import": "./dist/public/*.mjs",
-      "require": "./dist/public/*.js"
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.js"
     }
   },
   "scripts": {
-    "build": "tsup",
-    "clean": "rm -rf lib dist tsconfig.tsbuildinfo",
-    "dev": "tsup --watch",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev:transpile": "tsup --watch",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "prettier": "prettier .",
-    "typecheck": "tsc-absolute"
+    "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
@@ -29,12 +30,15 @@
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "eslint-config-sane": "workspace:*",
-    "mytsup": "workspace:*",
-    "ts-expect": "^1.3.0",
-    "tsconfig": "workspace:*"
+    "ts-expect": "^1.3.0"
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "files": [
+    "dist",
+    "types",
+    "CHANGELOG.md",
+    "package.json"
+  ]
 }
