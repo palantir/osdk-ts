@@ -37,7 +37,3 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish prerelease possibly
-        if: steps.changesets.outputs.published == 'false'
-        run: pnpm run ci:publishSnapshot
