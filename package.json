@@ -21,8 +21,11 @@
     "dprint": "^0.41.0",
     "esbuild-plugin-babel": "^0.2.3",
     "eslint": "^8.49.0",
+    "eslint-config-sane": "workspace:*",
     "find-up-cli": "^5.0.0",
+    "mytsup": "workspace:*",
     "tsc-absolute": "^1.0.1",
+    "tsconfig": "workspace:*",
     "tsup": "^7.2.0",
     "turbo": "^1.10.13",
     "typescript": "^5.2.2"
