@@ -45,8 +45,8 @@
   },
   "keywords": [],
   "files": [
-    "dist",
-    "types",
+    "build/types",
+    "build/js",
     "CHANGELOG.md",
     "package.json"
   ]

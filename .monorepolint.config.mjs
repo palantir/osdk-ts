@@ -98,7 +98,7 @@ function standardPackageRules(shared) {
           publishConfig: {
             "access": "public",
           },
-          files: ["dist", "types", "CHANGELOG.md", "package.json"],
+          files: ["build/types", "build/js", "CHANGELOG.md", "package.json"],
         },
       },
     }),
