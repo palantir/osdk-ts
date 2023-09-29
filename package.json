@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "check-mrl": "mrl check --verbose",
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish",
-    "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot",
+    "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "prePublish": "turbo build && turbo lint",
