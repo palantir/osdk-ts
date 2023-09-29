@@ -7,10 +7,10 @@
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "dev": "turbo run dev",
+    "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples/basic/*",
     "lint": "turbo run lint",
     "prePublish": "turbo build && turbo lint",
-    "typecheckAll": "tsc --build packages/* examples/basic/*",
-    "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples/basic/*"
+    "typecheckAll": "tsc --build packages/* examples/basic/*"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
