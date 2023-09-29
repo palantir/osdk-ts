@@ -153,16 +153,6 @@ function standardPackageRules(shared) {
         ),
       },
     }),
-    requireDependency({
-      ...shared,
-      options: {
-        devDependencies: {
-          mytsup: "workspace:*",
-          "eslint-config-sane": "workspace:*",
-          tsconfig: "workspace:*",
-        },
-      },
-    }),
   ];
 }
 

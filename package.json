@@ -25,6 +25,9 @@
     "tsc-absolute": "^1.0.1",
     "tsup": "^7.2.0",
     "turbo": "^1.10.13",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "eslint-config-sane": "workspace:*",
+    "mytsup": "workspace:*",
+    "tsconfig": "workspace:*"
   }
 }
