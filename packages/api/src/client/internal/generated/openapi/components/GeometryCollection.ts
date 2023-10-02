@@ -10,4 +10,7 @@ import { BBox } from "./BBox";
  * be used instead.
  *
  */
-export type GeometryCollection = { geometries: Array<Geometry>; bbox?: BBox; };
+export interface GeometryCollection {
+    geometries: Array<Geometry>;
+    bbox?: BBox;
+}

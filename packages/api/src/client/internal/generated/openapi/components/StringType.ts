@@ -1,1 +1,2 @@
-export type StringType = {};
+export interface StringType {
+}

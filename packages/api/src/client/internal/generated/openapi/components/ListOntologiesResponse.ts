@@ -1,3 +1,6 @@
 import { Ontology } from "./Ontology";
 
-export type ListOntologiesResponse = { data: Array<Ontology>; };
+export interface ListOntologiesResponse {
+    /** The list of Ontologies the user has access to. */
+    data: Array<Ontology>;
+}

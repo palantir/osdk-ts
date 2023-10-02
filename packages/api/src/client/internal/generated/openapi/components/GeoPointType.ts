@@ -1,1 +1,2 @@
-export type GeoPointType = {};
+export interface GeoPointType {
+}

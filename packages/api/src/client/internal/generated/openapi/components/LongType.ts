@@ -1,1 +1,2 @@
-export type LongType = {};
+export interface LongType {
+}

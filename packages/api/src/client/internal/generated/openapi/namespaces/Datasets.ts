@@ -5,17 +5,17 @@ import type { BranchId } from "../components/BranchId";
 import type { TransactionRid } from "../components/TransactionRid";
 import type { TableExportFormat } from "../components/TableExportFormat";
 import type { PreviewMode } from "../components/PreviewMode";
-import type { PageSize } from "../components/PageSize";
-import type { PageToken } from "../components/PageToken";
 import type { ListBranchesResponse } from "../components/ListBranchesResponse";
 import type { CreateBranchRequest } from "../components/CreateBranchRequest";
 import type { Branch } from "../components/Branch";
+import type { PageSize } from "../components/PageSize";
+import type { PageToken } from "../components/PageToken";
 import type { CreateTransactionRequest } from "../components/CreateTransactionRequest";
 import type { Transaction } from "../components/Transaction";
 import type { ListFilesResponse } from "../components/ListFilesResponse";
+import type { File } from "../components/File";
 import type { FilePath } from "../components/FilePath";
 import type { TransactionType } from "../components/TransactionType";
-import type { File } from "../components/File";
 import { OpenApiRequest } from "../request";
 
 /**
@@ -26,15 +26,11 @@ import { OpenApiRequest } from "../request";
  */
 export function createDataset<TResponse>(_request: OpenApiRequest<Dataset, TResponse>, request: CreateDatasetRequest): Promise<TResponse> {
     return _request(
-        "createDataset",
         "POST",
-        "/v1/datasets",
+        `/v1/datasets`,
         request,
         __undefined,
         __undefined,
-        __undefined,
-        "application/json",
-        "application/json",
     );
 }
 
@@ -46,17 +42,11 @@ export function createDataset<TResponse>(_request: OpenApiRequest<Dataset, TResp
  */
 export function getDataset<TResponse>(_request: OpenApiRequest<Dataset, TResponse>, datasetRid: DatasetRid): Promise<TResponse> {
     return _request(
-        "getDataset",
         "GET",
-        "/v1/datasets/{datasetRid}",
+        `/v1/datasets/${datasetRid}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -72,27 +62,23 @@ export function getDataset<TResponse>(_request: OpenApiRequest<Dataset, TRespons
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, branchId?: BranchId, startTransactionRid?: TransactionRid, endTransactionRid?: TransactionRid, format?: TableExportFormat, columns?: Array<string>, rowLimit?: number, preview?: PreviewMode): Promise<TResponse> {
+export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, queryParameters?: {
+    "branchId"?: BranchId,
+    "startTransactionRid"?: TransactionRid,
+    "endTransactionRid"?: TransactionRid,
+    "format": TableExportFormat,
+    "columns": Array<string>,
+    "rowLimit"?: number,
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "readTable",
         "GET",
-        "/v1/datasets/{datasetRid}/readTable",
+        `/v1/datasets/${datasetRid}/readTable`,
+        __undefined,
+        queryParameters,
         __undefined,
         __undefined,
-        {
-            branchId,
-            startTransactionRid,
-            endTransactionRid,
-            format,
-            columns,
-            rowLimit,
-            preview,
-        },
-        {
-            datasetRid,
-        },
-        __undefined,
-        AnyMediaType,
+        AnyMediaType
     );
 }
 
@@ -100,23 +86,17 @@ export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uin
  * Retrieves the Schema for a Dataset and Branch, if it exists.
  *
  */
-export function getSchema<TResponse>(_request: OpenApiRequest<any, TResponse>, datasetRid: DatasetRid, branchId?: BranchId, transactionRid?: TransactionRid, preview?: PreviewMode): Promise<TResponse> {
+export function getSchema<TResponse>(_request: OpenApiRequest<any, TResponse>, datasetRid: DatasetRid, queryParameters?: {
+    "branchId"?: BranchId,
+    "transactionRid"?: TransactionRid,
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "getSchema",
         "GET",
-        "/v1/datasets/{datasetRid}/schema",
+        `/v1/datasets/${datasetRid}/schema`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            transactionRid,
-            preview,
-        },
-        {
-            datasetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -124,22 +104,16 @@ export function getSchema<TResponse>(_request: OpenApiRequest<any, TResponse>, d
  * Puts a Schema on an existing Dataset and Branch.
  *
  */
-export function putSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, request: any, branchId?: BranchId, preview?: PreviewMode): Promise<TResponse> {
+export function putSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, request: any, queryParameters?: {
+    "branchId"?: BranchId,
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "putSchema",
         "PUT",
-        "/v1/datasets/{datasetRid}/schema",
+        `/v1/datasets/${datasetRid}/schema`,
         request,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            preview,
-        },
-        {
-            datasetRid,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -147,23 +121,17 @@ export function putSchema<TResponse>(_request: OpenApiRequest<undefined, TRespon
  * Deletes the Schema from a Dataset and Branch.
  *
  */
-export function deleteSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, branchId?: BranchId, transactionRid?: TransactionRid, preview?: PreviewMode): Promise<TResponse> {
+export function deleteSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, queryParameters?: {
+    "branchId"?: BranchId,
+    "transactionRid"?: TransactionRid,
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "deleteSchema",
         "DELETE",
-        "/v1/datasets/{datasetRid}/schema",
+        `/v1/datasets/${datasetRid}/schema`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            transactionRid,
-            preview,
-        },
-        {
-            datasetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -173,22 +141,16 @@ export function deleteSchema<TResponse>(_request: OpenApiRequest<undefined, TRes
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function listBranches<TResponse>(_request: OpenApiRequest<ListBranchesResponse, TResponse>, datasetRid: DatasetRid, pageSize?: PageSize, pageToken?: PageToken): Promise<TResponse> {
+export function listBranches<TResponse>(_request: OpenApiRequest<ListBranchesResponse, TResponse>, datasetRid: DatasetRid, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+}): Promise<TResponse> {
     return _request(
-        "listBranches",
         "GET",
-        "/v1/datasets/{datasetRid}/branches",
+        `/v1/datasets/${datasetRid}/branches`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-        },
-        {
-            datasetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -200,17 +162,11 @@ export function listBranches<TResponse>(_request: OpenApiRequest<ListBranchesRes
  */
 export function createBranch<TResponse>(_request: OpenApiRequest<Branch, TResponse>, datasetRid: DatasetRid, request: CreateBranchRequest): Promise<TResponse> {
     return _request(
-        "createBranch",
         "POST",
-        "/v1/datasets/{datasetRid}/branches",
+        `/v1/datasets/${datasetRid}/branches`,
         request,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -222,18 +178,11 @@ export function createBranch<TResponse>(_request: OpenApiRequest<Branch, TRespon
  */
 export function getBranch<TResponse>(_request: OpenApiRequest<Branch, TResponse>, datasetRid: DatasetRid, branchId: BranchId): Promise<TResponse> {
     return _request(
-        "getBranch",
         "GET",
-        "/v1/datasets/{datasetRid}/branches/{branchId}",
+        `/v1/datasets/${datasetRid}/branches/${branchId}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-            branchId,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -245,18 +194,11 @@ export function getBranch<TResponse>(_request: OpenApiRequest<Branch, TResponse>
  */
 export function deleteBranch<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, branchId: BranchId): Promise<TResponse> {
     return _request(
-        "deleteBranch",
         "DELETE",
-        "/v1/datasets/{datasetRid}/branches/{branchId}",
+        `/v1/datasets/${datasetRid}/branches/${branchId}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-            branchId,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -266,21 +208,15 @@ export function deleteBranch<TResponse>(_request: OpenApiRequest<undefined, TRes
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
  */
-export function createTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, request: CreateTransactionRequest, branchId?: BranchId): Promise<TResponse> {
+export function createTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, request: CreateTransactionRequest, queryParameters?: {
+    "branchId"?: BranchId,
+}): Promise<TResponse> {
     return _request(
-        "createTransaction",
         "POST",
-        "/v1/datasets/{datasetRid}/transactions",
+        `/v1/datasets/${datasetRid}/transactions`,
         request,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-        },
-        {
-            datasetRid,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -292,18 +228,11 @@ export function createTransaction<TResponse>(_request: OpenApiRequest<Transactio
  */
 export function getTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, transactionRid: TransactionRid): Promise<TResponse> {
     return _request(
-        "getTransaction",
         "GET",
-        "/v1/datasets/{datasetRid}/transactions/{transactionRid}",
+        `/v1/datasets/${datasetRid}/transactions/${transactionRid}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-            transactionRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -316,18 +245,11 @@ export function getTransaction<TResponse>(_request: OpenApiRequest<Transaction, 
  */
 export function commitTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, transactionRid: TransactionRid): Promise<TResponse> {
     return _request(
-        "commitTransaction",
         "POST",
-        "/v1/datasets/{datasetRid}/transactions/{transactionRid}/commit",
+        `/v1/datasets/${datasetRid}/transactions/${transactionRid}/commit`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-            transactionRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -340,18 +262,11 @@ export function commitTransaction<TResponse>(_request: OpenApiRequest<Transactio
  */
 export function abortTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, transactionRid: TransactionRid): Promise<TResponse> {
     return _request(
-        "abortTransaction",
         "POST",
-        "/v1/datasets/{datasetRid}/transactions/{transactionRid}/abort",
+        `/v1/datasets/${datasetRid}/transactions/${transactionRid}/abort`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            datasetRid,
-            transactionRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -384,25 +299,19 @@ export function abortTransaction<TResponse>(_request: OpenApiRequest<Transaction
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function listFiles<TResponse>(_request: OpenApiRequest<ListFilesResponse, TResponse>, datasetRid: DatasetRid, branchId?: BranchId, startTransactionRid?: TransactionRid, endTransactionRid?: TransactionRid, pageSize?: PageSize, pageToken?: PageToken): Promise<TResponse> {
+export function listFiles<TResponse>(_request: OpenApiRequest<ListFilesResponse, TResponse>, datasetRid: DatasetRid, queryParameters?: {
+    "branchId"?: BranchId,
+    "startTransactionRid"?: TransactionRid,
+    "endTransactionRid"?: TransactionRid,
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+}): Promise<TResponse> {
     return _request(
-        "listFiles",
         "GET",
-        "/v1/datasets/{datasetRid}/files",
+        `/v1/datasets/${datasetRid}/files`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            startTransactionRid,
-            endTransactionRid,
-            pageSize,
-            pageToken,
-        },
-        {
-            datasetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -429,24 +338,19 @@ export function listFiles<TResponse>(_request: OpenApiRequest<ListFilesResponse,
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
  */
-export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, request: ReadableStream<Uint8Array> | Blob, filePath?: FilePath, branchId?: BranchId, transactionType?: TransactionType, transactionRid?: TransactionRid): Promise<TResponse> {
+export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, request: ReadableStream<Uint8Array> | Blob, queryParameters?: {
+    "filePath": FilePath,
+    "branchId"?: BranchId,
+    "transactionType"?: TransactionType,
+    "transactionRid"?: TransactionRid,
+}): Promise<TResponse> {
     return _request(
-        "uploadFile",
         "POST",
-        "/v1/datasets/{datasetRid}/files:upload",
+        `/v1/datasets/${datasetRid}/files:upload`,
         request,
+        queryParameters,
         __undefined,
-        {
-            filePath,
-            branchId,
-            transactionType,
-            transactionRid,
-        },
-        {
-            datasetRid,
-        },
         AnyMediaType,
-        "application/json",
     );
 }
 
@@ -477,24 +381,17 @@ export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>,
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function getFileMetadata<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, filePath: FilePath, branchId?: BranchId, startTransactionRid?: TransactionRid, endTransactionRid?: TransactionRid): Promise<TResponse> {
+export function getFileMetadata<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
+    "branchId"?: BranchId,
+    "startTransactionRid"?: TransactionRid,
+    "endTransactionRid"?: TransactionRid,
+}): Promise<TResponse> {
     return _request(
-        "getFileMetadata",
         "GET",
-        "/v1/datasets/{datasetRid}/files/{filePath}",
+        `/v1/datasets/${datasetRid}/files/${filePath}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            startTransactionRid,
-            endTransactionRid,
-        },
-        {
-            datasetRid,
-            filePath,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -517,23 +414,16 @@ export function getFileMetadata<TResponse>(_request: OpenApiRequest<File, TRespo
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
  */
-export function deleteFile<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, filePath: FilePath, branchId?: BranchId, transactionRid?: TransactionRid): Promise<TResponse> {
+export function deleteFile<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
+    "branchId"?: BranchId,
+    "transactionRid"?: TransactionRid,
+}): Promise<TResponse> {
     return _request(
-        "deleteFile",
         "DELETE",
-        "/v1/datasets/{datasetRid}/files/{filePath}",
+        `/v1/datasets/${datasetRid}/files/${filePath}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            branchId,
-            transactionRid,
-        },
-        {
-            datasetRid,
-            filePath,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -565,24 +455,19 @@ export function deleteFile<TResponse>(_request: OpenApiRequest<undefined, TRespo
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function getFileContent<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, filePath: FilePath, branchId?: BranchId, startTransactionRid?: TransactionRid, endTransactionRid?: TransactionRid): Promise<TResponse> {
+export function getFileContent<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
+    "branchId"?: BranchId,
+    "startTransactionRid"?: TransactionRid,
+    "endTransactionRid"?: TransactionRid,
+}): Promise<TResponse> {
     return _request(
-        "getFileContent",
         "GET",
-        "/v1/datasets/{datasetRid}/files/{filePath}/content",
+        `/v1/datasets/${datasetRid}/files/${filePath}/content`,
+        __undefined,
+        queryParameters,
         __undefined,
         __undefined,
-        {
-            branchId,
-            startTransactionRid,
-            endTransactionRid,
-        },
-        {
-            datasetRid,
-            filePath,
-        },
-        __undefined,
-        AnyMediaType,
+        AnyMediaType
     );
 }
 

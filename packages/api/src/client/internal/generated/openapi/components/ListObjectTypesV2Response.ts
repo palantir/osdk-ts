@@ -1,4 +1,8 @@
 import { PageToken } from "./PageToken";
 import { ObjectTypeV2 } from "./ObjectTypeV2";
 
-export type ListObjectTypesV2Response = { nextPageToken?: PageToken; data: Array<ObjectTypeV2>; };
+export interface ListObjectTypesV2Response {
+    nextPageToken?: PageToken;
+    /** The list of object types in the current page. */
+    data: Array<ObjectTypeV2>;
+}

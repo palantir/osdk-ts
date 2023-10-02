@@ -8,13 +8,6 @@ function isFeature(obj: FeatureCollectionTypes): obj is FeatureCollectionTypes_F
     return (obj.type === "Feature");
 }
 
-function Feature(obj: Feature): FeatureCollectionTypes_Feature {
-    return {
-        ...obj,
-        type: "Feature",
-    };
-}
-
 export interface FeatureCollectionTypesVisitor<T> {
     Feature: (obj: Feature) => T;
     unknown: (obj: FeatureCollectionTypes) => T;
@@ -32,6 +25,5 @@ export type FeatureCollectionTypes = FeatureCollectionTypes_Feature;
 
 export const FeatureCollectionTypes = {
     isFeature: isFeature,
-    Feature: Feature,
     visit: visit,
 };

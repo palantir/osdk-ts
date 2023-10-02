@@ -1,1 +1,2 @@
-export type DateType = {};
+export interface DateType {
+}

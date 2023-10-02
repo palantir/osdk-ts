@@ -1,1 +1,4 @@
-export type DecimalType = { precision?: number; scale?: number; };
+export interface DecimalType {
+    precision?: number;
+    scale?: number;
+}

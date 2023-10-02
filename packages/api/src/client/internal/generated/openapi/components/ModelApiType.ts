@@ -19,26 +19,12 @@ function isAny(obj: ModelApiType): obj is ModelApiType_Any {
     return (obj.type === "any");
 }
 
-function any(obj: AnyType): ModelApiType_Any {
-    return {
-        ...obj,
-        type: "any",
-    };
-}
-
 export interface ModelApiType_Array extends ModelApiArrayType {
     type: "array";
 }
 
 function isArray(obj: ModelApiType): obj is ModelApiType_Array {
     return (obj.type === "array");
-}
-
-function array(obj: ModelApiArrayType): ModelApiType_Array {
-    return {
-        ...obj,
-        type: "array",
-    };
 }
 
 export interface ModelApiType_Boolean extends BooleanType {
@@ -49,26 +35,12 @@ function isBoolean(obj: ModelApiType): obj is ModelApiType_Boolean {
     return (obj.type === "boolean");
 }
 
-function boolean(obj: BooleanType): ModelApiType_Boolean {
-    return {
-        ...obj,
-        type: "boolean",
-    };
-}
-
 export interface ModelApiType_Date extends DateType {
     type: "date";
 }
 
 function isDate(obj: ModelApiType): obj is ModelApiType_Date {
     return (obj.type === "date");
-}
-
-function date(obj: DateType): ModelApiType_Date {
-    return {
-        ...obj,
-        type: "date",
-    };
 }
 
 export interface ModelApiType_Float extends FloatType {
@@ -79,26 +51,12 @@ function isFloat(obj: ModelApiType): obj is ModelApiType_Float {
     return (obj.type === "float");
 }
 
-function float(obj: FloatType): ModelApiType_Float {
-    return {
-        ...obj,
-        type: "float",
-    };
-}
-
 export interface ModelApiType_Integer extends IntegerType {
     type: "integer";
 }
 
 function isInteger(obj: ModelApiType): obj is ModelApiType_Integer {
     return (obj.type === "integer");
-}
-
-function integer(obj: IntegerType): ModelApiType_Integer {
-    return {
-        ...obj,
-        type: "integer",
-    };
 }
 
 export interface ModelApiType_Map extends ModelApiMapType {
@@ -109,26 +67,12 @@ function isMap(obj: ModelApiType): obj is ModelApiType_Map {
     return (obj.type === "map");
 }
 
-function map(obj: ModelApiMapType): ModelApiType_Map {
-    return {
-        ...obj,
-        type: "map",
-    };
-}
-
 export interface ModelApiType_Null extends ModelApiNullType {
     type: "null";
 }
 
 function isNull(obj: ModelApiType): obj is ModelApiType_Null {
     return (obj.type === "null");
-}
-
-function null_(obj: ModelApiNullType): ModelApiType_Null {
-    return {
-        ...obj,
-        type: "null",
-    };
 }
 
 export interface ModelApiType_String extends StringType {
@@ -139,26 +83,12 @@ function isString(obj: ModelApiType): obj is ModelApiType_String {
     return (obj.type === "string");
 }
 
-function string(obj: StringType): ModelApiType_String {
-    return {
-        ...obj,
-        type: "string",
-    };
-}
-
 export interface ModelApiType_Struct extends ModelApiStructType {
     type: "struct";
 }
 
 function isStruct(obj: ModelApiType): obj is ModelApiType_Struct {
     return (obj.type === "struct");
-}
-
-function struct(obj: ModelApiStructType): ModelApiType_Struct {
-    return {
-        ...obj,
-        type: "struct",
-    };
 }
 
 export interface ModelApiType_Timestamp extends TimestampType {
@@ -169,26 +99,12 @@ function isTimestamp(obj: ModelApiType): obj is ModelApiType_Timestamp {
     return (obj.type === "timestamp");
 }
 
-function timestamp(obj: TimestampType): ModelApiType_Timestamp {
-    return {
-        ...obj,
-        type: "timestamp",
-    };
-}
-
 export interface ModelApiType_Union extends ModelApiUnionType {
     type: "union";
 }
 
 function isUnion(obj: ModelApiType): obj is ModelApiType_Union {
     return (obj.type === "union");
-}
-
-function union(obj: ModelApiUnionType): ModelApiType_Union {
-    return {
-        ...obj,
-        type: "union",
-    };
 }
 
 export interface ModelApiTypeVisitor<T> {
@@ -263,28 +179,16 @@ export type ModelApiType = ModelApiType_Any | ModelApiType_Array | ModelApiType_
 
 export const ModelApiType = {
     isAny: isAny,
-    any: any,
     isArray: isArray,
-    array: array,
     isBoolean: isBoolean,
-    boolean: boolean,
     isDate: isDate,
-    date: date,
     isFloat: isFloat,
-    float: float,
     isInteger: isInteger,
-    integer: integer,
     isMap: isMap,
-    map: map,
     isNull: isNull,
-    null_: null_,
     isString: isString,
-    string: string,
     isStruct: isStruct,
-    struct: struct,
     isTimestamp: isTimestamp,
-    timestamp: timestamp,
     isUnion: isUnion,
-    union: union,
     visit: visit,
 };

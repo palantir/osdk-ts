@@ -18,26 +18,12 @@ function isArray(obj: ActionParameterType): obj is ActionParameterType_Array {
     return (obj.type === "array");
 }
 
-function array(obj: ActionParameterArrayType): ActionParameterType_Array {
-    return {
-        ...obj,
-        type: "array",
-    };
-}
-
 export interface ActionParameterType_Attachment extends AttachmentType {
     type: "attachment";
 }
 
 function isAttachment(obj: ActionParameterType): obj is ActionParameterType_Attachment {
     return (obj.type === "attachment");
-}
-
-function attachment(obj: AttachmentType): ActionParameterType_Attachment {
-    return {
-        ...obj,
-        type: "attachment",
-    };
 }
 
 export interface ActionParameterType_Boolean extends BooleanType {
@@ -48,26 +34,12 @@ function isBoolean(obj: ActionParameterType): obj is ActionParameterType_Boolean
     return (obj.type === "boolean");
 }
 
-function boolean(obj: BooleanType): ActionParameterType_Boolean {
-    return {
-        ...obj,
-        type: "boolean",
-    };
-}
-
 export interface ActionParameterType_Date extends DateType {
     type: "date";
 }
 
 function isDate(obj: ActionParameterType): obj is ActionParameterType_Date {
     return (obj.type === "date");
-}
-
-function date(obj: DateType): ActionParameterType_Date {
-    return {
-        ...obj,
-        type: "date",
-    };
 }
 
 export interface ActionParameterType_Double extends DoubleType {
@@ -78,26 +50,12 @@ function isDouble(obj: ActionParameterType): obj is ActionParameterType_Double {
     return (obj.type === "double");
 }
 
-function double(obj: DoubleType): ActionParameterType_Double {
-    return {
-        ...obj,
-        type: "double",
-    };
-}
-
 export interface ActionParameterType_Integer extends IntegerType {
     type: "integer";
 }
 
 function isInteger(obj: ActionParameterType): obj is ActionParameterType_Integer {
     return (obj.type === "integer");
-}
-
-function integer(obj: IntegerType): ActionParameterType_Integer {
-    return {
-        ...obj,
-        type: "integer",
-    };
 }
 
 export interface ActionParameterType_Long extends LongType {
@@ -108,26 +66,12 @@ function isLong(obj: ActionParameterType): obj is ActionParameterType_Long {
     return (obj.type === "long");
 }
 
-function long(obj: LongType): ActionParameterType_Long {
-    return {
-        ...obj,
-        type: "long",
-    };
-}
-
 export interface ActionParameterType_ObjectSet extends OntologyObjectSetType {
     type: "objectSet";
 }
 
 function isObjectSet(obj: ActionParameterType): obj is ActionParameterType_ObjectSet {
     return (obj.type === "objectSet");
-}
-
-function objectSet(obj: OntologyObjectSetType): ActionParameterType_ObjectSet {
-    return {
-        ...obj,
-        type: "objectSet",
-    };
 }
 
 export interface ActionParameterType_Object extends OntologyObjectType {
@@ -138,13 +82,6 @@ function isObject(obj: ActionParameterType): obj is ActionParameterType_Object {
     return (obj.type === "object");
 }
 
-function object(obj: OntologyObjectType): ActionParameterType_Object {
-    return {
-        ...obj,
-        type: "object",
-    };
-}
-
 export interface ActionParameterType_String extends StringType {
     type: "string";
 }
@@ -153,26 +90,12 @@ function isString(obj: ActionParameterType): obj is ActionParameterType_String {
     return (obj.type === "string");
 }
 
-function string(obj: StringType): ActionParameterType_String {
-    return {
-        ...obj,
-        type: "string",
-    };
-}
-
 export interface ActionParameterType_Timestamp extends TimestampType {
     type: "timestamp";
 }
 
 function isTimestamp(obj: ActionParameterType): obj is ActionParameterType_Timestamp {
     return (obj.type === "timestamp");
-}
-
-function timestamp(obj: TimestampType): ActionParameterType_Timestamp {
-    return {
-        ...obj,
-        type: "timestamp",
-    };
 }
 
 export interface ActionParameterTypeVisitor<T> {
@@ -242,26 +165,15 @@ export type ActionParameterType = ActionParameterType_Array | ActionParameterTyp
 
 export const ActionParameterType = {
     isArray: isArray,
-    array: array,
     isAttachment: isAttachment,
-    attachment: attachment,
     isBoolean: isBoolean,
-    boolean: boolean,
     isDate: isDate,
-    date: date,
     isDouble: isDouble,
-    double: double,
     isInteger: isInteger,
-    integer: integer,
     isLong: isLong,
-    long: long,
     isObjectSet: isObjectSet,
-    objectSet: objectSet,
     isObject: isObject,
-    object: object,
     isString: isString,
-    string: string,
     isTimestamp: isTimestamp,
-    timestamp: timestamp,
     visit: visit,
 };

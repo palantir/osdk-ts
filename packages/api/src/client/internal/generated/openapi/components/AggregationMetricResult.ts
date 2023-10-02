@@ -1,1 +1,5 @@
-export type AggregationMetricResult = { name: string; value?: number; };
+export interface AggregationMetricResult {
+    name: string;
+    /** TBD */
+    value?: number;
+}

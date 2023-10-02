@@ -5,4 +5,8 @@ import { Fuzzy } from "./Fuzzy";
  * order in the provided value. This query supports fuzzy matching.
  *
  */
-export type AllTermsQuery = { field: string; value: string; fuzzy?: Fuzzy; };
+export interface AllTermsQuery {
+    field: string;
+    value: string;
+    fuzzy?: Fuzzy;
+}

@@ -1,3 +1,5 @@
 import { OntologyStructField } from "./OntologyStructField";
 
-export type OntologyStructType = { fields: Array<OntologyStructField>; };
+export interface OntologyStructType {
+    fields: Array<OntologyStructField>;
+}

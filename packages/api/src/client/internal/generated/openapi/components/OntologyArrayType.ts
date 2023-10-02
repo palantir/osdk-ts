@@ -1,3 +1,5 @@
 import { OntologyDataType } from "./OntologyDataType";
 
-export type OntologyArrayType = { itemType: OntologyDataType; };
+export interface OntologyArrayType {
+    itemType: OntologyDataType;
+}

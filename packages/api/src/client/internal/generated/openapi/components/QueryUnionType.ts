@@ -1,3 +1,5 @@
 import { QueryDataType } from "./QueryDataType";
 
-export type QueryUnionType = { unionTypes: Array<QueryDataType>; };
+export interface QueryUnionType {
+    unionTypes: Array<QueryDataType>;
+}

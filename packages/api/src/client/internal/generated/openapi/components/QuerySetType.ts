@@ -1,3 +1,5 @@
 import { QueryDataType } from "./QueryDataType";
 
-export type QuerySetType = { subType: QueryDataType; };
+export interface QuerySetType {
+    subType: QueryDataType;
+}

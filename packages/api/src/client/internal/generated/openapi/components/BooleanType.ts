@@ -1,1 +1,2 @@
-export type BooleanType = {};
+export interface BooleanType {
+}

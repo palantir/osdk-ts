@@ -1,4 +1,7 @@
 import { PropertyValue } from "./PropertyValue";
 import { PropertyApiName } from "./PropertyApiName";
 
-export type AddObject = { primaryKey: PropertyValue; objectType: PropertyApiName; };
+export interface AddObject {
+    primaryKey: PropertyValue;
+    objectType: PropertyApiName;
+}

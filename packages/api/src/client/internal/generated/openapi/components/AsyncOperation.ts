@@ -9,26 +9,12 @@ function isApplyActionAsyncV2(obj: AsyncOperation): obj is AsyncOperation_ApplyA
     return (obj.type === "applyActionAsyncV2");
 }
 
-function applyActionAsyncV2(obj: AsyncApplyActionOperationV2): AsyncOperation_ApplyActionAsyncV2 {
-    return {
-        ...obj,
-        type: "applyActionAsyncV2",
-    };
-}
-
 export interface AsyncOperation_ApplyActionAsync extends AsyncActionOperation {
     type: "applyActionAsync";
 }
 
 function isApplyActionAsync(obj: AsyncOperation): obj is AsyncOperation_ApplyActionAsync {
     return (obj.type === "applyActionAsync");
-}
-
-function applyActionAsync(obj: AsyncActionOperation): AsyncOperation_ApplyActionAsync {
-    return {
-        ...obj,
-        type: "applyActionAsync",
-    };
 }
 
 export interface AsyncOperationVisitor<T> {
@@ -53,8 +39,6 @@ export type AsyncOperation = AsyncOperation_ApplyActionAsyncV2 | AsyncOperation_
 
 export const AsyncOperation = {
     isApplyActionAsyncV2: isApplyActionAsyncV2,
-    applyActionAsyncV2: applyActionAsyncV2,
     isApplyActionAsync: isApplyActionAsync,
-    applyActionAsync: applyActionAsync,
     visit: visit,
 };

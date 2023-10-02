@@ -1,1 +1,2 @@
-export type ByteType = {};
+export interface ByteType {
+}

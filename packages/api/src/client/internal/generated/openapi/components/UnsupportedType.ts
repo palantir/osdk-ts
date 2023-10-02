@@ -1,1 +1,3 @@
-export type UnsupportedType = { unsupportedType: string; };
+export interface UnsupportedType {
+    unsupportedType: string;
+}

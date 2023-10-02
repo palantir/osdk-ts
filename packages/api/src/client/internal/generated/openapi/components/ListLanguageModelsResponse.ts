@@ -1,3 +1,6 @@
 import { LanguageModel } from "./LanguageModel";
 
-export type ListLanguageModelsResponse = { data: Array<LanguageModel>; };
+export interface ListLanguageModelsResponse {
+    /** The list of language models. */
+    data: Array<LanguageModel>;
+}

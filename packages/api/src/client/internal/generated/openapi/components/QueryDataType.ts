@@ -24,26 +24,12 @@ function isArray(obj: QueryDataType): obj is QueryDataType_Array {
     return (obj.type === "array");
 }
 
-function array(obj: QueryArrayType): QueryDataType_Array {
-    return {
-        ...obj,
-        type: "array",
-    };
-}
-
 export interface QueryDataType_Attachment extends AttachmentType {
     type: "attachment";
 }
 
 function isAttachment(obj: QueryDataType): obj is QueryDataType_Attachment {
     return (obj.type === "attachment");
-}
-
-function attachment(obj: AttachmentType): QueryDataType_Attachment {
-    return {
-        ...obj,
-        type: "attachment",
-    };
 }
 
 export interface QueryDataType_Boolean extends BooleanType {
@@ -54,26 +40,12 @@ function isBoolean(obj: QueryDataType): obj is QueryDataType_Boolean {
     return (obj.type === "boolean");
 }
 
-function boolean(obj: BooleanType): QueryDataType_Boolean {
-    return {
-        ...obj,
-        type: "boolean",
-    };
-}
-
 export interface QueryDataType_Date extends DateType {
     type: "date";
 }
 
 function isDate(obj: QueryDataType): obj is QueryDataType_Date {
     return (obj.type === "date");
-}
-
-function date(obj: DateType): QueryDataType_Date {
-    return {
-        ...obj,
-        type: "date",
-    };
 }
 
 export interface QueryDataType_Double extends DoubleType {
@@ -84,26 +56,12 @@ function isDouble(obj: QueryDataType): obj is QueryDataType_Double {
     return (obj.type === "double");
 }
 
-function double(obj: DoubleType): QueryDataType_Double {
-    return {
-        ...obj,
-        type: "double",
-    };
-}
-
 export interface QueryDataType_Float extends FloatType {
     type: "float";
 }
 
 function isFloat(obj: QueryDataType): obj is QueryDataType_Float {
     return (obj.type === "float");
-}
-
-function float(obj: FloatType): QueryDataType_Float {
-    return {
-        ...obj,
-        type: "float",
-    };
 }
 
 export interface QueryDataType_Integer extends IntegerType {
@@ -114,26 +72,12 @@ function isInteger(obj: QueryDataType): obj is QueryDataType_Integer {
     return (obj.type === "integer");
 }
 
-function integer(obj: IntegerType): QueryDataType_Integer {
-    return {
-        ...obj,
-        type: "integer",
-    };
-}
-
 export interface QueryDataType_Long extends LongType {
     type: "long";
 }
 
 function isLong(obj: QueryDataType): obj is QueryDataType_Long {
     return (obj.type === "long");
-}
-
-function long(obj: LongType): QueryDataType_Long {
-    return {
-        ...obj,
-        type: "long",
-    };
 }
 
 export interface QueryDataType_ObjectSet extends OntologyObjectSetType {
@@ -144,26 +88,12 @@ function isObjectSet(obj: QueryDataType): obj is QueryDataType_ObjectSet {
     return (obj.type === "objectSet");
 }
 
-function objectSet(obj: OntologyObjectSetType): QueryDataType_ObjectSet {
-    return {
-        ...obj,
-        type: "objectSet",
-    };
-}
-
 export interface QueryDataType_Object extends OntologyObjectType {
     type: "object";
 }
 
 function isObject(obj: QueryDataType): obj is QueryDataType_Object {
     return (obj.type === "object");
-}
-
-function object(obj: OntologyObjectType): QueryDataType_Object {
-    return {
-        ...obj,
-        type: "object",
-    };
 }
 
 export interface QueryDataType_Set extends QuerySetType {
@@ -174,26 +104,12 @@ function isSet(obj: QueryDataType): obj is QueryDataType_Set {
     return (obj.type === "set");
 }
 
-function set(obj: QuerySetType): QueryDataType_Set {
-    return {
-        ...obj,
-        type: "set",
-    };
-}
-
 export interface QueryDataType_String extends StringType {
     type: "string";
 }
 
 function isString(obj: QueryDataType): obj is QueryDataType_String {
     return (obj.type === "string");
-}
-
-function string(obj: StringType): QueryDataType_String {
-    return {
-        ...obj,
-        type: "string",
-    };
 }
 
 export interface QueryDataType_Struct extends QueryStructType {
@@ -204,26 +120,12 @@ function isStruct(obj: QueryDataType): obj is QueryDataType_Struct {
     return (obj.type === "struct");
 }
 
-function struct(obj: QueryStructType): QueryDataType_Struct {
-    return {
-        ...obj,
-        type: "struct",
-    };
-}
-
 export interface QueryDataType_Timestamp extends TimestampType {
     type: "timestamp";
 }
 
 function isTimestamp(obj: QueryDataType): obj is QueryDataType_Timestamp {
     return (obj.type === "timestamp");
-}
-
-function timestamp(obj: TimestampType): QueryDataType_Timestamp {
-    return {
-        ...obj,
-        type: "timestamp",
-    };
 }
 
 export interface QueryDataType_Union extends QueryUnionType {
@@ -234,13 +136,6 @@ function isUnion(obj: QueryDataType): obj is QueryDataType_Union {
     return (obj.type === "union");
 }
 
-function union(obj: QueryUnionType): QueryDataType_Union {
-    return {
-        ...obj,
-        type: "union",
-    };
-}
-
 export interface QueryDataType_Null extends NullType {
     type: "null";
 }
@@ -249,26 +144,12 @@ function isNull(obj: QueryDataType): obj is QueryDataType_Null {
     return (obj.type === "null");
 }
 
-function null_(obj: NullType): QueryDataType_Null {
-    return {
-        ...obj,
-        type: "null",
-    };
-}
-
 export interface QueryDataType_Unsupported extends UnsupportedType {
     type: "unsupported";
 }
 
 function isUnsupported(obj: QueryDataType): obj is QueryDataType_Unsupported {
     return (obj.type === "unsupported");
-}
-
-function unsupported(obj: UnsupportedType): QueryDataType_Unsupported {
-    return {
-        ...obj,
-        type: "unsupported",
-    };
 }
 
 export interface QueryDataTypeVisitor<T> {
@@ -368,38 +249,21 @@ export type QueryDataType = QueryDataType_Array | QueryDataType_Attachment | Que
 
 export const QueryDataType = {
     isArray: isArray,
-    array: array,
     isAttachment: isAttachment,
-    attachment: attachment,
     isBoolean: isBoolean,
-    boolean: boolean,
     isDate: isDate,
-    date: date,
     isDouble: isDouble,
-    double: double,
     isFloat: isFloat,
-    float: float,
     isInteger: isInteger,
-    integer: integer,
     isLong: isLong,
-    long: long,
     isObjectSet: isObjectSet,
-    objectSet: objectSet,
     isObject: isObject,
-    object: object,
     isSet: isSet,
-    set: set,
     isString: isString,
-    string: string,
     isStruct: isStruct,
-    struct: struct,
     isTimestamp: isTimestamp,
-    timestamp: timestamp,
     isUnion: isUnion,
-    union: union,
     isNull: isNull,
-    null_: null_,
     isUnsupported: isUnsupported,
-    unsupported: unsupported,
     visit: visit,
 };

@@ -1,1 +1,3 @@
-export type ObjectSetReferenceType = { reference: string; };
+export interface ObjectSetReferenceType {
+    reference: string;
+}

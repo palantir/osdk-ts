@@ -1,1 +1,2 @@
-export type ShortType = {};
+export interface ShortType {
+}

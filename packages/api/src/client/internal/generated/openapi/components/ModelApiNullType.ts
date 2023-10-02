@@ -1,1 +1,2 @@
-export type ModelApiNullType = {};
+export interface ModelApiNullType {
+}

@@ -1,3 +1,5 @@
 import { TimeRange } from "./TimeRange";
 
-export type StreamTimeSeriesPointsRequest = { range?: TimeRange; };
+export interface StreamTimeSeriesPointsRequest {
+    range?: TimeRange;
+}

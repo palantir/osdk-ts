@@ -7,4 +7,12 @@ import { FunctionRid } from "./FunctionRid";
 import { FunctionVersion } from "./FunctionVersion";
 
 /** Represents a query type in the Ontology. */
-export type QueryTypeV2 = { apiName: QueryApiName; description?: string; displayName?: DisplayName; parameters: Record<ParameterId, QueryParameterV2>; output: QueryDataType; rid: FunctionRid; version: FunctionVersion; };
+export interface QueryTypeV2 {
+    apiName: QueryApiName;
+    description?: string;
+    displayName?: DisplayName;
+    parameters: Record<ParameterId, QueryParameterV2>;
+    output: QueryDataType;
+    rid: FunctionRid;
+    version: FunctionVersion;
+}

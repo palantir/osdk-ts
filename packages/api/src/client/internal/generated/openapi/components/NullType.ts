@@ -1,1 +1,2 @@
-export type NullType = {};
+export interface NullType {
+}

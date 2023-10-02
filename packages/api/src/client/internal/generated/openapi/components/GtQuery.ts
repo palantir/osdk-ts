@@ -1,2 +1,6 @@
 /** Returns objects where the specified field is greater than a value. */
-export type GtQuery = { field: string; value: any; };
+export interface GtQuery {
+    field: string;
+    /** Greater than value */
+    value: any;
+}

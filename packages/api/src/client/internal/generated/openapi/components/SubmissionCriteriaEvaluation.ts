@@ -6,4 +6,12 @@ import { ValidationResult } from "./ValidationResult";
  * These are configured in the **Ontology Manager**.
  *
  */
-export type SubmissionCriteriaEvaluation = { configuredFailureMessage?: string; result: ValidationResult; };
+export interface SubmissionCriteriaEvaluation {
+    /**
+     * The message indicating one of the **submission criteria** was not satisfied.
+     * This is configured per **submission criteria** in the **Ontology Manager**.
+     *
+     */
+    configuredFailureMessage?: string;
+    result: ValidationResult;
+}

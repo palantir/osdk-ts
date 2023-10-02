@@ -1,3 +1,5 @@
 import { DeploymentMetadata } from "./DeploymentMetadata";
 
-export type ListDeploymentsResponse = { deployments: Array<DeploymentMetadata>; };
+export interface ListDeploymentsResponse {
+    deployments: Array<DeploymentMetadata>;
+}

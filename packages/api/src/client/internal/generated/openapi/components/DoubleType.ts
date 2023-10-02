@@ -1,1 +1,2 @@
-export type DoubleType = {};
+export interface DoubleType {
+}

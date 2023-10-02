@@ -1,8 +1,8 @@
-import type { LanguageModelApiName } from "../components/LanguageModelApiName";
 import type { ChatCompletionRequest } from "../components/ChatCompletionRequest";
+import type { LanguageModelApiName } from "../components/LanguageModelApiName";
 import type { ChatCompletionResponse } from "../components/ChatCompletionResponse";
-import type { LanguageModelSource } from "../components/LanguageModelSource";
 import type { ListLanguageModelsResponse } from "../components/ListLanguageModelsResponse";
+import type { LanguageModelSource } from "../components/LanguageModelSource";
 import { OpenApiRequest } from "../request";
 
 /**
@@ -11,17 +11,11 @@ import { OpenApiRequest } from "../request";
  */
 export function createChatCompletion<TResponse>(_request: OpenApiRequest<ChatCompletionResponse, TResponse>, modelName: LanguageModelApiName, request: ChatCompletionRequest): Promise<TResponse> {
     return _request(
-        "createChatCompletion",
         "POST",
-        "/v1/models/languageModels/{modelName}/chatCompletions",
+        `/v1/models/languageModels/${modelName}/chatCompletions`,
         request,
         __undefined,
         __undefined,
-        {
-            modelName,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -32,17 +26,13 @@ export function createChatCompletion<TResponse>(_request: OpenApiRequest<ChatCom
  */
 export function streamChatCompletion<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, modelName: LanguageModelApiName, request: ChatCompletionRequest): Promise<TResponse> {
     return _request(
-        "streamChatCompletion",
         "POST",
-        "/v1/models/languageModels/{modelName}/chatCompletions/stream",
+        `/v1/models/languageModels/${modelName}/chatCompletions/stream`,
         request,
         __undefined,
         __undefined,
-        {
-            modelName,
-        },
         "application/json",
-        AnyMediaType,
+        AnyMediaType
     );
 }
 
@@ -50,19 +40,15 @@ export function streamChatCompletion<TResponse>(_request: OpenApiRequest<Readabl
  * Lists the language models available. Can be filtered by source.
  *
  */
-export function listLanguageModels<TResponse>(_request: OpenApiRequest<ListLanguageModelsResponse, TResponse>, source?: LanguageModelSource): Promise<TResponse> {
+export function listLanguageModels<TResponse>(_request: OpenApiRequest<ListLanguageModelsResponse, TResponse>, queryParameters?: {
+    "source"?: LanguageModelSource,
+}): Promise<TResponse> {
     return _request(
-        "listLanguageModels",
         "GET",
-        "/v1/models/languageModels",
+        `/v1/models/languageModels`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            source,
-        },
-        __undefined,
-        __undefined,
-        "application/json",
     );
 }
 

@@ -1,3 +1,5 @@
 import { ObjectTypeApiName } from "./ObjectTypeApiName";
 
-export type ObjectTypeEdits = { editedObjectTypes: Array<ObjectTypeApiName>; };
+export interface ObjectTypeEdits {
+    editedObjectTypes: Array<ObjectTypeApiName>;
+}

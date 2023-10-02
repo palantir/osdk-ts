@@ -1,3 +1,5 @@
 import { BaseType } from "./BaseType";
 
-export type ArrayType = { itemType: BaseType; };
+export interface ArrayType {
+    itemType: BaseType;
+}

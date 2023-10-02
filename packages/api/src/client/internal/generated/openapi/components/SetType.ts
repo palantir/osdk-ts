@@ -1,3 +1,5 @@
 import { BaseType } from "./BaseType";
 
-export type SetType = { itemType: BaseType; };
+export interface SetType {
+    itemType: BaseType;
+}

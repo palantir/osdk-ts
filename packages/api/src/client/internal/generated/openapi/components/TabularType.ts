@@ -1,3 +1,5 @@
 import { ConstraintType } from "./ConstraintType";
 
-export type TabularType = { constraints: Array<ConstraintType>; };
+export interface TabularType {
+    constraints: Array<ConstraintType>;
+}

@@ -1,3 +1,5 @@
 import { ChatMessage } from "./ChatMessage";
 
-export type ChatCompletionChoice = { message?: ChatMessage; };
+export interface ChatCompletionChoice {
+    message?: ChatMessage;
+}

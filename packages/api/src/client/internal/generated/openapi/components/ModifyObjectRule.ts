@@ -1,3 +1,5 @@
 import { ObjectTypeApiName } from "./ObjectTypeApiName";
 
-export type ModifyObjectRule = { objectTypeApiName: ObjectTypeApiName; };
+export interface ModifyObjectRule {
+    objectTypeApiName: ObjectTypeApiName;
+}

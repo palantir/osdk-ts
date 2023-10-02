@@ -1,2 +1,6 @@
 /** Returns objects where the specified array contains a value. */
-export type ContainsQuery = { field: string; value: any; };
+export interface ContainsQuery {
+    field: string;
+    /** Contains value */
+    value: any;
+}

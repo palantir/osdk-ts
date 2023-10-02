@@ -1,1 +1,2 @@
-export type FilesystemResource = {};
+export interface FilesystemResource {
+}

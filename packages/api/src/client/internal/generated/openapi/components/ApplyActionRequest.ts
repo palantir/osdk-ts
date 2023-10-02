@@ -1,4 +1,6 @@
 import { ParameterId } from "./ParameterId";
 import { DataValue } from "./DataValue";
 
-export type ApplyActionRequest = { parameters: Record<ParameterId, DataValue>; };
+export interface ApplyActionRequest {
+    parameters: Record<ParameterId, DataValue>;
+}

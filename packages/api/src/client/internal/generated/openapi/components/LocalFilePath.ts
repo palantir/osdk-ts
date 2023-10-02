@@ -1,1 +1,2 @@
-export type LocalFilePath = {};
+export interface LocalFilePath {
+}

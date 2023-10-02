@@ -9,26 +9,12 @@ function isAbsolute(obj: TimeRange): obj is TimeRange_Absolute {
     return (obj.type === "absolute");
 }
 
-function absolute(obj: AbsoluteTimeRange): TimeRange_Absolute {
-    return {
-        ...obj,
-        type: "absolute",
-    };
-}
-
 export interface TimeRange_Relative extends RelativeTimeRange {
     type: "relative";
 }
 
 function isRelative(obj: TimeRange): obj is TimeRange_Relative {
     return (obj.type === "relative");
-}
-
-function relative(obj: RelativeTimeRange): TimeRange_Relative {
-    return {
-        ...obj,
-        type: "relative",
-    };
 }
 
 export interface TimeRangeVisitor<T> {
@@ -53,8 +39,6 @@ export type TimeRange = TimeRange_Absolute | TimeRange_Relative;
 
 export const TimeRange = {
     isAbsolute: isAbsolute,
-    absolute: absolute,
     isRelative: isRelative,
-    relative: relative,
     visit: visit,
 };

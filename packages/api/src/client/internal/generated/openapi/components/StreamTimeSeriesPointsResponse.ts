@@ -1,3 +1,5 @@
 import { TimeSeriesPoint } from "./TimeSeriesPoint";
 
-export type StreamTimeSeriesPointsResponse = { data: Array<TimeSeriesPoint>; };
+export interface StreamTimeSeriesPointsResponse {
+    data: Array<TimeSeriesPoint>;
+}

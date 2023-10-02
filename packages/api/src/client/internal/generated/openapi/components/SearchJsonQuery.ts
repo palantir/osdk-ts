@@ -21,26 +21,12 @@ function isLt(obj: SearchJsonQuery): obj is SearchJsonQuery_Lt {
     return (obj.type === "lt");
 }
 
-function lt(obj: LtQuery): SearchJsonQuery_Lt {
-    return {
-        ...obj,
-        type: "lt",
-    };
-}
-
 export interface SearchJsonQuery_Gt extends GtQuery {
     type: "gt";
 }
 
 function isGt(obj: SearchJsonQuery): obj is SearchJsonQuery_Gt {
     return (obj.type === "gt");
-}
-
-function gt(obj: GtQuery): SearchJsonQuery_Gt {
-    return {
-        ...obj,
-        type: "gt",
-    };
 }
 
 export interface SearchJsonQuery_Lte extends LteQuery {
@@ -51,26 +37,12 @@ function isLte(obj: SearchJsonQuery): obj is SearchJsonQuery_Lte {
     return (obj.type === "lte");
 }
 
-function lte(obj: LteQuery): SearchJsonQuery_Lte {
-    return {
-        ...obj,
-        type: "lte",
-    };
-}
-
 export interface SearchJsonQuery_Gte extends GteQuery {
     type: "gte";
 }
 
 function isGte(obj: SearchJsonQuery): obj is SearchJsonQuery_Gte {
     return (obj.type === "gte");
-}
-
-function gte(obj: GteQuery): SearchJsonQuery_Gte {
-    return {
-        ...obj,
-        type: "gte",
-    };
 }
 
 export interface SearchJsonQuery_Eq extends EqualsQuery {
@@ -81,26 +53,12 @@ function isEq(obj: SearchJsonQuery): obj is SearchJsonQuery_Eq {
     return (obj.type === "eq");
 }
 
-function eq(obj: EqualsQuery): SearchJsonQuery_Eq {
-    return {
-        ...obj,
-        type: "eq",
-    };
-}
-
 export interface SearchJsonQuery_IsNull extends IsNullQuery {
     type: "isNull";
 }
 
 function isIsNull(obj: SearchJsonQuery): obj is SearchJsonQuery_IsNull {
     return (obj.type === "isNull");
-}
-
-function isNull(obj: IsNullQuery): SearchJsonQuery_IsNull {
-    return {
-        ...obj,
-        type: "isNull",
-    };
 }
 
 export interface SearchJsonQuery_Contains extends ContainsQuery {
@@ -111,26 +69,12 @@ function isContains(obj: SearchJsonQuery): obj is SearchJsonQuery_Contains {
     return (obj.type === "contains");
 }
 
-function contains(obj: ContainsQuery): SearchJsonQuery_Contains {
-    return {
-        ...obj,
-        type: "contains",
-    };
-}
-
 export interface SearchJsonQuery_And extends AndQuery {
     type: "and";
 }
 
 function isAnd(obj: SearchJsonQuery): obj is SearchJsonQuery_And {
     return (obj.type === "and");
-}
-
-function and(obj: AndQuery): SearchJsonQuery_And {
-    return {
-        ...obj,
-        type: "and",
-    };
 }
 
 export interface SearchJsonQuery_Or extends OrQuery {
@@ -141,26 +85,12 @@ function isOr(obj: SearchJsonQuery): obj is SearchJsonQuery_Or {
     return (obj.type === "or");
 }
 
-function or(obj: OrQuery): SearchJsonQuery_Or {
-    return {
-        ...obj,
-        type: "or",
-    };
-}
-
 export interface SearchJsonQuery_Not extends NotQuery {
     type: "not";
 }
 
 function isNot(obj: SearchJsonQuery): obj is SearchJsonQuery_Not {
     return (obj.type === "not");
-}
-
-function not(obj: NotQuery): SearchJsonQuery_Not {
-    return {
-        ...obj,
-        type: "not",
-    };
 }
 
 export interface SearchJsonQuery_Prefix extends PrefixQuery {
@@ -171,26 +101,12 @@ function isPrefix(obj: SearchJsonQuery): obj is SearchJsonQuery_Prefix {
     return (obj.type === "prefix");
 }
 
-function prefix(obj: PrefixQuery): SearchJsonQuery_Prefix {
-    return {
-        ...obj,
-        type: "prefix",
-    };
-}
-
 export interface SearchJsonQuery_Phrase extends PhraseQuery {
     type: "phrase";
 }
 
 function isPhrase(obj: SearchJsonQuery): obj is SearchJsonQuery_Phrase {
     return (obj.type === "phrase");
-}
-
-function phrase(obj: PhraseQuery): SearchJsonQuery_Phrase {
-    return {
-        ...obj,
-        type: "phrase",
-    };
 }
 
 export interface SearchJsonQuery_AnyTerm extends AnyTermQuery {
@@ -201,26 +117,12 @@ function isAnyTerm(obj: SearchJsonQuery): obj is SearchJsonQuery_AnyTerm {
     return (obj.type === "anyTerm");
 }
 
-function anyTerm(obj: AnyTermQuery): SearchJsonQuery_AnyTerm {
-    return {
-        ...obj,
-        type: "anyTerm",
-    };
-}
-
 export interface SearchJsonQuery_AllTerms extends AllTermsQuery {
     type: "allTerms";
 }
 
 function isAllTerms(obj: SearchJsonQuery): obj is SearchJsonQuery_AllTerms {
     return (obj.type === "allTerms");
-}
-
-function allTerms(obj: AllTermsQuery): SearchJsonQuery_AllTerms {
-    return {
-        ...obj,
-        type: "allTerms",
-    };
 }
 
 export interface SearchJsonQueryVisitor<T> {
@@ -305,32 +207,18 @@ export type SearchJsonQuery = SearchJsonQuery_Lt | SearchJsonQuery_Gt | SearchJs
 
 export const SearchJsonQuery = {
     isLt: isLt,
-    lt: lt,
     isGt: isGt,
-    gt: gt,
     isLte: isLte,
-    lte: lte,
     isGte: isGte,
-    gte: gte,
     isEq: isEq,
-    eq: eq,
     isIsNull: isIsNull,
-    isNull: isNull,
     isContains: isContains,
-    contains: contains,
     isAnd: isAnd,
-    and: and,
     isOr: isOr,
-    or: or,
     isNot: isNot,
-    not: not,
     isPrefix: isPrefix,
-    prefix: prefix,
     isPhrase: isPhrase,
-    phrase: phrase,
     isAnyTerm: isAnyTerm,
-    anyTerm: anyTerm,
     isAllTerms: isAllTerms,
-    allTerms: allTerms,
     visit: visit,
 };

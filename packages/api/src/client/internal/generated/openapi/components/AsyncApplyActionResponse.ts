@@ -1,1 +1,2 @@
-export type AsyncApplyActionResponse = {};
+export interface AsyncApplyActionResponse {
+}

@@ -1,3 +1,5 @@
 import { StructField } from "./StructField";
 
-export type StructType = { fields: Array<StructField>; };
+export interface StructType {
+    fields: Array<StructField>;
+}

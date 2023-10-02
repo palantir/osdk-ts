@@ -9,26 +9,12 @@ function isDouble(obj: TimeSeriesItemType): obj is TimeSeriesItemType_Double {
     return (obj.type === "double");
 }
 
-function double(obj: DoubleType): TimeSeriesItemType_Double {
-    return {
-        ...obj,
-        type: "double",
-    };
-}
-
 export interface TimeSeriesItemType_String extends StringType {
     type: "string";
 }
 
 function isString(obj: TimeSeriesItemType): obj is TimeSeriesItemType_String {
     return (obj.type === "string");
-}
-
-function string(obj: StringType): TimeSeriesItemType_String {
-    return {
-        ...obj,
-        type: "string",
-    };
 }
 
 export interface TimeSeriesItemTypeVisitor<T> {
@@ -53,8 +39,6 @@ export type TimeSeriesItemType = TimeSeriesItemType_Double | TimeSeriesItemType_
 
 export const TimeSeriesItemType = {
     isDouble: isDouble,
-    double: double,
     isString: isString,
-    string: string,
     visit: visit,
 };

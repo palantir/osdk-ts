@@ -13,26 +13,12 @@ function isMax(obj: Aggregation): obj is Aggregation_Max {
     return (obj.type === "max");
 }
 
-function max(obj: MaxAggregation): Aggregation_Max {
-    return {
-        ...obj,
-        type: "max",
-    };
-}
-
 export interface Aggregation_Min extends MinAggregation {
     type: "min";
 }
 
 function isMin(obj: Aggregation): obj is Aggregation_Min {
     return (obj.type === "min");
-}
-
-function min(obj: MinAggregation): Aggregation_Min {
-    return {
-        ...obj,
-        type: "min",
-    };
 }
 
 export interface Aggregation_Avg extends AvgAggregation {
@@ -43,26 +29,12 @@ function isAvg(obj: Aggregation): obj is Aggregation_Avg {
     return (obj.type === "avg");
 }
 
-function avg(obj: AvgAggregation): Aggregation_Avg {
-    return {
-        ...obj,
-        type: "avg",
-    };
-}
-
 export interface Aggregation_Sum extends SumAggregation {
     type: "sum";
 }
 
 function isSum(obj: Aggregation): obj is Aggregation_Sum {
     return (obj.type === "sum");
-}
-
-function sum(obj: SumAggregation): Aggregation_Sum {
-    return {
-        ...obj,
-        type: "sum",
-    };
 }
 
 export interface Aggregation_Count extends CountAggregation {
@@ -73,26 +45,12 @@ function isCount(obj: Aggregation): obj is Aggregation_Count {
     return (obj.type === "count");
 }
 
-function count(obj: CountAggregation): Aggregation_Count {
-    return {
-        ...obj,
-        type: "count",
-    };
-}
-
 export interface Aggregation_ApproximateDistinct extends ApproximateDistinctAggregation {
     type: "approximateDistinct";
 }
 
 function isApproximateDistinct(obj: Aggregation): obj is Aggregation_ApproximateDistinct {
     return (obj.type === "approximateDistinct");
-}
-
-function approximateDistinct(obj: ApproximateDistinctAggregation): Aggregation_ApproximateDistinct {
-    return {
-        ...obj,
-        type: "approximateDistinct",
-    };
 }
 
 export interface AggregationVisitor<T> {
@@ -137,16 +95,10 @@ export type Aggregation = Aggregation_Max | Aggregation_Min | Aggregation_Avg | 
 
 export const Aggregation = {
     isMax: isMax,
-    max: max,
     isMin: isMin,
-    min: min,
     isAvg: isAvg,
-    avg: avg,
     isSum: isSum,
-    sum: sum,
     isCount: isCount,
-    count: count,
     isApproximateDistinct: isApproximateDistinct,
-    approximateDistinct: approximateDistinct,
     visit: visit,
 };

@@ -4,4 +4,7 @@
  * The last term can be a partial prefix match.
  *
  */
-export type ContainsAllTermsInOrderPrefixLastTerm = { field: string; value: string; };
+export interface ContainsAllTermsInOrderPrefixLastTerm {
+    field: string;
+    value: string;
+}

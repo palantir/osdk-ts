@@ -1,1 +1,2 @@
-export type TimestampType = {};
+export interface TimestampType {
+}

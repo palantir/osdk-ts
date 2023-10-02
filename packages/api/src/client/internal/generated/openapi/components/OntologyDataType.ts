@@ -27,26 +27,12 @@ function isAny(obj: OntologyDataType): obj is OntologyDataType_Any {
     return (obj.type === "any");
 }
 
-function any(obj: AnyType): OntologyDataType_Any {
-    return {
-        ...obj,
-        type: "any",
-    };
-}
-
 export interface OntologyDataType_Binary extends BinaryType {
     type: "binary";
 }
 
 function isBinary(obj: OntologyDataType): obj is OntologyDataType_Binary {
     return (obj.type === "binary");
-}
-
-function binary(obj: BinaryType): OntologyDataType_Binary {
-    return {
-        ...obj,
-        type: "binary",
-    };
 }
 
 export interface OntologyDataType_Boolean extends BooleanType {
@@ -57,26 +43,12 @@ function isBoolean(obj: OntologyDataType): obj is OntologyDataType_Boolean {
     return (obj.type === "boolean");
 }
 
-function boolean(obj: BooleanType): OntologyDataType_Boolean {
-    return {
-        ...obj,
-        type: "boolean",
-    };
-}
-
 export interface OntologyDataType_Byte extends ByteType {
     type: "byte";
 }
 
 function isByte(obj: OntologyDataType): obj is OntologyDataType_Byte {
     return (obj.type === "byte");
-}
-
-function byte(obj: ByteType): OntologyDataType_Byte {
-    return {
-        ...obj,
-        type: "byte",
-    };
 }
 
 export interface OntologyDataType_Date extends DateType {
@@ -87,26 +59,12 @@ function isDate(obj: OntologyDataType): obj is OntologyDataType_Date {
     return (obj.type === "date");
 }
 
-function date(obj: DateType): OntologyDataType_Date {
-    return {
-        ...obj,
-        type: "date",
-    };
-}
-
 export interface OntologyDataType_Decimal extends DecimalType {
     type: "decimal";
 }
 
 function isDecimal(obj: OntologyDataType): obj is OntologyDataType_Decimal {
     return (obj.type === "decimal");
-}
-
-function decimal(obj: DecimalType): OntologyDataType_Decimal {
-    return {
-        ...obj,
-        type: "decimal",
-    };
 }
 
 export interface OntologyDataType_Double extends DoubleType {
@@ -117,26 +75,12 @@ function isDouble(obj: OntologyDataType): obj is OntologyDataType_Double {
     return (obj.type === "double");
 }
 
-function double(obj: DoubleType): OntologyDataType_Double {
-    return {
-        ...obj,
-        type: "double",
-    };
-}
-
 export interface OntologyDataType_Float extends FloatType {
     type: "float";
 }
 
 function isFloat(obj: OntologyDataType): obj is OntologyDataType_Float {
     return (obj.type === "float");
-}
-
-function float(obj: FloatType): OntologyDataType_Float {
-    return {
-        ...obj,
-        type: "float",
-    };
 }
 
 export interface OntologyDataType_Integer extends IntegerType {
@@ -147,26 +91,12 @@ function isInteger(obj: OntologyDataType): obj is OntologyDataType_Integer {
     return (obj.type === "integer");
 }
 
-function integer(obj: IntegerType): OntologyDataType_Integer {
-    return {
-        ...obj,
-        type: "integer",
-    };
-}
-
 export interface OntologyDataType_Long extends LongType {
     type: "long";
 }
 
 function isLong(obj: OntologyDataType): obj is OntologyDataType_Long {
     return (obj.type === "long");
-}
-
-function long(obj: LongType): OntologyDataType_Long {
-    return {
-        ...obj,
-        type: "long",
-    };
 }
 
 export interface OntologyDataType_Short extends ShortType {
@@ -177,26 +107,12 @@ function isShort(obj: OntologyDataType): obj is OntologyDataType_Short {
     return (obj.type === "short");
 }
 
-function short(obj: ShortType): OntologyDataType_Short {
-    return {
-        ...obj,
-        type: "short",
-    };
-}
-
 export interface OntologyDataType_String extends StringType {
     type: "string";
 }
 
 function isString(obj: OntologyDataType): obj is OntologyDataType_String {
     return (obj.type === "string");
-}
-
-function string(obj: StringType): OntologyDataType_String {
-    return {
-        ...obj,
-        type: "string",
-    };
 }
 
 export interface OntologyDataType_Timestamp extends TimestampType {
@@ -207,26 +123,12 @@ function isTimestamp(obj: OntologyDataType): obj is OntologyDataType_Timestamp {
     return (obj.type === "timestamp");
 }
 
-function timestamp(obj: TimestampType): OntologyDataType_Timestamp {
-    return {
-        ...obj,
-        type: "timestamp",
-    };
-}
-
 export interface OntologyDataType_Array extends OntologyArrayType {
     type: "array";
 }
 
 function isArray(obj: OntologyDataType): obj is OntologyDataType_Array {
     return (obj.type === "array");
-}
-
-function array(obj: OntologyArrayType): OntologyDataType_Array {
-    return {
-        ...obj,
-        type: "array",
-    };
 }
 
 export interface OntologyDataType_Map extends OntologyMapType {
@@ -237,26 +139,12 @@ function isMap(obj: OntologyDataType): obj is OntologyDataType_Map {
     return (obj.type === "map");
 }
 
-function map(obj: OntologyMapType): OntologyDataType_Map {
-    return {
-        ...obj,
-        type: "map",
-    };
-}
-
 export interface OntologyDataType_Set extends OntologySetType {
     type: "set";
 }
 
 function isSet(obj: OntologyDataType): obj is OntologyDataType_Set {
     return (obj.type === "set");
-}
-
-function set(obj: OntologySetType): OntologyDataType_Set {
-    return {
-        ...obj,
-        type: "set",
-    };
 }
 
 export interface OntologyDataType_Struct extends OntologyStructType {
@@ -267,26 +155,12 @@ function isStruct(obj: OntologyDataType): obj is OntologyDataType_Struct {
     return (obj.type === "struct");
 }
 
-function struct(obj: OntologyStructType): OntologyDataType_Struct {
-    return {
-        ...obj,
-        type: "struct",
-    };
-}
-
 export interface OntologyDataType_Object extends OntologyObjectType {
     type: "object";
 }
 
 function isObject(obj: OntologyDataType): obj is OntologyDataType_Object {
     return (obj.type === "object");
-}
-
-function object(obj: OntologyObjectType): OntologyDataType_Object {
-    return {
-        ...obj,
-        type: "object",
-    };
 }
 
 export interface OntologyDataType_ObjectSet extends OntologyObjectSetType {
@@ -297,26 +171,12 @@ function isObjectSet(obj: OntologyDataType): obj is OntologyDataType_ObjectSet {
     return (obj.type === "objectSet");
 }
 
-function objectSet(obj: OntologyObjectSetType): OntologyDataType_ObjectSet {
-    return {
-        ...obj,
-        type: "objectSet",
-    };
-}
-
 export interface OntologyDataType_Unsupported extends UnsupportedType {
     type: "unsupported";
 }
 
 function isUnsupported(obj: OntologyDataType): obj is OntologyDataType_Unsupported {
     return (obj.type === "unsupported");
-}
-
-function unsupported(obj: UnsupportedType): OntologyDataType_Unsupported {
-    return {
-        ...obj,
-        type: "unsupported",
-    };
 }
 
 export interface OntologyDataTypeVisitor<T> {
@@ -431,44 +291,24 @@ export type OntologyDataType = OntologyDataType_Any | OntologyDataType_Binary | 
 
 export const OntologyDataType = {
     isAny: isAny,
-    any: any,
     isBinary: isBinary,
-    binary: binary,
     isBoolean: isBoolean,
-    boolean: boolean,
     isByte: isByte,
-    byte: byte,
     isDate: isDate,
-    date: date,
     isDecimal: isDecimal,
-    decimal: decimal,
     isDouble: isDouble,
-    double: double,
     isFloat: isFloat,
-    float: float,
     isInteger: isInteger,
-    integer: integer,
     isLong: isLong,
-    long: long,
     isShort: isShort,
-    short: short,
     isString: isString,
-    string: string,
     isTimestamp: isTimestamp,
-    timestamp: timestamp,
     isArray: isArray,
-    array: array,
     isMap: isMap,
-    map: map,
     isSet: isSet,
-    set: set,
     isStruct: isStruct,
-    struct: struct,
     isObject: isObject,
-    object: object,
     isObjectSet: isObjectSet,
-    objectSet: objectSet,
     isUnsupported: isUnsupported,
-    unsupported: unsupported,
     visit: visit,
 };

@@ -3,4 +3,13 @@
  * *This range is always inclusive.*
  *
  */
-export type StringLength = { lt?: any; lte?: any; gt?: any; gte?: any; };
+export interface StringLength {
+    /** Less than */
+    lt?: any;
+    /** Less than or equal */
+    lte?: any;
+    /** Greater than */
+    gt?: any;
+    /** Greater than or equal */
+    gte?: any;
+}

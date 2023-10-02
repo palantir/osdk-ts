@@ -1,3 +1,5 @@
 import { ObjectTypeApiName } from "./ObjectTypeApiName";
 
-export type DeleteObjectRule = { objectTypeApiName: ObjectTypeApiName; };
+export interface DeleteObjectRule {
+    objectTypeApiName: ObjectTypeApiName;
+}

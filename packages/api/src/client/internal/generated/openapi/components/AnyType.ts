@@ -1,1 +1,2 @@
-export type AnyType = {};
+export interface AnyType {
+}

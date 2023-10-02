@@ -8,13 +8,6 @@ function isArray(obj: ConstraintType): obj is ConstraintType_Array {
     return (obj.type === "array");
 }
 
-function array(obj: ColumnConstraint): ConstraintType_Array {
-    return {
-        ...obj,
-        type: "array",
-    };
-}
-
 export interface ConstraintTypeVisitor<T> {
     array: (obj: ColumnConstraint) => T;
     unknown: (obj: ConstraintType) => T;
@@ -32,6 +25,5 @@ export type ConstraintType = ConstraintType_Array;
 
 export const ConstraintType = {
     isArray: isArray,
-    array: array,
     visit: visit,
 };

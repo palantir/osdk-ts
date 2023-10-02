@@ -1,3 +1,6 @@
 import { ChatMessageRole } from "./ChatMessageRole";
 
-export type ChatMessage = { role: ChatMessageRole; content?: string; };
+export interface ChatMessage {
+    role: ChatMessageRole;
+    content?: string;
+}

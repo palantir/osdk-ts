@@ -1,1 +1,2 @@
-export type IntegerType = {};
+export interface IntegerType {
+}

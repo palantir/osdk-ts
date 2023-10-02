@@ -1,1 +1,2 @@
-export type BinaryType = {};
+export interface BinaryType {
+}

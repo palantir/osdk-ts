@@ -1,4 +1,6 @@
 import { ParameterId } from "./ParameterId";
 import { DataValue } from "./DataValue";
 
-export type ExecuteQueryRequest = { parameters: Record<ParameterId, DataValue>; };
+export interface ExecuteQueryRequest {
+    parameters: Record<ParameterId, DataValue>;
+}

@@ -1,1 +1,3 @@
-export type AggregationOrderBy = { metricName: string; };
+export interface AggregationOrderBy {
+    metricName: string;
+}

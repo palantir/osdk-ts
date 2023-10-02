@@ -1,3 +1,5 @@
 import { QueryStructField } from "./QueryStructField";
 
-export type QueryStructType = { fields: Array<QueryStructField>; };
+export interface QueryStructType {
+    fields: Array<QueryStructField>;
+}

@@ -29,26 +29,12 @@ function isLt(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Lt {
     return (obj.type === "lt");
 }
 
-function lt(obj: LtQuery): SearchJsonQueryV2_Lt {
-    return {
-        ...obj,
-        type: "lt",
-    };
-}
-
 export interface SearchJsonQueryV2_Gt extends GtQuery {
     type: "gt";
 }
 
 function isGt(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Gt {
     return (obj.type === "gt");
-}
-
-function gt(obj: GtQuery): SearchJsonQueryV2_Gt {
-    return {
-        ...obj,
-        type: "gt",
-    };
 }
 
 export interface SearchJsonQueryV2_Lte extends LteQuery {
@@ -59,26 +45,12 @@ function isLte(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Lte {
     return (obj.type === "lte");
 }
 
-function lte(obj: LteQuery): SearchJsonQueryV2_Lte {
-    return {
-        ...obj,
-        type: "lte",
-    };
-}
-
 export interface SearchJsonQueryV2_Gte extends GteQuery {
     type: "gte";
 }
 
 function isGte(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Gte {
     return (obj.type === "gte");
-}
-
-function gte(obj: GteQuery): SearchJsonQueryV2_Gte {
-    return {
-        ...obj,
-        type: "gte",
-    };
 }
 
 export interface SearchJsonQueryV2_Eq extends EqualsQuery {
@@ -89,26 +61,12 @@ function isEq(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Eq {
     return (obj.type === "eq");
 }
 
-function eq(obj: EqualsQuery): SearchJsonQueryV2_Eq {
-    return {
-        ...obj,
-        type: "eq",
-    };
-}
-
 export interface SearchJsonQueryV2_IsNull extends IsNullQuery {
     type: "isNull";
 }
 
 function isIsNull(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_IsNull {
     return (obj.type === "isNull");
-}
-
-function isNull(obj: IsNullQuery): SearchJsonQueryV2_IsNull {
-    return {
-        ...obj,
-        type: "isNull",
-    };
 }
 
 export interface SearchJsonQueryV2_Contains extends ContainsQuery {
@@ -119,26 +77,12 @@ function isContains(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Contains {
     return (obj.type === "contains");
 }
 
-function contains(obj: ContainsQuery): SearchJsonQueryV2_Contains {
-    return {
-        ...obj,
-        type: "contains",
-    };
-}
-
 export interface SearchJsonQueryV2_And extends AndQueryV2 {
     type: "and";
 }
 
 function isAnd(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_And {
     return (obj.type === "and");
-}
-
-function and(obj: AndQueryV2): SearchJsonQueryV2_And {
-    return {
-        ...obj,
-        type: "and",
-    };
 }
 
 export interface SearchJsonQueryV2_Or extends OrQueryV2 {
@@ -149,26 +93,12 @@ function isOr(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Or {
     return (obj.type === "or");
 }
 
-function or(obj: OrQueryV2): SearchJsonQueryV2_Or {
-    return {
-        ...obj,
-        type: "or",
-    };
-}
-
 export interface SearchJsonQueryV2_Not extends NotQueryV2 {
     type: "not";
 }
 
 function isNot(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Not {
     return (obj.type === "not");
-}
-
-function not(obj: NotQueryV2): SearchJsonQueryV2_Not {
-    return {
-        ...obj,
-        type: "not",
-    };
 }
 
 export interface SearchJsonQueryV2_StartsWith extends StartsWithQuery {
@@ -179,26 +109,12 @@ function isStartsWith(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_StartsWi
     return (obj.type === "startsWith");
 }
 
-function startsWith(obj: StartsWithQuery): SearchJsonQueryV2_StartsWith {
-    return {
-        ...obj,
-        type: "startsWith",
-    };
-}
-
 export interface SearchJsonQueryV2_ContainsAllTermsInOrder extends ContainsAllTermsInOrderQuery {
     type: "containsAllTermsInOrder";
 }
 
 function isContainsAllTermsInOrder(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_ContainsAllTermsInOrder {
     return (obj.type === "containsAllTermsInOrder");
-}
-
-function containsAllTermsInOrder(obj: ContainsAllTermsInOrderQuery): SearchJsonQueryV2_ContainsAllTermsInOrder {
-    return {
-        ...obj,
-        type: "containsAllTermsInOrder",
-    };
 }
 
 export interface SearchJsonQueryV2_ContainsAllTermsInOrderPrefixLastTerm extends ContainsAllTermsInOrderPrefixLastTerm {
@@ -209,26 +125,12 @@ function isContainsAllTermsInOrderPrefixLastTerm(obj: SearchJsonQueryV2): obj is
     return (obj.type === "containsAllTermsInOrderPrefixLastTerm");
 }
 
-function containsAllTermsInOrderPrefixLastTerm(obj: ContainsAllTermsInOrderPrefixLastTerm): SearchJsonQueryV2_ContainsAllTermsInOrderPrefixLastTerm {
-    return {
-        ...obj,
-        type: "containsAllTermsInOrderPrefixLastTerm",
-    };
-}
-
 export interface SearchJsonQueryV2_ContainsAnyTerm extends ContainsAnyTermQuery {
     type: "containsAnyTerm";
 }
 
 function isContainsAnyTerm(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_ContainsAnyTerm {
     return (obj.type === "containsAnyTerm");
-}
-
-function containsAnyTerm(obj: ContainsAnyTermQuery): SearchJsonQueryV2_ContainsAnyTerm {
-    return {
-        ...obj,
-        type: "containsAnyTerm",
-    };
 }
 
 export interface SearchJsonQueryV2_ContainsAllTerms extends ContainsAllTermsQuery {
@@ -239,26 +141,12 @@ function isContainsAllTerms(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_Co
     return (obj.type === "containsAllTerms");
 }
 
-function containsAllTerms(obj: ContainsAllTermsQuery): SearchJsonQueryV2_ContainsAllTerms {
-    return {
-        ...obj,
-        type: "containsAllTerms",
-    };
-}
-
 export interface SearchJsonQueryV2_WithinDistanceOf extends WithinDistanceOfQuery {
     type: "withinDistanceOf";
 }
 
 function isWithinDistanceOf(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_WithinDistanceOf {
     return (obj.type === "withinDistanceOf");
-}
-
-function withinDistanceOf(obj: WithinDistanceOfQuery): SearchJsonQueryV2_WithinDistanceOf {
-    return {
-        ...obj,
-        type: "withinDistanceOf",
-    };
 }
 
 export interface SearchJsonQueryV2_WithinBoundingBox extends WithinBoundingBoxQuery {
@@ -269,26 +157,12 @@ function isWithinBoundingBox(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_W
     return (obj.type === "withinBoundingBox");
 }
 
-function withinBoundingBox(obj: WithinBoundingBoxQuery): SearchJsonQueryV2_WithinBoundingBox {
-    return {
-        ...obj,
-        type: "withinBoundingBox",
-    };
-}
-
 export interface SearchJsonQueryV2_IntersectsBoundingBox extends IntersectsBoundingBoxQuery {
     type: "intersectsBoundingBox";
 }
 
 function isIntersectsBoundingBox(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_IntersectsBoundingBox {
     return (obj.type === "intersectsBoundingBox");
-}
-
-function intersectsBoundingBox(obj: IntersectsBoundingBoxQuery): SearchJsonQueryV2_IntersectsBoundingBox {
-    return {
-        ...obj,
-        type: "intersectsBoundingBox",
-    };
 }
 
 export interface SearchJsonQueryV2_DoesNotIntersectBoundingBox extends DoesNotIntersectBoundingBoxQuery {
@@ -299,26 +173,12 @@ function isDoesNotIntersectBoundingBox(obj: SearchJsonQueryV2): obj is SearchJso
     return (obj.type === "doesNotIntersectBoundingBox");
 }
 
-function doesNotIntersectBoundingBox(obj: DoesNotIntersectBoundingBoxQuery): SearchJsonQueryV2_DoesNotIntersectBoundingBox {
-    return {
-        ...obj,
-        type: "doesNotIntersectBoundingBox",
-    };
-}
-
 export interface SearchJsonQueryV2_WithinPolygon extends WithinPolygonQuery {
     type: "withinPolygon";
 }
 
 function isWithinPolygon(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_WithinPolygon {
     return (obj.type === "withinPolygon");
-}
-
-function withinPolygon(obj: WithinPolygonQuery): SearchJsonQueryV2_WithinPolygon {
-    return {
-        ...obj,
-        type: "withinPolygon",
-    };
 }
 
 export interface SearchJsonQueryV2_IntersectsPolygon extends IntersectsPolygonQuery {
@@ -329,26 +189,12 @@ function isIntersectsPolygon(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_I
     return (obj.type === "intersectsPolygon");
 }
 
-function intersectsPolygon(obj: IntersectsPolygonQuery): SearchJsonQueryV2_IntersectsPolygon {
-    return {
-        ...obj,
-        type: "intersectsPolygon",
-    };
-}
-
 export interface SearchJsonQueryV2_DoesNotIntersectPolygon extends DoesNotIntersectPolygonQuery {
     type: "doesNotIntersectPolygon";
 }
 
 function isDoesNotIntersectPolygon(obj: SearchJsonQueryV2): obj is SearchJsonQueryV2_DoesNotIntersectPolygon {
     return (obj.type === "doesNotIntersectPolygon");
-}
-
-function doesNotIntersectPolygon(obj: DoesNotIntersectPolygonQuery): SearchJsonQueryV2_DoesNotIntersectPolygon {
-    return {
-        ...obj,
-        type: "doesNotIntersectPolygon",
-    };
 }
 
 export interface SearchJsonQueryV2Visitor<T> {
@@ -473,48 +319,26 @@ export type SearchJsonQueryV2 = SearchJsonQueryV2_Lt | SearchJsonQueryV2_Gt | Se
 
 export const SearchJsonQueryV2 = {
     isLt: isLt,
-    lt: lt,
     isGt: isGt,
-    gt: gt,
     isLte: isLte,
-    lte: lte,
     isGte: isGte,
-    gte: gte,
     isEq: isEq,
-    eq: eq,
     isIsNull: isIsNull,
-    isNull: isNull,
     isContains: isContains,
-    contains: contains,
     isAnd: isAnd,
-    and: and,
     isOr: isOr,
-    or: or,
     isNot: isNot,
-    not: not,
     isStartsWith: isStartsWith,
-    startsWith: startsWith,
     isContainsAllTermsInOrder: isContainsAllTermsInOrder,
-    containsAllTermsInOrder: containsAllTermsInOrder,
     isContainsAllTermsInOrderPrefixLastTerm: isContainsAllTermsInOrderPrefixLastTerm,
-    containsAllTermsInOrderPrefixLastTerm: containsAllTermsInOrderPrefixLastTerm,
     isContainsAnyTerm: isContainsAnyTerm,
-    containsAnyTerm: containsAnyTerm,
     isContainsAllTerms: isContainsAllTerms,
-    containsAllTerms: containsAllTerms,
     isWithinDistanceOf: isWithinDistanceOf,
-    withinDistanceOf: withinDistanceOf,
     isWithinBoundingBox: isWithinBoundingBox,
-    withinBoundingBox: withinBoundingBox,
     isIntersectsBoundingBox: isIntersectsBoundingBox,
-    intersectsBoundingBox: intersectsBoundingBox,
     isDoesNotIntersectBoundingBox: isDoesNotIntersectBoundingBox,
-    doesNotIntersectBoundingBox: doesNotIntersectBoundingBox,
     isWithinPolygon: isWithinPolygon,
-    withinPolygon: withinPolygon,
     isIntersectsPolygon: isIntersectsPolygon,
-    intersectsPolygon: intersectsPolygon,
     isDoesNotIntersectPolygon: isDoesNotIntersectPolygon,
-    doesNotIntersectPolygon: doesNotIntersectPolygon,
     visit: visit,
 };

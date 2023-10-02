@@ -8,13 +8,6 @@ function isPolygon(obj: PolygonValue): obj is PolygonValue_Polygon {
     return (obj.type === "Polygon");
 }
 
-function Polygon(obj: Polygon): PolygonValue_Polygon {
-    return {
-        ...obj,
-        type: "Polygon",
-    };
-}
-
 export interface PolygonValueVisitor<T> {
     Polygon: (obj: Polygon) => T;
     unknown: (obj: PolygonValue) => T;
@@ -32,6 +25,5 @@ export type PolygonValue = PolygonValue_Polygon;
 
 export const PolygonValue = {
     isPolygon: isPolygon,
-    Polygon: Polygon,
     visit: visit,
 };

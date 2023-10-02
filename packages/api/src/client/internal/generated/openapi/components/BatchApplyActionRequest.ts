@@ -1,3 +1,5 @@
 import { ApplyActionRequest } from "./ApplyActionRequest";
 
-export type BatchApplyActionRequest = { requests: Array<ApplyActionRequest>; };
+export interface BatchApplyActionRequest {
+    requests: Array<ApplyActionRequest>;
+}

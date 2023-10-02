@@ -1,3 +1,5 @@
 import { ObjectPropertyType } from "./ObjectPropertyType";
 
-export type OntologyObjectArrayType = { subType: ObjectPropertyType; };
+export interface OntologyObjectArrayType {
+    subType: ObjectPropertyType;
+}

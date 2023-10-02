@@ -1,3 +1,6 @@
 import { BaseType } from "./BaseType";
 
-export type MapType = { keyType: BaseType; valueType: BaseType; };
+export interface MapType {
+    keyType: BaseType;
+    valueType: BaseType;
+}

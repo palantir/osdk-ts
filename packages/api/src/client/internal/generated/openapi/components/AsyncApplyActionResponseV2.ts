@@ -1,1 +1,3 @@
-export type AsyncApplyActionResponseV2 = { operationId: string; };
+export interface AsyncApplyActionResponseV2 {
+    operationId: string;
+}

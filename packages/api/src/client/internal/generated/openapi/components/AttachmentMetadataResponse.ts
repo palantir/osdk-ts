@@ -9,26 +9,12 @@ function isSingle(obj: AttachmentMetadataResponse): obj is AttachmentMetadataRes
     return (obj.type === "single");
 }
 
-function single(obj: AttachmentV2): AttachmentMetadataResponse_Single {
-    return {
-        ...obj,
-        type: "single",
-    };
-}
-
 export interface AttachmentMetadataResponse_Multiple extends ListAttachmentsResponseV2 {
     type: "multiple";
 }
 
 function isMultiple(obj: AttachmentMetadataResponse): obj is AttachmentMetadataResponse_Multiple {
     return (obj.type === "multiple");
-}
-
-function multiple(obj: ListAttachmentsResponseV2): AttachmentMetadataResponse_Multiple {
-    return {
-        ...obj,
-        type: "multiple",
-    };
 }
 
 export interface AttachmentMetadataResponseVisitor<T> {
@@ -53,8 +39,6 @@ export type AttachmentMetadataResponse = AttachmentMetadataResponse_Single | Att
 
 export const AttachmentMetadataResponse = {
     isSingle: isSingle,
-    single: single,
     isMultiple: isMultiple,
-    multiple: multiple,
     visit: visit,
 };

@@ -5,4 +5,7 @@ import { Duration } from "./Duration";
  * The interval uses the ISO 8601 notation. For example, "PT1H2M34S" represents a duration of 3754 seconds.
  *
  */
-export type AggregationDurationGrouping = { field: string; duration: Duration; };
+export interface AggregationDurationGrouping {
+    field: string;
+    duration: Duration;
+}

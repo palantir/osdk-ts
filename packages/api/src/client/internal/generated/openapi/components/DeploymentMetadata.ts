@@ -6,4 +6,8 @@ import { DeploymentApi } from "./DeploymentApi";
  * Metadata related to a model deployment.
  *
  */
-export type DeploymentMetadata = { apiName: DeploymentApiName; description?: DeploymentDescription; api?: DeploymentApi; };
+export interface DeploymentMetadata {
+    apiName: DeploymentApiName;
+    description?: DeploymentDescription;
+    api?: DeploymentApi;
+}

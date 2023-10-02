@@ -15,26 +15,12 @@ function isBase(obj: ObjectSet): obj is ObjectSet_Base {
     return (obj.type === "base");
 }
 
-function base(obj: ObjectSetBaseType): ObjectSet_Base {
-    return {
-        ...obj,
-        type: "base",
-    };
-}
-
 export interface ObjectSet_Static extends ObjectSetStaticType {
     type: "static";
 }
 
 function isStatic(obj: ObjectSet): obj is ObjectSet_Static {
     return (obj.type === "static");
-}
-
-function static_(obj: ObjectSetStaticType): ObjectSet_Static {
-    return {
-        ...obj,
-        type: "static",
-    };
 }
 
 export interface ObjectSet_Reference extends ObjectSetReferenceType {
@@ -45,26 +31,12 @@ function isReference(obj: ObjectSet): obj is ObjectSet_Reference {
     return (obj.type === "reference");
 }
 
-function reference(obj: ObjectSetReferenceType): ObjectSet_Reference {
-    return {
-        ...obj,
-        type: "reference",
-    };
-}
-
 export interface ObjectSet_Filter extends ObjectSetFilterType {
     type: "filter";
 }
 
 function isFilter(obj: ObjectSet): obj is ObjectSet_Filter {
     return (obj.type === "filter");
-}
-
-function filter(obj: ObjectSetFilterType): ObjectSet_Filter {
-    return {
-        ...obj,
-        type: "filter",
-    };
 }
 
 export interface ObjectSet_Union extends ObjectSetUnionType {
@@ -75,26 +47,12 @@ function isUnion(obj: ObjectSet): obj is ObjectSet_Union {
     return (obj.type === "union");
 }
 
-function union(obj: ObjectSetUnionType): ObjectSet_Union {
-    return {
-        ...obj,
-        type: "union",
-    };
-}
-
 export interface ObjectSet_Intersect extends ObjectSetIntersectionType {
     type: "intersect";
 }
 
 function isIntersect(obj: ObjectSet): obj is ObjectSet_Intersect {
     return (obj.type === "intersect");
-}
-
-function intersect(obj: ObjectSetIntersectionType): ObjectSet_Intersect {
-    return {
-        ...obj,
-        type: "intersect",
-    };
 }
 
 export interface ObjectSet_Subtract extends ObjectSetSubtractType {
@@ -105,26 +63,12 @@ function isSubtract(obj: ObjectSet): obj is ObjectSet_Subtract {
     return (obj.type === "subtract");
 }
 
-function subtract(obj: ObjectSetSubtractType): ObjectSet_Subtract {
-    return {
-        ...obj,
-        type: "subtract",
-    };
-}
-
 export interface ObjectSet_SearchAround extends ObjectSetSearchAroundType {
     type: "searchAround";
 }
 
 function isSearchAround(obj: ObjectSet): obj is ObjectSet_SearchAround {
     return (obj.type === "searchAround");
-}
-
-function searchAround(obj: ObjectSetSearchAroundType): ObjectSet_SearchAround {
-    return {
-        ...obj,
-        type: "searchAround",
-    };
 }
 
 export interface ObjectSetVisitor<T> {
@@ -179,20 +123,12 @@ export type ObjectSet = ObjectSet_Base | ObjectSet_Static | ObjectSet_Reference 
 
 export const ObjectSet = {
     isBase: isBase,
-    base: base,
     isStatic: isStatic,
-    static_: static_,
     isReference: isReference,
-    reference: reference,
     isFilter: isFilter,
-    filter: filter,
     isUnion: isUnion,
-    union: union,
     isIntersect: isIntersect,
-    intersect: intersect,
     isSubtract: isSubtract,
-    subtract: subtract,
     isSearchAround: isSearchAround,
-    searchAround: searchAround,
     visit: visit,
 };

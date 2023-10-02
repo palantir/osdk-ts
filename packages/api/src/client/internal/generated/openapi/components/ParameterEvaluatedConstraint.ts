@@ -16,26 +16,12 @@ function isArraySize(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluat
     return (obj.type === "arraySize");
 }
 
-function arraySize(obj: ArraySize): ParameterEvaluatedConstraint_ArraySize {
-    return {
-        ...obj,
-        type: "arraySize",
-    };
-}
-
 export interface ParameterEvaluatedConstraint_GroupMember extends GroupMember {
     type: "groupMember";
 }
 
 function isGroupMember(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluatedConstraint_GroupMember {
     return (obj.type === "groupMember");
-}
-
-function groupMember(obj: GroupMember): ParameterEvaluatedConstraint_GroupMember {
-    return {
-        ...obj,
-        type: "groupMember",
-    };
 }
 
 export interface ParameterEvaluatedConstraint_ObjectPropertyValue extends ObjectPropertyValue {
@@ -46,26 +32,12 @@ function isObjectPropertyValue(obj: ParameterEvaluatedConstraint): obj is Parame
     return (obj.type === "objectPropertyValue");
 }
 
-function objectPropertyValue(obj: ObjectPropertyValue): ParameterEvaluatedConstraint_ObjectPropertyValue {
-    return {
-        ...obj,
-        type: "objectPropertyValue",
-    };
-}
-
 export interface ParameterEvaluatedConstraint_ObjectQueryResult extends ObjectQueryResult {
     type: "objectQueryResult";
 }
 
 function isObjectQueryResult(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluatedConstraint_ObjectQueryResult {
     return (obj.type === "objectQueryResult");
-}
-
-function objectQueryResult(obj: ObjectQueryResult): ParameterEvaluatedConstraint_ObjectQueryResult {
-    return {
-        ...obj,
-        type: "objectQueryResult",
-    };
 }
 
 export interface ParameterEvaluatedConstraint_OneOf extends OneOf {
@@ -76,26 +48,12 @@ function isOneOf(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluatedCo
     return (obj.type === "oneOf");
 }
 
-function oneOf(obj: OneOf): ParameterEvaluatedConstraint_OneOf {
-    return {
-        ...obj,
-        type: "oneOf",
-    };
-}
-
 export interface ParameterEvaluatedConstraint_Range extends Range {
     type: "range";
 }
 
 function isRange(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluatedConstraint_Range {
     return (obj.type === "range");
-}
-
-function range(obj: Range): ParameterEvaluatedConstraint_Range {
-    return {
-        ...obj,
-        type: "range",
-    };
 }
 
 export interface ParameterEvaluatedConstraint_StringLength extends StringLength {
@@ -106,13 +64,6 @@ function isStringLength(obj: ParameterEvaluatedConstraint): obj is ParameterEval
     return (obj.type === "stringLength");
 }
 
-function stringLength(obj: StringLength): ParameterEvaluatedConstraint_StringLength {
-    return {
-        ...obj,
-        type: "stringLength",
-    };
-}
-
 export interface ParameterEvaluatedConstraint_StringRegexMatch extends StringRegexMatch {
     type: "stringRegexMatch";
 }
@@ -121,26 +72,12 @@ function isStringRegexMatch(obj: ParameterEvaluatedConstraint): obj is Parameter
     return (obj.type === "stringRegexMatch");
 }
 
-function stringRegexMatch(obj: StringRegexMatch): ParameterEvaluatedConstraint_StringRegexMatch {
-    return {
-        ...obj,
-        type: "stringRegexMatch",
-    };
-}
-
 export interface ParameterEvaluatedConstraint_Unevaluable extends Unevaluable {
     type: "unevaluable";
 }
 
 function isUnevaluable(obj: ParameterEvaluatedConstraint): obj is ParameterEvaluatedConstraint_Unevaluable {
     return (obj.type === "unevaluable");
-}
-
-function unevaluable(obj: Unevaluable): ParameterEvaluatedConstraint_Unevaluable {
-    return {
-        ...obj,
-        type: "unevaluable",
-    };
 }
 
 export interface ParameterEvaluatedConstraintVisitor<T> {
@@ -200,22 +137,13 @@ export type ParameterEvaluatedConstraint = ParameterEvaluatedConstraint_ArraySiz
 
 export const ParameterEvaluatedConstraint = {
     isArraySize: isArraySize,
-    arraySize: arraySize,
     isGroupMember: isGroupMember,
-    groupMember: groupMember,
     isObjectPropertyValue: isObjectPropertyValue,
-    objectPropertyValue: objectPropertyValue,
     isObjectQueryResult: isObjectQueryResult,
-    objectQueryResult: objectQueryResult,
     isOneOf: isOneOf,
-    oneOf: oneOf,
     isRange: isRange,
-    range: range,
     isStringLength: isStringLength,
-    stringLength: stringLength,
     isStringRegexMatch: isStringRegexMatch,
-    stringRegexMatch: stringRegexMatch,
     isUnevaluable: isUnevaluable,
-    unevaluable: unevaluable,
     visit: visit,
 };

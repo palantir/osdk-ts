@@ -1,3 +1,6 @@
 import { ObjectTypeApiName } from "./ObjectTypeApiName";
 
-export type OntologyObjectType = { objectApiName: ObjectTypeApiName; objectTypeApiName: ObjectTypeApiName; };
+export interface OntologyObjectType {
+    objectApiName: ObjectTypeApiName;
+    objectTypeApiName: ObjectTypeApiName;
+}

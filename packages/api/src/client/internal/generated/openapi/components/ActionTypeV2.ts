@@ -7,4 +7,12 @@ import { ActionTypeRid } from "./ActionTypeRid";
 import { LogicRule } from "./LogicRule";
 
 /** Represents an action type in the Ontology. */
-export type ActionTypeV2 = { apiName: ActionTypeApiName; description?: string; displayName?: DisplayName; status: ReleaseStatus; parameters: Record<ParameterId, ActionParameterV2>; rid: ActionTypeRid; operations: Array<LogicRule>; };
+export interface ActionTypeV2 {
+    apiName: ActionTypeApiName;
+    description?: string;
+    displayName?: DisplayName;
+    status: ReleaseStatus;
+    parameters: Record<ParameterId, ActionParameterV2>;
+    rid: ActionTypeRid;
+    operations: Array<LogicRule>;
+}

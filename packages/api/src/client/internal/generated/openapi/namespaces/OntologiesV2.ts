@@ -1,19 +1,17 @@
 import type { ListOntologiesV2Response } from "../components/ListOntologiesV2Response";
 import type { OntologyApiName } from "../components/OntologyApiName";
 import type { OntologyV2 } from "../components/OntologyV2";
-import type { PageSize } from "../components/PageSize";
-import type { PageToken } from "../components/PageToken";
 import type { ListActionTypesResponseV2 } from "../components/ListActionTypesResponseV2";
 import type { ActionTypeApiName } from "../components/ActionTypeApiName";
 import type { ActionTypeV2 } from "../components/ActionTypeV2";
+import type { PageSize } from "../components/PageSize";
+import type { PageToken } from "../components/PageToken";
 import type { ListObjectTypesV2Response } from "../components/ListObjectTypesV2Response";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 import type { ObjectTypeV2 } from "../components/ObjectTypeV2";
 import type { ListOutgoingLinkTypesResponseV2 } from "../components/ListOutgoingLinkTypesResponseV2";
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
 import type { LinkTypeSideV2 } from "../components/LinkTypeSideV2";
-import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName";
-import type { OrderBy } from "../components/OrderBy";
 import type { ListObjectsResponseV2 } from "../components/ListObjectsResponseV2";
 import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString";
 import type { OntologyObjectV2 } from "../components/OntologyObjectV2";
@@ -33,12 +31,14 @@ import type { ApplyActionRequestV2 } from "../components/ApplyActionRequestV2";
 import type { SyncApplyActionResponseV2 } from "../components/SyncApplyActionResponseV2";
 import type { AsyncApplyActionRequestV2 } from "../components/AsyncApplyActionRequestV2";
 import type { AsyncApplyActionResponseV2 } from "../components/AsyncApplyActionResponseV2";
-import type { PreviewMode } from "../components/PreviewMode";
+import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName";
+import type { OrderBy } from "../components/OrderBy";
 import type { ListQueryTypesResponseV2 } from "../components/ListQueryTypesResponseV2";
 import type { QueryApiName } from "../components/QueryApiName";
 import type { QueryTypeV2 } from "../components/QueryTypeV2";
 import type { ExecuteQueryRequest } from "../components/ExecuteQueryRequest";
 import type { ExecuteQueryResponse } from "../components/ExecuteQueryResponse";
+import type { PreviewMode } from "../components/PreviewMode";
 import type { ObjectSetRid } from "../components/ObjectSetRid";
 import type { ObjectSet } from "../components/ObjectSet";
 import type { LoadObjectSetRequestV2 } from "../components/LoadObjectSetRequestV2";
@@ -60,15 +60,11 @@ import { OpenApiRequest } from "../request";
  */
 export function listOntologiesV2<TResponse>(_request: OpenApiRequest<ListOntologiesV2Response, TResponse>): Promise<TResponse> {
     return _request(
-        "listOntologiesV2",
         "GET",
-        "/v2/ontologies",
+        `/v2/ontologies`,
         __undefined,
         __undefined,
         __undefined,
-        __undefined,
-        __undefined,
-        "application/json",
     );
 }
 
@@ -80,17 +76,11 @@ export function listOntologiesV2<TResponse>(_request: OpenApiRequest<ListOntolog
  */
 export function getOntologyV2<TResponse>(_request: OpenApiRequest<OntologyV2, TResponse>, ontology: OntologyApiName): Promise<TResponse> {
     return _request(
-        "getOntologyV2",
         "GET",
-        "/v2/ontologies/{ontology}",
+        `/v2/ontologies/${ontology}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -103,22 +93,16 @@ export function getOntologyV2<TResponse>(_request: OpenApiRequest<OntologyV2, TR
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function listActionTypesV2<TResponse>(_request: OpenApiRequest<ListActionTypesResponseV2, TResponse>, ontology: OntologyApiName, pageSize?: PageSize, pageToken?: PageToken): Promise<TResponse> {
+export function listActionTypesV2<TResponse>(_request: OpenApiRequest<ListActionTypesResponseV2, TResponse>, ontology: OntologyApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+}): Promise<TResponse> {
     return _request(
-        "listActionTypesV2",
         "GET",
-        "/v2/ontologies/{ontology}/actionTypes",
+        `/v2/ontologies/${ontology}/actionTypes`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-        },
-        {
-            ontology,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -130,18 +114,11 @@ export function listActionTypesV2<TResponse>(_request: OpenApiRequest<ListAction
  */
 export function getActionTypeV2<TResponse>(_request: OpenApiRequest<ActionTypeV2, TResponse>, ontology: OntologyApiName, actionType: ActionTypeApiName): Promise<TResponse> {
     return _request(
-        "getActionTypeV2",
         "GET",
-        "/v2/ontologies/{ontology}/actionTypes/{actionType}",
+        `/v2/ontologies/${ontology}/actionTypes/${actionType}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            actionType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -155,22 +132,16 @@ export function getActionTypeV2<TResponse>(_request: OpenApiRequest<ActionTypeV2
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function listObjectTypesV2<TResponse>(_request: OpenApiRequest<ListObjectTypesV2Response, TResponse>, ontology: OntologyApiName, pageSize?: PageSize, pageToken?: PageToken): Promise<TResponse> {
+export function listObjectTypesV2<TResponse>(_request: OpenApiRequest<ListObjectTypesV2Response, TResponse>, ontology: OntologyApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+}): Promise<TResponse> {
     return _request(
-        "listObjectTypesV2",
         "GET",
-        "/v2/ontologies/{ontology}/objectTypes",
+        `/v2/ontologies/${ontology}/objectTypes`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-        },
-        {
-            ontology,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -182,18 +153,11 @@ export function listObjectTypesV2<TResponse>(_request: OpenApiRequest<ListObject
  */
 export function getObjectTypeV2<TResponse>(_request: OpenApiRequest<ObjectTypeV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName): Promise<TResponse> {
     return _request(
-        "getObjectTypeV2",
         "GET",
-        "/v2/ontologies/{ontology}/objectTypes/{objectType}",
+        `/v2/ontologies/${ontology}/objectTypes/${objectType}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -204,23 +168,16 @@ export function getObjectTypeV2<TResponse>(_request: OpenApiRequest<ObjectTypeV2
  * following operation scopes: `api:read-data`.
  *
  */
-export function listOutgoingLinkTypesV2<TResponse>(_request: OpenApiRequest<ListOutgoingLinkTypesResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, pageSize?: PageSize, pageToken?: PageToken): Promise<TResponse> {
+export function listOutgoingLinkTypesV2<TResponse>(_request: OpenApiRequest<ListOutgoingLinkTypesResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+}): Promise<TResponse> {
     return _request(
-        "listOutgoingLinkTypesV2",
         "GET",
-        "/v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes",
+        `/v2/ontologies/${ontology}/objectTypes/${objectType}/outgoingLinkTypes`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-        },
-        {
-            ontology,
-            objectType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -233,19 +190,11 @@ export function listOutgoingLinkTypesV2<TResponse>(_request: OpenApiRequest<List
  */
 export function getOutgoingLinkTypeV2<TResponse>(_request: OpenApiRequest<LinkTypeSideV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, linkType: LinkTypeApiName): Promise<TResponse> {
     return _request(
-        "getOutgoingLinkTypeV2",
         "GET",
-        "/v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}",
+        `/v2/ontologies/${ontology}/objectTypes/${objectType}/outgoingLinkTypes/${linkType}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            linkType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -265,25 +214,18 @@ export function getOutgoingLinkTypeV2<TResponse>(_request: OpenApiRequest<LinkTy
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function listObjectsV2<TResponse>(_request: OpenApiRequest<ListObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, pageSize?: PageSize, pageToken?: PageToken, select?: Array<SelectedPropertyApiName>, orderBy?: OrderBy): Promise<TResponse> {
+export function listObjectsV2<TResponse>(_request: OpenApiRequest<ListObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+    "select": Array<SelectedPropertyApiName>,
+    "orderBy"?: OrderBy,
+}): Promise<TResponse> {
     return _request(
-        "listObjectsV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}",
+        `/v2/ontologies/${ontology}/objects/${objectType}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-            select,
-            orderBy,
-        },
-        {
-            ontology,
-            objectType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -293,23 +235,15 @@ export function listObjectsV2<TResponse>(_request: OpenApiRequest<ListObjectsRes
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function getObjectV2<TResponse>(_request: OpenApiRequest<OntologyObjectV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, select?: Array<SelectedPropertyApiName>): Promise<TResponse> {
+export function getObjectV2<TResponse>(_request: OpenApiRequest<OntologyObjectV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, queryParameters?: {
+    "select": Array<SelectedPropertyApiName>,
+}): Promise<TResponse> {
     return _request(
-        "getObjectV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            select,
-        },
-        {
-            ontology,
-            objectType,
-            primaryKey,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -321,18 +255,11 @@ export function getObjectV2<TResponse>(_request: OpenApiRequest<OntologyObjectV2
  */
 export function countObjects<TResponse>(_request: OpenApiRequest<CountObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName): Promise<TResponse> {
     return _request(
-        "countObjects",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/count",
+        `/v2/ontologies/${ontology}/objects/${objectType}/count`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -363,36 +290,22 @@ export function countObjects<TResponse>(_request: OpenApiRequest<CountObjectsRes
  */
 export function searchObjectsV2<TResponse>(_request: OpenApiRequest<SearchObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, request: SearchObjectsRequestV2): Promise<TResponse> {
     return _request(
-        "searchObjectsV2",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/search",
+        `/v2/ontologies/${ontology}/objects/${objectType}/search`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
 /** Temporary endpoint for search. */
 export function deprecatedSearchObjectsV2<TResponse>(_request: OpenApiRequest<SearchObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, request: SearchObjectsRequestV2): Promise<TResponse> {
     return _request(
-        "deprecatedSearchObjectsV2",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/_search",
+        `/v2/ontologies/${ontology}/objects/${objectType}/_search`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -404,18 +317,11 @@ export function deprecatedSearchObjectsV2<TResponse>(_request: OpenApiRequest<Se
  */
 export function aggregateObjectsV2<TResponse>(_request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, request: AggregateObjectsRequestV2): Promise<TResponse> {
     return _request(
-        "aggregateObjectsV2",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/aggregate",
+        `/v2/ontologies/${ontology}/objects/${objectType}/aggregate`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -425,18 +331,11 @@ export function aggregateObjectsV2<TResponse>(_request: OpenApiRequest<Aggregate
  */
 export function deprecatedAggregateObjectsV2<TResponse>(_request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, request: AggregateObjectsRequestV2): Promise<TResponse> {
     return _request(
-        "deprecatedAggregateObjectsV2",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/_aggregate",
+        `/v2/ontologies/${ontology}/objects/${objectType}/_aggregate`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -456,27 +355,18 @@ export function deprecatedAggregateObjectsV2<TResponse>(_request: OpenApiRequest
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function listLinkedObjectsV2<TResponse>(_request: OpenApiRequest<ListLinkedObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, linkType: LinkTypeApiName, pageSize?: PageSize, pageToken?: PageToken, select?: Array<SelectedPropertyApiName>, orderBy?: OrderBy): Promise<TResponse> {
+export function listLinkedObjectsV2<TResponse>(_request: OpenApiRequest<ListLinkedObjectsResponseV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, linkType: LinkTypeApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+    "select": Array<SelectedPropertyApiName>,
+    "orderBy"?: OrderBy,
+}): Promise<TResponse> {
     return _request(
-        "listLinkedObjectsV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/links/${linkType}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-            select,
-            orderBy,
-        },
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            linkType,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -488,25 +378,15 @@ export function listLinkedObjectsV2<TResponse>(_request: OpenApiRequest<ListLink
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function getLinkedObjectV2<TResponse>(_request: OpenApiRequest<OntologyObjectV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, linkType: LinkTypeApiName, linkedObjectPrimaryKey: PropertyValueEscapedString, select?: Array<SelectedPropertyApiName>): Promise<TResponse> {
+export function getLinkedObjectV2<TResponse>(_request: OpenApiRequest<OntologyObjectV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, linkType: LinkTypeApiName, linkedObjectPrimaryKey: PropertyValueEscapedString, queryParameters?: {
+    "select": Array<SelectedPropertyApiName>,
+}): Promise<TResponse> {
     return _request(
-        "getLinkedObjectV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/links/${linkType}/${linkedObjectPrimaryKey}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            select,
-        },
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            linkType,
-            linkedObjectPrimaryKey,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -519,20 +399,11 @@ export function getLinkedObjectV2<TResponse>(_request: OpenApiRequest<OntologyOb
  */
 export function getAttachmentsV2<TResponse>(_request: OpenApiRequest<AttachmentMetadataResponse, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName): Promise<TResponse> {
     return _request(
-        "getAttachmentsV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -545,21 +416,11 @@ export function getAttachmentsV2<TResponse>(_request: OpenApiRequest<AttachmentM
  */
 export function getAttachmentByRidV2<TResponse>(_request: OpenApiRequest<AttachmentV2, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName, attachmentRid: AttachmentRid): Promise<TResponse> {
     return _request(
-        "getAttachmentByRidV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/${attachmentRid}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-            attachmentRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -572,20 +433,13 @@ export function getAttachmentByRidV2<TResponse>(_request: OpenApiRequest<Attachm
  */
 export function getAttachmentContentV2<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName): Promise<TResponse> {
     return _request(
-        "getAttachmentContentV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/content",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/content`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-        },
         __undefined,
-        AnyMediaType,
+        AnyMediaType
     );
 }
 
@@ -600,21 +454,13 @@ export function getAttachmentContentV2<TResponse>(_request: OpenApiRequest<Reada
  */
 export function getAttachmentContentByRidV2<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName, attachmentRid: AttachmentRid): Promise<TResponse> {
     return _request(
-        "getAttachmentContentByRidV2",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}/content",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/${attachmentRid}/content`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-            attachmentRid,
-        },
         __undefined,
-        AnyMediaType,
+        AnyMediaType
     );
 }
 
@@ -627,20 +473,11 @@ export function getAttachmentContentByRidV2<TResponse>(_request: OpenApiRequest<
  */
 export function getFirstPoint<TResponse>(_request: OpenApiRequest<TimeSeriesPoint, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName): Promise<TResponse> {
     return _request(
-        "getFirstPoint",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/firstPoint",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/firstPoint`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -653,20 +490,11 @@ export function getFirstPoint<TResponse>(_request: OpenApiRequest<TimeSeriesPoin
  */
 export function getLastPoint<TResponse>(_request: OpenApiRequest<TimeSeriesPoint, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName): Promise<TResponse> {
     return _request(
-        "getLastPoint",
         "GET",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/lastPoint",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/lastPoint`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -679,20 +507,13 @@ export function getLastPoint<TResponse>(_request: OpenApiRequest<TimeSeriesPoint
  */
 export function streamPoints<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, ontology: OntologyApiName, objectType: ObjectTypeApiName, primaryKey: PropertyValueEscapedString, property: PropertyApiName, request: StreamTimeSeriesPointsRequest): Promise<TResponse> {
     return _request(
-        "streamPoints",
         "POST",
-        "/v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/streamPoints",
+        `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/streamPoints`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectType,
-            primaryKey,
-            property,
-        },
         "application/json",
-        AnyMediaType,
+        AnyMediaType
     );
 }
 
@@ -710,18 +531,11 @@ export function streamPoints<TResponse>(_request: OpenApiRequest<ReadableStream<
  */
 export function applyActionV2<TResponse>(_request: OpenApiRequest<SyncApplyActionResponseV2, TResponse>, ontology: OntologyApiName, action: ActionTypeApiName, request: ApplyActionRequestV2): Promise<TResponse> {
     return _request(
-        "applyActionV2",
         "POST",
-        "/v2/ontologies/{ontology}/actions/{action}/apply",
+        `/v2/ontologies/${ontology}/actions/${action}/apply`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            action,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -739,18 +553,11 @@ export function applyActionV2<TResponse>(_request: OpenApiRequest<SyncApplyActio
  */
 export function applyActionAsyncV2<TResponse>(_request: OpenApiRequest<AsyncApplyActionResponseV2, TResponse>, ontology: OntologyApiName, action: ActionTypeApiName, request: AsyncApplyActionRequestV2): Promise<TResponse> {
     return _request(
-        "applyActionAsyncV2",
         "POST",
-        "/v2/ontologies/{ontology}/actions/{action}/applyAsync",
+        `/v2/ontologies/${ontology}/actions/${action}/applyAsync`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            action,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -763,23 +570,17 @@ export function applyActionAsyncV2<TResponse>(_request: OpenApiRequest<AsyncAppl
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function listQueryTypesV2<TResponse>(_request: OpenApiRequest<ListQueryTypesResponseV2, TResponse>, ontology: OntologyApiName, pageSize?: PageSize, pageToken?: PageToken, preview?: PreviewMode): Promise<TResponse> {
+export function listQueryTypesV2<TResponse>(_request: OpenApiRequest<ListQueryTypesResponseV2, TResponse>, ontology: OntologyApiName, queryParameters?: {
+    "pageSize"?: PageSize,
+    "pageToken"?: PageToken,
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "listQueryTypesV2",
         "GET",
-        "/v2/ontologies/{ontology}/queryTypes",
+        `/v2/ontologies/${ontology}/queryTypes`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            pageSize,
-            pageToken,
-            preview,
-        },
-        {
-            ontology,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -788,22 +589,15 @@ export function listQueryTypesV2<TResponse>(_request: OpenApiRequest<ListQueryTy
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  */
-export function getQueryTypeV2<TResponse>(_request: OpenApiRequest<QueryTypeV2, TResponse>, ontology: OntologyApiName, queryApiName: QueryApiName, preview?: PreviewMode): Promise<TResponse> {
+export function getQueryTypeV2<TResponse>(_request: OpenApiRequest<QueryTypeV2, TResponse>, ontology: OntologyApiName, queryApiName: QueryApiName, queryParameters?: {
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "getQueryTypeV2",
         "GET",
-        "/v2/ontologies/{ontology}/queryTypes/{queryApiName}",
+        `/v2/ontologies/${ontology}/queryTypes/${queryApiName}`,
         __undefined,
+        queryParameters,
         __undefined,
-        {
-            preview,
-        },
-        {
-            ontology,
-            queryApiName,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -816,22 +610,15 @@ export function getQueryTypeV2<TResponse>(_request: OpenApiRequest<QueryTypeV2, 
  * following operation scopes: `api:read-data`.
  *
  */
-export function executeQueryV2<TResponse>(_request: OpenApiRequest<ExecuteQueryResponse, TResponse>, ontology: OntologyApiName, queryApiName: QueryApiName, request: ExecuteQueryRequest, preview?: PreviewMode): Promise<TResponse> {
+export function executeQueryV2<TResponse>(_request: OpenApiRequest<ExecuteQueryResponse, TResponse>, ontology: OntologyApiName, queryApiName: QueryApiName, request: ExecuteQueryRequest, queryParameters?: {
+    "preview"?: PreviewMode,
+}): Promise<TResponse> {
     return _request(
-        "executeQueryV2",
         "POST",
-        "/v2/ontologies/{ontology}/queries/{queryApiName}/execute",
+        `/v2/ontologies/${ontology}/queries/${queryApiName}/execute`,
         request,
+        queryParameters,
         __undefined,
-        {
-            preview,
-        },
-        {
-            ontology,
-            queryApiName,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -843,18 +630,11 @@ export function executeQueryV2<TResponse>(_request: OpenApiRequest<ExecuteQueryR
  */
 export function getObjectSetV2<TResponse>(_request: OpenApiRequest<ObjectSet, TResponse>, ontology: OntologyApiName, objectSetRid: ObjectSetRid): Promise<TResponse> {
     return _request(
-        "getObjectSetV2",
         "GET",
-        "/v2/ontologies/{ontology}/objectSets/{objectSetRid}",
+        `/v2/ontologies/${ontology}/objectSets/${objectSetRid}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            objectSetRid,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -866,17 +646,11 @@ export function getObjectSetV2<TResponse>(_request: OpenApiRequest<ObjectSet, TR
  */
 export function loadObjectSetV2<TResponse>(_request: OpenApiRequest<LoadObjectSetResponseV2, TResponse>, ontology: OntologyApiName, request: LoadObjectSetRequestV2): Promise<TResponse> {
     return _request(
-        "loadObjectSetV2",
         "POST",
-        "/v2/ontologies/{ontology}/objectSets/loadObjects",
+        `/v2/ontologies/${ontology}/objectSets/loadObjects`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -888,17 +662,11 @@ export function loadObjectSetV2<TResponse>(_request: OpenApiRequest<LoadObjectSe
  */
 export function aggregateObjectSetV2<TResponse>(_request: OpenApiRequest<AggregateObjectSetResponseV2, TResponse>, ontology: OntologyApiName, request: AggregateObjectSetRequestV2): Promise<TResponse> {
     return _request(
-        "aggregateObjectSetV2",
         "POST",
-        "/v2/ontologies/{ontology}/objectSets/aggregate",
+        `/v2/ontologies/${ontology}/objectSets/aggregate`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-        },
-        "application/json",
-        "application/json",
     );
 }
 
@@ -908,17 +676,11 @@ export function aggregateObjectSetV2<TResponse>(_request: OpenApiRequest<Aggrega
  */
 export function listDeployments<TResponse>(_request: OpenApiRequest<ListDeploymentsResponse, TResponse>, ontology: OntologyApiName): Promise<TResponse> {
     return _request(
-        "listDeployments",
         "GET",
-        "/v2/ontologies/{ontology}/models/deployments",
+        `/v2/ontologies/${ontology}/models/deployments`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -928,18 +690,11 @@ export function listDeployments<TResponse>(_request: OpenApiRequest<ListDeployme
  */
 export function getDeployment<TResponse>(_request: OpenApiRequest<DeploymentMetadata, TResponse>, ontology: OntologyApiName, deployment: DeploymentApiName): Promise<TResponse> {
     return _request(
-        "getDeployment",
         "GET",
-        "/v2/ontologies/{ontology}/models/deployments/{deployment}",
+        `/v2/ontologies/${ontology}/models/deployments/${deployment}`,
         __undefined,
         __undefined,
         __undefined,
-        {
-            ontology,
-            deployment,
-        },
-        __undefined,
-        "application/json",
     );
 }
 
@@ -951,18 +706,11 @@ export function getDeployment<TResponse>(_request: OpenApiRequest<DeploymentMeta
  */
 export function transformDeployment<TResponse>(_request: OpenApiRequest<TransformDataResponse, TResponse>, ontology: OntologyApiName, deployment: DeploymentApiName, request: TransformDataRequest): Promise<TResponse> {
     return _request(
-        "transformDeployment",
         "POST",
-        "/v2/ontologies/{ontology}/models/deployments/{deployment}/transform",
+        `/v2/ontologies/${ontology}/models/deployments/${deployment}/transform`,
         request,
         __undefined,
         __undefined,
-        {
-            ontology,
-            deployment,
-        },
-        "application/json",
-        "application/json",
     );
 }
 

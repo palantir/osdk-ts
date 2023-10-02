@@ -1,1 +1,3 @@
-export type CountObjectsResponseV2 = { count?: number; };
+export interface CountObjectsResponseV2 {
+    count?: number;
+}

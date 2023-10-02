@@ -11,26 +11,12 @@ function isFixedWidth(obj: AggregationGroupByV2): obj is AggregationGroupByV2_Fi
     return (obj.type === "fixedWidth");
 }
 
-function fixedWidth(obj: AggregationFixedWidthGrouping): AggregationGroupByV2_FixedWidth {
-    return {
-        ...obj,
-        type: "fixedWidth",
-    };
-}
-
 export interface AggregationGroupByV2_Ranges extends AggregationRangesGroupingV2 {
     type: "ranges";
 }
 
 function isRanges(obj: AggregationGroupByV2): obj is AggregationGroupByV2_Ranges {
     return (obj.type === "ranges");
-}
-
-function ranges(obj: AggregationRangesGroupingV2): AggregationGroupByV2_Ranges {
-    return {
-        ...obj,
-        type: "ranges",
-    };
 }
 
 export interface AggregationGroupByV2_Exact extends AggregationExactGrouping {
@@ -41,26 +27,12 @@ function isExact(obj: AggregationGroupByV2): obj is AggregationGroupByV2_Exact {
     return (obj.type === "exact");
 }
 
-function exact(obj: AggregationExactGrouping): AggregationGroupByV2_Exact {
-    return {
-        ...obj,
-        type: "exact",
-    };
-}
-
 export interface AggregationGroupByV2_Duration extends AggregationDurationGroupingV2 {
     type: "duration";
 }
 
 function isDuration(obj: AggregationGroupByV2): obj is AggregationGroupByV2_Duration {
     return (obj.type === "duration");
-}
-
-function duration(obj: AggregationDurationGroupingV2): AggregationGroupByV2_Duration {
-    return {
-        ...obj,
-        type: "duration",
-    };
 }
 
 export interface AggregationGroupByV2Visitor<T> {
@@ -95,12 +67,8 @@ export type AggregationGroupByV2 = AggregationGroupByV2_FixedWidth | Aggregation
 
 export const AggregationGroupByV2 = {
     isFixedWidth: isFixedWidth,
-    fixedWidth: fixedWidth,
     isRanges: isRanges,
-    ranges: ranges,
     isExact: isExact,
-    exact: exact,
     isDuration: isDuration,
-    duration: duration,
     visit: visit,
 };

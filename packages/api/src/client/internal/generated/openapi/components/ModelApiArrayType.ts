@@ -1,3 +1,5 @@
 import { ModelApiType } from "./ModelApiType";
 
-export type ModelApiArrayType = { subType: ModelApiType; };
+export interface ModelApiArrayType {
+    subType: ModelApiType;
+}

@@ -8,13 +8,6 @@ function isPoint(obj: WithinBoundingBoxPoint): obj is WithinBoundingBoxPoint_Poi
     return (obj.type === "Point");
 }
 
-function Point(obj: GeoPoint): WithinBoundingBoxPoint_Point {
-    return {
-        ...obj,
-        type: "Point",
-    };
-}
-
 export interface WithinBoundingBoxPointVisitor<T> {
     Point: (obj: GeoPoint) => T;
     unknown: (obj: WithinBoundingBoxPoint) => T;
@@ -32,6 +25,5 @@ export type WithinBoundingBoxPoint = WithinBoundingBoxPoint_Point;
 
 export const WithinBoundingBoxPoint = {
     isPoint: isPoint,
-    Point: Point,
     visit: visit,
 };

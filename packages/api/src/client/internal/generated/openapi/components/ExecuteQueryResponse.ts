@@ -1,3 +1,5 @@
 import { DataValue } from "./DataValue";
 
-export type ExecuteQueryResponse = { value: DataValue; };
+export interface ExecuteQueryResponse {
+    value: DataValue;
+}

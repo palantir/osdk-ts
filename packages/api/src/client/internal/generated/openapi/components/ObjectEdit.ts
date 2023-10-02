@@ -10,13 +10,6 @@ function isAddObject(obj: ObjectEdit): obj is ObjectEdit_AddObject {
     return (obj.type === "addObject");
 }
 
-function addObject(obj: AddObject): ObjectEdit_AddObject {
-    return {
-        ...obj,
-        type: "addObject",
-    };
-}
-
 export interface ObjectEdit_ModifyObject extends ModifyObject {
     type: "modifyObject";
 }
@@ -25,26 +18,12 @@ function isModifyObject(obj: ObjectEdit): obj is ObjectEdit_ModifyObject {
     return (obj.type === "modifyObject");
 }
 
-function modifyObject(obj: ModifyObject): ObjectEdit_ModifyObject {
-    return {
-        ...obj,
-        type: "modifyObject",
-    };
-}
-
 export interface ObjectEdit_AddLink extends AddLink {
     type: "addLink";
 }
 
 function isAddLink(obj: ObjectEdit): obj is ObjectEdit_AddLink {
     return (obj.type === "addLink");
-}
-
-function addLink(obj: AddLink): ObjectEdit_AddLink {
-    return {
-        ...obj,
-        type: "addLink",
-    };
 }
 
 export interface ObjectEditVisitor<T> {
@@ -74,10 +53,7 @@ export type ObjectEdit = ObjectEdit_AddObject | ObjectEdit_ModifyObject | Object
 
 export const ObjectEdit = {
     isAddObject: isAddObject,
-    addObject: addObject,
     isModifyObject: isModifyObject,
-    modifyObject: modifyObject,
     isAddLink: isAddLink,
-    addLink: addLink,
     visit: visit,
 };

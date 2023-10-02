@@ -1,1 +1,3 @@
-export type ObjectSetBaseType = { objectType: string; };
+export interface ObjectSetBaseType {
+    objectType: string;
+}

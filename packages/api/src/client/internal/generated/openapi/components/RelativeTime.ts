@@ -5,4 +5,8 @@ import { RelativeTimeSeriesTimeUnit } from "./RelativeTimeSeriesTimeUnit";
  * A relative time, such as "3 days before" or "2 hours after" the current moment.
  *
  */
-export type RelativeTime = { when: RelativeTimeRelation; value: number; unit: RelativeTimeSeriesTimeUnit; };
+export interface RelativeTime {
+    when: RelativeTimeRelation;
+    value: number;
+    unit: RelativeTimeSeriesTimeUnit;
+}

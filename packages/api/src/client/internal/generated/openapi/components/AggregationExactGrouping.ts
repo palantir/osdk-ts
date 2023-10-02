@@ -1,2 +1,5 @@
 /** Divides objects into groups according to an exact value. */
-export type AggregationExactGrouping = { field: string; maxGroupCount?: number; };
+export interface AggregationExactGrouping {
+    field: string;
+    maxGroupCount?: number;
+}

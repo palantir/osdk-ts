@@ -1,1 +1,2 @@
-export type BatchApplyActionResponse = {};
+export interface BatchApplyActionResponse {
+}

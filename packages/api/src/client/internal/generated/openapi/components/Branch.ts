@@ -5,4 +5,7 @@ import { TransactionRid } from "./TransactionRid";
  * A Branch of a Dataset.
  *
  */
-export type Branch = { branchId: BranchId; transactionRid?: TransactionRid; };
+export interface Branch {
+    branchId: BranchId;
+    transactionRid?: TransactionRid;
+}

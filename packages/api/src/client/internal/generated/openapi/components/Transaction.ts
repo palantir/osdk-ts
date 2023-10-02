@@ -6,4 +6,12 @@ import { TransactionStatus } from "./TransactionStatus";
  * An operation that modifies the files within a dataset.
  *
  */
-export type Transaction = { rid: TransactionRid; transactionType: TransactionType; status: TransactionStatus; createdTime: string; closedTime?: string; };
+export interface Transaction {
+    rid: TransactionRid;
+    transactionType: TransactionType;
+    status: TransactionStatus;
+    /** The timestamp when the transaction was created, in ISO 8601 timestamp format. */
+    createdTime: string;
+    /** The timestamp when the transaction was closed, in ISO 8601 timestamp format. */
+    closedTime?: string;
+}

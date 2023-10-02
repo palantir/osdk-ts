@@ -1,3 +1,5 @@
 import { ObjectRid } from "./ObjectRid";
 
-export type ObjectSetStaticType = { objects: Array<ObjectRid>; };
+export interface ObjectSetStaticType {
+    objects: Array<ObjectRid>;
+}

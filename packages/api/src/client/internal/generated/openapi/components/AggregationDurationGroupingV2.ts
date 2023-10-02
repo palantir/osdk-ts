@@ -5,4 +5,8 @@ import { TimeUnit } from "./TimeUnit";
  * When grouping by `YEARS`, `QUARTERS`, `MONTHS`, or `WEEKS`, the `value` must be set to `1`.
  *
  */
-export type AggregationDurationGroupingV2 = { field: string; value: number; unit: TimeUnit; };
+export interface AggregationDurationGroupingV2 {
+    field: string;
+    value: number;
+    unit: TimeUnit;
+}

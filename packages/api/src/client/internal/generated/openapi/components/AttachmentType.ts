@@ -1,1 +1,2 @@
-export type AttachmentType = {};
+export interface AttachmentType {
+}
