@@ -22,6 +22,17 @@ export async function fetchEmployeePage(client: Client<OntologyType>) {
   const result = await client.objectSet("Employee").fetchPageOrThrow();
   expectType<string | undefined>(result.data[0].businessTitle);
 
+  // Rough shape is correct
+  expectType<
+    {
+      data: {
+        adUsername: string;
+        businessTitle: string | undefined;
+        employeeNumber: number | undefined;
+      }[];
+    }
+  >(result);
+
   console.log("fetchEmployeePage(): ");
   console.table(
     result.data.map(({ adUsername, businessTitle, employeeNumber }) => ({

@@ -17,6 +17,8 @@
 import type { ThinClient } from "@osdk/api";
 import { aggregateOrThrow } from "@osdk/api/objects";
 import invariant from "tiny-invariant";
+import type { TypeOf } from "ts-expect";
+import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchAggregationForEmployeesGroupedThin(
@@ -55,7 +57,30 @@ export async function fetchAggregationForEmployeesGroupedThin(
   console.log(JSON.stringify(result, undefined, 2));
   console.log();
 
-  result; //
+  expectType<
+    TypeOf<
+      Array<{
+        group: {
+          locationType: string | undefined;
+        };
+        values: {
+          "employeeNumber": {
+            max: number | undefined;
+            avg: number | undefined;
+            min: number | undefined;
+          };
+          locationCity: {
+            approximateDistinct: number;
+          };
+          locationName: {
+            approximateDistinct: number;
+          };
+        };
+      }>,
+      typeof result
+    >
+  >(true);
+
   result[0].values.employeeNumber;
   invariant(Array.isArray(result), "groups means we should get an array");
   invariant(Object.keys(result).length >= 1, "there should be one group");
