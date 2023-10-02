@@ -26,9 +26,9 @@ export default {
     ], {});
 
     const mrlCommands = mrlFiles.length > 0
-      ? ["monorepolint check"]
+      ? ["monorepolint check", `dprint fmt ${mrlFiles.join(" ")}`]
       : [];
 
-    return [...mrlCommands, `dprint fmt ${mrlFiles.join(" ")}`];
+    return [...mrlCommands];
   },
 };
