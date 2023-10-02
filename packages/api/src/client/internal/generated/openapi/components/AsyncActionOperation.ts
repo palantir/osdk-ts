@@ -1,2 +1,1 @@
-/** */
 export type AsyncActionOperation = any;

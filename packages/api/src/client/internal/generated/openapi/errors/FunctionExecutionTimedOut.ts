@@ -1,7 +1,6 @@
 import { FunctionRid } from "../components/FunctionRid";
 import { FunctionVersion } from "../components/FunctionVersion";
 
-/** */
 export interface FunctionExecutionTimedOut {
     errorCode: "TIMEOUT";
     errorName: "FunctionExecutionTimedOut";
