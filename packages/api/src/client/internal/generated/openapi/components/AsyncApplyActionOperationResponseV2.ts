@@ -1,0 +1,2 @@
+/** */
+export type AsyncApplyActionOperationResponseV2 = {};

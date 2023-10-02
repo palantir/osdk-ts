@@ -1,0 +1,2 @@
+/** */
+export type FolderRid = string;

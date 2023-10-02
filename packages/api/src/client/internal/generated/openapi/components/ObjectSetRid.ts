@@ -1,0 +1,2 @@
+/** */
+export type ObjectSetRid = string;

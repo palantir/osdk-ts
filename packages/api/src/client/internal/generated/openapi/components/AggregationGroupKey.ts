@@ -1,0 +1,2 @@
+/** */
+export type AggregationGroupKey = string;
