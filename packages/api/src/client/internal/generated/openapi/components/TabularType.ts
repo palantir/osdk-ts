@@ -17,5 +17,5 @@
 import type { ConstraintType } from "./ConstraintType";
 
 export interface TabularType {
-    constraints: Array<ConstraintType>;
+  constraints: Array<ConstraintType>;
 }

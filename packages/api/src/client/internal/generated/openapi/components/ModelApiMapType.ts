@@ -17,6 +17,6 @@
 import type { ModelApiType } from "./ModelApiType";
 
 export interface ModelApiMapType {
-    keyType: ModelApiType;
-    valueType: ModelApiType;
+  keyType: ModelApiType;
+  valueType: ModelApiType;
 }

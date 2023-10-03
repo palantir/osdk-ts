@@ -15,9 +15,8 @@
  */
 
 export interface InvalidDurationGroupByValue {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidDurationGroupByValue";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidDurationGroupByValue";
+  errorInstanceId: string;
+  parameters: {};
 }

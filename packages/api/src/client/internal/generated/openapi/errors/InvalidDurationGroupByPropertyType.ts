@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { PropertyApiName } from "../components/PropertyApiName";
 import type { ValueType } from "../components/ValueType";
 
 /**
  * Invalid property type for duration groupBy.
- *
  */
 export interface InvalidDurationGroupByPropertyType {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidDurationGroupByPropertyType";
-    errorInstanceId: string;
-    parameters: {
-        property: PropertyApiName;
-        objectType: ObjectTypeApiName;
-        propertyBaseType: ValueType;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidDurationGroupByPropertyType";
+  errorInstanceId: string;
+  parameters: {
+    property: PropertyApiName;
+    objectType: ObjectTypeApiName;
+    propertyBaseType: ValueType;
+  };
 }

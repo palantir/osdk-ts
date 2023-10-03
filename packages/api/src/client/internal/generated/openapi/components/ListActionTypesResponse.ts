@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { ActionType } from "./ActionType";
+import type { PageToken } from "./PageToken";
 
 export interface ListActionTypesResponse {
-    nextPageToken?: PageToken;
-    data: Array<ActionType>;
+  nextPageToken?: PageToken;
+  data: Array<ActionType>;
 }

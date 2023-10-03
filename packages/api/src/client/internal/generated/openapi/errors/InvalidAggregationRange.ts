@@ -15,9 +15,8 @@
  */
 
 export interface InvalidAggregationRange {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidAggregationRange";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidAggregationRange";
+  errorInstanceId: string;
+  parameters: {};
 }

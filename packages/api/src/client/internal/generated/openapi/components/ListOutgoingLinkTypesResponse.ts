@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { LinkTypeSide } from "./LinkTypeSide";
+import type { PageToken } from "./PageToken";
 
 export interface ListOutgoingLinkTypesResponse {
-    nextPageToken?: PageToken;
-    /** The list of link type sides in the current page. */
-    data: Array<LinkTypeSide>;
+  nextPageToken?: PageToken;
+  /** The list of link type sides in the current page. */
+  data: Array<LinkTypeSide>;
 }

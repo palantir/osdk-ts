@@ -18,7 +18,7 @@ import type { BaseType } from "./BaseType";
 import type { ColumnName } from "./ColumnName";
 
 export interface ColumnConstraint {
-    columnType: BaseType;
-    name: ColumnName;
-    nullable?: boolean;
+  columnType: BaseType;
+  name: ColumnName;
+  nullable?: boolean;
 }

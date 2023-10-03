@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { PropertyFilter } from "../components/PropertyFilter";
 import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyFilter } from "../components/PropertyFilter";
 
 /** The provided filters cannot be used together. */
 export interface InvalidPropertyFiltersCombination {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidPropertyFiltersCombination";
-    errorInstanceId: string;
-    parameters: {
-        propertyFilters: Array<PropertyFilter>;
-        property: PropertyApiName;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidPropertyFiltersCombination";
+  errorInstanceId: string;
+  parameters: {
+    propertyFilters: Array<PropertyFilter>;
+    property: PropertyApiName;
+  };
 }

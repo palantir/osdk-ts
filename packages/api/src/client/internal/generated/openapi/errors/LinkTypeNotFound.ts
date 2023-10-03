@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 
 /** The link type is not found, or the user does not have access to it. */
 export interface LinkTypeNotFound {
-    errorCode: "NOT_FOUND";
-    errorName: "LinkTypeNotFound";
-    errorInstanceId: string;
-    parameters: {
-        objectType: ObjectTypeApiName;
-        linkType: LinkTypeApiName;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "LinkTypeNotFound";
+  errorInstanceId: string;
+  parameters: {
+    objectType: ObjectTypeApiName;
+    linkType: LinkTypeApiName;
+  };
 }

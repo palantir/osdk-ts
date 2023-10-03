@@ -31,6 +31,5 @@ import type { Coordinate } from "./Coordinate";
  * interpret these values. The interpretation and meaning of additional
  * elements is beyond the scope of this specification, and additional
  * elements MAY be ignored by parsers.
- *
  */
 export type Position = Array<Coordinate>;

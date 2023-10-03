@@ -18,6 +18,6 @@ import type { ApplyActionMode } from "./ApplyActionMode";
 import type { ReturnEditsMode } from "./ReturnEditsMode";
 
 export interface ApplyActionRequestOptions {
-    mode?: ApplyActionMode;
-    returnEdits?: ReturnEditsMode;
+  mode?: ApplyActionMode;
+  returnEdits?: ReturnEditsMode;
 }

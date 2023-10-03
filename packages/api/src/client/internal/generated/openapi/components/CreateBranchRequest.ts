@@ -18,6 +18,6 @@ import type { BranchId } from "./BranchId";
 import type { TransactionRid } from "./TransactionRid";
 
 export interface CreateBranchRequest {
-    branchId: BranchId;
-    transactionRid?: TransactionRid;
+  branchId: BranchId;
+  transactionRid?: TransactionRid;
 }

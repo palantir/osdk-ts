@@ -15,9 +15,8 @@
  */
 
 export interface ObjectsExceededLimit {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "ObjectsExceededLimit";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "ObjectsExceededLimit";
+  errorInstanceId: string;
+  parameters: {};
 }

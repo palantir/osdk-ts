@@ -25,39 +25,56 @@ import type { StringRegexMatch } from "./StringRegexMatch";
 import type { Unevaluable } from "./Unevaluable";
 
 export interface ParameterEvaluatedConstraint_ArraySize extends ArraySize {
-    type: "arraySize";
+  type: "arraySize";
 }
 
 export interface ParameterEvaluatedConstraint_GroupMember extends GroupMember {
-    type: "groupMember";
+  type: "groupMember";
 }
 
-export interface ParameterEvaluatedConstraint_ObjectPropertyValue extends ObjectPropertyValue {
-    type: "objectPropertyValue";
+export interface ParameterEvaluatedConstraint_ObjectPropertyValue
+  extends ObjectPropertyValue
+{
+  type: "objectPropertyValue";
 }
 
-export interface ParameterEvaluatedConstraint_ObjectQueryResult extends ObjectQueryResult {
-    type: "objectQueryResult";
+export interface ParameterEvaluatedConstraint_ObjectQueryResult
+  extends ObjectQueryResult
+{
+  type: "objectQueryResult";
 }
 
 export interface ParameterEvaluatedConstraint_OneOf extends OneOf {
-    type: "oneOf";
+  type: "oneOf";
 }
 
 export interface ParameterEvaluatedConstraint_Range extends Range {
-    type: "range";
+  type: "range";
 }
 
-export interface ParameterEvaluatedConstraint_StringLength extends StringLength {
-    type: "stringLength";
+export interface ParameterEvaluatedConstraint_StringLength
+  extends StringLength
+{
+  type: "stringLength";
 }
 
-export interface ParameterEvaluatedConstraint_StringRegexMatch extends StringRegexMatch {
-    type: "stringRegexMatch";
+export interface ParameterEvaluatedConstraint_StringRegexMatch
+  extends StringRegexMatch
+{
+  type: "stringRegexMatch";
 }
 
 export interface ParameterEvaluatedConstraint_Unevaluable extends Unevaluable {
-    type: "unevaluable";
+  type: "unevaluable";
 }
 
-export type ParameterEvaluatedConstraint = ParameterEvaluatedConstraint_ArraySize | ParameterEvaluatedConstraint_GroupMember | ParameterEvaluatedConstraint_ObjectPropertyValue | ParameterEvaluatedConstraint_ObjectQueryResult | ParameterEvaluatedConstraint_OneOf | ParameterEvaluatedConstraint_Range | ParameterEvaluatedConstraint_StringLength | ParameterEvaluatedConstraint_StringRegexMatch | ParameterEvaluatedConstraint_Unevaluable;
+export type ParameterEvaluatedConstraint =
+  | ParameterEvaluatedConstraint_ArraySize
+  | ParameterEvaluatedConstraint_GroupMember
+  | ParameterEvaluatedConstraint_ObjectPropertyValue
+  | ParameterEvaluatedConstraint_ObjectQueryResult
+  | ParameterEvaluatedConstraint_OneOf
+  | ParameterEvaluatedConstraint_Range
+  | ParameterEvaluatedConstraint_StringLength
+  | ParameterEvaluatedConstraint_StringRegexMatch
+  | ParameterEvaluatedConstraint_Unevaluable;

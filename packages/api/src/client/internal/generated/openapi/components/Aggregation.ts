@@ -14,35 +14,43 @@
  * limitations under the License.
  */
 
+import type { ApproximateDistinctAggregation } from "./ApproximateDistinctAggregation";
+import type { AvgAggregation } from "./AvgAggregation";
+import type { CountAggregation } from "./CountAggregation";
 import type { MaxAggregation } from "./MaxAggregation";
 import type { MinAggregation } from "./MinAggregation";
-import type { AvgAggregation } from "./AvgAggregation";
 import type { SumAggregation } from "./SumAggregation";
-import type { CountAggregation } from "./CountAggregation";
-import type { ApproximateDistinctAggregation } from "./ApproximateDistinctAggregation";
 
 export interface Aggregation_Max extends MaxAggregation {
-    type: "max";
+  type: "max";
 }
 
 export interface Aggregation_Min extends MinAggregation {
-    type: "min";
+  type: "min";
 }
 
 export interface Aggregation_Avg extends AvgAggregation {
-    type: "avg";
+  type: "avg";
 }
 
 export interface Aggregation_Sum extends SumAggregation {
-    type: "sum";
+  type: "sum";
 }
 
 export interface Aggregation_Count extends CountAggregation {
-    type: "count";
+  type: "count";
 }
 
-export interface Aggregation_ApproximateDistinct extends ApproximateDistinctAggregation {
-    type: "approximateDistinct";
+export interface Aggregation_ApproximateDistinct
+  extends ApproximateDistinctAggregation
+{
+  type: "approximateDistinct";
 }
 
-export type Aggregation = Aggregation_Max | Aggregation_Min | Aggregation_Avg | Aggregation_Sum | Aggregation_Count | Aggregation_ApproximateDistinct;
+export type Aggregation =
+  | Aggregation_Max
+  | Aggregation_Min
+  | Aggregation_Avg
+  | Aggregation_Sum
+  | Aggregation_Count
+  | Aggregation_ApproximateDistinct;

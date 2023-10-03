@@ -17,5 +17,5 @@
 import type { DataValue } from "./DataValue";
 
 export interface ExecuteQueryResponse {
-    value: DataValue;
+  value: DataValue;
 }

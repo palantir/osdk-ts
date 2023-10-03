@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "./ActionTypeApiName";
-import type { DisplayName } from "./DisplayName";
-import type { ReleaseStatus } from "./ReleaseStatus";
-import type { ParameterId } from "./ParameterId";
 import type { ActionParameterV2 } from "./ActionParameterV2";
+import type { ActionTypeApiName } from "./ActionTypeApiName";
 import type { ActionTypeRid } from "./ActionTypeRid";
+import type { DisplayName } from "./DisplayName";
 import type { LogicRule } from "./LogicRule";
+import type { ParameterId } from "./ParameterId";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 /** Represents an action type in the Ontology. */
 export interface ActionTypeV2 {
-    apiName: ActionTypeApiName;
-    description?: string;
-    displayName?: DisplayName;
-    status: ReleaseStatus;
-    parameters: Record<ParameterId, ActionParameterV2>;
-    rid: ActionTypeRid;
-    operations: Array<LogicRule>;
+  apiName: ActionTypeApiName;
+  description?: string;
+  displayName?: DisplayName;
+  status: ReleaseStatus;
+  parameters: Record<ParameterId, ActionParameterV2>;
+  rid: ActionTypeRid;
+  operations: Array<LogicRule>;
 }

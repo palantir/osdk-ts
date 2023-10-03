@@ -18,5 +18,5 @@ import type { SearchJsonQuery } from "./SearchJsonQuery";
 
 /** Returns objects where every query is satisfied. */
 export interface AndQuery {
-    value: Array<SearchJsonQuery>;
+  value: Array<SearchJsonQuery>;
 }

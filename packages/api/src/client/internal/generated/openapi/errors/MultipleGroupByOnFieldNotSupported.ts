@@ -15,10 +15,10 @@
  */
 
 export interface MultipleGroupByOnFieldNotSupported {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "MultipleGroupByOnFieldNotSupported";
-    errorInstanceId: string;
-    parameters: {
-        duplicateFields: Array<string>;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "MultipleGroupByOnFieldNotSupported";
+  errorInstanceId: string;
+  parameters: {
+    duplicateFields: Array<string>;
+  };
 }

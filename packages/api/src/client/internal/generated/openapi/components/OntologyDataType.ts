@@ -24,95 +24,115 @@ import type { DoubleType } from "./DoubleType";
 import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { OntologyArrayType } from "./OntologyArrayType";
+import type { OntologyMapType } from "./OntologyMapType";
+import type { OntologyObjectSetType } from "./OntologyObjectSetType";
+import type { OntologyObjectType } from "./OntologyObjectType";
+import type { OntologySetType } from "./OntologySetType";
+import type { OntologyStructType } from "./OntologyStructType";
 import type { ShortType } from "./ShortType";
 import type { StringType } from "./StringType";
 import type { TimestampType } from "./TimestampType";
-import type { OntologyArrayType } from "./OntologyArrayType";
-import type { OntologyMapType } from "./OntologyMapType";
-import type { OntologySetType } from "./OntologySetType";
-import type { OntologyStructType } from "./OntologyStructType";
-import type { OntologyObjectType } from "./OntologyObjectType";
-import type { OntologyObjectSetType } from "./OntologyObjectSetType";
 import type { UnsupportedType } from "./UnsupportedType";
 
 export interface OntologyDataType_Any extends AnyType {
-    type: "any";
+  type: "any";
 }
 
 export interface OntologyDataType_Binary extends BinaryType {
-    type: "binary";
+  type: "binary";
 }
 
 export interface OntologyDataType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface OntologyDataType_Byte extends ByteType {
-    type: "byte";
+  type: "byte";
 }
 
 export interface OntologyDataType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface OntologyDataType_Decimal extends DecimalType {
-    type: "decimal";
+  type: "decimal";
 }
 
 export interface OntologyDataType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface OntologyDataType_Float extends FloatType {
-    type: "float";
+  type: "float";
 }
 
 export interface OntologyDataType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface OntologyDataType_Long extends LongType {
-    type: "long";
+  type: "long";
 }
 
 export interface OntologyDataType_Short extends ShortType {
-    type: "short";
+  type: "short";
 }
 
 export interface OntologyDataType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface OntologyDataType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
 export interface OntologyDataType_Array extends OntologyArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface OntologyDataType_Map extends OntologyMapType {
-    type: "map";
+  type: "map";
 }
 
 export interface OntologyDataType_Set extends OntologySetType {
-    type: "set";
+  type: "set";
 }
 
 export interface OntologyDataType_Struct extends OntologyStructType {
-    type: "struct";
+  type: "struct";
 }
 
 export interface OntologyDataType_Object extends OntologyObjectType {
-    type: "object";
+  type: "object";
 }
 
 export interface OntologyDataType_ObjectSet extends OntologyObjectSetType {
-    type: "objectSet";
+  type: "objectSet";
 }
 
 export interface OntologyDataType_Unsupported extends UnsupportedType {
-    type: "unsupported";
+  type: "unsupported";
 }
 
-export type OntologyDataType = OntologyDataType_Any | OntologyDataType_Binary | OntologyDataType_Boolean | OntologyDataType_Byte | OntologyDataType_Date | OntologyDataType_Decimal | OntologyDataType_Double | OntologyDataType_Float | OntologyDataType_Integer | OntologyDataType_Long | OntologyDataType_Short | OntologyDataType_String | OntologyDataType_Timestamp | OntologyDataType_Array | OntologyDataType_Map | OntologyDataType_Set | OntologyDataType_Struct | OntologyDataType_Object | OntologyDataType_ObjectSet | OntologyDataType_Unsupported;
+export type OntologyDataType =
+  | OntologyDataType_Any
+  | OntologyDataType_Binary
+  | OntologyDataType_Boolean
+  | OntologyDataType_Byte
+  | OntologyDataType_Date
+  | OntologyDataType_Decimal
+  | OntologyDataType_Double
+  | OntologyDataType_Float
+  | OntologyDataType_Integer
+  | OntologyDataType_Long
+  | OntologyDataType_Short
+  | OntologyDataType_String
+  | OntologyDataType_Timestamp
+  | OntologyDataType_Array
+  | OntologyDataType_Map
+  | OntologyDataType_Set
+  | OntologyDataType_Struct
+  | OntologyDataType_Object
+  | OntologyDataType_ObjectSet
+  | OntologyDataType_Unsupported;

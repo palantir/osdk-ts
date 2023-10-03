@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { FolderRid } from "../components/FolderRid";
 import type { DatasetName } from "../components/DatasetName";
+import type { FolderRid } from "../components/FolderRid";
 
 /** The provided token does not have permission to create a dataset in this folder. */
 export interface CreateDatasetPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "CreateDatasetPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-        parentFolderRid: FolderRid;
-        name: DatasetName;
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "CreateDatasetPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    parentFolderRid: FolderRid;
+    name: DatasetName;
+  };
 }

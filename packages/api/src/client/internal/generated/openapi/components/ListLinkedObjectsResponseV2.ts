@@ -18,6 +18,6 @@ import type { OntologyObjectV2 } from "./OntologyObjectV2";
 import type { PageToken } from "./PageToken";
 
 export interface ListLinkedObjectsResponseV2 {
-    data: Array<OntologyObjectV2>;
-    nextPageToken?: PageToken;
+  data: Array<OntologyObjectV2>;
+  nextPageToken?: PageToken;
 }

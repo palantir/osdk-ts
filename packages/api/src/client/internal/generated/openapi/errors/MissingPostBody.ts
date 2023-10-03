@@ -15,9 +15,8 @@
  */
 
 export interface MissingPostBody {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "MissingPostBody";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "MissingPostBody";
+  errorInstanceId: string;
+  parameters: {};
 }

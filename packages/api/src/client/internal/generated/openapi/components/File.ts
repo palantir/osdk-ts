@@ -18,8 +18,8 @@ import type { FilePath } from "./FilePath";
 import type { TransactionRid } from "./TransactionRid";
 
 export interface File {
-    path: FilePath;
-    transactionRid: TransactionRid;
-    sizeBytes?: number;
-    updatedTime: string;
+  path: FilePath;
+  transactionRid: TransactionRid;
+  sizeBytes?: number;
+  updatedTime: string;
 }

@@ -15,5 +15,5 @@
  */
 
 export interface AggregationOrderBy {
-    metricName: string;
+  metricName: string;
 }

@@ -15,16 +15,16 @@
  */
 
 import type { ObjectSet } from "./ObjectSet";
+import type { PageSize } from "./PageSize";
+import type { PageToken } from "./PageToken";
 import type { SearchOrderBy } from "./SearchOrderBy";
 import type { SelectedPropertyApiName } from "./SelectedPropertyApiName";
-import type { PageToken } from "./PageToken";
-import type { PageSize } from "./PageSize";
 
 /** Represents the API POST body when loading an `ObjectSet`. */
 export interface LoadObjectSetRequestV2 {
-    objectSet: ObjectSet;
-    orderBy?: SearchOrderBy;
-    select: Array<SelectedPropertyApiName>;
-    pageToken?: PageToken;
-    pageSize?: PageSize;
+  objectSet: ObjectSet;
+  orderBy?: SearchOrderBy;
+  select: Array<SelectedPropertyApiName>;
+  pageToken?: PageToken;
+  pageSize?: PageSize;
 }

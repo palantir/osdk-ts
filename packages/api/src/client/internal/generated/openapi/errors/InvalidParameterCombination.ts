@@ -15,11 +15,11 @@
  */
 
 export interface InvalidParameterCombination {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidParameterCombination";
-    errorInstanceId: string;
-    parameters: {
-        validCombinations: Array<Array<string>>;
-        providedParameters: Array<string>;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidParameterCombination";
+  errorInstanceId: string;
+  parameters: {
+    validCombinations: Array<Array<string>>;
+    providedParameters: Array<string>;
+  };
 }

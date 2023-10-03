@@ -15,11 +15,11 @@
  */
 
 export interface OntologyEditsExceededLimit {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "OntologyEditsExceededLimit";
-    errorInstanceId: string;
-    parameters: {
-        editsCount: number;
-        editsLimit: number;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "OntologyEditsExceededLimit";
+  errorInstanceId: string;
+  parameters: {
+    editsCount: number;
+    editsLimit: number;
+  };
 }

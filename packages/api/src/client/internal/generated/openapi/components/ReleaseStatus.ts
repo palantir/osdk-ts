@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ReleaseStatus = 'ACTIVE' | 'EXPERIMENTAL' | 'DEPRECATED';
+export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";

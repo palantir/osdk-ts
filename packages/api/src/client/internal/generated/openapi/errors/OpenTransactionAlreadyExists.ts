@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** A transaction is already open on this dataset and branch. A branch of a dataset can only have one open transaction at a time. */
 export interface OpenTransactionAlreadyExists {
-    errorCode: "CONFLICT";
-    errorName: "OpenTransactionAlreadyExists";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-    };
+  errorCode: "CONFLICT";
+  errorName: "OpenTransactionAlreadyExists";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+  };
 }

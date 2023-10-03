@@ -15,9 +15,8 @@
  */
 
 export interface InvalidContentLength {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidContentLength";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidContentLength";
+  errorInstanceId: string;
+  parameters: {};
 }

@@ -15,10 +15,10 @@
  */
 
 import type { ApplyActionRequestOptions } from "./ApplyActionRequestOptions";
-import type { ParameterId } from "./ParameterId";
 import type { DataValue } from "./DataValue";
+import type { ParameterId } from "./ParameterId";
 
 export interface ApplyActionRequestV2 {
-    options?: ApplyActionRequestOptions;
-    parameters: Record<ParameterId, DataValue>;
+  options?: ApplyActionRequestOptions;
+  parameters: Record<ParameterId, DataValue>;
 }

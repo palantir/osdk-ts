@@ -15,9 +15,8 @@
  */
 
 export interface ApiFeaturePreviewUsageOnly {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "ApiFeaturePreviewUsageOnly";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "ApiFeaturePreviewUsageOnly";
+  errorInstanceId: string;
+  parameters: {};
 }

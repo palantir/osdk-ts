@@ -18,6 +18,6 @@ import type { ObjectSet } from "./ObjectSet";
 import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 
 export interface ObjectSetFilterType {
-    objectSet: ObjectSet;
-    where: SearchJsonQueryV2;
+  objectSet: ObjectSet;
+  where: SearchJsonQueryV2;
 }

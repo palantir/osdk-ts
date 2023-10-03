@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type LanguageModelSource = 'global' | 'hosted';
+export type LanguageModelSource = "global" | "hosted";

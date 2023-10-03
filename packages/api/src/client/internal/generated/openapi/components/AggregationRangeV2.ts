@@ -15,8 +15,8 @@
  */
 
 export interface AggregationRangeV2 {
-    /** Inclusive start. */
-    startValue: any;
-    /** Exclusive end. */
-    endValue: any;
+  /** Inclusive start. */
+  startValue: any;
+  /** Exclusive end. */
+  endValue: any;
 }

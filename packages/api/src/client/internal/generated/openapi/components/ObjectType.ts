@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { DisplayName } from "./DisplayName";
-import type { ReleaseStatus } from "./ReleaseStatus";
-import type { ObjectTypeVisibility } from "./ObjectTypeVisibility";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { Property } from "./Property";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { ObjectTypeRid } from "./ObjectTypeRid";
+import type { ObjectTypeVisibility } from "./ObjectTypeVisibility";
+import type { Property } from "./Property";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 /** Represents an object type in the Ontology. */
 export interface ObjectType {
-    apiName: ObjectTypeApiName;
-    displayName?: DisplayName;
-    status: ReleaseStatus;
-    /** The description of the object type. */
-    description?: string;
-    visibility?: ObjectTypeVisibility;
-    /** The primary key of the object. This is a list of properties that can be used to uniquely identify the object. */
-    primaryKey: Array<PropertyApiName>;
-    /** A map of the properties of the object type. */
-    properties: Record<PropertyApiName, Property>;
-    rid: ObjectTypeRid;
+  apiName: ObjectTypeApiName;
+  displayName?: DisplayName;
+  status: ReleaseStatus;
+  /** The description of the object type. */
+  description?: string;
+  visibility?: ObjectTypeVisibility;
+  /** The primary key of the object. This is a list of properties that can be used to uniquely identify the object. */
+  primaryKey: Array<PropertyApiName>;
+  /** A map of the properties of the object type. */
+  properties: Record<PropertyApiName, Property>;
+  rid: ObjectTypeRid;
 }

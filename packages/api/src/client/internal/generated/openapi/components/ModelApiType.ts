@@ -15,64 +15,76 @@
  */
 
 import type { AnyType } from "./AnyType";
-import type { ModelApiArrayType } from "./ModelApiArrayType";
 import type { BooleanType } from "./BooleanType";
 import type { DateType } from "./DateType";
 import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
+import type { ModelApiArrayType } from "./ModelApiArrayType";
 import type { ModelApiMapType } from "./ModelApiMapType";
 import type { ModelApiNullType } from "./ModelApiNullType";
-import type { StringType } from "./StringType";
 import type { ModelApiStructType } from "./ModelApiStructType";
-import type { TimestampType } from "./TimestampType";
 import type { ModelApiUnionType } from "./ModelApiUnionType";
+import type { StringType } from "./StringType";
+import type { TimestampType } from "./TimestampType";
 
 export interface ModelApiType_Any extends AnyType {
-    type: "any";
+  type: "any";
 }
 
 export interface ModelApiType_Array extends ModelApiArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface ModelApiType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface ModelApiType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface ModelApiType_Float extends FloatType {
-    type: "float";
+  type: "float";
 }
 
 export interface ModelApiType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface ModelApiType_Map extends ModelApiMapType {
-    type: "map";
+  type: "map";
 }
 
 export interface ModelApiType_Null extends ModelApiNullType {
-    type: "null";
+  type: "null";
 }
 
 export interface ModelApiType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface ModelApiType_Struct extends ModelApiStructType {
-    type: "struct";
+  type: "struct";
 }
 
 export interface ModelApiType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
 export interface ModelApiType_Union extends ModelApiUnionType {
-    type: "union";
+  type: "union";
 }
 
-export type ModelApiType = ModelApiType_Any | ModelApiType_Array | ModelApiType_Boolean | ModelApiType_Date | ModelApiType_Float | ModelApiType_Integer | ModelApiType_Map | ModelApiType_Null | ModelApiType_String | ModelApiType_Struct | ModelApiType_Timestamp | ModelApiType_Union;
+export type ModelApiType =
+  | ModelApiType_Any
+  | ModelApiType_Array
+  | ModelApiType_Boolean
+  | ModelApiType_Date
+  | ModelApiType_Float
+  | ModelApiType_Integer
+  | ModelApiType_Map
+  | ModelApiType_Null
+  | ModelApiType_String
+  | ModelApiType_Struct
+  | ModelApiType_Timestamp
+  | ModelApiType_Union;

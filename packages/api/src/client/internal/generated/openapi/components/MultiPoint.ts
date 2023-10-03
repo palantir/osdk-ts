@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Position } from "./Position";
 import type { BBox } from "./BBox";
+import type { Position } from "./Position";
 
 export interface MultiPoint {
-    coordinates: Array<Position>;
-    bbox?: BBox;
+  coordinates: Array<Position>;
+  bbox?: BBox;
 }

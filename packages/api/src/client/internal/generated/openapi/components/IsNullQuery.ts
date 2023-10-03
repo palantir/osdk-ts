@@ -15,6 +15,6 @@
  */
 
 export interface IsNullQuery {
-    field: string;
-    value: boolean;
+  field: string;
+  value: boolean;
 }

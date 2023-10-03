@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Geometry } from "./Geometry";
 import type { BBox } from "./BBox";
+import type { Geometry } from "./Geometry";
 
 /**
  * GeoJSon geometry collection
@@ -24,9 +24,8 @@ import type { BBox } from "./BBox";
  * single type SHOULD be avoided when that single part or a single object
  * of multipart type (MultiPoint, MultiLineString, or MultiPolygon) could
  * be used instead.
- *
  */
 export interface GeometryCollection {
-    geometries: Array<Geometry>;
-    bbox?: BBox;
+  geometries: Array<Geometry>;
+  bbox?: BBox;
 }

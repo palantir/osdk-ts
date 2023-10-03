@@ -15,18 +15,18 @@
  */
 
 import type { DatasetRid } from "../components/DatasetRid";
-import type { TransactionRid } from "../components/TransactionRid";
 import type { FilePath } from "../components/FilePath";
+import type { TransactionRid } from "../components/TransactionRid";
 
 /** The requested file could not be found on the given transaction range, or the client token does not have access to it. */
 export interface FileNotFoundOnTransactionRange {
-    errorCode: "NOT_FOUND";
-    errorName: "FileNotFoundOnTransactionRange";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        startTransactionRid: TransactionRid;
-        endTransactionRid: TransactionRid;
-        path: FilePath;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "FileNotFoundOnTransactionRange";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    startTransactionRid: TransactionRid;
+    endTransactionRid: TransactionRid;
+    path: FilePath;
+  };
 }

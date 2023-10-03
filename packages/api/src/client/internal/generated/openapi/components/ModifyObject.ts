@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { PropertyValue } from "./PropertyValue";
 import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyValue } from "./PropertyValue";
 
 export interface ModifyObject {
-    primaryKey: PropertyValue;
-    objectType: PropertyApiName;
+  primaryKey: PropertyValue;
+  objectType: PropertyApiName;
 }

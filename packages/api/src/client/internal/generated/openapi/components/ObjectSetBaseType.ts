@@ -15,5 +15,5 @@
  */
 
 export interface ObjectSetBaseType {
-    objectType: string;
+  objectType: string;
 }

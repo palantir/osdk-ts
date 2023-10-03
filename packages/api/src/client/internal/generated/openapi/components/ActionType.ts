@@ -15,20 +15,20 @@
  */
 
 import type { ActionTypeApiName } from "./ActionTypeApiName";
-import type { DisplayName } from "./DisplayName";
-import type { ReleaseStatus } from "./ReleaseStatus";
-import type { ParameterId } from "./ParameterId";
-import type { Parameter } from "./Parameter";
 import type { ActionTypeRid } from "./ActionTypeRid";
+import type { DisplayName } from "./DisplayName";
 import type { LogicRule } from "./LogicRule";
+import type { Parameter } from "./Parameter";
+import type { ParameterId } from "./ParameterId";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 /** Represents an action type in the Ontology. */
 export interface ActionType {
-    apiName: ActionTypeApiName;
-    description?: string;
-    displayName?: DisplayName;
-    status: ReleaseStatus;
-    parameters: Record<ParameterId, Parameter>;
-    rid: ActionTypeRid;
-    operations: Array<LogicRule>;
+  apiName: ActionTypeApiName;
+  description?: string;
+  displayName?: DisplayName;
+  status: ReleaseStatus;
+  parameters: Record<ParameterId, Parameter>;
+  rid: ActionTypeRid;
+  operations: Array<LogicRule>;
 }

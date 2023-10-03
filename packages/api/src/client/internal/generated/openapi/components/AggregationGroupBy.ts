@@ -14,25 +14,33 @@
  * limitations under the License.
  */
 
+import type { AggregationDurationGrouping } from "./AggregationDurationGrouping";
+import type { AggregationExactGrouping } from "./AggregationExactGrouping";
 import type { AggregationFixedWidthGrouping } from "./AggregationFixedWidthGrouping";
 import type { AggregationRangesGrouping } from "./AggregationRangesGrouping";
-import type { AggregationExactGrouping } from "./AggregationExactGrouping";
-import type { AggregationDurationGrouping } from "./AggregationDurationGrouping";
 
-export interface AggregationGroupBy_FixedWidth extends AggregationFixedWidthGrouping {
-    type: "fixedWidth";
+export interface AggregationGroupBy_FixedWidth
+  extends AggregationFixedWidthGrouping
+{
+  type: "fixedWidth";
 }
 
 export interface AggregationGroupBy_Ranges extends AggregationRangesGrouping {
-    type: "ranges";
+  type: "ranges";
 }
 
 export interface AggregationGroupBy_Exact extends AggregationExactGrouping {
-    type: "exact";
+  type: "exact";
 }
 
-export interface AggregationGroupBy_Duration extends AggregationDurationGrouping {
-    type: "duration";
+export interface AggregationGroupBy_Duration
+  extends AggregationDurationGrouping
+{
+  type: "duration";
 }
 
-export type AggregationGroupBy = AggregationGroupBy_FixedWidth | AggregationGroupBy_Ranges | AggregationGroupBy_Exact | AggregationGroupBy_Duration;
+export type AggregationGroupBy =
+  | AggregationGroupBy_FixedWidth
+  | AggregationGroupBy_Ranges
+  | AggregationGroupBy_Exact
+  | AggregationGroupBy_Duration;

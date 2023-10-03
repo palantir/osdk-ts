@@ -14,75 +14,89 @@
  * limitations under the License.
  */
 
-import type { LtQuery } from "./LtQuery";
-import type { GtQuery } from "./GtQuery";
-import type { LteQuery } from "./LteQuery";
-import type { GteQuery } from "./GteQuery";
-import type { EqualsQuery } from "./EqualsQuery";
-import type { IsNullQuery } from "./IsNullQuery";
-import type { ContainsQuery } from "./ContainsQuery";
-import type { AndQuery } from "./AndQuery";
-import type { OrQuery } from "./OrQuery";
-import type { NotQuery } from "./NotQuery";
-import type { PrefixQuery } from "./PrefixQuery";
-import type { PhraseQuery } from "./PhraseQuery";
-import type { AnyTermQuery } from "./AnyTermQuery";
 import type { AllTermsQuery } from "./AllTermsQuery";
+import type { AndQuery } from "./AndQuery";
+import type { AnyTermQuery } from "./AnyTermQuery";
+import type { ContainsQuery } from "./ContainsQuery";
+import type { EqualsQuery } from "./EqualsQuery";
+import type { GteQuery } from "./GteQuery";
+import type { GtQuery } from "./GtQuery";
+import type { IsNullQuery } from "./IsNullQuery";
+import type { LteQuery } from "./LteQuery";
+import type { LtQuery } from "./LtQuery";
+import type { NotQuery } from "./NotQuery";
+import type { OrQuery } from "./OrQuery";
+import type { PhraseQuery } from "./PhraseQuery";
+import type { PrefixQuery } from "./PrefixQuery";
 
 export interface SearchJsonQuery_Lt extends LtQuery {
-    type: "lt";
+  type: "lt";
 }
 
 export interface SearchJsonQuery_Gt extends GtQuery {
-    type: "gt";
+  type: "gt";
 }
 
 export interface SearchJsonQuery_Lte extends LteQuery {
-    type: "lte";
+  type: "lte";
 }
 
 export interface SearchJsonQuery_Gte extends GteQuery {
-    type: "gte";
+  type: "gte";
 }
 
 export interface SearchJsonQuery_Eq extends EqualsQuery {
-    type: "eq";
+  type: "eq";
 }
 
 export interface SearchJsonQuery_IsNull extends IsNullQuery {
-    type: "isNull";
+  type: "isNull";
 }
 
 export interface SearchJsonQuery_Contains extends ContainsQuery {
-    type: "contains";
+  type: "contains";
 }
 
 export interface SearchJsonQuery_And extends AndQuery {
-    type: "and";
+  type: "and";
 }
 
 export interface SearchJsonQuery_Or extends OrQuery {
-    type: "or";
+  type: "or";
 }
 
 export interface SearchJsonQuery_Not extends NotQuery {
-    type: "not";
+  type: "not";
 }
 
 export interface SearchJsonQuery_Prefix extends PrefixQuery {
-    type: "prefix";
+  type: "prefix";
 }
 
 export interface SearchJsonQuery_Phrase extends PhraseQuery {
-    type: "phrase";
+  type: "phrase";
 }
 
 export interface SearchJsonQuery_AnyTerm extends AnyTermQuery {
-    type: "anyTerm";
+  type: "anyTerm";
 }
 
 export interface SearchJsonQuery_AllTerms extends AllTermsQuery {
-    type: "allTerms";
+  type: "allTerms";
 }
 
-export type SearchJsonQuery = SearchJsonQuery_Lt | SearchJsonQuery_Gt | SearchJsonQuery_Lte | SearchJsonQuery_Gte | SearchJsonQuery_Eq | SearchJsonQuery_IsNull | SearchJsonQuery_Contains | SearchJsonQuery_And | SearchJsonQuery_Or | SearchJsonQuery_Not | SearchJsonQuery_Prefix | SearchJsonQuery_Phrase | SearchJsonQuery_AnyTerm | SearchJsonQuery_AllTerms;
+export type SearchJsonQuery =
+  | SearchJsonQuery_Lt
+  | SearchJsonQuery_Gt
+  | SearchJsonQuery_Lte
+  | SearchJsonQuery_Gte
+  | SearchJsonQuery_Eq
+  | SearchJsonQuery_IsNull
+  | SearchJsonQuery_Contains
+  | SearchJsonQuery_And
+  | SearchJsonQuery_Or
+  | SearchJsonQuery_Not
+  | SearchJsonQuery_Prefix
+  | SearchJsonQuery_Phrase
+  | SearchJsonQuery_AnyTerm
+  | SearchJsonQuery_AllTerms;

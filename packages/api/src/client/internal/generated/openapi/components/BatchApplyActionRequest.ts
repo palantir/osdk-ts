@@ -17,5 +17,5 @@
 import type { ApplyActionRequest } from "./ApplyActionRequest";
 
 export interface BatchApplyActionRequest {
-    requests: Array<ApplyActionRequest>;
+  requests: Array<ApplyActionRequest>;
 }

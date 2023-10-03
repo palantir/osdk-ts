@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ChatMessageRole = 'SYSTEM' | 'ASSISTANT' | 'USER';
+export type ChatMessageRole = "SYSTEM" | "ASSISTANT" | "USER";

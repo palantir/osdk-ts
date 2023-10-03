@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
+import type { AddLink } from "./AddLink";
 import type { AddObject } from "./AddObject";
 import type { ModifyObject } from "./ModifyObject";
-import type { AddLink } from "./AddLink";
 
 export interface ObjectEdit_AddObject extends AddObject {
-    type: "addObject";
+  type: "addObject";
 }
 
 export interface ObjectEdit_ModifyObject extends ModifyObject {
-    type: "modifyObject";
+  type: "modifyObject";
 }
 
 export interface ObjectEdit_AddLink extends AddLink {
-    type: "addLink";
+  type: "addLink";
 }
 
-export type ObjectEdit = ObjectEdit_AddObject | ObjectEdit_ModifyObject | ObjectEdit_AddLink;
+export type ObjectEdit =
+  | ObjectEdit_AddObject
+  | ObjectEdit_ModifyObject
+  | ObjectEdit_AddLink;

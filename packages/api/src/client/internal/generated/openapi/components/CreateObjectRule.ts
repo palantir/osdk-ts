@@ -17,5 +17,5 @@
 import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 
 export interface CreateObjectRule {
-    objectTypeApiName: ObjectTypeApiName;
+  objectTypeApiName: ObjectTypeApiName;
 }

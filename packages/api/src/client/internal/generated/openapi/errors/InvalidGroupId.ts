@@ -15,10 +15,10 @@
  */
 
 export interface InvalidGroupId {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidGroupId";
-    errorInstanceId: string;
-    parameters: {
-        groupId: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidGroupId";
+  errorInstanceId: string;
+  parameters: {
+    groupId: string;
+  };
 }

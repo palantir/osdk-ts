@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ValidateActionResponseV2 } from "./ValidateActionResponseV2";
 import type { ActionResults } from "./ActionResults";
+import type { ValidateActionResponseV2 } from "./ValidateActionResponseV2";
 
 export interface SyncApplyActionResponseV2 {
-    validation?: ValidateActionResponseV2;
-    edits?: ActionResults;
+  validation?: ValidateActionResponseV2;
+  edits?: ActionResults;
 }

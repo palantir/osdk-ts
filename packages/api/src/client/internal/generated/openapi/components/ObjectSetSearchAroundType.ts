@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "./ObjectSet";
 import type { LinkTypeApiName } from "./LinkTypeApiName";
+import type { ObjectSet } from "./ObjectSet";
 
 export interface ObjectSetSearchAroundType {
-    objectSet: ObjectSet;
-    link: LinkTypeApiName;
+  objectSet: ObjectSet;
+  link: LinkTypeApiName;
 }

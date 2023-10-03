@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { StructFieldName } from "./StructFieldName";
 import type { QueryDataType } from "./QueryDataType";
+import type { StructFieldName } from "./StructFieldName";
 
 export interface QueryStructField {
-    name: StructFieldName;
-    fieldType: QueryDataType;
+  name: StructFieldName;
+  fieldType: QueryDataType;
 }

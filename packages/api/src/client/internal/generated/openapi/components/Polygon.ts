@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { LinearRing } from "./LinearRing";
 import type { BBox } from "./BBox";
+import type { LinearRing } from "./LinearRing";
 
 export interface Polygon {
-    coordinates: Array<LinearRing>;
-    bbox?: BBox;
+  coordinates: Array<LinearRing>;
+  bbox?: BBox;
 }

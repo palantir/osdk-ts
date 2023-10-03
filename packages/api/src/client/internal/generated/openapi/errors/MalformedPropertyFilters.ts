@@ -15,10 +15,10 @@
  */
 
 export interface MalformedPropertyFilters {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "MalformedPropertyFilters";
-    errorInstanceId: string;
-    parameters: {
-        malformedPropertyFilter: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "MalformedPropertyFilters";
+  errorInstanceId: string;
+  parameters: {
+    malformedPropertyFilter: string;
+  };
 }

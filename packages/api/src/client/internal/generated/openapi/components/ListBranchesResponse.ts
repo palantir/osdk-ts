@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { Branch } from "./Branch";
+import type { PageToken } from "./PageToken";
 
 export interface ListBranchesResponse {
-    nextPageToken?: PageToken;
-    /** The list of branches in the current page. */
-    data: Array<Branch>;
+  nextPageToken?: PageToken;
+  /** The list of branches in the current page. */
+  data: Array<Branch>;
 }

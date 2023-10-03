@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
+import type { DeploymentApi } from "./DeploymentApi";
 import type { DeploymentApiName } from "./DeploymentApiName";
 import type { DeploymentDescription } from "./DeploymentDescription";
-import type { DeploymentApi } from "./DeploymentApi";
 
 /**
  * Metadata related to a model deployment.
- *
  */
 export interface DeploymentMetadata {
-    apiName: DeploymentApiName;
-    description?: DeploymentDescription;
-    api?: DeploymentApi;
+  apiName: DeploymentApiName;
+  description?: DeploymentDescription;
+  api?: DeploymentApi;
 }

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { LinearRing } from "./LinearRing";
 import type { BBox } from "./BBox";
+import type { LinearRing } from "./LinearRing";
 
 export interface MultiPolygon {
-    coordinates: Array<Array<LinearRing>>;
-    bbox?: BBox;
+  coordinates: Array<Array<LinearRing>>;
+  bbox?: BBox;
 }

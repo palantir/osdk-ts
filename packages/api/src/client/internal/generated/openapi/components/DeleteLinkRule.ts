@@ -18,8 +18,8 @@ import type { LinkTypeApiName } from "./LinkTypeApiName";
 import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 
 export interface DeleteLinkRule {
-    linkTypeApiNameAtoB: LinkTypeApiName;
-    linkTypeApiNameBtoA: LinkTypeApiName;
-    aSideObjectTypeApiName: ObjectTypeApiName;
-    bSideObjectTypeApiName: ObjectTypeApiName;
+  linkTypeApiNameAtoB: LinkTypeApiName;
+  linkTypeApiNameBtoA: LinkTypeApiName;
+  aSideObjectTypeApiName: ObjectTypeApiName;
+  bSideObjectTypeApiName: ObjectTypeApiName;
 }

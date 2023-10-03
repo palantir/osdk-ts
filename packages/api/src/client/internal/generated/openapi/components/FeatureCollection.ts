@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { FeatureCollectionTypes } from "./FeatureCollectionTypes";
 import type { BBox } from "./BBox";
+import type { FeatureCollectionTypes } from "./FeatureCollectionTypes";
 
 /** GeoJSon 'FeatureCollection' object */
 export interface FeatureCollection {
-    features: Array<FeatureCollectionTypes>;
-    bbox?: BBox;
+  features: Array<FeatureCollectionTypes>;
+  bbox?: BBox;
 }

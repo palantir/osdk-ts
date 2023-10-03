@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export interface ShortType {
-}
+export interface ShortType {}

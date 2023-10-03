@@ -15,44 +15,52 @@
  */
 
 import type { ObjectSetBaseType } from "./ObjectSetBaseType";
-import type { ObjectSetStaticType } from "./ObjectSetStaticType";
-import type { ObjectSetReferenceType } from "./ObjectSetReferenceType";
 import type { ObjectSetFilterType } from "./ObjectSetFilterType";
-import type { ObjectSetUnionType } from "./ObjectSetUnionType";
 import type { ObjectSetIntersectionType } from "./ObjectSetIntersectionType";
-import type { ObjectSetSubtractType } from "./ObjectSetSubtractType";
+import type { ObjectSetReferenceType } from "./ObjectSetReferenceType";
 import type { ObjectSetSearchAroundType } from "./ObjectSetSearchAroundType";
+import type { ObjectSetStaticType } from "./ObjectSetStaticType";
+import type { ObjectSetSubtractType } from "./ObjectSetSubtractType";
+import type { ObjectSetUnionType } from "./ObjectSetUnionType";
 
 export interface ObjectSet_Base extends ObjectSetBaseType {
-    type: "base";
+  type: "base";
 }
 
 export interface ObjectSet_Static extends ObjectSetStaticType {
-    type: "static";
+  type: "static";
 }
 
 export interface ObjectSet_Reference extends ObjectSetReferenceType {
-    type: "reference";
+  type: "reference";
 }
 
 export interface ObjectSet_Filter extends ObjectSetFilterType {
-    type: "filter";
+  type: "filter";
 }
 
 export interface ObjectSet_Union extends ObjectSetUnionType {
-    type: "union";
+  type: "union";
 }
 
 export interface ObjectSet_Intersect extends ObjectSetIntersectionType {
-    type: "intersect";
+  type: "intersect";
 }
 
 export interface ObjectSet_Subtract extends ObjectSetSubtractType {
-    type: "subtract";
+  type: "subtract";
 }
 
 export interface ObjectSet_SearchAround extends ObjectSetSearchAroundType {
-    type: "searchAround";
+  type: "searchAround";
 }
 
-export type ObjectSet = ObjectSet_Base | ObjectSet_Static | ObjectSet_Reference | ObjectSet_Filter | ObjectSet_Union | ObjectSet_Intersect | ObjectSet_Subtract | ObjectSet_SearchAround;
+export type ObjectSet =
+  | ObjectSet_Base
+  | ObjectSet_Static
+  | ObjectSet_Reference
+  | ObjectSet_Filter
+  | ObjectSet_Union
+  | ObjectSet_Intersect
+  | ObjectSet_Subtract
+  | ObjectSet_SearchAround;

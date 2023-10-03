@@ -15,10 +15,10 @@
  */
 
 export interface OperationNotFound {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "OperationNotFound";
-    errorInstanceId: string;
-    parameters: {
-        id: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "OperationNotFound";
+  errorInstanceId: string;
+  parameters: {
+    id: string;
+  };
 }

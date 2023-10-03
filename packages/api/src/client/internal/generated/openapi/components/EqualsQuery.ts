@@ -15,7 +15,7 @@
  */
 
 export interface EqualsQuery {
-    field: string;
-    /** Equals to value */
-    value: any;
+  field: string;
+  /** Equals to value */
+  value: any;
 }

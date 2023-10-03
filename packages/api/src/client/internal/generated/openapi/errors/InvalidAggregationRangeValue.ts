@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { PropertyApiName } from "../components/PropertyApiName";
 import type { ValueType } from "../components/ValueType";
 
 /**
  * Aggregation value does not conform to the expected underlying type.
- *
  */
 export interface InvalidAggregationRangeValue {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidAggregationRangeValue";
-    errorInstanceId: string;
-    parameters: {
-        property: PropertyApiName;
-        objectType: ObjectTypeApiName;
-        propertyBaseType: ValueType;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidAggregationRangeValue";
+  errorInstanceId: string;
+  parameters: {
+    property: PropertyApiName;
+    objectType: ObjectTypeApiName;
+    propertyBaseType: ValueType;
+  };
 }

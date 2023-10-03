@@ -15,7 +15,7 @@
  */
 
 export interface LtQuery {
-    field: string;
-    /** Less than value */
-    value: any;
+  field: string;
+  /** Less than value */
+  value: any;
 }

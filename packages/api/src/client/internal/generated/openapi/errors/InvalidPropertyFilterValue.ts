@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import type { ValueType } from "../components/ValueType";
-import type { PropertyFilter } from "../components/PropertyFilter";
 import type { FilterValue } from "../components/FilterValue";
 import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyFilter } from "../components/PropertyFilter";
+import type { ValueType } from "../components/ValueType";
 
 /**
  * The value of the given property filter is invalid. For instance, 2 is an invalid value for
  * `isNull` in `properties.address.isNull=2` because the `isNull` filter expects a value of boolean type.
- *
  */
 export interface InvalidPropertyFilterValue {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidPropertyFilterValue";
-    errorInstanceId: string;
-    parameters: {
-        expectedType: ValueType;
-        propertyFilter: PropertyFilter;
-        propertyFilterValue: FilterValue;
-        property: PropertyApiName;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidPropertyFilterValue";
+  errorInstanceId: string;
+  parameters: {
+    expectedType: ValueType;
+    propertyFilter: PropertyFilter;
+    propertyFilterValue: FilterValue;
+    property: PropertyApiName;
+  };
 }

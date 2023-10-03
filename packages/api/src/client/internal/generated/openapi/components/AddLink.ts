@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "./LinkTypeApiName";
 import type { LinkSideObject } from "./LinkSideObject";
+import type { LinkTypeApiName } from "./LinkTypeApiName";
 
 export interface AddLink {
-    linkTypeApiNameAtoB: LinkTypeApiName;
-    linkTypeApiNameBtoA: LinkTypeApiName;
-    aSideObject: LinkSideObject;
-    bSideObject: LinkSideObject;
+  linkTypeApiNameAtoB: LinkTypeApiName;
+  linkTypeApiNameBtoA: LinkTypeApiName;
+  aSideObject: LinkSideObject;
+  bSideObject: LinkSideObject;
 }

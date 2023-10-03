@@ -17,5 +17,5 @@
 import type { TransactionType } from "./TransactionType";
 
 export interface CreateTransactionRequest {
-    transactionType?: TransactionType;
+  transactionType?: TransactionType;
 }

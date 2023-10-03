@@ -17,5 +17,5 @@
 import type { ModelApiType } from "./ModelApiType";
 
 export interface ModelApiUnionType {
-    unionTypes: Array<ModelApiType>;
+  unionTypes: Array<ModelApiType>;
 }

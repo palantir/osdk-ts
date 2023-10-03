@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectArrayType } from "./OntologyObjectArrayType";
 import type { AttachmentType } from "./AttachmentType";
 import type { BooleanType } from "./BooleanType";
 import type { ByteType } from "./ByteType";
@@ -26,73 +25,90 @@ import type { GeoPointType } from "./GeoPointType";
 import type { GeoShapeType } from "./GeoShapeType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { OntologyObjectArrayType } from "./OntologyObjectArrayType";
 import type { ShortType } from "./ShortType";
 import type { StringType } from "./StringType";
-import type { TimestampType } from "./TimestampType";
 import type { TimeseriesType } from "./TimeseriesType";
+import type { TimestampType } from "./TimestampType";
 
 export interface ObjectPropertyType_Array extends OntologyObjectArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface ObjectPropertyType_Attachment extends AttachmentType {
-    type: "attachment";
+  type: "attachment";
 }
 
 export interface ObjectPropertyType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface ObjectPropertyType_Byte extends ByteType {
-    type: "byte";
+  type: "byte";
 }
 
 export interface ObjectPropertyType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface ObjectPropertyType_Decimal extends DecimalType {
-    type: "decimal";
+  type: "decimal";
 }
 
 export interface ObjectPropertyType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface ObjectPropertyType_Float extends FloatType {
-    type: "float";
+  type: "float";
 }
 
 export interface ObjectPropertyType_Geopoint extends GeoPointType {
-    type: "geopoint";
+  type: "geopoint";
 }
 
 export interface ObjectPropertyType_Geoshape extends GeoShapeType {
-    type: "geoshape";
+  type: "geoshape";
 }
 
 export interface ObjectPropertyType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface ObjectPropertyType_Long extends LongType {
-    type: "long";
+  type: "long";
 }
 
 export interface ObjectPropertyType_Short extends ShortType {
-    type: "short";
+  type: "short";
 }
 
 export interface ObjectPropertyType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface ObjectPropertyType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
 export interface ObjectPropertyType_Timeseries extends TimeseriesType {
-    type: "timeseries";
+  type: "timeseries";
 }
 
-export type ObjectPropertyType = ObjectPropertyType_Array | ObjectPropertyType_Attachment | ObjectPropertyType_Boolean | ObjectPropertyType_Byte | ObjectPropertyType_Date | ObjectPropertyType_Decimal | ObjectPropertyType_Double | ObjectPropertyType_Float | ObjectPropertyType_Geopoint | ObjectPropertyType_Geoshape | ObjectPropertyType_Integer | ObjectPropertyType_Long | ObjectPropertyType_Short | ObjectPropertyType_String | ObjectPropertyType_Timestamp | ObjectPropertyType_Timeseries;
+export type ObjectPropertyType =
+  | ObjectPropertyType_Array
+  | ObjectPropertyType_Attachment
+  | ObjectPropertyType_Boolean
+  | ObjectPropertyType_Byte
+  | ObjectPropertyType_Date
+  | ObjectPropertyType_Decimal
+  | ObjectPropertyType_Double
+  | ObjectPropertyType_Float
+  | ObjectPropertyType_Geopoint
+  | ObjectPropertyType_Geoshape
+  | ObjectPropertyType_Integer
+  | ObjectPropertyType_Long
+  | ObjectPropertyType_Short
+  | ObjectPropertyType_String
+  | ObjectPropertyType_Timestamp
+  | ObjectPropertyType_Timeseries;

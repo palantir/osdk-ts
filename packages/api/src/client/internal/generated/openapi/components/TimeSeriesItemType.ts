@@ -18,11 +18,13 @@ import type { DoubleType } from "./DoubleType";
 import type { StringType } from "./StringType";
 
 export interface TimeSeriesItemType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface TimeSeriesItemType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
-export type TimeSeriesItemType = TimeSeriesItemType_Double | TimeSeriesItemType_String;
+export type TimeSeriesItemType =
+  | TimeSeriesItemType_Double
+  | TimeSeriesItemType_String;

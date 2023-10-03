@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { OntologyObject } from "./OntologyObject";
+import type { PageToken } from "./PageToken";
 
 export interface ListObjectsResponse {
-    nextPageToken?: PageToken;
-    /** The list of objects in the current page. */
-    data: Array<OntologyObject>;
+  nextPageToken?: PageToken;
+  /** The list of objects in the current page. */
+  data: Array<OntologyObject>;
 }

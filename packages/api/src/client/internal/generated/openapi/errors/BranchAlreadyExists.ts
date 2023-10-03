@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** The branch cannot be created because a branch with that name already exists. */
 export interface BranchAlreadyExists {
-    errorCode: "CONFLICT";
-    errorName: "BranchAlreadyExists";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-    };
+  errorCode: "CONFLICT";
+  errorName: "BranchAlreadyExists";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+  };
 }

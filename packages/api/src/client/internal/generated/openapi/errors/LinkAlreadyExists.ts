@@ -15,9 +15,8 @@
  */
 
 export interface LinkAlreadyExists {
-    errorCode: "CONFLICT";
-    errorName: "LinkAlreadyExists";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "CONFLICT";
+  errorName: "LinkAlreadyExists";
+  errorInstanceId: string;
+  parameters: {};
 }

@@ -18,6 +18,6 @@ import type { AttachmentV2 } from "./AttachmentV2";
 import type { PageToken } from "./PageToken";
 
 export interface ListAttachmentsResponseV2 {
-    data: Array<AttachmentV2>;
-    nextPageToken?: PageToken;
+  data: Array<AttachmentV2>;
+  nextPageToken?: PageToken;
 }

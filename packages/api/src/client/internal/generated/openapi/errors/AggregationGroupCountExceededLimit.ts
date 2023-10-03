@@ -15,11 +15,11 @@
  */
 
 export interface AggregationGroupCountExceededLimit {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "AggregationGroupCountExceededLimit";
-    errorInstanceId: string;
-    parameters: {
-        groupsCount: number;
-        groupsLimit: number;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "AggregationGroupCountExceededLimit";
+  errorInstanceId: string;
+  parameters: {
+    groupsCount: number;
+    groupsLimit: number;
+  };
 }

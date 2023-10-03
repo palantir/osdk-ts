@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "./LinkTypeApiName";
 import type { DisplayName } from "./DisplayName";
-import type { ReleaseStatus } from "./ReleaseStatus";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+import type { LinkTypeApiName } from "./LinkTypeApiName";
 import type { LinkTypeSideCardinality } from "./LinkTypeSideCardinality";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { PropertyApiName } from "./PropertyApiName";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 export interface LinkTypeSide {
-    apiName: LinkTypeApiName;
-    displayName: DisplayName;
-    status: ReleaseStatus;
-    objectTypeApiName: ObjectTypeApiName;
-    cardinality: LinkTypeSideCardinality;
-    foreignKeyPropertyApiName?: PropertyApiName;
+  apiName: LinkTypeApiName;
+  displayName: DisplayName;
+  status: ReleaseStatus;
+  objectTypeApiName: ObjectTypeApiName;
+  cardinality: LinkTypeSideCardinality;
+  foreignKeyPropertyApiName?: PropertyApiName;
 }

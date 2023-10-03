@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ActionMode = 'ASYNC' | 'RUN' | 'VALIDATE';
+export type ActionMode = "ASYNC" | "RUN" | "VALIDATE";

@@ -15,7 +15,7 @@
  */
 
 export interface ContainsQuery {
-    field: string;
-    /** Contains value */
-    value: any;
+  field: string;
+  /** Contains value */
+  value: any;
 }

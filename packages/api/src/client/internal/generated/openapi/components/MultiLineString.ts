@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { LineStringCoordinates } from "./LineStringCoordinates";
 import type { BBox } from "./BBox";
+import type { LineStringCoordinates } from "./LineStringCoordinates";
 
 export interface MultiLineString {
-    coordinates: Array<LineStringCoordinates>;
-    bbox?: BBox;
+  coordinates: Array<LineStringCoordinates>;
+  bbox?: BBox;
 }

@@ -18,11 +18,11 @@ import type { ObjectEdits } from "./ObjectEdits";
 import type { ObjectTypeEdits } from "./ObjectTypeEdits";
 
 export interface ActionResults_Edits extends ObjectEdits {
-    type: "edits";
+  type: "edits";
 }
 
 export interface ActionResults_LargeScaleEdits extends ObjectTypeEdits {
-    type: "largeScaleEdits";
+  type: "largeScaleEdits";
 }
 
 export type ActionResults = ActionResults_Edits | ActionResults_LargeScaleEdits;

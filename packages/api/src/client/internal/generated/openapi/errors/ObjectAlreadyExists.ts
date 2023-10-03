@@ -15,9 +15,8 @@
  */
 
 export interface ObjectAlreadyExists {
-    errorCode: "CONFLICT";
-    errorName: "ObjectAlreadyExists";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "CONFLICT";
+  errorName: "ObjectAlreadyExists";
+  errorInstanceId: string;
+  parameters: {};
 }

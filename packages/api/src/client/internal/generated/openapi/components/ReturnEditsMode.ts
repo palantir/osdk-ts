@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ReturnEditsMode = 'ALL' | 'NONE';
+export type ReturnEditsMode = "ALL" | "NONE";

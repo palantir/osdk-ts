@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ValidationResult } from "./ValidationResult";
-import type { SubmissionCriteriaEvaluation } from "./SubmissionCriteriaEvaluation";
-import type { ParameterId } from "./ParameterId";
 import type { ParameterEvaluationResult } from "./ParameterEvaluationResult";
+import type { ParameterId } from "./ParameterId";
+import type { SubmissionCriteriaEvaluation } from "./SubmissionCriteriaEvaluation";
+import type { ValidationResult } from "./ValidationResult";
 
 export interface ValidateActionResponse {
-    result: ValidationResult;
-    submissionCriteria: Array<SubmissionCriteriaEvaluation>;
-    parameters: Record<ParameterId, ParameterEvaluationResult>;
+  result: ValidationResult;
+  submissionCriteria: Array<SubmissionCriteriaEvaluation>;
+  parameters: Record<ParameterId, ParameterEvaluationResult>;
 }

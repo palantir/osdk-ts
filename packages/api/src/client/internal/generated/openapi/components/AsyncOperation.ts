@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-import type { AsyncApplyActionOperationV2 } from "./AsyncApplyActionOperationV2";
 import type { AsyncActionOperation } from "./AsyncActionOperation";
+import type { AsyncApplyActionOperationV2 } from "./AsyncApplyActionOperationV2";
 
-export interface AsyncOperation_ApplyActionAsyncV2 extends AsyncApplyActionOperationV2 {
-    type: "applyActionAsyncV2";
+export interface AsyncOperation_ApplyActionAsyncV2
+  extends AsyncApplyActionOperationV2
+{
+  type: "applyActionAsyncV2";
 }
 
 export interface AsyncOperation_ApplyActionAsync extends AsyncActionOperation {
-    type: "applyActionAsync";
+  type: "applyActionAsync";
 }
 
-export type AsyncOperation = AsyncOperation_ApplyActionAsyncV2 | AsyncOperation_ApplyActionAsync;
+export type AsyncOperation =
+  | AsyncOperation_ApplyActionAsyncV2
+  | AsyncOperation_ApplyActionAsync;

@@ -17,5 +17,5 @@
 import type { ChatMessage } from "./ChatMessage";
 
 export interface ChatCompletionChoice {
-    message?: ChatMessage;
+  message?: ChatMessage;
 }

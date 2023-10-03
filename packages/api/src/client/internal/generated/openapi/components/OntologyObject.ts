@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { ObjectRid } from "./ObjectRid";
 import type { PropertyApiName } from "./PropertyApiName";
 import type { PropertyValue } from "./PropertyValue";
-import type { ObjectRid } from "./ObjectRid";
 
 /** Represents an object in the Ontology. */
 export interface OntologyObject {
-    /** A map of the property values of the object. */
-    properties: Record<PropertyApiName, PropertyValue>;
-    rid: ObjectRid;
+  /** A map of the property values of the object. */
+  properties: Record<PropertyApiName, PropertyValue>;
+  rid: ObjectRid;
 }

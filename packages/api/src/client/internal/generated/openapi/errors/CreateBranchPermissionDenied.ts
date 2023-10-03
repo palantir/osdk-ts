@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** The provided token does not have permission to create a branch of this dataset. */
 export interface CreateBranchPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "CreateBranchPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "CreateBranchPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+  };
 }

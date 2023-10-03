@@ -17,5 +17,5 @@
 import type { ModelApiStructField } from "./ModelApiStructField";
 
 export interface ModelApiStructType {
-    fields: Array<ModelApiStructField>;
+  fields: Array<ModelApiStructField>;
 }

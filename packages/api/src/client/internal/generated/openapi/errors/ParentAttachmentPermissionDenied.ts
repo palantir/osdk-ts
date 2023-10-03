@@ -15,9 +15,8 @@
  */
 
 export interface ParentAttachmentPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "ParentAttachmentPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "ParentAttachmentPermissionDenied";
+  errorInstanceId: string;
+  parameters: {};
 }

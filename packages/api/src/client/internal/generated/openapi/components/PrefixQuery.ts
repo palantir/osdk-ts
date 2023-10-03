@@ -15,6 +15,6 @@
  */
 
 export interface PrefixQuery {
-    field: string;
-    value: string;
+  field: string;
+  value: string;
 }

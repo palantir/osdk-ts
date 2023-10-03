@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** todo */
 export interface PutSchemaPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "PutSchemaPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "PutSchemaPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+  };
 }

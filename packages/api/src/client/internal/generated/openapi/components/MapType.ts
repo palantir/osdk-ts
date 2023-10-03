@@ -17,6 +17,6 @@
 import type { BaseType } from "./BaseType";
 
 export interface MapType {
-    keyType: BaseType;
-    valueType: BaseType;
+  keyType: BaseType;
+  valueType: BaseType;
 }

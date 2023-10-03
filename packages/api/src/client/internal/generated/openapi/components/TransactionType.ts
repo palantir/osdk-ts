@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type TransactionType = 'APPEND' | 'UPDATE' | 'SNAPSHOT' | 'DELETE';
+export type TransactionType = "APPEND" | "UPDATE" | "SNAPSHOT" | "DELETE";

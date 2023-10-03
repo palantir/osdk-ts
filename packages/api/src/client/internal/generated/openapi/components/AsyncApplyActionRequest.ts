@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ParameterId } from "./ParameterId";
 import type { DataValue } from "./DataValue";
+import type { ParameterId } from "./ParameterId";
 
 export interface AsyncApplyActionRequest {
-    parameters: Record<ParameterId, DataValue>;
+  parameters: Record<ParameterId, DataValue>;
 }

@@ -15,9 +15,8 @@
  */
 
 export interface ObjectChanged {
-    errorCode: "CONFLICT";
-    errorName: "ObjectChanged";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "CONFLICT";
+  errorName: "ObjectChanged";
+  errorInstanceId: string;
+  parameters: {};
 }

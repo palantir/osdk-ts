@@ -17,5 +17,5 @@
 import type { ObjectSet } from "./ObjectSet";
 
 export interface ObjectSetSubtractType {
-    objectSets: Array<ObjectSet>;
+  objectSets: Array<ObjectSet>;
 }

@@ -16,17 +16,17 @@
 
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { PropertyApiName } from "../components/PropertyApiName";
 import type { PrimaryKeyValue } from "../components/PrimaryKeyValue";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /** The linked object with the given primary key is not found, or the user does not have access to it. */
 export interface LinkedObjectNotFound {
-    errorCode: "NOT_FOUND";
-    errorName: "LinkedObjectNotFound";
-    errorInstanceId: string;
-    parameters: {
-        linkType: LinkTypeApiName;
-        linkedObjectType: ObjectTypeApiName;
-        linkedObjectPrimaryKey: Record<PropertyApiName, PrimaryKeyValue>;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "LinkedObjectNotFound";
+  errorInstanceId: string;
+  parameters: {
+    linkType: LinkTypeApiName;
+    linkedObjectType: ObjectTypeApiName;
+    linkedObjectPrimaryKey: Record<PropertyApiName, PrimaryKeyValue>;
+  };
 }

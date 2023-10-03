@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import type { OntologyRid } from "../components/OntologyRid";
 import type { OntologyApiName } from "../components/OntologyApiName";
+import type { OntologyRid } from "../components/OntologyRid";
 
 /** The requested Ontology is not found, or the client token does not have access to it. */
 export interface OntologyNotFound {
-    errorCode: "NOT_FOUND";
-    errorName: "OntologyNotFound";
-    errorInstanceId: string;
-    parameters: {
-        ontologyRid: OntologyRid;
-        apiName: OntologyApiName;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "OntologyNotFound";
+  errorInstanceId: string;
+  parameters: {
+    ontologyRid: OntologyRid;
+    apiName: OntologyApiName;
+  };
 }

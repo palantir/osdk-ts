@@ -15,6 +15,6 @@
  */
 
 export interface ContainsAllTermsInOrderQuery {
-    field: string;
-    value: string;
+  field: string;
+  value: string;
 }

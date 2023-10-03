@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type TableExportFormat = 'ARROW' | 'CSV';
+export type TableExportFormat = "ARROW" | "CSV";

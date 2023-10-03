@@ -15,7 +15,7 @@
  */
 
 export interface GteQuery {
-    field: string;
-    /** Greater than or equal to value */
-    value: any;
+  field: string;
+  /** Greater than or equal to value */
+  value: any;
 }

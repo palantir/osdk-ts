@@ -15,6 +15,7 @@
  */
 
 import type { AnyType } from "./AnyType";
+import type { ArrayType } from "./ArrayType";
 import type { BinaryType } from "./BinaryType";
 import type { BooleanType } from "./BooleanType";
 import type { ByteType } from "./ByteType";
@@ -24,80 +25,96 @@ import type { DoubleType } from "./DoubleType";
 import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
-import type { ShortType } from "./ShortType";
-import type { StringType } from "./StringType";
-import type { TimestampType } from "./TimestampType";
-import type { ArrayType } from "./ArrayType";
 import type { MapType } from "./MapType";
 import type { SetType } from "./SetType";
+import type { ShortType } from "./ShortType";
+import type { StringType } from "./StringType";
 import type { StructType } from "./StructType";
+import type { TimestampType } from "./TimestampType";
 
 export interface BaseType_Any extends AnyType {
-    type: "any";
+  type: "any";
 }
 
 export interface BaseType_Binary extends BinaryType {
-    type: "binary";
+  type: "binary";
 }
 
 export interface BaseType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface BaseType_Byte extends ByteType {
-    type: "byte";
+  type: "byte";
 }
 
 export interface BaseType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface BaseType_Decimal extends DecimalType {
-    type: "decimal";
+  type: "decimal";
 }
 
 export interface BaseType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface BaseType_Float extends FloatType {
-    type: "float";
+  type: "float";
 }
 
 export interface BaseType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface BaseType_Long extends LongType {
-    type: "long";
+  type: "long";
 }
 
 export interface BaseType_Short extends ShortType {
-    type: "short";
+  type: "short";
 }
 
 export interface BaseType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface BaseType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
 export interface BaseType_Array extends ArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface BaseType_Map extends MapType {
-    type: "map";
+  type: "map";
 }
 
 export interface BaseType_Set extends SetType {
-    type: "set";
+  type: "set";
 }
 
 export interface BaseType_Struct extends StructType {
-    type: "struct";
+  type: "struct";
 }
 
-export type BaseType = BaseType_Any | BaseType_Binary | BaseType_Boolean | BaseType_Byte | BaseType_Date | BaseType_Decimal | BaseType_Double | BaseType_Float | BaseType_Integer | BaseType_Long | BaseType_Short | BaseType_String | BaseType_Timestamp | BaseType_Array | BaseType_Map | BaseType_Set | BaseType_Struct;
+export type BaseType =
+  | BaseType_Any
+  | BaseType_Binary
+  | BaseType_Boolean
+  | BaseType_Byte
+  | BaseType_Date
+  | BaseType_Decimal
+  | BaseType_Double
+  | BaseType_Float
+  | BaseType_Integer
+  | BaseType_Long
+  | BaseType_Short
+  | BaseType_String
+  | BaseType_Timestamp
+  | BaseType_Array
+  | BaseType_Map
+  | BaseType_Set
+  | BaseType_Struct;

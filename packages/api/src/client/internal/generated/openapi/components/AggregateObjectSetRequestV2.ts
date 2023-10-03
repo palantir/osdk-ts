@@ -15,11 +15,11 @@
  */
 
 import type { Aggregation } from "./Aggregation";
-import type { ObjectSet } from "./ObjectSet";
 import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
+import type { ObjectSet } from "./ObjectSet";
 
 export interface AggregateObjectSetRequestV2 {
-    aggregation: Array<Aggregation>;
-    objectSet: ObjectSet;
-    groupBy: Array<AggregationGroupByV2>;
+  aggregation: Array<Aggregation>;
+  objectSet: ObjectSet;
+  groupBy: Array<AggregationGroupByV2>;
 }

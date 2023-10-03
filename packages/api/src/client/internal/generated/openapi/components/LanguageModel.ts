@@ -19,6 +19,6 @@ import type { LanguageModelSource } from "./LanguageModelSource";
 
 /** Represents a language model. */
 export interface LanguageModel {
-    apiName?: LanguageModelApiName;
-    source?: LanguageModelSource;
+  apiName?: LanguageModelApiName;
+  source?: LanguageModelSource;
 }

@@ -16,13 +16,13 @@
 
 import type { AttachmentRid } from "./AttachmentRid";
 import type { Filename } from "./Filename";
-import type { SizeBytes } from "./SizeBytes";
 import type { MediaType } from "./MediaType";
+import type { SizeBytes } from "./SizeBytes";
 
 /** The representation of an attachment. */
 export interface AttachmentV2 {
-    rid: AttachmentRid;
-    filename: Filename;
-    sizeBytes: SizeBytes;
-    mediaType: MediaType;
+  rid: AttachmentRid;
+  filename: Filename;
+  sizeBytes: SizeBytes;
+  mediaType: MediaType;
 }

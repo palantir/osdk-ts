@@ -15,11 +15,11 @@
  */
 
 export interface AttachmentSizeExceededLimit {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "AttachmentSizeExceededLimit";
-    errorInstanceId: string;
-    parameters: {
-        fileSizeBytes: string;
-        fileLimitBytes: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "AttachmentSizeExceededLimit";
+  errorInstanceId: string;
+  parameters: {
+    fileSizeBytes: string;
+    fileLimitBytes: string;
+  };
 }

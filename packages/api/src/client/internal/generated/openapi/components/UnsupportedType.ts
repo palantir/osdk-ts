@@ -15,5 +15,5 @@
  */
 
 export interface UnsupportedType {
-    unsupportedType: string;
+  unsupportedType: string;
 }

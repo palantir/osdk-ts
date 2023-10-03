@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { DisplayName } from "./DisplayName";
-import type { ReleaseStatus } from "./ReleaseStatus";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { PropertyV2 } from "./PropertyV2";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { ObjectTypeRid } from "./ObjectTypeRid";
 import type { ObjectTypeVisibility } from "./ObjectTypeVisibility";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyV2 } from "./PropertyV2";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 /** Represents an object type in the Ontology. */
 export interface ObjectTypeV2 {
-    apiName: ObjectTypeApiName;
-    displayName?: DisplayName;
-    status: ReleaseStatus;
-    /** The description of the object type. */
-    description?: string;
-    primaryKey: PropertyApiName;
-    /** A map of the properties of the object type. */
-    properties: Record<PropertyApiName, PropertyV2>;
-    rid: ObjectTypeRid;
-    visibility?: ObjectTypeVisibility;
+  apiName: ObjectTypeApiName;
+  displayName?: DisplayName;
+  status: ReleaseStatus;
+  /** The description of the object type. */
+  description?: string;
+  primaryKey: PropertyApiName;
+  /** A map of the properties of the object type. */
+  properties: Record<PropertyApiName, PropertyV2>;
+  rid: ObjectTypeRid;
+  visibility?: ObjectTypeVisibility;
 }

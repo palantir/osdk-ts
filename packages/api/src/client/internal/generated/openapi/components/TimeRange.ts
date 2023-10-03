@@ -18,11 +18,11 @@ import type { AbsoluteTimeRange } from "./AbsoluteTimeRange";
 import type { RelativeTimeRange } from "./RelativeTimeRange";
 
 export interface TimeRange_Absolute extends AbsoluteTimeRange {
-    type: "absolute";
+  type: "absolute";
 }
 
 export interface TimeRange_Relative extends RelativeTimeRange {
-    type: "relative";
+  type: "relative";
 }
 
 export type TimeRange = TimeRange_Absolute | TimeRange_Relative;

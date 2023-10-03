@@ -17,5 +17,5 @@
 import type { ActionParameterType } from "./ActionParameterType";
 
 export interface ActionParameterArrayType {
-    subType: ActionParameterType;
+  subType: ActionParameterType;
 }

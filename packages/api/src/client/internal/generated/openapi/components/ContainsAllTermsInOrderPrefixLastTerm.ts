@@ -15,6 +15,6 @@
  */
 
 export interface ContainsAllTermsInOrderPrefixLastTerm {
-    field: string;
-    value: string;
+  field: string;
+  value: string;
 }

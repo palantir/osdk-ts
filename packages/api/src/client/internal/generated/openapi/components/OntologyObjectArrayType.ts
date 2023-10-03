@@ -17,5 +17,5 @@
 import type { ObjectPropertyType } from "./ObjectPropertyType";
 
 export interface OntologyObjectArrayType {
-    subType: ObjectPropertyType;
+  subType: ObjectPropertyType;
 }

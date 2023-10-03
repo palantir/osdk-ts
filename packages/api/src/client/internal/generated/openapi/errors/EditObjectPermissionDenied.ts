@@ -15,9 +15,8 @@
  */
 
 export interface EditObjectPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "EditObjectPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "EditObjectPermissionDenied";
+  errorInstanceId: string;
+  parameters: {};
 }

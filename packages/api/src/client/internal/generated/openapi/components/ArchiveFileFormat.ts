@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ArchiveFileFormat = 'ZIP';
+export type ArchiveFileFormat = "ZIP";

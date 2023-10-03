@@ -14,40 +14,47 @@
  * limitations under the License.
  */
 
+import type { GeometryCollection } from "./GeometryCollection";
 import type { GeoPoint } from "./GeoPoint";
-import type { MultiPoint } from "./MultiPoint";
 import type { LineString } from "./LineString";
 import type { MultiLineString } from "./MultiLineString";
-import type { Polygon } from "./Polygon";
+import type { MultiPoint } from "./MultiPoint";
 import type { MultiPolygon } from "./MultiPolygon";
-import type { GeometryCollection } from "./GeometryCollection";
+import type { Polygon } from "./Polygon";
 
 export interface Geometry_Point extends GeoPoint {
-    type: "Point";
+  type: "Point";
 }
 
 export interface Geometry_MultiPoint extends MultiPoint {
-    type: "MultiPoint";
+  type: "MultiPoint";
 }
 
 export interface Geometry_LineString extends LineString {
-    type: "LineString";
+  type: "LineString";
 }
 
 export interface Geometry_MultiLineString extends MultiLineString {
-    type: "MultiLineString";
+  type: "MultiLineString";
 }
 
 export interface Geometry_Polygon extends Polygon {
-    type: "Polygon";
+  type: "Polygon";
 }
 
 export interface Geometry_MultiPolygon extends MultiPolygon {
-    type: "MultiPolygon";
+  type: "MultiPolygon";
 }
 
 export interface Geometry_GeometryCollection extends GeometryCollection {
-    type: "GeometryCollection";
+  type: "GeometryCollection";
 }
 
-export type Geometry = Geometry_Point | Geometry_MultiPoint | Geometry_LineString | Geometry_MultiLineString | Geometry_Polygon | Geometry_MultiPolygon | Geometry_GeometryCollection;
+export type Geometry =
+  | Geometry_Point
+  | Geometry_MultiPoint
+  | Geometry_LineString
+  | Geometry_MultiLineString
+  | Geometry_Polygon
+  | Geometry_MultiPolygon
+  | Geometry_GeometryCollection;

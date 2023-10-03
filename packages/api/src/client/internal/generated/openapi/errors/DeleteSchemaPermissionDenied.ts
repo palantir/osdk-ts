@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 import type { TransactionRid } from "../components/TransactionRid";
 
 /** todo */
 export interface DeleteSchemaPermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "DeleteSchemaPermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-        transactionRid: TransactionRid;
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "DeleteSchemaPermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+    transactionRid: TransactionRid;
+  };
 }

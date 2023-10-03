@@ -15,11 +15,11 @@
  */
 
 import type { Aggregation } from "./Aggregation";
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 
 export interface AggregateObjectsRequestV2 {
-    aggregation: Array<Aggregation>;
-    where?: SearchJsonQueryV2;
-    groupBy: Array<AggregationGroupByV2>;
+  aggregation: Array<Aggregation>;
+  where?: SearchJsonQueryV2;
+  groupBy: Array<AggregationGroupByV2>;
 }

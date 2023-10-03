@@ -15,12 +15,12 @@
  */
 
 export interface StringLength {
-    /** Less than */
-    lt?: any;
-    /** Less than or equal */
-    lte?: any;
-    /** Greater than */
-    gt?: any;
-    /** Greater than or equal */
-    gte?: any;
+  /** Less than */
+  lt?: any;
+  /** Less than or equal */
+  lte?: any;
+  /** Greater than */
+  gt?: any;
+  /** Greater than or equal */
+  gte?: any;
 }

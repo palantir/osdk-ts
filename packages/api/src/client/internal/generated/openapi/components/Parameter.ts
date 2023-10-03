@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ValueType } from "./ValueType";
 import type { OntologyDataType } from "./OntologyDataType";
+import type { ValueType } from "./ValueType";
 
 /** Details about a parameter of an action or query. */
 export interface Parameter {
-    description?: string;
-    baseType: ValueType;
-    dataType?: OntologyDataType;
-    required: boolean;
+  description?: string;
+  baseType: ValueType;
+  dataType?: OntologyDataType;
+  required: boolean;
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { AggregateObjectsResponseItem } from "./AggregateObjectsResponseItem";
+import type { PageToken } from "./PageToken";
 
 export interface AggregateObjectsResponse {
-    excludedItems?: number;
-    nextPageToken?: PageToken;
-    data: Array<AggregateObjectsResponseItem>;
+  excludedItems?: number;
+  nextPageToken?: PageToken;
+  data: Array<AggregateObjectsResponseItem>;
 }

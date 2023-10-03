@@ -15,9 +15,8 @@
  */
 
 export interface InvalidContentType {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidContentType";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidContentType";
+  errorInstanceId: string;
+  parameters: {};
 }

@@ -27,47 +27,58 @@ import type { StringType } from "./StringType";
 import type { TimestampType } from "./TimestampType";
 
 export interface ActionParameterType_Array extends ActionParameterArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface ActionParameterType_Attachment extends AttachmentType {
-    type: "attachment";
+  type: "attachment";
 }
 
 export interface ActionParameterType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface ActionParameterType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface ActionParameterType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface ActionParameterType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface ActionParameterType_Long extends LongType {
-    type: "long";
+  type: "long";
 }
 
 export interface ActionParameterType_ObjectSet extends OntologyObjectSetType {
-    type: "objectSet";
+  type: "objectSet";
 }
 
 export interface ActionParameterType_Object extends OntologyObjectType {
-    type: "object";
+  type: "object";
 }
 
 export interface ActionParameterType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface ActionParameterType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
-export type ActionParameterType = ActionParameterType_Array | ActionParameterType_Attachment | ActionParameterType_Boolean | ActionParameterType_Date | ActionParameterType_Double | ActionParameterType_Integer | ActionParameterType_Long | ActionParameterType_ObjectSet | ActionParameterType_Object | ActionParameterType_String | ActionParameterType_Timestamp;
+export type ActionParameterType =
+  | ActionParameterType_Array
+  | ActionParameterType_Attachment
+  | ActionParameterType_Boolean
+  | ActionParameterType_Date
+  | ActionParameterType_Double
+  | ActionParameterType_Integer
+  | ActionParameterType_Long
+  | ActionParameterType_ObjectSet
+  | ActionParameterType_Object
+  | ActionParameterType_String
+  | ActionParameterType_Timestamp;

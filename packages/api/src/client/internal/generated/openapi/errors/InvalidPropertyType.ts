@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import type { ValueType } from "../components/ValueType";
 import type { PropertyApiName } from "../components/PropertyApiName";
+import type { ValueType } from "../components/ValueType";
 
 /**
  * The given property type is not of the expected type.
- *
  */
 export interface InvalidPropertyType {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidPropertyType";
-    errorInstanceId: string;
-    parameters: {
-        propertyBaseType: ValueType;
-        property: PropertyApiName;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidPropertyType";
+  errorInstanceId: string;
+  parameters: {
+    propertyBaseType: ValueType;
+    property: PropertyApiName;
+  };
 }

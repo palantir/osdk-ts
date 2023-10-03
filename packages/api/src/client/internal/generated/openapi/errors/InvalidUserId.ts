@@ -15,10 +15,10 @@
  */
 
 export interface InvalidUserId {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidUserId";
-    errorInstanceId: string;
-    parameters: {
-        userId: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidUserId";
+  errorInstanceId: string;
+  parameters: {
+    userId: string;
+  };
 }

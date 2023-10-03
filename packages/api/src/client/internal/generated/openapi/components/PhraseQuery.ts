@@ -15,6 +15,6 @@
  */
 
 export interface PhraseQuery {
-    field: string;
-    value: string;
+  field: string;
+  value: string;
 }

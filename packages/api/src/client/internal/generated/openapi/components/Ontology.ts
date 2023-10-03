@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyApiName } from "./OntologyApiName";
 import type { DisplayName } from "./DisplayName";
+import type { OntologyApiName } from "./OntologyApiName";
 import type { OntologyRid } from "./OntologyRid";
 
 /** Metadata about an Ontology. */
 export interface Ontology {
-    apiName: OntologyApiName;
-    displayName: DisplayName;
-    description: string;
-    rid: OntologyRid;
+  apiName: OntologyApiName;
+  displayName: DisplayName;
+  description: string;
+  rid: OntologyRid;
 }

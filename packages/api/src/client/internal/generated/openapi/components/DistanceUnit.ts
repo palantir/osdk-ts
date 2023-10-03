@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-export type DistanceUnit = 'MILLIMETERS' | 'CENTIMETERS' | 'METERS' | 'KILOMETERS' | 'INCHES' | 'FEET' | 'YARDS' | 'MILES' | 'NAUTICAL_MILES';
+export type DistanceUnit =
+  | "MILLIMETERS"
+  | "CENTIMETERS"
+  | "METERS"
+  | "KILOMETERS"
+  | "INCHES"
+  | "FEET"
+  | "YARDS"
+  | "MILES"
+  | "NAUTICAL_MILES";

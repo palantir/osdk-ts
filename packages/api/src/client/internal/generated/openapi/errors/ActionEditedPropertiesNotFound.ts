@@ -15,9 +15,8 @@
  */
 
 export interface ActionEditedPropertiesNotFound {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "ActionEditedPropertiesNotFound";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "ActionEditedPropertiesNotFound";
+  errorInstanceId: string;
+  parameters: {};
 }

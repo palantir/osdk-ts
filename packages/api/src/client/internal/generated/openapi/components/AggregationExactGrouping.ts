@@ -15,6 +15,6 @@
  */
 
 export interface AggregationExactGrouping {
-    field: string;
-    maxGroupCount?: number;
+  field: string;
+  maxGroupCount?: number;
 }

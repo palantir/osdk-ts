@@ -17,5 +17,5 @@
 import type { TimeSeriesItemType } from "./TimeSeriesItemType";
 
 export interface TimeseriesType {
-    itemType?: TimeSeriesItemType;
+  itemType?: TimeSeriesItemType;
 }

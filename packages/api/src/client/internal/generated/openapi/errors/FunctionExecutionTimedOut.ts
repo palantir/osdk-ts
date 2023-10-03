@@ -18,11 +18,11 @@ import type { FunctionRid } from "../components/FunctionRid";
 import type { FunctionVersion } from "../components/FunctionVersion";
 
 export interface FunctionExecutionTimedOut {
-    errorCode: "TIMEOUT";
-    errorName: "FunctionExecutionTimedOut";
-    errorInstanceId: string;
-    parameters: {
-        functionRid: FunctionRid;
-        functionVersion: FunctionVersion;
-    };
+  errorCode: "TIMEOUT";
+  errorName: "FunctionExecutionTimedOut";
+  errorInstanceId: string;
+  parameters: {
+    functionRid: FunctionRid;
+    functionVersion: FunctionVersion;
+  };
 }

@@ -15,7 +15,7 @@
  */
 
 export interface GtQuery {
-    field: string;
-    /** Greater than value */
-    value: any;
+  field: string;
+  /** Greater than value */
+  value: any;
 }

@@ -17,6 +17,6 @@
 import type { ModelApiType } from "./ModelApiType";
 
 export interface ModelApiStructField {
-    name: string;
-    fieldType: ModelApiType;
+  name: string;
+  fieldType: ModelApiType;
 }

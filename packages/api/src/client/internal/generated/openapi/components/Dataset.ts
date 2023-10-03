@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "./DatasetRid";
 import type { DatasetName } from "./DatasetName";
+import type { DatasetRid } from "./DatasetRid";
 import type { FolderRid } from "./FolderRid";
 
 export interface Dataset {
-    rid: DatasetRid;
-    name: DatasetName;
-    parentFolderRid: FolderRid;
+  rid: DatasetRid;
+  name: DatasetName;
+  parentFolderRid: FolderRid;
 }

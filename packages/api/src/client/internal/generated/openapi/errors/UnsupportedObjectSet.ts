@@ -15,9 +15,8 @@
  */
 
 export interface UnsupportedObjectSet {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "UnsupportedObjectSet";
-    errorInstanceId: string;
-    parameters: {
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "UnsupportedObjectSet";
+  errorInstanceId: string;
+  parameters: {};
 }

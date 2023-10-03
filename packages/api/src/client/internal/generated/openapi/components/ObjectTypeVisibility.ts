@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ObjectTypeVisibility = 'NORMAL' | 'PROMINENT' | 'HIDDEN';
+export type ObjectTypeVisibility = "NORMAL" | "PROMINENT" | "HIDDEN";

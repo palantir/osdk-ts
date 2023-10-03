@@ -15,17 +15,17 @@
  */
 
 import type { DatasetRid } from "../components/DatasetRid";
-import type { TransactionRid } from "../components/TransactionRid";
 import type { FilePath } from "../components/FilePath";
+import type { TransactionRid } from "../components/TransactionRid";
 
 /** The provided token does not have permission to upload the given file to the given dataset and transaction. */
 export interface UploadFilePermissionDenied {
-    errorCode: "PERMISSION_DENIED";
-    errorName: "UploadFilePermissionDenied";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        transactionRid: TransactionRid;
-        path: FilePath;
-    };
+  errorCode: "PERMISSION_DENIED";
+  errorName: "UploadFilePermissionDenied";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    transactionRid: TransactionRid;
+    path: FilePath;
+  };
 }

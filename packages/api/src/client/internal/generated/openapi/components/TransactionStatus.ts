@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type TransactionStatus = 'ABORTED' | 'COMMITTED' | 'OPEN';
+export type TransactionStatus = "ABORTED" | "COMMITTED" | "OPEN";

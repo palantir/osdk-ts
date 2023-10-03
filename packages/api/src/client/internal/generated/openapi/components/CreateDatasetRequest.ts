@@ -18,6 +18,6 @@ import type { DatasetName } from "./DatasetName";
 import type { FolderRid } from "./FolderRid";
 
 export interface CreateDatasetRequest {
-    name: DatasetName;
-    parentFolderRid: FolderRid;
+  name: DatasetName;
+  parentFolderRid: FolderRid;
 }

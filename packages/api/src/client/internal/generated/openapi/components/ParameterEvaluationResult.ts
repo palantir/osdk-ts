@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ValidationResult } from "./ValidationResult";
 import type { ParameterEvaluatedConstraint } from "./ParameterEvaluatedConstraint";
+import type { ValidationResult } from "./ValidationResult";
 
 /** Represents the validity of a parameter against the configured constraints. */
 export interface ParameterEvaluationResult {
-    result: ValidationResult;
-    evaluatedConstraints: Array<ParameterEvaluatedConstraint>;
-    /** Represents whether the parameter is a required input to the action. */
-    required: boolean;
+  result: ValidationResult;
+  evaluatedConstraints: Array<ParameterEvaluatedConstraint>;
+  /** Represents whether the parameter is a required input to the action. */
+  required: boolean;
 }

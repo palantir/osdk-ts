@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { LineStringCoordinates } from "./LineStringCoordinates";
 import type { BBox } from "./BBox";
+import type { LineStringCoordinates } from "./LineStringCoordinates";
 
 export interface LineString {
-    coordinates?: LineStringCoordinates;
-    bbox?: BBox;
+  coordinates?: LineStringCoordinates;
+  bbox?: BBox;
 }

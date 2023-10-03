@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import type { SearchJsonQuery } from "./SearchJsonQuery";
-import type { SearchOrderBy } from "./SearchOrderBy";
 import type { PageSize } from "./PageSize";
 import type { PageToken } from "./PageToken";
 import type { PropertyApiName } from "./PropertyApiName";
+import type { SearchJsonQuery } from "./SearchJsonQuery";
+import type { SearchOrderBy } from "./SearchOrderBy";
 
 export interface SearchObjectsRequest {
-    query: SearchJsonQuery;
-    orderBy?: SearchOrderBy;
-    pageSize?: PageSize;
-    pageToken?: PageToken;
-    /**
-     * The API names of the object type properties to include in the response.
-     *
-     */
-    fields: Array<PropertyApiName>;
+  query: SearchJsonQuery;
+  orderBy?: SearchOrderBy;
+  pageSize?: PageSize;
+  pageToken?: PageToken;
+  /**
+   * The API names of the object type properties to include in the response.
+   */
+  fields: Array<PropertyApiName>;
 }

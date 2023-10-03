@@ -18,5 +18,5 @@ import type { SearchJsonQuery } from "./SearchJsonQuery";
 
 /** Returns objects where the query is not satisfied. */
 export interface NotQuery {
-    value: SearchJsonQuery;
+  value: SearchJsonQuery;
 }

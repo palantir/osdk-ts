@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import type { PropertyFilter } from "../components/PropertyFilter";
 import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyFilter } from "../components/PropertyFilter";
 
 /**
  * At least one of the requested property filters are not supported. See the documentation of `PropertyFilter` for
  * a list of supported property filters.
- *
  */
 export interface PropertyFiltersNotSupported {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "PropertyFiltersNotSupported";
-    errorInstanceId: string;
-    parameters: {
-        propertyFilters: Array<PropertyFilter>;
-        property: PropertyApiName;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "PropertyFiltersNotSupported";
+  errorInstanceId: string;
+  parameters: {
+    propertyFilters: Array<PropertyFilter>;
+    property: PropertyApiName;
+  };
 }

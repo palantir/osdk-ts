@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type LinkTypeSideCardinality = 'ONE' | 'MANY';
+export type LinkTypeSideCardinality = "ONE" | "MANY";

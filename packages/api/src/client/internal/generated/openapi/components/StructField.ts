@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { StructFieldName } from "./StructFieldName";
 import type { BaseType } from "./BaseType";
+import type { StructFieldName } from "./StructFieldName";
 
 export interface StructField {
-    name: StructFieldName;
-    fieldType: BaseType;
+  name: StructFieldName;
+  fieldType: BaseType;
 }

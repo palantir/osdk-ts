@@ -17,5 +17,5 @@
 import type { OntologyDataType } from "./OntologyDataType";
 
 export interface OntologySetType {
-    itemType: OntologyDataType;
+  itemType: OntologyDataType;
 }

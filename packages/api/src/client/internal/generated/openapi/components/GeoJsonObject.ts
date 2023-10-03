@@ -16,48 +16,57 @@
 
 import type { Feature } from "./Feature";
 import type { FeatureCollection } from "./FeatureCollection";
+import type { GeometryCollection } from "./GeometryCollection";
 import type { GeoPoint } from "./GeoPoint";
-import type { MultiPoint } from "./MultiPoint";
 import type { LineString } from "./LineString";
 import type { MultiLineString } from "./MultiLineString";
-import type { Polygon } from "./Polygon";
+import type { MultiPoint } from "./MultiPoint";
 import type { MultiPolygon } from "./MultiPolygon";
-import type { GeometryCollection } from "./GeometryCollection";
+import type { Polygon } from "./Polygon";
 
 export interface GeoJsonObject_Feature extends Feature {
-    type: "Feature";
+  type: "Feature";
 }
 
 export interface GeoJsonObject_FeatureCollection extends FeatureCollection {
-    type: "FeatureCollection";
+  type: "FeatureCollection";
 }
 
 export interface GeoJsonObject_Point extends GeoPoint {
-    type: "Point";
+  type: "Point";
 }
 
 export interface GeoJsonObject_MultiPoint extends MultiPoint {
-    type: "MultiPoint";
+  type: "MultiPoint";
 }
 
 export interface GeoJsonObject_LineString extends LineString {
-    type: "LineString";
+  type: "LineString";
 }
 
 export interface GeoJsonObject_MultiLineString extends MultiLineString {
-    type: "MultiLineString";
+  type: "MultiLineString";
 }
 
 export interface GeoJsonObject_Polygon extends Polygon {
-    type: "Polygon";
+  type: "Polygon";
 }
 
 export interface GeoJsonObject_MultiPolygon extends MultiPolygon {
-    type: "MultiPolygon";
+  type: "MultiPolygon";
 }
 
 export interface GeoJsonObject_GeometryCollection extends GeometryCollection {
-    type: "GeometryCollection";
+  type: "GeometryCollection";
 }
 
-export type GeoJsonObject = GeoJsonObject_Feature | GeoJsonObject_FeatureCollection | GeoJsonObject_Point | GeoJsonObject_MultiPoint | GeoJsonObject_LineString | GeoJsonObject_MultiLineString | GeoJsonObject_Polygon | GeoJsonObject_MultiPolygon | GeoJsonObject_GeometryCollection;
+export type GeoJsonObject =
+  | GeoJsonObject_Feature
+  | GeoJsonObject_FeatureCollection
+  | GeoJsonObject_Point
+  | GeoJsonObject_MultiPoint
+  | GeoJsonObject_LineString
+  | GeoJsonObject_MultiLineString
+  | GeoJsonObject_Polygon
+  | GeoJsonObject_MultiPolygon
+  | GeoJsonObject_GeometryCollection;

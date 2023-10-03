@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "../components/QueryDataType";
-import type { ParameterId } from "../components/ParameterId";
 import type { DataValue } from "../components/DataValue";
+import type { ParameterId } from "../components/ParameterId";
+import type { QueryDataType } from "../components/QueryDataType";
 
 /**
  * The value of the given parameter is invalid. See the documentation of `DataValue` for details on
  * how parameters are represented.
- *
  */
 export interface InvalidQueryParameterValue {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidQueryParameterValue";
-    errorInstanceId: string;
-    parameters: {
-        parameterDataType: QueryDataType;
-        parameterId: ParameterId;
-        parameterValue: DataValue;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidQueryParameterValue";
+  errorInstanceId: string;
+  parameters: {
+    parameterDataType: QueryDataType;
+    parameterId: ParameterId;
+    parameterValue: DataValue;
+  };
 }

@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { QueryApiName } from "./QueryApiName";
 import type { DisplayName } from "./DisplayName";
-import type { ParameterId } from "./ParameterId";
-import type { Parameter } from "./Parameter";
-import type { OntologyDataType } from "./OntologyDataType";
 import type { FunctionRid } from "./FunctionRid";
 import type { FunctionVersion } from "./FunctionVersion";
+import type { OntologyDataType } from "./OntologyDataType";
+import type { Parameter } from "./Parameter";
+import type { ParameterId } from "./ParameterId";
+import type { QueryApiName } from "./QueryApiName";
 
 /** Represents a query type in the Ontology. */
 export interface QueryType {
-    apiName: QueryApiName;
-    description?: string;
-    displayName?: DisplayName;
-    parameters: Record<ParameterId, Parameter>;
-    output?: OntologyDataType;
-    rid: FunctionRid;
-    version: FunctionVersion;
+  apiName: QueryApiName;
+  description?: string;
+  displayName?: DisplayName;
+  parameters: Record<ParameterId, Parameter>;
+  output?: OntologyDataType;
+  rid: FunctionRid;
+  version: FunctionVersion;
 }

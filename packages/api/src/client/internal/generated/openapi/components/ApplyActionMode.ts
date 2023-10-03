@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ApplyActionMode = 'VALIDATE_ONLY' | 'VALIDATE_AND_EXECUTE';
+export type ApplyActionMode = "VALIDATE_ONLY" | "VALIDATE_AND_EXECUTE";

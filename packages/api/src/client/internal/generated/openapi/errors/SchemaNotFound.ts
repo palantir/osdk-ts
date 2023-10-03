@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
 import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 import type { TransactionRid } from "../components/TransactionRid";
 
 /** A schema could not be found for the given dataset and branch, or the client token does not have access to it. */
 export interface SchemaNotFound {
-    errorCode: "NOT_FOUND";
-    errorName: "SchemaNotFound";
-    errorInstanceId: string;
-    parameters: {
-        datasetRid: DatasetRid;
-        branchId: BranchId;
-        transactionRid: TransactionRid;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "SchemaNotFound";
+  errorInstanceId: string;
+  parameters: {
+    datasetRid: DatasetRid;
+    branchId: BranchId;
+    transactionRid: TransactionRid;
+  };
 }

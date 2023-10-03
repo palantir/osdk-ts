@@ -15,5 +15,5 @@
  */
 
 export interface ObjectSetReferenceType {
-    reference: string;
+  reference: string;
 }

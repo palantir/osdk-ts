@@ -15,16 +15,16 @@
  */
 
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { PropertyApiName } from "../components/PropertyApiName";
 import type { PrimaryKeyValue } from "../components/PrimaryKeyValue";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /** The requested object is not found, or the client token does not have access to it. */
 export interface ObjectNotFound {
-    errorCode: "NOT_FOUND";
-    errorName: "ObjectNotFound";
-    errorInstanceId: string;
-    parameters: {
-        objectType: ObjectTypeApiName;
-        primaryKey: Record<PropertyApiName, PrimaryKeyValue>;
-    };
+  errorCode: "NOT_FOUND";
+  errorName: "ObjectNotFound";
+  errorInstanceId: string;
+  parameters: {
+    objectType: ObjectTypeApiName;
+    primaryKey: Record<PropertyApiName, PrimaryKeyValue>;
+  };
 }

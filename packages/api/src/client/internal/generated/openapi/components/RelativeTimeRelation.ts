@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type RelativeTimeRelation = 'BEFORE' | 'AFTER';
+export type RelativeTimeRelation = "BEFORE" | "AFTER";

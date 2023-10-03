@@ -15,6 +15,6 @@
  */
 
 export interface AbsoluteTimeRange {
-    startTime?: string;
-    endTime?: string;
+  startTime?: string;
+  endTime?: string;
 }

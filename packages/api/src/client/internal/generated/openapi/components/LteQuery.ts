@@ -15,7 +15,7 @@
  */
 
 export interface LteQuery {
-    field: string;
-    /** Less than or equal to value */
-    value: any;
+  field: string;
+  /** Less than or equal to value */
+  value: any;
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
 import type { ObjectTypeV2 } from "./ObjectTypeV2";
+import type { PageToken } from "./PageToken";
 
 export interface ListObjectTypesV2Response {
-    nextPageToken?: PageToken;
-    /** The list of object types in the current page. */
-    data: Array<ObjectTypeV2>;
+  nextPageToken?: PageToken;
+  /** The list of object types in the current page. */
+  data: Array<ObjectTypeV2>;
 }

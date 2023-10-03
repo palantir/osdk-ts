@@ -24,6 +24,5 @@ import type { Coordinate } from "./Coordinate";
  * contained geometries, with all axes of the most southwesterly point
  * followed by all axes of the more northeasterly point. The axes order
  * of a bbox follows the axes order of geometries.
- *
  */
 export type BBox = Array<Coordinate>;

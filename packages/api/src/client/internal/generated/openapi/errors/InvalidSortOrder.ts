@@ -15,10 +15,10 @@
  */
 
 export interface InvalidSortOrder {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidSortOrder";
-    errorInstanceId: string;
-    parameters: {
-        invalidSortOrder: string;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidSortOrder";
+  errorInstanceId: string;
+  parameters: {
+    invalidSortOrder: string;
+  };
 }

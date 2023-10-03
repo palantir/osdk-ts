@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type ValidationResult = 'VALID' | 'INVALID';
+export type ValidationResult = "VALID" | "INVALID";

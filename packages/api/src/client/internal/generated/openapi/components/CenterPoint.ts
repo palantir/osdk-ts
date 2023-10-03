@@ -19,9 +19,8 @@ import type { Distance } from "./Distance";
 
 /**
  * The coordinate point to use as the center of the distance query.
- *
  */
 export interface CenterPoint {
-    center: CenterPointTypes;
-    distance: Distance;
+  center: CenterPointTypes;
+  distance: Distance;
 }

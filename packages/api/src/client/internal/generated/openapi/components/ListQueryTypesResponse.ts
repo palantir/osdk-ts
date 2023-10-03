@@ -18,6 +18,6 @@ import type { PageToken } from "./PageToken";
 import type { QueryType } from "./QueryType";
 
 export interface ListQueryTypesResponse {
-    nextPageToken?: PageToken;
-    data: Array<QueryType>;
+  nextPageToken?: PageToken;
+  data: Array<QueryType>;
 }

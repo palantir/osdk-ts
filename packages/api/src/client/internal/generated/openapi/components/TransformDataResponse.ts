@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { FieldName } from "./FieldName";
 import type { DataValue } from "./DataValue";
+import type { FieldName } from "./FieldName";
 
 export interface TransformDataResponse {
-    outputs: Record<FieldName, DataValue>;
+  outputs: Record<FieldName, DataValue>;
 }

@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import type { ValueType } from "../components/ValueType";
+import type { DataValue } from "../components/DataValue";
 import type { OntologyDataType } from "../components/OntologyDataType";
 import type { ParameterId } from "../components/ParameterId";
-import type { DataValue } from "../components/DataValue";
+import type { ValueType } from "../components/ValueType";
 
 /**
  * The value of the given parameter is invalid. See the documentation of `DataValue` for details on
  * how parameters are represented.
- *
  */
 export interface InvalidParameterValue {
-    errorCode: "INVALID_ARGUMENT";
-    errorName: "InvalidParameterValue";
-    errorInstanceId: string;
-    parameters: {
-        parameterBaseType: ValueType;
-        parameterDataType: OntologyDataType;
-        parameterId: ParameterId;
-        parameterValue: DataValue;
-    };
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidParameterValue";
+  errorInstanceId: string;
+  parameters: {
+    parameterBaseType: ValueType;
+    parameterDataType: OntologyDataType;
+    parameterId: ParameterId;
+    parameterValue: DataValue;
+  };
 }

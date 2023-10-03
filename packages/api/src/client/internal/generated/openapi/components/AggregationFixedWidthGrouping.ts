@@ -15,6 +15,6 @@
  */
 
 export interface AggregationFixedWidthGrouping {
-    field: string;
-    fixedWidth: number;
+  field: string;
+  fixedWidth: number;
 }

@@ -15,6 +15,6 @@
  */
 
 export interface DecimalType {
-    precision?: number;
-    scale?: number;
+  precision?: number;
+  scale?: number;
 }

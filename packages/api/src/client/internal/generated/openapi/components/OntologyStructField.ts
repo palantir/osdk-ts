@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { StructFieldName } from "./StructFieldName";
 import type { OntologyDataType } from "./OntologyDataType";
+import type { StructFieldName } from "./StructFieldName";
 
 export interface OntologyStructField {
-    name: StructFieldName;
-    fieldType: OntologyDataType;
-    required: boolean;
+  name: StructFieldName;
+  fieldType: OntologyDataType;
+  required: boolean;
 }

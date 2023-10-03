@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { QueryArrayType } from "./QueryArrayType";
 import type { AttachmentType } from "./AttachmentType";
 import type { BooleanType } from "./BooleanType";
 import type { DateType } from "./DateType";
@@ -22,82 +21,100 @@ import type { DoubleType } from "./DoubleType";
 import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { NullType } from "./NullType";
 import type { OntologyObjectSetType } from "./OntologyObjectSetType";
 import type { OntologyObjectType } from "./OntologyObjectType";
+import type { QueryArrayType } from "./QueryArrayType";
 import type { QuerySetType } from "./QuerySetType";
-import type { StringType } from "./StringType";
 import type { QueryStructType } from "./QueryStructType";
-import type { TimestampType } from "./TimestampType";
 import type { QueryUnionType } from "./QueryUnionType";
-import type { NullType } from "./NullType";
+import type { StringType } from "./StringType";
+import type { TimestampType } from "./TimestampType";
 import type { UnsupportedType } from "./UnsupportedType";
 
 export interface QueryDataType_Array extends QueryArrayType {
-    type: "array";
+  type: "array";
 }
 
 export interface QueryDataType_Attachment extends AttachmentType {
-    type: "attachment";
+  type: "attachment";
 }
 
 export interface QueryDataType_Boolean extends BooleanType {
-    type: "boolean";
+  type: "boolean";
 }
 
 export interface QueryDataType_Date extends DateType {
-    type: "date";
+  type: "date";
 }
 
 export interface QueryDataType_Double extends DoubleType {
-    type: "double";
+  type: "double";
 }
 
 export interface QueryDataType_Float extends FloatType {
-    type: "float";
+  type: "float";
 }
 
 export interface QueryDataType_Integer extends IntegerType {
-    type: "integer";
+  type: "integer";
 }
 
 export interface QueryDataType_Long extends LongType {
-    type: "long";
+  type: "long";
 }
 
 export interface QueryDataType_ObjectSet extends OntologyObjectSetType {
-    type: "objectSet";
+  type: "objectSet";
 }
 
 export interface QueryDataType_Object extends OntologyObjectType {
-    type: "object";
+  type: "object";
 }
 
 export interface QueryDataType_Set extends QuerySetType {
-    type: "set";
+  type: "set";
 }
 
 export interface QueryDataType_String extends StringType {
-    type: "string";
+  type: "string";
 }
 
 export interface QueryDataType_Struct extends QueryStructType {
-    type: "struct";
+  type: "struct";
 }
 
 export interface QueryDataType_Timestamp extends TimestampType {
-    type: "timestamp";
+  type: "timestamp";
 }
 
 export interface QueryDataType_Union extends QueryUnionType {
-    type: "union";
+  type: "union";
 }
 
 export interface QueryDataType_Null extends NullType {
-    type: "null";
+  type: "null";
 }
 
 export interface QueryDataType_Unsupported extends UnsupportedType {
-    type: "unsupported";
+  type: "unsupported";
 }
 
-export type QueryDataType = QueryDataType_Array | QueryDataType_Attachment | QueryDataType_Boolean | QueryDataType_Date | QueryDataType_Double | QueryDataType_Float | QueryDataType_Integer | QueryDataType_Long | QueryDataType_ObjectSet | QueryDataType_Object | QueryDataType_Set | QueryDataType_String | QueryDataType_Struct | QueryDataType_Timestamp | QueryDataType_Union | QueryDataType_Null | QueryDataType_Unsupported;
+export type QueryDataType =
+  | QueryDataType_Array
+  | QueryDataType_Attachment
+  | QueryDataType_Boolean
+  | QueryDataType_Date
+  | QueryDataType_Double
+  | QueryDataType_Float
+  | QueryDataType_Integer
+  | QueryDataType_Long
+  | QueryDataType_ObjectSet
+  | QueryDataType_Object
+  | QueryDataType_Set
+  | QueryDataType_String
+  | QueryDataType_Struct
+  | QueryDataType_Timestamp
+  | QueryDataType_Union
+  | QueryDataType_Null
+  | QueryDataType_Unsupported;
