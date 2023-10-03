@@ -15,6 +15,10 @@
       "cache": false
     },
 
+    "fix-lint": {
+      "cache": false
+    },
+
     "lint": {
       "inputs": [
         "src/**/*.ts",
