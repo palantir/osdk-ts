@@ -15,6 +15,7 @@
  */
 
 import type { OntologyDefinition } from "#ontology";
+import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { createThinClient } from "../createThinClient";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
@@ -66,7 +67,14 @@ export async function test1() {
   expectType<number | undefined>(notGrouped.priority.avg);
   expectType<number | undefined>(notGrouped.id.max);
   expectType<number | undefined>(notGrouped.id.avg);
-  expectType<never>(notGrouped.other);
+  expectType<
+    TypeOf<
+      {
+        other: any;
+      },
+      typeof notGrouped
+    >
+  >(false); // subselect should hide unused keys
 
   const grouped = await aggregateOrThrow(thinClient, "Todo", {
     select: {

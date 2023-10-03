@@ -16,6 +16,7 @@
 
 import type { Client } from "@osdk/api";
 import invariant from "tiny-invariant";
+import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType";
 
@@ -50,7 +51,7 @@ fetchAggregationForEmployees()
   }
 }
   */
-  // Compile Time Verification
+  // Compile Time Verification of rough shape
   expectType<{
     employeeNumber: {
       max: number | undefined;
@@ -64,6 +65,13 @@ fetchAggregationForEmployees()
       approximateDistinct: number;
     };
   }>(result);
+
+  // adUsername shouldn't be present
+  expectType<
+    TypeOf<{
+      adUsername: any;
+    }, typeof result>
+  >(false);
 
   // Runtime Verification
   invariant(
