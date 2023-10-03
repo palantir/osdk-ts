@@ -15,6 +15,8 @@
  */
 
 import type { Client } from "@osdk/api";
+import type { TypeOf } from "ts-expect";
+import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchEmployeeLead(
@@ -39,6 +41,28 @@ export async function fetchEmployeeLead(
   //   .fetchPageOrThrow({
   //     select: ["adUsername", "businessTitle", "employeeNumber"],
   //   });
+
+  // Check rough shape is correct.
+  expectType<
+    {
+      nextPageToken: string | undefined;
+      data: {
+        adUsername: string;
+        businessTitle: string | undefined;
+        employeeNumber: number | undefined;
+      }[];
+    }
+  >(result);
+
+  // check down select worked
+  expectType<
+    TypeOf<{
+      data: {
+        jobProfile: any; // should be omitted
+      }[];
+    }, typeof result>
+  >(false);
+
   console.log(`fetchEmployeePageByAdUsername('${adUsername}')`);
   console.table(
     result.data.map(({ adUsername, businessTitle, employeeNumber }) => ({

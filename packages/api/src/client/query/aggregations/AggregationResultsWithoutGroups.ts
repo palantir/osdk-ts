@@ -24,12 +24,16 @@ import type {
 import type { StringArrayToUnion } from "#util";
 import type { AggregationClause } from "./AggregationsClause";
 
+type SubselectKeys<AC extends AggregationClause<any, any>, P extends keyof AC> =
+  AC[P] extends readonly string[] | string ? P : never;
+
 export type AggregationResultsWithoutGroups<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
   AC extends AggregationClause<O, K>,
 > = {
-  [P in PropertyKeysFrom<O, K>]: AC[P] extends readonly string[] | string ? {
+  [P in PropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
+    readonly string[] | string ? {
       [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
         : OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>;
     }

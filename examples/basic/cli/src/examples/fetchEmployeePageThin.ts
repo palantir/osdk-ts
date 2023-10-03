@@ -30,11 +30,11 @@ export async function fetchEmployeePageThin(
 
   expectType<string>(result.data[0].adUsername);
 
-  // locationCity was not selected!
+  // locationCity was not selected. Should not be present
   expectType<
     TypeOf<
       {
-        locationCity: string | undefined;
+        locationCity: any;
       },
       (typeof result.data)[0]
     >

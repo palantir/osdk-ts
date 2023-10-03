@@ -25,6 +25,7 @@ import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdU
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit";
 import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin";
 import type { OntologyType } from "./OntologyType";
+import { typeChecks } from "./typeChecks";
 
 declare global {
   namespace NodeJS {
@@ -58,6 +59,8 @@ async function runTests() {
 
     await fetchAggregationForEmployeesGroupedThin(thinClient);
     await fetchEmployeeLead(client, "bob");
+
+    await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);
     console.error(e);
