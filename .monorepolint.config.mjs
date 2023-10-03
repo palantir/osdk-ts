@@ -75,7 +75,7 @@ function standardPackageRules(shared) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          prettier: "prettier .",
+          prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
           typecheck: "tsc-absolute --build",
         },
