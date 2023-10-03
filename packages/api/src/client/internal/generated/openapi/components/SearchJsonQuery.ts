@@ -1,17 +1,33 @@
-import { LtQuery } from "./LtQuery";
-import { GtQuery } from "./GtQuery";
-import { LteQuery } from "./LteQuery";
-import { GteQuery } from "./GteQuery";
-import { EqualsQuery } from "./EqualsQuery";
-import { IsNullQuery } from "./IsNullQuery";
-import { ContainsQuery } from "./ContainsQuery";
-import { AndQuery } from "./AndQuery";
-import { OrQuery } from "./OrQuery";
-import { NotQuery } from "./NotQuery";
-import { PrefixQuery } from "./PrefixQuery";
-import { PhraseQuery } from "./PhraseQuery";
-import { AnyTermQuery } from "./AnyTermQuery";
-import { AllTermsQuery } from "./AllTermsQuery";
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { LtQuery } from "./LtQuery";
+import type { GtQuery } from "./GtQuery";
+import type { LteQuery } from "./LteQuery";
+import type { GteQuery } from "./GteQuery";
+import type { EqualsQuery } from "./EqualsQuery";
+import type { IsNullQuery } from "./IsNullQuery";
+import type { ContainsQuery } from "./ContainsQuery";
+import type { AndQuery } from "./AndQuery";
+import type { OrQuery } from "./OrQuery";
+import type { NotQuery } from "./NotQuery";
+import type { PrefixQuery } from "./PrefixQuery";
+import type { PhraseQuery } from "./PhraseQuery";
+import type { AnyTermQuery } from "./AnyTermQuery";
+import type { AllTermsQuery } from "./AllTermsQuery";
 
 export interface SearchJsonQuery_Lt extends LtQuery {
     type: "lt";

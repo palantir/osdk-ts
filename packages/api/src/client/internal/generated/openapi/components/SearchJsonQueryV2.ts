@@ -1,25 +1,41 @@
-import { LtQuery } from "./LtQuery";
-import { GtQuery } from "./GtQuery";
-import { LteQuery } from "./LteQuery";
-import { GteQuery } from "./GteQuery";
-import { EqualsQuery } from "./EqualsQuery";
-import { IsNullQuery } from "./IsNullQuery";
-import { ContainsQuery } from "./ContainsQuery";
-import { AndQueryV2 } from "./AndQueryV2";
-import { OrQueryV2 } from "./OrQueryV2";
-import { NotQueryV2 } from "./NotQueryV2";
-import { StartsWithQuery } from "./StartsWithQuery";
-import { ContainsAllTermsInOrderQuery } from "./ContainsAllTermsInOrderQuery";
-import { ContainsAllTermsInOrderPrefixLastTerm } from "./ContainsAllTermsInOrderPrefixLastTerm";
-import { ContainsAnyTermQuery } from "./ContainsAnyTermQuery";
-import { ContainsAllTermsQuery } from "./ContainsAllTermsQuery";
-import { WithinDistanceOfQuery } from "./WithinDistanceOfQuery";
-import { WithinBoundingBoxQuery } from "./WithinBoundingBoxQuery";
-import { IntersectsBoundingBoxQuery } from "./IntersectsBoundingBoxQuery";
-import { DoesNotIntersectBoundingBoxQuery } from "./DoesNotIntersectBoundingBoxQuery";
-import { WithinPolygonQuery } from "./WithinPolygonQuery";
-import { IntersectsPolygonQuery } from "./IntersectsPolygonQuery";
-import { DoesNotIntersectPolygonQuery } from "./DoesNotIntersectPolygonQuery";
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { LtQuery } from "./LtQuery";
+import type { GtQuery } from "./GtQuery";
+import type { LteQuery } from "./LteQuery";
+import type { GteQuery } from "./GteQuery";
+import type { EqualsQuery } from "./EqualsQuery";
+import type { IsNullQuery } from "./IsNullQuery";
+import type { ContainsQuery } from "./ContainsQuery";
+import type { AndQueryV2 } from "./AndQueryV2";
+import type { OrQueryV2 } from "./OrQueryV2";
+import type { NotQueryV2 } from "./NotQueryV2";
+import type { StartsWithQuery } from "./StartsWithQuery";
+import type { ContainsAllTermsInOrderQuery } from "./ContainsAllTermsInOrderQuery";
+import type { ContainsAllTermsInOrderPrefixLastTerm } from "./ContainsAllTermsInOrderPrefixLastTerm";
+import type { ContainsAnyTermQuery } from "./ContainsAnyTermQuery";
+import type { ContainsAllTermsQuery } from "./ContainsAllTermsQuery";
+import type { WithinDistanceOfQuery } from "./WithinDistanceOfQuery";
+import type { WithinBoundingBoxQuery } from "./WithinBoundingBoxQuery";
+import type { IntersectsBoundingBoxQuery } from "./IntersectsBoundingBoxQuery";
+import type { DoesNotIntersectBoundingBoxQuery } from "./DoesNotIntersectBoundingBoxQuery";
+import type { WithinPolygonQuery } from "./WithinPolygonQuery";
+import type { IntersectsPolygonQuery } from "./IntersectsPolygonQuery";
+import type { DoesNotIntersectPolygonQuery } from "./DoesNotIntersectPolygonQuery";
 
 export interface SearchJsonQueryV2_Lt extends LtQuery {
     type: "lt";

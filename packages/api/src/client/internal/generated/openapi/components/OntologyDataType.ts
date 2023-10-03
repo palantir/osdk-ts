@@ -1,23 +1,39 @@
-import { AnyType } from "./AnyType";
-import { BinaryType } from "./BinaryType";
-import { BooleanType } from "./BooleanType";
-import { ByteType } from "./ByteType";
-import { DateType } from "./DateType";
-import { DecimalType } from "./DecimalType";
-import { DoubleType } from "./DoubleType";
-import { FloatType } from "./FloatType";
-import { IntegerType } from "./IntegerType";
-import { LongType } from "./LongType";
-import { ShortType } from "./ShortType";
-import { StringType } from "./StringType";
-import { TimestampType } from "./TimestampType";
-import { OntologyArrayType } from "./OntologyArrayType";
-import { OntologyMapType } from "./OntologyMapType";
-import { OntologySetType } from "./OntologySetType";
-import { OntologyStructType } from "./OntologyStructType";
-import { OntologyObjectType } from "./OntologyObjectType";
-import { OntologyObjectSetType } from "./OntologyObjectSetType";
-import { UnsupportedType } from "./UnsupportedType";
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { AnyType } from "./AnyType";
+import type { BinaryType } from "./BinaryType";
+import type { BooleanType } from "./BooleanType";
+import type { ByteType } from "./ByteType";
+import type { DateType } from "./DateType";
+import type { DecimalType } from "./DecimalType";
+import type { DoubleType } from "./DoubleType";
+import type { FloatType } from "./FloatType";
+import type { IntegerType } from "./IntegerType";
+import type { LongType } from "./LongType";
+import type { ShortType } from "./ShortType";
+import type { StringType } from "./StringType";
+import type { TimestampType } from "./TimestampType";
+import type { OntologyArrayType } from "./OntologyArrayType";
+import type { OntologyMapType } from "./OntologyMapType";
+import type { OntologySetType } from "./OntologySetType";
+import type { OntologyStructType } from "./OntologyStructType";
+import type { OntologyObjectType } from "./OntologyObjectType";
+import type { OntologyObjectSetType } from "./OntologyObjectSetType";
+import type { UnsupportedType } from "./UnsupportedType";
 
 export interface OntologyDataType_Any extends AnyType {
     type: "any";

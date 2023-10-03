@@ -1,15 +1,31 @@
-import { AnyType } from "./AnyType";
-import { ModelApiArrayType } from "./ModelApiArrayType";
-import { BooleanType } from "./BooleanType";
-import { DateType } from "./DateType";
-import { FloatType } from "./FloatType";
-import { IntegerType } from "./IntegerType";
-import { ModelApiMapType } from "./ModelApiMapType";
-import { ModelApiNullType } from "./ModelApiNullType";
-import { StringType } from "./StringType";
-import { ModelApiStructType } from "./ModelApiStructType";
-import { TimestampType } from "./TimestampType";
-import { ModelApiUnionType } from "./ModelApiUnionType";
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type { AnyType } from "./AnyType";
+import type { ModelApiArrayType } from "./ModelApiArrayType";
+import type { BooleanType } from "./BooleanType";
+import type { DateType } from "./DateType";
+import type { FloatType } from "./FloatType";
+import type { IntegerType } from "./IntegerType";
+import type { ModelApiMapType } from "./ModelApiMapType";
+import type { ModelApiNullType } from "./ModelApiNullType";
+import type { StringType } from "./StringType";
+import type { ModelApiStructType } from "./ModelApiStructType";
+import type { TimestampType } from "./TimestampType";
+import type { ModelApiUnionType } from "./ModelApiUnionType";
 
 export interface ModelApiType_Any extends AnyType {
     type: "any";
