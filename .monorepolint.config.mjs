@@ -73,7 +73,9 @@ function standardPackageRules(shared) {
           "dev:transpile": "tsup --watch",
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
-          prettier: "prettier .",
+          "fix-lint":
+            "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+          prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
           typecheck: "tsc-absolute --build",
         },
