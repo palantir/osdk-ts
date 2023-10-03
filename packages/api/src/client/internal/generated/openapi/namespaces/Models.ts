@@ -31,8 +31,8 @@ export function streamChatCompletion<TResponse>(_request: OpenApiRequest<Readabl
         request,
         __undefined,
         __undefined,
-        "application/json",
-        AnyMediaType
+        __applicationJson,
+        __anyMediaType
     );
 }
 
@@ -41,7 +41,7 @@ export function streamChatCompletion<TResponse>(_request: OpenApiRequest<Readabl
  *
  */
 export function listLanguageModels<TResponse>(_request: OpenApiRequest<ListLanguageModelsResponse, TResponse>, queryParameters?: {
-    "source"?: LanguageModelSource,
+    source?: LanguageModelSource,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -52,6 +52,7 @@ export function listLanguageModels<TResponse>(_request: OpenApiRequest<ListLangu
     );
 }
 
-const AnyMediaType: string = "*/*";
+const __anyMediaType: string = "*/*";
+const __applicationJson: string = "application/json";
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
