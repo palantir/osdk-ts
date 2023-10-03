@@ -9,7 +9,7 @@ import { OpenApiRequest } from "../request";
  *
  */
 export function getOperation<TResponse>(_request: OpenApiRequest<AsyncOperation, TResponse>, operationId: string, queryParameters?: {
-    "preview"?: PreviewMode,
+    preview?: PreviewMode,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -20,6 +20,7 @@ export function getOperation<TResponse>(_request: OpenApiRequest<AsyncOperation,
     );
 }
 
-const AnyMediaType: string = "*/*";
+const __anyMediaType: string = "*/*";
+const __applicationJson: string = "application/json";
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;

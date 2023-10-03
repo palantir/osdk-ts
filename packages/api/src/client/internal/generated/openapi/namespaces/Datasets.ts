@@ -62,14 +62,14 @@ export function getDataset<TResponse>(_request: OpenApiRequest<Dataset, TRespons
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
  */
-export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, queryParameters?: {
-    "branchId"?: BranchId,
-    "startTransactionRid"?: TransactionRid,
-    "endTransactionRid"?: TransactionRid,
-    "format": TableExportFormat,
-    "columns": Array<string>,
-    "rowLimit"?: number,
-    "preview"?: PreviewMode,
+export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, queryParameters: {
+    branchId?: BranchId,
+    startTransactionRid?: TransactionRid,
+    endTransactionRid?: TransactionRid,
+    format: TableExportFormat,
+    columns: Array<string>,
+    rowLimit?: number,
+    preview?: PreviewMode,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -78,7 +78,7 @@ export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uin
         queryParameters,
         __undefined,
         __undefined,
-        AnyMediaType
+        __anyMediaType
     );
 }
 
@@ -87,9 +87,9 @@ export function readTable<TResponse>(_request: OpenApiRequest<ReadableStream<Uin
  *
  */
 export function getSchema<TResponse>(_request: OpenApiRequest<any, TResponse>, datasetRid: DatasetRid, queryParameters?: {
-    "branchId"?: BranchId,
-    "transactionRid"?: TransactionRid,
-    "preview"?: PreviewMode,
+    branchId?: BranchId,
+    transactionRid?: TransactionRid,
+    preview?: PreviewMode,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -105,8 +105,8 @@ export function getSchema<TResponse>(_request: OpenApiRequest<any, TResponse>, d
  *
  */
 export function putSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, request: any, queryParameters?: {
-    "branchId"?: BranchId,
-    "preview"?: PreviewMode,
+    branchId?: BranchId,
+    preview?: PreviewMode,
 }): Promise<TResponse> {
     return _request(
         "PUT",
@@ -122,9 +122,9 @@ export function putSchema<TResponse>(_request: OpenApiRequest<undefined, TRespon
  *
  */
 export function deleteSchema<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, queryParameters?: {
-    "branchId"?: BranchId,
-    "transactionRid"?: TransactionRid,
-    "preview"?: PreviewMode,
+    branchId?: BranchId,
+    transactionRid?: TransactionRid,
+    preview?: PreviewMode,
 }): Promise<TResponse> {
     return _request(
         "DELETE",
@@ -142,8 +142,8 @@ export function deleteSchema<TResponse>(_request: OpenApiRequest<undefined, TRes
  *
  */
 export function listBranches<TResponse>(_request: OpenApiRequest<ListBranchesResponse, TResponse>, datasetRid: DatasetRid, queryParameters?: {
-    "pageSize"?: PageSize,
-    "pageToken"?: PageToken,
+    pageSize?: PageSize,
+    pageToken?: PageToken,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -209,7 +209,7 @@ export function deleteBranch<TResponse>(_request: OpenApiRequest<undefined, TRes
  *
  */
 export function createTransaction<TResponse>(_request: OpenApiRequest<Transaction, TResponse>, datasetRid: DatasetRid, request: CreateTransactionRequest, queryParameters?: {
-    "branchId"?: BranchId,
+    branchId?: BranchId,
 }): Promise<TResponse> {
     return _request(
         "POST",
@@ -300,11 +300,11 @@ export function abortTransaction<TResponse>(_request: OpenApiRequest<Transaction
  *
  */
 export function listFiles<TResponse>(_request: OpenApiRequest<ListFilesResponse, TResponse>, datasetRid: DatasetRid, queryParameters?: {
-    "branchId"?: BranchId,
-    "startTransactionRid"?: TransactionRid,
-    "endTransactionRid"?: TransactionRid,
-    "pageSize"?: PageSize,
-    "pageToken"?: PageToken,
+    branchId?: BranchId,
+    startTransactionRid?: TransactionRid,
+    endTransactionRid?: TransactionRid,
+    pageSize?: PageSize,
+    pageToken?: PageToken,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -338,11 +338,11 @@ export function listFiles<TResponse>(_request: OpenApiRequest<ListFilesResponse,
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
  */
-export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, request: ReadableStream<Uint8Array> | Blob, queryParameters?: {
-    "filePath": FilePath,
-    "branchId"?: BranchId,
-    "transactionType"?: TransactionType,
-    "transactionRid"?: TransactionRid,
+export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, request: ReadableStream<Uint8Array> | Blob, queryParameters: {
+    filePath: FilePath,
+    branchId?: BranchId,
+    transactionType?: TransactionType,
+    transactionRid?: TransactionRid,
 }): Promise<TResponse> {
     return _request(
         "POST",
@@ -350,7 +350,7 @@ export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>,
         request,
         queryParameters,
         __undefined,
-        AnyMediaType,
+        __anyMediaType,
     );
 }
 
@@ -382,9 +382,9 @@ export function uploadFile<TResponse>(_request: OpenApiRequest<File, TResponse>,
  *
  */
 export function getFileMetadata<TResponse>(_request: OpenApiRequest<File, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
-    "branchId"?: BranchId,
-    "startTransactionRid"?: TransactionRid,
-    "endTransactionRid"?: TransactionRid,
+    branchId?: BranchId,
+    startTransactionRid?: TransactionRid,
+    endTransactionRid?: TransactionRid,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -415,8 +415,8 @@ export function getFileMetadata<TResponse>(_request: OpenApiRequest<File, TRespo
  *
  */
 export function deleteFile<TResponse>(_request: OpenApiRequest<undefined, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
-    "branchId"?: BranchId,
-    "transactionRid"?: TransactionRid,
+    branchId?: BranchId,
+    transactionRid?: TransactionRid,
 }): Promise<TResponse> {
     return _request(
         "DELETE",
@@ -456,9 +456,9 @@ export function deleteFile<TResponse>(_request: OpenApiRequest<undefined, TRespo
  *
  */
 export function getFileContent<TResponse>(_request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>, datasetRid: DatasetRid, filePath: FilePath, queryParameters?: {
-    "branchId"?: BranchId,
-    "startTransactionRid"?: TransactionRid,
-    "endTransactionRid"?: TransactionRid,
+    branchId?: BranchId,
+    startTransactionRid?: TransactionRid,
+    endTransactionRid?: TransactionRid,
 }): Promise<TResponse> {
     return _request(
         "GET",
@@ -467,10 +467,11 @@ export function getFileContent<TResponse>(_request: OpenApiRequest<ReadableStrea
         queryParameters,
         __undefined,
         __undefined,
-        AnyMediaType
+        __anyMediaType
     );
 }
 
-const AnyMediaType: string = "*/*";
+const __anyMediaType: string = "*/*";
+const __applicationJson: string = "application/json";
 /** Constant reference to `undefined` that we expect to get minified and therefore reduce total code size */
 const __undefined: undefined = undefined;
