@@ -15,11 +15,11 @@
  */
 
 import type { OntologyDefinition } from "#ontology";
+import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { createThinClient } from "../createThinClient";
-import type { AggregateObjectSetResponseV2 } from "../internal/generated/openapi/components";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import { aggregateOrThrow } from "./aggregateOrThrow";
 

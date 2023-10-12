@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { loadObjectSetV2 } from "#gateway/requests";
-import type { LoadObjectSetRequestV2 } from "#gateway/types";
 import { createOpenApiRequest } from "#net";
 import type { Wire } from "#net";
 import type {
@@ -25,6 +23,8 @@ import type {
   PropertyKeysFrom,
 } from "#ontology";
 import type { NOOP } from "#util";
+import { loadObjectSetV2 } from "@osdk/gateway/requests";
+import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import type { PageResult } from "../PageResult";
 import type { ThinClient } from "../ThinClient";
 

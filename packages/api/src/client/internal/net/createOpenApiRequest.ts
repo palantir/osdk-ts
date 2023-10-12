@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OpenApiRequest } from "../generated/openapi/request";
+import type { OpenApiRequest } from "@osdk/gateway/types";
 
 export default function createOpenApiRequest<TExpectedResponse>(
   basePath: string,
