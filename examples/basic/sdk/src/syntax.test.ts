@@ -16,6 +16,7 @@
 
 import type { Client } from "@osdk/api";
 import { isOk } from "@osdk/api";
+import { describe, it } from "vitest";
 import type { Ontology } from "./Ontology";
 
 // This file should really get migrated into various test files in osdk-api instead of in the
@@ -178,3 +179,8 @@ async function aggregateThingsWithGroupsAndHandleErrors() {
     }
   }
 }
+
+describe("syntax", () => {
+  it("works", () => {
+  });
+});

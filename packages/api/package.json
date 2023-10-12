@@ -21,6 +21,8 @@
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build"
@@ -41,7 +43,9 @@
     "#util": "./src/util/index.ts",
     "#ontology": "./src/ontology/index.ts",
     "#client/converters": "./src/client/internal/conversions/index.ts",
-    "#client/query": "./src/client/query/index.ts"
+    "#client/query": "./src/client/query/index.ts",
+    "#gateway/types": "./src/client/internal/generated/openapi/components/index.ts",
+    "#gateway/requests": "./src/client/internal/generated/openapi/namespaces/index.ts"
   },
   "keywords": [],
   "files": [

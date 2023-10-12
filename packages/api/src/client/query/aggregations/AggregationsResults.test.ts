@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { describe, it } from "vitest";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
 import type { AggregationsResults } from "./AggregationsResults";
 
@@ -72,3 +73,7 @@ type Q = AggregationResultsWithoutGroups<
     text: "approximateDistinct";
   }
 >;
+
+describe("AggregationResults", () => {
+  it("works", () => {});
+});

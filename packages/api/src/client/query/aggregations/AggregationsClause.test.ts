@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { describe, it } from "vitest";
 import type { AggregatableKeys } from "./AggregatableKeys";
 import type { AggregationClause } from "./AggregationsClause";
 
@@ -58,3 +59,7 @@ export type Q = AggregationClause<
   },
   "Todo"
 >;
+
+describe("AggregationClause", () => {
+  it("works", () => {});
+});

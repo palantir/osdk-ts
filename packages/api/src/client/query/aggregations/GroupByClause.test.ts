@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { describe, it } from "vitest";
 import type { GroupByClause } from "./GroupByClause";
 
 export type F = GroupByClause<
@@ -36,3 +37,7 @@ export type F = GroupByClause<
   },
   "Todo"
 >;
+
+describe("GroupByClause", () => {
+  it("works", () => {});
+});

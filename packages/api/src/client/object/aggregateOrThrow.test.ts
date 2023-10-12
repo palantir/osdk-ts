@@ -17,12 +17,18 @@
 import type { OntologyDefinition } from "#ontology";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+import { describe, expect, it, type Mock, vi } from "vitest";
 import { createThinClient } from "../createThinClient";
+import type { AggregateObjectSetResponseV2 } from "../internal/generated/openapi/components";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import { aggregateOrThrow } from "./aggregateOrThrow";
 
 const mockOntology = {
-  metadata: undefined as any,
+  metadata: {
+    ontologyRid: "ri.a.b.c.d",
+    ontologyApiName: "apiName",
+    userAgent: "",
+  },
   objects: {
     Todo: {
       apiName: "Todo",
@@ -47,99 +53,140 @@ const mockOntology = {
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
 
-// export so its not removed
-export async function test1() {
-  const thinClient = createThinClient(
-    mockOntology as MockOntology,
-    "host.com",
-    () => "",
-    fetch,
-  );
-  const notGrouped = await aggregateOrThrow(thinClient, "Todo", {
-    select: {
-      text: "approximateDistinct",
-      priority: "avg",
-      id: ["max", "avg"],
-    },
-  });
+describe("aggregateOrThrow", () => {
+  it("works", async () => {
+    const mockFetch: Mock = vi.fn();
 
-  expectType<number>(notGrouped.text.approximateDistinct);
-  expectType<number | undefined>(notGrouped.priority.avg);
-  expectType<number | undefined>(notGrouped.id.max);
-  expectType<number | undefined>(notGrouped.id.avg);
-  expectType<
-    TypeOf<
-      {
-        other: any;
+    const aggregationResponse: AggregateObjectSetResponseV2 = {
+      data: [
+        {
+          group: {
+            text: "hello",
+          },
+          metrics: [
+            {
+              name: "text.approximateDistinct",
+              value: 1,
+            },
+            {
+              name: "priority.avg",
+              value: 1,
+            },
+            {
+              name: "id.max",
+              value: 1,
+            },
+            {
+              name: "id.avg",
+              value: 1,
+            },
+          ],
+        },
+      ],
+    };
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => new Promise((resolve) => resolve(aggregationResponse)),
+    });
+
+    const thinClient = createThinClient(
+      mockOntology as MockOntology,
+      "host.com",
+      () => "",
+      mockFetch,
+    );
+
+    const notGrouped = await aggregateOrThrow(thinClient, "Todo", {
+      select: {
+        text: "approximateDistinct",
+        priority: "avg",
+        id: ["max", "avg"],
       },
-      typeof notGrouped
-    >
-  >(false); // subselect should hide unused keys
+    });
 
-  const grouped = await aggregateOrThrow(thinClient, "Todo", {
-    select: {
-      text: "approximateDistinct",
-    },
-    groupBy: {
-      text: "exact",
-    },
+    expectType<number>(notGrouped.text.approximateDistinct);
+    expectType<number | undefined>(notGrouped.priority.avg);
+    expectType<number | undefined>(notGrouped.id.max);
+    expectType<number | undefined>(notGrouped.id.avg);
+    expectType<
+      TypeOf<
+        {
+          other: any;
+        },
+        typeof notGrouped
+      >
+    >(false); // subselect should hide unused keys
+
+    const grouped = await aggregateOrThrow(thinClient, "Todo", {
+      select: {
+        text: "approximateDistinct",
+      },
+      groupBy: {
+        text: "exact",
+      },
+    });
+    expectType<Array<any>>(grouped);
+    expectType<string | undefined>(grouped[0].group.text);
+    expectType<number>(grouped[0].values.text.approximateDistinct);
   });
-  expectType<Array<any>>(grouped);
-  expectType<string | undefined>(grouped[0].group.text);
-  expectType<number>(grouped[0].values.text.approximateDistinct);
-}
 
-// export so its not removed
-export async function test2() {
-  type f = AggregateOpts<
-    {
-      metadata: any;
-      objects: {
-        Todo: {
-          apiName: "Todo";
-          links: {};
-          properties: {
-            text: {
-              type: "string";
-            };
-            id: {
-              type: "double";
+  it("works with where: todo", async () => {
+    type f = AggregateOpts<
+      {
+        metadata: any;
+        objects: {
+          Todo: {
+            apiName: "Todo";
+            links: {};
+            properties: {
+              text: {
+                type: "string";
+              };
+              id: {
+                type: "double";
+              };
             };
           };
         };
-      };
-    },
-    "Todo",
-    {
-      locationCity: "approximateDistinct";
-      text: "approximateDistinct";
-    }
-  >;
+      },
+      "Todo",
+      {
+        locationCity: "approximateDistinct";
+        text: "approximateDistinct";
+      }
+    >;
 
-  const f: AggregateOpts<
-    {
-      metadata: any;
-      objects: {
-        Todo: {
-          apiName: "Todo";
-          links: {};
-          properties: {
-            text: {
-              type: "string";
-            };
-            id: {
-              type: "double";
+    const f: AggregateOpts<
+      {
+        metadata: any;
+        objects: {
+          Todo: {
+            apiName: "Todo";
+            links: {};
+            properties: {
+              text: {
+                type: "string";
+              };
+              id: {
+                type: "double";
+              };
             };
           };
         };
-      };
-    },
-    "Todo",
-    {
-      locationCity: "approximateDistinct";
-      text: "approximateDistinct";
-    }
-  > = undefined as any;
+      },
+      "Todo",
+      {
+        locationCity: "approximateDistinct";
+        text: "approximateDistinct";
+      }
+    > = {
+      select: {
+        locationCity: "approximateDistinct",
+      },
+    } as any;
 
-  expectType<"approximateDistinct">(f.select.locationCity);
-}
+    expectType<"approximateDistinct">(f.select.locationCity);
+  });
+});

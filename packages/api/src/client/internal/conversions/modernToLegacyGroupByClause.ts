@@ -15,18 +15,18 @@
  */
 
 import type { AllGroupByValues, GroupByClause } from "#client/query";
-import type { Wire } from "#net";
+import type { AggregationGroupByV2 } from "#gateway/types";
 import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 
 export function modernToLegacyGroupByClause<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(groupByClause: GroupByClause<O, K> | undefined) {
-  if (!groupByClause) return undefined;
+  if (!groupByClause) return [];
 
   return Object.entries(
     groupByClause as Record<string, AllGroupByValues>,
-  ).flatMap<Wire.GroupByClause>(([field, type]) => {
+  ).flatMap<AggregationGroupByV2>(([field, type]) => {
     if (type === "exact") {
       return [{ type, field }];
     } else if (type.exactWithLimit) {

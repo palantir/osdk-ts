@@ -67,6 +67,11 @@
       "outputs": ["dist/**", "lib/**"]
     },
 
+    "test": {},
+    "test:watch": {
+      "cache": false
+    },
+
     "//#check-mrl": {
       "inputs": [
         "package.json",
