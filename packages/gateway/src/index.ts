@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export {};
+export * from "./generated/openapi/index";
