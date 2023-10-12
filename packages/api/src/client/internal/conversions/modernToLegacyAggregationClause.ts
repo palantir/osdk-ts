@@ -15,7 +15,7 @@
  */
 
 import type { AggregationClause } from "#client/query";
-import type { Wire } from "#net";
+import type { Aggregation } from "#gateway/types";
 import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 
 export function modernToLegacyAggregationClause<
@@ -23,9 +23,9 @@ export function modernToLegacyAggregationClause<
   K extends ObjectTypesFrom<T>,
   AC extends AggregationClause<T, K>,
 >(select: AC) {
-  return Object.entries(select).flatMap<Wire.AggregationClause>(([k, v]) => {
+  return Object.entries(select).flatMap<Aggregation>(([k, v]) => {
     if (Array.isArray(v)) {
-      return (v as string[]).map((v2) => {
+      return v.map((v2) => {
         return {
           type: v2,
           name: `${k}.${v2}`,
@@ -35,7 +35,7 @@ export function modernToLegacyAggregationClause<
     } else {
       return [
         {
-          type: v as string,
+          type: v as "min" | "max" | "sum" | "avg" | "approximateDistinct", // FIXME v has additional possible values
           name: `${k}.${v}`,
           field: k,
         },

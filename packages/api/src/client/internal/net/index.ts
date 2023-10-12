@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { default as aggregateObjectsV2 } from "./aggregateObjectsV2";
-export { default as listObjectsFromObjectSetV2 } from "./listObjectsFromObjectSetV2";
+export { default as createOpenApiRequest } from "./createOpenApiRequest";
 export * as Wire from "./types";

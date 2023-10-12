@@ -16,6 +16,7 @@
 
 import type * as ontology from "#ontology";
 import type { FetchAsJsonFn } from "#util";
+import type { OpenApiRequest } from "./internal/generated/openapi/request";
 
 export interface ThinClient<O extends ontology.OntologyDefinition<any>> {
   ontology: O;

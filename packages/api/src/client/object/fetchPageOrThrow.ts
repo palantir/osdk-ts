@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { listObjectsFromObjectSetV2 } from "#net";
+import { loadObjectSetV2 } from "#gateway/requests";
+import type { LoadObjectSetRequestV2 } from "#gateway/types";
+import { createOpenApiRequest } from "#net";
 import type { Wire } from "#net";
 import type {
   ObjectTypesFrom,
@@ -59,7 +61,7 @@ export async function fetchPageOrThrow<
     >
   >
 > {
-  const body: Wire.LoadObjectSetRequestV2 = {
+  const body: LoadObjectSetRequestV2 = {
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
     select: (args?.select ?? []) as unknown as string[], // FIXME?
@@ -69,9 +71,11 @@ export async function fetchPageOrThrow<
     body.pageToken = args.nextPageToken;
   }
 
-  const r = await listObjectsFromObjectSetV2(
-    client.fetchJson,
-    client.stack,
+  const r = await loadObjectSetV2(
+    createOpenApiRequest(
+      client.stack,
+      client.fetchJson as typeof fetch,
+    ),
     client.ontology.metadata.ontologyApiName,
     body,
   );

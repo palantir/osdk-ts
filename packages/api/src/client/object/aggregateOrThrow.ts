@@ -24,8 +24,9 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "#client/query";
-import type { Wire } from "#net";
-import { aggregateObjectsV2 } from "#net";
+import { aggregateObjectsV2 } from "#gateway/requests";
+import type { AggregateObjectsRequestV2 } from "#gateway/types";
+import { createOpenApiRequest } from "#net";
 import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import invariant from "tiny-invariant";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
@@ -40,25 +41,27 @@ export async function aggregateOrThrow<
   objectType: K,
   req: AO,
 ): Promise<AggregationsResults<T, K, AO>> {
-  const body: Wire.AggregateObjectsV2Body = {
+  const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<T, K, AO["select"]>(
       req.select,
     ),
+    groupBy: [],
+    where: undefined,
   };
 
   if (req.groupBy) {
     body.groupBy = modernToLegacyGroupByClause(req.groupBy);
   }
   if (req.where) {
-    body.where = {
-      where: modernToLegacyWhereClause(req.where),
-      // TODO: orderBy
-      // TODO The token stuff here sucks
-    };
+    body.where = modernToLegacyWhereClause(req.where);
+    // TODO: orderBy
+    // TODO The token stuff here sucks
   }
   const result = await aggregateObjectsV2(
-    thinClient.fetchJson,
-    thinClient.stack,
+    createOpenApiRequest(
+      thinClient.stack,
+      thinClient.fetch,
+    ),
     thinClient.ontology.metadata.ontologyApiName,
     objectType,
     body,
