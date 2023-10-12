@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-export type { WhereClause } from "#client/query";
-export type { OsdkObject } from "#ontology";
-export { createClient, createThinClient, isOk } from "./client";
-export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
+import { format } from "prettier";
 
-// FIXME: Shoudl this be Objects or Object?
-export * as Objects from "./client/object";
-
-export type {
-  ObjectDefinition,
-  OntologyDefinition,
-  PropertyDefinition,
-} from "./ontology/Definition";
+export function formatTs(contents: string) {
+  return format(contents, {
+    parser: "typescript",
+    singleQuote: true,
+    trailingComma: "all",
+    tabWidth: 2,
+    printWidth: 120,
+  });
+}

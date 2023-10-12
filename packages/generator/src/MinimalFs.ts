@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-export type { WhereClause } from "#client/query";
-export type { OsdkObject } from "#ontology";
-export { createClient, createThinClient, isOk } from "./client";
-export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
+export interface MinimalFs {
+  writeFile: WriteFileFn;
+}
 
-// FIXME: Shoudl this be Objects or Object?
-export * as Objects from "./client/object";
-
-export type {
-  ObjectDefinition,
-  OntologyDefinition,
-  PropertyDefinition,
-} from "./ontology/Definition";
+export type WriteFileFn = (path: string, contents: string) => Promise<void>;

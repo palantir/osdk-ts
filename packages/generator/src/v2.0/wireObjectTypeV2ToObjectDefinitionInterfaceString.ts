@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-export type { WhereClause } from "#client/query";
-export type { OsdkObject } from "#ontology";
-export { createClient, createThinClient, isOk } from "./client";
-export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
+import type { ObjectTypeV2 } from "@osdk/gateway/types";
 
-// FIXME: Shoudl this be Objects or Object?
-export * as Objects from "./client/object";
-
-export type {
-  ObjectDefinition,
-  OntologyDefinition,
-  PropertyDefinition,
-} from "./ontology/Definition";
+export function wireObjectTypeV2ToObjectDefinitionInterfaceString(
+  input: ObjectTypeV2,
+) {
+  return `
+    export interface ${input.apiName} extends ObjectDefinition<"${input.apiName}", "${input.apiName}">{
+      apiName: "${input.apiName}";
+      properties: {
+        ${
+    Object.entries(input.properties).map(([key, value]) => `
+      /**
+       * ${value.description ?? ""}
+       **/
+      ${key}: {
+          type: "${value.dataType.type}";
+          displayName: "${value.displayName ?? key}";
+        }
+        
+        `)
+  }
+      }
+    }
+  `;
+}

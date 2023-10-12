@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-export type { WhereClause } from "#client/query";
-export type { OsdkObject } from "#ontology";
-export { createClient, createThinClient, isOk } from "./client";
-export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
+import * as path from "node:path";
+import type { MinimalFs } from "../MinimalFs";
+import { formatTs } from "../util/test/formatTs";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-// FIXME: Shoudl this be Objects or Object?
-export * as Objects from "./client/object";
+export async function generateClientSdkVersionOneDotOne(
+  ontology: WireOntologyDefinition,
+  fs: MinimalFs,
+  outDir: string,
+) {
+  const { rid, apiName, description, objectTypes, actionTypes, queryTypes } =
+    ontology;
 
-export type {
-  ObjectDefinition,
-  OntologyDefinition,
-  PropertyDefinition,
-} from "./ontology/Definition";
+  await fs.writeFile(
+    path.join(outDir, "index.ts"),
+    await formatTs(`// Path: ${path.join(outDir, "index.ts")}
+    export const ontologyRid = "${rid}";
+    `),
+  );
+}

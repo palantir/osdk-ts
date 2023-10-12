@@ -217,12 +217,18 @@ importers:
 
   packages/generator:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
+      prettier:
+        specifier: ^3.0.3
+        version: 3.0.3
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.1
@@ -3827,6 +3833,12 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
     dev: true
+
+  /prettier@3.0.3:
+    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
+    engines: {node: '>=14'}
+    hasBin: true
+    dev: false
 
   /pretty-format@29.7.0:
     resolution: {integrity: sha512-Pdlw/oPxN+aXdmM9R00JVC9WVFoCLTKJvDVLgmJ+qAffBMxsV85l/Lu7sNx4zSzPyoL2euImuEwHhOXdEgNFZQ==}
