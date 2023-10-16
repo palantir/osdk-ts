@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/library"],
-  root: true,
-};
+export {};
