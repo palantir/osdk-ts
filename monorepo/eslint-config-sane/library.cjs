@@ -50,14 +50,14 @@ module.exports = {
     "import/order": [
       "error",
       {
-        groups: [
+        groups: [[
           "internal",
           "builtin",
           "external",
           "parent",
           "sibling",
           "index",
-        ],
+        ]],
       },
     ],
     "import/no-unresolved": "off",

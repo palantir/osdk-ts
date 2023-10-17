@@ -12,7 +12,10 @@ import micromatch from "micromatch";
  * @type {import("lint-staged").Config}
  */
 export default {
-  "{monorepo,packages,examples}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+  "{monorepo}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+    "dprint fmt",
+  ],
+  "{packages,examples}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
     "eslint --fix",
   ],
@@ -26,7 +29,7 @@ export default {
     ], {});
 
     const mrlCommands = mrlFiles.length > 0
-      ? ["monorepolint check", `dprint fmt ${mrlFiles.join(" ")}`]
+      ? ["monorepolint check --verbose", `dprint fmt ${mrlFiles.join(" ")}`]
       : [];
 
     return [...mrlCommands];
