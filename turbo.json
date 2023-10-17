@@ -67,8 +67,11 @@
       "outputs": ["dist/**", "lib/**"]
     },
 
-    "test": {},
+    "test": {
+      "env": ["FORCE_COLOR"]
+    },
     "test:watch": {
+      "env": ["FORCE_COLOR"],
       "cache": false
     },
 

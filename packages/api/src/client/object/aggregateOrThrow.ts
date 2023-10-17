@@ -24,10 +24,10 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "#client/query";
-import { aggregateObjectsV2 } from "#gateway/requests";
-import type { AggregateObjectsRequestV2 } from "#gateway/types";
 import { createOpenApiRequest } from "#net";
 import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
+import { aggregateObjectsV2 } from "@osdk/gateway/requests";
+import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { ThinClient } from "../ThinClient";

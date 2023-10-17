@@ -15,8 +15,8 @@
  */
 
 import type { AggregationClause } from "#client/query";
-import type { Aggregation } from "#gateway/types";
 import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
+import type { Aggregation } from "@osdk/gateway/types";
 
 export function modernToLegacyAggregationClause<
   T extends OntologyDefinition<any>,
