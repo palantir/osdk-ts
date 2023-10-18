@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { createOpenApiRequest } from "#net";
-import type { Wire } from "#net";
+import { loadObjectSetV2 } from "@osdk/gateway/requests";
+import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import type {
   ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectFrom,
   PropertyKeysFrom,
-} from "#ontology";
-import type { NOOP } from "#util";
-import { loadObjectSetV2 } from "@osdk/gateway/requests";
-import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
+} from "../../ontology";
+import type { NOOP } from "../../util";
+import type { Wire } from "../internal/net";
+import { createOpenApiRequest } from "../internal/net";
 import type { PageResult } from "../PageResult";
 import type { ThinClient } from "../ThinClient";
 

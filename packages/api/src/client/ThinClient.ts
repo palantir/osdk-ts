@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type * as ontology from "#ontology";
-import type { FetchAsJsonFn } from "#util";
+import type * as ontology from "../ontology";
+import type { FetchAsJsonFn } from "../util";
 
 export interface ThinClient<O extends ontology.OntologyDefinition<any>> {
   ontology: O;

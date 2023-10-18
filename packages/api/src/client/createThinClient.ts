@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "#ontology";
+import type { OntologyDefinition } from "../ontology";
 import {
   createFetchAsJson,
   createFetchHeaderMutator,
   createFetchOrThrow,
   createRetryingFetch,
-} from "#util";
+} from "../util";
 import type { ThinClient } from "./ThinClient";
 
 /**

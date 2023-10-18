@@ -20,7 +20,7 @@ import type {
   OsdkObjectPropertyType,
   PropertyDefinitionFrom,
   PropertyKeysFrom,
-} from "#ontology";
+} from "../../../ontology";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
 import type { AggregationClause } from "./AggregationsClause";
 import type { GroupByClause } from "./GroupByClause";

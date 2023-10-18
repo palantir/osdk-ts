@@ -179,6 +179,9 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
+      typescript-transform-paths:
+        specifier: ^3.4.6
+        version: 3.4.6(typescript@5.2.2)
 
   packages/client:
     dependencies:
@@ -4657,6 +4660,15 @@ packages:
     resolution: {integrity: sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==}
     dependencies:
       is-typedarray: 1.0.0
+    dev: true
+
+  /typescript-transform-paths@3.4.6(typescript@5.2.2):
+    resolution: {integrity: sha512-qdgpCk9oRHkIBhznxaHAapCFapJt5e4FbFik7Y4qdqtp6VyC3smAIPoDEIkjZ2eiF7x5+QxUPYNwJAtw0thsTw==}
+    peerDependencies:
+      typescript: '>=3.6.5'
+    dependencies:
+      minimatch: 3.1.2
+      typescript: 5.2.2
     dev: true
 
   /typescript@5.2.2:
