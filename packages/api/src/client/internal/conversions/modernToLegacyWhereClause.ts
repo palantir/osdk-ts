@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+import type { ObjectDefinition } from "../../../ontology";
 import type {
   AndWhereClause,
   NotWhereClause,
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "#client/query";
-import type { Wire } from "#net";
-import type { ObjectDefinition } from "#ontology";
-import invariant from "tiny-invariant";
+} from "../../query";
+import type { Wire } from "../net";
 
 export function modernToLegacyWhereClause<T extends ObjectDefinition<any, any>>(
   whereClause: WhereClause<T>,

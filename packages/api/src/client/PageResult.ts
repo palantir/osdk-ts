@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObject } from "#ontology";
+import type { OsdkObject } from "../ontology";
 
 export interface PageResult<T extends OsdkObject<any>> {
   data: T[];

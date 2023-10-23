@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition, PropertyDefinition } from "#ontology";
+import type { ObjectDefinition, PropertyDefinition } from "../../ontology";
 
 export type PossibleWhereClauseFilters =
   | "gt"

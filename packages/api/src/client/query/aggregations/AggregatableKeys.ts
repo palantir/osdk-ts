@@ -19,7 +19,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyKeysFrom,
-} from "#ontology";
+} from "../../../ontology";
 
 type Q<
   O extends OntologyDefinition<any>,

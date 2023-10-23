@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
+import { aggregateObjectsV2 } from "@osdk/gateway/requests";
+import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
+import invariant from "tiny-invariant";
+import type { ObjectTypesFrom, OntologyDefinition } from "../../ontology";
 import {
   legacyToModernSingleAggregationResult,
   modernToLegacyAggregationClause,
   modernToLegacyGroupByClause,
   modernToLegacyWhereClause,
-} from "#client/converters";
+} from "../internal/conversions";
+import { createOpenApiRequest } from "../internal/net";
 import type {
   AggregationResultsWithGroups,
   AggregationsResults,
-} from "#client/query";
-import { createOpenApiRequest } from "#net";
-import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
-import { aggregateObjectsV2 } from "@osdk/gateway/requests";
-import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
-import invariant from "tiny-invariant";
+} from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { ThinClient } from "../ThinClient";
 

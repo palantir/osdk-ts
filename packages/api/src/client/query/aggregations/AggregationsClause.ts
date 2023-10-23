@@ -18,7 +18,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyDefinitionsFrom,
-} from "#ontology";
+} from "../../../ontology";
 import type { AggregatableKeys } from "./AggregatableKeys";
 
 type StringAggregateOption = "approximateDistinct";

@@ -20,8 +20,8 @@ import type {
   OsdkObjectPropertyType,
   PropertyDefinitionFrom,
   PropertyKeysFrom,
-} from "#ontology";
-import type { StringArrayToUnion } from "#util";
+} from "../../../ontology";
+import type { StringArrayToUnion } from "../../../util";
 import type { AggregationClause } from "./AggregationsClause";
 
 type SubselectKeys<AC extends AggregationClause<any, any>, P extends keyof AC> =

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import invariant from "tiny-invariant";
+import type { ArrayElement } from "../../../util";
 import type {
   AggregationClause,
   AggregationResultsWithoutGroups,
-} from "#client/query";
-import type { Wire } from "#net";
-import type { ArrayElement } from "#util";
-import invariant from "tiny-invariant";
+} from "../../query";
+import type { Wire } from "../net";
 
 export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<any, any>,
