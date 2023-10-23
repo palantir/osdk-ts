@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 0.0.5
+
+### Patch Changes
+
+- d2e9964: Removing subpath imports since TS does not resolve them when creating `.d.ts` files
+- Updated dependencies [d2e9964]
+  - @osdk/gateway@0.0.1
+
 ## 0.0.4
 
 ### Patch Changes
