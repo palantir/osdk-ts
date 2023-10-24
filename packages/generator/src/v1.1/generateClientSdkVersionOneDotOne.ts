@@ -27,10 +27,84 @@ export async function generateClientSdkVersionOneDotOne(
   const { rid, apiName, description, objectTypes, actionTypes, queryTypes } =
     ontology;
 
+  /**
+   * The internally generated client looks similar to this:
+      export { FoundryClient } from "./FoundryClient";
+      export {
+        TimeSeries,
+        TimeSeriesPoint,
+        Timestamp,
+        LocalDate,
+        ActionExecutionMode,
+        ActionResponse,
+        ActionValidationResult,
+        QueryResponse,
+        GeoShape,
+        GeoPoint,
+        Polygon,
+        Op,
+        Attachment,
+        AttachmentMetadata,
+        ReturnEditsMode,
+        Edits,
+        AggregationGroup,
+        AggregationResult,
+        AggregatableObjectSet,
+        isErr,
+        isOk,
+        Result,
+        GetObjectError,
+        GetLinkedObjectError,
+        ListObjectsError,
+        LoadObjectSetError,
+        ListLinkedObjectsError,
+        AttachmentsError,
+        SearchObjectsError,
+        AggregateObjectsError,
+        QueryError,
+        ActionError,
+        ErrorVisitor,
+        visitError,
+        TimeSeriesError,
+        PermissionDenied,
+        Unauthorized,
+        UnknownError,
+        FoundryApiError,
+        Page,
+        ArrayType,
+        BooleanType,
+        ByteType,
+        DateType,
+        DecimalType,
+        DoubleType,
+        FloatType,
+        GeoPointType,
+        GeoShapeType,
+        IntegerType,
+        LongType,
+        ShortType,
+        StringType,
+        TimeSeriesType,
+        TimestampType,
+        StructType,
+        StructField,
+        SetType,
+        ObjectType,
+        AttachmentType,
+      } from "./internal/@foundry/ontology-runtime/dist";
+      export {
+        PublicClientAuth,
+        ConfidentialClientAuth,
+        UserTokenAuth,
+      } from "./internal/@foundry/oauth-client/dist";
+   */
+
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`// Path: ${path.join(outDir, "index.ts")}
     export const ontologyRid = "${rid}";
+
+    export * from "@osdk/legacy-client";
     `),
   );
 }
