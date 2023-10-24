@@ -59,6 +59,8 @@ export interface LinkDefinition<K extends string> {
 }
 export interface PropertyDefinition {
   readonly?: boolean;
+  displayName?: string;
+  description?: string;
   type: keyof ValidPropertyTypes; // FIXME WHAT ARE THE TYPES
   nullable?: boolean;
 }
