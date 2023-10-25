@@ -29,76 +29,19 @@ export interface Distance {
   value: number;
   unit: DistanceUnit;
 }
+
 // good example of export * being better
-export const Distance: {
-  ofMillimeters: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofCentimeters: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofMeters: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofKilometers: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofInches: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofFeet: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofYards: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofMiles: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-  ofNauticalMiles: (value: number) => {
-    unit: DistanceUnit;
-    value: number;
-  };
-} = {
-  ofMillimeters: function(
-    value: number,
-  ): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofCentimeters: function(
-    value: number,
-  ): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofMeters: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofKilometers: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofInches: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofFeet: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofYards: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofMiles: function(value: number): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
-  ofNauticalMiles: function(
-    value: number,
-  ): { unit: DistanceUnit; value: number } {
-    throw new Error("not implemented");
-  },
+export const Distance = {
+  ofMillimeters: (value: number) => ({ unit: DistanceUnit.MILLIMETERS, value }),
+  ofCentimeters: (value: number) => ({ unit: DistanceUnit.CENTIMETERS, value }),
+  ofMeters: (value: number) => ({ unit: DistanceUnit.METERS, value }),
+  ofKilometers: (value: number) => ({ unit: DistanceUnit.KILOMETERS, value }),
+  ofInches: (value: number) => ({ unit: DistanceUnit.INCHES, value }),
+  ofFeet: (value: number) => ({ unit: DistanceUnit.FEET, value }),
+  ofYards: (value: number) => ({ unit: DistanceUnit.YARDS, value }),
+  ofMiles: (value: number) => ({ unit: DistanceUnit.MILES, value }),
+  ofNauticalMiles: (value: number) => ({
+    unit: DistanceUnit.NAUTICAL_MILES,
+    value,
+  }),
 };

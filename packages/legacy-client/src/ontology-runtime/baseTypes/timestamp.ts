@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import type { LocalDate } from "./localDate";
+import { DateTime, Duration } from "luxon";
+import { LocalDate } from "./localDate";
 /**
  * Type representing an instant in time.
  * Offset is always UTC+00:00
  */
 export class Timestamp {
-  type: "Timestamp";
+  public type = "Timestamp" as const;
+
   /**
    * Returns a Timestamp representing the current time in UTC.
    */
   static now(): Timestamp {
-    throw new Error("not implemented");
+    return new Timestamp(DateTime.utc());
   }
 
   /**
@@ -35,7 +37,10 @@ export class Timestamp {
    * @param dateTimeString
    */
   static fromISOString(dateTimeString: string): Timestamp {
-    throw new Error("not implemented");
+    // TODO check setZone behaviour
+    return new Timestamp(
+      DateTime.fromISO(dateTimeString, { zone: "utc", setZone: true }),
+    );
   }
 
   /**
@@ -44,7 +49,7 @@ export class Timestamp {
    * @param milliseconds number of milliseconds since Unix epoch
    */
   static fromEpochMilli(milliseconds: number): Timestamp {
-    throw new Error("not implemented");
+    return new Timestamp(DateTime.fromMillis(milliseconds, { zone: "utc" }));
   }
 
   /**
@@ -53,103 +58,104 @@ export class Timestamp {
    * @param date
    */
   static fromJsDate(date: Date): Timestamp {
-    throw new Error("not implemented");
+    return new Timestamp(DateTime.fromJSDate(date, { zone: "utc" }));
   }
 
   private dateTime;
-  private constructor() {
-    throw new Error("not implemented");
+
+  private constructor(dateTime: DateTime) {
+    this.dateTime = dateTime;
   }
 
   /**
    * Gets year in the current timezone offset.
    */
   getYear(): number {
-    throw new Error("not implemented");
+    return this.dateTime.year;
   }
 
   /**
    * Gets month (1-12) in the current timezone offset.
    */
   getMonth(): number {
-    throw new Error("not implemented");
+    return this.dateTime.month;
   }
 
   /**
    * Gets day of month (1-31) in the current timezone offset.
    */
   getDayOfMonth(): number {
-    throw new Error("not implemented");
+    return this.dateTime.day;
   }
 
   /**
    * Gets hours (0-23) in the current timezone offset.
    */
   getHours(): number {
-    throw new Error("not implemented");
+    return this.dateTime.hour;
   }
 
   /**
    * Gets minutes (0-59) in the current timezone offset.
    */
   getMinutes(): number {
-    throw new Error("not implemented");
+    return this.dateTime.minute;
   }
 
   /**
    * Gets seconds (0-59) in the current timezone offset.
    */
   getSeconds(): number {
-    throw new Error("not implemented");
+    return this.dateTime.second;
   }
 
   /**
    * Gets milliseconds (0-999) in the current timezone offset.
    */
   getMilliseconds(): number {
-    throw new Error("not implemented");
+    return this.dateTime.millisecond;
   }
 
   /**
    * A time-zone offset from Greenwich/UTC in minutes.
    */
   getTimezoneOffset(): number {
-    throw new Error("not implemented");
+    return this.dateTime.offset;
   }
 
   /**
    * Gets milliseconds from epoch.
    */
   getTime(): number {
-    throw new Error("not implemented");
+    return this.dateTime.valueOf();
   }
 
   /**
    * Returns the epoch time in millisecond.
    */
   valueOf(): number {
-    throw new Error("not implemented");
+    return this.getTime();
   }
 
   /**
    * Checks if the timestamp represents to the same instant in time as another timestamp.
    */
   isEqual(other: Timestamp): boolean {
-    throw new Error("not implemented");
+    return this.getTime() === other.getTime();
   }
 
   /**
    * Returns a javascript Date for the same instant in time.
    */
   toJsDate(): Date {
-    throw new Error("not implemented");
+    return this.dateTime.toJSDate();
   }
 
   /**
    * Returns a LocalDate for the day in the current timezone offset.
    */
   toLocalDate(): LocalDate {
-    throw new Error("not implemented");
+    return LocalDate.of(this.getYear(), this.getMonth(), this.getDayOfMonth());
   }
 
   /**
@@ -157,49 +163,54 @@ export class Timestamp {
    * The timezone-offset is maintained.
    */
   toISOString(): string {
-    throw new Error("not implemented");
+    return this.dateTime.toISO()!;
   }
 
   /**
    * Returns new Timestamp with milliseconds subtracted from it.
    */
   minusMilliseconds(millisecondsToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    return new Timestamp(this.dateTime.minus(millisecondsToSubtract));
   }
 
   /**
    * Returns new Timestamp with seconds subtracted from it.
    */
   minusSeconds(secondsToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ seconds: secondsToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with minutes subtracted from it.
    */
   minusMinutes(minutesToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ minutes: minutesToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with hours subtracted from it.
    */
   minusHours(hoursToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ hours: hoursToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with days subtracted from it.
    */
   minusDays(daysToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ days: daysToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with weeks subtracted from it.
    */
   minusWeeks(weeksToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ weeks: weeksToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -208,56 +219,64 @@ export class Timestamp {
    * the day of the month will change to the last day in the final month.
    */
   minusMonths(monthsToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ months: monthsToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with years subtracted from it.
    */
   minusYears(yearsToSubtract: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ years: yearsToSubtract });
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
    * Returns new Timestamp with milliseconds added to it.
    */
   plusMilliseconds(millisecondsToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ milliseconds: millisecondsToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with seconds added to it.
    */
   plusSeconds(secondsToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ seconds: secondsToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with minutes added to it.
    */
   plusMinutes(minutesToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ minutes: minutesToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with hours added to it.
    */
   plusHours(hoursToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ hours: hoursToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with days added to it.
    */
   plusDays(daysToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ days: daysToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with weeks added to it.
    */
   plusWeeks(weeksToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ weeks: weeksToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -266,13 +285,15 @@ export class Timestamp {
    * the day of the month will change to the last day in the final month.
    */
   plusMonths(monthsToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ months: monthsToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
    * Returns new Timestamp with years added to it.
    */
   plusYears(yearsToAdd: number): Timestamp {
-    throw new Error("not implemented");
+    const duration = Duration.fromObject({ years: yearsToAdd });
+    return new Timestamp(this.dateTime.plus(duration));
   }
 }

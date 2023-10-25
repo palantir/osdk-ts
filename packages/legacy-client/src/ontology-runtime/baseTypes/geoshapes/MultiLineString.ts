@@ -14,23 +14,47 @@
  * limitations under the License.
  */
 
+import { mapCoordinatesToGeoPoint } from ".";
 import type { GeoJsonMultiLineString } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { LineString } from "./LineString";
+import { LineString } from "./LineString";
+
 export interface MultiLineString extends Geometry {
   getLineStrings(): LineString[];
   toGeoJson(): GeoJsonMultiLineString;
 }
+
 export class MultiLineString implements MultiLineString {
-  private geoLineStrings;
-  type: "MultiLineString";
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "MultiLineString" as const;
+
+  private constructor(private geoLineStrings: LineString[]) {}
+
+  public getLineStrings(): LineString[] {
+    return this.geoLineStrings;
   }
-  static fromLineStrings(lineStrings: LineString[]): MultiLineString {
-    throw new Error("not implemented");
+
+  public toGeoJson(): GeoJsonMultiLineString {
+    return {
+      type: "MultiLineString",
+      coordinates: this.geoLineStrings.map(geoLineString => {
+        return geoLineString.toGeoJson().coordinates;
+      }),
+    };
   }
-  static fromGeoJson(geoJson: GeoJsonMultiLineString): MultiLineString {
-    throw new Error("not implemented");
+
+  public static fromLineStrings(lineStrings: LineString[]) {
+    return new MultiLineString(lineStrings);
+  }
+
+  public static fromGeoJson(geoJson: GeoJsonMultiLineString): MultiLineString {
+    const lineStrings: LineString[] = geoJson.coordinates.map(
+      (coordinateList: number[][]) => {
+        return LineString.fromGeoPoints(
+          coordinateList.map(mapCoordinatesToGeoPoint),
+        );
+      },
+    );
+
+    return MultiLineString.fromLineStrings(lineStrings);
   }
 }

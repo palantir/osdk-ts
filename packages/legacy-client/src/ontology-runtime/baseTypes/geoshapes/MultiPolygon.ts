@@ -14,24 +14,49 @@
  * limitations under the License.
  */
 
+import { mapCoordinatesToGeoPoint } from ".";
 import type { GeoJsonMultiPolygon } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { Polygon } from "./Polygon";
+import { Polygon } from "./Polygon";
+
 export interface MultiPolygon extends Geometry {
   getPolygons(): Polygon[];
   toGeoJson(): GeoJsonMultiPolygon;
 }
+
 export class MultiPolygon implements MultiPolygon {
-  private polygons;
-  type: "MultiPolygon";
-  private constructor() {
-    throw new Error("not implemented");
-  }
-  static fromPolygons(polygons: Polygon[]): MultiPolygon {
-    throw new Error("not implemented");
+  public type = "MultiPolygon" as const;
+
+  private constructor(private polygons: Polygon[]) {}
+
+  public getPolygons(): Polygon[] {
+    return this.polygons;
   }
 
-  static fromGeoJson(geoJson: GeoJsonMultiPolygon): MultiPolygon {
-    throw new Error("not implemented");
+  public toGeoJson(): GeoJsonMultiPolygon {
+    return {
+      type: "MultiPolygon",
+      coordinates: this.polygons.map(geoPolygon => {
+        return geoPolygon.toGeoJson().coordinates;
+      }),
+    };
+  }
+
+  public static fromPolygons(polygons: Polygon[]) {
+    return new MultiPolygon(polygons);
+  }
+
+  public static fromGeoJson(geoJson: GeoJsonMultiPolygon): MultiPolygon {
+    const polygons: Polygon[] = geoJson.coordinates.map(
+      (coordinateList: number[][][]) => {
+        return Polygon.fromLinearRings(
+          coordinateList.map((ring: number[][]) => {
+            return ring.map(mapCoordinatesToGeoPoint);
+          }),
+        );
+      },
+    );
+
+    return MultiPolygon.fromPolygons(polygons);
   }
 }

@@ -16,6 +16,7 @@
 
 import type { AttachmentsError } from "../../ontologyProvider/Errors";
 import type { Result } from "../../ontologyProvider/Result";
+
 export interface Attachment {
   type: "Attachment";
   attachmentRid: string | undefined;
@@ -28,6 +29,7 @@ export interface Attachment {
    */
   read(): Promise<Result<Blob, AttachmentsError>>;
 }
+
 export interface AttachmentMetadata {
   rid: string;
   filename: string;
