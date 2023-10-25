@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./ParameterValue";
-export interface OntologyObject {
-  __rid: string;
-  __apiName: string;
-  __primaryKey: ParameterValue;
-}
-
-export function isOntologyObject(obj: any): obj is OntologyObject {
-  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
-    && "__primaryKey" in obj;
+export enum GroupKeyType {
+  NUMERIC = "NUMERIC",
+  STRING = "STRING",
+  BOOLEAN = "BOOLEAN",
+  DATE = "DATE",
+  TIMESTAMP = "TIMESTAMP",
 }

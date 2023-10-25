@@ -22,21 +22,28 @@ import type {
   ParameterObjectNotFound,
   ParameterObjectSetRidNotFound,
   ParameterTypeNotSupported,
-  PermissionDenied,
   PropertyBaseTypeNotSupported,
   QueryEncounteredUserFacingError,
   QueryMemoryExceededLimit,
   QueryNotFound,
   QueryTimeExceededLimit,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
-export class ExecuteQueryErrorHandler {
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
+
+export class ExecuteQueryErrorHandler extends DefaultErrorHandler {
   handleParameterObjectSetRidNotFound(
     error: PalantirApiError,
     objectSetRid: string,
   ): ParameterObjectSetRidNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ParameterObjectSetRidNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectSetRid,
+    };
   }
 
   handlePropertyBaseTypeNotSupported(
@@ -45,7 +52,17 @@ export class ExecuteQueryErrorHandler {
     property: string,
     propertyBaseType: ValueType,
   ): PropertyBaseTypeNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertyBaseTypeNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      property,
+      propertyBaseType,
+    };
   }
 
   handleQueryTimeExceededLimit(
@@ -53,7 +70,16 @@ export class ExecuteQueryErrorHandler {
     functionRid: string,
     functionVersion: string,
   ): QueryTimeExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "QueryTimeExceededLimit",
+      errorType: "TIMEOUT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+    };
   }
 
   handleInvalidParameterValue(
@@ -63,11 +89,30 @@ export class ExecuteQueryErrorHandler {
     parameterDataType?: object,
     parameterValue?: any,
   ): InvalidParameterValue {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidParameterValue",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameterId,
+      parameterBaseType,
+      parameterDataType,
+      parameterValue,
+    };
   }
 
   handleQueryNotFound(error: PalantirApiError, query: string): QueryNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "QueryNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      query,
+    };
   }
 
   handleParameterObjectNotFound(
@@ -77,7 +122,16 @@ export class ExecuteQueryErrorHandler {
       [key: string]: string;
     },
   ): ParameterObjectNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ParameterObjectNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      primaryKey,
+    };
   }
 
   handleQueryMemoryExceededLimit(
@@ -85,7 +139,16 @@ export class ExecuteQueryErrorHandler {
     functionRid: string,
     functionVersion: string,
   ): QueryMemoryExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "QueryMemoryExceededLimit",
+      errorType: "TIMEOUT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+    };
   }
 
   handleQueryEncounteredUserFacingError(
@@ -94,7 +157,16 @@ export class ExecuteQueryErrorHandler {
     functionVersion: string,
     message: string,
   ): QueryEncounteredUserFacingError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      errorName: "QueryEncounteredUserFacingError",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+      message,
+    };
   }
 
   handleParameterTypeNotSupported(
@@ -102,25 +174,30 @@ export class ExecuteQueryErrorHandler {
     parameterId: string,
     parameterBaseType: ValueType,
   ): ParameterTypeNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ParameterTypeNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameterId,
+      parameterBaseType,
+    };
   }
 
   handleMissingParameter(
     error: PalantirApiError,
     parameters: string[],
   ): MissingParameter {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "MissingParameter",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameters,
+    };
   }
 }

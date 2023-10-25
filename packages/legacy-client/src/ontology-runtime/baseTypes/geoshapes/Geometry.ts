@@ -15,6 +15,7 @@
  */
 
 import type { GeoJsonGeometry } from "./GeoJson";
+
 export interface Geometry {
   type: string;
   toGeoJson(): GeoJsonGeometry;

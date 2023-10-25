@@ -16,23 +16,26 @@
 
 import type { Auth } from "../../oauth-client";
 import type { BaseObjectType, ObjectSetDefinition } from "../baseTypes";
-import type { OrderByClause } from "../filters";
 import type { OntologyMetadata } from "../ontologyProvider";
-import type {
-  AggregatableObjectSetStep,
-  AggregatablePropertiesForResult,
-  AggregatableProperty,
-  AggregationBuilderResult,
-  Bucketing,
-  BucketKey,
-  BucketValue,
-  Double,
-  InternalBucketing,
-  MetricValue,
-  MultipleAggregationsOperations,
+import { isMultipleAggregationOperation } from ".";
+import {
+  type AggregatableObjectSetStep,
+  type AggregatablePropertiesForResult,
+  type AggregatableProperty,
+  type AggregationBuilderResult,
+  assertBucketingInternal,
+  type Bucketing,
+  type BucketKey,
+  type BucketValue,
+  type Double,
+  type InternalBucketing,
+  type MetricValue,
+  type MultipleAggregationsOperations,
 } from "./Aggregations";
-import type { AggregationComputeStep } from "./ComputeStep";
-import type { CountOperation } from "./CountOperation";
+import { type AggregationComputeStep, ComputeStep } from "./ComputeStep";
+import { type CountOperation, isCountOperation } from "./CountOperation";
+import { MetricValueType } from "./metrics";
+
 export abstract class AggregatableObjectSet<
   TAggregatableProperties,
   TMultipleAggregationProperties extends
@@ -48,32 +51,24 @@ export abstract class AggregatableObjectSet<
     TGroupableProperties
   >
 {
-  #private;
-  private stack;
-  protected objectTypeProvider: () => BaseObjectType;
-  private ontologyMetadata;
-  private aggregatableProperties;
-  private multipleAggregationProperties;
-  private groupableProperties;
-  protected definition?: ObjectSetDefinition;
-  protected orderByClauses: OrderByClause[];
-  protected groupByClauses: Array<InternalBucketing<BucketKey, BucketValue>>;
   constructor(
-    authClient: Auth,
-    stack: string,
-    objectTypeProvider: () => BaseObjectType,
-    ontologyMetadata: OntologyMetadata,
-    aggregatableProperties: TAggregatableProperties,
-    multipleAggregationProperties: TMultipleAggregationProperties,
-    groupableProperties: TGroupableProperties,
-    definition?: ObjectSetDefinition,
-    orderByClauses?: OrderByClause[],
-    groupByClauses?: Array<InternalBucketing<BucketKey, BucketValue>>,
+    private auth: Auth,
+    private stack: string,
+    private objectType: BaseObjectType,
+    private ontologyMetadata: OntologyMetadata,
+    private aggregatableProperties: TAggregatableProperties,
+    private multipleAggregationProperties: TMultipleAggregationProperties,
+    private groupableProperties: TGroupableProperties,
+    protected definition: ObjectSetDefinition,
+    protected groupByClauses: Array<InternalBucketing<BucketKey, BucketValue>> =
+      [],
   ) {
-    throw new Error("not implemented");
   }
 
-  groupBy<TBucketKey extends BucketKey, TBucketValue extends BucketValue>(
+  public groupBy<
+    TBucketKey extends BucketKey,
+    TBucketValue extends BucketValue,
+  >(
     propertySelector: (
       obj: TGroupableProperties,
     ) => Bucketing<TBucketKey, TBucketValue>,
@@ -85,14 +80,35 @@ export abstract class AggregatableObjectSet<
       [K in TBucketKey]: TBucketValue;
     }
   > {
-    throw new Error("not implemented");
+    const groupByClause = propertySelector(this.groupableProperties);
+    assertBucketingInternal(groupByClause);
+    this.groupByClauses.push(
+      groupByClause as InternalBucketing<BucketKey, BucketValue>,
+    );
+    // @ts-ignore
+    return this;
   }
 
-  count(): AggregationComputeStep<{}, number> {
-    throw new Error("not implemented");
+  public count(): AggregationComputeStep<{}, number> {
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "count",
+          name: "count",
+          metricValueType: MetricValueType.NUMERIC,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  max<TResult extends MetricValue>(
+  public max<TResult extends MetricValue>(
     propertySelector: (
       obj: AggregatablePropertiesForResult<
         TAggregatableProperties,
@@ -100,10 +116,27 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    throw new Error("not implemented");
+    const selectedProperty = propertySelector(this.aggregatableProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "max",
+          name: "max",
+          field: selectedProperty.propertyApiName,
+          metricValueType: selectedProperty.metricValueType,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  min<TResult extends MetricValue>(
+  public min<TResult extends MetricValue>(
     propertySelector: (
       obj: AggregatablePropertiesForResult<
         TAggregatableProperties,
@@ -111,18 +144,52 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    throw new Error("not implemented");
+    const selectedProperty = propertySelector(this.aggregatableProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "min",
+          name: "min",
+          field: selectedProperty.propertyApiName,
+          metricValueType: selectedProperty.metricValueType,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  approximateDistinct(
+  public approximateDistinct(
     propertySelector: (
       obj: TAggregatableProperties,
     ) => AggregatableProperty<any>,
   ): AggregationComputeStep<{}, Double> {
-    throw new Error("not implemented");
+    const selectedProperty = propertySelector(this.aggregatableProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "approximateDistinct",
+          name: "distinctCount",
+          field: selectedProperty.propertyApiName,
+          metricValueType: MetricValueType.NUMERIC,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  avg<TResult extends MetricValue>(
+  public avg<TResult extends MetricValue>(
     propertySelector: (
       obj: AggregatablePropertiesForResult<
         TAggregatableProperties,
@@ -130,10 +197,27 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    throw new Error("not implemented");
+    const selectedProperty = propertySelector(this.aggregatableProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "avg",
+          name: "avg",
+          field: selectedProperty.propertyApiName,
+          metricValueType: selectedProperty.metricValueType,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  sum<TResult extends MetricValue>(
+  public sum<TResult extends MetricValue>(
     propertySelector: (
       obj: AggregatablePropertiesForResult<
         TAggregatableProperties,
@@ -141,10 +225,27 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    throw new Error("not implemented");
+    const selectedProperty = propertySelector(this.aggregatableProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      [
+        {
+          type: "sum",
+          name: "sum",
+          field: selectedProperty.propertyApiName,
+          metricValueType: selectedProperty.metricValueType,
+          namedAggregation: true,
+        },
+      ],
+    );
   }
 
-  aggregate<
+  public aggregate<
     TOperation extends
       | MultipleAggregationsOperations<MetricValue>
       | CountOperation,
@@ -162,9 +263,44 @@ export abstract class AggregatableObjectSet<
     {},
     {
       [K in keyof TAggregateResult]: TAggregateResult[K] extends
-        MultipleAggregationsOperations<infer TResult> ? TResult : Double;
+        MultipleAggregationsOperations<infer TResult> ? TResult
+        : Double;
     }
   > {
-    throw new Error("not implemented");
+    const aggregate = aggregateBuilder(this.multipleAggregationProperties);
+    return new ComputeStep(
+      this.auth,
+      this.stack,
+      this.objectType,
+      this.ontologyMetadata,
+      this.definition,
+      this.groupByClauses,
+      Object.keys(aggregate).map(key => {
+        const aggregation = aggregate[key]!;
+        if (isCountOperation(aggregation)) {
+          return {
+            type: aggregation.operation,
+            name: key,
+            metricValueType: MetricValueType.NUMERIC,
+            namedAggregation: false,
+          };
+        }
+
+        if (isMultipleAggregationOperation(aggregation)) {
+          return {
+            type: aggregation.operation,
+            name: key,
+            field: aggregation.propertyApiName,
+            metricValueType: aggregation.metricValueType,
+            namedAggregation: false,
+          };
+        }
+
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        throw new Error(
+          `Unknown aggregation type: ${(aggregation as any).type}`,
+        );
+      }),
+    );
   }
 }

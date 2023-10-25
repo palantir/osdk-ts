@@ -32,13 +32,15 @@ declare type DefaultTypeUnionVisitor<
       type: string;
     }) => R;
   };
-export function visitTypeUnionWithDefault<
-  T extends {
-    type: string;
-  },
-  R,
->(value: T, visitor: DefaultTypeUnionVisitor<T, R>): R {
-  throw new Error("not implemented");
+
+export function visitTypeUnionWithDefault<T extends { type: string }, R>(
+  value: T,
+  visitor: DefaultTypeUnionVisitor<T, R>,
+): R {
+  if (value.type in visitor) {
+    return (visitor as any)[value.type](value);
+  }
+  return visitor.default(value);
 }
 
 export type TypeUnionVisitor<
@@ -60,11 +62,12 @@ export type TypeUnionVisitor<
     }) => R;
   };
 
-export function visitTypeUnion<
-  T extends {
-    type: string;
-  },
-  R,
->(value: T, visitor: TypeUnionVisitor<T, R>): R {
-  throw new Error("not implemented");
+export function visitTypeUnion<T extends { type: string }, R>(
+  value: T,
+  visitor: TypeUnionVisitor<T, R>,
+): R {
+  if (value.type in visitor) {
+    return (visitor as any)[value.type](value);
+  }
+  return visitor.unknown(value);
 }

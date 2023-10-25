@@ -16,31 +16,86 @@
 
 import type { GeoJsonPolygon } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { GeoPoint } from "./GeoPoint";
+import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint";
+
 export interface Polygon extends Geometry {
   getLinearRings(): LinearRing[];
   toGeoJson(): GeoJsonPolygon;
 }
+
 export type LinearRing = GeoPoint[];
+
 export class Polygon implements Polygon {
-  private linearRings;
-  type: "Polygon";
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "Polygon" as const;
+
+  private constructor(private linearRings: LinearRing[]) {}
+
+  public getLinearRings(): LinearRing[] {
+    return this.linearRings;
   }
+
+  public toGeoJson(): GeoJsonPolygon {
+    return {
+      type: "Polygon",
+      coordinates: this.linearRings.map((ring: LinearRing) => {
+        return ring.map((geoPoint: GeoPoint) => {
+          return geoPoint.toGeoJson().coordinates;
+        });
+      }),
+    };
+  }
+
   /**
    * Creates a Polygon from an array of 1 or more linear rings
    *
    * @param linearRings a list of one or more linear rings, where the first and last coordinate in the linear rings
    * represent the exact same point
    */
-  static fromLinearRings(linearRings: LinearRing[]): Polygon {
-    throw new Error("not implemented");
+  public static fromLinearRings(linearRings: LinearRing[]): Polygon {
+    if (linearRings.length < 1) {
+      throw new Error(
+        "Polygons must be represented by at least one outer linear-ring",
+      );
+    }
+
+    linearRings.forEach((ring: LinearRing) => {
+      if (ring.length < 4) {
+        throw new Error(
+          `Polygons must be represented by at least four coordinates, received ${ring.length}`,
+        );
+      }
+
+      if (
+        ring[0]?.toCoordinates().latitude
+          !== ring[ring.length - 1]?.toCoordinates().latitude
+        || ring[0]?.toCoordinates().longitude
+          !== ring[ring.length - 1]?.toCoordinates().longitude
+      ) {
+        throw new Error(
+          `The first and last GeoPoint in the array must represent the same exact position,`
+            + `received first: ${
+              JSON.stringify(ring[0]?.toCoordinates())
+            } last: ${
+              JSON.stringify(
+                ring[ring.length - 1]?.toCoordinates(),
+              )
+            }`,
+        );
+      }
+    });
+
+    return new Polygon(linearRings);
   }
+
   /**
    * Creates a Polygon from a GeoJson representation of a Polygon
    */
-  static fromGeoJson(geoJson: GeoJsonPolygon): Polygon {
-    throw new Error("not implemented");
+  public static fromGeoJson(geoJson: GeoJsonPolygon): Polygon {
+    const polygonRings: GeoPoint[][] = geoJson.coordinates.map(
+      (ring: number[][]) => {
+        return ring.map(mapCoordinatesToGeoPoint);
+      },
+    );
+    return Polygon.fromLinearRings(polygonRings);
   }
 }

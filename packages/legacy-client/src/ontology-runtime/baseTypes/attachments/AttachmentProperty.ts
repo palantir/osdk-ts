@@ -19,20 +19,34 @@ import type {
   AttachmentsError,
   OntologyMetadata,
 } from "../../ontologyProvider";
+import { OntologyProvider } from "../../ontologyProvider";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment, AttachmentMetadata } from "./Attachment";
+
 export class AttachmentProperty implements Attachment {
-  #private;
-  private propertyName?;
-  private apiName?;
-  private primaryKey?;
-  type: "Attachment";
-  attachmentRid: string | undefined;
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "Attachment" as const;
+  public attachmentRid: string | undefined;
+
+  #ontologyMetadata: OntologyMetadata;
+  #provider: OntologyProvider;
+
+  private constructor(
+    authClient: Auth,
+    stack: string,
+    ontologyMetadata: OntologyMetadata,
+    private propertyName?: string,
+    private apiName?: string,
+    private primaryKey?: string,
+    attachmentRid?: string,
+  ) {
+    this.#ontologyMetadata = ontologyMetadata;
+    this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
+    this.attachmentRid = attachmentRid;
   }
+
   static constructAttachment(
     authClient: Auth,
+    stack: string,
     ontologyMetadata: OntologyMetadata,
     propertyName?: string,
     apiName?: string,
@@ -41,12 +55,34 @@ export class AttachmentProperty implements Attachment {
       rid: string;
     },
   ): AttachmentProperty {
-    throw new Error("not implemented");
+    return new AttachmentProperty(
+      authClient,
+      stack,
+      ontologyMetadata,
+      propertyName,
+      apiName,
+      primaryKey,
+      attachmentRid?.rid,
+    );
   }
+
   getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>> {
-    throw new Error("not implemented");
+    return this.#provider.getAttachmentMetadata(
+      this.#ontologyMetadata.ontologyApiName,
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+      this.attachmentRid,
+    );
   }
+
   read(): Promise<Result<Blob, AttachmentsError>> {
-    throw new Error("not implemented");
+    return this.#provider.readAttachmentContent(
+      this.#ontologyMetadata.ontologyApiName,
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+      this.attachmentRid,
+    );
   }
 }

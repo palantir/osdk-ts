@@ -22,12 +22,14 @@ import type {
 } from "../ontologyProvider";
 import type { Page } from "../paging";
 import type { OntologyObject } from "./OntologyObject";
+
 export interface SingleLink<T extends OntologyObject = OntologyObject> {
   /**
    * Loads the linked object
    */
   get(): Promise<Result<T, GetLinkedObjectError>>;
 }
+
 export interface MultiLink<T extends OntologyObject = OntologyObject> {
   /**
    * Loads the linked object with the given primary key

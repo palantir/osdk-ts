@@ -14,8 +14,15 @@
  * limitations under the License.
  */
 
+import type {
+  StreamTimeSeriesPointsRequest,
+  TimeRange,
+} from "@osdk/gateway/types";
 import type { Timestamp } from "../timestamp";
+import type { TimeSeriesDuration } from "./TimeSeriesDuration";
+import { DurationUnit, WhenUnit } from "./TimeSeriesDuration";
 import { TimeSeriesTerminalOperations } from "./TimeSeriesTerminalOperations";
+
 export class TimeSeriesQuery<T extends string | number>
   extends TimeSeriesTerminalOperations<T>
 {
@@ -31,7 +38,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromYearsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.YEARS,
+      value,
+    });
   }
 
   /**
@@ -46,7 +57,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromMonthsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.MONTHS,
+      value,
+    });
   }
 
   /**
@@ -61,7 +76,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromWeeksAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.WEEKS,
+      value,
+    });
   }
 
   /**
@@ -76,7 +95,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromDaysAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({ when: WhenUnit.BEFORE, unit: DurationUnit.DAYS, value });
   }
 
   /**
@@ -91,7 +110,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromHoursAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.HOURS,
+      value,
+    });
   }
 
   /**
@@ -106,7 +129,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromMinutesAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.MINUTES,
+      value,
+    });
   }
 
   /**
@@ -121,7 +148,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromSecondsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.SECONDS,
+      value,
+    });
   }
 
   /**
@@ -136,7 +167,11 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .all();
    */
   fromMillisecondsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    return this.from({
+      when: WhenUnit.BEFORE,
+      unit: DurationUnit.MILLISECONDS,
+      value,
+    });
   }
 
   /**
@@ -157,6 +192,45 @@ export class TimeSeriesQuery<T extends string | number>
       endTime?: Timestamp;
     },
   ): TimeSeriesTerminalOperations<T> {
-    throw new Error("not implemented");
+    let body: StreamTimeSeriesPointsRequest = {};
+    if (Object.keys(range).length !== 0) {
+      const absoluteRange = { type: "absolute" } as TimeRange;
+      if (range.startTime) {
+        absoluteRange.startTime = range?.startTime?.toISOString();
+      }
+      if (range.endTime) {
+        absoluteRange.endTime = range?.endTime?.toISOString();
+      }
+      body = { range: absoluteRange };
+    } else {
+      throw new Error("Argument .range() needs at least one input.");
+    }
+    return new TimeSeriesTerminalOperations<T>(
+      this.getAuth(),
+      this.stack,
+      this.propertyName,
+      this.apiName,
+      this.primaryKey,
+      this.getOntologyMetadata(),
+      body,
+    );
+  }
+
+  private from(from: TimeSeriesDuration): TimeSeriesTerminalOperations<T> {
+    let body: StreamTimeSeriesPointsRequest = {};
+    if (Object.keys(from).length !== 0) {
+      body = { range: { type: "relative", startTime: from } };
+    } else {
+      throw new Error("Argument .from() needs at least one input.");
+    }
+    return new TimeSeriesTerminalOperations<T>(
+      this.getAuth(),
+      this.stack,
+      this.propertyName,
+      this.apiName,
+      this.primaryKey,
+      this.getOntologyMetadata(),
+      body,
+    );
   }
 }

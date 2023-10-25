@@ -15,13 +15,18 @@
  */
 
 import type { LocalDate } from "../../baseTypes";
-import type {
-  Bucketing,
-  BucketKey,
-  Duration,
-  Range,
-  Rangeable,
+import {
+  type Bucketing,
+  type BucketKey,
+  type Duration,
+  type DurationBucketing,
+  type ExactValueBucketing,
+  type Range,
+  type Rangeable,
+  type RangeBucketing,
+  TimeUnit,
 } from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
 export interface LocalDateGroupBy<T extends BucketKey> {
   /** Divides objects into groups according to specified ranges. */
   ranges: (ranges: Array<Range<LocalDate>>) => Bucketing<T, Range<Rangeable>>;
@@ -53,8 +58,57 @@ export interface LocalDateGroupBy<T extends BucketKey> {
    */
   exact: (maxGroupCount?: number) => Bucketing<T, Range<LocalDate>>;
 }
-export const LocalDateGroupBy: (
+
+export const LocalDateGroupBy = (
   propertyApiName: string,
-) => LocalDateGroupBy<string> = (propertyApiName) => {
-  throw new Error("not implemented");
-};
+): LocalDateGroupBy<string> => ({
+  exact: (
+    maxGroupCount?: number,
+  ): ExactValueBucketing<string, Range<LocalDate>> => ({
+    type: "Bucketing",
+    kind: "ExactValueBucketing",
+    propertyApiName,
+    keyDataType: GroupKeyType.DATE,
+    maxGroupCount,
+  }),
+
+  byDays: (numberOfDays?: number): DurationBucketing<string, LocalDate> =>
+    getLocalDateGroupBy(propertyApiName, TimeUnit.DAYS, numberOfDays),
+
+  byWeek: (): DurationBucketing<string, LocalDate> =>
+    getLocalDateGroupBy(propertyApiName, TimeUnit.WEEKS),
+
+  byMonth: (): DurationBucketing<string, LocalDate> =>
+    getLocalDateGroupBy(propertyApiName, TimeUnit.MONTHS),
+
+  byQuarter: (): DurationBucketing<string, LocalDate> =>
+    getLocalDateGroupBy(propertyApiName, TimeUnit.QUARTERS),
+
+  byYear: (): DurationBucketing<string, LocalDate> =>
+    getLocalDateGroupBy(propertyApiName, TimeUnit.YEARS),
+
+  ranges: (
+    ranges: Array<Range<LocalDate>>,
+  ): RangeBucketing<string, Range<Rangeable>> => ({
+    type: "Bucketing",
+    kind: "RangeBucketing",
+    propertyApiName,
+    keyDataType: GroupKeyType.DATE,
+    ranges,
+  }),
+});
+
+function getLocalDateGroupBy(
+  propertyApiName: string,
+  unit: TimeUnit,
+  value: number = 1,
+): DurationBucketing<string, LocalDate> {
+  return {
+    type: "Bucketing",
+    kind: "DurationBucketing",
+    keyDataType: GroupKeyType.DATE,
+    propertyApiName,
+    unit,
+    value,
+  };
+}

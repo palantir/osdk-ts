@@ -16,16 +16,24 @@
 
 import type { StreamTimeSeriesPointsRequest as StreamPointsBody } from "@osdk/gateway/types";
 import type { Auth } from "../../../oauth-client";
-import type { Result, TimeSeriesError } from "../../ontologyProvider";
+import {
+  OntologyProvider,
+  type Result,
+  type TimeSeriesError,
+} from "../../ontologyProvider";
 import type { OntologyMetadata } from "../../ontologyProvider/OntologyMetadata";
 import type { TimeSeriesPoint } from "./TimeSeriesPoint";
+
 export class TimeSeriesTerminalOperations<T extends number | string> {
-  #private;
+  #provider: OntologyProvider;
+  #ontologyMetadata: OntologyMetadata;
+  #auth: Auth;
   protected stack: string;
   protected propertyName: string;
   protected apiName: string;
   protected primaryKey: string;
   protected body: StreamPointsBody;
+
   constructor(
     auth: Auth,
     stack: string,
@@ -33,17 +41,25 @@ export class TimeSeriesTerminalOperations<T extends number | string> {
     apiName: string,
     primaryKey: string,
     ontologyMetadata: OntologyMetadata,
-    body?: StreamPointsBody,
+    body: StreamPointsBody = {},
   ) {
-    throw new Error("not implemented");
+    this.#provider = new OntologyProvider(auth, stack, ontologyMetadata);
+    this.#ontologyMetadata = ontologyMetadata;
+    this.#auth = auth;
+
+    this.stack = stack;
+    this.propertyName = propertyName;
+    this.apiName = apiName;
+    this.primaryKey = primaryKey;
+    this.body = body;
   }
 
   protected getAuth(): Auth {
-    throw new Error("not implemented");
+    return this.#auth;
   }
 
   protected getOntologyMetadata(): OntologyMetadata {
-    throw new Error("not implemented");
+    return this.#ontologyMetadata;
   }
   /**
    * Get all the Time Series points.
@@ -52,7 +68,12 @@ export class TimeSeriesTerminalOperations<T extends number | string> {
    * const allPoints = object.property.points.all()
    */
   all(): Promise<Result<Array<TimeSeriesPoint<T>>>> {
-    throw new Error("not implemented");
+    return this.#provider.getAllTimeSeriesPoints(
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+      this.body,
+    );
   }
 
   /**
@@ -68,7 +89,12 @@ export class TimeSeriesTerminalOperations<T extends number | string> {
    * }
    */
   iterate(): TimeSeriesIterator<T> {
-    throw new Error("not implemented");
+    return this.#provider.iterateTimeSeriesPoints(
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+      this.body,
+    );
   }
 }
 export type TimeSeriesIterator<T extends string | number> = AsyncGenerator<

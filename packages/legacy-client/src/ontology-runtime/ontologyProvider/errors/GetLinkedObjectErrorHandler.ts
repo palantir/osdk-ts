@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ValueType } from "@osdk/gateway/types";
 import type { PalantirApiError } from "../../../Errors";
 import type {
   CompositePrimaryKeyNotSupported,
@@ -22,25 +21,40 @@ import type {
   ObjectTypeNotFound,
   ObjectTypeNotSynced,
   OntologySyncing,
-  PermissionDenied,
   PropertiesNotFound,
   PropertiesNotSortable,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
-export class GetLinkedObjectErrorHandler {
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
+
+export class GetLinkedObjectErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectTypeNotSynced(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotSynced {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "ObjectTypeNotSynced",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleCompositePrimaryKeyNotSupported(
@@ -48,21 +62,46 @@ export class GetLinkedObjectErrorHandler {
     objectTypeApiName: string,
     primaryKey: string[],
   ): CompositePrimaryKeyNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "CompositePrimaryKeyNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+      primaryKey,
+    };
   }
 
   handlePropertiesNotSortable(
     error: PalantirApiError,
     properties: string[],
   ): PropertiesNotSortable {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "PropertiesNotSortable",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      properties,
+    };
   }
 
   handleOntologySyncing(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): OntologySyncing {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "OntologySyncing",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleLinkedObjectNotFound(
@@ -73,25 +112,33 @@ export class GetLinkedObjectErrorHandler {
       [key: string]: string;
     },
   ): LinkedObjectNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "LinkedObjectNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      linkType,
+      linkedObjectType,
+      linkedObjectPrimaryKey,
+    };
   }
 
   handlePropertiesNotFound(
     error: PalantirApiError,
+    objectType: string,
     properties: any,
   ): PropertiesNotFound {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "PropertiesNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      properties,
+    };
   }
 }

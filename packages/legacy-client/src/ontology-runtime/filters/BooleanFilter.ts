@@ -23,8 +23,21 @@ export interface BooleanFilter {
   isNull: () => WhereClause;
 }
 
-export const BooleanFilter: (property: string) => BooleanFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
+export const BooleanFilter = (property: string): BooleanFilter => {
+  return {
+    eq(value: boolean): WhereClause {
+      return {
+        type: "eq",
+        field: property,
+        value,
+      };
+    },
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+  };
 };

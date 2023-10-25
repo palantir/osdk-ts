@@ -20,45 +20,62 @@ import type {
   ObjectTypeNotFound,
   ObjectTypeNotSynced,
   OntologySyncing,
-  PermissionDenied,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
-export class ListObjectsErrorHandler {
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
+export class ListObjectsErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectTypeNotSynced(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotSynced {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotSynced",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectsExceededLimit(error: PalantirApiError): ObjectsExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectsExceededLimit",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handleOntologySyncing(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): OntologySyncing {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "OntologySyncing",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 }

@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import type { Bucketing, BucketKey, Double, Range } from "../Aggregations";
+import type {
+  Bucketing,
+  BucketKey,
+  Double,
+  ExactValueBucketing,
+  FixedWidthBucketing,
+  Range,
+  RangeBucketing,
+} from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
+
 export interface NumericGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups with the specified width. */
   fixedWidth(n: number): Bucketing<TBucketKey, Range<Double>>;
@@ -27,8 +37,33 @@ export interface NumericGroupBy<TBucketKey extends BucketKey> {
     ranges: Array<Range<number>>,
   ) => Bucketing<TBucketKey, Range<number>>;
 }
-export const NumericGroupBy: (
+
+export const NumericGroupBy = (
   propertyApiName: string,
-) => NumericGroupBy<string> = (propertyApiName) => {
-  throw new Error("not implemented");
-};
+): NumericGroupBy<string> => ({
+  fixedWidth: (n: number): FixedWidthBucketing<string, Range<Double>> => ({
+    type: "Bucketing",
+    kind: "FixedWidthBucketing",
+    keyDataType: GroupKeyType.NUMERIC,
+    propertyApiName,
+    fixedWidth: n,
+  }),
+
+  exact: (maxGroupCount: number): ExactValueBucketing<string, Double> => ({
+    type: "Bucketing",
+    kind: "ExactValueBucketing",
+    keyDataType: GroupKeyType.NUMERIC,
+    propertyApiName,
+    maxGroupCount,
+  }),
+
+  ranges: (
+    ranges: Array<Range<number>>,
+  ): RangeBucketing<string, Range<number>> => ({
+    type: "Bucketing",
+    kind: "RangeBucketing",
+    keyDataType: GroupKeyType.NUMERIC,
+    propertyApiName,
+    ranges,
+  }),
+});

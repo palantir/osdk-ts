@@ -17,36 +17,87 @@
 import type {
   AggregateObjectsResponseV2 as AggregationAPIResponse,
   Aggregation as ApiAggregationClause,
+  AggregationGroupByV2,
+  AggregationGroupByV2_Duration,
+  AggregationGroupByV2_Exact,
+  AggregationGroupByV2_FixedWidth,
+  AggregationGroupByV2_Ranges,
+  AggregationRangeV2,
 } from "@osdk/gateway/types";
 
-import type {
-  AggregationClause,
-  AggregationResult,
-  BucketGroup,
-  BucketKey,
-  BucketValue,
-  GroupByClause,
-  InternalBucketing,
-  Metrics,
-  MetricValue,
-  Range,
-  Rangeable,
+import {
+  type AggregationClause,
+  type AggregationResult,
+  type BucketGroup,
+  type BucketKey,
+  type BucketValue,
+  type GroupByClause,
+  type InternalBucketing,
+  type InternalBucketingVisitor,
+  type Metrics,
+  type MetricValue,
+  type Range,
+  type Rangeable,
+  visitInternalBucketing,
 } from "../aggregations";
-import type { BaseObjectType } from "../baseTypes";
+import { type BaseObjectType, LocalDate, Timestamp } from "../baseTypes";
 import type { SearchClause } from "../filters";
 
 export function buildBucketObject<T>(startValue?: T, endValue?: T): {
   startValue?: T;
   endValue?: T;
 } {
-  throw new Error("not implemented");
+  const result: { startValue?: T; endValue?: T } = {};
+  if (startValue) {
+    result.startValue = startValue;
+  }
+  if (endValue) {
+    result.endValue = endValue;
+  }
+  return result;
 }
 
 export function mapBucketing<
   TBucketKey extends BucketKey,
   T extends BucketValue,
 >(bucket: InternalBucketing<TBucketKey, T>): GroupByClause {
-  throw new Error("not implemented");
+  return visitInternalBucketing(bucket, {
+    onExactValue(bucketing): AggregationGroupByV2_Exact {
+      return {
+        type: "exact",
+        field: bucketing.propertyApiName,
+        maxGroupCount: bucketing.maxGroupCount,
+      };
+    },
+    onRange(
+      bucketing,
+    ): AggregationGroupByV2_Ranges {
+      return {
+        type: "ranges",
+        field: bucketing.propertyApiName,
+        ranges: convertRanges(bucketing.ranges),
+      };
+    },
+    onFixedWidth(
+      bucketing,
+    ): AggregationGroupByV2_FixedWidth {
+      return {
+        type: "fixedWidth",
+        field: bucketing.propertyApiName,
+        fixedWidth: bucketing.fixedWidth,
+      };
+    },
+    onDuration(
+      bucketing,
+    ): AggregationGroupByV2_Duration {
+      return {
+        type: "duration",
+        field: bucketing.propertyApiName,
+        value: bucketing.value,
+        unit: bucketing.unit,
+      };
+    },
+  } as InternalBucketingVisitor<TBucketKey, T, AggregationGroupByV2>);
 }
 
 export function mapToAggregationResponse<
@@ -61,20 +112,57 @@ export function mapToAggregationResponse<
   throw new Error("not implemented");
 }
 
-export function convertRanges(ranges: Array<Range<Rangeable>>): Array<
-  {
-    startValue?: string | number;
-    endValue: string | number;
-  } | {
-    startValue: string | number;
-    endValue?: string | number;
-  }
-> {
-  throw new Error("not implemented");
+export function convertRanges(
+  ranges: Array<Range<Rangeable>>,
+): AggregationRangeV2[] {
+  return ranges.map(range => {
+    let convertedStartValue: undefined | string | number;
+    let convertedEndValue: undefined | string | number;
+    if (range.startValue !== undefined) {
+      convertedStartValue = convertRange(range.startValue);
+    }
+    if (range.endValue !== undefined) {
+      convertedEndValue = convertRange(range.endValue);
+    }
+
+    if (convertedStartValue === undefined) {
+      return {
+        endValue: convertedEndValue!,
+      } as AggregationRangeV2;
+    } else if (convertedEndValue === undefined) {
+      return {
+        startValue: convertedStartValue!,
+      } as AggregationRangeV2;
+    }
+    return {
+      startValue: convertedStartValue,
+      endValue: convertedEndValue,
+    };
+  });
 }
 
 export function mapAggregation(
   aggregationClause: AggregationClause,
 ): ApiAggregationClause {
-  throw new Error("not implemented");
+  if (aggregationClause.type === "count") {
+    return { type: "count", name: aggregationClause.name };
+  } else {
+    return {
+      type: aggregationClause.type,
+      name: aggregationClause.name,
+      field: aggregationClause.field!,
+    };
+  }
+}
+
+function convertRange(value: Rangeable) {
+  let convertedStartValue;
+  if (value instanceof Timestamp) {
+    convertedStartValue = value.toISOString();
+  } else if (value instanceof LocalDate) {
+    convertedStartValue = value.toISOString();
+  } else {
+    convertedStartValue = value;
+  }
+  return convertedStartValue;
 }

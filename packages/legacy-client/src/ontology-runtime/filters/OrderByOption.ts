@@ -15,12 +15,28 @@
  */
 
 import type { OrderByClause } from "./Filters";
+
 export interface OrderByOption {
   /** Order results in ascending order */
   asc: () => OrderByClause;
   /** Order results in descending order */
   desc: () => OrderByClause;
 }
-export const OrderByOption: (property: string) => OrderByOption = () => {
-  throw new Error("not implemented");
+
+export const OrderByOption = (property: string): OrderByOption => {
+  return {
+    asc(): OrderByClause {
+      return {
+        field: property,
+        direction: "asc",
+      };
+    },
+
+    desc(): OrderByClause {
+      return {
+        field: property,
+        direction: "desc",
+      };
+    },
+  };
 };

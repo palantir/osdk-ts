@@ -18,10 +18,12 @@ export interface CountOperation {
   type: "CountOperation";
   operation: "count";
 }
+
 export const CountOperation: CountOperation = {
   type: "CountOperation",
   operation: "count",
 };
+
 export function isCountOperation(value: any): value is CountOperation {
-  throw new Error("not implemented");
+  return value.type === "CountOperation";
 }

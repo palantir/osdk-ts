@@ -20,44 +20,61 @@ import type {
   AttachmentSizeExceededLimit,
   InvalidContentLength,
   InvalidContentType,
-  PermissionDenied,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
-export class AttachmentsErrorHandler {
+export class AttachmentsErrorHandler extends DefaultErrorHandler {
   handleAttachmentSizeExceededLimit(
     error: PalantirApiError,
     fileSizeBytes: string,
     fileLimitBytes: string,
   ): AttachmentSizeExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "AttachmentSizeExceededLimit",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      fileSizeBytes,
+      fileLimitBytes,
+    };
   }
 
   handleInvalidContentLength(error: PalantirApiError): InvalidContentLength {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName!,
+      message: error.message,
+      errorName: "InvalidContentLength",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handleInvalidContentType(error: PalantirApiError): InvalidContentType {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidContentType",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handleAttachmentNotFound(
     error: PalantirApiError,
     attachmentRid: string,
   ): AttachmentNotFound {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "AttachmentNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      attachmentRid,
+    };
   }
 }

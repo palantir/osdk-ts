@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./ParameterValue";
-export interface OntologyObject {
-  __rid: string;
-  __apiName: string;
-  __primaryKey: ParameterValue;
-}
+import { MetricValueType } from "./metrics";
+import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
 
-export function isOntologyObject(obj: any): obj is OntologyObject {
-  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
-    && "__primaryKey" in obj;
-}
+export const TimestampPropertyMetric = (
+  propertyApiName: string,
+): MultipleAggregatableProperty<number> =>
+  MultipleAggregatableProperty(propertyApiName, MetricValueType.TIMESTAMP);

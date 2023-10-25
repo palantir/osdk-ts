@@ -16,50 +16,74 @@
 
 import type { GeoJson } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { GeometryCollection } from "./GeometryCollection";
-import type { GeoPoint } from "./GeoPoint";
-import type { LineString } from "./LineString";
-import type { MultiGeoPoint } from "./MultiGeoPoint";
-import type { MultiLineString } from "./MultiLineString";
-import type { MultiPolygon } from "./MultiPolygon";
-import type { Polygon } from "./Polygon";
+import { GeometryCollection } from "./GeometryCollection";
+import { GeoPoint } from "./GeoPoint";
+import { LineString } from "./LineString";
+import { MultiGeoPoint } from "./MultiGeoPoint";
+import { MultiLineString } from "./MultiLineString";
+import { MultiPolygon } from "./MultiPolygon";
+import { Polygon } from "./Polygon";
+
 export type GeoShape = Geometry | GeometryCollection;
-export const GeoShape: {
-  isGeoPoint(obj: any): obj is GeoPoint;
-  isPolygon(obj: any): obj is Polygon;
-  isLineString(obj: any): obj is LineString;
-  isMultiGeoPoint(obj: any): obj is MultiGeoPoint;
-  isMultiPolygon(obj: any): obj is MultiPolygon;
-  isMultiLineString(obj: any): obj is MultiLineString;
-  isGeometryCollection(obj: any): obj is GeometryCollection;
-  isGeoShape(obj: any): obj is GeoShape;
-  fromGeoJson(geoJson: GeoJson): GeoShape;
-} = {
-  isGeoPoint: function(obj: any): obj is GeoPoint {
-    throw new Error("not implemented");
+
+export const GeoShape = {
+  isGeoPoint(obj: any): obj is GeoPoint {
+    return obj?.type === "GeoPoint";
   },
-  isPolygon: function(obj: any): obj is Polygon {
-    throw new Error("not implemented");
+
+  isPolygon(obj: any): obj is Polygon {
+    return obj?.type === "Polygon";
   },
-  isLineString: function(obj: any): obj is LineString {
-    throw new Error("not implemented");
+
+  isLineString(obj: any): obj is LineString {
+    return obj?.type === "LineString";
   },
-  isMultiGeoPoint: function(obj: any): obj is MultiGeoPoint {
-    throw new Error("not implemented");
+
+  isMultiGeoPoint(obj: any): obj is MultiGeoPoint {
+    return obj?.type === "MultiGeoPoint";
   },
-  isMultiPolygon: function(obj: any): obj is MultiPolygon {
-    throw new Error("not implemented");
+
+  isMultiPolygon(obj: any): obj is MultiPolygon {
+    return obj?.type === "MultiPolygon";
   },
-  isMultiLineString: function(obj: any): obj is MultiLineString {
-    throw new Error("not implemented");
+
+  isMultiLineString(obj: any): obj is MultiLineString {
+    return obj?.type === "MultiLineString";
   },
-  isGeometryCollection: function(obj: any): obj is GeometryCollection {
-    throw new Error("not implemented");
+
+  isGeometryCollection(obj: any): obj is GeometryCollection {
+    return obj?.type === "GeometryCollection";
   },
-  isGeoShape: function(obj: any): obj is GeoShape {
-    throw new Error("not implemented");
+
+  isGeoShape(obj: any): obj is GeoShape {
+    return (
+      obj?.type === "geoshape"
+      || GeoShape.isGeoPoint(obj)
+      || GeoShape.isPolygon(obj)
+      || GeoShape.isLineString(obj)
+      || GeoShape.isMultiGeoPoint(obj)
+      || GeoShape.isMultiPolygon(obj)
+      || GeoShape.isMultiLineString(obj)
+      || GeoShape.isGeometryCollection(obj)
+    );
   },
-  fromGeoJson: function(geoJson: GeoJson): GeoShape {
-    throw new Error("not implemented");
+
+  fromGeoJson(geoJson: GeoJson): GeoShape {
+    switch (geoJson.type) {
+      case "Point":
+        return GeoPoint.fromGeoJson(geoJson);
+      case "Polygon":
+        return Polygon.fromGeoJson(geoJson);
+      case "LineString":
+        return LineString.fromGeoJson(geoJson);
+      case "MultiPoint":
+        return MultiGeoPoint.fromGeoJson(geoJson);
+      case "MultiPolygon":
+        return MultiPolygon.fromGeoJson(geoJson);
+      case "MultiLineString":
+        return MultiLineString.fromGeoJson(geoJson);
+      case "GeometryCollection":
+        return GeometryCollection.fromGeoJson(geoJson);
+    }
   },
 };

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./ParameterValue";
-export interface OntologyObject {
-  __rid: string;
-  __apiName: string;
-  __primaryKey: ParameterValue;
-}
+import type { AggregatableProperty, MetricValue } from "../Aggregations";
+import { MetricValueType } from "./metrics";
 
-export function isOntologyObject(obj: any): obj is OntologyObject {
-  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
-    && "__primaryKey" in obj;
-}
+export const DefaultAggregatableProperty = <T extends MetricValue>(
+  propertyApiName: string,
+): AggregatableProperty<T> => ({
+  type: "AggregatableProperty",
+  metricValueType: MetricValueType.NUMERIC,
+  propertyApiName,
+});
