@@ -22,6 +22,7 @@ import type {
   Timestamp,
 } from "../baseTypes";
 import type { WhereClause } from "./Filters";
+
 export interface ArrayFilter<
   T extends
     | string
@@ -38,8 +39,24 @@ export interface ArrayFilter<
   /** The provided property contains the provided value. */
   contains: (element: T) => WhereClause;
 }
-export const ArrayFilter: <T extends string | number>(
+
+export const ArrayFilter = <T extends string | number>(
   property: string,
-) => ArrayFilter<T> = (property: string) => {
-  throw new Error("not implemented");
+): ArrayFilter<T> => {
+  return {
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+    contains(element: T): WhereClause {
+      return {
+        type: "contains",
+        field: property,
+        value: element,
+      };
+    },
+  };
 };

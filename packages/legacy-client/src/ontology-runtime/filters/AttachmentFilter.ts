@@ -15,12 +15,20 @@
  */
 
 import type { WhereClause } from "./Filters";
+
 export interface AttachmentFilter {
   /** The provided property is null. */
   isNull: () => WhereClause;
 }
-export const AttachmentFilter: (property: string) => AttachmentFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
+
+export const AttachmentFilter = (property: string): AttachmentFilter => {
+  return {
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+  };
 };

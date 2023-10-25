@@ -15,6 +15,7 @@
  */
 
 import type { WhereClause } from "./Filters";
+
 export interface StringFilter {
   /** The provided property is exactly equal to the provided value. */
   eq: (s: string) => WhereClause;
@@ -38,6 +39,86 @@ export interface StringFilter {
   containsAllTerms: (s: string) => WhereClause;
 }
 
-export const StringFilter: (property: string) => StringFilter = () => {
-  throw new Error("not implemented");
+export const StringFilter = (property: string): StringFilter => {
+  return {
+    eq(value: string): WhereClause {
+      return {
+        type: "eq",
+        field: property,
+        value,
+      };
+    },
+
+    lt(value: string): WhereClause {
+      return {
+        type: "lt",
+        field: property,
+        value,
+      };
+    },
+
+    gt(value: string): WhereClause {
+      return {
+        type: "gt",
+        field: property,
+        value,
+      };
+    },
+
+    lte(value: string): WhereClause {
+      return {
+        type: "lte",
+        field: property,
+        value,
+      };
+    },
+
+    gte(value: string): WhereClause {
+      return {
+        type: "gte",
+        field: property,
+        value,
+      };
+    },
+
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+
+    startsWith(value: string): WhereClause {
+      return {
+        type: "startsWith",
+        field: property,
+        value,
+      };
+    },
+
+    containsAllTermsInOrder(value: string): WhereClause {
+      return {
+        type: "containsAllTermsInOrder",
+        field: property,
+        value,
+      };
+    },
+
+    containsAnyTerm(value: string): WhereClause {
+      return {
+        type: "containsAnyTerm",
+        field: property,
+        value,
+      };
+    },
+
+    containsAllTerms(value: string): WhereClause {
+      return {
+        type: "containsAllTerms",
+        field: property,
+        value,
+      };
+    },
+  };
 };

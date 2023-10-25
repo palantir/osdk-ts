@@ -38,14 +38,61 @@ export interface TimestampFilter extends BaseTimePropertyFilter<Timestamp> {
 export interface LocalDateFilter extends BaseTimePropertyFilter<LocalDate> {
 }
 
-export const TimestampFilter: (property: string) => TimestampFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
-};
+export const TimestampFilter = (property: string): TimestampFilter =>
+  createTimePropertyFilter<Timestamp>(property);
+export const LocalDateFilter = (property: string): LocalDateFilter =>
+  createTimePropertyFilter<LocalDate>(property);
 
-export const LocalDateFilter: (property: string) => LocalDateFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
+const createTimePropertyFilter = <T extends Timestamp | LocalDate>(
+  property: string,
+): BaseTimePropertyFilter<T> => {
+  return {
+    eq(value: T): WhereClause {
+      return {
+        type: "eq",
+        field: property,
+        value: value.toISOString(),
+      };
+    },
+
+    lt(value: T): WhereClause {
+      return {
+        type: "lt",
+        field: property,
+        value: value.toISOString(),
+      };
+    },
+
+    gt(value: T): WhereClause {
+      return {
+        type: "gt",
+        field: property,
+        value: value.toISOString(),
+      };
+    },
+
+    lte(value: T): WhereClause {
+      return {
+        type: "lte",
+        field: property,
+        value: value.toISOString(),
+      };
+    },
+
+    gte(value: T): WhereClause {
+      return {
+        type: "gte",
+        field: property,
+        value: value.toISOString(),
+      };
+    },
+
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+  };
 };

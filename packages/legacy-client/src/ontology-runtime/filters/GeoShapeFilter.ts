@@ -17,6 +17,7 @@
 import type { Polygon } from "../baseTypes";
 import type { WhereClause } from "./Filters";
 import type { BoundingBox } from "./GeoPointFilter";
+
 export interface GeoShapeFilter {
   /** The provided property is within the specified bounding box. */
   withinBoundingBox: (boundingBox: BoundingBox) => WhereClause;
@@ -31,6 +32,62 @@ export interface GeoShapeFilter {
   /** The provided property is within the specified Polygon */
   doesNotIntersectPolygon: (polygon: Polygon) => WhereClause;
 }
-export const GeoShapeFilter: (property: string) => GeoShapeFilter = () => {
-  throw new Error("not implemented");
+
+export const GeoShapeFilter = (property: string): GeoShapeFilter => {
+  return {
+    withinBoundingBox(boundingBox: BoundingBox): WhereClause {
+      return {
+        type: "withinBoundingBox",
+        field: property,
+        value: {
+          topLeft: boundingBox.topLeft.toGeoJson(),
+          bottomRight: boundingBox.bottomRight.toGeoJson(),
+        },
+      };
+    },
+
+    intersectsBoundingBox(boundingBox: BoundingBox): WhereClause {
+      return {
+        type: "intersectsBoundingBox",
+        field: property,
+        value: {
+          topLeft: boundingBox.topLeft.toGeoJson(),
+          bottomRight: boundingBox.bottomRight.toGeoJson(),
+        },
+      };
+    },
+
+    doesNotIntersectBoundingBox(boundingBox: BoundingBox): WhereClause {
+      return {
+        type: "doesNotIntersectBoundingBox",
+        field: property,
+        value: {
+          topLeft: boundingBox.topLeft.toGeoJson(),
+          bottomRight: boundingBox.bottomRight.toGeoJson(),
+        },
+      };
+    },
+
+    withinPolygon(polygon) {
+      return {
+        type: "withinPolygon",
+        field: property,
+        value: polygon.toGeoJson(),
+      };
+    },
+    intersectsPolygon(polygon) {
+      return {
+        type: "intersectsPolygon",
+        field: property,
+        value: polygon.toGeoJson(),
+      };
+    },
+    doesNotIntersectPolygon(polygon) {
+      return {
+        type: "doesNotIntersectPolygon",
+        field: property,
+        value: polygon.toGeoJson(),
+      };
+    },
+  };
 };

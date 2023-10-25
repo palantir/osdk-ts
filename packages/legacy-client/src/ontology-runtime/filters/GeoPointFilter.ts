@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import type { GeoPoint, Polygon } from "../baseTypes";
+import { Distance, type GeoPoint, type Polygon } from "../baseTypes";
 import type { WhereClause } from "./Filters";
+
 export type BoundingBox = {
   topLeft: GeoPoint;
   bottomRight: GeoPoint;
 };
+
 export interface GeoPointFilter {
   /** The provided property is within the specified bounding box. */
   withinBoundingBox: (boundingBox: BoundingBox) => WhereClause;
@@ -47,8 +49,96 @@ export interface GeoPointFilter {
   /** The provided property is within the specified Polygon */
   withinPolygon: (polygon: Polygon) => WhereClause;
 }
-export const GeoPointFilter: (property: string) => GeoPointFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
+
+export const GeoPointFilter = (property: string): GeoPointFilter => {
+  return {
+    withinBoundingBox(boundingBox: BoundingBox): WhereClause {
+      return {
+        type: "withinBoundingBox",
+        field: property,
+        value: {
+          topLeft: boundingBox.topLeft.toGeoJson(),
+          bottomRight: boundingBox.bottomRight.toGeoJson(),
+        },
+      };
+    },
+
+    withinMillimetersOf(point, millimeters): WhereClause {
+      return getWithinDistanceOf(
+        property,
+        point,
+        Distance.ofMillimeters(millimeters),
+      );
+    },
+
+    withinCentimetersOf(point, centimeters): WhereClause {
+      return getWithinDistanceOf(
+        property,
+        point,
+        Distance.ofCentimeters(centimeters),
+      );
+    },
+
+    withinMetersOf(point, meters): WhereClause {
+      return getWithinDistanceOf(property, point, Distance.ofMeters(meters));
+    },
+
+    withinKilometersOf(point, kilometers): WhereClause {
+      return getWithinDistanceOf(
+        property,
+        point,
+        Distance.ofKilometers(kilometers),
+      );
+    },
+
+    withinInchesOf(point, inches): WhereClause {
+      return getWithinDistanceOf(property, point, Distance.ofInches(inches));
+    },
+
+    withinFeetOf(point, feet): WhereClause {
+      return getWithinDistanceOf(property, point, Distance.ofFeet(feet));
+    },
+
+    withinYardsOf(point, yards): WhereClause {
+      return getWithinDistanceOf(property, point, Distance.ofYards(yards));
+    },
+
+    withinMilesOf(point, miles): WhereClause {
+      return getWithinDistanceOf(property, point, Distance.ofMiles(miles));
+    },
+
+    withinNauticalMilesOf(point, nauticalMiles): WhereClause {
+      return getWithinDistanceOf(
+        property,
+        point,
+        Distance.ofNauticalMiles(nauticalMiles),
+      );
+    },
+
+    withinPolygon(polygon) {
+      return {
+        type: "withinPolygon",
+        field: property,
+        value: polygon.toGeoJson(),
+      };
+    },
+  };
 };
+
+function getWithinDistanceOf(
+  propertyApiName: string,
+  point: GeoPoint,
+  distance: Distance,
+): WhereClause {
+  return {
+    type: "withinDistanceOf",
+    field: propertyApiName,
+    value: {
+      center: point.toGeoJson(),
+      distance: {
+        value: distance.value,
+        unit: distance.unit,
+      },
+    },
+  };
+}
