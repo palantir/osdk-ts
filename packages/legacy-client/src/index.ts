@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { BaseFoundryClient, type FoundryClientOptions } from "./client";
 export {
   ConfidentialClientAuth,
   PublicClientAuth,

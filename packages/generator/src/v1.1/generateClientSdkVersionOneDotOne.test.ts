@@ -38,7 +38,10 @@ describe("generator", () => {
       helper.getFiles()[`${BASE_PATH}/index.ts`],
     ).toMatchInlineSnapshot(`
       "// Path: /foo/index.ts
+      import { Auth, FoundryClientOptions, BaseFoundryClient } from '@osdk/legacy-client';
       export const ontologyRid = 'ridHere';
+      export * from '@osdk/legacy-client';
+      export { FoundryClient } from './FoundryClient';
       "
     `);
 
@@ -49,6 +52,9 @@ describe("generator", () => {
       );
     }
 
-    expect(diagnostics).toHaveLength(0);
+    // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
+    const errors = diagnostics.filter((q) => q.code !== 2792);
+
+    expect(errors).toHaveLength(0);
   });
 });

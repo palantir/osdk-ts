@@ -14,41 +14,38 @@
  * limitations under the License.
  */
 
-import { describe, expect, test } from "vitest";
-import { compileThis } from "../util/test/compileThis";
+import { describe, expect, it } from "vitest";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateClientSdkVersionTwoPointZero } from "./generateClientSdkVersionTwoPointZero";
+import { generateMetadata } from "./generateMetadata";
 
-describe("generator", () => {
-  test("should be able to generate a project", async () => {
+describe("generateMetadata", () => {
+  it("generates metadata", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
 
-    await generateClientSdkVersionTwoPointZero(
+    await generateMetadata(
       TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
     );
 
-    const files = helper.getFiles();
+    expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(files).toMatchObject({
-      [`${BASE_PATH}/index.ts`]: expect.anything(),
-      [`${BASE_PATH}/Ontology.ts`]: expect.anything(),
-      [`${BASE_PATH}/objects/Todo.ts`]: expect.anything(),
-    });
-
-    helper.dumpFilesToConsole();
-
-    const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
-    for (const q of diagnostics) {
-      console.error(
-        `${q.file?.fileName}:${q.file?.getLineStarts()} ${q.messageText}`,
-      );
-    }
-
-    const errors = diagnostics.filter(q => q.code !== 2792);
-    expect(errors).toHaveLength(0);
+    expect(
+      helper.getFiles()[`${BASE_PATH}/OntologyDefinition.ts`],
+    ).toMatchInlineSnapshot(`
+      "// Path: /foo/OntologyDefinition
+      import type { OntologyDefinition as ApiOntologyDefinition } from '@osdk/legacy-client';
+      export const OntologyDefinition = {
+        metadata: {
+          ontologyRid: 'ridHere',
+          ontologyApiName: 'OntologyApiName',
+          userAgent: 'foundry-typescript-osdk/0.0.1',
+        },
+        objects: {},
+      } satisfies ApiOntologyDefinition<'Todo'>;
+      "
+    `);
   });
 });
