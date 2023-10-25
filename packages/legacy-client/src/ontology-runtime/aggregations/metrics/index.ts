@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-export interface CountOperation {
-  type: "CountOperation";
-  operation: "count";
-}
-
-export const CountOperation: CountOperation = {
-  type: "CountOperation",
-  operation: "count",
-};
-
-export function isCountOperation(value: any): value is CountOperation {
-  return value.type === "CountOperation";
-}
+export * from "./ApproximateDistinctCountAggregatableProperty";
+export * from "./DefaultAggregatableProperty";
+export * from "./LocalDatePropertyMetric";
+export * from "./metrics";
+export * from "./MultipleAggregatableProperty";
+export * from "./NumericPropertyMetric";
+export * from "./TimestampPropertyMetric";

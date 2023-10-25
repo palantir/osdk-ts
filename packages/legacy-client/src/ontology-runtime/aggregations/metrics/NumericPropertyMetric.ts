@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-export interface CountOperation {
-  type: "CountOperation";
-  operation: "count";
-}
+import { MetricValueType } from "./metrics";
+import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
 
-export const CountOperation: CountOperation = {
-  type: "CountOperation",
-  operation: "count",
-};
-
-export function isCountOperation(value: any): value is CountOperation {
-  return value.type === "CountOperation";
-}
+export const NumericPropertyMetric = (
+  propertyApiName: string,
+): MultipleAggregatableProperty<number> =>
+  MultipleAggregatableProperty(propertyApiName, MetricValueType.NUMERIC);

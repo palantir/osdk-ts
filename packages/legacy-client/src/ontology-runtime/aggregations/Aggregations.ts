@@ -17,7 +17,9 @@
 import type { LocalDate, Timestamp } from "../baseTypes";
 import type { AggregationComputeStep } from "./ComputeStep";
 import type { CountOperation } from "./CountOperation";
-import type { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
+import type { GroupKeyType } from "./groupBy/GroupKeyType";
+import type { MetricValueType, MultipleAggregatableProperty } from "./metrics";
+
 export interface BaseBucket<K, V> {
   key: K;
   value: V;
@@ -70,14 +72,18 @@ export type Metrics = Record<string, MetricValue>;
 export interface AggregatableProperty<_TResult extends MetricValue = Double> {
   type: "AggregatableProperty";
   propertyApiName: string;
+  metricValueType: MetricValueType;
 }
+
 export interface MultipleAggregationsOperations<
   _TResult extends MetricValue = Double,
 > {
-  type: "IMultipleAggregationsOperations";
+  type: "MultipleAggregationsOperations";
   propertyApiName: string;
+  metricValueType: MetricValueType;
   operation: "max" | "min" | "avg" | "sum" | "approximateDistinct";
 }
+
 export type AggregatableProperties = Record<
   string,
   AggregatableProperty<MetricValue>
@@ -270,6 +276,7 @@ export interface GroupedTerminalAggregationOperations<
   >;
 }
 export type BaseGroupBy<_T extends BucketValue> = {};
+
 export interface BaseBucketing<
   TBucketKey extends BucketKey,
   TBucketValue extends BucketValue,
@@ -277,7 +284,9 @@ export interface BaseBucketing<
 > extends Bucketing<TBucketKey, TBucketValue> {
   kind: Kind;
   propertyApiName: string;
+  keyDataType: GroupKeyType;
 }
+
 export interface ExactValueBucketing<
   TBucketKey extends BucketKey,
   TBucketValue extends BucketValue,
@@ -327,6 +336,7 @@ export interface AggregationClause {
   type: "max" | "min" | "avg" | "sum" | "count" | "approximateDistinct";
   field?: string;
   name: string;
+  metricValueType: MetricValueType;
   namedAggregation: boolean;
 }
 export interface GroupByClause {
@@ -343,13 +353,16 @@ export type InternalBucketing<
     ? RangeBucketing<TBucketKey, T> | FixedWidthBucketing<TBucketKey, T>
     : never)
   | (T extends Date ? DurationBucketing<TBucketKey, T> : never);
+
 export function assertBucketingInternal<
   TBucketKey extends BucketKey,
   T extends BucketValue,
 >(
   bucketing: Bucketing<TBucketKey, T>,
 ): asserts bucketing is InternalBucketing<TBucketKey, T> {
-  throw new Error("not implemented");
+  if (bucketing.type !== "Bucketing" || !(bucketing as any).kind) {
+    throw new Error("The provided bucketing is not supported.");
+  }
 }
 
 export type InternalBucketingVisitor<
@@ -374,6 +387,7 @@ export type InternalBucketingVisitor<
     bucketing: DurationBucketing<TBucketKey, T extends Date ? T : never>,
   ) => R;
 };
+
 export function visitInternalBucketing<
   TBucketKey extends BucketKey,
   T extends BucketValue,
@@ -382,5 +396,30 @@ export function visitInternalBucketing<
   bucketing: InternalBucketing<TBucketKey, T>,
   handlers: InternalBucketingVisitor<TBucketKey, T, R>,
 ): R {
-  throw new Error("not implemented");
+  switch (bucketing.kind) {
+    case "ExactValueBucketing":
+      return handlers.onExactValue(bucketing);
+    case "RangeBucketing":
+      return handlers.onRange(
+        bucketing as RangeBucketing<
+          TBucketKey,
+          T extends Range<Rangeable> ? T : never
+        >,
+      );
+    case "FixedWidthBucketing":
+      return handlers.onFixedWidth(
+        bucketing as FixedWidthBucketing<
+          TBucketKey,
+          T extends Range<Rangeable> ? T : never
+        >,
+      );
+    case "DurationBucketing":
+      return handlers.onDuration(
+        bucketing as DurationBucketing<TBucketKey, T extends Date ? T : never>,
+      );
+    default:
+      // Exhaustive check to ensure all cases are handled
+      const _: never = bucketing;
+      throw new Error(`Unhandled bucketing: ${JSON.stringify(bucketing)}`);
+  }
 }

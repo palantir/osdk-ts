@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-export interface CountOperation {
-  type: "CountOperation";
-  operation: "count";
-}
-
-export const CountOperation: CountOperation = {
-  type: "CountOperation",
-  operation: "count",
-};
-
-export function isCountOperation(value: any): value is CountOperation {
-  return value.type === "CountOperation";
+export enum GroupKeyType {
+  NUMERIC = "NUMERIC",
+  STRING = "STRING",
+  BOOLEAN = "BOOLEAN",
+  DATE = "DATE",
+  TIMESTAMP = "TIMESTAMP",
 }

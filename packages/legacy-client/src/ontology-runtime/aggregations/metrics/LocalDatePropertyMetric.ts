@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import type { Double, MultipleAggregationsOperations } from "./Aggregations";
-export interface ApproximateDistinctCountAggregatableProperty {
-  type: "ApproximateDistinctCountAggregatableProperty";
-  approximateDistinct(): MultipleAggregationsOperations<Double>;
-}
-export const ApproximateDistinctCountAggregatableProperty: (
+import { MetricValueType } from "./metrics";
+import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
+
+export const LocalDatePropertyMetric = (
   propertyApiName: string,
-) => ApproximateDistinctCountAggregatableProperty = (proerty) => {
-  throw new Error("not implemented");
-};
+): MultipleAggregatableProperty<number> =>
+  MultipleAggregatableProperty(propertyApiName, MetricValueType.LOCALDATE);

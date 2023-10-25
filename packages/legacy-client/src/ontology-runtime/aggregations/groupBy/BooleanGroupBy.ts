@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import type { Bucketing } from "../Aggregations";
+import type { Bucketing, ExactValueBucketing } from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
+
 export interface BooleanGroupBy<T extends string> {
   /** Divides objects into groups according to an exact value.
    * If omitted, the default maxGroupCount is 10,000.
@@ -22,8 +24,14 @@ export interface BooleanGroupBy<T extends string> {
   exact(maxGroupCount?: number): Bucketing<T, boolean>;
 }
 
-export const BooleanGroupBy: (
+export const BooleanGroupBy = (
   propertyApiName: string,
-) => BooleanGroupBy<string> = (propertyApiName) => {
-  throw new Error("not implemented");
-};
+): BooleanGroupBy<string> => ({
+  exact: (maxGroupCount?: number): ExactValueBucketing<string, boolean> => ({
+    type: "Bucketing",
+    kind: "ExactValueBucketing",
+    propertyApiName,
+    maxGroupCount,
+    keyDataType: GroupKeyType.BOOLEAN,
+  }),
+});

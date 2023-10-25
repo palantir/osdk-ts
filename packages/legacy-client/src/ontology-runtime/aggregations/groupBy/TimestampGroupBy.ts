@@ -15,13 +15,19 @@
  */
 
 import type { Timestamp } from "../../baseTypes";
-import type {
-  Bucketing,
-  BucketKey,
-  Duration,
-  Range,
-  Rangeable,
+import {
+  type Bucketing,
+  type BucketKey,
+  type Duration,
+  type DurationBucketing,
+  type ExactValueBucketing,
+  type Range,
+  type Rangeable,
+  type RangeBucketing,
+  TimeUnit,
 } from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
+
 export interface TimestampGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups according to specified ranges. */
   ranges: (
@@ -85,8 +91,79 @@ export interface TimestampGroupBy<TBucketKey extends BucketKey> {
    */
   exact: (maxGroupCount?: number) => Bucketing<TBucketKey, Range<Timestamp>>;
 }
-export const TimestampGroupBy: (
+
+export const TimestampGroupBy = (
   propertyApiName: string,
-) => TimestampGroupBy<string> = (propertyApiName) => {
-  throw new Error("not implemented");
-};
+): TimestampGroupBy<string> => ({
+  exact: (
+    maxGroupCount?: number,
+  ): ExactValueBucketing<string, Range<Timestamp>> => ({
+    type: "Bucketing",
+    kind: "ExactValueBucketing",
+    keyDataType: GroupKeyType.TIMESTAMP,
+    propertyApiName,
+    maxGroupCount,
+  }),
+
+  byMilliseconds: (
+    numberOfMilliseconds: number = 1,
+  ): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(
+      propertyApiName,
+      TimeUnit.MILLISECONDS,
+      numberOfMilliseconds,
+    ),
+
+  bySeconds: (
+    numberOfSeconds: number = 1,
+  ): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.SECONDS, numberOfSeconds),
+
+  byMinutes: (
+    numberOfMinutes: number = 1,
+  ): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.MINUTES, numberOfMinutes),
+
+  byHours: (numberOfHours: number = 1): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.HOURS, numberOfHours),
+
+  byDays: (numberOfDays: number = 1): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.DAYS, numberOfDays),
+
+  byWeek: (): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.WEEKS),
+
+  byMonth: (): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.MONTHS),
+
+  byQuarter: (): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.QUARTERS),
+
+  byYear: (): DurationBucketing<string, Timestamp> =>
+    getTimestampBucketing(propertyApiName, TimeUnit.YEARS),
+
+  ranges: (
+    ranges: Array<Range<Timestamp>>,
+  ): RangeBucketing<string, Range<Rangeable>> => ({
+    type: "Bucketing",
+    kind: "RangeBucketing",
+    keyDataType: GroupKeyType.TIMESTAMP,
+    propertyApiName,
+    ranges,
+  }),
+});
+
+function getTimestampBucketing(
+  propertyApiName: string,
+  unit: TimeUnit,
+  value: number = 1,
+): DurationBucketing<string, Timestamp> {
+  return {
+    type: "Bucketing",
+    kind: "DurationBucketing",
+    keyDataType: GroupKeyType.TIMESTAMP,
+    propertyApiName,
+    unit,
+    value,
+  };
+}
