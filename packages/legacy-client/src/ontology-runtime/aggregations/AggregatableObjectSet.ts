@@ -16,7 +16,6 @@
 
 import type { Auth } from "../../oauth-client";
 import type { BaseObjectType, ObjectSetDefinition } from "../baseTypes";
-import type { OrderByClause } from "../filters";
 import type { OntologyMetadata } from "../ontologyProvider";
 import { isMultipleAggregationOperation } from ".";
 import {
@@ -35,6 +34,7 @@ import {
 } from "./Aggregations";
 import { type AggregationComputeStep, ComputeStep } from "./ComputeStep";
 import { type CountOperation, isCountOperation } from "./CountOperation";
+import { MetricValueType } from "./metrics";
 
 export abstract class AggregatableObjectSet<
   TAggregatableProperties,
