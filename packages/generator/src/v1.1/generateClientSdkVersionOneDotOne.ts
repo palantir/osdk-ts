@@ -18,6 +18,8 @@ import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { generateFoundryClient } from "./generateFoundryClient";
+import { generateMetadata } from "./generateMetadata";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
@@ -99,12 +101,16 @@ export async function generateClientSdkVersionOneDotOne(
       } from "./internal/@foundry/oauth-client/dist";
    */
 
+  await generateFoundryClient(fs, outDir);
+  await generateMetadata(ontology, fs, outDir);
+
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`// Path: ${path.join(outDir, "index.ts")}
+    import { Auth, FoundryClientOptions, BaseFoundryClient } from "@osdk/legacy-client";
     export const ontologyRid = "${rid}";
-
     export * from "@osdk/legacy-client";
+    export { FoundryClient } from "./FoundryClient";
     `),
   );
 }
