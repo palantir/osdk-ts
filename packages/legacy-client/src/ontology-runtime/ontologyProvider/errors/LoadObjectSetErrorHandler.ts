@@ -29,68 +29,130 @@ import type {
   ObjectTypeNotFound,
   ObjectTypeNotSynced,
   OntologySyncing,
-  PermissionDenied,
   PropertiesNotFilterable,
   PropertiesNotSearchable,
   PropertiesNotSortable,
   PropertyFiltersNotSupported,
   PropertyTypesSearchNotSupported,
   QueryDepthExceededLimit,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
-export class LoadObjectSetErrorHandler {
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
+
+export class LoadObjectSetErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectTypeNotSynced(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotSynced {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotSynced",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectsExceededLimit(error: PalantirApiError): ObjectsExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectsExceededLimit",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handlePropertiesNotSearchable(
     error: PalantirApiError,
     properties: string[],
   ): PropertiesNotSearchable {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotSearchable",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      propertyApiNames: properties,
+    };
   }
 
   handlePropertyTypesSearchNotSupported(
     error: PalantirApiError,
     parameters: any,
   ): PropertyTypesSearchNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertyTypesSearchNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameters,
+    };
   }
 
   handlePropertiesNotFilterable(
-    errror: PalantirApiError,
+    error: PalantirApiError,
     properties: string[],
   ): PropertiesNotFilterable {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotFilterable",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      properties,
+    };
   }
 
   handleMalformedPropertyFilters(
     error: PalantirApiError,
     malformedPropertyFilter: string,
   ): MalformedPropertyFilters {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "MalformedPropertyFilters",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      malformedPropertyFilter,
+    };
   }
 
   handleOntologySyncing(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): OntologySyncing {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "OntologySyncing",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleInvalidRangeQuery(
@@ -101,7 +163,19 @@ export class LoadObjectSetErrorHandler {
     lte?: any,
     gte?: any,
   ): InvalidRangeQuery {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidRangeQuery",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      field,
+      lt,
+      gt,
+      lte,
+      gte,
+    };
   }
 
   handleInvalidPropertyValue(
@@ -110,21 +184,47 @@ export class LoadObjectSetErrorHandler {
     property: string,
     propertyValue: string,
   ): InvalidPropertyValue {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidPropertyValue",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      propertyBaseType,
+      property,
+      propertyValue,
+    };
   }
 
   handlePropertiesNotSortable(
     error: PalantirApiError,
     properties: string[],
   ): PropertiesNotSortable {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotSortable",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      properties,
+    };
   }
 
   handleInvalidSortOrder(
     error: PalantirApiError,
     invalidSortOrder: string,
   ): InvalidSortOrder {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidSortOrder",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      invalidSortOrder,
+    };
   }
 
   handleQueryDepthExceededLimit(
@@ -132,7 +232,16 @@ export class LoadObjectSetErrorHandler {
     depth: number,
     depthLimit: number,
   ): QueryDepthExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "QueryDepthExceededLimit",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      depth,
+      depthLimit,
+    };
   }
 
   handleInvalidPropertyFiltersCombination(
@@ -140,21 +249,46 @@ export class LoadObjectSetErrorHandler {
     propertyFilters: string[],
     property: string,
   ): InvalidPropertyFiltersCombination {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidPropertyFiltersCombination",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      propertyFilters,
+      property,
+    };
   }
 
   handleDuplicateOrderBy(
     error: PalantirApiError,
     properties: string[],
   ): DuplicateOrderBy {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "DuplicateOrderBy",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      properties,
+    };
   }
 
   handleInvalidSortType(
     error: PalantirApiError,
     invalidSortType: string,
   ): InvalidSortType {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidSortType",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      invalidSortType,
+    };
   }
 
   handlePropertyFiltersNotSupported(
@@ -162,7 +296,16 @@ export class LoadObjectSetErrorHandler {
     propertyFilters: string[],
     property: string,
   ): PropertyFiltersNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertyFiltersNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      propertyFilters,
+      property,
+    };
   }
 
   handleInvalidPropertyFilterValue(
@@ -172,18 +315,17 @@ export class LoadObjectSetErrorHandler {
     propertyFilterValue: string,
     property: string,
   ): InvalidPropertyFilterValue {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidPropertyFilterValue",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      expectedType,
+      property,
+      propertyFilter,
+      propertyFilterValue,
+    };
   }
 }

@@ -17,7 +17,7 @@
 export interface PalantirApiError extends Error {
   errorType?: string;
   message: string;
-  errorName?: string;
+  errorName: string;
   errorInstanceId?: string;
   statusCode?: number;
   parameters?: any;
@@ -25,7 +25,7 @@ export interface PalantirApiError extends Error {
 
 export class PalantirApiError extends Error implements PalantirApiError {
   message: string;
-  errorName?: string;
+  errorName: string;
   errorType?: string;
   statusCode?: number;
   errorInstanceId?: string;
@@ -33,19 +33,18 @@ export class PalantirApiError extends Error implements PalantirApiError {
 
   constructor(
     message: string,
-    errorName?: string,
+    errorName: string,
     errorType?: string,
     statusCode?: number,
     errorInstanceId?: string,
     parameters?: any,
   ) {
     super();
-    throw new Error("not implemented");
-  }
-}
-export class UnknownError extends PalantirApiError {
-  constructor(message: string, errorType: string) {
-    super("not implemented");
-    throw new Error("not implemented");
+    this.errorName = errorName;
+    this.errorType = errorType;
+    this.statusCode = statusCode;
+    this.errorInstanceId = errorInstanceId;
+    this.message = message;
+    this.parameters = parameters;
   }
 }

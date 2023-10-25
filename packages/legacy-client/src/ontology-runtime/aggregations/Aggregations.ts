@@ -324,7 +324,7 @@ export interface BucketedAggregation<
   buckets: Array<BaseBucket<TGroupKey, TValue>>;
 }
 export interface AggregationClause {
-  type: string;
+  type: "max" | "min" | "avg" | "sum" | "count" | "approximateDistinct";
   field?: string;
   name: string;
   namedAggregation: boolean;
