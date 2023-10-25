@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../metadata";
 import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(private foundryClientOptions: FoundryClientOptions<TAuth>) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
-
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
+export interface FoundryClientOptions<TAuth extends Auth = Auth> {
+  url: string;
+  auth: TAuth;
+  /**
+   * The fetch function to use for making requests. By default, it uses the global `fetch` function with error handling,
+   * authentication, and automatic retries.
+   */
+  fetchFunction?: typeof globalThis.fetch;
 }

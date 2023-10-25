@@ -28,7 +28,7 @@ export async function generateFoundryClient(
     import { OntologyDefinition } from "./OntologyDefinition";
     export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<OntologyDefinition, TAuth> {
         constructor(options: FoundryClientOptions<TAuth>) {
-          super();
+          super(options);
         }
     }`),
   );

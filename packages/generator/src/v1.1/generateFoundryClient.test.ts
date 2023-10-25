@@ -35,9 +35,9 @@ describe("generateFoundryClient", () => {
     ).toMatchInlineSnapshot(`
       "// Path: /foo/FoundryClient
       import { OntologyDefinition } from './OntologyDefinition';
-      export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<OntologyDefinition> {
+      export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<OntologyDefinition, TAuth> {
         constructor(options: FoundryClientOptions<TAuth>) {
-          super();
+          super(options);
         }
       }
       "

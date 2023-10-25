@@ -15,3 +15,4 @@
  */
 
 export * from "./foundryClient";
+export * from "./foundryClientOptions";
