@@ -42,7 +42,6 @@ import type {
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsRequest as StreamPointsBody,
 } from "@osdk/gateway/types";
-import { BaseFoundryClient, type FoundryClientOptions } from "../..";
 import { PalantirApiError } from "../../Errors";
 import type { Auth } from "../../oauth-client";
 import { visitTypeUnion } from "..";
@@ -83,7 +82,6 @@ import type {
   ObjectSetType,
   ObjectType,
   OntologyObject,
-  OntologyType,
   QueryBucketKey,
   QueryBucketKeyType,
   QueryBucketRangeableType,
@@ -105,7 +103,6 @@ import type {
 import {
   ActionResponse,
   AttachmentProperty,
-  BaseObjectType,
   GeoPoint,
   GeoShape,
   isOntologyObject,
@@ -153,7 +150,6 @@ import type {
   LoadObjectSetError,
   QueryError,
   TimeSeriesError,
-  UnknownError,
 } from "./Errors";
 import type { OntologyMetadata } from "./OntologyMetadata";
 import type { OntologyObjectFactory } from "./OntologyObjectFactory";

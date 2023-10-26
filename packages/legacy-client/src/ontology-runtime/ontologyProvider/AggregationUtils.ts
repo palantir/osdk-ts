@@ -31,7 +31,6 @@ import {
   type BucketGroup,
   type BucketKey,
   type BucketValue,
-  type GroupByClause,
   type InternalBucketing,
   type InternalBucketingVisitor,
   type Metrics,
