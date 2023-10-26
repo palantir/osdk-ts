@@ -29,18 +29,24 @@ export class AttachmentProperty implements Attachment {
 
   #ontologyMetadata: OntologyMetadata;
   #provider: OntologyProvider;
+  #propertyName?: string;
+  #apiName?: string;
+  #primaryKey?: string;
 
   private constructor(
     authClient: Auth,
     stack: string,
     ontologyMetadata: OntologyMetadata,
-    private propertyName?: string,
-    private apiName?: string,
-    private primaryKey?: string,
+    propertyName?: string,
+    apiName?: string,
+    primaryKey?: string,
     attachmentRid?: string,
   ) {
     this.#ontologyMetadata = ontologyMetadata;
     this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
+    this.#propertyName = propertyName;
+    this.#apiName = apiName;
+    this.#primaryKey = primaryKey;
     this.attachmentRid = attachmentRid;
   }
 
@@ -69,9 +75,9 @@ export class AttachmentProperty implements Attachment {
   getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>> {
     return this.#provider.getAttachmentMetadata(
       this.#ontologyMetadata.ontologyApiName,
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
+      this.#apiName,
+      this.#primaryKey,
+      this.#propertyName,
       this.attachmentRid,
     );
   }
@@ -79,9 +85,9 @@ export class AttachmentProperty implements Attachment {
   read(): Promise<Result<Blob, AttachmentsError>> {
     return this.#provider.readAttachmentContent(
       this.#ontologyMetadata.ontologyApiName,
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
+      this.#apiName,
+      this.#primaryKey,
+      this.#propertyName,
       this.attachmentRid,
     );
   }

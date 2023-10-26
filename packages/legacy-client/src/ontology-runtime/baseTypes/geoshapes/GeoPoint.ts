@@ -55,27 +55,33 @@ export class GeoPoint implements GeoPoint {
 
   private static geoHashRegex = /^([0123456789bcdefghjkmnpqrstuvwxyz])+$/i;
 
+  #coordinates: Coordinates;
+  #precision?: Precision;
+
   private constructor(
-    private coordinates: Coordinates,
-    private precision?: Precision,
-  ) {}
+    coordinates: Coordinates,
+    precision?: Precision,
+  ) {
+    this.#coordinates = coordinates;
+    this.#precision = precision;
+  }
 
   public toCoordinates() {
-    return this.coordinates;
+    return this.#coordinates;
   }
 
   public toGeoHash() {
     return Geohash.encode(
-      this.coordinates.latitude,
-      this.coordinates.longitude,
-      this.precision ?? Precision.TWELVE_DIGITS,
+      this.#coordinates.latitude,
+      this.#coordinates.longitude,
+      this.#precision ?? Precision.TWELVE_DIGITS,
     );
   }
 
   public toGeoJson(): GeoJsonPoint {
     return {
       type: "Point",
-      coordinates: [this.coordinates.longitude, this.coordinates.latitude],
+      coordinates: [this.#coordinates.longitude, this.#coordinates.latitude],
     };
   }
 
