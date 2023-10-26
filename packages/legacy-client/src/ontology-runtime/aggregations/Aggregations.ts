@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import type { LocalDate, Timestamp } from "../baseTypes";
+import type { BaseBucket, LocalDate, Timestamp } from "../baseTypes";
 import type { AggregationComputeStep } from "./ComputeStep";
 import type { CountOperation } from "./CountOperation";
 import type { GroupKeyType } from "./groupBy/GroupKeyType";
 import type { MetricValueType, MultipleAggregatableProperty } from "./metrics";
 
-export interface BaseBucket<K, V> {
-  key: K;
-  value: V;
-}
 export type Double = number;
 export type Rangeable = Double | Timestamp | LocalDate;
 export type MetricValue = Double | Timestamp | LocalDate;
