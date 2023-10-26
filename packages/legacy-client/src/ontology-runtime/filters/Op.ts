@@ -16,36 +16,20 @@
 
 import type { WhereClause } from "./Filters";
 
-// FIXME this should not be an interface.
-// It could be an export * as Op from a higher level.
-export interface Op {
-  /** All the sub-queries match */
-  and: (...whereClauses: WhereClause[]) => WhereClause;
-  /** At least one of the sub-queries matches. */
-  or: (...whereClauses: WhereClause[]) => WhereClause;
-  /** The sub-query does not match. */
-  not: (whereClause: WhereClause) => WhereClause;
-}
+/** All the sub-queries match */
+export const and = (...whereClauses: WhereClause[]): WhereClause => ({
+  type: "and",
+  value: whereClauses,
+});
 
-export const Op: Op = {
-  and(...whereClauses: WhereClause[]): WhereClause {
-    return {
-      type: "and",
-      value: whereClauses,
-    };
-  },
+/** At least one of the sub-queries matches. */
+export const or = (...whereClauses: WhereClause[]): WhereClause => ({
+  type: "or",
+  value: whereClauses,
+});
 
-  or(...whereClauses: WhereClause[]): WhereClause {
-    return {
-      type: "or",
-      value: whereClauses,
-    };
-  },
-
-  not(whereClause: WhereClause): WhereClause {
-    return {
-      type: "not",
-      value: whereClause,
-    };
-  },
-};
+/** The sub-query does not match. */
+export const not = (whereClause: WhereClause): WhereClause => ({
+  type: "not",
+  value: whereClause,
+});

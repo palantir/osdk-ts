@@ -14,34 +14,11 @@
  * limitations under the License.
  */
 
-export enum DistanceUnit {
-  MILLIMETERS = "MILLIMETERS",
-  CENTIMETERS = "CENTIMETERS",
-  METERS = "METERS",
-  KILOMETERS = "KILOMETERS",
-  INCHES = "INCHES",
-  FEET = "FEET",
-  YARDS = "YARDS",
-  MILES = "MILES",
-  NAUTICAL_MILES = "NAUTICAL_MILES",
-}
+import type { DistanceUnit } from "./DistanceUnit";
+
 export interface Distance {
   value: number;
   unit: DistanceUnit;
 }
 
-// good example of export * being better
-export const Distance = {
-  ofMillimeters: (value: number) => ({ unit: DistanceUnit.MILLIMETERS, value }),
-  ofCentimeters: (value: number) => ({ unit: DistanceUnit.CENTIMETERS, value }),
-  ofMeters: (value: number) => ({ unit: DistanceUnit.METERS, value }),
-  ofKilometers: (value: number) => ({ unit: DistanceUnit.KILOMETERS, value }),
-  ofInches: (value: number) => ({ unit: DistanceUnit.INCHES, value }),
-  ofFeet: (value: number) => ({ unit: DistanceUnit.FEET, value }),
-  ofYards: (value: number) => ({ unit: DistanceUnit.YARDS, value }),
-  ofMiles: (value: number) => ({ unit: DistanceUnit.MILES, value }),
-  ofNauticalMiles: (value: number) => ({
-    unit: DistanceUnit.NAUTICAL_MILES,
-    value,
-  }),
-};
+export * as Distance from "./DistanceMethods";
