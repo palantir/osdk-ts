@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import { modernToLegacyWhereClause } from "#client/converters";
-import type {
-  AggregationClause,
-  AggregationsResults,
-  GroupByClause,
-  WhereClause,
-} from "#client/query";
-import type { Wire } from "#net";
 import type {
   ObjectInfoFrom,
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyKeysFrom,
-} from "#ontology";
+} from "../../ontology";
+import { modernToLegacyWhereClause } from "../internal/conversions";
+import type { Wire } from "../internal/net";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
+import type {
+  AggregationClause,
+  AggregationsResults,
+  GroupByClause,
+  WhereClause,
+} from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { ThinClient } from "../ThinClient";
 import type { LinkTypesFrom } from "./LinkTypesFrom";

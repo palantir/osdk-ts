@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { AggregationClause } from "#client/query";
-import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import type { Aggregation } from "@osdk/gateway/types";
+import type { ObjectTypesFrom, OntologyDefinition } from "../../../ontology";
+import type { AggregationClause } from "../../query";
 
 export function modernToLegacyAggregationClause<
   T extends OntologyDefinition<any>,

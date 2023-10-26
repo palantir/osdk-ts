@@ -18,7 +18,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyDefinitionFrom,
-} from "#ontology";
+} from "../../../ontology";
 import type { AggregatableKeys } from "./AggregatableKeys";
 import type { GroupByMapper } from "./GroupByMapper";
 

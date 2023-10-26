@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export type { WhereClause } from "#client/query";
-export type { OsdkObject } from "#ontology";
 export { createClient, createThinClient, isOk } from "./client";
 export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
+export type { WhereClause } from "./client/query";
+export type { OsdkObject } from "./ontology";
 
 // FIXME: Shoudl this be Objects or Object?
 export * as Objects from "./client/object";

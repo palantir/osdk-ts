@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "../../../ontology";
 import type { AggregateOpts } from "./AggregateOpts";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";

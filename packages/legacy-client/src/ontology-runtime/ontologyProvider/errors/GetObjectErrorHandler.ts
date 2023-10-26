@@ -21,32 +21,55 @@ import type {
   ObjectTypeNotFound,
   ObjectTypeNotSynced,
   OntologySyncing,
-  PermissionDenied,
   PropertiesNotFound,
   PropertiesNotSortable,
-  Unauthorized,
-  UnknownError,
 } from "../Errors";
-export class GetObjectErrorHandler {
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
+
+export class GetObjectErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectTypeNotSynced(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): ObjectTypeNotSynced {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectTypeNotSynced",
+      errorType: "CONFLICT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handlePropertiesNotSortable(
     error: PalantirApiError,
     properties: string[],
   ): PropertiesNotSortable {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotSortable",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      properties,
+    };
   }
 
   handleCompositePrimaryKeyNotSupported(
@@ -54,14 +77,31 @@ export class GetObjectErrorHandler {
     objectTypeApiName: string,
     primaryKey: string[],
   ): CompositePrimaryKeyNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorType: "INVALID_ARGUMENT",
+      errorName: "CompositePrimaryKeyNotSupported",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+      primaryKey,
+    };
   }
 
   handleOntologySyncing(
     error: PalantirApiError,
     objectTypeApiName: string,
   ): OntologySyncing {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorType: "CONFLICT",
+      errorName: "OntologySyncing",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType: objectTypeApiName,
+    };
   }
 
   handleObjectNotFound(
@@ -69,25 +109,32 @@ export class GetObjectErrorHandler {
     objectTypeApiName: string,
     primaryKey: any,
   ): ObjectNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      primaryKey,
+      objectType: objectTypeApiName,
+    };
   }
 
   handlePropertiesNotFound(
     error: PalantirApiError,
+    objectType: string,
     properties: any,
   ): PropertiesNotFound {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      properties,
+    };
   }
 }

@@ -56,17 +56,15 @@ import type {
 import type { OntologyMetadata } from "./OntologyMetadata";
 import type { OntologyObjectFactory } from "./OntologyObjectFactory";
 import type { Result } from "./Result";
+
 export class OntologyProvider {
-  private authClient;
-  private stack;
-  private ontologyMetadata;
-  private objectFactory?;
-  private client;
+  private client: any;
+
   constructor(
-    authClient: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
-    objectFactory?: OntologyObjectFactory,
+    private authClient: Auth,
+    private stack: string,
+    private ontologyMetadata: OntologyMetadata,
+    private objectFactory?: OntologyObjectFactory,
   ) {
     throw new Error("not implemented");
   }
@@ -211,9 +209,9 @@ export class OntologyProvider {
     TBucketGroup extends BucketGroup,
     TMetrics extends Metrics | MetricValue,
   >(objectType: BaseObjectType, body: {
+    objectSet: ObjectSetDefinition;
     aggregation: AggregationClause[];
     groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;
-    where?: SearchClause;
   }): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {

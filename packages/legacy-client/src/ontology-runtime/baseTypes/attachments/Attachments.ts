@@ -19,29 +19,37 @@ import type {
   AttachmentsError,
   OntologyMetadata,
 } from "../../ontologyProvider";
+import { OntologyProvider } from "../../ontologyProvider";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment } from "./Attachment";
 
 export class Attachments {
-  #private;
-  private constructor() {
-    throw new Error("not implemented");
+  #provider: OntologyProvider;
+
+  private constructor(
+    auth: Auth,
+    stack: string,
+    ontologyMetadata: OntologyMetadata,
+  ) {
+    this.#provider = new OntologyProvider(auth, stack, ontologyMetadata);
   }
-  static initializeAttachmentsClient(
-    authClient: Auth,
+
+  public static initializeAttachmentsClient(
+    auth: Auth,
     stack: string,
     ontologyMetadata: OntologyMetadata,
   ): Attachments {
-    throw new Error("not implemented");
+    return new Attachments(auth, stack, ontologyMetadata);
   }
 
-  upload(
+  public async upload(
     fileName: string,
     data: Blob,
   ): Promise<Result<Attachment, AttachmentsError>> {
-    throw new Error("not implemented");
+    return this.#provider.uploadAttachment(fileName, data);
   }
-  static isAttachment(obj: any): boolean {
-    throw new Error("not implemented");
+
+  public static isAttachment(obj: any): boolean {
+    return obj?.type === "Attachment";
   }
 }

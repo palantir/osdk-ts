@@ -16,9 +16,7 @@
 
 export * from "./AggregatableObjectSet";
 export * from "./Aggregations";
-export * from "./ApproximateDistinctCountAggregatableProperty";
 export * from "./ComputeStep";
 export * from "./CountOperation";
-export * from "./DefaultAggregatableProperty";
 export * from "./groupBy";
-export * from "./MultipleAggregatableProperty";
+export * from "./metrics";

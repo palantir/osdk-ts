@@ -15,15 +15,15 @@
  */
 
 import type {
-  AggregationClause,
-  GroupByClause,
-  WhereClause,
-} from "#client/query";
-import type {
   ObjectInfoFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-} from "#ontology";
+} from "../../../ontology";
+import type {
+  AggregationClause,
+  GroupByClause,
+  WhereClause,
+} from "../../query";
 
 export type AggregateOpts<
   T extends OntologyDefinition<any>,

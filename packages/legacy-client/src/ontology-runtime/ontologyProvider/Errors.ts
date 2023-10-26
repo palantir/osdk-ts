@@ -37,7 +37,10 @@ export class FoundryApiError extends Error implements FoundryApiError {
     errorInstanceId?: string,
   ) {
     super();
-    throw new Error("not implemented");
+    this.errorName = errorName;
+    this.errorType = errorType;
+    this.errorInstanceId = errorInstanceId;
+    this.statusCode = statusCode;
   }
 }
 
@@ -191,6 +194,7 @@ export interface Unauthorized extends FoundryApiError {
 export interface UnknownError extends Error {
   errorType: "UNKNOWN";
   errorName: "UnknownError";
+  originalError: any;
 }
 export interface InvalidAggregationRangeValue extends FoundryApiError {
   errorType: "INVALID_ARGUMENT";

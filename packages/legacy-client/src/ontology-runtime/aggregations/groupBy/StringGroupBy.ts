@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { Bucketing, BucketKey } from "../Aggregations";
+import type {
+  Bucketing,
+  BucketKey,
+  ExactValueBucketing,
+} from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
+
 export interface StringGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups according to an exact value.
    * If omitted, the default maxGroupCount is 10,000.
@@ -22,8 +28,14 @@ export interface StringGroupBy<TBucketKey extends BucketKey> {
   exact(maxGroupCount?: number): Bucketing<TBucketKey, string>;
 }
 
-export const StringGroupBy: (
+export const StringGroupBy = (
   propertyApiName: string,
-) => StringGroupBy<string> = (propertyApiName) => {
-  throw new Error("not implemented");
-};
+): StringGroupBy<string> => ({
+  exact: (maxGroupCount: number): ExactValueBucketing<string, string> => ({
+    type: "Bucketing",
+    kind: "ExactValueBucketing",
+    keyDataType: GroupKeyType.STRING,
+    propertyApiName,
+    maxGroupCount,
+  }),
+});

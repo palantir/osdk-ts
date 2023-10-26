@@ -25,11 +25,11 @@ export interface Err<E> {
 }
 export type Result<V, E = FoundryApiError> = Ok<V> | Err<E>;
 export function isOk<V, E>(result: Result<V, E>): result is Ok<V> {
-  throw new Error("not implemented");
+  return result.type === "ok";
 }
 
 export function isErr<V, E>(result: Result<V, E>): result is Err<E> {
-  throw new Error("not implemented");
+  return result.type === "error";
 }
 
 export type ErrorVisitor<E extends FoundryApiError, R> =
@@ -48,7 +48,8 @@ export function visitError<E extends FoundryApiError, R>(
   error: E,
   visitor: ErrorVisitor<E, R>,
 ): R {
-  throw new Error("not implemented");
+  const handler = (visitor as any)[error.name] || visitor.default;
+  return handler(error);
 }
 
 export type ExtractKeysWithType<T, K extends keyof T> = T extends {

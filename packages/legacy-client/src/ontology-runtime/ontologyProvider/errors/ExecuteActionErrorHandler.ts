@@ -33,28 +33,42 @@ import type {
   OntologyEditsExceededLimit,
   ParameterObjectNotFound,
   ParametersNotFound,
-  PermissionDenied,
   PropertiesNotFound,
   PropertyApiNameNotFound,
   PropertyBaseTypeNotSupported,
-  Unauthorized,
-  UnknownError,
   UnknownParameter,
 } from "../Errors";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
-export class ExecuteActionErrorHandler {
+export class ExecuteActionErrorHandler extends DefaultErrorHandler {
   handleActionValidationFailed(
     error: PalantirApiError,
     actionType: string,
   ): ActionValidationFailed {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionValidationFailed",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      actionType,
+    };
   }
 
   handleActionTypeNotFound(
     error: PalantirApiError,
     actionType: string,
   ): ActionTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      actionType,
+    };
   }
 
   handlePropertyApiNameNotFound(
@@ -62,18 +76,43 @@ export class ExecuteActionErrorHandler {
     propertyId: string,
     propertyBaseType: ValueType,
   ): PropertyApiNameNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertyApiNameNotFound",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      propertyId,
+      propertyBaseType,
+    };
   }
 
   handleActionParameterObjectTypeNotFound(
     error: PalantirApiError,
     parameterId: string,
   ): ActionParameterObjectTypeNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionParameterObjectTypeNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameterId,
+    };
   }
 
   handleInvalidUserId(error: PalantirApiError, userId: string): InvalidUserId {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidUserId",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      userId,
+    };
   }
 
   handleFunctionEncounteredUserFacingError(
@@ -82,7 +121,16 @@ export class ExecuteActionErrorHandler {
     functionVersion: string,
     message: string,
   ): FunctionEncounteredUserFacingError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message,
+      errorName: "FunctionEncounteredUserFacingError",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+    };
   }
 
   handleFunctionInvalidInput(
@@ -90,7 +138,16 @@ export class ExecuteActionErrorHandler {
     functionRid: string,
     functionVersion: string,
   ): FunctionInvalidInput {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "FunctionInvalidInput",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+    };
   }
 
   handlePropertiesNotFound(
@@ -98,7 +155,16 @@ export class ExecuteActionErrorHandler {
     objectType: string,
     properties: string[],
   ): PropertiesNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      properties,
+    };
   }
 
   handleOntologyEditsExceededLimit(
@@ -106,28 +172,61 @@ export class ExecuteActionErrorHandler {
     editsCount: number,
     editsLimit: number,
   ): OntologyEditsExceededLimit {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "OntologyEditsExceededLimit",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      editsCount,
+      editsLimit,
+    };
   }
 
   handleActionNotFound(
     error: PalantirApiError,
     actionRid: string,
   ): ActionNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      actionRid,
+    };
   }
 
   handleInvalidGroupId(
     error: PalantirApiError,
     groupId: string,
   ): InvalidGroupId {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "InvalidGroupId",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      groupId,
+    };
   }
 
   handleActionParameterObjectNotFound(
     error: PalantirApiError,
     parameterId: string,
   ): ActionParameterObjectNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionParameterObjectNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameterId,
+    };
   }
 
   handleFunctionExecutionTimedOut(
@@ -135,7 +234,16 @@ export class ExecuteActionErrorHandler {
     functionRid: string,
     functionVersion: string,
   ): FunctionExecutionTimedOut {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "FunctionExecutionTimedOut",
+      errorType: "TIMEOUT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      functionRid,
+      functionVersion,
+    };
   }
 
   handlePropertyBaseTypeNotSupported(
@@ -144,11 +252,28 @@ export class ExecuteActionErrorHandler {
     property: string,
     propertyBaseType: ValueType,
   ): PropertyBaseTypeNotSupported {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertyBaseTypeNotSupported",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      property,
+      propertyBaseType,
+    };
   }
 
   handleApplyActionFailed(error: PalantirApiError): ApplyActionFailed {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ApplyActionFailed",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handleParametersNotFound(
@@ -157,7 +282,17 @@ export class ExecuteActionErrorHandler {
     unknownParameterIds: string[],
     configuredParameterIds: string[],
   ): ParametersNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ParametersNotFound",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      actionType,
+      unknownParameterIds,
+      configuredParameterIds,
+    };
   }
 
   handleParameterObjectNotFound(
@@ -165,7 +300,16 @@ export class ExecuteActionErrorHandler {
     objectType: string,
     primaryKey: any,
   ): ParameterObjectNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ParameterObjectNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      primaryKey,
+    };
   }
 
   handleUnknownParameter(
@@ -173,31 +317,43 @@ export class ExecuteActionErrorHandler {
     unknownParameters: string[],
     expectedParameters: string[],
   ): UnknownParameter {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "UnknownParameter",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      unknownParameters,
+      expectedParameters,
+    };
   }
 
   handleActionEditedPropertiesNotFound(
     error: PalantirApiError,
   ): ActionEditedPropertiesNotFound {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ActionEditedPropertiesNotFound",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+    };
   }
 
   handleMissingParameter(
     error: PalantirApiError,
     parameters: string[],
   ): MissingParameter {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "MissingParameter",
+      errorType: "INVALID_ARGUMENT",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      parameters,
+    };
   }
 }

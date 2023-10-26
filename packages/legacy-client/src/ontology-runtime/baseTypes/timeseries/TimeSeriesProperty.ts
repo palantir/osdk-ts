@@ -15,23 +15,24 @@
  */
 
 import type { Auth } from "../../../oauth-client";
-import type {
-  OntologyMetadata,
-  Result,
-  TimeSeriesError,
+import {
+  type OntologyMetadata,
+  OntologyProvider,
+  type Result,
+  type TimeSeriesError,
 } from "../../ontologyProvider";
 import type { TimeSeries } from "./TimeSeries";
 import type { TimeSeriesPoint } from "./TimeSeriesPoint";
-import type { TimeSeriesQuery } from "./TimeSeriesQuery";
+import { TimeSeriesQuery } from "./TimeSeriesQuery";
+
 export class TimeSeriesProperty<T extends number | string>
   implements TimeSeries<T>
 {
-  #private;
-  private stack;
-  private propertyName;
-  private apiName;
-  private primaryKey;
-  type: "TimeSeries" = "TimeSeries";
+  public type = "TimeSeries" as const;
+
+  #provider: OntologyProvider;
+  #ontologyMetadata: OntologyMetadata;
+
   static constructTimeSeries<T extends string | number>(
     propertyName: string,
     authClient: Auth,
@@ -40,22 +41,52 @@ export class TimeSeriesProperty<T extends number | string>
     primaryKey: string,
     ontologyMetadata: OntologyMetadata,
   ): TimeSeriesProperty<T> {
-    throw new Error("not implemented");
+    return new TimeSeriesProperty<T>(
+      authClient,
+      stack,
+      propertyName,
+      apiName,
+      primaryKey,
+      ontologyMetadata,
+    );
   }
 
   getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    throw new Error("not implemented");
+    return this.#provider.getFirstPoint(
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+    );
   }
 
   getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    throw new Error("not implemented");
+    return this.#provider.getLastPoint(
+      this.apiName,
+      this.primaryKey,
+      this.propertyName,
+    );
   }
 
   get points(): TimeSeriesQuery<T> {
-    throw new Error("not implemented");
+    return new TimeSeriesQuery(
+      this.authClient,
+      this.stack,
+      this.propertyName,
+      this.apiName,
+      this.primaryKey,
+      this.#ontologyMetadata,
+    );
   }
 
-  private constructor() {
-    throw new Error("not implemented");
+  private constructor(
+    private authClient: Auth,
+    private stack: string,
+    private propertyName: string,
+    private apiName: string,
+    private primaryKey: string,
+    ontologyMetadata: OntologyMetadata,
+  ) {
+    this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
+    this.#ontologyMetadata = ontologyMetadata;
   }
 }

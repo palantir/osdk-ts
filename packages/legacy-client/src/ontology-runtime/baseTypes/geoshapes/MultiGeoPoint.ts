@@ -16,21 +16,39 @@
 
 import type { GeoJsonMultiPoint } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { GeoPoint } from "./GeoPoint";
+import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint";
+
 export interface MultiGeoPoint extends Geometry {
   getGeoPoints(): GeoPoint[];
   toGeoJson(): GeoJsonMultiPoint;
 }
+
 export class MultiGeoPoint implements MultiGeoPoint {
-  private geoPoints;
-  type: "MultiGeoPoint";
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "MultiGeoPoint" as const;
+
+  private constructor(private geoPoints: GeoPoint[]) {}
+
+  public getGeoPoints(): GeoPoint[] {
+    return this.geoPoints;
   }
-  static fromGeoPoints(geoPoints: GeoPoint[]): MultiGeoPoint {
-    throw new Error("not implemented");
+
+  public toGeoJson(): GeoJsonMultiPoint {
+    return {
+      type: "MultiPoint",
+      coordinates: this.geoPoints.map(geoPoint => {
+        return geoPoint.toGeoJson().coordinates;
+      }),
+    };
   }
-  static fromGeoJson(geoJson: GeoJsonMultiPoint): MultiGeoPoint {
-    throw new Error("not implemented");
+
+  public static fromGeoPoints(geoPoints: GeoPoint[]) {
+    return new MultiGeoPoint(geoPoints);
+  }
+
+  public static fromGeoJson(geoJson: GeoJsonMultiPoint): MultiGeoPoint {
+    const multiPointGeoPoints: GeoPoint[] = geoJson.coordinates.map(
+      mapCoordinatesToGeoPoint,
+    );
+    return MultiGeoPoint.fromGeoPoints(multiPointGeoPoints);
   }
 }

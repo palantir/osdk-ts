@@ -14,13 +14,32 @@
  * limitations under the License.
  */
 
+import * as Geohash from "ngeohash";
 import type { GeoJsonPoint } from "./GeoJson";
 import type { Geometry } from "./Geometry";
+
 export type GeoHash = string;
 export interface Coordinates {
   latitude: number;
   longitude: number;
 }
+
+// https://www.elastic.co/guide/en/elasticsearch/reference/6.0/search-aggregations-bucket-geohashgrid-aggregation.html#_cell_dimensions_at_the_equator
+enum Precision {
+  ONE_DIGIT = 1,
+  TWO_DIGITS = 2,
+  THREE_DIGITS = 3,
+  FOUR_DIGITS = 4,
+  FIVE_DIGITS = 5,
+  SIX_DIGITS = 6,
+  SEVEN_DIGITS = 7,
+  EIGHT_DIGITS = 8,
+  NINE_DIGITS = 9,
+  TEN_DIGITS = 10,
+  ELEVEN_DIGITS = 11,
+  TWELVE_DIGITS = 12,
+}
+
 export interface GeoPoint extends Geometry {
   toCoordinates(): Coordinates;
   toGeoHash(): GeoHash;
@@ -28,30 +47,84 @@ export interface GeoPoint extends Geometry {
 }
 
 export function isGeoPoint(obj: any): obj is GeoPoint {
-  throw new Error("not implemented");
+  return obj?.type === "GeoPoint";
 }
 
 export class GeoPoint implements GeoPoint {
-  private coordinates;
-  private precision?;
-  type: "GeoPoint";
+  public type = "GeoPoint" as const;
 
-  private constructor() {
-    throw new Error("not implemented");
+  private static geoHashRegex = /^([0123456789bcdefghjkmnpqrstuvwxyz])+$/i;
+
+  private constructor(
+    private coordinates: Coordinates,
+    private precision?: Precision,
+  ) {}
+
+  public toCoordinates() {
+    return this.coordinates;
   }
-  static fromGeoHash(geoHash: GeoHash): GeoPoint {
-    throw new Error("not implemented");
+
+  public toGeoHash() {
+    return Geohash.encode(
+      this.coordinates.latitude,
+      this.coordinates.longitude,
+      this.precision ?? Precision.TWELVE_DIGITS,
+    );
   }
-  static fromCoordinates(coordinates: Coordinates): GeoPoint {
-    throw new Error("not implemented");
+
+  public toGeoJson(): GeoJsonPoint {
+    return {
+      type: "Point",
+      coordinates: [this.coordinates.longitude, this.coordinates.latitude],
+    };
   }
-  static fromGeoJson(geoJsonPoint: GeoJsonPoint): GeoPoint {
-    throw new Error("not implemented");
+
+  public static fromGeoHash(geoHash: GeoHash): GeoPoint {
+    if (geoHash.includes(",")) {
+      return this.fromCoordinatesString(geoHash);
+    }
+
+    if (!this.geoHashRegex.test(geoHash)) {
+      this.throwInvalidGeoHashError(geoHash);
+    }
+    const { latitude, longitude } = Geohash.decode(geoHash);
+    return new GeoPoint({ latitude, longitude }, geoHash.length);
+  }
+
+  public static fromCoordinates(coordinates: Coordinates): GeoPoint {
+    return new GeoPoint(coordinates);
+  }
+
+  public static fromGeoJson(geoJsonPoint: GeoJsonPoint): GeoPoint {
+    return GeoPoint.fromCoordinates({
+      longitude: geoJsonPoint.coordinates[0]!,
+      latitude: geoJsonPoint.coordinates[1]!,
+    });
+  }
+
+  private static fromCoordinatesString(geoHash: string) {
+    const geohashParts = geoHash.split(",").map(s => s.trim());
+    if (geohashParts.length !== 2 || !geohashParts.every(p => p.length > 0)) {
+      this.throwInvalidGeoHashError(geoHash);
+    }
+    const [latitude, longitude] = geohashParts.map(Number) as [number, number];
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      this.throwInvalidGeoHashError(geoHash);
+    }
+
+    return new GeoPoint({ latitude, longitude });
+  }
+
+  private static throwInvalidGeoHashError(geoHash: GeoHash) {
+    throw new Error(
+      `Received invalid geohash ${geoHash}. An acceptable value should either be a geohash string or a "lat, long" string`,
+    );
   }
 }
 
-export function mapCoordinatesToGeoPoint(
-  coordinate: number[],
-): GeoPoint {
-  throw new Error("not implemented");
+export function mapCoordinatesToGeoPoint(coordinate: number[]) {
+  return GeoPoint.fromCoordinates({
+    longitude: coordinate[0]!,
+    latitude: coordinate[1]!,
+  });
 }

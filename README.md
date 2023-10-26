@@ -4,9 +4,10 @@
 
 1. Fork the repo
 2. Create a branch
-3. Start dev mode: `pnpm dev`
-4. Add your code
-5. Add a changeset
+3. `pnpm install`
+4. Start dev mode: `pnpm dev --concurrency 20`
+5. Add your code
+6. Add a changeset
 
    > 📘 Note
    >

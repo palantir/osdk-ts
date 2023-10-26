@@ -16,21 +16,45 @@
 
 import type { GeoJsonLineString } from "./GeoJson";
 import type { Geometry } from "./Geometry";
-import type { GeoPoint } from "./GeoPoint";
+import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint";
+
 export interface LineString extends Geometry {
   getGeoPoints(): GeoPoint[];
   toGeoJson(): GeoJsonLineString;
 }
+
 export class LineString implements LineString {
-  private geoPoints;
-  type: "LineString";
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "LineString" as const;
+
+  private constructor(private geoPoints: GeoPoint[]) {}
+
+  public getGeoPoints(): GeoPoint[] {
+    return this.geoPoints;
   }
-  static fromGeoPoints(geoPoints: GeoPoint[]): LineString {
-    throw new Error("not implemented");
+
+  public toGeoJson(): GeoJsonLineString {
+    return {
+      type: "LineString",
+      coordinates: this.geoPoints.map((geoPoint: GeoPoint) => {
+        return geoPoint.toGeoJson().coordinates;
+      }),
+    };
   }
-  static fromGeoJson(geoJson: GeoJsonLineString): LineString {
-    throw new Error("not implemented");
+
+  public static fromGeoPoints(geoPoints: GeoPoint[]): LineString {
+    if (geoPoints.length < 2) {
+      throw new Error(
+        "LineString's must be represented by two or more GeoPoints",
+      );
+    }
+
+    return new LineString(geoPoints);
+  }
+
+  public static fromGeoJson(geoJson: GeoJsonLineString): LineString {
+    const lineStringGeoPoints: GeoPoint[] = geoJson.coordinates.map(
+      mapCoordinatesToGeoPoint,
+    );
+    return LineString.fromGeoPoints(lineStringGeoPoints);
   }
 }

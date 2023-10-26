@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "../ontology";
 import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet";
 import type { ObjectSetCreator } from "./ObjectSetCreator";
 

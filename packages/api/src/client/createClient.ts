@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "#ontology";
+import type { OntologyDefinition } from "../ontology";
 import type { Client } from "./Client";
 import { createThinClient } from "./createThinClient";
 import { createObjectSet } from "./objectSet/createObjectSet";

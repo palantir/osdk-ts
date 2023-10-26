@@ -16,19 +16,42 @@
 
 import type { GeoJsonGeometryCollection } from "./GeoJson";
 import type { Geometry } from "./Geometry";
+import { GeoShape } from "./GeoShape";
+
 export class GeometryCollection {
-  private geometries;
-  type: "GeometryCollection";
-  private constructor() {
-    throw new Error("not implemented");
+  public type = "GeometryCollection" as const;
+
+  private constructor(private geometries: Geometry[]) {}
+
+  public toGeoJson(): GeoJsonGeometryCollection {
+    return {
+      type: "GeometryCollection",
+      geometries: this.geometries.map((geometry: Geometry) => {
+        return geometry.toGeoJson();
+      }),
+    };
   }
-  getGeometries(): Geometry[] {
-    throw new Error("not implemented");
+
+  public getGeometries(): Geometry[] {
+    return this.geometries;
   }
-  static fromGeometries(geometries: Geometry[]): GeometryCollection {
-    throw new Error("not implemented");
+
+  public static fromGeometries(geometries: Geometry[]) {
+    return new GeometryCollection(geometries);
   }
-  static fromGeoJson(geoJson: GeoJsonGeometryCollection): GeometryCollection {
-    throw new Error("not implemented");
+
+  public static fromGeoJson(
+    geoJson: GeoJsonGeometryCollection,
+  ): GeometryCollection {
+    const geoShapes: GeoShape[] = geoJson.geometries.map(GeoShape.fromGeoJson);
+    geoShapes.forEach(geoShape => {
+      if (GeoShape.isGeometryCollection(geoShape)) {
+        throw new Error("Cannot have nested geometry collections.");
+      }
+    });
+
+    return GeometryCollection.fromGeometries(
+      geoJson.geometries.map(GeoShape.fromGeoJson) as Geometry[],
+    );
   }
 }

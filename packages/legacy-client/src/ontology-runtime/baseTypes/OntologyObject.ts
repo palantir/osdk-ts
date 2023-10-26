@@ -22,5 +22,6 @@ export interface OntologyObject {
 }
 
 export function isOntologyObject(obj: any): obj is OntologyObject {
-  throw new Error("not implemented");
+  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
+    && "__primaryKey" in obj;
 }

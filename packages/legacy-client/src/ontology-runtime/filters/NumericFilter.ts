@@ -31,8 +31,54 @@ export interface NumericFilter {
   isNull: () => WhereClause;
 }
 
-export const NumericFilter: (property: string) => NumericFilter = (
-  property,
-) => {
-  throw new Error("not implemented");
+export const NumericFilter = (property: string): NumericFilter => {
+  return {
+    eq(value: number): WhereClause {
+      return {
+        type: "eq",
+        field: property,
+        value,
+      };
+    },
+
+    lt(value: number): WhereClause {
+      return {
+        type: "lt",
+        field: property,
+        value,
+      };
+    },
+
+    gt(value: number): WhereClause {
+      return {
+        type: "gt",
+        field: property,
+        value,
+      };
+    },
+
+    lte(value: number): WhereClause {
+      return {
+        type: "lte",
+        field: property,
+        value,
+      };
+    },
+
+    gte(value: number): WhereClause {
+      return {
+        type: "gte",
+        field: property,
+        value,
+      };
+    },
+
+    isNull(): WhereClause {
+      return {
+        type: "isNull",
+        field: property,
+        value: true,
+      };
+    },
+  };
 };

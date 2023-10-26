@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { AllGroupByValues, GroupByClause } from "#client/query";
-import type { ObjectTypesFrom, OntologyDefinition } from "#ontology";
 import type { AggregationGroupByV2 } from "@osdk/gateway/types";
+import type { ObjectTypesFrom, OntologyDefinition } from "../../../ontology";
+import type { AllGroupByValues, GroupByClause } from "../../query";
 
 export function modernToLegacyGroupByClause<
   O extends OntologyDefinition<any>,

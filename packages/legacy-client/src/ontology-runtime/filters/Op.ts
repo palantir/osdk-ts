@@ -28,14 +28,24 @@ export interface Op {
 }
 
 export const Op: Op = {
-  and: () => {
-    throw new Error("not implemented");
-  },
-  or: () => {
-    throw new Error("not implemented");
+  and(...whereClauses: WhereClause[]): WhereClause {
+    return {
+      type: "and",
+      value: whereClauses,
+    };
   },
 
-  not: () => {
-    throw new Error("not implemented");
+  or(...whereClauses: WhereClause[]): WhereClause {
+    return {
+      type: "or",
+      value: whereClauses,
+    };
+  },
+
+  not(whereClause: WhereClause): WhereClause {
+    return {
+      type: "not",
+      value: whereClause,
+    };
   },
 };

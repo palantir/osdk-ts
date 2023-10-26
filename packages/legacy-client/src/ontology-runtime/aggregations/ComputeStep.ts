@@ -17,10 +17,11 @@
 import type { Auth } from "../../oauth-client";
 import type { BaseObjectType, ObjectSetDefinition } from "../baseTypes";
 import type { OrderByClause } from "../filters";
-import type {
-  AggregateObjectsError,
-  OntologyMetadata,
-  Result,
+import {
+  type AggregateObjectsError,
+  type OntologyMetadata,
+  OntologyProvider,
+  type Result,
 } from "../ontologyProvider";
 import type {
   AggregationClause,
@@ -31,35 +32,42 @@ import type {
   Metrics,
   MetricValue,
 } from "./Aggregations";
+
 export class ComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > implements AggregationComputeStep<TBucketGroup, TMetrics> {
-  #private;
-  private stack;
-  private objectType;
-  private ontologyMetadata;
-  private definition?;
-  protected groupByClauses: Array<InternalBucketing<string, BucketValue>>;
-  private aggregationClauses;
-  private orderByClauses;
   constructor(
-    authClient: Auth,
-    stack: string,
-    objectType: BaseObjectType,
-    ontologyMetadata: OntologyMetadata,
-    definition?: ObjectSetDefinition,
-    groupByClauses?: Array<InternalBucketing<string, BucketValue>>,
-    aggregationClauses?: AggregationClause[],
-    orderByClauses?: OrderByClause[],
+    private auth: Auth,
+    private stack: string,
+    private objectType: BaseObjectType,
+    private ontologyMetadata: OntologyMetadata,
+    private definition: ObjectSetDefinition,
+    protected groupByClauses: Array<InternalBucketing<string, BucketValue>> =
+      [],
+    private aggregationClauses: AggregationClause[] = [],
   ) {
-    throw new Error("not implemented");
   }
 
-  compute(): Promise<
+  public async compute(): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {
-    throw new Error("not implemented");
+    const provider = new OntologyProvider(
+      this.auth,
+      this.stack,
+      this.ontologyMetadata,
+    );
+
+    const result = await provider.aggregate<TBucketGroup, TMetrics>(
+      this.objectType,
+      {
+        objectSet: this.definition,
+        aggregation: this.aggregationClauses,
+        groupBy: this.groupByClauses,
+      },
+    );
+
+    return result;
   }
 }
 

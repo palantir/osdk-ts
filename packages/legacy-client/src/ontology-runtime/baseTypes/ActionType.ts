@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { SyncApplyActionResponseV2 as ApiActionResponse } from "@osdk/gateway/types";
+import type {
+  SyncApplyActionResponseV2,
+  SyncApplyActionResponseV2 as ApiActionResponse,
+} from "@osdk/gateway/types";
 import type {
   GetObjectError,
   OntologyProvider,
@@ -119,18 +122,60 @@ export type ActionResponseFromOptions<
 } ? ActionResponse<TEdits>
   : ActionResponse;
 
-export const ActionResponse: {
+export const ActionResponse = {
   of: <
     TAddedObjects extends OntologyObject,
     TModifiedObjects extends OntologyObject,
   >(
-    response: ApiActionResponse,
+    response: SyncApplyActionResponseV2,
     provider?: OntologyProvider,
-  ) => ActionResponse<Edits<OntologyObject, OntologyObject> | undefined>;
-} = {
-  of: () => {
-    throw new Error("not implemented");
+  ): ActionResponse<Edits<OntologyObject, OntologyObject> | undefined> => {
+    const validation = {
+      result: ActionValidationResult[
+        response.validation?.result as keyof typeof ActionValidationResult
+      ],
+    };
+    if (provider && response.edits?.type === "edits") {
+      const added = [];
+      const modified = [];
+      for (const edit of response.edits.edits) {
+        if (edit.type === "addObject") {
+          added.push({
+            apiName: edit.objectType,
+            primaryKey: edit.primaryKey,
+            get: () =>
+              provider.get<TAddedObjects>(edit.objectType, edit.primaryKey),
+          });
+        }
+        if (edit.type === "modifyObject") {
+          modified.push({
+            apiName: edit.objectType,
+            primaryKey: edit.primaryKey,
+            get: () =>
+              provider.get<TModifiedObjects>(edit.objectType, edit.primaryKey),
+          });
+        }
+      }
+      return {
+        validation,
+        edits: {
+          type: "edits",
+          added: added as TAddedObjects extends OntologyObject ? typeof added
+            : never,
+          modified: modified as TModifiedObjects extends OntologyObject
+            ? typeof modified
+            : never,
+        },
+      };
+    }
+    if (response.edits?.type === "largeScaleEdits") {
+      return {
+        validation,
+        edits: {
+          type: "bulkEdits",
+        },
+      };
+    }
+    return { validation } as ActionResponse;
   },
 };
-
-export {};

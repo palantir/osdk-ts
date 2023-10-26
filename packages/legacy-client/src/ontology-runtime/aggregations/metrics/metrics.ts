@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregatableProperty, MetricValue } from "./Aggregations";
-export const DefaultAggregatableProperty: <T extends MetricValue>(
-  propertyApiName: string,
-) => AggregatableProperty<T> = (property) => {
-  throw new Error("not implemented");
-};
+export enum MetricValueType {
+  NUMERIC = "Numeric",
+  TIMESTAMP = "Timestamp",
+  LOCALDATE = "LocalDate",
+}

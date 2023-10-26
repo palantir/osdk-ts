@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -42,13 +42,6 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "imports": {
-    "#net": "./src/client/internal/net/index.ts",
-    "#util": "./src/util/index.ts",
-    "#ontology": "./src/ontology/index.ts",
-    "#client/converters": "./src/client/internal/conversions/index.ts",
-    "#client/query": "./src/client/query/index.ts"
   },
   "keywords": [],
   "files": [

@@ -14,19 +14,7 @@
  * limitations under the License.
  */
 
-import type { PalantirApiError, UnknownError } from "../../../Errors";
-import type { PermissionDenied, Unauthorized } from "../Errors";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
-export class TimeSeriesErrorHandler {
-  handleUnauthorized(error: PalantirApiError): Unauthorized {
-    throw new Error("not implemented");
-  }
-
-  handlePermissionDenied(error: PalantirApiError): PermissionDenied {
-    throw new Error("not implemented");
-  }
-
-  handleUnknownError(error: PalantirApiError): UnknownError {
-    throw new Error("not implemented");
-  }
+export class TimeSeriesErrorHandler extends DefaultErrorHandler {
 }
