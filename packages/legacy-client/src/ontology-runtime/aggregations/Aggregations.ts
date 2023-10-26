@@ -423,3 +423,21 @@ export function visitInternalBucketing<
       throw new Error(`Unhandled bucketing: ${JSON.stringify(bucketing)}`);
   }
 }
+
+export interface QueryAggregation {
+  key: any;
+  value: any;
+}
+
+export interface NestedQueryAggregation {
+  key: any;
+  groups: Array<QueryAggregation>;
+}
+
+export interface QueryTwoDimensionalAggregation {
+  groups: Array<QueryAggregation>;
+}
+
+export interface QueryThreeDimensionalAggregation {
+  groups: Array<NestedQueryAggregation>;
+}

@@ -14,6 +14,36 @@
  * limitations under the License.
  */
 
+import type { BucketValue, Range, Rangeable } from "../aggregations";
+
 export type QueryResponse<T> = {
   value: T;
 };
+
+export interface BaseBucket<K, V> {
+  key: K;
+  value: V;
+}
+
+export type NestedBucket<TGroupKey, TSegmentKey, TValue extends BucketValue> =
+  BaseBucket<
+    TGroupKey,
+    Array<BaseBucket<TSegmentKey, TValue>>
+  >;
+
+export type QueryBucketKey = string | boolean | Range<Rangeable>;
+
+export interface TwoDimensionalAggregation<
+  TGroupKey extends QueryBucketKey,
+  TValue extends BucketValue = number,
+> {
+  groups: Array<BaseBucket<TGroupKey, TValue>>;
+}
+
+export interface ThreeDimensionalAggregation<
+  TGroupKey extends QueryBucketKey,
+  TSegmentKey extends QueryBucketKey,
+  TValue extends BucketValue = number,
+> {
+  groups: Array<NestedBucket<TGroupKey, TSegmentKey, TValue>>;
+}

@@ -33,6 +33,6 @@ export interface Attachment {
 export interface AttachmentMetadata {
   rid: string;
   filename: string;
-  sizeBytes: string;
+  sizeBytes: number;
   mediaType: string;
 }

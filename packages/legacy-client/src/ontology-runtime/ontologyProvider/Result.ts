@@ -15,6 +15,7 @@
  */
 
 import type { FoundryApiError } from "./Errors";
+
 export interface Ok<V> {
   type: "ok";
   value: V;
