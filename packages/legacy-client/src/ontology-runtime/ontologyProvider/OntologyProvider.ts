@@ -160,14 +160,25 @@ import {
 import type { Err, Ok, Result } from "./Result";
 
 export class OntologyProvider {
+  #authClient: Auth;
+  #stack: string;
+  #ontologyMetadata: OntologyMetadata;
+  #objectFactory?: OntologyObjectFactory;
+  #fetchFn: typeof globalThis.fetch;
+
   constructor(
-    private authClient: Auth,
-    private stack: string,
-    private ontologyMetadata: OntologyMetadata,
-    private objectFactory?: OntologyObjectFactory,
-    private fetchFn = globalThis.fetch,
+    authClient: Auth,
+    stack: string,
+    ontologyMetadata: OntologyMetadata,
+    objectFactory?: OntologyObjectFactory,
+    fetchFn = globalThis.fetch,
     // TODO contextPath for createOpenApiRequest?
   ) {
+    this.#authClient = authClient;
+    this.#stack = stack;
+    this.#ontologyMetadata = ontologyMetadata;
+    this.#objectFactory = objectFactory;
+    this.#fetchFn = fetchFn;
   }
 
   async get<T extends OntologyObject>(
@@ -177,8 +188,8 @@ export class OntologyProvider {
   ): Promise<Result<T, GetObjectError>> {
     return this.wrapResult(async () => {
       const object = await getObjectV2(
-        createOpenApiRequest(this.stack, this.fetchFn),
-        this.ontologyMetadata.ontologyApiName,
+        createOpenApiRequest(this.#stack, this.#fetchFn),
+        this.#ontologyMetadata.ontologyApiName,
         apiName,
         primaryKey.toString(),
         {
@@ -265,8 +276,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const point = await getFirstPoint(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -288,8 +299,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const point = await getLastPoint(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -312,8 +323,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const streamPointsIterator = await streamPoints(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -363,8 +374,8 @@ export class OntologyProvider {
     body: StreamTimeSeriesPointsRequest,
   ): AsyncGenerator<TimeSeriesPoint<T>> {
     const streamPointsResponse = await streamPoints(
-      createOpenApiRequest(this.stack, this.fetchFn),
-      this.ontologyMetadata.ontologyApiName,
+      createOpenApiRequest(this.#stack, this.#fetchFn),
+      this.#ontologyMetadata.ontologyApiName,
       apiName,
       primaryKey,
       propertyName,
@@ -506,8 +517,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const object = await getLinkedObjectV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           sourceApiName,
           primaryKey,
           linkTypeApiName,
@@ -643,8 +654,8 @@ export class OntologyProvider {
         );
 
         const response = await aggregateObjectSetV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           {
             objectSet: body.objectSet,
             groupBy: remappedGroups,
@@ -677,8 +688,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
@@ -710,8 +721,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
@@ -745,8 +756,8 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
-          this.ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#stack, this.#fetchFn),
+          this.#ontologyMetadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
@@ -773,8 +784,8 @@ export class OntologyProvider {
       async () => {
         const response: { value: PrimitiveParameterValue } =
           await executeQueryV2(
-            createOpenApiRequest(this.stack, this.fetchFn),
-            this.ontologyMetadata.ontologyApiName,
+            createOpenApiRequest(this.#stack, this.#fetchFn),
+            this.#ontologyMetadata.ontologyApiName,
             apiName,
             {
               parameters: params ? this.getRemappedParameters(params) : {},
@@ -785,7 +796,7 @@ export class OntologyProvider {
           );
         const remappedResponse = await this.remapQueryResponseType(
           response.value,
-          this.objectFactory!,
+          this.#objectFactory!,
           responseType,
         );
         return {
@@ -808,7 +819,7 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const response = await uploadAttachment(
-          createOpenApiRequest(this.stack, this.fetchFn),
+          createOpenApiRequest(this.#stack, this.#fetchFn),
           data,
           {
             filename,
@@ -819,9 +830,9 @@ export class OntologyProvider {
           },
         );
         return remapAttachmentResponse(
-          this.authClient,
-          this.stack,
-          this.ontologyMetadata,
+          this.#authClient,
+          this.#stack,
+          this.#ontologyMetadata,
           response,
         );
       },
@@ -841,7 +852,7 @@ export class OntologyProvider {
       async () => {
         if (attachmentRid) {
           const response = await getAttachment(
-            createOpenApiRequest(this.stack, this.fetchFn),
+            createOpenApiRequest(this.#stack, this.#fetchFn),
             attachmentRid,
           );
           return {
@@ -853,7 +864,7 @@ export class OntologyProvider {
         }
 
         const response = await getAttachmentsV2(
-          createOpenApiRequest(this.stack, this.fetchFn),
+          createOpenApiRequest(this.#stack, this.#fetchFn),
           ontologyApiName!,
           objectTypeApiName!,
           primaryKey!,
@@ -886,7 +897,7 @@ export class OntologyProvider {
     return this.wrapResult(
       async () => {
         const response = await getAttachmentContent(
-          createOpenApiRequest(this.stack, this.fetchFn),
+          createOpenApiRequest(this.#stack, this.#fetchFn),
           attachmentRid!,
         );
         if (globalThis.Blob && response instanceof globalThis.Blob) {
@@ -1036,8 +1047,8 @@ export class OntologyProvider {
         // in the case we change it to return the full type
         return objectFactory.create(
           type.objectTypeApiName,
-          ontologyProvider.authClient,
-          ontologyProvider.stack,
+          ontologyProvider.#authClient,
+          ontologyProvider.#stack,
           (responseValue as OntologyObject).__rid,
           responseValue,
         );
@@ -1292,10 +1303,10 @@ export class OntologyProvider {
   }
 
   private createObject<T extends OntologyObject>(object: OntologyObjectV2): T {
-    return this.objectFactory!.create(
+    return this.#objectFactory!.create(
       object.__apiName,
-      this.authClient,
-      this.stack,
+      this.#authClient,
+      this.#stack,
       object.__rid,
       object,
     ) as T;
@@ -1307,8 +1318,8 @@ export class OntologyProvider {
     options?: { pageSize?: number; pageToken?: string },
   ) {
     const pagePromise = await listObjectsV2(
-      createOpenApiRequest(this.stack, this.fetchFn),
-      this.ontologyMetadata.ontologyApiName,
+      createOpenApiRequest(this.#stack, this.#fetchFn),
+      this.#ontologyMetadata.ontologyApiName,
       apiName,
       {
         pageSize: options?.pageSize,
@@ -1329,8 +1340,8 @@ export class OntologyProvider {
     let nextPageToken;
     do {
       const page: ListObjectsResponseV2 = await listObjectsV2(
-        createOpenApiRequest(this.stack, this.fetchFn),
-        this.ontologyMetadata.ontologyApiName,
+        createOpenApiRequest(this.#stack, this.#fetchFn),
+        this.#ontologyMetadata.ontologyApiName,
         apiName,
         {
           pageSize: options?.pageSize,
@@ -1354,8 +1365,8 @@ export class OntologyProvider {
     options?: { pageSize?: number; pageToken?: string },
   ) {
     const pagePromise = await listLinkedObjectsV2(
-      createOpenApiRequest(this.stack, this.fetchFn),
-      this.ontologyMetadata.ontologyApiName,
+      createOpenApiRequest(this.#stack, this.#fetchFn),
+      this.#ontologyMetadata.ontologyApiName,
       sourceApiName,
       primaryKey,
       linkTypeApiName,
@@ -1380,8 +1391,8 @@ export class OntologyProvider {
     options?: { pageSize?: number; pageToken?: string },
   ) {
     const pagePromise = await loadObjectSetV2(
-      createOpenApiRequest(this.stack, this.fetchFn),
-      this.ontologyMetadata.ontologyApiName,
+      createOpenApiRequest(this.#stack, this.#fetchFn),
+      this.#ontologyMetadata.ontologyApiName,
       this.mapObjectSetBody(
         objectSetDefinition,
         orderBy,
@@ -1426,8 +1437,8 @@ export class OntologyProvider {
     let nextPageToken;
     do {
       const page: LoadObjectSetResponseV2 = await loadObjectSetV2(
-        createOpenApiRequest(this.stack, this.fetchFn),
-        this.ontologyMetadata.ontologyApiName,
+        createOpenApiRequest(this.#stack, this.#fetchFn),
+        this.#ontologyMetadata.ontologyApiName,
         this.mapObjectSetBody(
           objectSetDefinition,
           orderBy,
@@ -1456,8 +1467,8 @@ export class OntologyProvider {
     let nextPageToken;
     do {
       const page: ListLinkedObjectsResponseV2 = await listLinkedObjectsV2(
-        createOpenApiRequest(this.stack, this.fetchFn),
-        this.ontologyMetadata.ontologyApiName,
+        createOpenApiRequest(this.#stack, this.#fetchFn),
+        this.#ontologyMetadata.ontologyApiName,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
