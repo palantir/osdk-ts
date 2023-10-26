@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-grep -rHn "not implemented" packages examples monorepo | cat -n
+grep -rHn "not implemented" packages examples monorepo | grep -v '/build/' | cat -n
