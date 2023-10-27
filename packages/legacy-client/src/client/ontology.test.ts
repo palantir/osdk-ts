@@ -20,6 +20,6 @@ import { Ontology } from "./ontology";
 describe("ontology", () => {
   it("correct types", () => {
     const ontology = new Ontology<typeof MockOntology>();
-    ontology.objects.test;
+    const x = ontology.objects.test;
   });
 });

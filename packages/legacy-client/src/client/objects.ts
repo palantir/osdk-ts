@@ -15,22 +15,12 @@
  */
 
 import type { OntologyDefinition } from "../metadata";
-import type { Objects } from "./objects";
+import type { ObjectSet } from "./interfaces";
 
-export class Ontology<O extends OntologyDefinition<any> = any> {
-  get objects(): Objects<O> {
-    throw new Error("not implemented");
-  }
+export type ObjectTypesFrom<O extends OntologyDefinition<string>> =
+  & keyof O["objects"]
+  & string;
 
-  get actions(): never {
-    throw new Error("not implemented");
-  }
-
-  get queries(): never {
-    throw new Error("not implemented");
-  }
-
-  get attachments(): never {
-    throw new Error("not implemented");
-  }
-}
+export type Objects<D extends OntologyDefinition<any> = any> = {
+  [T in ObjectTypesFrom<D>]: ObjectSet<D, T>;
+};

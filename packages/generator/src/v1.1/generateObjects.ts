@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export async function generateMetadata(
+export async function generateObjects(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
@@ -28,28 +27,15 @@ export async function generateMetadata(
   await fs.writeFile(
     path.join(outDir, "OntologyDefinition.ts"),
     await formatTs(`// Path: ${path.join(outDir, "OntologyDefinition")}
-  import type { OntologyDefinition as ApiOntologyDefinition } from "@osdk/legacy-client";
-  export const OntologyDefinition = {
-    metadata: {
-        ontologyRid: "${ontology.rid}",
-        ontologyApiName: "${ontology.apiName}",
-        userAgent: "foundry-typescript-osdk/0.0.1",
-    },
-    objects: {
-        ${
+    export interface Objects {
+      ${
       Object.keys(ontology.objectTypes).map((o) => {
-        `${ontology.objectTypes[o].apiName} : }`;
+        `${ontology.objectTypes[o].apiName} : ${
+          ontology.objectTypes[o].apiName
+        };`;
       })
     }
     }
-  } satisfies ApiOntologyDefinition<${
-      Object.keys(ontology.objectTypes).map((o) =>
-        `"${ontology.objectTypes[o].apiName}"`
-      ).join(" | ")
-    }>;`),
+    ;`),
   );
-}
-
-function getObjectMetadata(objectType: ObjectTypeV2): string {
-  return ``;
 }

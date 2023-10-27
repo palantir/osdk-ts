@@ -27,6 +27,11 @@ export const TodoWireOntology = {
       displayName: "AwesomeTodoDisplayname",
       description: "Its a todo item.",
       properties: {
+        id: {
+          dataType: {
+            type: "integer",
+          },
+        },
         body: {
           dataType: {
             type: "string",

@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../metadata";
-import type { Objects } from "./objects";
+import type { OntologyDefinition } from "../../metadata";
 
-export class Ontology<O extends OntologyDefinition<any> = any> {
-  get objects(): Objects<O> {
-    throw new Error("not implemented");
-  }
-
-  get actions(): never {
-    throw new Error("not implemented");
-  }
-
-  get queries(): never {
-    throw new Error("not implemented");
-  }
-
-  get attachments(): never {
-    throw new Error("not implemented");
-  }
+/**
+ * An ObjectSet
+ * @type {O['objects'][T]}
+ */
+export interface ObjectSet<O extends OntologyDefinition<any>, T> {
+  where(query: any): ObjectSet<O, T>;
 }

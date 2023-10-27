@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../metadata";
-import type { Objects } from "./objects";
+import type { OntologyDefinition } from "../../metadata";
+import type {
+  GetObjectError,
+  Result,
+} from "../../ontology-runtime/ontologyProvider";
 
-export class Ontology<O extends OntologyDefinition<any> = any> {
-  get objects(): Objects<O> {
-    throw new Error("not implemented");
-  }
-
-  get actions(): never {
-    throw new Error("not implemented");
-  }
-
-  get queries(): never {
-    throw new Error("not implemented");
-  }
-
-  get attachments(): never {
-    throw new Error("not implemented");
-  }
+export interface BaseObjectSet<O extends OntologyDefinition<any>> {
+  get(primayKey: any): Promise<Result<any, GetObjectError>>;
 }
