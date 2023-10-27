@@ -28,7 +28,6 @@ import {
   type AggregationClause,
   type BucketKey,
   type BucketValue,
-  type GroupByClause,
   type InternalBucketing,
   type InternalBucketingVisitor,
   type Range,
@@ -54,7 +53,7 @@ export function buildBucketObject<T>(startValue?: T, endValue?: T): {
 export function mapBucketing<
   TBucketKey extends BucketKey,
   T extends BucketValue,
->(bucket: InternalBucketing<TBucketKey, T>): GroupByClause {
+>(bucket: InternalBucketing<TBucketKey, T>): AggregationGroupByV2 {
   return visitInternalBucketing(bucket, {
     onExactValue(bucketing): AggregationGroupByV2_Exact {
       return {

@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
+import type {
+  BucketValue,
+  ObjectSetDefinition,
+  QueryBucketKey,
+  QueryThreeDimensionalAggregation,
+  QueryTwoDimensionalAggregation,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "..";
 import type { AttachmentProperty } from "./attachments";
 import type { GeoJson, GeoJsonPoint, GeoPoint, GeoShape } from "./geoshapes";
 import type { LocalDate } from "./localDate";
 import type { OntologyObject } from "./OntologyObject";
 import type { Timestamp } from "./timestamp";
+
 export type ParameterValue =
   | string
   | number
@@ -30,18 +40,24 @@ export type ParameterValue =
   | OntologyObject
   | AttachmentProperty
   | Set<ParameterValue>
+  | TwoDimensionalAggregation<QueryBucketKey, BucketValue>
+  | ThreeDimensionalAggregation<QueryBucketKey, QueryBucketKey, BucketValue>
   | ParameterValue[]
   | {
     [key: string]: ParameterValue;
   };
+
 export type PrimitiveParameterValue =
   | string
   | number
   | boolean
   | OntologyObject
+  | ObjectSetDefinition
   | GeoJson
   | GeoJsonPoint
   | PrimitiveParameterValue[]
   | {
     [key: string]: PrimitiveParameterValue;
-  };
+  }
+  | QueryTwoDimensionalAggregation
+  | QueryThreeDimensionalAggregation;

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  SyncApplyActionResponseV2,
-  SyncApplyActionResponseV2 as ApiActionResponse,
-} from "@osdk/gateway/types";
+import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
 import type {
   GetObjectError,
   OntologyProvider,

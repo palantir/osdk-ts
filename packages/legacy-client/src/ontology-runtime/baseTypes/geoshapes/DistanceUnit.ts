@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./ArrayFilter";
-export * from "./AttachmentFilter";
-export * from "./BooleanFilter";
-export * from "./DateTimeFilters";
-export * from "./Filters";
-export * from "./GeoPointFilter";
-export * from "./GeoShapeFilter";
-export * from "./NumericFilter";
-export * as Op from "./Op";
-export * from "./OrderByOption";
-export * from "./StringFilter";
+export enum DistanceUnit {
+  MILLIMETERS = "MILLIMETERS",
+  CENTIMETERS = "CENTIMETERS",
+  METERS = "METERS",
+  KILOMETERS = "KILOMETERS",
+  INCHES = "INCHES",
+  FEET = "FEET",
+  YARDS = "YARDS",
+  MILES = "MILES",
+  NAUTICAL_MILES = "NAUTICAL_MILES",
+}

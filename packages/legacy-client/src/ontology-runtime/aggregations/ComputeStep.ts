@@ -16,7 +16,6 @@
 
 import type { Auth } from "../../oauth-client";
 import type { BaseObjectType, ObjectSetDefinition } from "../baseTypes";
-import type { OrderByClause } from "../filters";
 import {
   type AggregateObjectsError,
   type OntologyMetadata,
@@ -59,7 +58,6 @@ export class ComputeStep<
     );
 
     const result = await provider.aggregate<TBucketGroup, TMetrics>(
-      this.objectType,
       {
         objectSet: this.definition,
         aggregation: this.aggregationClauses,
