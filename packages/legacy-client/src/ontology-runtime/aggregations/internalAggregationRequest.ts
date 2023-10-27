@@ -14,4 +14,16 @@
  * limitations under the License.
  */
 
-export * from "./Model";
+import type {
+  AggregationClause,
+  BucketKey,
+  BucketValue,
+  InternalBucketing,
+} from "../aggregations";
+import type { ObjectSetDefinition } from "../baseTypes";
+
+export interface InternalAggregationRequest {
+  objectSet: ObjectSetDefinition;
+  aggregation: AggregationClause[];
+  groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;
+}
