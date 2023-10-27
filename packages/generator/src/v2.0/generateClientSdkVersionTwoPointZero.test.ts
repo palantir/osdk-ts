@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { mkdir, writeFile } from "fs/promises";
+import { dirname } from "path";
 import { describe, expect, test } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
@@ -50,5 +52,19 @@ describe("generator", () => {
 
     const errors = diagnostics.filter(q => q.code !== 2792);
     expect(errors).toHaveLength(0);
+  });
+
+  test.skip("runs generator locally", async () => {
+    await mkdir(`${__dirname}/generated`, { recursive: true });
+    await generateClientSdkVersionTwoPointZero(
+      TodoWireOntology,
+      {
+        writeFile: async (path, contents) => {
+          await mkdir(dirname(path), { recursive: true });
+          await writeFile(path, contents, { flag: "w" });
+        },
+      },
+      `${__dirname}/generated/`,
+    );
   });
 });

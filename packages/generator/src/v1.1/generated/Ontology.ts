@@ -15,24 +15,20 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import type { Ontology as ClientOntology } from "@osdk/legacy-client";
+import { Todo } from "./objects/Todo";
+import type { Objects } from "./ontologyObjects";
+export const Ontology = {
+  metadata: {
+    ontologyRid: "ridHere",
+    ontologyApiName: "OntologyApiName",
+    userAgent: "foundry-typescript-osdk/0.0.1",
+  },
+  objects: {
+    Todo: Todo,
+  },
+} satisfies OntologyDefinition<"Todo">;
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
-
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
+export interface Ontology extends ClientOntology<typeof Ontology> {
+  objects: Objects;
 }

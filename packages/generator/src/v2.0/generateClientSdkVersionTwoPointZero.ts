@@ -15,10 +15,10 @@
  */
 
 import type { MinimalFs } from "../MinimalFs";
+import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { wireObjectTypeV2ToObjectDefinitionInterfaceString } from "./wireObjectTypeV2ToObjectDefinitionInterfaceString";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,

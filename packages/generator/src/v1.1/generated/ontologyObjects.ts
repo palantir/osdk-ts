@@ -14,31 +14,8 @@
  * limitations under the License.
  */
 
-import type { LocalDate } from "../ontology-runtime/baseTypes";
-
-export interface OntologyDefinition<K extends string> {
-  metadata: OntologyMetadata;
-  objects: {
-    [KK in K]: ObjectDefinition<KK, K>;
-  };
-}
-
-export interface OntologyMetadata {
-}
-
-export interface ObjectDefinition<N extends K, K extends string> {
-  apiName: N;
-  properties: Record<string, PropertyDefinition>;
-}
-
-export interface PropertyDefinition {
-  isPrimaryKey: boolean;
-  type: keyof PropertyType;
-}
-
-export interface PropertyType {
-  string: string;
-  datetime: LocalDate;
-  double: number;
-  boolean: boolean;
+import type { BaseObjectSet } from "@osdk/legacy-client";
+import type { Todo } from "./objects";
+export interface Objects {
+  Todo: BaseObjectSet<Todo>;
 }

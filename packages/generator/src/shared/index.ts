@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export type { OntologyDefinition } from "./OntologyDefinition";
+export * from "./generateMetadata";
+export * from "./wireObjectTypeV2ToSdkObjectDefinition";
+export * from "./wirePropertyV2ToSdkPropertyDefinition";

@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
-
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
+import {
+  type Auth,
+  BaseFoundryClient,
+  type FoundryClientOptions,
+} from "@osdk/legacy-client";
+import { Ontology } from "./Ontology";
+export class FoundryClient<TAuth extends Auth = Auth>
+  extends BaseFoundryClient<typeof Ontology, TAuth>
+{
+  constructor(options: FoundryClientOptions<TAuth>) {
+    super(options, Ontology);
   }
 
-  get auth(): TAuth {
-    throw new Error("not implemented");
+  get ontology(): Ontology {
+    return this.ontology;
   }
 }

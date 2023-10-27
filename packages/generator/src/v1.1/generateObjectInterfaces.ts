@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
+import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToObjectInterfaceString";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
 
 export async function generateObjectInterfaces(
   ontology: WireOntologyDefinition,
@@ -26,9 +29,25 @@ export async function generateObjectInterfaces(
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       await fs.writeFile(
-        `${outDir}/objects/${object.apiName}.ts`,
-        await wireObjectTypeV2ToObjectInterfaceStringV1(object),
+        `${outDir}/${object.apiName}.ts`,
+        await formatTs(`
+        import { ObjectDefinition } from "@osdk/api";
+        ${wireObjectTypeV2ToObjectInterfaceStringV1(object)}
+         export const ${object.apiName} = ${
+          JSON.stringify(wireObjectTypeV2ToSdkObjectDefinition(object), null, 2)
+        } satisfies ObjectDefinition<"${object.apiName}", "${object.apiName}">;`),
       );
     }),
+  );
+
+  await fs.writeFile(
+    `${outDir}/index.ts`,
+    await formatTs(`// Path: ${path.join(outDir, "index.ts")}
+    ${
+      Object.values(ontology.objectTypes).map(o =>
+        `export * from "./${o.apiName}";`
+      ).join("\n")
+    }
+    `),
   );
 }

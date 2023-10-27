@@ -109,9 +109,8 @@ export async function generateClientSdkVersionOneDotOne(
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`// Path: ${path.join(outDir, "index.ts")}
-    import { Auth, FoundryClientOptions, BaseFoundryClient } from "@osdk/legacy-client";
-    export const ontologyRid = "${rid}";
     export * from "@osdk/legacy-client";
+    export { Ontology } from "./Ontology";
     export { FoundryClient } from "./FoundryClient";
     `),
   );

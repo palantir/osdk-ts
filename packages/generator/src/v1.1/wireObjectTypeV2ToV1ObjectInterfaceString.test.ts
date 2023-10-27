@@ -15,15 +15,17 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { formatTs } from "../util/test/formatTs";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToObjectInterfaceString";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
 
 describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("generates object interface", async () => {
+    const objectInterface = wireObjectTypeV2ToObjectInterfaceStringV1(
+      TodoWireOntology.objectTypes["Todo"],
+    );
     expect(
-      await wireObjectTypeV2ToObjectInterfaceStringV1(
-        TodoWireOntology.objectTypes["Todo"],
-      ),
+      await formatTs(objectInterface),
     ).toMatchInlineSnapshot(`
       "import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
       /**

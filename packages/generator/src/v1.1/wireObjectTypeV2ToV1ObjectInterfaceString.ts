@@ -15,12 +15,11 @@
  */
 
 import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
-import { formatTs } from "../util/test/formatTs";
 
-export async function wireObjectTypeV2ToObjectInterfaceStringV1(
+export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
 ) {
-  return await formatTs(`
+  return `
 import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
 /**
  * ${input.description}
@@ -44,7 +43,7 @@ ${
     ).join(";\n")
   }
 }
-  `);
+  `;
 }
 
 function wirePropertyTypeV2ToTypeScriptType(

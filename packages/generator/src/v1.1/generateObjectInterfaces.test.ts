@@ -22,7 +22,7 @@ import { generateObjectInterfaces } from "./generateObjectInterfaces";
 describe("generateObjectInterfaces", () => {
   it("generates object interfaces", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
+    const BASE_PATH = "/foo/objects";
 
     await generateObjectInterfaces(
       TodoWireOntology,
@@ -33,7 +33,8 @@ describe("generateObjectInterfaces", () => {
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
     expect(helper.getFiles()).toMatchObject({
-      [`${BASE_PATH}/objects/Todo.ts`]: expect.anything(),
+      [`${BASE_PATH}/Todo.ts`]: expect.anything(),
+      [`${BASE_PATH}/index.ts`]: expect.anything(),
     });
   });
 });

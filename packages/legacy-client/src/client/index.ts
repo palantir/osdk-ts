@@ -16,3 +16,5 @@
 
 export * from "./foundryClient";
 export * from "./foundryClientOptions";
+export * from "./interfaces";
+export * from "./ontology";

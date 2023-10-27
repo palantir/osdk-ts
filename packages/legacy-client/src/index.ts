@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { BaseFoundryClient, type FoundryClientOptions } from "./client";
 export {
+  BaseFoundryClient,
+  type BaseObjectSet,
+  type FoundryClientOptions,
+  type Ontology,
+} from "./client";
+export {
+  type Auth,
   ConfidentialClientAuth,
   PublicClientAuth,
   UserTokenAuth,
@@ -72,6 +78,7 @@ export type {
   ListLinkedObjectsError,
   ListObjectsError,
   LoadObjectSetError,
+  OntologyObject,
   Page,
   PermissionDenied,
   QueryError,

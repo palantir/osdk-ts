@@ -14,40 +14,40 @@
  * limitations under the License.
  */
 
-import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export async function generateMetadata(
+export async function generateOntologyMetadata(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
-  await fs.writeFile(
-    path.join(outDir, "Ontology.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "Ontology")}
-  import type { OntologyDefinition } from "@osdk/api";
-  import type { Ontology as ClientOntology } from "@osdk/legacy-client";
-  import type { Objects } from "./ontologyObjects";
-  ${objectNames.map((name) => `import {${name}} from "./objects/${name}";`)}
-  export const Ontology = {
-    metadata: {
-        ontologyRid: "${ontology.rid}",
-        ontologyApiName: "${ontology.apiName}",
-        userAgent: "foundry-typescript-osdk/0.0.1",
-    },
-    objects: {
-        ${
-      objectNames.map((name) => `${name}: ${name},`)
-        .join("\n")
-    }
-    }
-  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}>;
-    
-export interface Ontology extends ClientOntology<typeof Ontology> {
-    objects: Objects;
-}`),
+  fs.writeFile(
+    `${outDir}/Ontology.ts`,
+    await formatTs(
+      `
+          import type { OntologyDefinition } from "@osdk/api";
+          ${
+        objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+          .join("\n")
+      }
+          ${/* FIXME: Generate this file */ ""}
+          import { OntologyMetadata } from "./OntologyMetadata";
+          
+          export const Ontology = {
+            metadata: OntologyMetadata,
+            objects: {
+              ${
+        objectNames.map((name) => `${name}: ${name},`)
+          .join("\n")
+      }
+            },
+          } satisfies OntologyDefinition<${
+        objectNames.map(n => `"${n}"`).join("|")
+      }>;
+        `,
+    ),
   );
 }

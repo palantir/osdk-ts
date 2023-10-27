@@ -28,8 +28,8 @@ export async function generateObjects(
   await generateObjectInterfaces(ontology, fs, path.join(outDir, "objects"));
 
   await fs.writeFile(
-    path.join(outDir, "objects.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "objects.ts")}
+    path.join(outDir, "ontologyObjects.ts"),
+    await formatTs(`// Path: ${path.join(outDir, "ontologyObjects.ts")}
     import { BaseObjectSet } from "@osdk/legacy-client";
     import { ${
       Object.values(ontology.objectTypes).map(o => o.apiName).join(",")

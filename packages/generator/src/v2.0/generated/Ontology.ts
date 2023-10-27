@@ -15,24 +15,13 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import { Todo } from "./objects/Todo";
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
+import { OntologyMetadata } from "./OntologyMetadata";
 
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
-
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
-}
+export const Ontology = {
+  metadata: OntologyMetadata,
+  objects: {
+    Todo: Todo,
+  },
+} satisfies OntologyDefinition<"Todo">;
