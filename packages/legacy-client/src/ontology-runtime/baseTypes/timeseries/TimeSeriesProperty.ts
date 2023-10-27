@@ -32,6 +32,11 @@ export class TimeSeriesProperty<T extends number | string>
 
   #provider: OntologyProvider;
   #ontologyMetadata: OntologyMetadata;
+  #authClient: Auth;
+  #stack: string;
+  #propertyName: string;
+  #apiName: string;
+  #primaryKey: string;
 
   static constructTimeSeries<T extends string | number>(
     propertyName: string,
@@ -53,39 +58,44 @@ export class TimeSeriesProperty<T extends number | string>
 
   getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
     return this.#provider.getFirstPoint(
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
+      this.#apiName,
+      this.#primaryKey,
+      this.#propertyName,
     );
   }
 
   getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
     return this.#provider.getLastPoint(
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
+      this.#apiName,
+      this.#primaryKey,
+      this.#propertyName,
     );
   }
 
   get points(): TimeSeriesQuery<T> {
     return new TimeSeriesQuery(
-      this.authClient,
-      this.stack,
-      this.propertyName,
-      this.apiName,
-      this.primaryKey,
+      this.#authClient,
+      this.#stack,
+      this.#propertyName,
+      this.#apiName,
+      this.#primaryKey,
       this.#ontologyMetadata,
     );
   }
 
   private constructor(
-    private authClient: Auth,
-    private stack: string,
-    private propertyName: string,
-    private apiName: string,
-    private primaryKey: string,
+    authClient: Auth,
+    stack: string,
+    propertyName: string,
+    apiName: string,
+    primaryKey: string,
     ontologyMetadata: OntologyMetadata,
   ) {
+    this.#authClient = authClient;
+    this.#stack = stack;
+    this.#propertyName = propertyName;
+    this.#apiName = apiName;
+    this.#primaryKey = primaryKey;
     this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
     this.#ontologyMetadata = ontologyMetadata;
   }

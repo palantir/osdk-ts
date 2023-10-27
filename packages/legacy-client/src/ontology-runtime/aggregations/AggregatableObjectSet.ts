@@ -51,18 +51,33 @@ export abstract class AggregatableObjectSet<
     TGroupableProperties
   >
 {
+  #auth: Auth;
+  #stack: string;
+  #objectType: BaseObjectType;
+  #ontologyMetadata: OntologyMetadata;
+  #aggregatableProperties: TAggregatableProperties;
+  #multipleAggregationProperties: TMultipleAggregationProperties;
+  #groupableProperties: TGroupableProperties;
+
   constructor(
-    private auth: Auth,
-    private stack: string,
-    private objectType: BaseObjectType,
-    private ontologyMetadata: OntologyMetadata,
-    private aggregatableProperties: TAggregatableProperties,
-    private multipleAggregationProperties: TMultipleAggregationProperties,
-    private groupableProperties: TGroupableProperties,
+    auth: Auth,
+    stack: string,
+    objectType: BaseObjectType,
+    ontologyMetadata: OntologyMetadata,
+    aggregatableProperties: TAggregatableProperties,
+    multipleAggregationProperties: TMultipleAggregationProperties,
+    groupableProperties: TGroupableProperties,
     protected definition: ObjectSetDefinition,
     protected groupByClauses: Array<InternalBucketing<BucketKey, BucketValue>> =
       [],
   ) {
+    this.#auth = auth;
+    this.#stack = stack;
+    this.#objectType = objectType;
+    this.#ontologyMetadata = ontologyMetadata;
+    this.#aggregatableProperties = aggregatableProperties;
+    this.#multipleAggregationProperties = multipleAggregationProperties;
+    this.#groupableProperties = groupableProperties;
   }
 
   public groupBy<
@@ -80,7 +95,7 @@ export abstract class AggregatableObjectSet<
       [K in TBucketKey]: TBucketValue;
     }
   > {
-    const groupByClause = propertySelector(this.groupableProperties);
+    const groupByClause = propertySelector(this.#groupableProperties);
     assertBucketingInternal(groupByClause);
     this.groupByClauses.push(
       groupByClause as InternalBucketing<BucketKey, BucketValue>,
@@ -91,10 +106,10 @@ export abstract class AggregatableObjectSet<
 
   public count(): AggregationComputeStep<{}, number> {
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -116,12 +131,12 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    const selectedProperty = propertySelector(this.aggregatableProperties);
+    const selectedProperty = propertySelector(this.#aggregatableProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -144,12 +159,12 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    const selectedProperty = propertySelector(this.aggregatableProperties);
+    const selectedProperty = propertySelector(this.#aggregatableProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -169,12 +184,12 @@ export abstract class AggregatableObjectSet<
       obj: TAggregatableProperties,
     ) => AggregatableProperty<any>,
   ): AggregationComputeStep<{}, Double> {
-    const selectedProperty = propertySelector(this.aggregatableProperties);
+    const selectedProperty = propertySelector(this.#aggregatableProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -197,12 +212,12 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    const selectedProperty = propertySelector(this.aggregatableProperties);
+    const selectedProperty = propertySelector(this.#aggregatableProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -225,12 +240,12 @@ export abstract class AggregatableObjectSet<
       >,
     ) => AggregatableProperty<TResult>,
   ): AggregationComputeStep<{}, TResult> {
-    const selectedProperty = propertySelector(this.aggregatableProperties);
+    const selectedProperty = propertySelector(this.#aggregatableProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       [
@@ -267,12 +282,12 @@ export abstract class AggregatableObjectSet<
         : Double;
     }
   > {
-    const aggregate = aggregateBuilder(this.multipleAggregationProperties);
+    const aggregate = aggregateBuilder(this.#multipleAggregationProperties);
     return new ComputeStep(
-      this.auth,
-      this.stack,
-      this.objectType,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#objectType,
+      this.#ontologyMetadata,
       this.definition,
       this.groupByClauses,
       Object.keys(aggregate).map(key => {

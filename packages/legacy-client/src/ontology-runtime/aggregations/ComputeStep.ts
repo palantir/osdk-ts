@@ -36,31 +36,44 @@ export class ComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > implements AggregationComputeStep<TBucketGroup, TMetrics> {
+  #auth: Auth;
+  #stack: string;
+  #objectType: BaseObjectType;
+  #ontologyMetadata: OntologyMetadata;
+  #definition: ObjectSetDefinition;
+  #aggregationClauses: AggregationClause[];
+
   constructor(
-    private auth: Auth,
-    private stack: string,
-    private objectType: BaseObjectType,
-    private ontologyMetadata: OntologyMetadata,
-    private definition: ObjectSetDefinition,
+    auth: Auth,
+    stack: string,
+    objectType: BaseObjectType,
+    ontologyMetadata: OntologyMetadata,
+    definition: ObjectSetDefinition,
     protected groupByClauses: Array<InternalBucketing<string, BucketValue>> =
       [],
-    private aggregationClauses: AggregationClause[] = [],
+    aggregationClauses: AggregationClause[] = [],
   ) {
+    this.#auth = auth;
+    this.#stack = stack;
+    this.#objectType = objectType;
+    this.#ontologyMetadata = ontologyMetadata;
+    this.#definition = definition;
+    this.#aggregationClauses = aggregationClauses;
   }
 
   public async compute(): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {
     const provider = new OntologyProvider(
-      this.auth,
-      this.stack,
-      this.ontologyMetadata,
+      this.#auth,
+      this.#stack,
+      this.#ontologyMetadata,
     );
 
     const result = await provider.aggregate<TBucketGroup, TMetrics>(
       {
-        objectSet: this.definition,
-        aggregation: this.aggregationClauses,
+        objectSet: this.#definition,
+        aggregation: this.#aggregationClauses,
         groupBy: this.groupByClauses,
       },
     );
