@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export * from "./ConfidentialClientAuth";
-export * from "./ConfidentialClientFlow";
+export async function generateCodeChallenge(codeVerifier: string) {
+  const data = new TextEncoder().encode(codeVerifier);
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  const codeChallengeMethod = "S256";
+  const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\//g, "_")
+    .replace(/\+/g, "-")
+    .replace(/=/g, "");
+  return {
+    codeChallenge,
+    codeChallengeMethod,
+  };
+}

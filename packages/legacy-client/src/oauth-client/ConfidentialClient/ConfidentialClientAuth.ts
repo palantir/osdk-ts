@@ -18,12 +18,11 @@ import type { Auth } from "../Auth";
 import type { SignInResponse, SignOutResponse } from "../OAuthClient";
 import type { OAuthToken } from "../OAuthToken";
 import type { Token } from "../Token";
+import { getTokenWithClientSecret, revokeTokenWithClientSecret } from ".";
 
 export class ConfidentialClientAuth implements Auth {
-  private options;
-  private confidentialClientFlowProvider;
-  token: OAuthToken | null;
-  private refreshTimeout;
+  public token: OAuthToken | undefined;
+  private refreshTimeout: ReturnType<typeof setTimeout> | undefined;
 
   /**
    * Creates a new instance of ConfidentialClientAuth
@@ -37,26 +36,42 @@ export class ConfidentialClientAuth implements Auth {
    * @param options.multipassContextPath The context path for the multipass authentication (optional).
    * @param options.scopes An array of strings representing the requested OAuth scopes (optional).
    */
-  constructor(options: {
-    clientId: string;
-    clientSecret: string;
-    url: string;
-    multipassContextPath?: string;
-    scopes?: string[];
-  }) {
-    throw new Error("not implemented");
+  constructor(
+    private options: {
+      clientId: string;
+      clientSecret: string;
+      url: string;
+      multipassContextPath?: string;
+      fetchFn?: typeof globalThis.fetch;
+      scopes?: string[];
+    },
+  ) {
   }
 
-  getToken(): Promise<Token> {
-    throw new Error("not implemented");
+  public async getToken(): Promise<Token> {
+    if (!this.token) {
+      await this.signInAsServiceUser();
+    }
+
+    if (this.token?.isExpired) {
+      await this.refresh();
+    }
+
+    return {
+      accessToken: this.token?.accessToken!,
+    };
   }
 
-  executeWithToken<T>(call: (token: Token) => Promise<T>): Promise<T> {
-    throw new Error("not implemented");
+  public async executeWithToken<T>(
+    call: (token: Token) => Promise<T>,
+  ): Promise<T> {
+    return call(await this.getToken());
   }
 
-  runWithToken(call: (token: Token) => Promise<void>): Promise<void> {
-    throw new Error("not implemented");
+  public async runWithToken(
+    call: (token: Token) => Promise<void>,
+  ): Promise<void> {
+    await call(await this.getToken());
   }
 
   /**
@@ -64,8 +79,25 @@ export class ConfidentialClientAuth implements Auth {
    *
    * @returns {Promise<SignInResponse>}
    */
-  signInAsServiceUser(): Promise<SignInResponse> {
-    throw new Error("not implemented");
+  public async signInAsServiceUser(): Promise<SignInResponse> {
+    const token = await getTokenWithClientSecret(
+      this.options.clientId,
+      this.options.clientSecret,
+      this.options.url,
+      this.options.fetchFn,
+      this.options.multipassContextPath,
+      this.options.scopes,
+    );
+    this.token = token;
+
+    this.startRefreshTimeout(token);
+
+    return {
+      session: {
+        accessToken: this.token.accessToken,
+        expiresIn: this.token.expiresIn,
+      },
+    };
   }
 
   /**
@@ -73,7 +105,48 @@ export class ConfidentialClientAuth implements Auth {
    *
    * @returns {Promise<SignOutResponse>}
    */
-  signOut(): Promise<SignOutResponse> {
-    throw new Error("not implemented");
+  public async signOut(): Promise<SignOutResponse> {
+    this.clearRefreshTimeout();
+    if (this.token) {
+      await revokeTokenWithClientSecret(
+        this.token.accessToken,
+        this.options.clientId,
+        this.options.clientSecret,
+        this.options.url,
+        this.options.fetchFn,
+        this.options.multipassContextPath,
+      );
+    }
+    this.token = undefined;
+    return {};
+  }
+
+  private async refresh(): Promise<void> {
+    this.token = await getTokenWithClientSecret(
+      this.options.clientId,
+      this.options.clientSecret,
+      this.options.url,
+      this.options.fetchFn,
+      this.options.multipassContextPath,
+      this.options.scopes,
+    );
+    this.startRefreshTimeout(this.token);
+  }
+
+  private startRefreshTimeout(token: OAuthToken): void {
+    this.clearRefreshTimeout();
+
+    // Refresh the token before it expires with a buffer of
+    // 60 seconds to account for network latency
+    this.refreshTimeout = setTimeout(async () => {
+      this.refresh();
+    }, token.expiresIn * 1000 - 60 * 1000);
+  }
+
+  private clearRefreshTimeout(): void {
+    if (this.refreshTimeout) {
+      clearTimeout(this.refreshTimeout);
+      this.refreshTimeout = undefined;
+    }
   }
 }
