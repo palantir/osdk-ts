@@ -14,4 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./Model";
+export enum DistanceUnit {
+  MILLIMETERS = "MILLIMETERS",
+  CENTIMETERS = "CENTIMETERS",
+  METERS = "METERS",
+  KILOMETERS = "KILOMETERS",
+  INCHES = "INCHES",
+  FEET = "FEET",
+  YARDS = "YARDS",
+  MILES = "MILES",
+  NAUTICAL_MILES = "NAUTICAL_MILES",
+}

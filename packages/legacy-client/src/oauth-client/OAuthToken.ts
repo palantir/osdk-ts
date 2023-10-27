@@ -28,16 +28,20 @@ export class OAuthToken implements Token {
     refresh_token: string;
     expires_in: number;
   }) {
-    throw new Error("not implemented");
+    this.accessToken = tokenResponse.access_token;
+    this.tokenType = tokenResponse.token_type;
+    this.refreshToken = tokenResponse.refresh_token;
+
+    this.expiresAt = Date.now() + tokenResponse.expires_in * 1000;
   }
 
   /** The number of seconds until the access token expires. */
   get expiresIn(): number {
-    throw new Error("not implemented");
+    return (this.expiresAt - Date.now()) / 1000;
   }
 
   /** Whether the access token has expired. */
   get isExpired(): boolean {
-    throw new Error("not implemented");
+    return Date.now() >= this.expiresAt;
   }
 }

@@ -40,5 +40,8 @@
     "turbo": "^1.10.13",
     "typescript": "^5.2.2",
     "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "eslint-plugin-unused-imports": "^3.0.0"
   }
 }

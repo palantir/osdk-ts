@@ -18,22 +18,29 @@ import type { Auth } from "../Auth";
 import type { Token } from "../Token";
 
 export class UserTokenAuth implements Auth {
-  private options;
-  constructor(options: {
-    userToken: string;
-  }) {
-    throw new Error("not implemented");
+  constructor(
+    private options: {
+      userToken: string | (() => string | Promise<string>);
+    },
+  ) {}
+
+  public async getToken(): Promise<Token> {
+    return {
+      accessToken: typeof this.options.userToken === "function"
+        ? await this.options.userToken()
+        : this.options.userToken,
+    };
   }
 
-  getToken(): Promise<Token> {
-    throw new Error("not implemented");
+  public async executeWithToken<T>(
+    call: (token: Token) => Promise<T>,
+  ): Promise<T> {
+    return call(await this.getToken());
   }
 
-  executeWithToken<T>(call: (token: Token) => Promise<T>): Promise<T> {
-    throw new Error("not implemented");
-  }
-
-  runWithToken(call: (token: Token) => Promise<void>): Promise<void> {
-    throw new Error("not implemented");
+  public async runWithToken(
+    call: (token: Token) => Promise<void>,
+  ): Promise<void> {
+    await call(await this.getToken());
   }
 }

@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-export * from "./ArrayFilter";
-export * from "./AttachmentFilter";
-export * from "./BooleanFilter";
-export * from "./DateTimeFilters";
-export * from "./Filters";
-export * from "./GeoPointFilter";
-export * from "./GeoShapeFilter";
-export * from "./NumericFilter";
-export * as Op from "./Op";
-export * from "./OrderByOption";
-export * from "./StringFilter";
+import type {
+  AggregationClause,
+  BucketKey,
+  BucketValue,
+  InternalBucketing,
+} from "../aggregations";
+import type { ObjectSetDefinition } from "../baseTypes";
+
+export interface InternalAggregationRequest {
+  objectSet: ObjectSetDefinition;
+  aggregation: AggregationClause[];
+  groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;
+}

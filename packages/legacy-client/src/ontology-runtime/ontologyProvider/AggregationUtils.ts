@@ -15,7 +15,6 @@
  */
 
 import type {
-  AggregateObjectsResponseV2 as AggregationAPIResponse,
   Aggregation as ApiAggregationClause,
   AggregationGroupByV2,
   AggregationGroupByV2_Duration,
@@ -27,21 +26,15 @@ import type {
 
 import {
   type AggregationClause,
-  type AggregationResult,
-  type BucketGroup,
   type BucketKey,
   type BucketValue,
-  type GroupByClause,
   type InternalBucketing,
   type InternalBucketingVisitor,
-  type Metrics,
-  type MetricValue,
   type Range,
   type Rangeable,
   visitInternalBucketing,
 } from "../aggregations";
-import { type BaseObjectType, LocalDate, Timestamp } from "../baseTypes";
-import type { SearchClause } from "../filters";
+import { LocalDate, Timestamp } from "../baseTypes";
 
 export function buildBucketObject<T>(startValue?: T, endValue?: T): {
   startValue?: T;
@@ -60,7 +53,7 @@ export function buildBucketObject<T>(startValue?: T, endValue?: T): {
 export function mapBucketing<
   TBucketKey extends BucketKey,
   T extends BucketValue,
->(bucket: InternalBucketing<TBucketKey, T>): GroupByClause {
+>(bucket: InternalBucketing<TBucketKey, T>): AggregationGroupByV2 {
   return visitInternalBucketing(bucket, {
     onExactValue(bucketing): AggregationGroupByV2_Exact {
       return {
@@ -98,18 +91,6 @@ export function mapBucketing<
       };
     },
   } as InternalBucketingVisitor<TBucketKey, T, AggregationGroupByV2>);
-}
-
-export function mapToAggregationResponse<
-  TBucketKey extends BucketKey,
-  TBucketGroup extends BucketGroup,
-  TMetrics extends Metrics | MetricValue,
->(apiResponse: AggregationAPIResponse, body: {
-  aggregation: AggregationClause[];
-  groupBy?: Array<InternalBucketing<TBucketKey, BucketValue>>;
-  where?: SearchClause;
-}, objectType: BaseObjectType): AggregationResult<TBucketGroup, TMetrics> {
-  throw new Error("not implemented");
 }
 
 export function convertRanges(

@@ -62,8 +62,9 @@ module.exports = {
     ],
     "import/no-unresolved": "off",
     "import/no-named-as-default": "error",
+    "unused-imports/no-unused-imports": "error",
   },
-  plugins: ["@typescript-eslint", "import", "header"],
+  plugins: ["@typescript-eslint", "import", "header", "unused-imports"],
   parser: "@typescript-eslint/parser",
 
   // Obnoxiously, the only way to get eslint to check these files (and apply normal rules)

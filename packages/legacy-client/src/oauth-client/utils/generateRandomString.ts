@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-import type { OAuthToken } from "../OAuthToken";
-
-export class ConfidentialClientFlowProvider {
-  private clientId;
-  private clientSecret;
-  private url;
-  private multipassContextPath?;
-  private scopes?;
-  constructor(
-    clientId: string,
-    clientSecret: string,
-    url: string,
-    multipassContextPath?: string,
-    scopes?: string[],
-  ) {
-    throw new Error("not implemented");
-  }
-
-  getToken(): Promise<OAuthToken> {
-    throw new Error("not implemented");
-  }
-
-  revokeToken(accessToken: string): Promise<void> {
-    throw new Error("not implemented");
-  }
+export function generateRandomString() {
+  const array = crypto.getRandomValues(new Uint32Array(28));
+  return Array.from(array, dec => {
+    const decimalString = "0" + dec.toString(16);
+    return decimalString.substring(decimalString.length - 2);
+  }).join("");
 }

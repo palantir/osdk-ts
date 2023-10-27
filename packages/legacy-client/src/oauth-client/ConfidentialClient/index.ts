@@ -15,4 +15,4 @@
  */
 
 export * from "./ConfidentialClientAuth";
-export * from "./ConfidentialClientFlowProvider";
+export * from "./ConfidentialClientFlow";

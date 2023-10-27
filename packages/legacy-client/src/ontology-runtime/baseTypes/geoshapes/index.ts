@@ -15,6 +15,7 @@
  */
 
 export * from "./Distance";
+export * from "./DistanceUnit";
 export * from "./GeoJson";
 export * from "./GeometryCollection";
 export * from "./GeoPoint";

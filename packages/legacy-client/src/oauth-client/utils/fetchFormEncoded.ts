@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-export * from "./ArrayFilter";
-export * from "./AttachmentFilter";
-export * from "./BooleanFilter";
-export * from "./DateTimeFilters";
-export * from "./Filters";
-export * from "./GeoPointFilter";
-export * from "./GeoShapeFilter";
-export * from "./NumericFilter";
-export * as Op from "./Op";
-export * from "./OrderByOption";
-export * from "./StringFilter";
+export async function fetchFormEncoded(
+  fetchFn: typeof globalThis.fetch,
+  url: string,
+  formEncodedBody: URLSearchParams,
+) {
+  const response = await fetchFn(url, {
+    body: formEncodedBody.toString(),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    method: "POST",
+  });
+
+  return response;
+}
