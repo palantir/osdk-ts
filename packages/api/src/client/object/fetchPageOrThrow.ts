@@ -43,7 +43,7 @@ export async function fetchPageOrThrow<
   const A extends FetchPageOrThrowArgs<O, T, PropertyKeysFrom<O, T>>,
 >(
   client: ThinClient<O>,
-  objectType: T,
+  objectType: T & string,
   args: A,
   objectSet: Wire.ObjectSet = {
     type: "base",

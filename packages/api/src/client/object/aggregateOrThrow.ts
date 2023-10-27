@@ -38,7 +38,7 @@ export async function aggregateOrThrow<
   const AO extends AggregateOpts<T, K, any>,
 >(
   thinClient: ThinClient<T>,
-  objectType: K,
+  objectType: K & string,
   req: AO,
 ): Promise<AggregationsResults<T, K, AO>> {
   const body: AggregateObjectsRequestV2 = {
