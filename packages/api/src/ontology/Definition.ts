@@ -70,6 +70,7 @@ interface ValidPropertyTypes {
   datetime: Date;
   double: number;
   boolean: boolean;
+  integer: number;
 }
 
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =

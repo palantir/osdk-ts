@@ -21,6 +21,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2,
 ): PropertyDefinition {
   switch (input.dataType.type) {
+    case "integer":
     case "string":
     case "boolean": {
       return {

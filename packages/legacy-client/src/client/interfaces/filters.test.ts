@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../metadata";
-import type { ObjectSet } from "./interfaces";
+import { describe, expectTypeOf, it } from "vitest";
+import type {
+  BooleanFilter,
+  NumericFilter,
+  StringFilter,
+} from "../../ontology-runtime";
+import type { Todo } from "../../util/test/TodoObject";
+import type { ObjectTypeFilter } from "./filters";
 
-export type ObjectTypesFrom<O extends OntologyDefinition<string>> =
-  & keyof O["objects"]
-  & string;
-
-export type Objects<D extends OntologyDefinition<any> = any> = {
-  [T in ObjectTypesFrom<D>]: ObjectSet<D, T>;
-};
+describe("Filters", () => {
+  it("correct types", () => {
+    expectTypeOf<ObjectTypeFilter<Todo>>().toMatchTypeOf<{
+      complete: BooleanFilter;
+      id: NumericFilter;
+      body: StringFilter;
+    }>();
+  });
+});

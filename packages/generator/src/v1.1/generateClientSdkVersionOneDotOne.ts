@@ -20,6 +20,7 @@ import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateFoundryClient } from "./generateFoundryClient";
 import { generateMetadata } from "./generateMetadata";
+import { generateObjects } from "./generateObjects";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
@@ -103,6 +104,7 @@ export async function generateClientSdkVersionOneDotOne(
 
   await generateFoundryClient(fs, outDir);
   await generateMetadata(ontology, fs, outDir);
+  await generateObjects(ontology, fs, outDir);
 
   await fs.writeFile(
     path.join(outDir, "index.ts"),

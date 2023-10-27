@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeV2 } from "@osdk/gateway/types";
+import type { ObjectTypeV2, PropertyV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
@@ -37,8 +37,8 @@ export async function generateMetadata(
     },
     objects: {
         ${
-      Object.keys(ontology.objectTypes).map((o) => {
-        `${ontology.objectTypes[o].apiName} : }`;
+      Object.values(ontology.objectTypes).map((o) => {
+        return `${o.apiName} : ${getObjectMetadata(o)}`;
       })
     }
     }
@@ -51,5 +51,55 @@ export async function generateMetadata(
 }
 
 function getObjectMetadata(objectType: ObjectTypeV2): string {
-  return ``;
+  return `{
+    apiName: "${objectType.apiName}",
+    rid: "${objectType.rid}",
+    properties: {
+        ${
+    Object.entries(objectType.properties).map(([apiName, property]) => {
+      return `${apiName}: ${
+        getPropertyMetadata(
+          apiName === objectType.primaryKey,
+          property,
+        )
+      }`;
+    }).join(",")
+  }
+    }
+  }`;
+}
+
+function getPropertyMetadata(
+  isPrimaryKey: boolean,
+  property: PropertyV2,
+): string {
+  return `{
+    isPrimaryKey: ${isPrimaryKey},
+    type: "${mapPropertyType(property)}"
+  }`;
+}
+
+function mapPropertyType(property: PropertyV2) {
+  switch (property.dataType.type) {
+    case "string":
+      return "string";
+    case "boolean":
+      return "boolean";
+    case "integer":
+      return "integer";
+    case "array":
+    case "attachment":
+    case "byte":
+    case "date":
+    case "decimal":
+    case "double":
+    case "float":
+    case "geopoint":
+    case "geoshape":
+    case "long":
+    case "short":
+    case "timestamp":
+    case "timeseries":
+      throw new Error("not implemented");
+  }
 }

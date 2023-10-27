@@ -43,7 +43,26 @@ describe("generateMetadata", () => {
           ontologyApiName: 'OntologyApiName',
           userAgent: 'foundry-typescript-osdk/0.0.1',
         },
-        objects: {},
+        objects: {
+          Todo: {
+            apiName: 'Todo',
+            rid: 'ridForTodo',
+            properties: {
+              id: {
+                isPrimaryKey: true,
+                type: 'integer',
+              },
+              body: {
+                isPrimaryKey: false,
+                type: 'string',
+              },
+              complete: {
+                isPrimaryKey: false,
+                type: 'boolean',
+              },
+            },
+          },
+        },
       } satisfies ApiOntologyDefinition<'Todo'>;
       "
     `);

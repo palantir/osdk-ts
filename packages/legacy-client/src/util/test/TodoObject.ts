@@ -14,31 +14,18 @@
  * limitations under the License.
  */
 
-import type { LocalDate } from "../ontology-runtime/baseTypes";
+import type { OntologyObject } from "../../ontology-runtime";
 
-export interface OntologyDefinition<K extends string> {
-  metadata: OntologyMetadata;
-  objects: {
-    [KK in K]: ObjectDefinition<KK, K>;
-  };
-}
-
-export interface OntologyMetadata {
-}
-
-export interface ObjectDefinition<N extends K, K extends string> {
-  apiName: N;
-  properties: Record<string, PropertyDefinition>;
-}
-
-export interface PropertyDefinition {
-  isPrimaryKey: boolean;
-  type: keyof PropertyType;
-}
-
-export interface PropertyType {
-  string: string;
-  datetime: LocalDate;
-  double: number;
-  boolean: boolean;
+/**
+ * Its a todo item.
+ */
+export interface Todo extends OntologyObject {
+  readonly __apiName: "Todo";
+  readonly __primaryKey: number;
+  readonly id: number | undefined;
+  /**
+   * The text of the todo
+   */
+  readonly body: string | undefined;
+  readonly complete: boolean | undefined;
 }

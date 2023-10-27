@@ -14,35 +14,21 @@
  * limitations under the License.
  */
 
-import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { generateObjectInterfaces } from "./generateObjectInterfaces";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToObjectInterfaceString";
 
-export async function generateObjects(
+export async function generateObjectInterfaces(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
 ) {
-  await generateObjectInterfaces(ontology, fs, path.join(outDir, "objects"));
-
-  await fs.writeFile(
-    path.join(outDir, "objects.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "objects.ts")}
-    import { BaseObjectSet } from "@osdk/legacy-client";
-    import { ${
-      Object.values(ontology.objectTypes).map(o => o.apiName).join(",")
-    } } from "./objects";
-    export interface Objects {
-      ${
-      Object.keys(ontology.objectTypes).map((o) => {
-        return `${ontology.objectTypes[o].apiName} : BaseObjectSet<${
-          ontology.objectTypes[o].apiName
-        }>;`;
-      })
-    }
-    }
-    ;`),
+  await Promise.all(
+    Object.values(ontology.objectTypes).map(async (object) => {
+      await fs.writeFile(
+        `${outDir}/objects/${object.apiName}.ts`,
+        await wireObjectTypeV2ToObjectInterfaceStringV1(object),
+      );
+    }),
   );
 }

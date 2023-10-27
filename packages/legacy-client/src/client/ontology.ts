@@ -15,10 +15,9 @@
  */
 
 import type { OntologyDefinition } from "../metadata";
-import type { Objects } from "./objects";
 
-export class Ontology<O extends OntologyDefinition<any> = any> {
-  get objects(): Objects<O> {
+export class Ontology<O extends OntologyDefinition<any>> {
+  get objects(): O["objects"] {
     throw new Error("not implemented");
   }
 

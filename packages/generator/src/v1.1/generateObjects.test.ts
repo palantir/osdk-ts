@@ -15,29 +15,31 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToObjectInterfaceString";
+import { generateObjects } from "./generateObjects";
 
-describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
-  it("generates object interface", async () => {
+describe("generate objects", () => {
+  it("generates objects", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generateObjects(
+      TodoWireOntology,
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    expect(helper.minimalFiles.writeFile).toBeCalled();
+
     expect(
-      await wireObjectTypeV2ToObjectInterfaceStringV1(
-        TodoWireOntology.objectTypes["Todo"],
-      ),
+      helper.getFiles()[`${BASE_PATH}/objects.ts`],
     ).toMatchInlineSnapshot(`
-      "import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
-      /**
-       * Its a todo item.
-       */
-      export interface Todo extends OntologyObject {
-        readonly __apiName: 'Todo';
-        readonly __primaryKey: number;
-        readonly id: number | undefined;
-        /**
-         * The text of the todo
-         */
-        readonly body: string | undefined;
-        readonly complete: boolean | undefined;
+      "// Path: /foo/objects.ts
+      import { BaseObjectSet } from '@osdk/legacy-client';
+      import { Todo } from './objects';
+      export interface Objects {
+        Todo: BaseObjectSet<Todo>;
       }
       "
     `);

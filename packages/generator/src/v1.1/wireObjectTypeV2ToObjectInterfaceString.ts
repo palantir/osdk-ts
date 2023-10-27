@@ -15,12 +15,13 @@
  */
 
 import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
+import { formatTs } from "../util/test/formatTs";
 
-export function wireObjectTypeV2ToObjectInterfaceStringV1(
+export async function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
 ) {
-  return /* TypeScript */ `
-import { OntologyObject } from "@osdk/legacy-client";
+  return await formatTs(`
+import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
 /**
  * ${input.description}
  */
@@ -35,13 +36,15 @@ ${
     Object.entries(input.properties).map((
       [propertyName, propertyDefinition],
     ) =>
-      `  readonly ${propertyName}: ${
+      `${
+        getDescriptionIfPresent(propertyDefinition.description)
+      }readonly ${propertyName}: ${
         wirePropertyTypeV2ToTypeScriptType(propertyDefinition.dataType)
       } | undefined`
     ).join(";\n")
   }
 }
-  `;
+  `);
 }
 
 function wirePropertyTypeV2ToTypeScriptType(
@@ -57,18 +60,38 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "integer":
       return "number";
     case "attachment":
+      throw new Error("not implemented");
     case "byte":
+      return "number";
     case "date":
+      return "LocalDate";
     case "decimal":
+      return "number";
     case "double":
+      return "number";
     case "float":
+      return "number";
     case "geopoint":
+      return "GeoPoint";
     case "geoshape":
+      return "GeoShape";
     case "long":
+      return "number";
     case "short":
+      return "number";
     case "timestamp":
+      return "TimeStamp";
     case "timeseries":
     default:
       throw new Error("not implemented");
   }
+}
+
+function getDescriptionIfPresent(description?: string) {
+  if (description) {
+    return `/**
+ * ${description}
+ */\n`;
+  }
+  return "";
 }

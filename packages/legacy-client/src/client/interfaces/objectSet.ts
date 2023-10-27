@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../../metadata";
+import type {
+  ListObjectsError,
+  OntologyObject,
+  Page,
+  Result,
+} from "../../ontology-runtime";
+import type { ObjectTypeFilterFunction } from "./filters";
 
-/**
- * An ObjectSet
- * @type {O['objects'][T]}
- */
-export interface ObjectSet<O extends OntologyDefinition<any>, T> {
-  where(query: any): ObjectSet<O, T>;
+export interface ObjectSet<O extends OntologyObject> {
+  where(
+    predicate: ObjectTypeFilterFunction<O>,
+  ): ObjectSet<O>;
+
+  /**
+   * Get a page of objects of this type.
+   */
+  page(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Result<Page<O>, ListObjectsError>>;
 }
