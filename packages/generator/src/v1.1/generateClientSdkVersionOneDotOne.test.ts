@@ -60,8 +60,11 @@ describe("generator", () => {
     expect(errors).toHaveLength(0);
   });
 
-  test.skip("runs generator locally", async () => {
-    await rmdir(`${__dirname}/generated`, { recursive: true });
+  test("runs generator locally", async () => {
+    try {
+      await rmdir(`${__dirname}/generated`, { recursive: true });
+    } catch (e) {
+    }
     await mkdir(`${__dirname}/generated`, { recursive: true });
     await generateClientSdkVersionOneDotOne(
       TodoWireOntology,

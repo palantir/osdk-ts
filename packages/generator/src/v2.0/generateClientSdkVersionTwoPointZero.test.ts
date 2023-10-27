@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mkdir, writeFile } from "fs/promises";
+import { mkdir, rmdir, writeFile } from "fs/promises";
 import { dirname } from "path";
 import { describe, expect, test } from "vitest";
 import { compileThis } from "../util/test/compileThis";
@@ -55,6 +55,10 @@ describe("generator", () => {
   });
 
   test.skip("runs generator locally", async () => {
+    try {
+      await rmdir(`${__dirname}/generated`, { recursive: true });
+    } catch (e) {
+    }
     await mkdir(`${__dirname}/generated`, { recursive: true });
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,

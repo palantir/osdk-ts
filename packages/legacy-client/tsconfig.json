@@ -15,9 +15,6 @@
     },
     {
       "path": "../gateway"
-    },
-    {
-      "path": "../generator"
     }
   ]
 }
