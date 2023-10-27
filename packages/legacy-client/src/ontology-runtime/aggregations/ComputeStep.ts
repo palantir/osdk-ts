@@ -59,7 +59,6 @@ export class ComputeStep<
     );
 
     const result = await provider.aggregate<TBucketGroup, TMetrics>(
-      this.objectType,
       {
         objectSet: this.definition,
         aggregation: this.aggregationClauses,

@@ -248,6 +248,9 @@ importers:
 
   packages/legacy-client:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
