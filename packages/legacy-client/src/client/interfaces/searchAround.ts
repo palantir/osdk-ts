@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
 import type {
-  GetObjectError,
-  Result,
-} from "../../ontology-runtime/ontologyProvider";
-import type { ObjectSet } from "./objectSet";
+  MultiLink,
+  OntologyObject,
+  SingleLink,
+} from "../../ontology-runtime";
+import type { ObjectSet } from ".";
 
-export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
-  get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
+type InferLinkType<T> = T extends SingleLink<infer V> ? V
+  : T extends MultiLink<infer V> ? V
+  : never;
+
+type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true : false;
+
+export type SearchAround<T extends OntologyObject> = {
+  [
+    K in Extract<keyof T, string> as IsLink<T[K]> extends true
+      ? `searchAround${Capitalize<string & K>}`
+      : never
+  ]: () => ObjectSet<InferLinkType<T[K]>>;
 };

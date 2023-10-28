@@ -237,6 +237,9 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1
     devDependencies:
+      '@osdk/legacy-client':
+        specifier: workspace:*
+        version: link:../legacy-client
       '@types/node':
         specifier: ^16.11.11
         version: 16.18.58

@@ -19,18 +19,30 @@ import type {
   BooleanFilter,
   LocalDateFilter,
   NumericFilter,
-  ObjectTypeProperties,
+  OntologyObject,
   StringFilter,
   TimestampFilter,
   WhereClause,
 } from "../../ontology-runtime";
 
-export declare type ObjectTypeFilterFunction<T extends ObjectTypeProperties> = (
+export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
   objectType: ObjectTypeFilter<T>,
 ) => WhereClause;
 
-export declare type ObjectTypeFilter<T extends ObjectTypeProperties> = {
-  [K in keyof Omit<T, "__apiName" | "__primaryKey" | "__rid">]: FilterFromType<
+export type isFilterableProperty<T> = T extends
+  number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
+
+export type filterableProperties<T extends OntologyObject> = {
+  [K in keyof T as isFilterableProperty<T[K]> extends true ? K : never]: T[K];
+};
+
+export declare type ObjectTypeFilter<T extends OntologyObject> = {
+  [
+    K in keyof Omit<
+      filterableProperties<T>,
+      "__apiName" | "__rid" | "__primaryKey"
+    >
+  ]: FilterFromType<
     T[K]
   >;
 };

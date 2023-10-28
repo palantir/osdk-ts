@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
-import type {
-  GetObjectError,
-  Result,
-} from "../../ontology-runtime/ontologyProvider";
-import type { ObjectSet } from "./objectSet";
+import type { MultiLink, OntologyObject } from "../../ontology-runtime";
+import type { Todo } from "./TodoObject";
 
-export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
-  get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
-};
+export interface Task extends OntologyObject {
+  readonly __apiName: "Task";
+  readonly __primaryKey: number;
+  readonly id: number | undefined;
+  readonly Todo: MultiLink<Todo>;
+}

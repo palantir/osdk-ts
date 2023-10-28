@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
-import type {
-  GetObjectError,
-  Result,
-} from "../../ontology-runtime/ontologyProvider";
+import { describe, it } from "vitest";
+import type { Task } from "../../util/test";
 import type { ObjectSet } from "./objectSet";
-
-export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
-  get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
-};
+describe("ObjectSet", () => {
+  it("creates", () => {
+    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
+    if (os) {
+      os.searchAroundTodo().searchAroundTask().where(a => a.id.eq(1));
+    }
+  });
+});

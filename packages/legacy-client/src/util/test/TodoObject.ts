@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
+import type { OntologyObject, SingleLink } from "../../ontology-runtime";
+import type { Task } from "./TaskObject";
 
 /**
  * Its a todo item.
@@ -28,4 +29,5 @@ export interface Todo extends OntologyObject {
    */
   readonly body: string | undefined;
   readonly complete: boolean | undefined;
+  readonly Task: SingleLink<Task>;
 }

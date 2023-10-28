@@ -15,3 +15,5 @@
  */
 
 export * from "./mockOntology";
+export * from "./TaskObject";
+export * from "./TodoObject";

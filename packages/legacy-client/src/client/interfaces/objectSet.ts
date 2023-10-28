@@ -21,8 +21,9 @@ import type {
   Result,
 } from "../../ontology-runtime";
 import type { ObjectTypeFilterFunction } from "./filters";
+import type { SearchAround } from "./searchAround";
 
-export interface ObjectSet<O extends OntologyObject> {
+export type ObjectSet<O extends OntologyObject> = {
   where(
     predicate: ObjectTypeFilterFunction<O>,
   ): ObjectSet<O>;
@@ -34,4 +35,4 @@ export interface ObjectSet<O extends OntologyObject> {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
-}
+} & SearchAround<O>;
