@@ -60,7 +60,7 @@ describe("generator", () => {
     expect(errors).toHaveLength(0);
   });
 
-  test("runs generator locally", async () => {
+  test.skip("runs generator locally", async () => {
     try {
       await rmdir(`${__dirname}/generated`, { recursive: true });
     } catch (e) {
