@@ -33,9 +33,9 @@ describe("generate objects", () => {
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
     expect(
-      helper.getFiles()[`${BASE_PATH}/objects.ts`],
+      helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
     ).toMatchInlineSnapshot(`
-      "// Path: /foo/objects.ts
+      "// Path: /foo/ontologyObjects.ts
       import { BaseObjectSet } from '@osdk/legacy-client';
       import { Todo } from './objects';
       export interface Objects {
