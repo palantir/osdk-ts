@@ -14,42 +14,30 @@
  * limitations under the License.
  */
 
-import type { LocalDate, Timestamp } from "../..";
 import type {
-  BooleanFilter,
-  LocalDateFilter,
-  NumericFilter,
+  LocalDate,
   OntologyObject,
-  StringFilter,
-  TimestampFilter,
-  WhereClause,
+  OrderByClause,
+  OrderByOption,
+  Timestamp,
 } from "../../ontology-runtime";
 
-export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
-  objectType: ObjectTypeFilter<T>,
-) => WhereClause;
-
-type IsFilterableProperty<T> = T extends
+type IsOrderableProperty<T> = T extends
   number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
 
-type FilterableProperties<T extends OntologyObject> = {
-  [K in keyof T as IsFilterableProperty<T[K]> extends true ? K : never]: T[K];
+type OrderableProperties<T extends OntologyObject> = {
+  [K in keyof T as IsOrderableProperty<T[K]> extends true ? K : never]: T[K];
 };
 
-export declare type ObjectTypeFilter<T extends OntologyObject> = {
+export declare type OrderByFunction<T extends OntologyObject> = (
+  object: OrderBy<T>,
+) => OrderByClause;
+
+export declare type OrderBy<T extends OntologyObject> = {
   [
     K in keyof Omit<
-      FilterableProperties<T>,
+      OrderableProperties<T>,
       "__apiName" | "__rid" | "__primaryKey"
     >
-  ]: FilterFromType<
-    T[K]
-  >;
+  ]: OrderByOption;
 };
-
-type FilterFromType<T> = T extends number ? NumericFilter
-  : T extends string ? StringFilter
-  : T extends LocalDate ? LocalDateFilter
-  : T extends Timestamp ? TimestampFilter
-  : T extends boolean ? BooleanFilter
-  : never;

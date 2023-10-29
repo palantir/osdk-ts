@@ -21,13 +21,38 @@ import type {
   Result,
 } from "../../ontology-runtime";
 import type { ObjectTypeFilterFunction } from "./filters";
+import type { OrderByFunction } from "./ordering";
 import type { SearchAround } from "./searchAround";
 
-export type ObjectSet<O extends OntologyObject> = {
-  where(
-    predicate: ObjectTypeFilterFunction<O>,
-  ): ObjectSet<O>;
+export type ObjectSet<O extends OntologyObject> =
+  & {
+    where(
+      predicate: ObjectTypeFilterFunction<O>,
+    ): ObjectSet<O>;
 
+    union(
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
+
+    intersect(
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
+
+    subtract(
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
+  }
+  & SearchAround<O>
+  & ObjectSetOrderByStep<O>
+  & ObjectSetTerminalLoadStep<O>;
+
+export type ObjectSetOrderByStep<O extends OntologyObject> = {
+  orderBy: (
+    predicate: OrderByFunction<O>,
+  ) => ObjectSetOrderByStep<O>;
+};
+
+export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
    * Get a page of objects of this type.
    */
@@ -35,4 +60,8 @@ export type ObjectSet<O extends OntologyObject> = {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
-} & SearchAround<O>;
+  /**
+   * Get all objects of this type.
+   */
+  all(): Promise<Result<O[], ListObjectsError>>;
+};

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { Task } from "../../util/test";
-import type { ObjectSet } from "./objectSet";
-describe("ObjectSet", () => {
-  it("creates", () => {
-    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
-    if (os) {
-      os.searchAroundTodo().searchAroundTask().where(a => a.id.eq(1));
-      os.orderBy(a => a.id.asc());
-    }
+import { describe, expectTypeOf, it } from "vitest";
+import type { OrderByOption } from "../../ontology-runtime";
+import type { Todo } from "../../util/test/TodoObject";
+import type { OrderBy } from "./ordering";
+
+describe("Ordering", () => {
+  it("correct types", () => {
+    expectTypeOf<OrderBy<Todo>>().toMatchTypeOf<{
+      complete: OrderByOption;
+      id: OrderByOption;
+      body: OrderByOption;
+    }>();
   });
 });
