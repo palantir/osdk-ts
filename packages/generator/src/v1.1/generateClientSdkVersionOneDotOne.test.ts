@@ -40,9 +40,8 @@ describe("generator", () => {
       helper.getFiles()[`${BASE_PATH}/index.ts`],
     ).toMatchInlineSnapshot(`
       "// Path: /foo/index.ts
-      import { Auth, FoundryClientOptions, BaseFoundryClient } from '@osdk/legacy-client';
-      export const ontologyRid = 'ridHere';
       export * from '@osdk/legacy-client';
+      export { Ontology } from './Ontology';
       export { FoundryClient } from './FoundryClient';
       "
     `);
