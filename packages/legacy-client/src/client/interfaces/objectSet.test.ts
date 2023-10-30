@@ -18,7 +18,7 @@ import { describe, it } from "vitest";
 import type { Task } from "../../util/test";
 import type { ObjectSet } from "./objectSet";
 describe("ObjectSet", () => {
-  it("creates", async () => {
+  it("creates", () => {
     const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
     if (os) {
       os.searchAroundTodo().searchAroundTask().where(a => a.id.eq(1));
