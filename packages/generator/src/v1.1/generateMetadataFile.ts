@@ -16,10 +16,11 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export async function generateMetadata(
+export async function generateMetadataFile(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
@@ -39,10 +40,7 @@ export async function generateMetadata(
         userAgent: "foundry-typescript-osdk/0.0.1",
     },
     objects: {
-        ${
-      objectNames.map((name) => `${name}: ${name},`)
-        .join("\n")
-    }
+        ${commaSeparatedIdentifiers(objectNames)}
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}>;
     

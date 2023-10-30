@@ -17,7 +17,9 @@
 import invariant from "tiny-invariant";
 import type { WireOntologyDefinition } from "./WireOntologyDefinition";
 
-function validateWireOntologyAssumptions(ontology: WireOntologyDefinition) {
+export function validateWireOntologyAssumptions(
+  ontology: WireOntologyDefinition,
+) {
   invariantNotStartWithDollarSign(ontology.apiName);
 
   for (const [objectKey, objectType] of Object.entries(ontology.objectTypes)) {
@@ -31,6 +33,7 @@ function validateWireOntologyAssumptions(ontology: WireOntologyDefinition) {
     }
   }
 }
+
 function invariantMapKeyMatchesApiName(
   key: string,
   value: { apiName: string },

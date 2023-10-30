@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-import { type MinimalFs } from "../MinimalFs";
-export interface InMemoryFs extends MinimalFs {
-  getFiles(): Record<string, string>;
-  getFile(path: string): string;
-}
-
-export function getNewInMemoryFileSystem(): InMemoryFs {
-  const files: Record<string, string> = {};
-  return {
-    writeFile: async (path, contents) => {
-      files[path] = contents;
-    },
-    getFiles: () => files,
-    getFile: (path) => files[path],
-  };
+export function commaSeparatedIdentifiers(identifiers: string[]) {
+  return identifiers.join(",");
 }

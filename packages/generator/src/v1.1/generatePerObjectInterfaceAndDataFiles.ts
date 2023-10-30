@@ -21,7 +21,7 @@ import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
 
-export async function generateObjectInterfaces(
+export async function generatePerObjectInterfaceAndDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
@@ -44,8 +44,8 @@ export async function generateObjectInterfaces(
     `${outDir}/index.ts`,
     await formatTs(`// Path: ${path.join(outDir, "index.ts")}
     ${
-      Object.values(ontology.objectTypes).map(o =>
-        `export * from "./${o.apiName}";`
+      Object.keys(ontology.objectTypes).map(apiName =>
+        `export * from "./${apiName}";`
       ).join("\n")
     }
     `),
