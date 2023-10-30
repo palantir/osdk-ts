@@ -22,13 +22,12 @@ export type ObjectInfoFrom<
 > = O["objects"][K];
 
 export type ObjectTypesFrom<O extends OntologyDefinition<string>> =
-  & keyof O["objects"]
-  & string;
+  keyof O["objects"];
 
 export type PropertyKeysFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
-> = keyof ObjectInfoFrom<O, K>["properties"] & string;
+> = keyof ObjectInfoFrom<O, K>["properties"];
 
 export type PropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,

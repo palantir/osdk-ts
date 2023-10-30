@@ -38,7 +38,10 @@ export type SearchAround<
   O extends OntologyDefinition<string>,
   K extends ObjectTypesFrom<O>,
 > = {
-  [L in LinkTypesFrom<O, K> as `searchAround_${L}`]: () => ObjectSet<O, L>; // TODO accept args?
+  [L in LinkTypesFrom<O, K> & string as `searchAround_${L}`]: () => ObjectSet<
+    O,
+    L
+  >; // TODO accept args?
 };
 
 export interface BaseObjectSet<
@@ -70,7 +73,7 @@ export interface BaseObjectSet<
   where: (clause: WhereClause<ObjectInfoFrom<O, K>>) => ObjectSet<O, K>;
 
   pivotTo: <T extends LinkTypesFrom<O, K>>(
-    type: T,
+    type: T & string,
     opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
   ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
 }
@@ -87,6 +90,6 @@ export interface ObjectSetOptions<
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
   K extends ObjectTypesFrom<O>,
 >(
-  type: K,
+  type: K & string,
   opts?: ObjectSetOptions<O, K>,
 ) => ObjectSet<O, K>; // FIXME

@@ -40,7 +40,7 @@ export function createObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  objectType: K,
+  objectType: K & string,
   thinClient: ThinClient<O>,
   opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
@@ -97,14 +97,14 @@ export function createObjectSet<
     },
 
     pivotTo: function<T extends LinkTypesFrom<O, K>>(
-      type: T,
+      type: T & string,
       opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
     ): ObjectSet<O, O["objects"][K]["links"][T]["targetType"]> {
       return createSearchAround(type)().where(opts?.$where ?? {});
     },
   };
 
-  function createSearchAround<S extends LinkTypesFrom<O, K>>(link: S) {
+  function createSearchAround<S extends LinkTypesFrom<O, K>>(link: S & string) {
     return () => {
       return createObjectSet(
         objectType,

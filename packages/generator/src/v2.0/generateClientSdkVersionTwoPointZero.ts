@@ -34,8 +34,8 @@ export async function generateClientSdkVersionTwoPointZero(
     ),
   );
 
-  const objectNames: (keyof WireOntologyDefinition["objectTypes"] & string)[] =
-    Object.keys(
+  const objectNames: (keyof WireOntologyDefinition["objectTypes"])[] = Object
+    .keys(
       ontology.objectTypes,
     );
 

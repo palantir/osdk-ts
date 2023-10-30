@@ -19,4 +19,4 @@ import type { ObjectTypesFrom, OntologyDefinition } from "../../ontology";
 export type LinkTypesFrom<
   O extends OntologyDefinition<string>,
   K extends ObjectTypesFrom<O>,
-> = keyof O["objects"][K]["links"] & string;
+> = keyof O["objects"][K]["links"];
