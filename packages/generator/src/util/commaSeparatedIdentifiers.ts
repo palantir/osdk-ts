@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export function commaSeparatedIdentifiers(identifiers: string[]) {
+export function commaSeparatedIdentifiers(identifiers: ReadonlyArray<string>) {
   return identifiers.join(",");
 }
