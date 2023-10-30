@@ -16,102 +16,25 @@
 
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { generateFoundryClient } from "./generateFoundryClient";
-import { generateMetadata } from "./generateMetadata";
-import { generateObjects } from "./generateObjects";
+import { generateFoundryClientFile } from "./generateFoundryClientFile";
+import { generateIndexFile } from "./generateIndexFile";
+import { generateMetadataFile } from "./generateMetadataFile";
+import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
 ) {
-  const { rid, apiName, description, objectTypes, actionTypes, queryTypes } =
-    ontology;
-
-  /**
-   * The internally generated client looks similar to this:
-      export { FoundryClient } from "./FoundryClient";
-      export {
-        TimeSeries,
-        TimeSeriesPoint,
-        Timestamp,
-        LocalDate,
-        ActionExecutionMode,
-        ActionResponse,
-        ActionValidationResult,
-        QueryResponse,
-        GeoShape,
-        GeoPoint,
-        Polygon,
-        Op,
-        Attachment,
-        AttachmentMetadata,
-        ReturnEditsMode,
-        Edits,
-        AggregationGroup,
-        AggregationResult,
-        AggregatableObjectSet,
-        isErr,
-        isOk,
-        Result,
-        GetObjectError,
-        GetLinkedObjectError,
-        ListObjectsError,
-        LoadObjectSetError,
-        ListLinkedObjectsError,
-        AttachmentsError,
-        SearchObjectsError,
-        AggregateObjectsError,
-        QueryError,
-        ActionError,
-        ErrorVisitor,
-        visitError,
-        TimeSeriesError,
-        PermissionDenied,
-        Unauthorized,
-        UnknownError,
-        FoundryApiError,
-        Page,
-        ArrayType,
-        BooleanType,
-        ByteType,
-        DateType,
-        DecimalType,
-        DoubleType,
-        FloatType,
-        GeoPointType,
-        GeoShapeType,
-        IntegerType,
-        LongType,
-        ShortType,
-        StringType,
-        TimeSeriesType,
-        TimestampType,
-        StructType,
-        StructField,
-        SetType,
-        ObjectType,
-        AttachmentType,
-      } from "./internal/@foundry/ontology-runtime/dist";
-      export {
-        PublicClientAuth,
-        ConfidentialClientAuth,
-        UserTokenAuth,
-      } from "./internal/@foundry/oauth-client/dist";
-   */
-
-  await generateFoundryClient(fs, outDir);
-  await generateMetadata(ontology, fs, outDir);
-  await generateObjects(ontology, fs, outDir);
-
-  await fs.writeFile(
-    path.join(outDir, "index.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "index.ts")}
-    export * from "@osdk/legacy-client";
-    export { Ontology } from "./Ontology";
-    export { FoundryClient } from "./FoundryClient";
-    `),
+  await generateFoundryClientFile(fs, outDir);
+  await generateMetadataFile(ontology, fs, outDir);
+  await generateObjectsInterfaceFile(ontology, fs, outDir);
+  await generatePerObjectInterfaceAndDataFiles(
+    ontology,
+    fs,
+    path.join(outDir, "objects"),
   );
+  await generateIndexFile(fs, outDir);
 }

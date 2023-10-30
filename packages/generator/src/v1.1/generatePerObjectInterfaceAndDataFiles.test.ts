@@ -17,14 +17,14 @@
 import { describe, expect, it } from "vitest";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateObjects } from "./generateObjects";
+import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 
-describe("generate objects", () => {
-  it("generates objects", async () => {
+describe(generatePerObjectInterfaceAndDataFiles, () => {
+  it("generates object interfaces", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
+    const BASE_PATH = "/foo/objects";
 
-    await generateObjects(
+    await generatePerObjectInterfaceAndDataFiles(
       TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
@@ -32,16 +32,9 @@ describe("generate objects", () => {
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(
-      helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
-    ).toMatchInlineSnapshot(`
-      "// Path: /foo/ontologyObjects.ts
-      import { BaseObjectSet } from '@osdk/legacy-client';
-      import { Todo } from './objects';
-      export interface Objects {
-        Todo: BaseObjectSet<Todo>;
-      }
-      "
-    `);
+    expect(helper.getFiles()).toMatchObject({
+      [`${BASE_PATH}/Todo.ts`]: expect.anything(),
+      [`${BASE_PATH}/index.ts`]: expect.anything(),
+    });
   });
 });

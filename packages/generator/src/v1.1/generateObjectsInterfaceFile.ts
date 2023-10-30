@@ -16,26 +16,29 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export async function generateFoundryClient(
+export async function generateObjectsInterfaceFile(
+  ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
 ) {
   await fs.writeFile(
-    path.join(outDir, "FoundryClient.ts"),
-    await formatTs(`
-    // Path: ${path.join(outDir, "FoundryClient")}
-    import { type Auth, BaseFoundryClient, type FoundryClientOptions } from "@osdk/legacy-client";
-    import { Ontology } from "./Ontology";
-    export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {
-        constructor(options: FoundryClientOptions<TAuth>) {
-          super(options, Ontology);
-        }
-
-        get ontology(): Ontology {
-          return this.ontology;
-        }
-    }`),
+    path.join(outDir, "ontologyObjects.ts"),
+    await formatTs(`// Path: ${path.join(outDir, "ontologyObjects.ts")}
+    import { BaseObjectSet } from "@osdk/legacy-client";
+    import { ${
+      commaSeparatedIdentifiers(Object.keys(ontology.objectTypes))
+    } } from "./objects";
+    export interface Objects {
+      ${
+      Object.keys(ontology.objectTypes).map((apiName) =>
+        `${apiName} : BaseObjectSet<${apiName}>;`
+      )
+    }
+    }
+    ;`),
   );
 }

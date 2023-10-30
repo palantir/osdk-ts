@@ -17,14 +17,14 @@
 import { describe, expect, it } from "vitest";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateMetadata } from "./generateMetadata";
+import { generateMetadataFile } from "./generateMetadataFile";
 
-describe("generateMetadata", () => {
+describe(generateMetadataFile, () => {
   it("generates metadata", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
 
-    await generateMetadata(
+    await generateMetadataFile(
       TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
