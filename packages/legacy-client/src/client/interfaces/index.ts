@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export type { OntologyDefinition } from "./OntologyDefinition";
+export * from "./baseObjectSet";
+export * from "./objectSet";

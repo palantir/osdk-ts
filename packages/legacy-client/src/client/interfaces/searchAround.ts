@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import type {
+  MultiLink,
+  OntologyObject,
+  SingleLink,
+} from "../../ontology-runtime";
+import type { ObjectSet } from ".";
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
+type InferLinkType<T> = T extends SingleLink<infer V> ? V
+  : T extends MultiLink<infer V> ? V
+  : never;
 
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
+type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true : false;
 
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
-}
+export type SearchAround<T extends OntologyObject> = {
+  [
+    K in Extract<keyof T, string> as IsLink<T[K]> extends true
+      ? `searchAround${Capitalize<string & K>}`
+      : never
+  ]: () => ObjectSet<InferLinkType<T[K]>>;
+};

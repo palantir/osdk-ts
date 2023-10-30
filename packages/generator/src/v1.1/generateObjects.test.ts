@@ -16,14 +16,16 @@
 
 import { describe, expect, it } from "vitest";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
-import { generateFoundryClient } from "./generateFoundryClient";
+import { TodoWireOntology } from "../util/test/TodoWireOntology";
+import { generateObjects } from "./generateObjects";
 
-describe("generateFoundryClient", () => {
-  it("generates foundry client", async () => {
+describe("generate objects", () => {
+  it("generates objects", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
 
-    await generateFoundryClient(
+    await generateObjects(
+      TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -31,19 +33,13 @@ describe("generateFoundryClient", () => {
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
     expect(
-      helper.getFiles()[`${BASE_PATH}/FoundryClient.ts`],
+      helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
     ).toMatchInlineSnapshot(`
-      "// Path: /foo/FoundryClient
-      import { type Auth, BaseFoundryClient, type FoundryClientOptions } from '@osdk/legacy-client';
-      import { Ontology } from './Ontology';
-      export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {
-        constructor(options: FoundryClientOptions<TAuth>) {
-          super(options, Ontology);
-        }
-
-        get ontology(): Ontology {
-          return this.ontology;
-        }
+      "// Path: /foo/ontologyObjects.ts
+      import { BaseObjectSet } from '@osdk/legacy-client';
+      import { Todo } from './objects';
+      export interface Objects {
+        Todo: BaseObjectSet<Todo>;
       }
       "
     `);

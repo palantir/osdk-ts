@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import type { OntologyObject, SingleLink } from "../../ontology-runtime";
+import type { Task } from "./TaskObject";
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
-
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
+/**
+ * Its a todo item.
+ */
+export interface Todo extends OntologyObject {
+  readonly __apiName: "Todo";
+  readonly __primaryKey: number;
+  readonly id: number | undefined;
+  /**
+   * The text of the todo
+   */
+  readonly body: string | undefined;
+  readonly complete: boolean | undefined;
+  readonly Task: SingleLink<Task>;
 }

@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import { describe, expectTypeOf, it } from "vitest";
+import type { OrderByOption } from "../../ontology-runtime";
+import type { Todo } from "../../util/test/TodoObject";
+import type { OrderBy } from "./ordering";
 
-export class BaseFoundryClient<
-  O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>();
-  }
-
-  get auth(): TAuth {
-    throw new Error("not implemented");
-  }
-}
+describe("Ordering", () => {
+  it("correct types", () => {
+    expectTypeOf<OrderBy<Todo>>().toMatchTypeOf<{
+      complete: OrderByOption;
+      id: OrderByOption;
+      body: OrderByOption;
+    }>();
+  });
+});

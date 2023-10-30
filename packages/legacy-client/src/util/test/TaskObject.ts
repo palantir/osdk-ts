@@ -14,31 +14,12 @@
  * limitations under the License.
  */
 
-import type { LocalDate } from "../ontology-runtime/baseTypes";
+import type { MultiLink, OntologyObject } from "../../ontology-runtime";
+import type { Todo } from "./TodoObject";
 
-export interface OntologyDefinition<K extends string> {
-  metadata: OntologyMetadata;
-  objects: {
-    [KK in K]: ObjectDefinition<KK, K>;
-  };
-}
-
-export interface OntologyMetadata {
-}
-
-export interface ObjectDefinition<N extends K, K extends string> {
-  apiName: N;
-  properties: Record<string, PropertyDefinition>;
-}
-
-export interface PropertyDefinition {
-  isPrimaryKey: boolean;
-  type: PropertyType;
-}
-
-interface PropertyType {
-  string: string;
-  datetime: LocalDate;
-  double: number;
-  boolean: boolean;
+export interface Task extends OntologyObject {
+  readonly __apiName: "Task";
+  readonly __primaryKey: number;
+  readonly id: number | undefined;
+  readonly Todo: MultiLink<Todo>;
 }

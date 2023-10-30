@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../../metadata";
+import type { OntologyDefinition } from "@osdk/api";
 
 export const MockOntology = {
-  metadata: {},
+  metadata: {
+    ontologyRid: "",
+    ontologyApiName: "",
+    userAgent: "",
+  },
   objects: {
     test: {
       apiName: "test",
       properties: {},
+      links: {},
     },
   },
 } satisfies OntologyDefinition<"test">;

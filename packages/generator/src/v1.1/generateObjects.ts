@@ -18,36 +18,31 @@ import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { generateObjectInterfaces } from "./generateObjectInterfaces";
 
-export async function generateMetadata(
+export async function generateObjects(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
 ) {
-  const objectNames = Object.keys(ontology.objectTypes);
+  await generateObjectInterfaces(ontology, fs, path.join(outDir, "objects"));
+
   await fs.writeFile(
-    path.join(outDir, "Ontology.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "Ontology")}
-  import type { OntologyDefinition } from "@osdk/api";
-  import type { Ontology as ClientOntology } from "@osdk/legacy-client";
-  import type { Objects } from "./ontologyObjects";
-  ${objectNames.map((name) => `import {${name}} from "./objects/${name}";`)}
-  export const Ontology = {
-    metadata: {
-        ontologyRid: "${ontology.rid}",
-        ontologyApiName: "${ontology.apiName}",
-        userAgent: "foundry-typescript-osdk/0.0.1",
-    },
-    objects: {
-        ${
-      objectNames.map((name) => `${name}: ${name},`)
-        .join("\n")
+    path.join(outDir, "ontologyObjects.ts"),
+    await formatTs(`// Path: ${path.join(outDir, "ontologyObjects.ts")}
+    import { BaseObjectSet } from "@osdk/legacy-client";
+    import { ${
+      Object.values(ontology.objectTypes).map(o => o.apiName).join(",")
+    } } from "./objects";
+    export interface Objects {
+      ${
+      Object.keys(ontology.objectTypes).map((o) => {
+        return `${ontology.objectTypes[o].apiName} : BaseObjectSet<${
+          ontology.objectTypes[o].apiName
+        }>;`;
+      })
     }
     }
-  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}>;
-    
-export interface Ontology extends ClientOntology<typeof Ontology> {
-    objects: Objects;
-}`),
+    ;`),
   );
 }

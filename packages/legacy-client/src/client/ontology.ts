@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../metadata";
+import type { OntologyDefinition } from "@osdk/api";
+import type { Objects } from "./objects";
 
 export class Ontology<O extends OntologyDefinition<any>> {
-  get objects(): O["objects"] {
+  get objects(): Objects<O> {
     throw new Error("not implemented");
   }
 

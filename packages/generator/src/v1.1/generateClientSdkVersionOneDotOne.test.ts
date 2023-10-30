@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { mkdir, rmdir, writeFile } from "fs/promises";
+import { dirname } from "path";
 import { describe, expect, test } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
@@ -38,9 +40,8 @@ describe("generator", () => {
       helper.getFiles()[`${BASE_PATH}/index.ts`],
     ).toMatchInlineSnapshot(`
       "// Path: /foo/index.ts
-      import { Auth, FoundryClientOptions, BaseFoundryClient } from '@osdk/legacy-client';
-      export const ontologyRid = 'ridHere';
       export * from '@osdk/legacy-client';
+      export { Ontology } from './Ontology';
       export { FoundryClient } from './FoundryClient';
       "
     `);
@@ -56,5 +57,23 @@ describe("generator", () => {
     const errors = diagnostics.filter((q) => q.code !== 2792);
 
     expect(errors).toHaveLength(0);
+  });
+
+  test.skip("runs generator locally", async () => {
+    try {
+      await rmdir(`${__dirname}/generated`, { recursive: true });
+    } catch (e) {
+    }
+    await mkdir(`${__dirname}/generated`, { recursive: true });
+    await generateClientSdkVersionOneDotOne(
+      TodoWireOntology,
+      {
+        writeFile: async (path, contents) => {
+          await mkdir(dirname(path), { recursive: true });
+          await writeFile(path, contents, { flag: "w" });
+        },
+      },
+      `${__dirname}/generated/`,
+    );
   });
 });

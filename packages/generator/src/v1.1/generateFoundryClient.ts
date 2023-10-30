@@ -24,11 +24,17 @@ export async function generateFoundryClient(
 ) {
   await fs.writeFile(
     path.join(outDir, "FoundryClient.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "FoundryClient")}
-    import { OntologyDefinition } from "./OntologyDefinition";
-    export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<OntologyDefinition, TAuth> {
+    await formatTs(`
+    // Path: ${path.join(outDir, "FoundryClient")}
+    import { type Auth, BaseFoundryClient, type FoundryClientOptions } from "@osdk/legacy-client";
+    import { Ontology } from "./Ontology";
+    export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {
         constructor(options: FoundryClientOptions<TAuth>) {
-          super(options);
+          super(options, Ontology);
+        }
+
+        get ontology(): Ontology {
+          return this.ontology;
         }
     }`),
   );

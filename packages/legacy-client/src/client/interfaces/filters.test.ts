@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/gateway/types";
+import { describe, expectTypeOf, it } from "vitest";
+import type {
+  BooleanFilter,
+  NumericFilter,
+  StringFilter,
+} from "../../ontology-runtime";
+import type { Todo } from "../../util/test/TodoObject";
+import type { ObjectTypeFilter } from "./filters";
 
-export function wirePropertyV2ToSdkPropertyDefinition(
-  input: PropertyV2,
-): PropertyDefinition {
-  switch (input.dataType.type) {
-    case "string":
-    case "boolean": {
-      return {
-        type: input.dataType.type,
-        // TODO: These wire objects don't have nullable, readonly
-      };
-    }
-    default: {
-      throw new Error(
-        `Not implemented: wirePropertyToSdkPropertyDefinition(${input.dataType.type})`,
-      );
-    }
-  }
-}
+describe("Filters", () => {
+  it("correct types", () => {
+    expectTypeOf<ObjectTypeFilter<Todo>>().toMatchTypeOf<{
+      complete: BooleanFilter;
+      id: NumericFilter;
+      body: StringFilter;
+    }>();
+  });
+});
