@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { Task } from "../../util/test";
-import type { ObjectSet } from "./objectSet";
-describe("ObjectSet", () => {
-  it("creates", async () => {
-    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
-    if (os) {
-      os.searchAroundTodo().searchAroundTask().where(a => a.id.eq(1));
-      os.orderBy(a => a.id.asc());
-    }
-  });
-});
+import type { IsLink } from "./IsLink";
+
+export declare type OmitMetadataProperties<T> = {
+  [K in keyof Omit<T, "__apiName" | "__rid" | "__primaryKey">]: T[K];
+};
+
+export declare type OmitLinksProperties<T> = {
+  [
+    K in Extract<keyof T, string> as IsLink<T[K]> extends true ? never : K
+  ]: T[K];
+};
+
+export declare type SelectableProperties<T> = OmitLinksProperties<
+  OmitMetadataProperties<T>
+>;

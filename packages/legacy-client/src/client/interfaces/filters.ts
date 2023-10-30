@@ -24,13 +24,14 @@ import type {
   TimestampFilter,
   WhereClause,
 } from "../../ontology-runtime";
+import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
   objectType: ObjectTypeFilter<T>,
 ) => WhereClause;
 
-type IsFilterableProperty<T> = T extends
-  number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
+type IsFilterableProperty<T> = NonNullable<T> extends
+  number | LocalDate | Timestamp | string | boolean ? true : false;
 
 type FilterableProperties<T extends OntologyObject> = {
   [K in keyof T as IsFilterableProperty<T[K]> extends true ? K : never]: T[K];
@@ -38,9 +39,8 @@ type FilterableProperties<T extends OntologyObject> = {
 
 export declare type ObjectTypeFilter<T extends OntologyObject> = {
   [
-    K in keyof Omit<
-      FilterableProperties<T>,
-      "__apiName" | "__rid" | "__primaryKey"
+    K in keyof OmitMetadataProperties<
+      FilterableProperties<T>
     >
   ]: FilterFromType<
     T[K]

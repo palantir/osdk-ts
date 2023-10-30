@@ -20,12 +20,11 @@ import type {
   SingleLink,
 } from "../../ontology-runtime";
 import type { ObjectSet } from ".";
+import type { IsLink } from "./utils/IsLink";
 
 type InferLinkType<T> = T extends SingleLink<infer V> ? V
   : T extends MultiLink<infer V> ? V
   : never;
-
-type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true : false;
 
 export type SearchAround<T extends OntologyObject> = {
   [
