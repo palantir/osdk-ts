@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
+export * from "./FilteredPropertiesTerminalOperations";
 export * from "./ObjectSetDefinition";
 export * from "./OntologyObjectSet";

@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import type {
-  MultiLink,
-  OntologyObject,
-  SingleLink,
-} from "../../ontology-runtime";
-import type { ObjectSet } from ".";
-import type { IsLink } from "./utils/IsLink";
+import type { IsLink } from "./IsLink";
 
-type InferLinkType<T> = T extends SingleLink<infer V> ? V
-  : T extends MultiLink<infer V> ? V
-  : never;
-
-export type SearchAround<T extends OntologyObject> = {
-  [
-    K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<string & K>}`
-      : never
-  ]: () => ObjectSet<InferLinkType<T[K]>>;
+export declare type OmitMetadataProperties<T> = {
+  [K in keyof Omit<T, "__apiName" | "__rid" | "__primaryKey">]: T[K];
 };
+
+export declare type OmitLinksProperties<T> = {
+  [
+    K in Extract<keyof T, string> as IsLink<T[K]> extends true ? never : K
+  ]: T[K];
+};
+
+export declare type SelectableProperties<T> = OmitLinksProperties<
+  OmitMetadataProperties<T>
+>;

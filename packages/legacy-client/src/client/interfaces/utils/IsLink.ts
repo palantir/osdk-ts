@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  MultiLink,
-  OntologyObject,
-  SingleLink,
-} from "../../ontology-runtime";
-import type { ObjectSet } from ".";
-import type { IsLink } from "./utils/IsLink";
+import type { MultiLink, SingleLink } from "../../../ontology-runtime";
 
-type InferLinkType<T> = T extends SingleLink<infer V> ? V
-  : T extends MultiLink<infer V> ? V
-  : never;
-
-export type SearchAround<T extends OntologyObject> = {
-  [
-    K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<string & K>}`
-      : never
-  ]: () => ObjectSet<InferLinkType<T[K]>>;
-};
+export type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true
+  : false;

@@ -15,14 +15,22 @@
  */
 
 import type {
+  AggregatableObjectSet,
+  FilteredPropertiesTerminalOperations,
   ListObjectsError,
   OntologyObject,
   Page,
   Result,
 } from "../../ontology-runtime";
+import type {
+  AggregateSelection,
+  GroupBySelections,
+  MultipleAggregateSelection,
+} from "./aggregations";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
 import type { SearchAround } from "./searchAround";
+import type { SelectableProperties } from "./utils/OmitProperties";
 
 export type ObjectSet<O extends OntologyObject> =
   & {
@@ -41,10 +49,19 @@ export type ObjectSet<O extends OntologyObject> =
     subtract(
       ...otherObjectSets: ObjectSet<O>[]
     ): ObjectSet<O>;
+
+    select<T extends keyof SelectableProperties<O>>(
+      properties: readonly T[],
+    ): FilteredPropertiesTerminalOperations<O, T[]>;
   }
   & SearchAround<O>
   & ObjectSetOrderByStep<O>
-  & ObjectSetTerminalLoadStep<O>;
+  & ObjectSetTerminalLoadStep<O>
+  & AggregatableObjectSet<
+    AggregateSelection<O>,
+    MultipleAggregateSelection<O>,
+    GroupBySelections<O>
+  >;
 
 export type ObjectSetOrderByStep<O extends OntologyObject> = {
   orderBy: (
@@ -60,6 +77,7 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
+
   /**
    * Get all objects of this type.
    */
