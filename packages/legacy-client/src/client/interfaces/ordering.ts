@@ -21,6 +21,8 @@ import type {
   OrderByOption,
   Timestamp,
 } from "../../ontology-runtime";
+import type { OmitMetadataProperties } from "./utils/OmitProperties";
+
 type IsOrderableProperty<T> = T extends
   number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
 
@@ -34,9 +36,8 @@ export declare type OrderByFunction<T extends OntologyObject> = (
 
 export declare type OrderBy<T extends OntologyObject> = {
   [
-    K in keyof Omit<
-      OrderableProperties<T>,
-      "__apiName" | "__rid" | "__primaryKey"
+    K in keyof OmitMetadataProperties<
+      OrderableProperties<T>
     >
   ]: OrderByOption;
 };

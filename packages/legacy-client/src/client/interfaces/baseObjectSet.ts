@@ -14,13 +14,25 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
+import type {
+  FilteredPropertiesTerminalOperationsWithGet,
+  OntologyObject,
+} from "../../ontology-runtime";
 import type {
   GetObjectError,
   Result,
 } from "../../ontology-runtime/ontologyProvider";
 import type { ObjectSet } from "./objectSet";
+import type { SelectableProperties } from "./utils/OmitProperties";
 
 export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
+  apiName: O["__apiName"];
+
+  description: string;
+
   get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
+
+  select<T extends keyof SelectableProperties<O>>(
+    properties: readonly T[],
+  ): FilteredPropertiesTerminalOperationsWithGet<O, T[]>;
 };
