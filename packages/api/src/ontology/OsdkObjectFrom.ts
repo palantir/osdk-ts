@@ -25,10 +25,10 @@ import type {
 export type OsdkObjectFrom<
   K extends ObjectTypesFrom<T>,
   T extends OntologyDefinition<any>,
-  L extends PropertyKeysFrom<T, K>,
+  PP extends PropertyKeysFrom<T, K>,
 > =
   & {
-    [P in L]: OsdkObjectPropertyType<
+    [P in PP]: OsdkObjectPropertyType<
       ObjectInfoFrom<T, K>["properties"][P]
     >;
   }

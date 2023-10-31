@@ -47,15 +47,38 @@ export interface OntologyDefinition<K extends string> {
   };
 }
 
-export interface ObjectDefinition<N extends K, K extends string> {
-  apiName: N;
+export interface ObjectDefinition<
+  K extends string,
+  L extends string,
+> {
+  apiName: K;
+  primaryKeyType: keyof ValidPropertyTypes;
   properties: Record<string, PropertyDefinition>;
-  links: Record<string, LinkDefinition<K>>;
+  links: Record<string, LinkDefinition<L>>;
 }
+
+export type LinkKeysFrom<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = keyof ObjectInfoFrom<O, K>["links"];
+
 export interface LinkDefinition<K extends string> {
   targetType: K;
   multiplicity: boolean;
 }
+
+export type LinkDefinitionFrom<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+  L extends LinkKeysFrom<O, K>,
+> = ObjectInfoFrom<O, K>["links"][L];
+
+export type LinkTargetTypeFrom<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+  L extends LinkKeysFrom<O, K>,
+> = LinkDefinitionFrom<O, K, L>["targetType"];
+
 export interface PropertyDefinition {
   readonly?: boolean;
   displayName?: string;
@@ -64,7 +87,7 @@ export interface PropertyDefinition {
   nullable?: boolean;
 }
 
-interface ValidPropertyTypes {
+export interface ValidPropertyTypes {
   string: string;
   datetime: Date;
   double: number;

@@ -16,6 +16,7 @@
 
 import type { ObjectDefinition } from "@osdk/api";
 import type { ObjectTypeV2 } from "@osdk/gateway/types";
+import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
 export function wireObjectTypeV2ToSdkObjectDefinition(
@@ -23,6 +24,9 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
 ): ObjectDefinition<any, any> {
   return {
     apiName: input.apiName,
+    primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
+      input.properties[input.primaryKey],
+    ),
     links: {},
     properties: Object.fromEntries(
       Object.entries(input.properties).map((

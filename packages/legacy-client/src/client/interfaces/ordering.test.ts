@@ -21,10 +21,8 @@ import type { OrderBy } from "./ordering";
 
 describe("Ordering", () => {
   it("correct types", () => {
-    expectTypeOf<OrderBy<Todo>>().toMatchTypeOf<{
-      complete: OrderByOption;
-      id: OrderByOption;
-      body: OrderByOption;
-    }>();
+    expectTypeOf<OrderBy<Todo>>().toMatchTypeOf<
+      { complete: OrderByOption; id: OrderByOption; body: OrderByOption }
+    >();
   });
 });

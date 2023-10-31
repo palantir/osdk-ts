@@ -29,7 +29,17 @@ export type { OsdkObject } from "./ontology";
 export * as Objects from "./client/object";
 
 export type {
+  LinkDefinitionFrom,
+  LinkKeysFrom,
+  LinkTargetTypeFrom,
   ObjectDefinition,
+  ObjectInfoFrom,
+  ObjectTypesFrom,
   OntologyDefinition,
+  OsdkObjectPropertyType,
   PropertyDefinition,
+  PropertyDefinitionFrom,
+  PropertyDefinitionsFrom,
+  PropertyKeysFrom,
+  ValidPropertyTypes,
 } from "./ontology/Definition";

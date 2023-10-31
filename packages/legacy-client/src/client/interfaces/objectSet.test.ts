@@ -17,6 +17,7 @@
 import { describe, it } from "vitest";
 import type { Task } from "../../util/test";
 import type { ObjectSet } from "./objectSet";
+
 describe("ObjectSet", () => {
   it("creates", () => {
     const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
