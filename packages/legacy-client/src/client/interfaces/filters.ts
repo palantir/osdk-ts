@@ -14,36 +14,36 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  OsdkObjectPropertyType,
+  PropertyDefinitionFrom,
+  PropertyKeysFrom,
+} from "@osdk/api";
 import type { LocalDate, Timestamp } from "../..";
 import type {
   BooleanFilter,
   LocalDateFilter,
   NumericFilter,
-  OntologyObject,
   StringFilter,
   TimestampFilter,
   WhereClause,
 } from "../../ontology-runtime";
 
-export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
-  objectType: ObjectTypeFilter<T>,
+export declare type ObjectTypeFilterFunction<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = (
+  objectType: ObjectTypeFilter<O, K>,
 ) => WhereClause;
 
-type IsFilterableProperty<T> = T extends
-  number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
-
-type FilterableProperties<T extends OntologyObject> = {
-  [K in keyof T as IsFilterableProperty<T[K]> extends true ? K : never]: T[K];
-};
-
-export declare type ObjectTypeFilter<T extends OntologyObject> = {
-  [
-    K in keyof Omit<
-      FilterableProperties<T>,
-      "__apiName" | "__rid" | "__primaryKey"
-    >
-  ]: FilterFromType<
-    T[K]
+export declare type ObjectTypeFilter<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = {
+  [P in PropertyKeysFrom<O, K>]: FilterFromType<
+    OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>
   >;
 };
 

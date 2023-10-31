@@ -15,8 +15,14 @@
  */
 
 import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  OsdkObjectPropertyType,
+  PropertyDefinitionFrom,
+  PropertyKeysFrom,
+} from "@osdk/api";
+import type {
   LocalDate,
-  OntologyObject,
   OrderByClause,
   OrderByOption,
   Timestamp,
@@ -25,19 +31,19 @@ import type {
 type IsOrderableProperty<T> = T extends
   number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
 
-type OrderableProperties<T extends OntologyObject> = {
-  [K in keyof T as IsOrderableProperty<T[K]> extends true ? K : never]: T[K];
-};
+type OrderableOnly<T> = IsOrderableProperty<T> extends true ? OrderByOption
+  : never;
 
-export declare type OrderByFunction<T extends OntologyObject> = (
-  object: OrderBy<T>,
-) => OrderByClause;
+export declare type OrderByFunction<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = (object: OrderBy<O, K>) => OrderByClause;
 
-export declare type OrderBy<T extends OntologyObject> = {
-  [
-    K in keyof Omit<
-      OrderableProperties<T>,
-      "__apiName" | "__rid" | "__primaryKey"
-    >
-  ]: OrderByOption;
+export declare type OrderBy<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = {
+  [P in PropertyKeysFrom<O, K>]: OrderableOnly<
+    OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>
+  >;
 };

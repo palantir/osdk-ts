@@ -16,12 +16,12 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 import type { OrderByOption } from "../../ontology-runtime";
-import type { Todo } from "../../util/test/TodoObject";
+import type { MockOntology } from "../../util/test";
 import type { OrderBy } from "./ordering";
 
 describe("Ordering", () => {
   it("correct types", () => {
-    expectTypeOf<OrderBy<Todo>>().toMatchTypeOf<{
+    expectTypeOf<OrderBy<typeof MockOntology, "Todo">>().toMatchTypeOf<{
       complete: OrderByOption;
       id: OrderByOption;
       body: OrderByOption;

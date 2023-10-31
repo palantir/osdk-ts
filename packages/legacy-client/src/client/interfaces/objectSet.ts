@@ -14,54 +14,60 @@
  * limitations under the License.
  */
 
-import type {
-  ListObjectsError,
-  OntologyObject,
-  Page,
-  Result,
-} from "../../ontology-runtime";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ListObjectsError, Page, Result } from "../../ontology-runtime";
+import type { UserObjectDefinitionType } from "../../proxies/OntologyObjectProxy";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
 import type { SearchAround } from "./searchAround";
 
-export type ObjectSet<O extends OntologyObject> =
+export type ObjectSet<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> =
   & {
     where(
-      predicate: ObjectTypeFilterFunction<O>,
-    ): ObjectSet<O>;
+      predicate: ObjectTypeFilterFunction<O, K>,
+    ): ObjectSet<O, K>;
 
     union(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
+      ...otherObjectSets: ObjectSet<O, K>[]
+    ): ObjectSet<O, K>;
 
     intersect(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
+      ...otherObjectSets: ObjectSet<O, K>[]
+    ): ObjectSet<O, K>;
 
     subtract(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
+      ...otherObjectSets: ObjectSet<O, K>[]
+    ): ObjectSet<O, K>;
   }
-  & SearchAround<O>
-  & ObjectSetOrderByStep<O>
-  & ObjectSetTerminalLoadStep<O>;
+  & SearchAround<O, K>
+  & ObjectSetOrderByStep<O, K>
+  & ObjectSetTerminalLoadStep<O, K>;
 
-export type ObjectSetOrderByStep<O extends OntologyObject> = {
+export type ObjectSetOrderByStep<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = {
   orderBy: (
-    predicate: OrderByFunction<O>,
-  ) => ObjectSetOrderByStep<O>;
+    predicate: OrderByFunction<O, K>,
+  ) => ObjectSetOrderByStep<O, K>;
 };
 
-export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
+export type ObjectSetTerminalLoadStep<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = {
   /**
    * Get a page of objects of this type.
    */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
-  }): Promise<Result<Page<O>, ListObjectsError>>;
+  }): Promise<Result<Page<UserObjectDefinitionType<O, K>>, ListObjectsError>>;
   /**
    * Get all objects of this type.
    */
-  all(): Promise<Result<O[], ListObjectsError>>;
+  all(): Promise<Result<UserObjectDefinitionType<O, K>[], ListObjectsError>>;
 };

@@ -15,22 +15,17 @@
  */
 
 import type {
-  MultiLink,
-  OntologyObject,
-  SingleLink,
-} from "../../ontology-runtime";
+  LinkDefinitionFrom,
+  LinkKeysFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import type { ObjectSet } from ".";
 
-type InferLinkType<T> = T extends SingleLink<infer V> ? V
-  : T extends MultiLink<infer V> ? V
-  : never;
-
-type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true : false;
-
-export type SearchAround<T extends OntologyObject> = {
-  [
-    K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<string & K>}`
-      : never
-  ]: () => ObjectSet<InferLinkType<T[K]>>;
+export type SearchAround<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = {
+  [L in LinkKeysFrom<O, K> as `searchAround${Capitalize<string & L>}`]: () =>
+    ObjectSet<O, LinkDefinitionFrom<O, K, L>["targetType"]>;
 };

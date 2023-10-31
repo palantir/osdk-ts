@@ -25,7 +25,9 @@ import type {
 } from "../../query";
 import type { Wire } from "../net";
 
-export function modernToLegacyWhereClause<T extends ObjectDefinition<any, any>>(
+export function modernToLegacyWhereClause<
+  T extends ObjectDefinition<any, any>,
+>(
   whereClause: WhereClause<T>,
 ): Wire.SearchJsonQueryV2 {
   if ("$and" in whereClause) {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition } from "@osdk/api";
 import type { MultiLink, OntologyObject } from "../../ontology-runtime";
-import type { Todo } from "./TodoObject";
 
 export interface Task extends OntologyObject {
   readonly __apiName: "Task";
   readonly __primaryKey: number;
   readonly id: number | undefined;
-  readonly Todo: MultiLink<Todo>;
+  readonly Todo: MultiLink<OntologyDefinition<"Task" | "Todo">, "Todo">;
 }

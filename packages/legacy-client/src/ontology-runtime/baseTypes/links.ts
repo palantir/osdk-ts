@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectInfoFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ValidPropertyTypes,
+} from "@osdk/api";
+import type { UserObjectDefinitionType } from "../../proxies/OntologyObjectProxy";
 import type { ObjectIterator } from "../iterator";
 import type {
   GetLinkedObjectError,
@@ -30,24 +37,33 @@ export interface SingleLink<T extends OntologyObject = OntologyObject> {
   get(): Promise<Result<T, GetLinkedObjectError>>;
 }
 
-export interface MultiLink<T extends OntologyObject = OntologyObject> {
+export interface MultiLink<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> {
   /**
    * Loads the linked object with the given primary key
    *
    * @param primaryKey
    */
-  get(primaryKey: T["__primaryKey"]): Promise<Result<T, GetLinkedObjectError>>;
+  get(
+    primaryKey: ValidPropertyTypes[ObjectInfoFrom<O, K>["primaryKeyType"]],
+  ): Promise<Result<UserObjectDefinitionType<O, K>, GetLinkedObjectError>>;
   /**
    * Gets all the linked objects
    */
-  all(): Promise<Result<T[], ListLinkedObjectsError>>;
+  all(): Promise<
+    Result<UserObjectDefinitionType<O, K>[], ListLinkedObjectsError>
+  >;
   /**
    * Pages through the linked objects
    */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
-  }): Promise<Result<Page<T>, ListLinkedObjectsError>>;
+  }): Promise<
+    Result<Page<UserObjectDefinitionType<O, K>>, ListLinkedObjectsError>
+  >;
   /**
    * Iterates through the linked objects
    *
@@ -55,5 +71,7 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
    */
   iterate(options?: {
     pageSize?: number;
-  }): ObjectIterator<Result<T, ListLinkedObjectsError>>;
+  }): ObjectIterator<
+    Result<UserObjectDefinitionType<O, K>, ListLinkedObjectsError>
+  >;
 }

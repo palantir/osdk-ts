@@ -15,9 +15,10 @@
  */
 
 import type { ParameterValue } from "./ParameterValue";
-export interface OntologyObject {
+
+export interface OntologyObject<T extends string = string> {
   __rid: string;
-  __apiName: string;
+  __apiName: T;
   __primaryKey: ParameterValue;
 }
 

@@ -20,15 +20,22 @@ import type {
   NumericFilter,
   StringFilter,
 } from "../../ontology-runtime";
-import type { Todo } from "../../util/test/TodoObject";
+import type { MockOntology } from "../../util/test";
 import type { ObjectTypeFilter } from "./filters";
 
 describe("Filters", () => {
   it("correct types", () => {
-    expectTypeOf<ObjectTypeFilter<Todo>>().toMatchTypeOf<{
-      complete: BooleanFilter;
-      id: NumericFilter;
-      body: StringFilter;
-    }>();
+    expectTypeOf<ObjectTypeFilter<typeof MockOntology, "Todo">>().toMatchTypeOf<
+      {
+        complete: BooleanFilter;
+        body: StringFilter;
+        id: StringFilter;
+      }
+    >();
+    expectTypeOf<ObjectTypeFilter<typeof MockOntology, "Task">>().toMatchTypeOf<
+      {
+        id: NumericFilter;
+      }
+    >();
   });
 });

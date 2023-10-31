@@ -14,13 +14,22 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../../ontology-runtime";
+import type {
+  ObjectInfoFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import type {
   GetObjectError,
   Result,
 } from "../../ontology-runtime/ontologyProvider";
 import type { ObjectSet } from "./objectSet";
 
-export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
-  get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
+export type BaseObjectSet<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = ObjectSet<O, K> & {
+  get(
+    primaryKey: ObjectInfoFrom<O, K>["primaryKeyType"],
+  ): Promise<Result<O, GetObjectError>>;
 };
