@@ -15,13 +15,12 @@
  */
 
 import { describe, it } from "vitest";
-import type { MockOntology } from "../../util/test";
+import type { Task } from "../../util/test";
 import type { ObjectSet } from "./objectSet";
 
 describe("ObjectSet", () => {
   it("creates", () => {
-    const os: ObjectSet<typeof MockOntology, "Task"> =
-      undefined as any as ObjectSet<typeof MockOntology, "Task">;
+    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
     if (os) {
       os.searchAroundTodo().searchAroundTask().where(a => a.id.eq(1));
       os.orderBy(a => a.id.asc());

@@ -15,10 +15,11 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
+import type { OntologyObject } from "../ontology-runtime";
 import type { BaseObjectSet } from "./interfaces";
 
 export type Objects<
   O extends OntologyDefinition<any>,
 > = {
-  [K in keyof O["objects"]]: BaseObjectSet<O, K>;
+  [K in keyof O["objects"]]: BaseObjectSet<OntologyObject>;
 };

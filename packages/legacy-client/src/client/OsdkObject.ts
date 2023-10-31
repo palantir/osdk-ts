@@ -46,7 +46,7 @@ export type OsdkLegacyLinksFrom<
   [L in LinkKeysFrom<O, K>]: LinkTargetTypeFrom<O, K, L> extends
     keyof O["objects"]
     ? LinkDefinitionFrom<O, K, L>["multiplicity"] extends true
-      ? MultiLink<O, LinkTargetTypeFrom<O, K, L>>
+      ? MultiLink<OsdkLegacyObjectFrom<O, LinkTargetTypeFrom<O, K, L>>>
     : SingleLink<
       OsdkLegacyObjectFrom<O, LinkTargetTypeFrom<O, K, L>>
     >

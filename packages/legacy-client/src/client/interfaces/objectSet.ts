@@ -14,60 +14,54 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { ListObjectsError, Page, Result } from "../../ontology-runtime";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type {
+  ListObjectsError,
+  OntologyObject,
+  Page,
+  Result,
+} from "../../ontology-runtime";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
 import type { SearchAround } from "./searchAround";
 
-export type ObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-> =
+export type ObjectSet<O extends OntologyObject> =
   & {
     where(
-      predicate: ObjectTypeFilterFunction<O, K>,
-    ): ObjectSet<O, K>;
+      predicate: ObjectTypeFilterFunction<O>,
+    ): ObjectSet<O>;
 
     union(
-      ...otherObjectSets: ObjectSet<O, K>[]
-    ): ObjectSet<O, K>;
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
 
     intersect(
-      ...otherObjectSets: ObjectSet<O, K>[]
-    ): ObjectSet<O, K>;
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
 
     subtract(
-      ...otherObjectSets: ObjectSet<O, K>[]
-    ): ObjectSet<O, K>;
+      ...otherObjectSets: ObjectSet<O>[]
+    ): ObjectSet<O>;
   }
-  & SearchAround<O, K>
-  & ObjectSetOrderByStep<O, K>
-  & ObjectSetTerminalLoadStep<O, K>;
+  & SearchAround<O>
+  & ObjectSetOrderByStep<O>
+  & ObjectSetTerminalLoadStep<O>;
 
-export type ObjectSetOrderByStep<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-> = {
+export type ObjectSetOrderByStep<O extends OntologyObject> = {
   orderBy: (
-    predicate: OrderByFunction<O, K>,
-  ) => ObjectSetOrderByStep<O, K>;
+    predicate: OrderByFunction<O>,
+  ) => ObjectSetOrderByStep<O>;
 };
 
-export type ObjectSetTerminalLoadStep<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-> = {
+export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
    * Get a page of objects of this type.
    */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
-  }): Promise<Result<Page<OsdkLegacyObjectFrom<O, K>>, ListObjectsError>>;
+  }): Promise<Result<Page<O>, ListObjectsError>>;
   /**
    * Get all objects of this type.
    */
-  all(): Promise<Result<OsdkLegacyObjectFrom<O, K>[], ListObjectsError>>;
+  all(): Promise<Result<O[], ListObjectsError>>;
 };

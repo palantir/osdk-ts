@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import { type OntologyDefinition } from "@osdk/api";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
