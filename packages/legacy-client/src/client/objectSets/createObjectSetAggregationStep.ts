@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { AggregatableObjectSetStep } from "../../ontology-runtime";
+import type {
+  AggregateSelection,
+  GroupBySelections,
+  MultipleAggregateSelection,
+} from "../interfaces/aggregations";
+import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
-export class BaseFoundryClient<
+export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
+  K extends ObjectTypesFrom<O>,
+>(): AggregatableObjectSetStep<
+  AggregateSelection<OsdkLegacyObjectFrom<O, K>>,
+  MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
+  GroupBySelections<OsdkLegacyObjectFrom<O, K>>
 > {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>(this.metadata);
-  }
-
-  get auth(): TAuth {
-    return this.foundryClientOptions.auth;
-  }
+  throw new Error("not implemented");
 }

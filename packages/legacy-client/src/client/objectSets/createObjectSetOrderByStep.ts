@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { Auth } from "../oauth-client";
-import type { FoundryClientOptions } from "./foundryClientOptions";
-import { Ontology } from "./ontology";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectSetOrderByStep } from "../interfaces";
+import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
-export class BaseFoundryClient<
+export function createObjectSetOrderByStep<
   O extends OntologyDefinition<any>,
-  TAuth extends Auth = Auth,
-> {
-  constructor(
-    private foundryClientOptions: FoundryClientOptions<TAuth>,
-    private metadata: O,
-  ) {}
-
-  get ontology(): Ontology<O> {
-    return new Ontology<O>(this.metadata);
-  }
-
-  get auth(): TAuth {
-    return this.foundryClientOptions.auth;
-  }
+  K extends ObjectTypesFrom<O>,
+>(): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
+  throw new Error("not implemented");
 }

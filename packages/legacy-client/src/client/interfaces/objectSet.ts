@@ -15,7 +15,7 @@
  */
 
 import type {
-  AggregatableObjectSet,
+  AggregatableObjectSetStep,
   FilteredPropertiesTerminalOperations,
   ListObjectsError,
   OntologyObject,
@@ -33,41 +33,43 @@ import type { SearchAround } from "./searchAround";
 import type { SelectableProperties } from "./utils/OmitProperties";
 
 export type ObjectSet<O extends OntologyObject> =
-  & {
-    where(
-      predicate: ObjectTypeFilterFunction<O>,
-    ): ObjectSet<O>;
-
-    union(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
-
-    intersect(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
-
-    subtract(
-      ...otherObjectSets: ObjectSet<O>[]
-    ): ObjectSet<O>;
-
-    select<T extends keyof SelectableProperties<O>>(
-      properties: readonly T[],
-    ): FilteredPropertiesTerminalOperations<O, T[]>;
-  }
+  & ObjectSetOperations<O>
   & SearchAround<O>
   & ObjectSetOrderByStep<O>
   & ObjectSetTerminalLoadStep<O>
-  & AggregatableObjectSet<
+  & AggregatableObjectSetStep<
     AggregateSelection<O>,
     MultipleAggregateSelection<O>,
     GroupBySelections<O>
   >;
 
+export type ObjectSetOperations<O extends OntologyObject> = {
+  where(
+    predicate: ObjectTypeFilterFunction<O>,
+  ): ObjectSet<O>;
+
+  union(
+    ...otherObjectSets: ObjectSet<O>[]
+  ): ObjectSet<O>;
+
+  intersect(
+    ...otherObjectSets: ObjectSet<O>[]
+  ): ObjectSet<O>;
+
+  subtract(
+    ...otherObjectSets: ObjectSet<O>[]
+  ): ObjectSet<O>;
+
+  select<T extends keyof SelectableProperties<O>>(
+    properties: readonly T[],
+  ): FilteredPropertiesTerminalOperations<O, T[]>;
+};
+
 export type ObjectSetOrderByStep<O extends OntologyObject> = {
   orderBy: (
     predicate: OrderByFunction<O>,
   ) => ObjectSetOrderByStep<O>;
-};
+} & ObjectSetTerminalLoadStep<O>;
 
 export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
