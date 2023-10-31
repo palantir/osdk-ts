@@ -18,6 +18,7 @@ import type { ObjectDefinition } from "@osdk/api";
 
 export const Todo = {
   apiName: "Todo",
+  primaryKeyType: "double",
   properties: {
     id: {
       type: "double",

@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause";
+import type { ValidPropertyTypes } from "@osdk/api";
+import type { PropertyV2 } from "@osdk/gateway/types";
 
-export type F = GroupByClause<
-  {
-    metadata: any;
-    objects: {
-      Todo: {
-        apiName: "Todo";
-        primaryKeyType: "double";
-        links: {};
-        properties: {
-          text: {
-            type: "string";
-          };
-          id: {
-            type: "double";
-          };
-        };
-      };
-    };
-  },
-  "Todo"
->;
-
-describe("GroupByClause", () => {
-  it("works", () => {});
-});
+export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
+  input: PropertyV2,
+): keyof ValidPropertyTypes {
+  switch (input.dataType.type) {
+    case "integer":
+    case "double":
+    case "string": {
+      return input.dataType.type;
+    }
+    default: {
+      throw new Error(
+        `Not implemented: wirePropertyToSdkPropertyDefinition(${input.dataType.type})`,
+      );
+    }
+  }
+}

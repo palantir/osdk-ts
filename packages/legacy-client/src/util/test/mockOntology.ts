@@ -23,10 +23,27 @@ export const MockOntology = {
     userAgent: "",
   },
   objects: {
-    test: {
-      apiName: "test",
-      properties: {},
-      links: {},
+    Task: {
+      apiName: "Task",
+      primaryKeyType: "integer",
+      properties: {
+        id: { type: "integer" },
+      },
+      links: {
+        Todo: { multiplicity: true, targetType: "Todo" },
+      },
+    },
+    Todo: {
+      apiName: "Todo",
+      primaryKeyType: "string",
+      properties: {
+        id: { type: "string" },
+        body: { type: "string", nullable: true },
+        complete: { type: "boolean", nullable: true },
+      },
+      links: {
+        Task: { multiplicity: false, targetType: "Task" },
+      },
     },
   },
-} satisfies OntologyDefinition<"test">;
+} satisfies OntologyDefinition<"Task" | "Todo">;

@@ -19,6 +19,8 @@ import type { ObjectDefinition } from "@osdk/api";
 export const Employee = {
   apiName: "Employee",
 
+  primaryKeyType: "double",
+
   properties: {
     /** Username as stored in active directory */
     adUsername: {

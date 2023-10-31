@@ -33,6 +33,7 @@ const mockOntology = {
     Todo: {
       apiName: "Todo",
       links: {},
+      primaryKeyType: "double",
       properties: {
         text: {
           type: "string",
@@ -139,6 +140,7 @@ describe("aggregateOrThrow", () => {
         objects: {
           Todo: {
             apiName: "Todo";
+            primaryKeyType: "double";
             links: {};
             properties: {
               text: {
@@ -164,6 +166,7 @@ describe("aggregateOrThrow", () => {
         objects: {
           Todo: {
             apiName: "Todo";
+            primaryKeyType: "double";
             links: {};
             properties: {
               text: {
