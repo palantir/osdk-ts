@@ -73,6 +73,12 @@ export type LinkDefinitionFrom<
   L extends LinkKeysFrom<O, K>,
 > = ObjectInfoFrom<O, K>["links"][L];
 
+export type LinkTargetTypeFrom<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+  L extends LinkKeysFrom<O, K>,
+> = LinkDefinitionFrom<O, K, L>["targetType"];
+
 export interface PropertyDefinition {
   readonly?: boolean;
   displayName?: string;

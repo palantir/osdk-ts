@@ -31,6 +31,7 @@ export * as Objects from "./client/object";
 export type {
   LinkDefinitionFrom,
   LinkKeysFrom,
+  LinkTargetTypeFrom,
   ObjectDefinition,
   ObjectInfoFrom,
   ObjectTypesFrom,

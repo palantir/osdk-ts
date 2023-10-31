@@ -20,7 +20,7 @@ import type {
   OntologyDefinition,
   ValidPropertyTypes,
 } from "@osdk/api";
-import type { UserObjectDefinitionType } from "../../proxies/OntologyObjectProxy";
+import type { OsdkLegacyObjectFrom } from "../../client/OsdkObject";
 import type { ObjectIterator } from "../iterator";
 import type {
   GetLinkedObjectError,
@@ -48,12 +48,12 @@ export interface MultiLink<
    */
   get(
     primaryKey: ValidPropertyTypes[ObjectInfoFrom<O, K>["primaryKeyType"]],
-  ): Promise<Result<UserObjectDefinitionType<O, K>, GetLinkedObjectError>>;
+  ): Promise<Result<OsdkLegacyObjectFrom<O, K>, GetLinkedObjectError>>;
   /**
    * Gets all the linked objects
    */
   all(): Promise<
-    Result<UserObjectDefinitionType<O, K>[], ListLinkedObjectsError>
+    Result<OsdkLegacyObjectFrom<O, K>[], ListLinkedObjectsError>
   >;
   /**
    * Pages through the linked objects
@@ -62,7 +62,7 @@ export interface MultiLink<
     pageSize?: number;
     pageToken?: string;
   }): Promise<
-    Result<Page<UserObjectDefinitionType<O, K>>, ListLinkedObjectsError>
+    Result<Page<OsdkLegacyObjectFrom<O, K>>, ListLinkedObjectsError>
   >;
   /**
    * Iterates through the linked objects
@@ -72,6 +72,6 @@ export interface MultiLink<
   iterate(options?: {
     pageSize?: number;
   }): ObjectIterator<
-    Result<UserObjectDefinitionType<O, K>, ListLinkedObjectsError>
+    Result<OsdkLegacyObjectFrom<O, K>, ListLinkedObjectsError>
   >;
 }

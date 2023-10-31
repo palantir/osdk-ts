@@ -16,7 +16,7 @@
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { ListObjectsError, Page, Result } from "../../ontology-runtime";
-import type { UserObjectDefinitionType } from "../../proxies/OntologyObjectProxy";
+import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
 import type { SearchAround } from "./searchAround";
@@ -65,9 +65,9 @@ export type ObjectSetTerminalLoadStep<
   page(options?: {
     pageSize?: number;
     pageToken?: string;
-  }): Promise<Result<Page<UserObjectDefinitionType<O, K>>, ListObjectsError>>;
+  }): Promise<Result<Page<OsdkLegacyObjectFrom<O, K>>, ListObjectsError>>;
   /**
    * Get all objects of this type.
    */
-  all(): Promise<Result<UserObjectDefinitionType<O, K>[], ListObjectsError>>;
+  all(): Promise<Result<OsdkLegacyObjectFrom<O, K>[], ListObjectsError>>;
 };
