@@ -42,13 +42,31 @@ export function createOsdkObjectSet<
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const objectSet: ObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     union(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      throw new Error("not implemented");
+      return createOsdkObjectSet({
+        type: "union",
+        objectSets: [
+          objectSetDefinition,
+          ...otherObjectSets.map((s) => s.definition),
+        ],
+      }, ontologyDefinition);
     },
     intersect(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      throw new Error("not implemented");
+      return createOsdkObjectSet({
+        type: "intersect",
+        objectSets: [
+          objectSetDefinition,
+          ...otherObjectSets.map((s) => s.definition),
+        ],
+      }, ontologyDefinition);
     },
     subtract(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      throw new Error("not implemented");
+      return createOsdkObjectSet({
+        type: "subtract",
+        objectSets: [
+          objectSetDefinition,
+          ...otherObjectSets.map((s) => s.definition),
+        ],
+      }, ontologyDefinition);
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       throw new Error("not implemented");
@@ -61,6 +79,7 @@ export function createOsdkObjectSet<
   };
 
   return {
+    definition: objectSetDefinition,
     ...objectSet,
     ...createObjectSetSearchAround<O, K>(),
     ...createObjectSetTerminalLoadStep<O, K>(),

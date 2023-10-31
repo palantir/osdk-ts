@@ -18,6 +18,7 @@ import type {
   AggregatableObjectSetStep,
   FilteredPropertiesTerminalOperations,
   ListObjectsError,
+  ObjectSetDefinition,
   OntologyObject,
   Page,
   Result,
@@ -33,6 +34,9 @@ import type { SearchAround } from "./searchAround";
 import type { SelectableProperties } from "./utils/OmitProperties";
 
 export type ObjectSet<O extends OntologyObject> =
+  & {
+    definition: ObjectSetDefinition;
+  }
   & ObjectSetOperations<O>
   & SearchAround<O>
   & ObjectSetOrderByStep<O>
