@@ -235,6 +235,8 @@ export function handleGetLinkedObjectError(
         parameters.objectType,
         parameters.properties,
       );
+    case "ObjectsExceeded":
+      return handler.handleObjectsExceeded(error);
     case "PermissionDenied":
       return handler.handlePermissionDenied(error);
     case "Unauthorized":

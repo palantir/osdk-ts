@@ -15,11 +15,7 @@
  */
 
 import type { OntologyObject, ParameterValue } from "../../baseTypes";
-import type {
-  GetLinkedObjectError,
-  LinkedObjectNotFound,
-  ObjectsExceededLimit,
-} from "../Errors";
+import type { GetLinkedObjectError, LinkedObjectNotFound } from "../Errors";
 import { isErr, type Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
 import { listLinkedObjects } from "./listLinkedObjects";
@@ -49,10 +45,15 @@ export async function getLinkedObject<
       {
         name: "Too many objects",
         message:
-          `There are multiple ${targetObjectType} objects for this object`,
-        errorName: "ObjectsExceededLimit",
-        errorType: "INVALID_ARGUMENT",
-      } satisfies ObjectsExceededLimit,
+          `There are multiple ${targetObjectType} objects for this object, but there should only be one`,
+        errorName: "LinkedObjectNotFound",
+        errorType: "NOT_FOUND",
+        linkType: targetObjectType,
+        linkedObjectType: sourceObjectType,
+        linkedObjectPrimaryKey: {
+          primaryKey: sourcePrimaryKey.toString(),
+        },
+      } satisfies LinkedObjectNotFound,
     );
   }
 
