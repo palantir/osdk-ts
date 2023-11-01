@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import type { ListLinkedObjectsError, OntologyObject, Result } from "../..";
+import type { OntologyObject } from "../../baseTypes";
 import {
   handleListLinkedObjectsError,
   ListLinkedObjectsErrorHandler,
-} from "../..";
+} from "../ErrorHandlers";
+import type { ListLinkedObjectsError } from "../Errors";
+import type { Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { wrapResult } from "./util/wrapResult";

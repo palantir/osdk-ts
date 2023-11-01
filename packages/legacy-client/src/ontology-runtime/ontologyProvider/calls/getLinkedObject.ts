@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, ParameterValue } from "../..";
-import type { GetLinkedObjectError, Result } from "..";
-import { isErr } from "..";
+import type { OntologyObject, ParameterValue } from "../../baseTypes";
+import type {
+  GetLinkedObjectError,
+  LinkedObjectNotFound,
+  ObjectsExceededLimit,
+} from "../Errors";
+import { isErr, type Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
 import { listLinkedObjects } from "./listLinkedObjects";
 import { createErrorResponse } from "./util/ResponseCreators";
@@ -42,17 +46,29 @@ export async function getLinkedObject<
 
   if (result.type == "ok" && result.value.length > 1) {
     return createErrorResponse(
-      new Error(
-        `There are multiple ${targetObjectType} objects for this object`,
-      ),
+      {
+        name: "Too many objects",
+        message:
+          `There are multiple ${targetObjectType} objects for this object`,
+        errorName: "ObjectsExceededLimit",
+        errorType: "INVALID_ARGUMENT",
+      } satisfies ObjectsExceededLimit,
     );
   }
 
   if (result.type == "ok" && result.value.length != 1) {
     return createErrorResponse(
-      new Error(
-        `There are no ${targetObjectType} objects for this object`,
-      ),
+      {
+        name: "Object not found",
+        message: "Expected to receive a single object but received none",
+        errorType: "NOT_FOUND",
+        errorName: "LinkedObjectNotFound",
+        linkType: targetObjectType,
+        linkedObjectType: sourceObjectType,
+        linkedObjectPrimaryKey: {
+          primaryKey: sourcePrimaryKey.toString(),
+        },
+      } satisfies LinkedObjectNotFound,
     );
   }
 

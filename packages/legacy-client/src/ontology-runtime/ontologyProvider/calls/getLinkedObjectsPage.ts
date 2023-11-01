@@ -16,7 +16,7 @@
 
 import { createOpenApiRequest } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
-import type { OntologyObject } from "../..";
+import type { OntologyObject } from "../../baseTypes";
 import type { ClientContext } from "./ClientContext";
 
 export async function getLinkedObjectsPage<T extends OntologyObject>(
