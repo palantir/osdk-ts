@@ -24,7 +24,7 @@ import { createObjectSetCreator } from "./ObjectSetCreator";
 export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
   stack: string,
-  tokenProvider: () => string,
+  tokenProvider: () => Promise<string> | string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client<O> {
   const thinClient = createThinClient<O>(

@@ -20,6 +20,8 @@ import type {
   FilteredPropertiesTerminalOperations,
   ObjectSetDefinition,
 } from "../../ontology-runtime";
+import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
+import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
 import type {
   BaseObjectSet,
   BaseObjectSetOperations,
@@ -37,36 +39,49 @@ export function createOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
+  clientContext: ClientContext,
   objectSetDefinition: ObjectSetDefinition,
   ontologyDefinition: O,
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const objectSet: ObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     union(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      return createOsdkObjectSet({
-        type: "union",
-        objectSets: [
-          objectSetDefinition,
-          ...otherObjectSets.map((s) => s.definition),
-        ],
-      }, ontologyDefinition);
+      return createOsdkObjectSet(
+        clientContext,
+        {
+          type: "union",
+          objectSets: [
+            objectSetDefinition,
+            ...otherObjectSets.map((s) => s.definition),
+          ],
+        },
+        ontologyDefinition,
+      );
     },
     intersect(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      return createOsdkObjectSet({
-        type: "intersect",
-        objectSets: [
-          objectSetDefinition,
-          ...otherObjectSets.map((s) => s.definition),
-        ],
-      }, ontologyDefinition);
+      return createOsdkObjectSet(
+        clientContext,
+        {
+          type: "intersect",
+          objectSets: [
+            objectSetDefinition,
+            ...otherObjectSets.map((s) => s.definition),
+          ],
+        },
+        ontologyDefinition,
+      );
     },
     subtract(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      return createOsdkObjectSet({
-        type: "subtract",
-        objectSets: [
-          objectSetDefinition,
-          ...otherObjectSets.map((s) => s.definition),
-        ],
-      }, ontologyDefinition);
+      return createOsdkObjectSet(
+        clientContext,
+        {
+          type: "subtract",
+          objectSets: [
+            objectSetDefinition,
+            ...otherObjectSets.map((s) => s.definition),
+          ],
+        },
+        ontologyDefinition,
+      );
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       throw new Error("not implemented");
@@ -92,6 +107,7 @@ export function createBaseOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
+  clientContext: ClientContext,
   apiName: string,
   ontologyDefinition: O,
 ): BaseObjectSet<OsdkLegacyObjectFrom<O, K>> {
@@ -104,7 +120,7 @@ export function createBaseOsdkObjectSet<
     apiName: apiName as OsdkLegacyObjectFrom<O, K>["__apiName"],
     description: "test",
     get(primaryKey) {
-      throw new Error("not implemented");
+      return getObject(clientContext, apiName, primaryKey);
     },
     select(properties) {
       throw new Error("not implemented");
@@ -113,6 +129,10 @@ export function createBaseOsdkObjectSet<
 
   return {
     ...objectSet,
-    ...createOsdkObjectSet<O, K>(baseObjectSetDefinition, ontologyDefinition),
+    ...createOsdkObjectSet<O, K>(
+      clientContext,
+      baseObjectSetDefinition,
+      ontologyDefinition,
+    ),
   };
 }
