@@ -35,7 +35,6 @@ import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep
 import { createObjectSetOrderByStep } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
-import { getObjectApiNameFromDefinition } from "./getObjectApiNameFromDefinition";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
 
 export function createOsdkObjectSet<
@@ -43,7 +42,7 @@ export function createOsdkObjectSet<
   K extends ObjectTypesFrom<O>,
 >(
   clientContext: ClientContext,
-  objectTypeApiName: K,
+  apiName: K,
   objectSetDefinition: ObjectSetDefinition,
   ontologyDefinition: O,
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
@@ -51,7 +50,7 @@ export function createOsdkObjectSet<
     union(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
-        objectTypeApiName,
+        apiName,
         {
           type: "union",
           objectSets: [
@@ -65,7 +64,7 @@ export function createOsdkObjectSet<
     intersect(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
-        objectTypeApiName,
+        apiName,
         {
           type: "intersect",
           objectSets: [
@@ -79,7 +78,7 @@ export function createOsdkObjectSet<
     subtract(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
-        objectTypeApiName,
+        apiName,
         {
           type: "subtract",
           objectSets: [
@@ -91,7 +90,6 @@ export function createOsdkObjectSet<
       );
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      const apiName = getObjectApiNameFromDefinition(objectSetDefinition);
       const objectProperties = ontologyDefinition.objects[apiName].properties;
       const filters = mapPropertiesToSearchFilter<OsdkLegacyObjectFrom<O, K>>(
         objectProperties,
@@ -105,7 +103,7 @@ export function createOsdkObjectSet<
 
       return createOsdkObjectSet(
         clientContext,
-        objectTypeApiName,
+        apiName,
         newDefinition,
         ontologyDefinition,
       );
