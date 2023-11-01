@@ -16,7 +16,7 @@
 
 import { type GetLinkedObjectError, type Result } from "../ontologyProvider";
 import type { ClientContext } from "../ontologyProvider/calls/ClientContext";
-import { getLinkedObject } from "../ontologyProvider/calls/getLinkedObject";
+import { getOnlyLinkedObject } from "../ontologyProvider/calls/getOnlyLinkedObject";
 import type { SingleLink } from "./links";
 import type { OntologyObject } from "./OntologyObject";
 import type { ParameterValue } from "./ParameterValue";
@@ -42,7 +42,7 @@ export class SingleLinkImpl<T extends OntologyObject = OntologyObject>
   }
 
   async get(): Promise<Result<T, GetLinkedObjectError>> {
-    return getLinkedObject(
+    return getOnlyLinkedObject(
       this.#context,
       this.#sourceObjectType,
       this.#sourcePrimaryKey,

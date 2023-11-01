@@ -14,64 +14,45 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, ParameterValue } from "../../baseTypes";
-import type { GetLinkedObjectError, LinkedObjectNotFound } from "../Errors";
-import { isErr, type Result } from "../Result";
+import { createOpenApiRequest } from "@osdk/api";
+import { getLinkedObjectV2 } from "@osdk/gateway/requests";
+import type { OntologyObject } from "../../baseTypes";
+import {
+  GetLinkedObjectErrorHandler,
+  handleGetLinkedObjectError,
+} from "../ErrorHandlers";
+import type { GetLinkedObjectError } from "../Errors";
+import type { Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
-import { listLinkedObjects } from "./listLinkedObjects";
-import { createErrorResponse } from "./util/ResponseCreators";
+import { wrapResult } from "./util/wrapResult";
 
-export async function getLinkedObject<
-  T extends OntologyObject = OntologyObject,
->(
+export function getLinkedObject<T extends OntologyObject>(
   context: ClientContext,
-  sourceObjectType: string,
-  sourcePrimaryKey: ParameterValue,
-  targetObjectType: T["__apiName"],
+  sourceApiName: string,
+  primaryKey: any,
+  linkTypeApiName: string,
+  linkedObjectPrimaryKey: string,
 ): Promise<Result<T, GetLinkedObjectError>> {
-  const result = await listLinkedObjects(
-    context,
-    sourceObjectType,
-    sourcePrimaryKey,
-    targetObjectType,
+  return wrapResult(
+    async () => {
+      const object = await getLinkedObjectV2(
+        createOpenApiRequest(context.client.stack, context.client.fetch),
+        context.ontology.metadata.ontologyApiName,
+        sourceApiName,
+        primaryKey,
+        linkTypeApiName,
+        linkedObjectPrimaryKey,
+        {
+          select: [],
+        },
+      );
+      return context.createObject<T>(context, linkTypeApiName, object);
+    },
+    e =>
+      handleGetLinkedObjectError(
+        new GetLinkedObjectErrorHandler(),
+        e,
+        e.parameters,
+      ),
   );
-
-  if (isErr(result)) {
-    return result;
-  }
-
-  if (result.type == "ok" && result.value.length > 1) {
-    return createErrorResponse(
-      {
-        name: "Too many objects",
-        message:
-          `There are multiple ${targetObjectType} objects for this object, but there should only be one`,
-        errorName: "LinkedObjectNotFound",
-        errorType: "NOT_FOUND",
-        linkType: targetObjectType,
-        linkedObjectType: sourceObjectType,
-        linkedObjectPrimaryKey: {
-          primaryKey: sourcePrimaryKey.toString(),
-        },
-      } satisfies LinkedObjectNotFound,
-    );
-  }
-
-  if (result.type == "ok" && result.value.length != 1) {
-    return createErrorResponse(
-      {
-        name: "Object not found",
-        message: "Expected to receive a single object but received none",
-        errorType: "NOT_FOUND",
-        errorName: "LinkedObjectNotFound",
-        linkType: targetObjectType,
-        linkedObjectType: sourceObjectType,
-        linkedObjectPrimaryKey: {
-          primaryKey: sourcePrimaryKey.toString(),
-        },
-      } satisfies LinkedObjectNotFound,
-    );
-  }
-
-  return { type: "ok", value: result.value[0] };
 }

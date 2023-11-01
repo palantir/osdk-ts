@@ -24,6 +24,7 @@ import type {
   OntologyObject,
   ParameterValue,
 } from "../ontology-runtime/baseTypes";
+import { MultiLinkImpl } from "../ontology-runtime/baseTypes/MultiLinkImpl";
 import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
 import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
 
@@ -36,14 +37,19 @@ function createPrototype<
   type: T,
 ) {
   const objDef = context.ontology.objects[type];
-  const proto = {};
+  const proto = { __apiName: type };
   for (
     const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
   ) {
     Object.defineProperty(proto, k, {
       get: function() {
         if (multiplicity == true) {
-          throw new Error("not implemented");
+          return new MultiLinkImpl(
+            context,
+            objDef.apiName,
+            primaryKey,
+            targetType,
+          );
         } else {
           return new SingleLinkImpl(
             context,
