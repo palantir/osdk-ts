@@ -47,10 +47,10 @@ function createPrototype<
     const self = this as OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>;
     for (const prop of Object.keys(context.ontology.objects[type].properties)) {
       obj[prop] = self[prop];
-      obj["__primaryKey"] = self.__primaryKey;
-      obj["__apiName"] = type;
-      obj["__rid"] = self.__rid;
     }
+    obj["__primaryKey"] = self.__primaryKey;
+    obj["__apiName"] = type;
+    obj["__rid"] = self.__rid;
     return JSON.stringify(obj, undefined, 2);
   };
 
