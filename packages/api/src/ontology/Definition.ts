@@ -52,6 +52,7 @@ export interface ObjectDefinition<
   L extends string,
 > {
   apiName: K;
+  description?: string;
   primaryKeyType: keyof ValidPropertyTypes;
   properties: Record<string, PropertyDefinition>;
   links: Record<string, LinkDefinition<L>>;

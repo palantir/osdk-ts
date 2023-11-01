@@ -118,7 +118,7 @@ export function createBaseOsdkObjectSet<
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     apiName: apiName as OsdkLegacyObjectFrom<O, K>["__apiName"],
-    description: "test",
+    description: ontologyDefinition.objects[apiName].description ?? "",
     get(primaryKey) {
       return getObject(clientContext, apiName, primaryKey);
     },
