@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectIterator } from "../iterator";
 import type {
   GetLinkedObjectError,
   ListLinkedObjectsError,
@@ -48,12 +47,4 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<T>, ListLinkedObjectsError>>;
-  /**
-   * Iterates through the linked objects
-   *
-   * @param options
-   */
-  iterate(options?: {
-    pageSize?: number;
-  }): ObjectIterator<Result<T, ListLinkedObjectsError>>;
 }
