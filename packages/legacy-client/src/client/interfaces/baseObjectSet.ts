@@ -25,7 +25,11 @@ import type {
 import type { ObjectSet } from "./objectSet";
 import type { SelectableProperties } from "./utils/OmitProperties";
 
-export type BaseObjectSet<O extends OntologyObject> = ObjectSet<O> & {
+export type BaseObjectSet<O extends OntologyObject> =
+  & ObjectSet<O>
+  & BaseObjectSetOperations<O>;
+
+export type BaseObjectSetOperations<O extends OntologyObject> = {
   apiName: O["__apiName"];
 
   description: string;

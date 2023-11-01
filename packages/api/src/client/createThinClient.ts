@@ -30,7 +30,7 @@ import type { ThinClient } from "./ThinClient";
 export function createThinClient<T extends OntologyDefinition<any>>(
   ontology: T,
   stack: string,
-  tokenProvider: () => string,
+  tokenProvider: () => Promise<string> | string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): ThinClient<T> {
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(

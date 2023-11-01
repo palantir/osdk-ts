@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import { createThinClient, type OntologyDefinition } from "@osdk/api";
 import type { Auth } from "../oauth-client";
+import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
 import type { FoundryClientOptions } from "./foundryClientOptions";
 import { Ontology } from "./ontology";
 
@@ -23,16 +24,34 @@ export class BaseFoundryClient<
   O extends OntologyDefinition<any>,
   TAuth extends Auth = Auth,
 > {
+  #clientContext: ClientContext;
+
   constructor(
     private foundryClientOptions: FoundryClientOptions<TAuth>,
     private metadata: O,
-  ) {}
+  ) {
+    this.#clientContext = {
+      client: createThinClient(
+        metadata,
+        foundryClientOptions.url,
+        async () => {
+          const getToken = await foundryClientOptions.auth.getToken();
+          return getToken.accessToken;
+        },
+        foundryClientOptions.fetchFunction,
+      ),
+      ontology: metadata,
+      createObject: () => {
+        throw new Error("Not Implemented");
+      },
+    };
+  }
 
   get ontology(): Ontology<O> {
-    return new Ontology<O>();
+    return new Ontology<O>(this.#clientContext, this.metadata);
   }
 
   get auth(): TAuth {
-    throw new Error("not implemented");
+    return this.foundryClientOptions.auth;
   }
 }
