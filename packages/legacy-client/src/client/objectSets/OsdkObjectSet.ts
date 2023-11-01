@@ -15,10 +15,11 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type {
-  BaseObjectSetDefinition,
-  FilteredPropertiesTerminalOperations,
-  ObjectSetDefinition,
+import {
+  type BaseObjectSetDefinition,
+  type FilteredPropertiesTerminalOperations,
+  type FilterObjectSetDefinition,
+  type ObjectSetDefinition,
 } from "../../ontology-runtime";
 import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
@@ -34,6 +35,8 @@ import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep
 import { createObjectSetOrderByStep } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import { getObjectApiNameFromDefinition } from "./getObjectApiNameFromDefinition";
+import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
 
 export function createOsdkObjectSet<
   O extends OntologyDefinition<any>,
@@ -84,7 +87,23 @@ export function createOsdkObjectSet<
       );
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      throw new Error("not implemented");
+      const apiName = getObjectApiNameFromDefinition(objectSetDefinition);
+      const objectProperties = ontologyDefinition.objects[apiName].properties;
+      const filters = mapPropertiesToSearchFilter<OsdkLegacyObjectFrom<O, K>>(
+        objectProperties,
+      );
+      const whereClause = predicate(filters);
+      const newDefinition: FilterObjectSetDefinition = {
+        type: "filter",
+        objectSet: objectSetDefinition,
+        where: whereClause,
+      };
+
+      return createOsdkObjectSet(
+        clientContext,
+        newDefinition,
+        ontologyDefinition,
+      );
     },
     select<T extends keyof SelectableProperties<OsdkLegacyObjectFrom<O, K>>>(
       properties: T[],

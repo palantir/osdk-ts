@@ -22,5 +22,5 @@ export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(): SearchAround<OsdkLegacyObjectFrom<O, K>> {
-  throw new Error("not implemented");
+  return {} as any;
 }

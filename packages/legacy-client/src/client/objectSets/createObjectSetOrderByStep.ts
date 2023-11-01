@@ -22,5 +22,5 @@ export function createObjectSetOrderByStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
-  throw new Error("not implemented");
+  return {} as any;
 }

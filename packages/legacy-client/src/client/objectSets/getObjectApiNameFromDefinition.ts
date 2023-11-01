@@ -15,12 +15,28 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSetTerminalLoadStep } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { type ObjectSetDefinition } from "../../ontology-runtime";
 
-export function createObjectSetTerminalLoadStep<
+export function getObjectApiNameFromDefinition<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): ObjectSetTerminalLoadStep<OsdkLegacyObjectFrom<O, K>> {
-  return {} as any;
+>(
+  objectSetDefinition: ObjectSetDefinition,
+): K {
+  switch (objectSetDefinition.type) {
+    case "base":
+      return objectSetDefinition.objectType as K;
+    case "filter":
+      return getObjectApiNameFromDefinition(objectSetDefinition.objectSet);
+    case "intersect":
+    case "subtract":
+    case "union":
+      return getObjectApiNameFromDefinition(objectSetDefinition.objectSets[0]);
+    case "searchAround":
+      throw new Error("not implemented");
+    case "static":
+      throw new Error("not implemented");
+    case "reference":
+      throw new Error("not implemented");
+  }
 }
