@@ -92,6 +92,7 @@ export type GetLinkedObjectError =
   | OntologySyncing
   | LinkedObjectNotFound
   | PropertiesNotFound
+  | ObjectsExceededLimit
   | CommonApiError;
 export type ListLinkedObjectsError =
   | ObjectsExceededLimit
