@@ -40,6 +40,7 @@ export function createOsdkObjectSet<
   K extends ObjectTypesFrom<O>,
 >(
   clientContext: ClientContext,
+  apiName: K,
   objectSetDefinition: ObjectSetDefinition,
   ontologyDefinition: O,
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
@@ -47,6 +48,7 @@ export function createOsdkObjectSet<
     union(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
+        apiName,
         {
           type: "union",
           objectSets: [
@@ -60,6 +62,7 @@ export function createOsdkObjectSet<
     intersect(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
+        apiName,
         {
           type: "intersect",
           objectSets: [
@@ -73,6 +76,7 @@ export function createOsdkObjectSet<
     subtract(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
         clientContext,
+        apiName,
         {
           type: "subtract",
           objectSets: [
@@ -96,7 +100,12 @@ export function createOsdkObjectSet<
   return {
     definition: objectSetDefinition,
     ...objectSet,
-    ...createObjectSetSearchAround<O, K>(),
+    ...createObjectSetSearchAround<O, K>(
+      clientContext,
+      apiName,
+      objectSetDefinition,
+      ontologyDefinition,
+    ),
     ...createObjectSetTerminalLoadStep<O, K>(),
     ...createObjectSetOrderByStep<O, K>(),
     ...createObjectSetAggregationStep<O, K>(),
@@ -105,10 +114,10 @@ export function createOsdkObjectSet<
 
 export function createBaseOsdkObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypesFrom<O> & string,
 >(
   clientContext: ClientContext,
-  apiName: string,
+  apiName: K,
   ontologyDefinition: O,
 ): BaseObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const baseObjectSetDefinition: BaseObjectSetDefinition = {
@@ -117,7 +126,7 @@ export function createBaseOsdkObjectSet<
   };
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
-    apiName: apiName as OsdkLegacyObjectFrom<O, K>["__apiName"],
+    apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["__apiName"],
     description: ontologyDefinition.objects[apiName].description ?? "",
     get(primaryKey) {
       return getObject(clientContext, apiName, primaryKey);
@@ -131,6 +140,7 @@ export function createBaseOsdkObjectSet<
     ...objectSet,
     ...createOsdkObjectSet<O, K>(
       clientContext,
+      apiName,
       baseObjectSetDefinition,
       ontologyDefinition,
     ),
