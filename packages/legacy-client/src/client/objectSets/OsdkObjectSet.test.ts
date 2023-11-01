@@ -36,6 +36,7 @@ describe("OsdkObjectSet", () => {
 
     const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
       context,
+      "Todo",
       baseObjectSet,
       MockOntology,
     );
