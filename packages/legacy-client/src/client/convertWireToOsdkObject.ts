@@ -37,7 +37,24 @@ function createPrototype<
   type: T,
 ) {
   const objDef = context.ontology.objects[type];
-  const proto = { __apiName: type };
+  const proto = {};
+
+  Object.defineProperty(proto, "__apiName", { get: () => type });
+
+  // toString that uses the ontology definition to enumerate the props that need to be serialized
+  proto.toString = function() {
+    const obj: Record<string, unknown> = {};
+    const self = this as OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>;
+    for (const prop of Object.keys(context.ontology.objects[type].properties)) {
+      obj[prop] = self[prop];
+    }
+    obj["__primaryKey"] = self.__primaryKey;
+    obj["__apiName"] = type;
+    obj["__rid"] = self.__rid;
+    return JSON.stringify(obj, undefined, 2);
+  };
+
+  // add the relevant keys for the link types associated with this object type
   for (
     const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
   ) {
@@ -61,6 +78,7 @@ function createPrototype<
       },
     });
   }
+
   return proto as OsdkLegacyLinksFrom<O, T>;
 }
 

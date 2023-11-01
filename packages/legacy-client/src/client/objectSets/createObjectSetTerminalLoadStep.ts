@@ -22,5 +22,5 @@ export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(): ObjectSetTerminalLoadStep<OsdkLegacyObjectFrom<O, K>> {
-  throw new Error("not implemented");
+  return {} as any;
 }

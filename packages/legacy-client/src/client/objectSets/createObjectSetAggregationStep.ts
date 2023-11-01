@@ -31,5 +31,5 @@ export function createObjectSetAggregationStep<
   MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
   GroupBySelections<OsdkLegacyObjectFrom<O, K>>
 > {
-  throw new Error("not implemented");
+  return {} as any;
 }
