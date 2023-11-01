@@ -35,11 +35,12 @@ export function createObjectSetSearchAround<
   ontologyDefinition: O,
 ): SearchAround<OsdkLegacyObjectFrom<O, K>> {
   const result = {} as SearchAround<OsdkLegacyObjectFrom<O, K>>;
-
   const objectDefinition = clientContext.ontology.objects[sourceApiName];
+
   for (const [link, { targetType }] of Object.entries(objectDefinition.links)) {
-    const key = `searchAround${capitalize(link)}` as keyof typeof result;
-    result[key] = () => {
+    const key = `searchAround${capitalize(link)}`;
+
+    result[key as keyof typeof result] = (() => {
       const definition = {
         type: "searchAround",
         objectSet,
@@ -53,8 +54,8 @@ export function createObjectSetSearchAround<
         ontologyDefinition,
       );
 
-      return objSet as ObjectSet<O, any>;
-    };
+      return objSet as ObjectSet<any>;
+    }) as any;
   }
 
   return result;
