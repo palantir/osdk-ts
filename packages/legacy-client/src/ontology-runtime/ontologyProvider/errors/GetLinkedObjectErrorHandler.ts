@@ -18,6 +18,7 @@ import type { PalantirApiError } from "../../../Errors";
 import type {
   CompositePrimaryKeyNotSupported,
   LinkedObjectNotFound,
+  ObjectsExceededLimit,
   ObjectTypeNotFound,
   ObjectTypeNotSynced,
   OntologySyncing,
@@ -139,6 +140,15 @@ export class GetLinkedObjectErrorHandler extends DefaultErrorHandler {
       statusCode: error.statusCode,
       objectType,
       properties,
+    };
+  }
+
+  handleObjectsExceeded(error: PalantirApiError): ObjectsExceededLimit {
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "ObjectsExceededLimit",
+      errorType: "INVALID_ARGUMENT",
     };
   }
 }

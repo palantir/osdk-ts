@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
-import type { OntologyObject } from "../..";
+import type { OntologyObject } from "../../baseTypes";
 
 export interface ClientContext {
   client: ThinClient<any>;

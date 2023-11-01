@@ -138,6 +138,11 @@ import {
   TimeSeriesErrorHandler,
 } from ".";
 import { mapAggregation, mapBucketing } from "./AggregationUtils";
+import {
+  createErrorResponse,
+  createOkResponse,
+} from "./calls/util/ResponseCreators";
+import { wrapResult } from "./calls/util/wrapResult";
 import type {
   ActionError,
   AggregateObjectsError,
@@ -157,7 +162,7 @@ import {
   iterateReadableStream,
   parseStreamedResponse,
 } from "./parseStreamedResponse";
-import type { Err, Ok, Result } from "./Result";
+import type { Result } from "./Result";
 
 export class OntologyProvider {
   #authClient: Auth;
@@ -186,7 +191,7 @@ export class OntologyProvider {
     primaryKey: T["__primaryKey"],
     selectedProperties: Array<keyof T> = [],
   ): Promise<Result<T, GetObjectError>> {
-    return this.wrapResult(async () => {
+    return wrapResult(async () => {
       const object = await getObjectV2(
         createOpenApiRequest(this.#stack, this.#fetchFn),
         this.#ontologyMetadata.ontologyApiName,
@@ -205,7 +210,7 @@ export class OntologyProvider {
     apiName: string,
     selectedProperties: Array<keyof T> = [],
   ): Promise<Result<T[], ListObjectsError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const allObjects: T[] = [];
         let page = await this.listObjects<T>(apiName, selectedProperties);
@@ -232,7 +237,7 @@ export class OntologyProvider {
     selectedProperties: Array<keyof T> = [],
     orderBy?: SearchClause,
   ): Promise<Result<T[], LoadObjectSetError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const allObjects: T[] = [];
         let page = await this.listObjectsFromObjectSet<T>(
@@ -273,7 +278,7 @@ export class OntologyProvider {
     primaryKey: any,
     propertyName: string,
   ): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const point = await getFirstPoint(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -296,7 +301,7 @@ export class OntologyProvider {
     primaryKey: any,
     propertyName: string,
   ): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const point = await getLastPoint(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -320,7 +325,7 @@ export class OntologyProvider {
     propertyName: string,
     body: StreamPointsBody,
   ): Promise<Result<Array<TimeSeriesPoint<T>>, TimeSeriesError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const streamPointsIterator = await streamPoints(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -514,7 +519,7 @@ export class OntologyProvider {
     linkTypeApiName: string,
     linkedObjectPrimaryKey: string,
   ): Promise<Result<T, GetLinkedObjectError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const object = await getLinkedObjectV2(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -532,42 +537,6 @@ export class OntologyProvider {
       e =>
         handleGetLinkedObjectError(
           new GetLinkedObjectErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
-  }
-
-  listLinkedObjects<T extends OntologyObject>(
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-  ): Promise<Result<T[], ListLinkedObjectsError>> {
-    return this.wrapResult(
-      async () => {
-        const allObjects: T[] = [];
-        let page = await this.getLinkedObjectsPage<T>(
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-        );
-        Array.prototype.push.apply(allObjects, page.data);
-        while (page.nextPageToken) {
-          page = await this.getLinkedObjectsPage<T>(
-            sourceApiName,
-            primaryKey,
-            linkTypeApiName,
-            {
-              pageToken: page.nextPageToken,
-            },
-          );
-          Array.prototype.push.apply(allObjects, page.data);
-        }
-        return allObjects;
-      },
-      e =>
-        handleListLinkedObjectsError(
-          new ListLinkedObjectsErrorHandler(),
           e,
           e.parameters,
         ),
@@ -643,7 +612,7 @@ export class OntologyProvider {
   }): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const remappedGroups = body.groupBy
           ? body.groupBy.map(group => mapBucketing(group))
@@ -685,7 +654,7 @@ export class OntologyProvider {
       ActionError
     >
   > {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response = await applyActionV2(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -718,7 +687,7 @@ export class OntologyProvider {
       ActionError
     >
   > {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response = await applyActionV2(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -753,7 +722,7 @@ export class OntologyProvider {
       ActionError
     >
   > {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response = await applyActionV2(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -780,7 +749,7 @@ export class OntologyProvider {
   executeQuery(apiName: string, responseType: QueryValueType, params?: {
     [parameterId: string]: ParameterValue;
   }): Promise<Result<QueryResponse<ParameterValue>, QueryError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response: { value: PrimitiveParameterValue } =
           await executeQueryV2(
@@ -816,7 +785,7 @@ export class OntologyProvider {
     filename: string,
     data: Blob,
   ): Promise<Result<Attachment, AttachmentsError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response = await uploadAttachment(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -848,7 +817,7 @@ export class OntologyProvider {
     propertyName?: string,
     attachmentRid?: string,
   ): Promise<Result<AttachmentMetadata, AttachmentsError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         if (attachmentRid) {
           const response = await getAttachment(
@@ -894,7 +863,7 @@ export class OntologyProvider {
     propertyName?: string,
     attachmentRid?: string,
   ): Promise<Result<Blob, AttachmentsError>> {
-    return this.wrapResult(
+    return wrapResult(
       async () => {
         const response = await getAttachmentContent(
           createOpenApiRequest(this.#stack, this.#fetchFn),
@@ -1249,29 +1218,12 @@ export class OntologyProvider {
     generator: () => AsyncGenerator<T, any, unknown>,
     errorHandler: (palantirApiError: PalantirApiError) => E,
   ) {
-    const page = this.wrapResult(apiCall, errorHandler);
+    const page = wrapResult(apiCall, errorHandler);
     const iterator = this.wrapIterator(generator, errorHandler);
 
     return Object.assign(page, {
       [Symbol.asyncIterator]: () => iterator,
     });
-  }
-
-  private async wrapResult<T, E extends FoundryApiError>(
-    apiCall: () => Promise<T>,
-    errorHandler: (palantirApiError: PalantirApiError) => E,
-  ): Promise<Result<T, E>> {
-    try {
-      const result = await apiCall();
-      return createOkResponse(result);
-    } catch (e) {
-      if (e instanceof PalantirApiError) {
-        return createErrorResponse(errorHandler(e));
-      } else {
-        // TODO this unknown used to be an UnknownError but it had casting problems
-        return createErrorResponse(e as unknown as E);
-      }
-    }
   }
 
   private async *wrapIterator<T, E extends FoundryApiError>(
@@ -1539,14 +1491,6 @@ export class OntologyProvider {
   ): obj is { objectSetDefinition: ObjectSetDefinition } {
     return obj && obj.objectSetDefinition;
   }
-}
-
-function createOkResponse<V>(value: V): Ok<V> {
-  return { type: "ok", value };
-}
-
-function createErrorResponse<E>(error: E): Err<E> {
-  return { type: "error", error };
 }
 
 async function remapAttachmentResponse(

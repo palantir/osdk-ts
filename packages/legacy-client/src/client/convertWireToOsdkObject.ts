@@ -24,23 +24,34 @@ import type {
   OntologyObject,
   ParameterValue,
 } from "../ontology-runtime/baseTypes";
+import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
+import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
 
 function createPrototype<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
-  _primaryKey: ParameterValue,
+  context: ClientContext,
+  primaryKey: ParameterValue,
   type: T,
-  ontologyDefinition: O,
 ) {
-  const objDef = ontologyDefinition.objects[type];
+  const objDef = context.ontology.objects[type];
   const proto = {};
   for (
-    const [k, _v] of Object.entries(objDef.links)
+    const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
   ) {
     Object.defineProperty(proto, k, {
       get: function() {
-        throw new Error("not implemented");
+        if (multiplicity == true) {
+          throw new Error("not implemented");
+        } else {
+          return new SingleLinkImpl(
+            context,
+            objDef.apiName,
+            primaryKey,
+            targetType,
+          );
+        }
       },
     });
   }
@@ -55,22 +66,22 @@ export function convertWireToOsdkObject<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
+  context: ClientContext,
   obj: OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>,
-  ontologyDefinition: O,
 ): OsdkLegacyObjectFrom<O, T> {
-  const ontologyCache = cache.get(ontologyDefinition.metadata.ontologyRid);
+  const ontologyCache = cache.get(context.ontology.metadata.ontologyRid);
   let proto = ontologyCache?.get(obj.__apiName);
 
   if (proto == null) {
     let proto = createPrototype(
+      context,
       obj.__primaryKey,
       obj.__apiName,
-      ontologyDefinition,
     );
 
     if (ontologyCache == null) {
       cache.set(
-        ontologyDefinition.metadata.ontologyRid,
+        context.ontology.metadata.ontologyRid,
         new Map([[obj.__apiName, proto]]),
       );
     } else {

@@ -15,7 +15,8 @@
  */
 
 import { PalantirApiError } from "../../../../Errors";
-import type { FoundryApiError, Result } from "../..";
+import type { FoundryApiError } from "../../Errors";
+import type { Result } from "../../Result";
 import { createErrorResponse, createOkResponse } from "./ResponseCreators";
 
 export async function wrapResult<T, E extends FoundryApiError>(
