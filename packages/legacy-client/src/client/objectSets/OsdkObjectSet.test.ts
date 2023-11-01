@@ -53,4 +53,32 @@ describe("OsdkObjectSet", () => {
       },
     });
   });
+
+  it("creates a searchAround on an ObjectSet", () => {
+    const baseObjectSet: ObjectSetDefinition = {
+      type: "base",
+      objectType: "Todo",
+    };
+
+    const context: ClientContext = {
+      client: createThinClient(MockOntology, "", () => "", vi.fn()),
+      ontology: MockOntology,
+      createObject: vi.fn(),
+    };
+
+    const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
+      context,
+      "Todo",
+      baseObjectSet,
+      MockOntology,
+    );
+
+    const searchAroundObjectSet = os.searchAroundTask();
+
+    expect(searchAroundObjectSet.definition).toEqual({
+      type: "searchAround",
+      objectSet: baseObjectSet,
+      link: "Task",
+    });
+  });
 });

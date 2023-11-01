@@ -118,7 +118,12 @@ export function createOsdkObjectSet<
   return {
     definition: objectSetDefinition,
     ...objectSet,
-    ...createObjectSetSearchAround<O, K>(),
+    ...createObjectSetSearchAround<O, K>(
+      clientContext,
+      apiName,
+      objectSetDefinition,
+      ontologyDefinition,
+    ),
     ...createObjectSetTerminalLoadStep<O, K>(),
     ...createObjectSetOrderByStep<O, K>(),
     ...createObjectSetAggregationStep<O, K>(),

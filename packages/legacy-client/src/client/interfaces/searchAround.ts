@@ -29,7 +29,7 @@ type InferLinkType<T> = T extends SingleLink<infer V> ? V
 export type SearchAround<T extends OntologyObject> = {
   [
     K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<string & K>}`
+      ? `searchAround${Capitalize<K>}`
       : never
   ]: () => ObjectSet<InferLinkType<T[K]>>;
 };

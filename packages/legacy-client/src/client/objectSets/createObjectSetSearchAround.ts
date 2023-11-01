@@ -15,12 +15,52 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectSetDefinition,
+  SearchAroundObjectSetDefinition,
+} from "../../ontology-runtime";
+import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
+import type { ObjectSet } from "../interfaces/objectSet";
 import type { SearchAround } from "../interfaces/searchAround";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createOsdkObjectSet } from "./OsdkObjectSet";
 
 export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): SearchAround<OsdkLegacyObjectFrom<O, K>> {
-  return {} as any;
+>(
+  clientContext: ClientContext,
+  sourceApiName: K,
+  objectSet: ObjectSetDefinition,
+  ontologyDefinition: O,
+): SearchAround<OsdkLegacyObjectFrom<O, K>> {
+  const result = {} as SearchAround<OsdkLegacyObjectFrom<O, K>>;
+  const objectDefinition = clientContext.ontology.objects[sourceApiName];
+
+  for (const [link, { targetType }] of Object.entries(objectDefinition.links)) {
+    const key = `searchAround${capitalize(link)}`;
+
+    result[key as keyof typeof result] = (() => {
+      const definition = {
+        type: "searchAround",
+        objectSet,
+        link,
+      } satisfies SearchAroundObjectSetDefinition;
+
+      const objSet = createOsdkObjectSet(
+        clientContext,
+        targetType,
+        definition,
+        ontologyDefinition,
+      );
+
+      return objSet as ObjectSet<any>;
+    }) as any;
+  }
+
+  return result;
+}
+
+function capitalize<S extends string>(s: S): Capitalize<S> {
+  return (s.charAt(0).toUpperCase() + s.substring(1)) as Capitalize<S>;
 }
