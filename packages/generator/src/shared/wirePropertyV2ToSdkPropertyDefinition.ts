@@ -23,16 +23,55 @@ export function wirePropertyV2ToSdkPropertyDefinition(
   switch (input.dataType.type) {
     case "integer":
     case "string":
+    case "byte":
+    case "decimal":
+    case "double":
+    case "float":
+    case "long":
+    case "short":
     case "boolean": {
       return {
         type: input.dataType.type,
         // TODO: These wire objects don't have nullable, readonly
       };
     }
-    default: {
-      throw new Error(
-        `Not implemented: wirePropertyToSdkPropertyDefinition(${input.dataType.type})`,
-      );
+    case "date": {
+      return {
+        type: "datetime",
+      };
     }
+    case "timestamp": {
+      return {
+        type: "timestamp",
+      };
+    }
+    case "array": {
+      // TODO:
+      return {
+        type: "stringArray",
+      };
+    }
+    case "attachment":
+      return {
+        type: "attachment",
+      };
+    case "geopoint":
+      return {
+        type: "geopoint",
+      };
+    case "geoshape":
+      return {
+        type: "geoshape",
+      };
+    case "timeseries":
+      // TODO:
+      return {
+        type: "timestamp",
+      };
+    default:
+      const _: never = input.dataType;
+      throw new Error(
+        `Unexpected data type ${JSON.stringify(input.dataType)}`,
+      );
   }
 }

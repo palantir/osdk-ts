@@ -1,5 +1,13 @@
 import { ObjectDefinition } from '@osdk/api';
-import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
+import type {
+  OntologyObject,
+  LocalDate,
+  Timestamp,
+  GeoShape,
+  GeoPoint,
+  Attachment,
+  TimeSeries,
+} from '@osdk/legacy-client';
 
 /**
  * A person
