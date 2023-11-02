@@ -27,7 +27,6 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       ActionExecutionMode,
       ActionResponse,
       ActionValidationResult, 
-      AggregatableObjectSet,
       ArrayType,
       AttachmentType,
       BooleanType,

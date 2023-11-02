@@ -31,7 +31,6 @@ export {
   ActionExecutionMode,
   ActionResponse,
   ActionValidationResult,
-  AggregatableObjectSet,
   ArrayType,
   AttachmentType,
   BooleanType,

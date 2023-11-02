@@ -16,6 +16,7 @@
 
 import { createThinClient } from "@osdk/api";
 import type {
+  AggregateObjectSetResponseV2,
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
@@ -75,6 +76,133 @@ describe("OsdkObjectSet", () => {
     });
   });
 
+  it("creates the count aggregation", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.count().compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "count", name: "count" }],
+      }),
+    );
+  });
+
+  it("creates the min aggregation", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.min(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "min", name: "min", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the max aggregation", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.max(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "max", name: "max", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the sum aggregation", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.sum(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "sum", name: "sum", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the avg aggregation", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.avg(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "avg", name: "avg", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the groupBy clauses", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.groupBy(s => s.complete.exact()).groupBy(s => s.body.exact())
+      .count().compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [{ type: "exact", field: "complete" }, {
+          type: "exact",
+          field: "body",
+        }],
+        aggregation: [{ type: "count", name: "count" }],
+      }),
+    );
+  });
+
+  it("creates complex aggregation queries", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await (os.aggregate(b => ({
+      foo: b.complete.approximateDistinct(),
+      bar: b.body.approximateDistinct(),
+    })).compute());
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{
+          type: "approximateDistinct",
+          name: "foo",
+          field: "complete",
+        }, { type: "approximateDistinct", name: "bar", field: "body" }],
+      }),
+    );
+  });
+
+  it("creates approximateDistinct queries", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockAggregateResponse({ data: [] });
+    await os.approximateDistinct(s => s.complete).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{
+          type: "approximateDistinct",
+          name: "distinctCount",
+          field: "complete",
+        }],
+      }),
+    );
+  });
+
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(context);
     mockObjectPage([mockTodoObject]);
@@ -104,6 +232,14 @@ describe("OsdkObjectSet", () => {
       json: () => {
         return Promise.resolve(response);
       },
+      status: 200,
+      ok: true,
+    } as any);
+  }
+
+  function mockAggregateResponse(response: AggregateObjectSetResponseV2) {
+    fetch.mockResolvedValue({
+      json: () => Promise.resolve(response),
       status: 200,
       ok: true,
     } as any);

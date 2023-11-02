@@ -130,7 +130,12 @@ export function createOsdkObjectSet<
       objectSetDefinition,
       ontologyDefinition,
     ),
-    ...createObjectSetAggregationStep(),
+    ...createObjectSetAggregationStep(
+      clientContext,
+      apiName,
+      objectSetDefinition,
+      [],
+    ),
     ...createObjectSetTerminalLoadStep(
       clientContext,
       apiName,

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./AggregatableObjectSet";
 export * from "./Aggregations";
 export * from "./ComputeStep";
 export * from "./CountOperation";
