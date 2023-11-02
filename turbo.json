@@ -68,7 +68,8 @@
     },
 
     "test": {
-      "env": ["FORCE_COLOR"]
+      "env": ["FORCE_COLOR"],
+      "dependsOn": ["build"]
     },
     "test:watch": {
       "env": ["FORCE_COLOR"],
