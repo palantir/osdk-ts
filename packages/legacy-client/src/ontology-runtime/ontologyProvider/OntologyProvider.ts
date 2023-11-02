@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createOpenApiRequest, isOk } from "@osdk/api";
+import { createOpenApiRequest } from "@osdk/api";
 import {
   aggregateObjectSetV2,
   applyActionV2,
@@ -25,24 +25,16 @@ import {
   getFirstPoint,
   getLastPoint,
   getObjectV2,
-  listLinkedObjectsV2,
-  listObjectsV2,
-  loadObjectSetV2,
   streamPoints,
   uploadAttachment,
 } from "@osdk/gateway/requests";
 import type {
   AttachmentV2,
-  ListObjectsResponseV2,
-  LoadObjectSetRequestV2,
-  LoadObjectSetResponseV2,
   OntologyObjectV2,
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsRequest as StreamPointsBody,
 } from "@osdk/gateway/types";
-import type { PalantirApiError } from "../../Errors";
 import type { Auth } from "../../oauth-client";
-import { visitTypeUnion } from "..";
 import type {
   AggregationClause,
   AggregationResult,
@@ -111,8 +103,10 @@ import type {
   ParameterValue,
   PrimitiveParameterValue,
 } from "../baseTypes/ParameterValue";
-import type { SearchClause } from "../filters";
-import type { Page } from "../paging";
+import { visitTypeUnion } from "../common/visitior";
+import { mapAggregation, mapBucketing } from "./AggregationUtils";
+import { wrapIterator } from "./calls/util/wrapIterator";
+import { wrapResult } from "./calls/util/wrapResult";
 import {
   AggregateObjectsErrorHandler,
   AttachmentsErrorHandler,
@@ -124,30 +118,14 @@ import {
   handleExecuteActionError,
   handleExecuteQueryError,
   handleGetObjectError,
-  handleListLinkedObjectsError,
-  handleListObjectsError,
-  handleLoadObjectSetError,
   handleTimeSeriesError,
-  ListLinkedObjectsErrorHandler,
-  ListObjectsErrorHandler,
-  LoadObjectSetErrorHandler,
   TimeSeriesErrorHandler,
-} from ".";
-import { mapAggregation, mapBucketing } from "./AggregationUtils";
-
-import type { ClientContext } from "./calls/ClientContext";
-import { createPageIterator } from "./calls/util/createPageIterator";
-import { iterateLinkedObjects } from "./calls/util/iterateLinkedObjects";
-import { wrapIterator } from "./calls/util/wrapIterator";
-import { wrapResult } from "./calls/util/wrapResult";
+} from "./ErrorHandlers";
 import type {
   ActionError,
   AggregateObjectsError,
   AttachmentsError,
   GetObjectError,
-  ListLinkedObjectsError,
-  ListObjectsError,
-  LoadObjectSetError,
   QueryError,
   TimeSeriesError,
 } from "./Errors";
@@ -157,6 +135,7 @@ import {
   iterateReadableStream,
   parseStreamedResponse,
 } from "./parseStreamedResponse";
+import { isOk } from "./Result";
 import type { Result } from "./Result";
 
 export class OntologyProvider {
@@ -199,73 +178,6 @@ export class OntologyProvider {
 
       return this.createObject<T>(object);
     }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
-  }
-
-  all<T extends OntologyObject>(
-    apiName: string,
-    selectedProperties: Array<keyof T> = [],
-  ): Promise<Result<T[], ListObjectsError>> {
-    return wrapResult(
-      async () => {
-        const allObjects: T[] = [];
-        let page = await this.listObjects<T>(apiName, selectedProperties);
-        Array.prototype.push.apply(allObjects, page.data);
-        while (page.nextPageToken) {
-          page = await this.listObjects<T>(apiName, selectedProperties, {
-            pageToken: page.nextPageToken,
-          });
-          Array.prototype.push.apply(allObjects, page.data);
-        }
-        return allObjects;
-      },
-      (palantirApiError: PalantirApiError) =>
-        handleListObjectsError(
-          new ListObjectsErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        ),
-    );
-  }
-
-  allObjectsFromObjectSet<T extends OntologyObject>(
-    objectSetDefinition: ObjectSetDefinition,
-    selectedProperties: Array<keyof T> = [],
-    orderBy?: SearchClause,
-  ): Promise<Result<T[], LoadObjectSetError>> {
-    return wrapResult(
-      async () => {
-        const allObjects: T[] = [];
-        let page = await this.listObjectsFromObjectSet<T>(
-          objectSetDefinition,
-          orderBy,
-        );
-        Array.prototype.push.apply(allObjects, page.data);
-        if (orderBy && orderBy.take && allObjects.length >= orderBy.take) {
-          return allObjects.slice(0, orderBy.take);
-        }
-        while (page.nextPageToken) {
-          page = await this.listObjectsFromObjectSet<T>(
-            objectSetDefinition,
-            orderBy,
-            selectedProperties,
-            {
-              pageToken: page.nextPageToken,
-            },
-          );
-          Array.prototype.push.apply(allObjects, page.data);
-          if (orderBy && orderBy.take && allObjects.length >= orderBy.take) {
-            return allObjects.slice(0, orderBy.take);
-          }
-        }
-        return allObjects;
-      },
-      (palantirApiError: PalantirApiError) =>
-        handleLoadObjectSetError(
-          new LoadObjectSetErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        ),
-    );
   }
 
   getFirstPoint<T extends string | number>(
@@ -403,134 +315,6 @@ export class OntologyProvider {
         value: point.value as T,
       };
     }
-  }
-
-  pageObjectsFromObjectSet<T extends OntologyObject>(
-    objectSetDefinition: ObjectSetDefinition,
-    orderBy?: SearchClause,
-    selectedProperties: Array<keyof T> = [],
-    options?: {
-      pageSize?: number;
-      pageToken?: string;
-    },
-  ): Promise<Result<Page<T>, LoadObjectSetError>> {
-    const response = createPageIterator<T, LoadObjectSetError>(
-      async () => {
-        return this.listObjectsFromObjectSet<T>(
-          objectSetDefinition,
-          orderBy,
-          selectedProperties,
-          options,
-        );
-      },
-      () =>
-        this.iterateObjectsFromObjectSet(
-          objectSetDefinition,
-          orderBy,
-          selectedProperties,
-          options,
-        ),
-      (palantirApiError: PalantirApiError) => {
-        return handleLoadObjectSetError(
-          new LoadObjectSetErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        );
-      },
-    );
-    return response;
-  }
-
-  async pageObjects<T extends OntologyObject>(
-    apiName: string,
-    selectedProperties: Array<keyof T> = [],
-    options?: {
-      pageSize?: number;
-      pageToken?: string;
-    },
-  ): Promise<Result<Page<T>, ListObjectsError>> {
-    const response = createPageIterator<T, ListObjectsError>(
-      async () => {
-        return this.listObjects<T>(apiName, selectedProperties, options);
-      },
-      () => this.iterateObjects(apiName, options),
-      (palantirApiError: PalantirApiError) => {
-        return handleListObjectsError(
-          new ListObjectsErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        );
-      },
-    );
-    return response;
-  }
-
-  async *iterator<T extends OntologyObject>(
-    apiName: string,
-    options?: { pageSize?: number },
-  ): AsyncGenerator<Result<T, ListObjectsError>, any, unknown> {
-    yield* wrapIterator(
-      () => {
-        return this.iterateObjects(apiName, options);
-      },
-      (palantirApiError: PalantirApiError) => {
-        return handleListObjectsError(
-          new ListObjectsErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        );
-      },
-    );
-  }
-
-  async *iteratorOnObjectSet<T extends OntologyObject>(
-    objectSetDefinition: ObjectSetDefinition,
-    orderBy?: SearchClause,
-    selectedProperties: Array<keyof T> = [],
-    options?: { pageSize?: number },
-  ): AsyncGenerator<Result<T, LoadObjectSetError>, any, unknown> {
-    yield* wrapIterator(
-      () => {
-        return this.iterateObjectsFromObjectSet(
-          objectSetDefinition,
-          orderBy,
-          selectedProperties,
-          options,
-        );
-      },
-      (palantirApiError: PalantirApiError) => {
-        return handleLoadObjectSetError(
-          new LoadObjectSetErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        );
-      },
-    );
-  }
-
-  async *linkedObjectsIterator<T extends OntologyObject>(
-    context: ClientContext,
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-    options?: { pageSize?: number },
-  ): AsyncGenerator<Result<T, ListLinkedObjectsError>, any, unknown> {
-    yield* wrapIterator(
-      () =>
-        iterateLinkedObjects(
-          context,
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-          options,
-        ),
-      e =>
-        handleListLinkedObjectsError(
-          new ListLinkedObjectsErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
   }
 
   aggregate<
@@ -1162,152 +946,6 @@ export class OntologyProvider {
       object.__rid,
       object,
     ) as T;
-  }
-
-  private async listObjects<T extends OntologyObject>(
-    apiName: string,
-    selectedProperties: Array<keyof T> = [],
-    options?: { pageSize?: number; pageToken?: string },
-  ) {
-    const pagePromise = await listObjectsV2(
-      createOpenApiRequest(this.#stack, this.#fetchFn),
-      this.#ontologyMetadata.ontologyApiName,
-      apiName,
-      {
-        pageSize: options?.pageSize,
-        pageToken: options?.pageToken,
-        select: selectedProperties.map(x => x.toString()),
-      },
-    );
-    return {
-      data: pagePromise.data.map(object => this.createObject<T>(object)),
-      nextPageToken: pagePromise.nextPageToken,
-    };
-  }
-
-  private async *iterateObjects<T extends OntologyObject>(
-    apiName: string,
-    options?: { pageSize?: number },
-  ): AsyncGenerator<T> {
-    let nextPageToken;
-    do {
-      const page: ListObjectsResponseV2 = await listObjectsV2(
-        createOpenApiRequest(this.#stack, this.#fetchFn),
-        this.#ontologyMetadata.ontologyApiName,
-        apiName,
-        {
-          pageSize: options?.pageSize,
-          pageToken: nextPageToken,
-          select: [],
-        },
-      );
-
-      for (const object of page.data) {
-        yield this.createObject<T>(object);
-      }
-
-      nextPageToken = page.nextPageToken;
-    } while (nextPageToken);
-  }
-
-  private async getLinkedObjectsPage<T extends OntologyObject>(
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-    options?: { pageSize?: number; pageToken?: string },
-  ) {
-    const pagePromise = await listLinkedObjectsV2(
-      createOpenApiRequest(this.#stack, this.#fetchFn),
-      this.#ontologyMetadata.ontologyApiName,
-      sourceApiName,
-      primaryKey,
-      linkTypeApiName,
-      {
-        pageSize: options?.pageSize,
-        pageToken: options?.pageToken,
-        select: [],
-      },
-    );
-    return {
-      data: pagePromise.data.map(object => {
-        return this.createObject<T>(object);
-      }),
-      nextPageToken: pagePromise.nextPageToken,
-    };
-  }
-
-  private async listObjectsFromObjectSet<T extends OntologyObject>(
-    objectSetDefinition: ObjectSetDefinition,
-    orderBy?: SearchClause,
-    selectedProperties: Array<keyof T> = [],
-    options?: { pageSize?: number; pageToken?: string },
-  ) {
-    const pagePromise = await loadObjectSetV2(
-      createOpenApiRequest(this.#stack, this.#fetchFn),
-      this.#ontologyMetadata.ontologyApiName,
-      this.mapObjectSetBody(
-        objectSetDefinition,
-        orderBy,
-        selectedProperties,
-        options,
-      ),
-    );
-    return {
-      data: pagePromise.data.map(object => this.createObject<T>(object)),
-      nextPageToken: pagePromise.nextPageToken,
-    };
-  }
-
-  private mapObjectSetBody(
-    objectSetDefinition: ObjectSetDefinition,
-    orderBy?: SearchClause,
-    selectedProperties: any[] = [],
-    options?: { pageSize?: number; pageToken?: string },
-  ): LoadObjectSetRequestV2 {
-    let objectSetBody: LoadObjectSetRequestV2 = {
-      objectSet: objectSetDefinition,
-      select: selectedProperties.map(x => x.toString()),
-    };
-    if (orderBy && orderBy?.orderBy?.fields?.length > 0) {
-      objectSetBody = { ...objectSetBody, orderBy: orderBy?.orderBy };
-    }
-    if (options && options?.pageSize) {
-      objectSetBody = { ...objectSetBody, pageSize: options.pageSize };
-    }
-    if (options && options?.pageToken) {
-      objectSetBody = { ...objectSetBody, pageToken: options.pageToken };
-    }
-    return objectSetBody;
-  }
-
-  private async *iterateObjectsFromObjectSet<T extends OntologyObject>(
-    objectSetDefinition: ObjectSetDefinition,
-    orderBy?: SearchClause,
-    selectedProperties: Array<keyof T> = [],
-    options?: { pageSize?: number },
-  ): AsyncGenerator<T> {
-    let nextPageToken;
-    do {
-      const page: LoadObjectSetResponseV2 = await loadObjectSetV2(
-        createOpenApiRequest(this.#stack, this.#fetchFn),
-        this.#ontologyMetadata.ontologyApiName,
-        this.mapObjectSetBody(
-          objectSetDefinition,
-          orderBy,
-          selectedProperties,
-          {
-            pageSize: options?.pageSize,
-            pageToken: nextPageToken,
-          },
-        ),
-      );
-
-      for (const object of page.data) {
-        yield this.createObject<T>(object);
-      }
-
-      nextPageToken = page.nextPageToken;
-    } while (nextPageToken);
   }
 
   private getRemappedParameters(

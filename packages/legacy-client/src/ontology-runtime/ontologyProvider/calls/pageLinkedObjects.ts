@@ -18,10 +18,10 @@ import type { PalantirApiError } from "../../../Errors";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
 import {
-  handleListObjectsError,
-  ListObjectsErrorHandler,
+  handleListLinkedObjectsError,
+  ListLinkedObjectsErrorHandler,
 } from "../ErrorHandlers";
-import type { ListObjectsError } from "../Errors";
+import type { ListLinkedObjectsError } from "../Errors";
 import type { Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
@@ -37,8 +37,8 @@ export async function pageLinkedObjects<T extends OntologyObject>(
     pageSize?: number;
     pageToken?: string;
   },
-): Promise<Result<Page<T>, ListObjectsError>> {
-  const response = createPageIterator<T, ListObjectsError>(
+): Promise<Result<Page<T>, ListLinkedObjectsError>> {
+  const response = createPageIterator<T, ListLinkedObjectsError>(
     async () => {
       return getLinkedObjectsPage<T>(
         context,
@@ -57,8 +57,8 @@ export async function pageLinkedObjects<T extends OntologyObject>(
         options,
       ),
     (palantirApiError: PalantirApiError) => {
-      return handleListObjectsError(
-        new ListObjectsErrorHandler(),
+      return handleListLinkedObjectsError(
+        new ListLinkedObjectsErrorHandler(),
         palantirApiError,
         palantirApiError.parameters,
       );

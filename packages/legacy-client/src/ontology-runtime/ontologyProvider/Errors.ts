@@ -58,12 +58,9 @@ export type GetObjectError =
   | ObjectNotFound
   | PropertiesNotFound
   | CommonApiError;
-export type ListObjectsError =
-  | ObjectsExceededLimit
-  | ObjectTypeNotFound
-  | ObjectTypeNotSynced
-  | OntologySyncing
-  | CommonApiError;
+
+export type ListObjectsError = LoadObjectSetError;
+
 export type LoadObjectSetError =
   | ObjectsExceededLimit
   | ObjectTypeNotFound
@@ -84,6 +81,7 @@ export type LoadObjectSetError =
   | PropertyFiltersNotSupported
   | InvalidPropertyFilterValue
   | CommonApiError;
+
 export type GetLinkedObjectError =
   | ObjectTypeNotFound
   | ObjectTypeNotSynced
@@ -127,6 +125,7 @@ export type SearchObjectsError =
   | PropertyFiltersNotSupported
   | InvalidPropertyFilterValue
   | CommonApiError;
+
 export type AggregateObjectsError =
   | PropertiesNotSearchable
   | PropertyTypesSearchNotSupported

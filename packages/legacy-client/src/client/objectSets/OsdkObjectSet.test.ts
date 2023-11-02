@@ -15,32 +15,42 @@
  */
 
 import { createThinClient } from "@osdk/api";
-import { describe, expect, it, vi } from "vitest";
+import type {
+  LoadObjectSetResponseV2,
+  OntologyObjectV2,
+} from "@osdk/gateway/types";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedFunction,
+  vi,
+} from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { MockOntology } from "../../util/test";
 import { createOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
-  it("creates a search on an ObjectSet", () => {
-    const baseObjectSet: ObjectSetDefinition = {
-      type: "base",
-      objectType: "Todo",
-    };
-
-    const context: ClientContext = {
-      client: createThinClient(MockOntology, "", () => "", vi.fn()),
+  let fetch: MockedFunction<typeof globalThis.fetch>;
+  let context: ClientContext;
+  beforeEach(() => {
+    fetch = vi.fn();
+    context = {
+      client: createThinClient(
+        MockOntology,
+        "https://mock.com",
+        () => "Token",
+        fetch,
+      ),
       ontology: MockOntology,
       createObject: vi.fn(),
     };
+  });
 
-    const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
-      context,
-      "Todo",
-      baseObjectSet,
-      MockOntology,
-    );
-
+  it("creates a search on an ObjectSet", () => {
+    const os = createBaseTodoObjectSet(context);
     const whereObjectSet = os.where(a => a.id.eq("123"));
 
     expect(whereObjectSet.definition).toEqual({
@@ -55,30 +65,86 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates a searchAround on an ObjectSet", () => {
-    const baseObjectSet: ObjectSetDefinition = {
-      type: "base",
-      objectType: "Todo",
-    };
-
-    const context: ClientContext = {
-      client: createThinClient(MockOntology, "", () => "", vi.fn()),
-      ontology: MockOntology,
-      createObject: vi.fn(),
-    };
-
-    const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
-      context,
-      "Todo",
-      baseObjectSet,
-      MockOntology,
-    );
-
-    const searchAroundObjectSet = os.searchAroundTask();
+    const os = createBaseTodoObjectSet(context);
+    const searchAroundObjectSet = os.searchAroundLinkedTodos();
 
     expect(searchAroundObjectSet.definition).toEqual({
       type: "searchAround",
       objectSet: baseObjectSet,
-      link: "Task",
+      link: "linkedTodos",
     });
   });
+
+  it("loads a page", async () => {
+    const os = createBaseTodoObjectSet(context);
+    mockObjectPage([mockTodoObject]);
+    const page = await os.page({ pageSize: 1 });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: [],
+        pageSize: 1,
+      }),
+    );
+    expect(page.type).toEqual("ok");
+  });
+
+  function mockObjectPage(
+    objects: OntologyObjectV2[],
+  ) {
+    const response: LoadObjectSetResponseV2 = {
+      data: objects,
+    };
+
+    fetch.mockResolvedValue({
+      json: () => {
+        return Promise.resolve(response);
+      },
+      status: 200,
+      ok: true,
+    } as any);
+  }
+
+  function expectedJestResponse(
+    endpoint: string,
+    body: object,
+  ): [string, RequestInit] {
+    return [
+      `https://mock.com/api/v2/ontologies/${endpoint}`,
+      {
+        body: JSON.stringify(body),
+        headers: expect.anything(),
+        method: "POST",
+      },
+    ];
+  }
 });
+
+const baseObjectSet: ObjectSetDefinition = {
+  type: "base",
+  objectType: "Todo",
+};
+
+function createBaseTodoObjectSet(context: ClientContext) {
+  const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
+    context,
+    "Todo",
+    baseObjectSet,
+    MockOntology,
+  );
+
+  return os;
+}
+
+const mockTodoObject: OntologyObjectV2 = {
+  __apiName: "Todo",
+  __primaryKey: 1,
+  __rid: "ri.a.b.c.d",
+  id: "123",
+  body: "body",
+  complete: false,
+};

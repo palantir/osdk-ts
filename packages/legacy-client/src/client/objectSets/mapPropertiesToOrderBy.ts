@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { Task } from "../../util/test";
-import type { ObjectSet } from "./objectSet";
+import type { PropertyDefinition } from "@osdk/api";
+import type { OntologyObject } from "../../ontology-runtime";
+import { OrderByOption } from "../../ontology-runtime";
+import type { OrderBy } from "../interfaces/ordering";
 
-describe("ObjectSet", () => {
-  it("creates", () => {
-    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
-    if (os) {
-      os.searchAroundLinkedTodos().searchAroundTask().where(a => a.id.eq(1));
-      os.orderBy(a => a.id.asc());
-    }
-  });
-});
+export function mapPropertiesToOrderBy<T extends OntologyObject>(
+  properties: Record<string, PropertyDefinition>,
+): OrderBy<T> {
+  return Object.entries(properties).reduce(
+    (acc, [propertyName]) => {
+      acc[propertyName] = OrderByOption(propertyName);
+      return acc;
+    },
+    {} as {
+      [key: string]: OrderByOption;
+    },
+  ) as OrderBy<T>;
+}

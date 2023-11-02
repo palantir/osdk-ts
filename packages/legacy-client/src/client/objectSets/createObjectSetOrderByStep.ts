@@ -15,12 +15,69 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectSetDefinition,
+  OrderByClause,
+} from "../../ontology-runtime";
+import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
 
-export function createObjectSetOrderByStep<
+export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
-  return {} as any;
+>(
+  clientContext: ClientContext,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  ontologyDefinition: O,
+  orderByClauses: OrderByClause[] = [],
+): Omit<ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>, "all" | "page"> {
+  return {
+    orderBy(predicate) {
+      const objectProperties = ontologyDefinition.objects[apiName].properties;
+      const orderBy = mapPropertiesToOrderBy<OsdkLegacyObjectFrom<O, K>>(
+        objectProperties,
+      );
+      const orderByClause = predicate(orderBy);
+
+      return createObjectSetOrderByStep(
+        clientContext,
+        apiName,
+        objectSet,
+        ontologyDefinition,
+        [...orderByClauses, orderByClause],
+      );
+    },
+  };
+}
+
+function createObjectSetOrderByStep<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+>(
+  clientContext: ClientContext,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  ontologyDefinition: O,
+  orderByClauses: OrderByClause[] = [],
+): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
+  return {
+    ...createObjectSetBaseOrderByStepMethod(
+      clientContext,
+      apiName,
+      objectSet,
+      ontologyDefinition,
+      orderByClauses,
+    ),
+    ...createObjectSetTerminalLoadStep(
+      clientContext,
+      apiName,
+      objectSet,
+      [],
+      orderByClauses,
+    ),
+  };
 }

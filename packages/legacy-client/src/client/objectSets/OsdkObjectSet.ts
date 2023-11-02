@@ -32,7 +32,7 @@ import type {
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
-import { createObjectSetOrderByStep } from "./createObjectSetOrderByStep";
+import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
@@ -118,15 +118,24 @@ export function createOsdkObjectSet<
   return {
     definition: objectSetDefinition,
     ...objectSet,
-    ...createObjectSetSearchAround<O, K>(
+    ...createObjectSetSearchAround(
       clientContext,
       apiName,
       objectSetDefinition,
       ontologyDefinition,
     ),
-    ...createObjectSetTerminalLoadStep<O, K>(),
-    ...createObjectSetOrderByStep<O, K>(),
-    ...createObjectSetAggregationStep<O, K>(),
+    ...createObjectSetBaseOrderByStepMethod(
+      clientContext,
+      apiName,
+      objectSetDefinition,
+      ontologyDefinition,
+    ),
+    ...createObjectSetAggregationStep(),
+    ...createObjectSetTerminalLoadStep(
+      clientContext,
+      apiName,
+      objectSetDefinition,
+    ),
   };
 }
 
