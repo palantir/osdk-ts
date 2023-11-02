@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "check": "turbo check",
     "check-mrl": "mrl check --verbose",
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",

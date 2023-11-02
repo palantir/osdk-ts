@@ -32,5 +32,5 @@ jobs:
         run: pnpm install
 
       - name: Build, lint, and test
-        run: turbo check
+        run: pnpm check
 
