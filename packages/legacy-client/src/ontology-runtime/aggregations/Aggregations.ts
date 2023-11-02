@@ -315,6 +315,7 @@ declare type AggregatablePropertyNamesForResult<
   [P in keyof TAggregatableProperties]: TAggregatableProperties[P] extends
     AggregatableProperty<infer U> ? U extends TResult ? P : never : never;
 }[keyof TAggregatableProperties];
+
 export type AggregatablePropertiesForResult<
   TAggregatableProperties,
   TResult extends MetricValue,
@@ -322,6 +323,7 @@ export type AggregatablePropertiesForResult<
   TAggregatableProperties,
   AggregatablePropertyNamesForResult<TAggregatableProperties, TResult>
 >;
+
 export interface BucketedAggregation<
   TGroupKey extends BucketValue,
   TValue extends MetricValue = Double,
