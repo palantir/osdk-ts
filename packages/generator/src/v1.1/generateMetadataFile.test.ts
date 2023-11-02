@@ -47,7 +47,7 @@ describe(generateMetadataFile, () => {
           userAgent: 'foundry-typescript-osdk/0.0.1',
         },
         objects: {
-          Todo: Todo,
+          Todo,
         },
       } satisfies OntologyDefinition<'Todo'>;
 

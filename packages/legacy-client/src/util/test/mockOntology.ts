@@ -19,7 +19,7 @@ import type { OntologyDefinition } from "@osdk/api";
 export const MockOntology = {
   metadata: {
     ontologyRid: "",
-    ontologyApiName: "",
+    ontologyApiName: "Ontology",
     userAgent: "",
   },
   objects: {

@@ -41,6 +41,7 @@ describe("generator", () => {
     ).toMatchInlineSnapshot(`
       "// Path: /foo/index.ts
       export * from '@osdk/legacy-client';
+      
       export { Ontology } from './Ontology';
       export { FoundryClient } from './FoundryClient';
       "
