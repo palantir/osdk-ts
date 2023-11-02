@@ -22,21 +22,9 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
     path.join(outDir, "index.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "index.ts")}
-    export * from "@osdk/legacy-client";
-
-    export { Ontology } from "./Ontology";
-    export { FoundryClient } from "./FoundryClient";
-    `),
-  );
-}
-
-/**
- TODO: We need to verify that all these things
-    * The internally generated client looks similar to this:
-       export { FoundryClient } from "./FoundryClient";
-       export {
-         TimeSeries,
+    await formatTs(`
+    export {
+      TimeSeries,
          TimeSeriesPoint,
          Timestamp,
          LocalDate,
@@ -96,10 +84,9 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
          SetType,
          ObjectType,
          AttachmentType,
-       } from "./internal/@foundry/ontology-runtime/dist";
-       export {
-         PublicClientAuth,
-         ConfidentialClientAuth,
-         UserTokenAuth,
-       } from "./internal/@foundry/oauth-client/dist";
-    */
+    } from "@osdk/legacy-client";
+    export { Ontology } from "./Ontology";
+    export { FoundryClient } from "./FoundryClient";
+    `),
+  );
+}
