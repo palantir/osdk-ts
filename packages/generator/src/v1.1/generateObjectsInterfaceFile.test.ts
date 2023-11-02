@@ -35,11 +35,12 @@ describe(generateObjectsInterfaceFile, () => {
     expect(
       helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
     ).toMatchInlineSnapshot(`
-      "// Path: /foo/ontologyObjects.ts
-      import { BaseObjectSet } from '@osdk/legacy-client';
-      import { Todo } from './objects';
+      "import { BaseObjectSet } from '@osdk/legacy-client';
+      import { Todo, Person } from './objects';
+
       export interface Objects {
         Todo: BaseObjectSet<Todo>;
+        Person: BaseObjectSet<Person>;
       }
       "
     `);

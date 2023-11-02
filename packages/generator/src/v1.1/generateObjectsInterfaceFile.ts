@@ -27,16 +27,17 @@ export async function generateObjectsInterfaceFile(
 ) {
   await fs.writeFile(
     path.join(outDir, "ontologyObjects.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "ontologyObjects.ts")}
+    await formatTs(`
     import { BaseObjectSet } from "@osdk/legacy-client";
     import { ${
       commaSeparatedIdentifiers(Object.keys(ontology.objectTypes))
     } } from "./objects";
+    
     export interface Objects {
       ${
       Object.keys(ontology.objectTypes).map((apiName) =>
         `${apiName} : BaseObjectSet<${apiName}>;`
-      )
+      ).join("\n")
     }
     }
     ;`),

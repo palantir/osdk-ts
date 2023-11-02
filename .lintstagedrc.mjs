@@ -15,7 +15,7 @@ export default {
   "monorepo/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
   ],
-  "{packages,examples}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+  "{packages,examples/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
     "eslint --fix",
   ],

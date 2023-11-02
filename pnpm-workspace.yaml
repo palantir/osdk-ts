@@ -1,4 +1,5 @@
 packages:
   - "packages/*"
-  - "examples/*/*"
+  - "examples/basic/*"
+  - "examples/one_dot_one"
   - "monorepo/*"
