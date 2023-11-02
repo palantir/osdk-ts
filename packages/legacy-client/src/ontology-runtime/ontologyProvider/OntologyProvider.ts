@@ -24,7 +24,6 @@ import {
   getAttachmentsV2,
   getFirstPoint,
   getLastPoint,
-  getLinkedObjectV2,
   getObjectV2,
   listLinkedObjectsV2,
   listObjectsV2,
@@ -34,7 +33,6 @@ import {
 } from "@osdk/gateway/requests";
 import type {
   AttachmentV2,
-  ListLinkedObjectsResponseV2,
   ListObjectsResponseV2,
   LoadObjectSetRequestV2,
   LoadObjectSetResponseV2,
@@ -42,7 +40,7 @@ import type {
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsRequest as StreamPointsBody,
 } from "@osdk/gateway/types";
-import { PalantirApiError } from "../../Errors";
+import type { PalantirApiError } from "../../Errors";
 import type { Auth } from "../../oauth-client";
 import { visitTypeUnion } from "..";
 import type {
@@ -120,13 +118,11 @@ import {
   AttachmentsErrorHandler,
   ExecuteActionErrorHandler,
   ExecuteQueryErrorHandler,
-  GetLinkedObjectErrorHandler,
   GetObjectErrorHandler,
   handleAggregateObjectsError,
   handleAttachmentsError,
   handleExecuteActionError,
   handleExecuteQueryError,
-  handleGetLinkedObjectError,
   handleGetObjectError,
   handleListLinkedObjectsError,
   handleListObjectsError,
@@ -138,17 +134,16 @@ import {
   TimeSeriesErrorHandler,
 } from ".";
 import { mapAggregation, mapBucketing } from "./AggregationUtils";
-import {
-  createErrorResponse,
-  createOkResponse,
-} from "./calls/util/ResponseCreators";
+
+import type { ClientContext } from "./calls/ClientContext";
+import { createPageIterator } from "./calls/util/createPageIterator";
+import { iterateLinkedObjects } from "./calls/util/iterateLinkedObjects";
+import { wrapIterator } from "./calls/util/wrapIterator";
 import { wrapResult } from "./calls/util/wrapResult";
 import type {
   ActionError,
   AggregateObjectsError,
   AttachmentsError,
-  FoundryApiError,
-  GetLinkedObjectError,
   GetObjectError,
   ListLinkedObjectsError,
   ListObjectsError,
@@ -359,7 +354,7 @@ export class OntologyProvider {
     propertyName: string,
     body: StreamPointsBody,
   ): AsyncGenerator<Result<TimeSeriesPoint<T>, TimeSeriesError>, any, unknown> {
-    yield* this.wrapIterator(
+    yield* wrapIterator(
       () => {
         return this.iterateTimeSeriesPointsInternal(
           apiName,
@@ -419,7 +414,7 @@ export class OntologyProvider {
       pageToken?: string;
     },
   ): Promise<Result<Page<T>, LoadObjectSetError>> {
-    const response = this.createPageIterator<T, LoadObjectSetError>(
+    const response = createPageIterator<T, LoadObjectSetError>(
       async () => {
         return this.listObjectsFromObjectSet<T>(
           objectSetDefinition,
@@ -454,7 +449,7 @@ export class OntologyProvider {
       pageToken?: string;
     },
   ): Promise<Result<Page<T>, ListObjectsError>> {
-    const response = this.createPageIterator<T, ListObjectsError>(
+    const response = createPageIterator<T, ListObjectsError>(
       async () => {
         return this.listObjects<T>(apiName, selectedProperties, options);
       },
@@ -474,7 +469,7 @@ export class OntologyProvider {
     apiName: string,
     options?: { pageSize?: number },
   ): AsyncGenerator<Result<T, ListObjectsError>, any, unknown> {
-    yield* this.wrapIterator(
+    yield* wrapIterator(
       () => {
         return this.iterateObjects(apiName, options);
       },
@@ -494,7 +489,7 @@ export class OntologyProvider {
     selectedProperties: Array<keyof T> = [],
     options?: { pageSize?: number },
   ): AsyncGenerator<Result<T, LoadObjectSetError>, any, unknown> {
-    yield* this.wrapIterator(
+    yield* wrapIterator(
       () => {
         return this.iterateObjectsFromObjectSet(
           objectSetDefinition,
@@ -513,45 +508,17 @@ export class OntologyProvider {
     );
   }
 
-  getLinkedObject<T extends OntologyObject>(
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-    linkedObjectPrimaryKey: string,
-  ): Promise<Result<T, GetLinkedObjectError>> {
-    return wrapResult(
-      async () => {
-        const object = await getLinkedObjectV2(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-          linkedObjectPrimaryKey,
-          {
-            select: [],
-          },
-        );
-        return this.createObject<T>(object);
-      },
-      e =>
-        handleGetLinkedObjectError(
-          new GetLinkedObjectErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
-  }
-
   async *linkedObjectsIterator<T extends OntologyObject>(
+    context: ClientContext,
     sourceApiName: string,
     primaryKey: any,
     linkTypeApiName: string,
     options?: { pageSize?: number },
   ): AsyncGenerator<Result<T, ListLinkedObjectsError>, any, unknown> {
-    yield* this.wrapIterator(
+    yield* wrapIterator(
       () =>
-        this.iterateLinkedObjects(
+        iterateLinkedObjects(
+          context,
           sourceApiName,
           primaryKey,
           linkTypeApiName,
@@ -564,42 +531,6 @@ export class OntologyProvider {
           e.parameters,
         ),
     );
-  }
-
-  async pageLinkedObjects<T extends OntologyObject>(
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-    options?: {
-      pageSize?: number;
-      pageToken?: string;
-    },
-  ): Promise<Result<Page<T>, ListObjectsError>> {
-    const response = this.createPageIterator<T, ListObjectsError>(
-      async () => {
-        return this.getLinkedObjectsPage<T>(
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-          options,
-        );
-      },
-      () =>
-        this.iterateLinkedObjects(
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-          options,
-        ),
-      (palantirApiError: PalantirApiError) => {
-        return handleListObjectsError(
-          new ListObjectsErrorHandler(),
-          palantirApiError,
-          palantirApiError.parameters,
-        );
-      },
-    );
-    return response;
   }
 
   aggregate<
@@ -1213,37 +1144,6 @@ export class OntologyProvider {
     );
   }
 
-  private async createPageIterator<T, E extends FoundryApiError>(
-    apiCall: () => Promise<Page<T>>,
-    generator: () => AsyncGenerator<T, any, unknown>,
-    errorHandler: (palantirApiError: PalantirApiError) => E,
-  ) {
-    const page = wrapResult(apiCall, errorHandler);
-    const iterator = this.wrapIterator(generator, errorHandler);
-
-    return Object.assign(page, {
-      [Symbol.asyncIterator]: () => iterator,
-    });
-  }
-
-  private async *wrapIterator<T, E extends FoundryApiError>(
-    lambda: () => AsyncGenerator<T, any, unknown>,
-    errorHandler: (palantirApiError: PalantirApiError) => E,
-  ): AsyncGenerator<Result<T, E>> {
-    try {
-      for await (const element of lambda()) {
-        yield createOkResponse(element);
-      }
-    } catch (e) {
-      if (e instanceof PalantirApiError) {
-        yield createErrorResponse(errorHandler(e));
-      } else {
-        // TODO this unknown used to be an UnknownError but it had casting problems
-        yield createErrorResponse(e as unknown as E);
-      }
-    }
-  }
-
   private async processStream<T extends string | number>(
     streamIterator: AsyncGenerator<any, any, unknown>,
   ): Promise<any[]> {
@@ -1400,35 +1300,6 @@ export class OntologyProvider {
             pageToken: nextPageToken,
           },
         ),
-      );
-
-      for (const object of page.data) {
-        yield this.createObject<T>(object);
-      }
-
-      nextPageToken = page.nextPageToken;
-    } while (nextPageToken);
-  }
-
-  private async *iterateLinkedObjects<T extends OntologyObject>(
-    sourceApiName: string,
-    primaryKey: any,
-    linkTypeApiName: string,
-    options?: { pageSize?: number },
-  ): AsyncGenerator<T, any, unknown> {
-    let nextPageToken;
-    do {
-      const page: ListLinkedObjectsResponseV2 = await listLinkedObjectsV2(
-        createOpenApiRequest(this.#stack, this.#fetchFn),
-        this.#ontologyMetadata.ontologyApiName,
-        sourceApiName,
-        primaryKey,
-        linkTypeApiName,
-        {
-          pageSize: options?.pageSize,
-          pageToken: nextPageToken,
-          select: [],
-        },
       );
 
       for (const object of page.data) {
