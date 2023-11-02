@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
@@ -86,30 +91,30 @@ function createPrototype<
  */
 const cache = new Map<string, Map<string, any>>();
 export function convertWireToOsdkObject<
-  T extends keyof O["objects"] & string,
+  T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(
   client: ThinClient<O>,
-  type: T,
-  obj: OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>,
+  apiName: T,
+  obj: OntologyObjectV2,
 ): OsdkLegacyObjectFrom<O, T> {
   const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
-  let proto = ontologyCache?.get(obj.__apiName);
+  let proto = ontologyCache?.get(apiName);
 
   if (proto == null) {
     let proto = createPrototype(
       client,
       obj.__primaryKey,
-      obj.__apiName,
+      apiName,
     );
 
     if (ontologyCache == null) {
       cache.set(
         client.ontology.metadata.ontologyRid,
-        new Map([[obj.__apiName, proto]]),
+        new Map([[apiName, proto]]),
       );
     } else {
-      ontologyCache.set(obj.__apiName, proto);
+      ontologyCache.set(apiName, proto);
     }
   }
 
