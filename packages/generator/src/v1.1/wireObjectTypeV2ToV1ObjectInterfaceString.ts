@@ -20,7 +20,7 @@ export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
 ) {
   return `
-import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
+import { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
 /**
  * ${input.description}
  */

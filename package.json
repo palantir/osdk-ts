@@ -6,7 +6,7 @@
     "check-mrl": "mrl check --verbose",
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --concurrency 20",
     "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples/basic/*",
     "lint": "turbo run lint",
     "prePublish": "turbo build && turbo lint",

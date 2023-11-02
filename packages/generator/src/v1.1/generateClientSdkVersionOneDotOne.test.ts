@@ -15,7 +15,6 @@
  */
 
 import { mkdir, rmdir, writeFile } from "fs/promises";
-import { dirname } from "path";
 import { describe, expect, test } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
@@ -69,8 +68,10 @@ describe("generator", () => {
       TodoWireOntology,
       {
         writeFile: async (path, contents) => {
-          await mkdir(dirname(path), { recursive: true });
           await writeFile(path, contents, { flag: "w" });
+        },
+        mkdir: async (path, options) => {
+          await mkdir(path, options);
         },
       },
       `${__dirname}/generated/`,

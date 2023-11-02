@@ -19,6 +19,7 @@ import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 
 export async function generateIndexFile(fs: MinimalFs, outDir: string) {
+  await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`// Path: ${path.join(outDir, "index.ts")}

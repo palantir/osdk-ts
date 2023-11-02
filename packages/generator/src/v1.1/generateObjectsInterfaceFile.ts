@@ -36,7 +36,7 @@ export async function generateObjectsInterfaceFile(
       ${
       Object.keys(ontology.objectTypes).map((apiName) =>
         `${apiName} : BaseObjectSet<${apiName}>;`
-      )
+      ).join("\n")
     }
     }
     ;`),

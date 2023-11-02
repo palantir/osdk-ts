@@ -24,7 +24,10 @@ export function createMockMinimalFiles() {
   const getFiles = () => Object.fromEntries(writeFile.mock.calls);
 
   return {
-    minimalFiles: { writeFile: writeFile as WriteFileFn },
+    minimalFiles: {
+      writeFile: writeFile as WriteFileFn,
+      mkdir: () => Promise.resolve(),
+    },
     getFiles,
     dumpFilesToConsole: () => {
       for (const [path, contents] of Object.entries(getFiles())) {

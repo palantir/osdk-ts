@@ -26,6 +26,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
   fs: MinimalFs,
   outDir: string,
 ) {
+  await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       await fs.writeFile(
