@@ -25,7 +25,7 @@ import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
 import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
 
-export function createObjectSetOrderByStep<
+export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
@@ -34,7 +34,7 @@ export function createObjectSetOrderByStep<
   objectSet: ObjectSetDefinition,
   ontologyDefinition: O,
   orderByClauses: OrderByClause[] = [],
-): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
+): Omit<ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>, "all" | "page"> {
   return {
     orderBy(predicate) {
       const objectProperties = ontologyDefinition.objects[apiName].properties;
@@ -51,6 +51,27 @@ export function createObjectSetOrderByStep<
         [...orderByClauses, orderByClause],
       );
     },
+  };
+}
+
+function createObjectSetOrderByStep<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+>(
+  clientContext: ClientContext,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  ontologyDefinition: O,
+  orderByClauses: OrderByClause[] = [],
+): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
+  return {
+    ...createObjectSetBaseOrderByStepMethod(
+      clientContext,
+      apiName,
+      objectSet,
+      ontologyDefinition,
+      orderByClauses,
+    ),
     ...createObjectSetTerminalLoadStep(
       clientContext,
       apiName,
