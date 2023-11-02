@@ -80,7 +80,16 @@ describe("OsdkObjectSet", () => {
     mockObjectPage([mockTodoObject]);
     const page = await os.page({ pageSize: 1 });
     expect(fetch).toHaveBeenCalledOnce();
-    expect(fetch).toHaveBeenCalledWith(...expectedJestResponse());
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: [],
+        pageSize: 1,
+      }),
+    );
     expect(page.type).toEqual("ok");
   });
 
@@ -100,18 +109,14 @@ describe("OsdkObjectSet", () => {
     } as any);
   }
 
-  function expectedJestResponse(): [string, RequestInit] {
+  function expectedJestResponse(
+    endpoint: string,
+    body: object,
+  ): [string, RequestInit] {
     return [
-      "https://mock.com/api/v2/ontologies/Ontology/objectSets/loadObjects",
+      `https://mock.com/api/v2/ontologies/${endpoint}`,
       {
-        body: JSON.stringify({
-          objectSet: {
-            type: "base",
-            objectType: "Todo",
-          },
-          select: [],
-          pageSize: 1,
-        }),
+        body: JSON.stringify(body),
         headers: expect.anything(),
         method: "POST",
       },
