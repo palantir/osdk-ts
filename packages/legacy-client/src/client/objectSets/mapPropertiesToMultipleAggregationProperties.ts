@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { MultipleAggregatableProperty } from "../../ontology-runtime";
 import {
   ApproximateDistinctCountAggregatableProperty,
   CountOperation,
@@ -51,6 +52,12 @@ export function mapPropertiesToMultipleAggregationProperties<
       }
       return acc;
     },
-    { count: () => CountOperation } as Record<string, any>,
+    { count: () => CountOperation } as
+      & Record<
+        string,
+        | MultipleAggregatableProperty<any>
+        | ApproximateDistinctCountAggregatableProperty
+      >
+      & { count: () => typeof CountOperation },
   ) as MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>;
 }

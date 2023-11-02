@@ -52,6 +52,6 @@ export function mapPropertiesToGroupByProperties<
       }
       return acc;
     },
-    {} as Record<string, any>,
+    {} as Record<string, GroupBySelections<any>>,
   ) as GroupBySelections<OsdkLegacyObjectFrom<O, K>>;
 }
