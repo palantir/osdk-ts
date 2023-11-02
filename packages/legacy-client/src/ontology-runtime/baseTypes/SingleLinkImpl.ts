@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import { type GetLinkedObjectError, type Result } from "../ontologyProvider";
-import type { ClientContext } from "../ontologyProvider/calls/ClientContext";
 import { getOnlyLinkedObject } from "../ontologyProvider/calls/getOnlyLinkedObject";
 import type { SingleLink } from "./links";
 import type { OntologyObject } from "./OntologyObject";
@@ -24,18 +24,18 @@ import type { ParameterValue } from "./ParameterValue";
 export class SingleLinkImpl<T extends OntologyObject = OntologyObject>
   implements SingleLink<T>
 {
-  #context: ClientContext;
+  #client: ThinClient<any>;
   #sourceObjectType: string;
   #sourcePrimaryKey: ParameterValue;
   #targetObjectType: T["__apiName"];
 
   constructor(
-    context: ClientContext,
+    client: ThinClient<any>,
     sourceObjectType: string,
     sourcePrimaryKey: ParameterValue,
     targetObjectType: T["__apiName"],
   ) {
-    this.#context = context;
+    this.#client = client;
     this.#sourceObjectType = sourceObjectType;
     this.#sourcePrimaryKey = sourcePrimaryKey;
     this.#targetObjectType = targetObjectType;
@@ -43,7 +43,7 @@ export class SingleLinkImpl<T extends OntologyObject = OntologyObject>
 
   async get(): Promise<Result<T, GetLinkedObjectError>> {
     return getOnlyLinkedObject(
-      this.#context,
+      this.#client,
       this.#sourceObjectType,
       this.#sourcePrimaryKey,
       this.#targetObjectType,

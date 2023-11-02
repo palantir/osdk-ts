@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
@@ -29,29 +30,24 @@ import {
   vi,
 } from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { MockOntology } from "../../util/test";
 import { createOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let context: ClientContext;
+  let client: ThinClient<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
-    context = {
-      client: createThinClient(
-        MockOntology,
-        "https://mock.com",
-        () => "Token",
-        fetch,
-      ),
-      ontology: MockOntology,
-      createObject: vi.fn(),
-    };
+    client = createThinClient(
+      MockOntology,
+      "https://mock.com",
+      () => "Token",
+      fetch,
+    );
   });
 
   it("creates a search on an ObjectSet", () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     const whereObjectSet = os.where(a => a.id.eq("123"));
 
     expect(whereObjectSet.definition).toEqual({
@@ -66,7 +62,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates a searchAround on an ObjectSet", () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     const searchAroundObjectSet = os.searchAroundLinkedTodos();
 
     expect(searchAroundObjectSet.definition).toEqual({
@@ -77,7 +73,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the count aggregation", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.count().compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -91,7 +87,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the min aggregation", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.min(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -105,7 +101,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the max aggregation", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.max(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -119,7 +115,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the sum aggregation", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.sum(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -133,7 +129,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the avg aggregation", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.avg(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -147,7 +143,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates the groupBy clauses", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.groupBy(s => s.complete.exact()).groupBy(s => s.body.exact())
       .count().compute();
@@ -165,7 +161,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates complex aggregation queries", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await (os.aggregate(b => ({
       foo: b.complete.approximateDistinct(),
@@ -186,7 +182,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates approximateDistinct queries", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
     await os.approximateDistinct(s => s.complete).compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -204,7 +200,7 @@ describe("OsdkObjectSet", () => {
   });
 
   it("loads a page", async () => {
-    const os = createBaseTodoObjectSet(context);
+    const os = createBaseTodoObjectSet(client);
     mockObjectPage([mockTodoObject]);
     const page = await os.page({ pageSize: 1 });
     expect(fetch).toHaveBeenCalledOnce();
@@ -265,12 +261,11 @@ const baseObjectSet: ObjectSetDefinition = {
   objectType: "Todo",
 };
 
-function createBaseTodoObjectSet(context: ClientContext) {
+function createBaseTodoObjectSet(client: ThinClient<any>) {
   const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
-    context,
+    client,
     "Todo",
     baseObjectSet,
-    MockOntology,
   );
 
   return os;

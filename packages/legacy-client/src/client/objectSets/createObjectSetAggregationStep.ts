@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
 import {
   assertBucketingInternal,
   ComputeStep,
@@ -28,7 +32,6 @@ import type {
   InternalBucketing,
   ObjectSetDefinition,
 } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import type {
   AggregateSelection,
   GroupBySelections,
@@ -43,7 +46,7 @@ export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  clientContext: ClientContext,
+  client: ThinClient<O>,
   type: K,
   definition: ObjectSetDefinition,
   groupByClauses: Array<InternalBucketing<string, BucketValue>>,
@@ -54,16 +57,16 @@ export function createObjectSetAggregationStep<
 > {
   // TODO defer these until they are needed and cache them by ontologyRid/objectType
   const aggregatableProperties = mapPropertiesToAggregatableProperties(
-    clientContext.ontology as O,
+    client.ontology,
     type,
   );
   const groupableProperties = mapPropertiesToGroupByProperties(
-    clientContext.ontology as O,
+    client.ontology,
     type,
   );
   const multipleAggregationProperties =
     mapPropertiesToMultipleAggregationProperties(
-      clientContext.ontology as O,
+      client.ontology,
       type,
     );
 
@@ -71,7 +74,7 @@ export function createObjectSetAggregationStep<
     aggregate(aggregateBuilder) {
       const aggregate = aggregateBuilder(multipleAggregationProperties);
       return new ComputeStep(
-        clientContext,
+        client,
         definition,
         groupByClauses,
         Object.keys(aggregate).map(key => {
@@ -103,7 +106,7 @@ export function createObjectSetAggregationStep<
 
     approximateDistinct(propertySelector) {
       const selectedProperty = propertySelector(aggregatableProperties);
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "approximateDistinct",
         name: "distinctCount",
         field: selectedProperty.propertyApiName,
@@ -116,7 +119,7 @@ export function createObjectSetAggregationStep<
       const groupByClause = propertySelector(groupableProperties);
       assertBucketingInternal(groupByClause);
       return createObjectSetAggregationStep<O, K>(
-        clientContext,
+        client,
         type,
         definition,
         [
@@ -132,7 +135,7 @@ export function createObjectSetAggregationStep<
     },
 
     count() {
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "count",
         name: "count",
         metricValueType: MetricValueType.NUMERIC,
@@ -142,7 +145,7 @@ export function createObjectSetAggregationStep<
 
     min(propertySelector) {
       const selectedProperty = propertySelector(aggregatableProperties);
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "min",
         name: "min",
         field: selectedProperty.propertyApiName,
@@ -153,7 +156,7 @@ export function createObjectSetAggregationStep<
 
     max(propertySelector) {
       const selectedProperty = propertySelector(aggregatableProperties);
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "max",
         name: "max",
         field: selectedProperty.propertyApiName,
@@ -164,7 +167,7 @@ export function createObjectSetAggregationStep<
 
     avg(propertySelector) {
       const selectedProperty = propertySelector(aggregatableProperties);
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "avg",
         name: "avg",
         field: selectedProperty.propertyApiName,
@@ -175,7 +178,7 @@ export function createObjectSetAggregationStep<
 
     sum(propertySelector) {
       const selectedProperty = propertySelector(aggregatableProperties);
-      return new ComputeStep(clientContext, definition, groupByClauses, [{
+      return new ComputeStep(client, definition, groupByClauses, [{
         type: "sum",
         name: "sum",
         field: selectedProperty.propertyApiName,

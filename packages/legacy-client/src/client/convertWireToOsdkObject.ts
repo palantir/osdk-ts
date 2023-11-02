@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type OntologyDefinition } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
@@ -26,13 +26,12 @@ import type {
 } from "../ontology-runtime/baseTypes";
 import { MultiLinkImpl } from "../ontology-runtime/baseTypes/MultiLinkImpl";
 import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
-import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
 
 function createPrototype<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
-  context: ClientContext,
+  context: ThinClient<O>,
   primaryKey: ParameterValue,
   type: T,
 ) {
@@ -90,22 +89,23 @@ export function convertWireToOsdkObject<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
-  context: ClientContext,
+  client: ThinClient<O>,
+  type: T,
   obj: OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>,
 ): OsdkLegacyObjectFrom<O, T> {
-  const ontologyCache = cache.get(context.ontology.metadata.ontologyRid);
+  const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
   let proto = ontologyCache?.get(obj.__apiName);
 
   if (proto == null) {
     let proto = createPrototype(
-      context,
+      client,
       obj.__primaryKey,
       obj.__apiName,
     );
 
     if (ontologyCache == null) {
       cache.set(
-        context.ontology.metadata.ontologyRid,
+        client.ontology.metadata.ontologyRid,
         new Map([[obj.__apiName, proto]]),
       );
     } else {
