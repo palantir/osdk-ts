@@ -10,7 +10,7 @@
     "**/*-lock.json",
     "**/build",
     "**/.turbo",
-    "src/generatedNoCheck/",
+    "**/src/generatedNoCheck/",
     "pnpm-lock.yaml",
     ".vscode/settings.json"
   ],

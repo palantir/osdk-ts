@@ -1,17 +1,11 @@
-import { ObjectDefinition } from "@osdk/api";
+import { ObjectDefinition } from '@osdk/api';
 
-import {
-  GeoPoint,
-  GeoShape,
-  LocalDate,
-  OntologyObject,
-  Timestamp,
-} from "@osdk/legacy-client";
+import { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
 /**
  * Its a todo item.
  */
 export interface Todo extends OntologyObject {
-  readonly __apiName: "Todo";
+  readonly __apiName: 'Todo';
   readonly __primaryKey: number;
   readonly id: number | undefined;
   /**
@@ -22,18 +16,18 @@ export interface Todo extends OntologyObject {
 }
 
 export const Todo = {
-  apiName: "Todo",
-  primaryKeyType: "integer",
+  apiName: 'Todo',
+  primaryKeyType: 'integer',
   links: {},
   properties: {
     id: {
-      type: "integer",
+      type: 'integer',
     },
     body: {
-      type: "string",
+      type: 'string',
     },
     complete: {
-      type: "boolean",
+      type: 'boolean',
     },
   },
-} satisfies ObjectDefinition<"Todo", "Todo">;
+} satisfies ObjectDefinition<'Todo', 'Todo'>;
