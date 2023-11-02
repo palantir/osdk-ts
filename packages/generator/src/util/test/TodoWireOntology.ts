@@ -48,6 +48,40 @@ export const TodoWireOntology = {
       status: "ACTIVE",
       rid: "ridForTodo",
     },
+    Person: {
+      apiName: "Person",
+      primaryKey: "email",
+      displayName: "Person",
+      description: "A person",
+      properties: {
+        email: {
+          dataType: {
+            type: "string",
+          },
+        },
+      },
+
+      rid: "ridForPerson",
+      status: "ACTIVE",
+    },
   },
   queryTypes: [],
+  linkTypes: {
+    Person: [{
+      apiName: "Todos",
+      cardinality: "MANY",
+      displayName: "Todos",
+      objectTypeApiName: "Todo",
+      status: "ACTIVE",
+      foreignKeyPropertyApiName: "id",
+    }],
+    Todo: [{
+      apiName: "Assignee",
+      cardinality: "ONE",
+      displayName: "Assignee",
+      objectTypeApiName: "Person",
+      status: "ACTIVE",
+      foreignKeyPropertyApiName: "email",
+    }],
+  },
 } satisfies WireOntologyDefinition;

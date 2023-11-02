@@ -19,8 +19,8 @@ import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
 ) {
-  return `
-import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
+  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
+
 /**
  * ${input.description}
  */

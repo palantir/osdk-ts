@@ -114,6 +114,25 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
 
+  examples/one_dot_one:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../../packages/api
+      '@osdk/generator':
+        specifier: workspace:*
+        version: link:../../packages/generator
+      '@osdk/legacy-client':
+        specifier: workspace:*
+        version: link:../../packages/legacy-client
+    devDependencies:
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+
   monorepo/eslint-config-sane:
     dependencies:
       '@typescript-eslint/eslint-plugin':

@@ -27,7 +27,8 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
     expect(
       await formatTs(objectInterface),
     ).toMatchInlineSnapshot(`
-      "import { OntologyObject, LocalDate, TimeStamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
+      "import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
+
       /**
        * Its a todo item.
        */

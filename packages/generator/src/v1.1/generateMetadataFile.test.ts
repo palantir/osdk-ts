@@ -35,11 +35,12 @@ describe(generateMetadataFile, () => {
     expect(
       helper.getFiles()[`${BASE_PATH}/Ontology.ts`],
     ).toMatchInlineSnapshot(`
-      "// Path: /foo/Ontology
-      import type { OntologyDefinition } from '@osdk/api';
+      "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Objects } from './ontologyObjects';
       import { Todo } from './objects/Todo';
+      import { Person } from './objects/Person';
+
       export const Ontology = {
         metadata: {
           ontologyRid: 'ridHere',
@@ -47,9 +48,10 @@ describe(generateMetadataFile, () => {
           userAgent: 'foundry-typescript-osdk/0.0.1',
         },
         objects: {
-          Todo: Todo,
+          Todo,
+          Person,
         },
-      } satisfies OntologyDefinition<'Todo'>;
+      } satisfies OntologyDefinition<'Todo' | 'Person'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;

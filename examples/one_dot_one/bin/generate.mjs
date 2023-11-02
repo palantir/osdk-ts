@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type * as gateway from "@osdk/gateway";
+import * as fs from "node:fs";
+import * as url from "node:url";
+import { go } from "../build/js/index.mjs";
 
-export interface WireOntologyDefinition {
-  rid: string;
-  apiName: string;
-  description?: string;
-  objectTypes: { [key: string]: gateway.components.ObjectTypeV2 };
-  actionTypes: gateway.components.ActionTypeV2[];
-  queryTypes: gateway.components.QueryTypeV2[];
-  linkTypes: Record<string, gateway.components.LinkTypeSideV2[]>;
-}
+const baseDir = url.fileURLToPath(
+  new URL("../src/generatedNoCheck/", import.meta.url),
+);
+
+fs.mkdirSync(baseDir, { recursive: true });
+go(baseDir);

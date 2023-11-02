@@ -15,6 +15,7 @@
  */
 
 export interface MinimalFs {
+  mkdir: (path: string, options?: { recursive: boolean }) => Promise<void>;
   writeFile: WriteFileFn;
 }
 

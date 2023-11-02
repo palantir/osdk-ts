@@ -28,11 +28,15 @@ export async function generateMetadataFile(
   const objectNames = Object.keys(ontology.objectTypes);
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
-    await formatTs(`// Path: ${path.join(outDir, "Ontology")}
+    await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
   import type { Objects } from "./ontologyObjects";
-  ${objectNames.map((name) => `import {${name}} from "./objects/${name}";`)}
+  ${
+      objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+        .join("\n")
+    }
+
   export const Ontology = {
     metadata: {
         ontologyRid: "${ontology.rid}",

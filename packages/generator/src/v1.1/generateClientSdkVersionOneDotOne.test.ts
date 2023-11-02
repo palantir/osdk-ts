@@ -15,7 +15,6 @@
  */
 
 import { mkdir, rmdir, writeFile } from "fs/promises";
-import { dirname } from "path";
 import { describe, expect, test } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
@@ -39,8 +38,70 @@ describe("generator", () => {
     expect(
       helper.getFiles()[`${BASE_PATH}/index.ts`],
     ).toMatchInlineSnapshot(`
-      "// Path: /foo/index.ts
-      export * from '@osdk/legacy-client';
+      "export {
+        ActionExecutionMode,
+        ActionResponse,
+        ActionValidationResult,
+        AggregatableObjectSet,
+        ArrayType,
+        AttachmentType,
+        BooleanType,
+        ByteType,
+        DateType,
+        DecimalType,
+        DoubleType,
+        FloatType,
+        FoundryApiError,
+        GeoPoint,
+        GeoPointType,
+        GeoShape,
+        GeoShapeType,
+        IntegerType,
+        isErr,
+        isOk,
+        LocalDate,
+        LongType,
+        ObjectType,
+        Op,
+        Polygon,
+        ReturnEditsMode,
+        SetType,
+        ShortType,
+        StringType,
+        StructField,
+        StructType,
+        TimeSeriesType,
+        Timestamp,
+        TimestampType,
+        visitError,
+      } from '@osdk/legacy-client';
+      export type {
+        ActionError,
+        AggregateObjectsError,
+        AggregationGroup,
+        AggregationResult,
+        Attachment,
+        AttachmentMetadata,
+        AttachmentsError,
+        Edits,
+        ErrorVisitor,
+        GetLinkedObjectError,
+        GetObjectError,
+        ListLinkedObjectsError,
+        ListObjectsError,
+        LoadObjectSetError,
+        Page,
+        PermissionDenied,
+        QueryError,
+        QueryResponse,
+        Result,
+        SearchObjectsError,
+        TimeSeries,
+        TimeSeriesError,
+        TimeSeriesPoint,
+        Unauthorized,
+        UnknownError,
+      } from '@osdk/legacy-client';
       export { Ontology } from './Ontology';
       export { FoundryClient } from './FoundryClient';
       "
@@ -69,8 +130,10 @@ describe("generator", () => {
       TodoWireOntology,
       {
         writeFile: async (path, contents) => {
-          await mkdir(dirname(path), { recursive: true });
           await writeFile(path, contents, { flag: "w" });
+        },
+        mkdir: async (path, options) => {
+          await mkdir(path, options);
         },
       },
       `${__dirname}/generated/`,

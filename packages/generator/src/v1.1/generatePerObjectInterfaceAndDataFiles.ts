@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";
@@ -26,6 +25,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
   fs: MinimalFs,
   outDir: string,
 ) {
+  await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       await fs.writeFile(
@@ -33,6 +33,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
         await formatTs(`
         import { ObjectDefinition } from "@osdk/api";
         ${wireObjectTypeV2ToObjectInterfaceStringV1(object)}
+
          export const ${object.apiName} = ${
           JSON.stringify(wireObjectTypeV2ToSdkObjectDefinition(object), null, 2)
         } satisfies ObjectDefinition<"${object.apiName}", "${object.apiName}">;`),
@@ -42,7 +43,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
 
   await fs.writeFile(
     `${outDir}/index.ts`,
-    await formatTs(`// Path: ${path.join(outDir, "index.ts")}
+    await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>
         `export * from "./${apiName}";`
