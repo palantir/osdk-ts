@@ -18,6 +18,7 @@ import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { OsdkLegacyObjectFrom } from "../../../client/OsdkObject";
 import type { ObjectSetDefinition } from "../../baseTypes";
 import type { OrderByClause } from "../../filters";
+import type { Page } from "../../paging";
 import type { LoadObjectSetError } from "../Errors";
 import type { Result } from "../Result";
 import type { ClientContext } from "./ClientContext";
@@ -35,37 +36,32 @@ export async function loadAllObjects<
   selectedProperties: Array<keyof T> = [],
 ): Promise<Result<T[], LoadObjectSetError>> {
   const allObjects: T[] = [];
-  let page = await loadObjectsPage<O, K, T>(
-    context,
-    objectApiName,
-    objectSetDefinition,
-    orderByClauses,
-    selectedProperties,
-  );
+  let page:
+    | Result<Page<T>, LoadObjectSetError>
+    | undefined;
 
-  if (page.type === "error") {
-    return page;
-  }
-
-  allObjects.push(...page.value.data);
-  while (page.type === "ok" && page.value.nextPageToken) {
+  do {
     page = await loadObjectsPage<O, K, T>(
       context,
       objectApiName,
       objectSetDefinition,
       orderByClauses,
       selectedProperties,
-      {
-        pageToken: page.value.nextPageToken,
-      },
+      page?.type === "ok" && page.value.nextPageToken !== undefined
+        ? {
+          pageToken: page.value.nextPageToken,
+        }
+        : undefined,
     );
 
     if (page.type === "error") {
       return page;
     }
 
-    allObjects.push(...page.value.data);
-  }
+    for (const object of page.value.data) {
+      allObjects.push(object);
+    }
+  } while (page.value.nextPageToken !== undefined);
 
   return { type: "ok", value: allObjects };
 }
