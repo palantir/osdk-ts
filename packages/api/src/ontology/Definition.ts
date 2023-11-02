@@ -85,10 +85,11 @@ export interface PropertyDefinition {
   displayName?: string;
   description?: string;
   type: keyof ValidPropertyTypes; // FIXME WHAT ARE THE TYPES
+  multiplicity?: boolean;
   nullable?: boolean;
 }
 
-export interface ValidPropertyBaseTypes {
+export interface ValidPropertyTypes {
   string: string;
   datetime: Date;
   double: number;
@@ -105,14 +106,6 @@ export interface ValidPropertyBaseTypes {
   geopoint: any;
   geoshape: any;
 }
-
-export type AttachmentTypes = {
-  [K in Extract<keyof ValidPropertyBaseTypes, string> as `${K}Array`]: Array<
-    ValidPropertyTypes[K]
-  >;
-};
-
-export type ValidPropertyTypes = ValidPropertyBaseTypes & AttachmentTypes;
 
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
   T["nullable"] extends false ? ValidPropertyTypes[T["type"]]

@@ -60,6 +60,10 @@ function mapPropertyTypeToSearchFilter(
   propertyApiName: string,
   propertyDefinition: PropertyDefinition,
 ) {
+  if (propertyDefinition.multiplicity) {
+    return ArrayFilter(propertyApiName);
+  }
+
   switch (propertyDefinition.type) {
     case "string":
       return StringFilter(propertyApiName);
@@ -89,20 +93,5 @@ function mapPropertyTypeToSearchFilter(
       return GeoPointFilter(propertyApiName);
     case "geoshape":
       return GeoShapeFilter(propertyApiName);
-    case "stringArray":
-    case "booleanArray":
-    case "datetimeArray":
-    case "doubleArray":
-    case "integerArray":
-    case "timestampArray":
-    case "shortArray":
-    case "longArray":
-    case "floatArray":
-    case "decimalArray":
-    case "byteArray":
-    case "attachmentArray":
-    case "geopointArray":
-    case "geoshapeArray":
-      return ArrayFilter(propertyApiName);
   }
 }

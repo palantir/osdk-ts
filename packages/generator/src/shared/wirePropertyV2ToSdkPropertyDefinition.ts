@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/gateway/types";
+import type { PropertyDefinition, ValidPropertyTypes } from "@osdk/api";
+import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2,
@@ -29,49 +29,54 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "float":
     case "long":
     case "short":
-    case "boolean": {
-      return {
-        type: input.dataType.type,
-        // TODO: These wire objects don't have nullable, readonly
-      };
-    }
-    case "date": {
-      return {
-        type: "datetime",
-      };
-    }
-    case "timestamp": {
-      return {
-        type: "timestamp",
-      };
-    }
-    case "array": {
-      // TODO:
-      return {
-        type: "stringArray",
-      };
-    }
+    case "boolean":
+    case "date":
     case "attachment":
-      return {
-        type: "attachment",
-      };
     case "geopoint":
-      return {
-        type: "geopoint",
-      };
     case "geoshape":
-      return {
-        type: "geoshape",
-      };
+    case "timestamp":
     case "timeseries":
-      // TODO:
       return {
-        type: "timestamp",
+        multiplicity: false,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
       };
+    case "array": {
+      return {
+        multiplicity: true,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+      };
+    }
     default:
       const _: never = input.dataType;
       throw new Error(
         `Unexpected data type ${JSON.stringify(input.dataType)}`,
       );
+  }
+}
+
+function objectPropertyTypeToSdkPropertyDefinition(
+  propertyType: ObjectPropertyType,
+): keyof ValidPropertyTypes {
+  switch (propertyType.type) {
+    case "integer":
+    case "string":
+    case "byte":
+    case "decimal":
+    case "double":
+    case "float":
+    case "long":
+    case "short":
+    case "boolean":
+    case "attachment":
+    case "geopoint":
+    case "geoshape":
+    case "timestamp":
+      return propertyType.type;
+    case "date":
+      return "datetime";
+    case "array":
+      return objectPropertyTypeToSdkPropertyDefinition(propertyType.subType);
+    case "timeseries":
+      throw new Error(`Unsupported property type ${propertyType.type}`);
   }
 }

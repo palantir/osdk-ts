@@ -29,12 +29,15 @@ export const Todo = {
   links: {},
   properties: {
     id: {
+      multiplicity: false,
       type: 'integer',
     },
     body: {
+      multiplicity: false,
       type: 'string',
     },
     complete: {
+      multiplicity: false,
       type: 'boolean',
     },
   },

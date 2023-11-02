@@ -52,91 +52,120 @@ export const ObjectTypeWithAllPropertyTypes = {
   links: {},
   properties: {
     id: {
+      multiplicity: false,
       type: 'integer',
     },
     string: {
+      multiplicity: false,
       type: 'string',
     },
     boolean: {
+      multiplicity: false,
       type: 'boolean',
     },
     date: {
+      multiplicity: false,
       type: 'datetime',
     },
     dateTime: {
+      multiplicity: false,
       type: 'timestamp',
     },
     decimal: {
+      multiplicity: false,
       type: 'decimal',
     },
     integer: {
+      multiplicity: false,
       type: 'integer',
     },
     long: {
+      multiplicity: false,
       type: 'long',
     },
     short: {
+      multiplicity: false,
       type: 'short',
     },
     float: {
+      multiplicity: false,
       type: 'float',
     },
     double: {
+      multiplicity: false,
       type: 'double',
     },
     byte: {
+      multiplicity: false,
       type: 'byte',
     },
     attachment: {
+      multiplicity: false,
       type: 'attachment',
     },
     geoPoint: {
+      multiplicity: false,
       type: 'geopoint',
     },
     geoShape: {
+      multiplicity: false,
       type: 'geoshape',
     },
     stringArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'string',
     },
     booleanArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'boolean',
     },
     dateArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'datetime',
     },
     dateTimeArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'timestamp',
     },
     decimalArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'decimal',
     },
     integerArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'integer',
     },
     longArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'long',
     },
     shortArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'short',
     },
     floatArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'float',
     },
     doubleArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'double',
     },
     byteArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'byte',
     },
     attachmentArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'attachment',
     },
     geoPointArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'geopoint',
     },
     geoShapeArray: {
-      type: 'stringArray',
+      multiplicity: true,
+      type: 'geoshape',
     },
   },
 } satisfies ObjectDefinition<'ObjectTypeWithAllPropertyTypes', 'ObjectTypeWithAllPropertyTypes'>;

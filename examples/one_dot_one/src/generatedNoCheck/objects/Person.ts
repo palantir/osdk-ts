@@ -24,6 +24,7 @@ export const Person = {
   links: {},
   properties: {
     email: {
+      multiplicity: false,
       type: 'string',
     },
   },
