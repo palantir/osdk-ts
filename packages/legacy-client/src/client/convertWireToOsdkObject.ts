@@ -102,7 +102,7 @@ export function convertWireToOsdkObject<
   let proto = ontologyCache?.get(apiName);
 
   if (proto == null) {
-    let proto = createPrototype(
+    proto = createPrototype(
       client,
       obj.__primaryKey,
       apiName,
