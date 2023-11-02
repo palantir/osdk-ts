@@ -89,7 +89,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build"]
+      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
     }
   },
 
