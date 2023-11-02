@@ -42,7 +42,7 @@ export const MockOntology = {
         complete: { type: "boolean", nullable: true },
       },
       links: {
-        Task: { multiplicity: false, targetType: "Task" },
+        linkedTodos: { multiplicity: false, targetType: "Task" },
       },
     },
   },

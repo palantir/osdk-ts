@@ -21,5 +21,5 @@ export interface Task extends OntologyObject {
   readonly __apiName: "Task";
   readonly __primaryKey: number;
   readonly id: number | undefined;
-  readonly Todo: MultiLink<Todo>;
+  readonly linkedTodos: MultiLink<Todo>;
 }

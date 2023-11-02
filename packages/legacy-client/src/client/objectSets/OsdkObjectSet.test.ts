@@ -73,12 +73,12 @@ describe("OsdkObjectSet", () => {
       MockOntology,
     );
 
-    const searchAroundObjectSet = os.searchAroundTask();
+    const searchAroundObjectSet = os.searchAroundLinkedTodos();
 
     expect(searchAroundObjectSet.definition).toEqual({
       type: "searchAround",
       objectSet: baseObjectSet,
-      link: "Task",
+      link: "linkedTodos",
     });
   });
 });
