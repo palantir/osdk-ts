@@ -15,19 +15,25 @@
  */
 
 import type { ObjectDefinition } from "@osdk/api";
-import type { ObjectTypeV2 } from "@osdk/gateway/types";
+import type { LinkTypeSideV2, ObjectTypeV2 } from "@osdk/gateway/types";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
 export function wireObjectTypeV2ToSdkObjectDefinition(
   input: ObjectTypeV2,
+  linkTypes: LinkTypeSideV2[] = [],
 ): ObjectDefinition<any, any> {
   return {
     apiName: input.apiName,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
       input.properties[input.primaryKey],
     ),
-    links: {},
+    links: Object.fromEntries(linkTypes.map(linkType => {
+      return [linkType.apiName, {
+        multiplicity: linkType.cardinality === "MANY",
+        targetType: linkType.objectTypeApiName,
+      }];
+    })),
     properties: Object.fromEntries(
       Object.entries(input.properties).map((
         [key, value],
