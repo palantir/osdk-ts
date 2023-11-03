@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+export type ThirdPartyAppRid =
+  `ri.third-party-applications.main.application.${string}`;

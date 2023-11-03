@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+export class ExitProcessError extends Error {
+  constructor(public readonly errorCode: number, msg?: string) {
+    super(msg);
+  }
+}

@@ -14,7 +14,21 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+import { consola } from "consola";
+import { getSiteVersions } from "../../../net/getSiteVersions.mjs";
+import type { CommonSiteArgs } from "../addSiteCommand.js";
+
+export default async function invokeSiteVersionsCommand(args: CommonSiteArgs) {
+  consola.start("Fetching versions");
+  const versions = await getSiteVersions(args.baseUrl, args.appRid);
+  if (versions.length == 0) {
+    consola.warn(
+      "Successfully connected to server, but no versions were found.",
+    );
+    return;
+  }
+
+  consola.success(
+    "Found versions:\n" + versions.map(a => `    * ${a}`).join("\n"),
+  );
+}

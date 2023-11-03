@@ -14,7 +14,30 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
+import type { CommandModule } from "yargs";
+import type { CommonSiteArgs } from "../addSiteCommand";
+import type { UploadArgs } from "./UploadArgs";
+
+export const command: CommandModule<
+  CommonSiteArgs,
+  UploadArgs
+> = {
+  command: "upload",
+  describe: "Upload an application version",
+  builder: (argv) => {
+    return argv
+      .option("siteVersion", {
+        type: "string",
+        demandOption: true,
+      })
+      .option("dir", {
+        type: "string",
+      });
+  },
+  handler: async (args) => {
+    const command = await import("./siteUploadCommand.mjs");
+    await command.default(args);
+  },
 };
+
+export default command;

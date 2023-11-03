@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
+import type { CommandModule } from "yargs";
+import type { CommonSiteArgs } from "../addSiteCommand.js";
+
+export const command: CommandModule<
+  CommonSiteArgs,
+  CommonSiteArgs
+> = {
+  command: "versions",
+  describe: "List application versions",
+  builder: (argv) => {
+    return argv;
+  },
+  handler: async (args) => {
+    const command = await import("./siteVersionsCommand.mjs");
+    await command.default(args);
+  },
 };
+
+export default command;

@@ -14,7 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+export type RepositoryRid = `ri.artifacts.main.repository.${string}`;

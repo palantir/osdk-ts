@@ -14,7 +14,26 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+import addSiteCommand from "./commands/site/addSiteCommand";
+import { ExitProcessError } from "./ExitProcessError.js";
+
+export async function cli(args: string[] = process.argv) {
+  const base = yargs(hideBin(args)).env("OSDK");
+
+  const Consola = await import("consola");
+  // Consola.default.level = Consola.LogLevels.debug;
+
+  addSiteCommand(base);
+
+  base.demandCommand().strict();
+
+  try {
+    return base.parseAsync();
+  } catch (e) {
+    if (e instanceof ExitProcessError) {
+      Consola.consola.error(e.message);
+    }
+  }
+}

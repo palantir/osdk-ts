@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+export function getSiteAssetBaseUrl(
+  foundryBaseUrl: string,
+  repositoryRid: string,
+) {
+  return `${foundryBaseUrl}/artifacts/api/repositories/${repositoryRid}/contents/release/siteasset`;
+}

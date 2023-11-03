@@ -1,0 +1,17 @@
+{
+  "extends": "tsconfig/base",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/types",
+    "composite": true
+  },
+  "include": [
+    "./src/**/*",
+    ".eslintrc.cjs"
+  ],
+  "references": [
+    {
+      "path": "../api"
+    }
+  ]
+}

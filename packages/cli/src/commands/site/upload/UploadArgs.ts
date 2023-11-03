@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+import type { CommonSiteArgs } from "../addSiteCommand";
+
+export interface UploadArgs extends CommonSiteArgs {
+  siteVersion: string;
+  dir?: string;
+}

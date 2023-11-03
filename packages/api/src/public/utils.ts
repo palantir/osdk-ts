@@ -14,7 +14,5 @@
  * limitations under the License.
  */
 
-module.exports = {
-  extends: ["sane/example"],
-  root: true,
-};
+export { createFetchHeaderMutator } from "../util/createFetchHeaderMutator.js";
+export { createRetryingFetch } from "../util/createRetryingFetch.js";
