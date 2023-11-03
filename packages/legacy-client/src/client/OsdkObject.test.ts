@@ -20,6 +20,9 @@ import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
 describe("OsdkObject", () => {
   it("compiles", async () => {
+    const x: Todo = {} as Todo;
+    const y: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> = x;
+
     expectTypeOf<Todo>()
       .toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();
   });

@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
 import type {
   ObjectSetDefinition,
   OrderByClause,
 } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { loadAllObjects } from "../../ontology-runtime/ontologyProvider/calls/loadObjects";
 import { loadObjectsPage } from "../../ontology-runtime/ontologyProvider/calls/loadObjectsPage";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
@@ -29,7 +32,7 @@ export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  clientContext: ClientContext,
+  client: ThinClient<O>,
   apiName: K,
   objectSet: ObjectSetDefinition,
   selectedProperties: string[] = [],
@@ -38,7 +41,7 @@ export function createObjectSetTerminalLoadStep<
   return {
     async page(options) {
       return loadObjectsPage<O, K, OsdkLegacyObjectFrom<O, K>>(
-        clientContext,
+        client,
         apiName,
         objectSet,
         orderByClauses,
@@ -48,7 +51,7 @@ export function createObjectSetTerminalLoadStep<
     },
     async all() {
       return loadAllObjects<O, K, OsdkLegacyObjectFrom<O, K>>(
-        clientContext,
+        client,
         apiName,
         objectSet,
         orderByClauses,

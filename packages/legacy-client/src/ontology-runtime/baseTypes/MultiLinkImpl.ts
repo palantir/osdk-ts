@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import type {
   GetLinkedObjectError,
   ListLinkedObjectsError,
   Result,
 } from "../ontologyProvider";
-import type { ClientContext } from "../ontologyProvider/calls/ClientContext";
 import { getLinkedObject } from "../ontologyProvider/calls/getLinkedObject";
 import { listLinkedObjects } from "../ontologyProvider/calls/listLinkedObjects";
 import { pageLinkedObjects } from "../ontologyProvider/calls/pageLinkedObjects";
@@ -31,18 +31,18 @@ import type { ParameterValue } from "./ParameterValue";
 export class MultiLinkImpl<T extends OntologyObject = OntologyObject>
   implements MultiLink<T>
 {
-  #context: ClientContext;
+  #client: ThinClient<any>;
   #sourceApiName: string;
   #sourcePrimaryKey: ParameterValue;
   #targetApiName: T["__apiName"];
 
   constructor(
-    context: ClientContext,
+    client: ThinClient<any>,
     sourceApiName: string,
     sourcePrimaryKey: ParameterValue,
     targetApiName: T["__apiName"],
   ) {
-    this.#context = context;
+    this.#client = client;
     this.#sourceApiName = sourceApiName;
     this.#sourcePrimaryKey = sourcePrimaryKey;
     this.#targetApiName = targetApiName;
@@ -50,7 +50,7 @@ export class MultiLinkImpl<T extends OntologyObject = OntologyObject>
 
   get(primaryKey: T["__primaryKey"]): Promise<Result<T, GetLinkedObjectError>> {
     return getLinkedObject(
-      this.#context,
+      this.#client,
       this.#sourceApiName,
       this.#sourcePrimaryKey,
       this.#targetApiName,
@@ -60,7 +60,7 @@ export class MultiLinkImpl<T extends OntologyObject = OntologyObject>
 
   all(): Promise<Result<T[], ListLinkedObjectsError>> {
     return listLinkedObjects(
-      this.#context,
+      this.#client,
       this.#sourceApiName,
       this.#sourcePrimaryKey,
       this.#targetApiName,
@@ -73,7 +73,7 @@ export class MultiLinkImpl<T extends OntologyObject = OntologyObject>
       | undefined,
   ): Promise<Result<Page<T>, ListLinkedObjectsError>> {
     return pageLinkedObjects(
-      this.#context,
+      this.#client,
       this.#sourceApiName,
       this.#sourcePrimaryKey,
       this.#targetApiName,

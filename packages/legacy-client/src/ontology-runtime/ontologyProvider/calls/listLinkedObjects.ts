@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import type { OntologyObject } from "../../baseTypes";
 import {
   handleListLinkedObjectsError,
@@ -21,12 +22,11 @@ import {
 } from "../ErrorHandlers";
 import type { ListLinkedObjectsError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { wrapResult } from "./util/wrapResult";
 
 export function listLinkedObjects<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<any>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: T["__apiName"],
@@ -35,7 +35,7 @@ export function listLinkedObjects<T extends OntologyObject>(
     async () => {
       const allObjects: T[] = [];
       let page = await getLinkedObjectsPage<T>(
-        context,
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
@@ -45,7 +45,7 @@ export function listLinkedObjects<T extends OntologyObject>(
       }
       while (page.nextPageToken) {
         page = await getLinkedObjectsPage<T>(
-          context,
+          client,
           sourceApiName,
           primaryKey,
           linkTypeApiName,

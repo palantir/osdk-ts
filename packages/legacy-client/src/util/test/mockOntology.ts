@@ -40,6 +40,7 @@ export const MockOntology = {
         id: { type: "string", nullable: true },
         body: { type: "string", nullable: true },
         complete: { type: "boolean", nullable: true },
+        points: { type: "integer", nullable: true },
       },
       links: {
         linkedTask: { multiplicity: false, targetType: "Task" },

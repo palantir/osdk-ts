@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
 import type { OsdkLegacyObjectFrom } from "../../../client/OsdkObject";
 import type { ObjectSetDefinition } from "../../baseTypes";
 import type { OrderByClause } from "../../filters";
 import type { Page } from "../../paging";
 import type { LoadObjectSetError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { loadObjectsPage } from "./loadObjectsPage";
 
 export async function loadAllObjects<
@@ -29,7 +32,7 @@ export async function loadAllObjects<
   K extends ObjectTypesFrom<O>,
   T extends OsdkLegacyObjectFrom<O, K>,
 >(
-  context: ClientContext,
+  client: ThinClient<O>,
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],
@@ -42,7 +45,7 @@ export async function loadAllObjects<
 
   do {
     page = await loadObjectsPage<O, K, T>(
-      context,
+      client,
       objectApiName,
       objectSetDefinition,
       orderByClauses,

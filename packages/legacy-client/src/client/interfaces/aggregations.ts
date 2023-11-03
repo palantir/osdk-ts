@@ -57,8 +57,10 @@ export declare type ObjectTypesGroupByFunction<
   objectType: GroupBySelections<T>,
 ) => Bucketing<K, V>;
 
-type IsGroupableProperty<T> = NonNullable<T> extends
-  number | LocalDate | Timestamp | string | boolean ? true : false;
+type groupableProperties = number | LocalDate | Timestamp | string | boolean;
+
+type IsGroupableProperty<T> = NonNullable<T> extends groupableProperties ? true
+  : false;
 
 type GroupableProperties<T extends OntologyObject> = {
   [K in keyof T as IsGroupableProperty<T[K]> extends true ? K : never]: T[K];

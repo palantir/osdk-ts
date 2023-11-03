@@ -93,5 +93,8 @@ function mapPropertyTypeToSearchFilter(
       return GeoPointFilter(propertyApiName);
     case "geoshape":
       return GeoShapeFilter(propertyApiName);
+    default:
+      const _: never = propertyDefinition.type;
+      throw new Error(`Unknown property type ${propertyDefinition.type}`);
   }
 }

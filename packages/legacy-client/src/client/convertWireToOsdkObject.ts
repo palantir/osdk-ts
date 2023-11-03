@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { type OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
@@ -26,13 +31,12 @@ import type {
 } from "../ontology-runtime/baseTypes";
 import { MultiLinkImpl } from "../ontology-runtime/baseTypes/MultiLinkImpl";
 import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
-import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
 
 function createPrototype<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
-  context: ClientContext,
+  context: ThinClient<O>,
   primaryKey: ParameterValue,
   type: T,
 ) {
@@ -87,29 +91,30 @@ function createPrototype<
  */
 const cache = new Map<string, Map<string, any>>();
 export function convertWireToOsdkObject<
-  T extends keyof O["objects"] & string,
+  T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(
-  context: ClientContext,
-  obj: OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>,
+  client: ThinClient<O>,
+  apiName: T,
+  obj: OntologyObjectV2,
 ): OsdkLegacyObjectFrom<O, T> {
-  const ontologyCache = cache.get(context.ontology.metadata.ontologyRid);
-  let proto = ontologyCache?.get(obj.__apiName);
+  const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
+  let proto = ontologyCache?.get(apiName);
 
   if (proto == null) {
-    let proto = createPrototype(
-      context,
+    proto = createPrototype(
+      client,
       obj.__primaryKey,
-      obj.__apiName,
+      apiName,
     );
 
     if (ontologyCache == null) {
       cache.set(
-        context.ontology.metadata.ontologyRid,
-        new Map([[obj.__apiName, proto]]),
+        client.ontology.metadata.ontologyRid,
+        new Map([[apiName, proto]]),
       );
     } else {
-      ontologyCache.set(obj.__apiName, proto);
+      ontologyCache.set(apiName, proto);
     }
   }
 

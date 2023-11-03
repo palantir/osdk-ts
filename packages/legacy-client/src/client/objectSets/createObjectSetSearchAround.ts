@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
 import type {
   ObjectSetDefinition,
   SearchAroundObjectSetDefinition,
 } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import type { ObjectSet } from "../interfaces/objectSet";
 import type { SearchAround } from "../interfaces/searchAround";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
@@ -29,13 +32,12 @@ export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  clientContext: ClientContext,
+  client: ThinClient<O>,
   sourceApiName: K,
   objectSet: ObjectSetDefinition,
-  ontologyDefinition: O,
 ): SearchAround<OsdkLegacyObjectFrom<O, K>> {
   const result = {} as SearchAround<OsdkLegacyObjectFrom<O, K>>;
-  const objectDefinition = clientContext.ontology.objects[sourceApiName];
+  const objectDefinition = client.ontology.objects[sourceApiName];
 
   for (const [link, { targetType }] of Object.entries(objectDefinition.links)) {
     const key = `searchAround${capitalize(link)}`;
@@ -48,10 +50,9 @@ export function createObjectSetSearchAround<
       } satisfies SearchAroundObjectSetDefinition;
 
       const objSet = createOsdkObjectSet(
-        clientContext,
+        client,
         targetType,
         definition,
-        ontologyDefinition,
       );
 
       return objSet as ObjectSet<any>;
