@@ -118,14 +118,14 @@ type FilterFromType<T, N extends string> = NonNullable<T> extends number
 
 type AggregationFromType<T> = NonNullable<T> extends number
   ? AggregatableProperty<Double>
-  : T extends Boolean ? AggregatableProperty<number>
-  : T extends LocalDate ? AggregatableProperty<LocalDate>
-  : T extends Timestamp ? AggregatableProperty<Timestamp>
+  : NonNullable<T> extends boolean ? AggregatableProperty<Double>
+  : NonNullable<T> extends LocalDate ? AggregatableProperty<LocalDate>
+  : NonNullable<T> extends Timestamp ? AggregatableProperty<Timestamp>
   : AggregatableProperty<never>;
 
 type MultipleAggregationFromType<T> = NonNullable<T> extends number
   ? MultipleAggregatableProperty<Double>
-  : T extends Boolean ? AggregatableProperty<number>
-  : T extends LocalDate ? MultipleAggregatableProperty<LocalDate>
-  : T extends Timestamp ? MultipleAggregatableProperty<Timestamp>
+  : NonNullable<T> extends boolean ? MultipleAggregatableProperty<LocalDate>
+  : NonNullable<T> extends LocalDate ? MultipleAggregatableProperty<LocalDate>
+  : NonNullable<T> extends Timestamp ? MultipleAggregatableProperty<Timestamp>
   : ApproximateDistinctCountAggregatableProperty;
