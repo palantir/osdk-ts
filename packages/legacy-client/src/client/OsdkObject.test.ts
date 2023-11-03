@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, SingleLink } from "../../ontology-runtime";
-import type { Task } from "./TaskObject";
+import { describe, expectTypeOf, it } from "vitest";
+import type { MockOntology, Todo } from "../util/test";
+import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
-/**
- * Its a todo item.
- */
-export interface Todo extends OntologyObject {
-  readonly __apiName: "Todo";
-  readonly __primaryKey: string;
-  readonly id: string | undefined;
-  /**
-   * The text of the todo
-   */
-  readonly body: string | undefined;
-  readonly complete: boolean | undefined;
-  readonly linkedTask: SingleLink<Task>;
-}
+describe("OsdkObject", () => {
+  it("compiles", async () => {
+    expectTypeOf<Todo>()
+      .toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();
+  });
+});

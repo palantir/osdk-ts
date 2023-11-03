@@ -107,9 +107,15 @@ export interface ValidPropertyTypes {
   geoshape: any;
 }
 
+type MaybeArray<T extends PropertyDefinition, U> = T["multiplicity"] extends
+  true ? Array<U> : U;
+
+type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
+  ? U | undefined
+  : U;
+
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  T["nullable"] extends false ? ValidPropertyTypes[T["type"]]
-    : ValidPropertyTypes[T["type"]] | undefined;
+  MaybeNullable<T, MaybeArray<T, ValidPropertyTypes[T["type"]]>>;
 
 export type OsdkObjectLink<
   K extends string,

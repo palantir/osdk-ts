@@ -27,22 +27,22 @@ export const MockOntology = {
       apiName: "Task",
       primaryKeyType: "integer",
       properties: {
-        id: { type: "integer" },
+        id: { type: "integer", nullable: true },
       },
       links: {
-        Todo: { multiplicity: true, targetType: "Todo" },
+        linkedTodos: { multiplicity: true, targetType: "Todo" },
       },
     },
     Todo: {
       apiName: "Todo",
       primaryKeyType: "string",
       properties: {
-        id: { type: "string" },
+        id: { type: "string", nullable: true },
         body: { type: "string", nullable: true },
         complete: { type: "boolean", nullable: true },
       },
       links: {
-        linkedTodos: { multiplicity: false, targetType: "Task" },
+        linkedTask: { multiplicity: false, targetType: "Task" },
       },
     },
   },

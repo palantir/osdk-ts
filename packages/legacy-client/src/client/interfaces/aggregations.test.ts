@@ -20,9 +20,6 @@ import type {
   ApproximateDistinctCountAggregatableProperty,
   BooleanGroupBy,
   CountOperation,
-  Double,
-  MultipleAggregatableProperty,
-  NumericGroupBy,
   StringGroupBy,
 } from "../../ontology-runtime";
 import type { Todo } from "../../util/test/TodoObject";
@@ -36,19 +33,19 @@ describe("Aggregations", () => {
   it("correct types", () => {
     expectTypeOf<GroupBySelections<Todo>>().toMatchTypeOf<{
       complete: BooleanGroupBy<"complete">;
-      id: NumericGroupBy<"id">;
+      id: StringGroupBy<"id">;
       body: StringGroupBy<"body">;
     }>();
 
     expectTypeOf<AggregateSelection<Todo>>().toMatchTypeOf<{
       complete: AggregatableProperty<never>;
-      id: AggregatableProperty<Double>;
+      id: AggregatableProperty<never>;
       body: AggregatableProperty<never>;
     }>();
 
     expectTypeOf<MultipleAggregateSelection<Todo>>().toMatchTypeOf<{
       complete: ApproximateDistinctCountAggregatableProperty;
-      id: MultipleAggregatableProperty<Double>;
+      id: ApproximateDistinctCountAggregatableProperty;
       body: ApproximateDistinctCountAggregatableProperty;
       count: () => CountOperation;
     }>();
