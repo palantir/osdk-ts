@@ -18,13 +18,13 @@ import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
 import type { ObjectTypesFrom, OntologyDefinition } from "../../ontology";
+import { createOpenApiRequest } from "../createOpenApiRequest";
 import {
   legacyToModernSingleAggregationResult,
   modernToLegacyAggregationClause,
   modernToLegacyGroupByClause,
   modernToLegacyWhereClause,
 } from "../internal/conversions";
-import { createOpenApiRequest } from "../internal/net";
 import type {
   AggregationResultsWithGroups,
   AggregationsResults,
