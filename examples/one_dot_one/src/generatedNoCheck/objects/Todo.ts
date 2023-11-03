@@ -1,5 +1,13 @@
 import { ObjectDefinition } from '@osdk/api';
-import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from '@osdk/legacy-client';
+import type {
+  OntologyObject,
+  LocalDate,
+  Timestamp,
+  GeoShape,
+  GeoPoint,
+  Attachment,
+  TimeSeries,
+} from '@osdk/legacy-client';
 
 /**
  * Its a todo item.
@@ -21,12 +29,15 @@ export const Todo = {
   links: {},
   properties: {
     id: {
+      multiplicity: false,
       type: 'integer',
     },
     body: {
+      multiplicity: false,
       type: 'string',
     },
     complete: {
+      multiplicity: false,
       type: 'boolean',
     },
   },

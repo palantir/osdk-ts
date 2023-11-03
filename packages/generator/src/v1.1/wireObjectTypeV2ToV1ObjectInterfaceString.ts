@@ -19,7 +19,7 @@ import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
 ) {
-  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
+  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries } from "@osdk/legacy-client";
 
 /**
  * ${input.description}
@@ -59,7 +59,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "integer":
       return "number";
     case "attachment":
-      throw new Error("not implemented");
+      return "Attachment";
     case "byte":
       return "number";
     case "date":
@@ -79,10 +79,12 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "short":
       return "number";
     case "timestamp":
-      return "TimeStamp";
+      return "Timestamp";
     case "timeseries":
+      return `TimeSeries<number>`;
     default:
-      throw new Error("not implemented");
+      const _: never = property;
+      throw new Error(`Unknown property type ${property}`);
   }
 }
 

@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import type {
   BaseObjectSetDefinition,
+  FilteredPropertiesTerminalOperationsWithGet,
   FilterObjectSetDefinition,
   ObjectSetDefinition,
 } from "../../ontology-runtime";
@@ -33,6 +34,7 @@ import type {
 } from "../interfaces";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
 import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
@@ -107,8 +109,16 @@ export function createOsdkObjectSet<
     },
     select<T extends keyof SelectableProperties<OsdkLegacyObjectFrom<O, K>>>(
       properties: T[],
-    ): FilteredPropertiesTerminalOperations<OsdkLegacyObjectFrom<O, K>, T[]> {
-      throw new Error("not implemented");
+    ): FilteredPropertiesTerminalOperationsWithGet<
+      OsdkLegacyObjectFrom<O, K>,
+      T[]
+    > {
+      return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
+        client,
+        apiName,
+        objectSetDefinition,
+        properties,
+      );
     },
   };
 
@@ -158,7 +168,12 @@ export function createBaseOsdkObjectSet<
       return getObject(client, apiName, primaryKey);
     },
     select(properties) {
-      throw new Error("not implemented");
+      return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
+        client,
+        apiName,
+        baseObjectSetDefinition,
+        properties,
+      );
     },
   };
 

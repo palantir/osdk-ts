@@ -67,6 +67,203 @@ export function go(basePath: string) {
           rid: "ridForPerson",
           status: "ACTIVE",
         },
+        ObjectTypeWithAllPropertyTypes: {
+          apiName: "ObjectTypeWithAllPropertyTypes",
+          primaryKey: "id",
+          displayName: "ObjectTypeWithAllPropertyTypes",
+          description: "A type with all property types",
+          rid: "ridForObjectTypeWithAllPropertyTypes",
+          status: "ACTIVE",
+          properties: {
+            id: {
+              dataType: {
+                type: "integer",
+              },
+            },
+            string: {
+              dataType: {
+                type: "string",
+              },
+            },
+            boolean: {
+              dataType: {
+                type: "boolean",
+              },
+            },
+            date: {
+              dataType: {
+                type: "date",
+              },
+            },
+            dateTime: {
+              dataType: {
+                type: "timestamp",
+              },
+            },
+            decimal: {
+              dataType: {
+                type: "decimal",
+              },
+            },
+            integer: {
+              dataType: {
+                type: "integer",
+              },
+            },
+            long: {
+              dataType: {
+                type: "long",
+              },
+            },
+            short: {
+              dataType: {
+                type: "short",
+              },
+            },
+            float: {
+              dataType: {
+                type: "float",
+              },
+            },
+            double: {
+              dataType: {
+                type: "double",
+              },
+            },
+            byte: {
+              dataType: {
+                type: "byte",
+              },
+            },
+            attachment: {
+              dataType: {
+                type: "attachment",
+              },
+            },
+            geoPoint: {
+              dataType: {
+                type: "geopoint",
+              },
+            },
+            geoShape: {
+              dataType: {
+                type: "geoshape",
+              },
+            },
+            stringArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "string",
+                },
+              },
+            },
+            booleanArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "boolean",
+                },
+              },
+            },
+            dateArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "date",
+                },
+              },
+            },
+            dateTimeArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "timestamp",
+                },
+              },
+            },
+            decimalArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "decimal",
+                },
+              },
+            },
+            integerArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "integer",
+                },
+              },
+            },
+            longArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "long",
+                },
+              },
+            },
+            shortArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "short",
+                },
+              },
+            },
+            floatArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "float",
+                },
+              },
+            },
+            doubleArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "double",
+                },
+              },
+            },
+            byteArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "byte",
+                },
+              },
+            },
+            attachmentArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "attachment",
+                },
+              },
+            },
+            geoPointArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "geopoint",
+                },
+              },
+            },
+            geoShapeArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "geoshape",
+                },
+              },
+            },
+          },
+        },
       },
       queryTypes: [],
       linkTypes: {

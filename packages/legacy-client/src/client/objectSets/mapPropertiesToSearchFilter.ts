@@ -15,12 +15,17 @@
  */
 
 import type { PropertyDefinition } from "@osdk/api";
+import type { OntologyObject } from "../../ontology-runtime";
 import {
+  ArrayFilter,
+  AttachmentFilter,
   BooleanFilter,
+  GeoPointFilter,
+  GeoShapeFilter,
   LocalDateFilter,
   NumericFilter,
-  type OntologyObject,
   StringFilter,
+  TimestampFilter,
 } from "../../ontology-runtime";
 import type { ObjectTypeFilter } from "../interfaces/filters";
 
@@ -41,7 +46,12 @@ export function mapPropertiesToSearchFilter<T extends OntologyObject>(
         | StringFilter
         | BooleanFilter
         | LocalDateFilter
-        | NumericFilter;
+        | NumericFilter
+        | TimestampFilter
+        | AttachmentFilter
+        | GeoPointFilter
+        | GeoShapeFilter
+        | ArrayFilter<any>;
     },
   ) as ObjectTypeFilter<T>;
 }
@@ -50,6 +60,10 @@ function mapPropertyTypeToSearchFilter(
   propertyApiName: string,
   propertyDefinition: PropertyDefinition,
 ) {
+  if (propertyDefinition.multiplicity) {
+    return ArrayFilter(propertyApiName);
+  }
+
   switch (propertyDefinition.type) {
     case "string":
       return StringFilter(propertyApiName);
@@ -61,5 +75,26 @@ function mapPropertyTypeToSearchFilter(
       return NumericFilter(propertyApiName);
     case "integer":
       return NumericFilter(propertyApiName);
+    case "timestamp":
+      return TimestampFilter(propertyApiName);
+    case "short":
+      return NumericFilter(propertyApiName);
+    case "long":
+      return NumericFilter(propertyApiName);
+    case "float":
+      return NumericFilter(propertyApiName);
+    case "decimal":
+      return NumericFilter(propertyApiName);
+    case "byte":
+      return NumericFilter(propertyApiName);
+    case "attachment":
+      return AttachmentFilter(propertyApiName);
+    case "geopoint":
+      return GeoPointFilter(propertyApiName);
+    case "geoshape":
+      return GeoShapeFilter(propertyApiName);
+    default:
+      const _: never = propertyDefinition.type;
+      throw new Error(`Unknown property type ${propertyDefinition.type}`);
   }
 }

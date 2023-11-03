@@ -22,12 +22,13 @@ import type { Task } from "./TaskObject";
  */
 export interface Todo extends OntologyObject {
   readonly __apiName: "Todo";
-  readonly __primaryKey: number;
-  readonly id: number | undefined;
+  readonly __primaryKey: string;
+  readonly id: string | undefined;
   /**
    * The text of the todo
    */
   readonly body: string | undefined;
   readonly complete: boolean | undefined;
-  readonly Task: SingleLink<Task>;
+  readonly points: number | undefined;
+  readonly linkedTask: SingleLink<Task>;
 }

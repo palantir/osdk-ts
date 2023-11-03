@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { default as createOpenApiRequest } from "./createOpenApiRequest";
 export * as Wire from "./types";

@@ -20,9 +20,6 @@ import {
   aggregateObjectSetV2,
   applyActionV2,
   executeQueryV2,
-  getAttachment,
-  getAttachmentContent,
-  getAttachmentsV2,
   getFirstPoint,
   getLastPoint,
   streamPoints,
@@ -51,7 +48,6 @@ import { convertToAggregationResult } from "../aggregations/aggregationConverter
 import type {
   ArrayType,
   Attachment,
-  AttachmentMetadata,
   AttachmentType,
   BooleanType,
   ByteType,
@@ -90,9 +86,9 @@ import type {
 } from "../baseTypes";
 import {
   ActionResponse,
-  AttachmentProperty,
   GeoPoint,
   GeoShape,
+  isAttachment,
   isOntologyObject,
   LocalDate,
   Timestamp,
@@ -489,76 +485,6 @@ export class OntologyProvider {
     );
   }
 
-  getAttachmentMetadata(
-    ontologyApiName?: string,
-    objectTypeApiName?: string,
-    primaryKey?: any,
-    propertyName?: string,
-    attachmentRid?: string,
-  ): Promise<Result<AttachmentMetadata, AttachmentsError>> {
-    return wrapResult(
-      async () => {
-        if (attachmentRid) {
-          const response = await getAttachment(
-            createOpenApiRequest(this.#client.stack, this.#client.fetch),
-            attachmentRid,
-          );
-          return {
-            filename: response.filename,
-            mediaType: response.mediaType,
-            rid: response.rid,
-            sizeBytes: response.sizeBytes,
-          };
-        }
-
-        const response = await getAttachmentsV2(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          ontologyApiName!,
-          objectTypeApiName!,
-          primaryKey!,
-          propertyName!,
-        );
-
-        if (response.type === "single") {
-          return {
-            filename: response.filename,
-            mediaType: response.mediaType,
-            rid: response.rid,
-            sizeBytes: response.sizeBytes,
-          };
-        }
-
-        throw new Error(`Remove this code path`);
-      },
-      e =>
-        handleAttachmentsError(new AttachmentsErrorHandler(), e, e.parameters),
-    );
-  }
-
-  readAttachmentContent(
-    ontologyApiName?: string,
-    objectTypeApiName?: string,
-    primaryKey?: any,
-    propertyName?: string,
-    attachmentRid?: string,
-  ): Promise<Result<Blob, AttachmentsError>> {
-    return wrapResult(
-      async () => {
-        const response = await getAttachmentContent(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          attachmentRid!,
-        );
-        if (globalThis.Blob && response instanceof globalThis.Blob) {
-          return response;
-        } else {
-          throw new Error(`Expected a Blob!`);
-        }
-      },
-      e =>
-        handleAttachmentsError(new AttachmentsErrorHandler(), e, e.parameters),
-    );
-  }
-
   private async remapQueryResponseType(
     responseValue: PrimitiveParameterValue,
     objectFactory: OntologyObjectFactory,
@@ -929,7 +855,7 @@ export class OntologyProvider {
       return value.toISOString();
     } else if (value instanceof Timestamp) {
       return value.toISOString();
-    } else if (value instanceof AttachmentProperty) {
+    } else if (isAttachment(value)) {
       return value.attachmentRid!;
     } else if (Array.isArray(value)) {
       return value.map(a => this.getParameterValueMapping(a));
@@ -960,18 +886,10 @@ export class OntologyProvider {
 }
 
 async function remapAttachmentResponse(
-  client: ThinClient<OntologyDefinition<any>>,
-  response: AttachmentV2,
+  _client: ThinClient<OntologyDefinition<any>>,
+  _response: AttachmentV2,
 ): Promise<Attachment> {
-  return AttachmentProperty.constructAttachment(
-    client,
-    undefined,
-    undefined,
-    undefined,
-    {
-      rid: response.rid,
-    },
-  );
+  throw new Error("remove");
 }
 
 function getReader(streamOrBlob: ReadableStream<Uint8Array> | Blob) {

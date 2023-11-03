@@ -15,6 +15,6 @@
  */
 
 module.exports = {
-  extends: ["sane/library"],
+  extends: ["sane/example"],
   root: true,
 };

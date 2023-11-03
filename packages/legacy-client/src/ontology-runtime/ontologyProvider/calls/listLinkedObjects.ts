@@ -16,6 +16,7 @@
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject } from "../../baseTypes";
+import type { Page } from "../../paging";
 import {
   handleListLinkedObjectsError,
   ListLinkedObjectsErrorHandler,
@@ -34,29 +35,23 @@ export function listLinkedObjects<T extends OntologyObject>(
   return wrapResult(
     async () => {
       const allObjects: T[] = [];
-      let page = await getLinkedObjectsPage<T>(
-        client,
-        sourceApiName,
-        primaryKey,
-        linkTypeApiName,
-      );
-      for (const object of page.data) {
-        allObjects.push(object);
-      }
-      while (page.nextPageToken) {
+
+      let page: Page<T> | undefined;
+      do {
         page = await getLinkedObjectsPage<T>(
           client,
           sourceApiName,
           primaryKey,
           linkTypeApiName,
           {
-            pageToken: page.nextPageToken,
+            pageToken: page?.nextPageToken,
           },
         );
         for (const object of page.data) {
           allObjects.push(object);
         }
-      }
+      } while (page.nextPageToken);
+
       return allObjects;
     },
     e =>

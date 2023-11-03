@@ -20,7 +20,6 @@ import type {
   ApproximateDistinctCountAggregatableProperty,
   BooleanGroupBy,
   CountOperation,
-  Double,
   MultipleAggregatableProperty,
   NumericGroupBy,
   StringGroupBy,
@@ -34,23 +33,26 @@ import type {
 
 describe("Aggregations", () => {
   it("correct types", () => {
-    expectTypeOf<GroupBySelections<Todo>>().toMatchTypeOf<{
+    expectTypeOf<{
       complete: BooleanGroupBy<"complete">;
-      id: NumericGroupBy<"id">;
+      id: StringGroupBy<"id">;
       body: StringGroupBy<"body">;
-    }>();
+      points: NumericGroupBy<"points">;
+    }>().toMatchTypeOf<GroupBySelections<Todo>>();
 
-    expectTypeOf<AggregateSelection<Todo>>().toMatchTypeOf<{
+    expectTypeOf<{
       complete: AggregatableProperty<never>;
-      id: AggregatableProperty<Double>;
-      body: AggregatableProperty<never>;
-    }>();
+      id: AggregatableProperty<never>;
+      body: AggregatableProperty<number>;
+      points: AggregatableProperty<number>;
+    }>().toMatchTypeOf<AggregateSelection<Todo>>();
 
-    expectTypeOf<MultipleAggregateSelection<Todo>>().toMatchTypeOf<{
-      complete: ApproximateDistinctCountAggregatableProperty;
-      id: MultipleAggregatableProperty<Double>;
+    expectTypeOf<{
+      complete: MultipleAggregatableProperty<number>;
+      id: ApproximateDistinctCountAggregatableProperty;
       body: ApproximateDistinctCountAggregatableProperty;
+      points: MultipleAggregatableProperty<number>;
       count: () => CountOperation;
-    }>();
+    }>().toMatchTypeOf<MultipleAggregateSelection<Todo>>();
   });
 });

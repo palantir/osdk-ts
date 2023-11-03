@@ -31,16 +31,19 @@ import {
 } from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
-import { createOsdkObjectSet } from "./OsdkObjectSet";
+import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
+  const origin = "https://mock.com";
+  const baseUrl = `${origin}/api/v2/ontologies/`;
+
   let fetch: MockedFunction<typeof globalThis.fetch>;
   let client: ThinClient<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
     client = createThinClient(
       MockOntology,
-      "https://mock.com",
+      origin,
       () => "Token",
       fetch,
     );
@@ -63,12 +66,12 @@ describe("OsdkObjectSet", () => {
 
   it("creates a searchAround on an ObjectSet", () => {
     const os = createBaseTodoObjectSet(client);
-    const searchAroundObjectSet = os.searchAroundLinkedTodos();
+    const searchAroundObjectSet = os.searchAroundLinkedTask();
 
     expect(searchAroundObjectSet.definition).toEqual({
       type: "searchAround",
       objectSet: baseObjectSet,
-      link: "linkedTodos",
+      link: "linkedTask",
     });
   });
 
@@ -199,6 +202,61 @@ describe("OsdkObjectSet", () => {
     );
   });
 
+  it("supports select methods - all", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([mockTodoObject]);
+    const result = await os.select(["id", "body", "complete"]).all();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: ["id", "body", "complete"],
+      }),
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports select methods - page", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([mockTodoObject]);
+    const result = await os.select(["id", "body", "complete"]).page({
+      pageSize: 5,
+      pageToken: "fakePageToken",
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: ["id", "body", "complete"],
+        pageSize: 5,
+        pageToken: "fakePageToken",
+      }),
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports select methods - get", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([mockTodoObject]);
+    const result = await os.select(["id", "body", "complete"]).get("123");
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      `${baseUrl}Ontology/objects/Todo/123?select=id&select=body&select=complete`,
+      {
+        method: "GET",
+        body: undefined,
+        headers: expect.anything(),
+      },
+    );
+    expect(result.type).toEqual("ok");
+  });
+
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(client);
     mockObjectPage([mockTodoObject]);
@@ -246,7 +304,7 @@ describe("OsdkObjectSet", () => {
     body: object,
   ): [string, RequestInit] {
     return [
-      `https://mock.com/api/v2/ontologies/${endpoint}`,
+      `${baseUrl}${endpoint}`,
       {
         body: JSON.stringify(body),
         headers: expect.anything(),
@@ -262,10 +320,9 @@ const baseObjectSet: ObjectSetDefinition = {
 };
 
 function createBaseTodoObjectSet(client: ThinClient<OntologyDefinition<any>>) {
-  const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
+  const os = createBaseOsdkObjectSet<typeof MockOntology, "Todo">(
     client,
     "Todo",
-    baseObjectSet,
   );
 
   return os;

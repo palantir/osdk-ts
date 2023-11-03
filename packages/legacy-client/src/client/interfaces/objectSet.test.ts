@@ -22,7 +22,9 @@ describe("ObjectSet", () => {
   it("creates", () => {
     const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
     if (os) {
-      os.searchAroundLinkedTodos().searchAroundTask().where(a => a.id.eq(1));
+      os.searchAroundLinkedTodos().searchAroundLinkedTask().where(a =>
+        a.id.eq(1)
+      );
       os.orderBy(a => a.id.asc());
     }
   });

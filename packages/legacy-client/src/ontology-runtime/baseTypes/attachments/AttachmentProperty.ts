@@ -15,71 +15,26 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import type { AttachmentsError } from "../../ontologyProvider";
-import { OntologyProvider } from "../../ontologyProvider";
-import type { Result } from "../../ontologyProvider/Result";
-import type { Attachment, AttachmentMetadata } from "./Attachment";
+import { getAttachment } from "../../ontologyProvider/calls/getAttachment";
+import { getAttachmentMetadata } from "../../ontologyProvider/calls/getAttachmentMetadata";
+import type { Attachment } from "./Attachment";
 
-export class AttachmentProperty implements Attachment {
-  public type = "Attachment" as const;
-  public attachmentRid: string | undefined;
-
-  #client: ThinClient<OntologyDefinition<any>>;
-  #provider: OntologyProvider;
-  #propertyName?: string;
-  #apiName?: string;
-  #primaryKey?: string;
-
-  private constructor(
-    client: ThinClient<OntologyDefinition<any>>,
-    propertyName?: string,
-    apiName?: string,
-    primaryKey?: string,
-    attachmentRid?: string,
-  ) {
-    this.#client = client;
-    this.#provider = new OntologyProvider(client);
-    this.#propertyName = propertyName;
-    this.#apiName = apiName;
-    this.#primaryKey = primaryKey;
-    this.attachmentRid = attachmentRid;
-  }
-
-  static constructAttachment(
-    client: ThinClient<OntologyDefinition<any>>,
-    propertyName?: string,
-    apiName?: string,
-    primaryKey?: string,
-    attachmentRid?: {
-      rid: string;
-    },
-  ): AttachmentProperty {
-    return new AttachmentProperty(
-      client,
-      propertyName,
-      apiName,
-      primaryKey,
-      attachmentRid?.rid,
-    );
-  }
-
-  getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>> {
-    return this.#provider.getAttachmentMetadata(
-      this.#client.ontology.metadata.ontologyApiName,
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-      this.attachmentRid,
-    );
-  }
-
-  read(): Promise<Result<Blob, AttachmentsError>> {
-    return this.#provider.readAttachmentContent(
-      this.#client.ontology.metadata.ontologyApiName,
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-      this.attachmentRid,
-    );
-  }
+export function isAttachment(obj: any): obj is Attachment {
+  return obj?.type === "Attachment";
 }
+
+export const AttachmentProperty = (
+  thinClient: ThinClient<OntologyDefinition<any>>,
+  attachmentRid: string,
+): Attachment => {
+  return {
+    attachmentRid: attachmentRid,
+    type: "Attachment" as const,
+    getMetadata() {
+      return getAttachmentMetadata(thinClient, attachmentRid);
+    },
+    read() {
+      return getAttachment(thinClient, attachmentRid);
+    },
+  };
+};

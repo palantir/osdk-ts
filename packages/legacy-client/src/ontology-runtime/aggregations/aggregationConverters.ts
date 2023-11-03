@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { BaseGroupValue, Bucketing, GroupValue } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
   AggregateObjectsResponseItemV2,
@@ -23,6 +22,11 @@ import type {
 import type { ObjectSetDefinition } from "../baseTypes";
 import { LocalDate, Timestamp } from "../baseTypes";
 import { buildBucketObject } from "../ontologyProvider/AggregationUtils";
+import type {
+  BaseGroupValue,
+  Bucketing,
+  GroupValue,
+} from "./aggregationConverter";
 import { visitInternalBucketing } from "./Aggregations";
 import type {
   AggregationClause,
