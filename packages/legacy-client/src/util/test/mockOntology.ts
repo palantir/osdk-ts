@@ -15,6 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
+import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 
 export const MockOntology = {
   metadata: {
@@ -46,5 +47,8 @@ export const MockOntology = {
         linkedTask: { multiplicity: false, targetType: "Task" },
       },
     },
+    ObjectTypeWithAllPropertyTypes,
   },
-} satisfies OntologyDefinition<"Task" | "Todo">;
+} satisfies OntologyDefinition<
+  "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes"
+>;

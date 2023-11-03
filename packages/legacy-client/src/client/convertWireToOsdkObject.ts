@@ -25,9 +25,14 @@ import type {
   OsdkLegacyObjectFrom,
   OsdkLegacyPropertiesFrom,
 } from "../client/OsdkObject";
-import type {
-  OntologyObject,
-  ParameterValue,
+import {
+  AttachmentProperty,
+  GeoPoint,
+  GeoShape,
+  LocalDate,
+  type OntologyObject,
+  type ParameterValue,
+  Timestamp,
 } from "../ontology-runtime/baseTypes";
 import { MultiLinkImpl } from "../ontology-runtime/baseTypes/MultiLinkImpl";
 import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
@@ -57,6 +62,21 @@ function createPrototype<
     obj["__rid"] = self.__rid;
     return JSON.stringify(obj, undefined, 2);
   };
+
+  for (const [k, v] of Object.entries(objDef.properties)) {
+    // if (v.type === "attachment") {
+    //   Object.defineProperty(proto, k, {
+    //     get: function() {
+    //       const attachment = this.attachment;
+    //       Object.setPrototypeOf(
+    //         attachment,
+    //         AttachmentProperty(context, this.attachment),
+    //       );
+    //       return attachment;
+    //     },
+    //   });
+    // }
+  }
 
   // add the relevant keys for the link types associated with this object type
   for (
@@ -100,15 +120,14 @@ export function convertWireToOsdkObject<
 ): OsdkLegacyObjectFrom<O, T> {
   const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
   let proto = ontologyCache?.get(apiName);
-
-  if (proto == null) {
+  if (!proto) {
     proto = createPrototype(
       client,
       obj.__primaryKey,
       apiName,
     );
 
-    if (ontologyCache == null) {
+    if (!ontologyCache) {
       cache.set(
         client.ontology.metadata.ontologyRid,
         new Map([[apiName, proto]]),
@@ -119,5 +138,133 @@ export function convertWireToOsdkObject<
   }
 
   Object.setPrototypeOf(obj, proto);
+  setPropertyPrototypes<T, O>(client, apiName, obj);
+
   return obj as OsdkLegacyObjectFrom<O, T>;
+}
+
+function setPropertyPrototypes<
+  T extends ObjectTypesFrom<O> & string,
+  O extends OntologyDefinition<any>,
+>(client: ThinClient<O>, apiName: T, obj: OntologyObjectV2) {
+  for (
+    const [k, v] of Object.entries(client.ontology.objects[apiName].properties)
+  ) {
+    if (!obj[k]) {
+      continue;
+    }
+    switch (v.type) {
+      case "attachment":
+        createPropertyPrototype(
+          obj,
+          k,
+          (value) => AttachmentProperty(client, value.rid),
+        );
+        break;
+      case "geopoint":
+        createPropertyPrototype(
+          obj,
+          k,
+          (value) => GeoPoint.fromGeoJson(value),
+        );
+        break;
+      case "geoshape":
+        createPropertyPrototype(
+          obj,
+          k,
+          (value) => GeoShape.fromGeoJson(value),
+        );
+        break;
+      case "datetime":
+        createPropertyPrototype(
+          obj,
+          k,
+          (value) => LocalDate.fromISOString(value),
+        );
+        break;
+      case "timestamp":
+        createPropertyPrototype(
+          obj,
+          k,
+          (value) => Timestamp.fromISOString(value),
+        );
+        break;
+      case "string":
+      case "boolean":
+      case "double":
+      case "integer":
+      case "short":
+      case "long":
+      case "float":
+      case "decimal":
+      case "byte":
+        break;
+      default:
+        const _: never = v.type;
+    }
+  }
+}
+
+function createPropertyPrototype<T>(
+  obj: OntologyObjectV2,
+  k: string,
+  constructor: (value: any) => T,
+) {
+  if (!obj[k]) {
+    return;
+  }
+
+  if (Array.isArray(obj[k])) {
+    createArrayPropertyPrototype(obj, k, constructor);
+  } else {
+    createSinglePropertyPrototype(obj, k, constructor);
+  }
+}
+
+function createArrayPropertyPrototype<T>(
+  obj: OntologyObjectV2,
+  k: string,
+  constructor: (value: any) => T,
+) {
+  const originalArray = obj[k];
+  const slicedArray = originalArray.slice();
+
+  for (let i = 0; i < slicedArray.length; i++) {
+    Object.defineProperty(slicedArray, i, {
+      get: (function(index): () => T {
+        let memoizedValue: T | undefined;
+        return function() {
+          if (!memoizedValue) {
+            memoizedValue = constructor(originalArray[index]);
+          }
+          return memoizedValue;
+        };
+      })(i),
+    });
+  }
+
+  Object.setPrototypeOf(slicedArray, Array.prototype);
+  obj[k] = slicedArray;
+}
+
+function createSinglePropertyPrototype<T>(
+  object: OntologyObjectV2,
+  key: string,
+  constructor: (value: any) => T,
+) {
+  const originalValue = object[key];
+  Object.defineProperty(object, key, {
+    get: (function(): () => T {
+      let memoizedValue: T | undefined;
+      return function() {
+        if (!memoizedValue) {
+          console.log(originalValue);
+          memoizedValue = constructor(originalValue);
+        }
+        return memoizedValue;
+      };
+    })(),
+    set(v) {
+    },
+  });
 }
