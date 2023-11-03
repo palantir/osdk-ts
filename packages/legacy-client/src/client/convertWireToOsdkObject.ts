@@ -105,14 +105,14 @@ export function convertWireToOsdkObject<
 ): OsdkLegacyObjectFrom<O, T> {
   const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
   let proto = ontologyCache?.get(apiName);
-  if (!proto) {
+  if (proto == null) {
     proto = createPrototype(
       client,
       obj.__primaryKey,
       apiName,
     );
 
-    if (!ontologyCache) {
+    if (ontologyCache == null) {
       cache.set(
         client.ontology.metadata.ontologyRid,
         new Map([[apiName, proto]]),
@@ -135,7 +135,7 @@ function setPropertyAccessors<
   for (
     const [k, v] of Object.entries(client.ontology.objects[apiName].properties)
   ) {
-    if (!obj[k]) {
+    if (obj[k] == null) {
       continue;
     }
     switch (v.type) {
@@ -195,7 +195,7 @@ function setPropertyAccessor<T>(
   k: string,
   constructor: (value: any) => T,
 ) {
-  if (!obj[k]) {
+  if (obj[k] == null) {
     return;
   }
 
