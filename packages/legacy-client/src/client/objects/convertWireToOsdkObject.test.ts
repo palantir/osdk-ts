@@ -17,8 +17,8 @@
 import { createThinClient, type ThinClient } from "@osdk/api";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GeoPoint, GeoShape, LocalDate, Timestamp } from "..";
-import { MockOntology } from "../util/test";
+import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../..";
+import { MockOntology } from "../../util/test";
 import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
 
 describe("convertWireToOsdkObject", () => {

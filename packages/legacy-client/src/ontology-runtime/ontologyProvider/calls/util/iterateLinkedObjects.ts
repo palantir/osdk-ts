@@ -18,7 +18,7 @@ import type { ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import type { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
-import { convertWireToOsdkObject } from "../../../../client/convertWireToOsdkObject";
+import { convertWireToOsdkObject } from "../../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../../baseTypes";
 
 export async function* iterateLinkedObjects<T extends OntologyObject>(

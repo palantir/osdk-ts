@@ -17,7 +17,7 @@
 import type { ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
-import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
+import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
 import { GetObjectErrorHandler, handleGetObjectError } from "../ErrorHandlers";
 import type { GetObjectError } from "../Errors";
