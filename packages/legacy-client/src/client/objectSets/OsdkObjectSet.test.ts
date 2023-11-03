@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
@@ -261,7 +261,7 @@ const baseObjectSet: ObjectSetDefinition = {
   objectType: "Todo",
 };
 
-function createBaseTodoObjectSet(client: ThinClient<any>) {
+function createBaseTodoObjectSet(client: ThinClient<OntologyDefinition<any>>) {
   const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
     client,
     "Todo",

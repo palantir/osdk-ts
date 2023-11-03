@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../../oauth-client";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import {
-  type OntologyMetadata,
   OntologyProvider,
   type Result,
   type TimeSeriesError,
@@ -30,34 +29,28 @@ export class TimeSeriesProperty<T extends number | string>
 {
   public type = "TimeSeries" as const;
 
-  #provider: OntologyProvider;
-  #ontologyMetadata: OntologyMetadata;
-  #authClient: Auth;
-  #stack: string;
+  #client: ThinClient<OntologyDefinition<any>>;
   #propertyName: string;
   #apiName: string;
   #primaryKey: string;
 
   static constructTimeSeries<T extends string | number>(
+    client: ThinClient<OntologyDefinition<any>>,
     propertyName: string,
-    authClient: Auth,
-    stack: string,
     apiName: string,
     primaryKey: string,
-    ontologyMetadata: OntologyMetadata,
   ): TimeSeriesProperty<T> {
     return new TimeSeriesProperty<T>(
-      authClient,
-      stack,
+      client,
       propertyName,
       apiName,
       primaryKey,
-      ontologyMetadata,
     );
   }
 
   getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.#provider.getFirstPoint(
+    const ontologyProvider = new OntologyProvider(this.#client);
+    return ontologyProvider.getFirstPoint(
       this.#apiName,
       this.#primaryKey,
       this.#propertyName,
@@ -65,7 +58,8 @@ export class TimeSeriesProperty<T extends number | string>
   }
 
   getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.#provider.getLastPoint(
+    const ontologyProvider = new OntologyProvider(this.#client);
+    return ontologyProvider.getLastPoint(
       this.#apiName,
       this.#primaryKey,
       this.#propertyName,
@@ -74,29 +68,22 @@ export class TimeSeriesProperty<T extends number | string>
 
   get points(): TimeSeriesQuery<T> {
     return new TimeSeriesQuery(
-      this.#authClient,
-      this.#stack,
+      this.#client,
       this.#propertyName,
       this.#apiName,
       this.#primaryKey,
-      this.#ontologyMetadata,
     );
   }
 
   private constructor(
-    authClient: Auth,
-    stack: string,
+    client: ThinClient<OntologyDefinition<any>>,
     propertyName: string,
     apiName: string,
     primaryKey: string,
-    ontologyMetadata: OntologyMetadata,
   ) {
-    this.#authClient = authClient;
-    this.#stack = stack;
+    this.#client = client;
     this.#propertyName = propertyName;
     this.#apiName = apiName;
     this.#primaryKey = primaryKey;
-    this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
-    this.#ontologyMetadata = ontologyMetadata;
   }
 }

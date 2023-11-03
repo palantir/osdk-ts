@@ -36,7 +36,7 @@ export async function loadAllObjects<
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],
-  selectedProperties: Array<keyof T> = [],
+  selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T[], LoadObjectSetError>> {
   const allObjects: T[] = [];
   let page:

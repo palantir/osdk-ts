@@ -206,12 +206,10 @@ export class TimeSeriesQuery<T extends string | number>
       throw new Error("Argument .range() needs at least one input.");
     }
     return new TimeSeriesTerminalOperations<T>(
-      this.getAuth(),
-      this.stack,
+      this.client,
       this.propertyName,
       this.apiName,
       this.primaryKey,
-      this.getOntologyMetadata(),
       body,
     );
   }
@@ -224,12 +222,10 @@ export class TimeSeriesQuery<T extends string | number>
       throw new Error("Argument .from() needs at least one input.");
     }
     return new TimeSeriesTerminalOperations<T>(
-      this.getAuth(),
-      this.stack,
+      this.client,
       this.propertyName,
       this.apiName,
       this.primaryKey,
-      this.getOntologyMetadata(),
       body,
     );
   }

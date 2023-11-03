@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject, ParameterValue } from "../../baseTypes";
 import type { GetLinkedObjectError, LinkedObjectNotFound } from "../Errors";
 import { isErr, type Result } from "../Result";
@@ -27,7 +27,7 @@ import { createErrorResponse } from "./util/ResponseCreators";
 export async function getOnlyLinkedObject<
   T extends OntologyObject = OntologyObject,
 >(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceObjectType: string,
   sourcePrimaryKey: ParameterValue,
   targetObjectType: T["__apiName"],

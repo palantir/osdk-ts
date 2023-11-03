@@ -19,11 +19,10 @@ import type {
   OntologyDefinition,
   ThinClient,
 } from "@osdk/api";
-import {
-  type BaseObjectSetDefinition,
-  type FilteredPropertiesTerminalOperations,
-  type FilterObjectSetDefinition,
-  type ObjectSetDefinition,
+import type {
+  BaseObjectSetDefinition,
+  FilterObjectSetDefinition,
+  ObjectSetDefinition,
 } from "../../ontology-runtime";
 import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
 import type {

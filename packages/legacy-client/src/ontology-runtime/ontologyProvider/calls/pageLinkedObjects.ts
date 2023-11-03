@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { PalantirApiError } from "../../../Errors";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
@@ -29,7 +29,7 @@ import { createPageIterator } from "./util/createPageIterator";
 import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,

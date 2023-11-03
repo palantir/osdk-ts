@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
 import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
@@ -25,10 +25,10 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getObject<T extends OntologyObject>(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<any>>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
-  selectedProperties: Array<keyof T> = [],
+  selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T, GetObjectError>> {
   return wrapResult(async () => {
     const object = await getObjectV2(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type {
   GetLinkedObjectError,
   ListLinkedObjectsError,
@@ -31,13 +31,13 @@ import type { ParameterValue } from "./ParameterValue";
 export class MultiLinkImpl<T extends OntologyObject = OntologyObject>
   implements MultiLink<T>
 {
-  #client: ThinClient<any>;
+  #client: ThinClient<OntologyDefinition<any>>;
   #sourceApiName: string;
   #sourcePrimaryKey: ParameterValue;
   #targetApiName: T["__apiName"];
 
   constructor(
-    client: ThinClient<any>,
+    client: ThinClient<OntologyDefinition<any>>,
     sourceApiName: string,
     sourcePrimaryKey: ParameterValue,
     targetApiName: T["__apiName"],

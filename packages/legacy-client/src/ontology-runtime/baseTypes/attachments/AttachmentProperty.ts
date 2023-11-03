@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../../oauth-client";
-import type {
-  AttachmentsError,
-  OntologyMetadata,
-} from "../../ontologyProvider";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { AttachmentsError } from "../../ontologyProvider";
 import { OntologyProvider } from "../../ontologyProvider";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment, AttachmentMetadata } from "./Attachment";
@@ -27,23 +24,21 @@ export class AttachmentProperty implements Attachment {
   public type = "Attachment" as const;
   public attachmentRid: string | undefined;
 
-  #ontologyMetadata: OntologyMetadata;
+  #client: ThinClient<OntologyDefinition<any>>;
   #provider: OntologyProvider;
   #propertyName?: string;
   #apiName?: string;
   #primaryKey?: string;
 
   private constructor(
-    authClient: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
     propertyName?: string,
     apiName?: string,
     primaryKey?: string,
     attachmentRid?: string,
   ) {
-    this.#ontologyMetadata = ontologyMetadata;
-    this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
+    this.#client = client;
+    this.#provider = new OntologyProvider(client);
     this.#propertyName = propertyName;
     this.#apiName = apiName;
     this.#primaryKey = primaryKey;
@@ -51,9 +46,7 @@ export class AttachmentProperty implements Attachment {
   }
 
   static constructAttachment(
-    authClient: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
     propertyName?: string,
     apiName?: string,
     primaryKey?: string,
@@ -62,9 +55,7 @@ export class AttachmentProperty implements Attachment {
     },
   ): AttachmentProperty {
     return new AttachmentProperty(
-      authClient,
-      stack,
-      ontologyMetadata,
+      client,
       propertyName,
       apiName,
       primaryKey,
@@ -74,7 +65,7 @@ export class AttachmentProperty implements Attachment {
 
   getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>> {
     return this.#provider.getAttachmentMetadata(
-      this.#ontologyMetadata.ontologyApiName,
+      this.#client.ontology.metadata.ontologyApiName,
       this.#apiName,
       this.#primaryKey,
       this.#propertyName,
@@ -84,7 +75,7 @@ export class AttachmentProperty implements Attachment {
 
   read(): Promise<Result<Blob, AttachmentsError>> {
     return this.#provider.readAttachmentContent(
-      this.#ontologyMetadata.ontologyApiName,
+      this.#client.ontology.metadata.ontologyApiName,
       this.#apiName,
       this.#primaryKey,
       this.#propertyName,
