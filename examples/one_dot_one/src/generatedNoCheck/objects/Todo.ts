@@ -7,7 +7,10 @@ import type {
   GeoPoint,
   Attachment,
   TimeSeries,
+  MultiLink,
+  SingleLink,
 } from '@osdk/legacy-client';
+import type { Person } from './Person';
 
 /**
  * Its a todo item.
@@ -21,12 +24,18 @@ export interface Todo extends OntologyObject {
    */
   readonly body: string | undefined;
   readonly complete: boolean | undefined;
+  readonly Assignee: SingleLink<Person>;
 }
 
 export const Todo = {
   apiName: 'Todo',
   primaryKeyType: 'integer',
-  links: {},
+  links: {
+    Assignee: {
+      multiplicity: false,
+      targetType: 'Person',
+    },
+  },
   properties: {
     id: {
       multiplicity: false,
@@ -41,4 +50,4 @@ export const Todo = {
       type: 'boolean',
     },
   },
-} satisfies ObjectDefinition<'Todo', 'Todo'>;
+} satisfies ObjectDefinition<'Todo', 'Person'>;

@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
+import type {
+  LinkTypeSideV2,
+  ObjectPropertyType,
+  ObjectTypeV2,
+} from "@osdk/gateway/types";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
+  linkTypes: LinkTypeSideV2[] = [],
 ) {
-  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries } from "@osdk/legacy-client";
+  const uniqueLinkTargets = new Set<string>(
+    linkTypes.map(a => a.objectTypeApiName).filter(a => a !== input.apiName),
+  );
+  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink } from "@osdk/legacy-client";
+${
+    Array.from(uniqueLinkTargets).map(linkTarget =>
+      `import type { ${linkTarget} } from "./${linkTarget}";`
+    ).join("\n")
+  }
 
 /**
  * ${input.description}
@@ -40,6 +53,13 @@ ${
       }readonly ${propertyName}: ${
         wirePropertyTypeV2ToTypeScriptType(propertyDefinition.dataType)
       } | undefined`
+    ).join(";\n")
+  }
+${
+    linkTypes.map(linkType =>
+      `readonly ${linkType.apiName}: ${
+        linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+      }<${linkType.objectTypeApiName}>;`
     ).join(";\n")
   }
 }
