@@ -20,7 +20,6 @@ import {
   type LinkTargetTypeFrom,
   type ObjectTypesFrom,
   type OntologyDefinition,
-  type OsdkObjectPropertyType,
   type PropertyDefinition,
   type PropertyDefinitionFrom,
   type PropertyKeysFrom,
@@ -68,7 +67,7 @@ export type OsdkLegacyPropertiesFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = {
-  [P in PropertyKeysFrom<O, K>]: OsdkObjectPropertyType<
+  [P in PropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
     PropertyDefinitionFrom<O, K, P>
   >;
 };
