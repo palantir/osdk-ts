@@ -247,7 +247,5 @@ function createSinglePropertyAccessor<T>(
         return memoizedValue;
       };
     })(),
-    set(v) {
-    },
   });
 }
