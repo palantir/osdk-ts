@@ -71,6 +71,12 @@ module.exports = {
   // is to have an overrides section.
   overrides: [
     {
+      files: ["**/bin/*.mjs"],
+      rules: {
+        "header/header": "off",
+      },
+    },
+    {
       files: ["*.ts", "*.tsx", "*.mts", "*.cts"],
     },
   ],
