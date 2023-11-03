@@ -44,7 +44,7 @@ export async function loadObjectsPage<
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],
-  selectedProperties: Array<keyof T> = [],
+  selectedProperties: ReadonlyArray<keyof T> = [],
   options?: { pageSize?: number; pageToken?: string },
 ): Promise<Result<Page<T>, LoadObjectSetError>> {
   return wrapResult(
@@ -79,7 +79,7 @@ export async function loadObjectsPage<
 function mapObjectSetBody(
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],
-  selectedProperties: any[] = [],
+  selectedProperties: ReadonlyArray<any> = [],
   options?: { pageSize?: number; pageToken?: string },
 ): LoadObjectSetRequestV2 {
   let objectSetBody: LoadObjectSetRequestV2 = {

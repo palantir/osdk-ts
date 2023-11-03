@@ -28,7 +28,7 @@ export async function getObject<T extends OntologyObject>(
   client: ThinClient<any>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
-  selectedProperties: Array<keyof T> = [],
+  selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T, GetObjectError>> {
   return wrapResult(async () => {
     const object = await getObjectV2(
