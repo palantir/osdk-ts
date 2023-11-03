@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
 import type {
@@ -35,13 +36,12 @@ import {
   handleAggregateObjectsError,
 } from "../ErrorHandlers";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { wrapResult } from "./util/wrapResult";
 
 export function aggregate<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
->(clientContext: ClientContext, body: {
+>(client: ThinClient<any>, body: {
   objectSet: ObjectSetDefinition;
   aggregation: AggregationClause[];
   groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;
@@ -60,10 +60,10 @@ export function aggregate<
 
       const response = await aggregateObjectSetV2(
         createOpenApiRequest(
-          clientContext.client.stack,
-          clientContext.client.fetch,
+          client.stack,
+          client.fetch,
         ),
-        clientContext.ontology.metadata.ontologyApiName,
+        client.ontology.metadata.ontologyApiName,
         {
           objectSet: body.objectSet,
           groupBy: remappedGroups,

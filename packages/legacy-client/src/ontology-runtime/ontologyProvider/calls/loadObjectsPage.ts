@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
+import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
 import type { OsdkLegacyObjectFrom } from "../../../client/OsdkObject";
 import type { ObjectSetDefinition } from "../../baseTypes";
 import type { OrderByClause } from "../../filters";
@@ -28,7 +33,6 @@ import {
 } from "../ErrorHandlers";
 import type { LoadObjectSetError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { wrapResult } from "./util/wrapResult";
 
 export async function loadObjectsPage<
@@ -36,7 +40,7 @@ export async function loadObjectsPage<
   K extends ObjectTypesFrom<O>,
   T extends OsdkLegacyObjectFrom<O, K>,
 >(
-  context: ClientContext,
+  client: ThinClient<O>,
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],
@@ -46,8 +50,8 @@ export async function loadObjectsPage<
   return wrapResult(
     async () => {
       const page = await loadObjectSetV2(
-        createOpenApiRequest(context.client.stack, context.client.fetch),
-        context.ontology.metadata.ontologyApiName,
+        createOpenApiRequest(client.stack, client.fetch),
+        client.ontology.metadata.ontologyApiName,
         mapObjectSetBody(
           objectSetDefinition,
           orderByClauses,
@@ -58,7 +62,7 @@ export async function loadObjectsPage<
 
       return {
         data: page.data.map(object =>
-          context.createObject<T>(context, objectApiName as string, object)
+          convertWireToOsdkObject(client, objectApiName as string, object) as T
         ),
         nextPageToken: page.nextPageToken,
       };

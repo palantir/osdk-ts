@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { type AggregateObjectsError, type Result } from "../ontologyProvider";
 import { aggregate } from "../ontologyProvider/calls/aggregate";
-import type { ClientContext } from "../ontologyProvider/calls/ClientContext";
 import type {
   AggregationClause,
   AggregationResult,
@@ -32,18 +32,18 @@ export class ComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > implements AggregationComputeStep<TBucketGroup, TMetrics> {
-  #clientContext: ClientContext;
+  #client: ThinClient<any>;
   #definition: ObjectSetDefinition;
   #aggregationClauses: AggregationClause[];
   #groupByClauses: Array<InternalBucketing<string, BucketValue>>;
 
   constructor(
-    clientContext: ClientContext,
+    client: ThinClient<any>,
     definition: ObjectSetDefinition,
     groupByClauses: Array<InternalBucketing<string, BucketValue>> = [],
     aggregationClauses: AggregationClause[] = [],
   ) {
-    this.#clientContext = clientContext;
+    this.#client = client;
     this.#definition = definition;
     this.#groupByClauses = groupByClauses;
     this.#aggregationClauses = aggregationClauses;
@@ -53,7 +53,7 @@ export class ComputeStep<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {
     const result = await aggregate<TBucketGroup, TMetrics>(
-      this.#clientContext,
+      this.#client,
       {
         objectSet: this.#definition,
         aggregation: this.#aggregationClauses,

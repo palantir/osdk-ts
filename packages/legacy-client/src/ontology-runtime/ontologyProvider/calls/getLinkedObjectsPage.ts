@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
+import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
-import type { ClientContext } from "./ClientContext";
 
 export async function getLinkedObjectsPage<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<any>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
   options?: { pageSize?: number; pageToken?: string },
 ) {
   const pagePromise = await listLinkedObjectsV2(
-    createOpenApiRequest(context.client.stack, context.client.fetch),
-    context.ontology.metadata.ontologyApiName,
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
     sourceApiName,
     primaryKey,
     linkTypeApiName,
@@ -40,7 +41,7 @@ export async function getLinkedObjectsPage<T extends OntologyObject>(
   );
   return {
     data: pagePromise.data.map(object => {
-      return context.createObject<T>(context, linkTypeApiName, object);
+      return convertWireToOsdkObject(client, linkTypeApiName, object);
     }),
     nextPageToken: pagePromise.nextPageToken,
   };

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ThinClient } from "@osdk/api";
 import type { PalantirApiError } from "../../../Errors";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
@@ -23,13 +24,12 @@ import {
 } from "../ErrorHandlers";
 import type { ListLinkedObjectsError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { createPageIterator } from "./util/createPageIterator";
 import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<any>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -41,7 +41,7 @@ export async function pageLinkedObjects<T extends OntologyObject>(
   const response = createPageIterator<T, ListLinkedObjectsError>(
     async () => {
       return getLinkedObjectsPage<T>(
-        context,
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
@@ -50,7 +50,7 @@ export async function pageLinkedObjects<T extends OntologyObject>(
     },
     () =>
       iterateLinkedObjects(
-        context,
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
