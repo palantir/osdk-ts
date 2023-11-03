@@ -125,7 +125,7 @@ type AggregationFromType<T> = NonNullable<T> extends number
 
 type MultipleAggregationFromType<T> = NonNullable<T> extends number
   ? MultipleAggregatableProperty<Double>
-  : NonNullable<T> extends boolean ? MultipleAggregatableProperty<LocalDate>
+  : NonNullable<T> extends boolean ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? MultipleAggregatableProperty<LocalDate>
   : NonNullable<T> extends Timestamp ? MultipleAggregatableProperty<Timestamp>
   : ApproximateDistinctCountAggregatableProperty;
