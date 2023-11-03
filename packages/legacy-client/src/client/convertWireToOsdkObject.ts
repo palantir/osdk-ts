@@ -123,12 +123,12 @@ export function convertWireToOsdkObject<
   }
 
   Object.setPrototypeOf(obj, proto);
-  setPropertyPrototypes<T, O>(client, apiName, obj);
+  setPropertyAccessors<T, O>(client, apiName, obj);
 
   return obj as OsdkLegacyObjectFrom<O, T>;
 }
 
-function setPropertyPrototypes<
+function setPropertyAccessors<
   T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(client: ThinClient<O>, apiName: T, obj: OntologyObjectV2) {
@@ -140,35 +140,35 @@ function setPropertyPrototypes<
     }
     switch (v.type) {
       case "attachment":
-        setPropertyAccessors(
+        setPropertyAccessor(
           obj,
           k,
           (value) => AttachmentProperty(client, value.rid),
         );
         break;
       case "geopoint":
-        setPropertyAccessors(
+        setPropertyAccessor(
           obj,
           k,
           (value) => GeoPoint.fromGeoJson(value),
         );
         break;
       case "geoshape":
-        setPropertyAccessors(
+        setPropertyAccessor(
           obj,
           k,
           (value) => GeoShape.fromGeoJson(value),
         );
         break;
       case "datetime":
-        setPropertyAccessors(
+        setPropertyAccessor(
           obj,
           k,
           (value) => LocalDate.fromISOString(value),
         );
         break;
       case "timestamp":
-        setPropertyAccessors(
+        setPropertyAccessor(
           obj,
           k,
           (value) => Timestamp.fromISOString(value),
@@ -190,7 +190,7 @@ function setPropertyPrototypes<
   }
 }
 
-function setPropertyAccessors<T>(
+function setPropertyAccessor<T>(
   obj: OntologyObjectV2,
   k: string,
   constructor: (value: any) => T,
@@ -200,13 +200,13 @@ function setPropertyAccessors<T>(
   }
 
   if (Array.isArray(obj[k])) {
-    createArrayPropertyPrototype(obj, k, constructor);
+    createArrayPropertyAccessor(obj, k, constructor);
   } else {
-    createSinglePropertyPrototype(obj, k, constructor);
+    createSinglePropertyAccessor(obj, k, constructor);
   }
 }
 
-function createArrayPropertyPrototype<T>(
+function createArrayPropertyAccessor<T>(
   obj: OntologyObjectV2,
   k: string,
   constructor: (value: any) => T,
@@ -231,7 +231,7 @@ function createArrayPropertyPrototype<T>(
   obj[k] = slicedArray;
 }
 
-function createSinglePropertyPrototype<T>(
+function createSinglePropertyAccessor<T>(
   object: OntologyObjectV2,
   key: string,
   constructor: (value: any) => T,
