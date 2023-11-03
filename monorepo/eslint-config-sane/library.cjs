@@ -63,6 +63,7 @@ module.exports = {
     "import/no-unresolved": "off",
     "import/no-named-as-default": "error",
     "unused-imports/no-unused-imports": "error",
+    "no-console": "error",
   },
   plugins: ["@typescript-eslint", "import", "header", "unused-imports"],
   parser: "@typescript-eslint/parser",
@@ -72,6 +73,12 @@ module.exports = {
   overrides: [
     {
       files: ["*.ts", "*.tsx", "*.mts", "*.cts"],
+    },
+    {
+      files: ["**/*.test.ts", "**/test/*"],
+      rules: {
+        "no-console": "off",
+      },
     },
   ],
 };
