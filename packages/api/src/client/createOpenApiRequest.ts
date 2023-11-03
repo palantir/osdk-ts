@@ -16,7 +16,7 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 
-export default function createOpenApiRequest<TExpectedResponse>(
+export function createOpenApiRequest<TExpectedResponse>(
   basePath: string,
   fetchFn: typeof fetch,
   contextPath: string = "/api",

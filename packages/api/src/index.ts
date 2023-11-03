@@ -16,12 +16,9 @@
 
 export { createClient, createThinClient, isOk } from "./client";
 export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
-export { default as createOpenApiRequest } from "./client/internal/net/createOpenApiRequest";
-export type {
-  BaseGroupValue,
-  Bucketing,
-  GroupValue,
-} from "./client/internal/net/types";
+
+export { createOpenApiRequest } from "./client/createOpenApiRequest";
+
 export type { WhereClause } from "./client/query";
 export type { OsdkObject } from "./ontology";
 

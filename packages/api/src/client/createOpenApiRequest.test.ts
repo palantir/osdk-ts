@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import { default as createOpenApiRequest } from "./createOpenApiRequest";
+import { createOpenApiRequest } from "./createOpenApiRequest";
 
 describe("createOpenApiRequest", () => {
   it("should construct request correctly", async () => {
