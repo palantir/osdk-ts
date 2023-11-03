@@ -20,6 +20,7 @@ import {
   LocalDateGroupBy,
   NumericGroupBy,
   StringGroupBy,
+  TimestampGroupBy,
 } from "../../ontology-runtime";
 import type { GroupBySelections } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
@@ -37,16 +38,24 @@ export function mapPropertiesToGroupByProperties<
         case "datetime":
           acc[property] = LocalDateGroupBy(property);
           break;
-
+        case "timestamp":
+          acc[property] = TimestampGroupBy(property);
+        case "short":
+        case "long":
+        case "float":
+        case "decimal":
+        case "byte":
         case "double":
         case "integer":
           acc[property] = NumericGroupBy(property);
           break;
-
         case "string":
           acc[property] = StringGroupBy(property);
           break;
-
+        case "geopoint":
+        case "geoshape":
+        case "attachment":
+          return acc;
         default:
           const _: never = definition.type;
       }

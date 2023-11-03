@@ -35,12 +35,23 @@ export function mapPropertiesToMultipleAggregationProperties<
         case "datetime":
           acc[property] = LocalDatePropertyMetric(property);
           break;
+        case "timestamp":
+          acc[property] = LocalDatePropertyMetric(property);
+          break;
 
+        case "byte":
+        case "decimal":
         case "double":
+        case "float":
         case "integer":
+        case "long":
+        case "boolean":
+        case "short":
           acc[property] = NumericPropertyMetric(property);
 
-        case "boolean":
+        case "attachment":
+        case "geopoint":
+        case "geoshape":
         case "string":
           acc[property] = ApproximateDistinctCountAggregatableProperty(
             property,

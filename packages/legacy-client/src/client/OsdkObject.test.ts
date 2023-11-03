@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { Task } from "../../util/test";
-import type { ObjectSet } from "./objectSet";
+import { describe, expectTypeOf, it } from "vitest";
+import type { MockOntology, Todo } from "../util/test";
+import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
-describe("ObjectSet", () => {
-  it("creates", () => {
-    const os: ObjectSet<Task> = undefined as any as ObjectSet<Task>;
-    if (os) {
-      os.searchAroundLinkedTodos().searchAroundLinkedTask().where(a =>
-        a.id.eq(1)
-      );
-      os.orderBy(a => a.id.asc());
-    }
+describe("OsdkObject", () => {
+  it("compiles", async () => {
+    const x: Todo = {} as Todo;
+    const y: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> = x;
+
+    expectTypeOf<Todo>()
+      .toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();
   });
 });
