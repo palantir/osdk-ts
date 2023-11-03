@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createOpenApiRequest, type ThinClient } from "@osdk/api";
+import { createOpenApiRequest } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { getAttachment } from "@osdk/gateway/requests";
 import type { AttachmentMetadata } from "../../baseTypes";
 import {
@@ -26,7 +27,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getAttachmentMetadata(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Promise<Result<AttachmentMetadata, AttachmentsError>> {
   return wrapResult(
