@@ -15,6 +15,9 @@
  */
 
 module.exports = {
-  extends: ["sane/example"],
+  extends: ["sane/library"],
   root: true,
+  rules: {
+    "no-console": "off",
+  },
 };
