@@ -63,21 +63,6 @@ function createPrototype<
     return JSON.stringify(obj, undefined, 2);
   };
 
-  for (const [k, v] of Object.entries(objDef.properties)) {
-    // if (v.type === "attachment") {
-    //   Object.defineProperty(proto, k, {
-    //     get: function() {
-    //       const attachment = this.attachment;
-    //       Object.setPrototypeOf(
-    //         attachment,
-    //         AttachmentProperty(context, this.attachment),
-    //       );
-    //       return attachment;
-    //     },
-    //   });
-    // }
-  }
-
   // add the relevant keys for the link types associated with this object type
   for (
     const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
@@ -155,35 +140,35 @@ function setPropertyPrototypes<
     }
     switch (v.type) {
       case "attachment":
-        createPropertyPrototype(
+        setPropertyAccessors(
           obj,
           k,
           (value) => AttachmentProperty(client, value.rid),
         );
         break;
       case "geopoint":
-        createPropertyPrototype(
+        setPropertyAccessors(
           obj,
           k,
           (value) => GeoPoint.fromGeoJson(value),
         );
         break;
       case "geoshape":
-        createPropertyPrototype(
+        setPropertyAccessors(
           obj,
           k,
           (value) => GeoShape.fromGeoJson(value),
         );
         break;
       case "datetime":
-        createPropertyPrototype(
+        setPropertyAccessors(
           obj,
           k,
           (value) => LocalDate.fromISOString(value),
         );
         break;
       case "timestamp":
-        createPropertyPrototype(
+        setPropertyAccessors(
           obj,
           k,
           (value) => Timestamp.fromISOString(value),
@@ -205,7 +190,7 @@ function setPropertyPrototypes<
   }
 }
 
-function createPropertyPrototype<T>(
+function setPropertyAccessors<T>(
   obj: OntologyObjectV2,
   k: string,
   constructor: (value: any) => T,
@@ -243,7 +228,6 @@ function createArrayPropertyPrototype<T>(
     });
   }
 
-  Object.setPrototypeOf(slicedArray, Array.prototype);
   obj[k] = slicedArray;
 }
 
@@ -258,7 +242,6 @@ function createSinglePropertyPrototype<T>(
       let memoizedValue: T | undefined;
       return function() {
         if (!memoizedValue) {
-          console.log(originalValue);
           memoizedValue = constructor(originalValue);
         }
         return memoizedValue;

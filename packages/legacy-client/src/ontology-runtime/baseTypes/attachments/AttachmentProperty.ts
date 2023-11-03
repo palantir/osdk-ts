@@ -31,7 +31,6 @@ export const AttachmentProperty = (
     attachmentRid: attachmentRid,
     type: "Attachment" as const,
     getMetadata() {
-      console.log("AttachmentProperty.getMetadata");
       return getAttachmentMetadata(thinClient, attachmentRid);
     },
     read() {
