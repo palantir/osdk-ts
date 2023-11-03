@@ -21,6 +21,7 @@
 
     "lint": {
       "inputs": [
+        "monorepo/eslint-config-sane/*.cjs",
         "src/**/*.ts",
         "src/**/*.tsx",
         ".eslintrc.cjs",

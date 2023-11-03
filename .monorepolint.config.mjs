@@ -191,11 +191,8 @@ function standardPackageRules(shared) {
            */
 
           module.exports = {
-              extends: ["sane/library"],
+              extends: ["sane/example"],
               root: true,
-              rules: {
-                "no-console": "off"
-              }
             };
             `,
           "js",
