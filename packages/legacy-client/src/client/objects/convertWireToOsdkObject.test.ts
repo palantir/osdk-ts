@@ -85,6 +85,48 @@ describe("convertWireToOsdkObject", () => {
       geoShapeArray: [expectedGeoShape],
     });
   });
+
+  it("reuses the same prototype for subsequent creations", () => {
+    const object1 = convertWireToOsdkObject<
+      "Task",
+      typeof MockOntology
+    >(client, "Task", {
+      __rid: "rid.1",
+      __primaryKey: 1,
+      __apiName: "Task",
+      id: 1,
+    });
+
+    const object2 = convertWireToOsdkObject<
+      "Task",
+      typeof MockOntology
+    >(client, "Task", {
+      __rid: "rid.2",
+      __primaryKey: 2,
+      __apiName: "Task",
+      id: 2,
+    });
+
+    expect(Object.getPrototypeOf(object1)).toBe(Object.getPrototypeOf(object2));
+  });
+
+  it("adds toString method which performs a json stringification", () => {
+    const wireObject = {
+      id: 1,
+      __primaryKey: 1,
+      __apiName: "Task",
+      __rid: "rid.1",
+    } as const;
+
+    const object = convertWireToOsdkObject<
+      "Task",
+      typeof MockOntology
+    >(client, "Task", wireObject);
+
+    expect(object.toString()).toEqual(
+      JSON.stringify(wireObject, null, 2),
+    );
+  });
 });
 
 const objectWithAllPropertyTypes = {

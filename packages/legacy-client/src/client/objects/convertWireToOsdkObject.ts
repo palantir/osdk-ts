@@ -26,9 +26,9 @@ import {
   GeoShape,
   LocalDate,
   type OntologyObject,
-  type ParameterValue,
   Timestamp,
 } from "../../ontology-runtime/baseTypes";
+import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
@@ -37,15 +37,16 @@ import type {
 import { createMultiLinkStep } from "./createMultiLinkStep";
 import { createSingleLinkStep } from "./createSingleLinkStep";
 
+const getPrototype = createCachedOntologyTransform(createPrototype);
 function createPrototype<
   T extends keyof O["objects"] & string,
   O extends OntologyDefinition<any>,
 >(
-  context: ThinClient<O>,
-  primaryKey: ParameterValue,
+  ontology: O,
   type: T,
+  client: ThinClient<O>,
 ) {
-  const objDef = context.ontology.objects[type];
+  const objDef = ontology.objects[type];
   const proto = {};
 
   Object.defineProperty(proto, "__apiName", { get: () => type });
@@ -54,7 +55,7 @@ function createPrototype<
   proto.toString = function() {
     const obj: Record<string, unknown> = {};
     const self = this as OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>;
-    for (const prop of Object.keys(context.ontology.objects[type].properties)) {
+    for (const prop of Object.keys(objDef.properties)) {
       obj[prop] = self[prop];
     }
     obj["__primaryKey"] = self.__primaryKey;
@@ -71,16 +72,16 @@ function createPrototype<
       get: function() {
         if (multiplicity == true) {
           return createMultiLinkStep(
-            context,
+            client,
             objDef.apiName,
-            primaryKey,
+            this.__primaryKey,
             targetType,
           );
         } else {
           return createSingleLinkStep(
-            context,
+            client,
             objDef.apiName,
-            primaryKey,
+            this.__primaryKey,
             targetType,
           );
         }
@@ -91,10 +92,6 @@ function createPrototype<
   return proto as OsdkLegacyLinksFrom<O, T>;
 }
 
-/**
- * First key is ontologyRid, second key is apiName
- */
-const cache = new Map<string, Map<string, any>>();
 export function convertWireToOsdkObject<
   T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
@@ -103,25 +100,7 @@ export function convertWireToOsdkObject<
   apiName: T,
   obj: OntologyObjectV2,
 ): OsdkLegacyObjectFrom<O, T> {
-  const ontologyCache = cache.get(client.ontology.metadata.ontologyRid);
-  let proto = ontologyCache?.get(apiName);
-  if (proto == null) {
-    proto = createPrototype(
-      client,
-      obj.__primaryKey,
-      apiName,
-    );
-
-    if (ontologyCache == null) {
-      cache.set(
-        client.ontology.metadata.ontologyRid,
-        new Map([[apiName, proto]]),
-      );
-    } else {
-      ontologyCache.set(apiName, proto);
-    }
-  }
-
+  const proto = getPrototype(client.ontology, apiName, client);
   Object.setPrototypeOf(obj, proto);
   setPropertyAccessors<T, O>(client, apiName, obj);
 
