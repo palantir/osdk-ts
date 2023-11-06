@@ -38,9 +38,20 @@ import type {
   MultipleAggregateSelection,
 } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { mapPropertiesToAggregatableProperties } from "./mapPropertiesToAggregatableProperties";
 import { mapPropertiesToGroupByProperties } from "./mapPropertiesToGroupByProperties";
 import { mapPropertiesToMultipleAggregationProperties } from "./mapPropertiesToMultipleAggregationProperties";
+
+const getAggregatableProperties = createCachedOntologyTransform(
+  mapPropertiesToAggregatableProperties,
+);
+const getGroupableProperties = createCachedOntologyTransform(
+  mapPropertiesToGroupByProperties,
+);
+const getMultipleAggregationProperties = createCachedOntologyTransform(
+  mapPropertiesToMultipleAggregationProperties,
+);
 
 export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
@@ -55,20 +66,18 @@ export function createObjectSetAggregationStep<
   MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
   GroupBySelections<OsdkLegacyObjectFrom<O, K>>
 > {
-  // TODO defer these until they are needed and cache them by ontologyRid/objectType
-  const aggregatableProperties = mapPropertiesToAggregatableProperties(
+  const aggregatableProperties = getAggregatableProperties(
     client.ontology,
     type,
   );
-  const groupableProperties = mapPropertiesToGroupByProperties(
+  const groupableProperties = getGroupableProperties(
     client.ontology,
     type,
   );
-  const multipleAggregationProperties =
-    mapPropertiesToMultipleAggregationProperties(
-      client.ontology,
-      type,
-    );
+  const multipleAggregationProperties = getMultipleAggregationProperties(
+    client.ontology,
+    type,
+  );
 
   return {
     aggregate(aggregateBuilder) {
