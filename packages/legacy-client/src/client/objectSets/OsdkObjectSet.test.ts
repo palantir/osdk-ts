@@ -15,7 +15,7 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
+import { createThinClient, isOk } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
   LoadObjectSetResponseV2,
@@ -257,6 +257,32 @@ describe("OsdkObjectSet", () => {
     expect(result.type).toEqual("ok");
   });
 
+  it("supports round-trip of circular links", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([mockTodoObject]);
+    const todoResponse = await os.get("1");
+
+    if (!isOk(todoResponse)) {
+      expect.fail("todo response was not ok");
+    }
+
+    mockObjectPage([mockTaskObject]);
+    const taskResponse = await todoResponse.value.linkedTask.get();
+
+    if (!isOk(taskResponse)) {
+      expect.fail("task response was not ok");
+    }
+
+    mockObjectPage([mockTodoObject]);
+    const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
+
+    if (!isOk(linkedTodosResponse)) {
+      expect.fail("linked todos response was not ok");
+    }
+
+    expect(linkedTodosResponse.value.length).toEqual(1);
+  });
+
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(client);
     mockObjectPage([mockTodoObject]);
@@ -337,4 +363,10 @@ const mockTodoObject: OntologyObjectV2 = {
   id: "123",
   body: "body",
   complete: false,
+};
+
+const mockTaskObject: OntologyObjectV2 = {
+  __apiName: "Task",
+  __primaryKey: 1,
+  id: 1,
 };

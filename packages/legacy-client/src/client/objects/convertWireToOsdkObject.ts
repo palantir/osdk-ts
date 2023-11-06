@@ -20,11 +20,6 @@ import type {
   ThinClient,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
-import type {
-  OsdkLegacyLinksFrom,
-  OsdkLegacyObjectFrom,
-  OsdkLegacyPropertiesFrom,
-} from "../client/OsdkObject";
 import {
   AttachmentProperty,
   GeoPoint,
@@ -32,10 +27,15 @@ import {
   LocalDate,
   type OntologyObject,
   Timestamp,
-} from "../ontology-runtime/baseTypes";
-import { MultiLinkImpl } from "../ontology-runtime/baseTypes/MultiLinkImpl";
-import { SingleLinkImpl } from "../ontology-runtime/baseTypes/SingleLinkImpl";
-import { createCachedOntologyTransform } from "./objectSets/createCachedOntologyTransform";
+} from "../../ontology-runtime/baseTypes";
+import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
+import type {
+  OsdkLegacyLinksFrom,
+  OsdkLegacyObjectFrom,
+  OsdkLegacyPropertiesFrom,
+} from "../OsdkObject";
+import { createMultiLinkStep } from "./createMultiLinkStep";
+import { createSingleLinkStep } from "./createSingleLinkStep";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 function createPrototype<
@@ -71,14 +71,14 @@ function createPrototype<
     Object.defineProperty(proto, k, {
       get: function() {
         if (multiplicity == true) {
-          return new MultiLinkImpl(
+          return createMultiLinkStep(
             client,
             objDef.apiName,
             this.__primaryKey,
             targetType,
           );
         } else {
-          return new SingleLinkImpl(
+          return createSingleLinkStep(
             client,
             objDef.apiName,
             this.__primaryKey,

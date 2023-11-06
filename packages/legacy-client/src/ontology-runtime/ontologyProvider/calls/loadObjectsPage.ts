@@ -22,7 +22,7 @@ import type {
 import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
-import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
+import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OsdkLegacyObjectFrom } from "../../../client/OsdkObject";
 import type { ObjectSetDefinition } from "../../baseTypes";
 import type { OrderByClause } from "../../filters";
