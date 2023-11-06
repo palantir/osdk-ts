@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import {
   aggregateObjectSetV2,
@@ -21,17 +22,14 @@ import {
   executeQueryV2,
   getFirstPoint,
   getLastPoint,
-  getObjectV2,
   streamPoints,
   uploadAttachment,
 } from "@osdk/gateway/requests";
 import type {
   AttachmentV2,
-  OntologyObjectV2,
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsRequest as StreamPointsBody,
 } from "@osdk/gateway/types";
-import type { Auth } from "../../oauth-client";
 import type {
   AggregationClause,
   AggregationResult,
@@ -101,6 +99,7 @@ import type {
 } from "../baseTypes/ParameterValue";
 import { visitTypeUnion } from "../common/visitior";
 import { mapAggregation, mapBucketing } from "./AggregationUtils";
+import { getObject } from "./calls/getObject";
 import { wrapIterator } from "./calls/util/wrapIterator";
 import { wrapResult } from "./calls/util/wrapResult";
 import {
@@ -108,12 +107,10 @@ import {
   AttachmentsErrorHandler,
   ExecuteActionErrorHandler,
   ExecuteQueryErrorHandler,
-  GetObjectErrorHandler,
   handleAggregateObjectsError,
   handleAttachmentsError,
   handleExecuteActionError,
   handleExecuteQueryError,
-  handleGetObjectError,
   handleTimeSeriesError,
   TimeSeriesErrorHandler,
 } from "./ErrorHandlers";
@@ -121,11 +118,9 @@ import type {
   ActionError,
   AggregateObjectsError,
   AttachmentsError,
-  GetObjectError,
   QueryError,
   TimeSeriesError,
 } from "./Errors";
-import type { OntologyMetadata } from "./OntologyMetadata";
 import type { OntologyObjectFactory } from "./OntologyObjectFactory";
 import {
   iterateReadableStream,
@@ -135,45 +130,16 @@ import { isOk } from "./Result";
 import type { Result } from "./Result";
 
 export class OntologyProvider {
-  #authClient: Auth;
-  #stack: string;
-  #ontologyMetadata: OntologyMetadata;
+  #client: ThinClient<OntologyDefinition<any>>;
   #objectFactory?: OntologyObjectFactory;
-  #fetchFn: typeof globalThis.fetch;
 
   constructor(
-    authClient: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
     objectFactory?: OntologyObjectFactory,
-    fetchFn = globalThis.fetch,
     // TODO contextPath for createOpenApiRequest?
   ) {
-    this.#authClient = authClient;
-    this.#stack = stack;
-    this.#ontologyMetadata = ontologyMetadata;
+    this.#client = client;
     this.#objectFactory = objectFactory;
-    this.#fetchFn = fetchFn;
-  }
-
-  async get<T extends OntologyObject>(
-    apiName: string,
-    primaryKey: T["__primaryKey"],
-    selectedProperties: Array<keyof T> = [],
-  ): Promise<Result<T, GetObjectError>> {
-    return wrapResult(async () => {
-      const object = await getObjectV2(
-        createOpenApiRequest(this.#stack, this.#fetchFn),
-        this.#ontologyMetadata.ontologyApiName,
-        apiName,
-        primaryKey.toString(),
-        {
-          select: selectedProperties.map(x => x.toString()),
-        },
-      );
-
-      return this.createObject<T>(object);
-    }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
   }
 
   getFirstPoint<T extends string | number>(
@@ -184,8 +150,8 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const point = await getFirstPoint(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -207,8 +173,8 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const point = await getLastPoint(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -231,8 +197,8 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const streamPointsIterator = await streamPoints(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           primaryKey,
           propertyName,
@@ -282,8 +248,8 @@ export class OntologyProvider {
     body: StreamTimeSeriesPointsRequest,
   ): AsyncGenerator<TimeSeriesPoint<T>> {
     const streamPointsResponse = await streamPoints(
-      createOpenApiRequest(this.#stack, this.#fetchFn),
-      this.#ontologyMetadata.ontologyApiName,
+      createOpenApiRequest(this.#client.stack, this.#client.fetch),
+      this.#client.ontology.metadata.ontologyApiName,
       apiName,
       primaryKey,
       propertyName,
@@ -334,8 +300,8 @@ export class OntologyProvider {
         );
 
         const response = await aggregateObjectSetV2(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           {
             objectSet: body.objectSet,
             groupBy: remappedGroups,
@@ -368,14 +334,14 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
           },
         );
-        return ActionResponse.of(response);
+        return ActionResponse.of(this.#client, response);
       },
       e =>
         handleExecuteActionError(
@@ -401,8 +367,8 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
@@ -411,7 +377,7 @@ export class OntologyProvider {
             },
           },
         );
-        return ActionResponse.of(response, provider);
+        return ActionResponse.of(this.#client, response, provider);
       },
       e =>
         handleExecuteActionError(
@@ -436,8 +402,8 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const response = await applyActionV2(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
-          this.#ontologyMetadata.ontologyApiName,
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
           apiName,
           {
             parameters: this.getRemappedParameters(params),
@@ -446,7 +412,7 @@ export class OntologyProvider {
             },
           },
         );
-        return ActionResponse.of(response);
+        return ActionResponse.of(this.#client, response);
       },
       e =>
         handleExecuteActionError(
@@ -464,8 +430,8 @@ export class OntologyProvider {
       async () => {
         const response: { value: PrimitiveParameterValue } =
           await executeQueryV2(
-            createOpenApiRequest(this.#stack, this.#fetchFn),
-            this.#ontologyMetadata.ontologyApiName,
+            createOpenApiRequest(this.#client.stack, this.#client.fetch),
+            this.#client.ontology.metadata.ontologyApiName,
             apiName,
             {
               parameters: params ? this.getRemappedParameters(params) : {},
@@ -499,7 +465,7 @@ export class OntologyProvider {
     return wrapResult(
       async () => {
         const response = await uploadAttachment(
-          createOpenApiRequest(this.#stack, this.#fetchFn),
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
           data,
           {
             filename,
@@ -510,9 +476,7 @@ export class OntologyProvider {
           },
         );
         return remapAttachmentResponse(
-          this.#authClient,
-          this.#stack,
-          this.#ontologyMetadata,
+          this.#client,
           response,
         );
       },
@@ -638,9 +602,13 @@ export class OntologyProvider {
 
         return new Set(remappedResponse);
       },
-      async object(type: ObjectType): Promise<OntologyObject> {
+
+      async object(
+        type: ObjectType,
+      ): Promise<OntologyObject> {
         if (typeof responseValue !== "object") {
-          const result = await ontologyProvider.get(
+          const result = await getObject(
+            ontologyProvider.#client,
             type.objectTypeApiName,
             responseValue,
             [],
@@ -656,9 +624,8 @@ export class OntologyProvider {
         // The API Gateway returns the object's primary key, but this is defensive
         // in the case we change it to return the full type
         return objectFactory.create(
+          ontologyProvider.#client,
           type.objectTypeApiName,
-          ontologyProvider.#authClient,
-          ontologyProvider.#stack,
           (responseValue as OntologyObject).__rid,
           responseValue,
         );
@@ -864,16 +831,6 @@ export class OntologyProvider {
     return allPoints;
   }
 
-  private createObject<T extends OntologyObject>(object: OntologyObjectV2): T {
-    return this.#objectFactory!.create(
-      object.__apiName,
-      this.#authClient,
-      this.#stack,
-      object.__rid,
-      object,
-    ) as T;
-  }
-
   private getRemappedParameters(
     params: { [parameterId: string]: any },
   ): { [parameterId: string]: any } {
@@ -929,10 +886,8 @@ export class OntologyProvider {
 }
 
 async function remapAttachmentResponse(
-  authClient: Auth,
-  stack: string,
-  ontologyMetadata: OntologyMetadata,
-  response: AttachmentV2,
+  _client: ThinClient<OntologyDefinition<any>>,
+  _response: AttachmentV2,
 ): Promise<Attachment> {
   throw new Error("remove");
 }

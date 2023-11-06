@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
 import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject";
@@ -25,7 +25,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getObject<T extends OntologyObject>(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
   selectedProperties: ReadonlyArray<keyof T> = [],
@@ -41,6 +41,6 @@ export async function getObject<T extends OntologyObject>(
       },
     );
 
-    return convertWireToOsdkObject(client, objectApiName, object);
+    return convertWireToOsdkObject(client, objectApiName, object) as T;
   }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
 }

@@ -319,7 +319,9 @@ const baseObjectSet: ObjectSetDefinition = {
   objectType: "Todo",
 };
 
-function createBaseTodoObjectSet(client: ThinClient<any>) {
+function createBaseTodoObjectSet(
+  client: ThinClient<typeof MockOntology>,
+) {
   const os = createBaseOsdkObjectSet<typeof MockOntology, "Todo">(
     client,
     "Todo",

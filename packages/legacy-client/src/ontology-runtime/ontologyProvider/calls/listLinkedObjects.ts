@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
 import {
@@ -27,7 +27,7 @@ import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { wrapResult } from "./util/wrapResult";
 
 export function listLinkedObjects<T extends OntologyObject>(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: T["__apiName"],

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { getAttachment } from "../../ontologyProvider/calls/getAttachment";
 import { getAttachmentMetadata } from "../../ontologyProvider/calls/getAttachmentMetadata";
 import type { Attachment } from "./Attachment";
@@ -24,7 +24,7 @@ export function isAttachment(obj: any): obj is Attachment {
 }
 
 export const AttachmentProperty = (
-  thinClient: ThinClient<any>,
+  thinClient: ThinClient<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Attachment => {
   return {
