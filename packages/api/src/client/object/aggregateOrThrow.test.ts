@@ -50,6 +50,7 @@ const mockOntology = {
       },
     },
   },
+  actions: {},
 } satisfies OntologyDefinition<"Todo">;
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
@@ -152,6 +153,7 @@ describe("aggregateOrThrow", () => {
             };
           };
         };
+        actions: {};
       },
       "Todo",
       {
@@ -178,6 +180,7 @@ describe("aggregateOrThrow", () => {
             };
           };
         };
+        actions: {};
       },
       "Todo",
       {

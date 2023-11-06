@@ -49,6 +49,33 @@ export const MockOntology = {
     },
     ObjectTypeWithAllPropertyTypes,
   },
+  actions: {
+    createTask: {
+      apiName: "createTask",
+      parameters: {
+        id: { displayName: "createTask", type: "integer", nullable: true },
+      },
+    },
+    updateTask: {
+      apiName: "updateTask",
+      parameters: {
+        task: {
+          displayName: "updateTask",
+          type: {
+            object: "Todo",
+          },
+          multiplicity: true,
+          nullable: true,
+        },
+        value: {
+          displayName: "value",
+          type: "boolean",
+          nullable: true,
+        },
+      },
+    },
+  },
 } satisfies OntologyDefinition<
-  "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes"
+  "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes",
+  "createTask" | "updateTask"
 >;

@@ -15,31 +15,29 @@
  */
 
 import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause";
+import type { MockOntology } from "../util/test";
+import type { Actions } from "./actions";
+import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
-export type F = GroupByClause<
-  {
-    metadata: any;
-    objects: {
-      Todo: {
-        apiName: "Todo";
-        primaryKeyType: "double";
-        links: {};
-        properties: {
-          text: {
-            type: "string";
-          };
-          id: {
-            type: "double";
-          };
-        };
-      };
-    };
-    actions: {};
-  },
-  "Todo"
->;
+describe(() => {
+  it("works", () => {
+    const actions: Actions<
+      typeof MockOntology,
+      "ObjectTypeWithAllPropertyTypes" | "Task" | "Todo"
+    > = {} as Actions<
+      typeof MockOntology,
+      "ObjectTypeWithAllPropertyTypes" | "Task" | "Todo"
+    >;
 
-describe("GroupByClause", () => {
-  it("works", () => {});
+    const mockTaskObject: OsdkLegacyObjectFrom<typeof MockOntology, "Task"> =
+      {} as OsdkLegacyObjectFrom<typeof MockOntology, "Task">;
+
+    actions.createTask({
+      id: 1,
+    });
+
+    actions.updateTask({
+      task: [mockTaskObject],
+    });
+  });
 });

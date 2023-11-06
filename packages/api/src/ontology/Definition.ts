@@ -40,11 +40,45 @@ export type PropertyDefinitionFrom<
   P extends PropertyKeysFrom<O, K>,
 > = PropertyDefinitionsFrom<O, K>[P];
 
-export interface OntologyDefinition<K extends string> {
+export interface OntologyDefinition<K extends string, A extends string = any> {
   metadata: OntologyMetadata;
   objects: {
     [KK in K]: ObjectDefinition<KK, K>;
   };
+  actions: {
+    [AA in A]: ActionDefinition<AA, K>;
+  };
+}
+
+export interface ActionDefinition<
+  A extends String,
+  K extends String,
+> {
+  apiName: A;
+  description?: string;
+  displayName?: string;
+  parameters: Record<string, ActionParameterDefinition<K>>;
+}
+
+export interface ValidActionParameterTypes {
+  string: string;
+  datetime: Date;
+  double: number;
+  boolean: boolean;
+  integer: number;
+  timestamp: Date;
+  short: number;
+  long: number;
+  float: number;
+  decimal: number;
+  byte: number;
+}
+
+export interface ActionParameterDefinition<K> {
+  displayName: string;
+  type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
+  multiplicity?: boolean;
+  nullable?: boolean;
 }
 
 export interface ObjectDefinition<

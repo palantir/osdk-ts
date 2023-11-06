@@ -26,6 +26,8 @@ export type { OsdkObject } from "./ontology";
 export * as Objects from "./client/object";
 
 export type {
+  ActionDefinition,
+  ActionParameterDefinition,
   LinkDefinitionFrom,
   LinkKeysFrom,
   LinkTargetTypeFrom,
@@ -38,5 +40,6 @@ export type {
   PropertyDefinitionFrom,
   PropertyDefinitionsFrom,
   PropertyKeysFrom,
+  ValidActionParameterTypes,
   ValidPropertyTypes,
 } from "./ontology/Definition";
