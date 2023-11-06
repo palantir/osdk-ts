@@ -25,7 +25,7 @@ export async function* iterateLinkedObjects<T extends OntologyObject>(
   client: ThinClient<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
-  linkTypeApiName: T["__apiName"],
+  linkTypeApiName: string,
   options?: { pageSize?: number },
 ): AsyncGenerator<T, any, unknown> {
   let nextPageToken;
@@ -43,8 +43,11 @@ export async function* iterateLinkedObjects<T extends OntologyObject>(
       },
     );
 
+    const { targetType } =
+      client.ontology.objects[sourceApiName].links[linkTypeApiName];
+
     for (const object of page.data) {
-      yield convertWireToOsdkObject(client, linkTypeApiName, object);
+      yield convertWireToOsdkObject(client, targetType, object) as unknown as T;
     }
 
     nextPageToken = page.nextPageToken;

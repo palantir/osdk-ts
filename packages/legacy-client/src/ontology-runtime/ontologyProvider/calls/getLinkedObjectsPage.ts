@@ -21,7 +21,7 @@ import { convertWireToOsdkObject } from "../../../client/convertWireToOsdkObject
 import type { OntologyObject } from "../../baseTypes";
 
 export async function getLinkedObjectsPage<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -41,7 +41,7 @@ export async function getLinkedObjectsPage<T extends OntologyObject>(
   );
   return {
     data: pagePromise.data.map(object => {
-      return convertWireToOsdkObject(client, linkTypeApiName, object);
+      return convertWireToOsdkObject(client, linkTypeApiName, object) as T;
     }),
     nextPageToken: pagePromise.nextPageToken,
   };

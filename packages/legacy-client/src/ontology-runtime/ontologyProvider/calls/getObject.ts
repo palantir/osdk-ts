@@ -25,7 +25,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getObject<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
   selectedProperties: ReadonlyArray<keyof T> = [],
@@ -41,6 +41,6 @@ export async function getObject<T extends OntologyObject>(
       },
     );
 
-    return convertWireToOsdkObject(client, objectApiName, object);
+    return convertWireToOsdkObject(client, objectApiName, object) as T;
   }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
 }

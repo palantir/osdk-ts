@@ -28,7 +28,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export function getLinkedObject<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -47,7 +47,7 @@ export function getLinkedObject<T extends OntologyObject>(
           select: [],
         },
       );
-      return convertWireToOsdkObject(client, linkTypeApiName, object);
+      return convertWireToOsdkObject(client, linkTypeApiName, object) as T;
     },
     e =>
       handleGetLinkedObjectError(
