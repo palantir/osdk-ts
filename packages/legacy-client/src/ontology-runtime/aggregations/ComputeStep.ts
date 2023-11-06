@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { type AggregateObjectsError, type Result } from "../ontologyProvider";
 import { aggregate } from "../ontologyProvider/calls/aggregate";
@@ -32,13 +32,13 @@ export class ComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > implements AggregationComputeStep<TBucketGroup, TMetrics> {
-  #client: ThinClient<any>;
+  #client: ThinClient<OntologyDefinition<any>>;
   #definition: ObjectSetDefinition;
   #aggregationClauses: AggregationClause[];
   #groupByClauses: Array<InternalBucketing<string, BucketValue>>;
 
   constructor(
-    client: ThinClient<any>,
+    client: ThinClient<OntologyDefinition<any>>,
     definition: ObjectSetDefinition,
     groupByClauses: Array<InternalBucketing<string, BucketValue>> = [],
     aggregationClauses: AggregationClause[] = [],

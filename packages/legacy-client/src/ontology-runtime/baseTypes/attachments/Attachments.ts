@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../../oauth-client";
-import type {
-  AttachmentsError,
-  OntologyMetadata,
-} from "../../ontologyProvider";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { AttachmentsError } from "../../ontologyProvider";
 import { OntologyProvider } from "../../ontologyProvider";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment } from "./Attachment";
@@ -27,19 +24,15 @@ export class Attachments {
   #provider: OntologyProvider;
 
   private constructor(
-    auth: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
   ) {
-    this.#provider = new OntologyProvider(auth, stack, ontologyMetadata);
+    this.#provider = new OntologyProvider(client);
   }
 
   public static initializeAttachmentsClient(
-    auth: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
   ): Attachments {
-    return new Attachments(auth, stack, ontologyMetadata);
+    return new Attachments(client);
   }
 
   public async upload(

@@ -7,6 +7,8 @@ import type {
   GeoPoint,
   Attachment,
   TimeSeries,
+  MultiLink,
+  SingleLink,
 } from '@osdk/legacy-client';
 
 /**
@@ -168,4 +170,4 @@ export const ObjectTypeWithAllPropertyTypes = {
       type: 'geoshape',
     },
   },
-} satisfies ObjectDefinition<'ObjectTypeWithAllPropertyTypes', 'ObjectTypeWithAllPropertyTypes'>;
+} satisfies ObjectDefinition<'ObjectTypeWithAllPropertyTypes', never>;

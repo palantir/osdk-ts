@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
@@ -28,7 +28,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export function getLinkedObject<T extends OntologyObject>(
-  client: ThinClient<any>,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -47,7 +47,7 @@ export function getLinkedObject<T extends OntologyObject>(
           select: [],
         },
       );
-      return convertWireToOsdkObject(client, linkTypeApiName, object);
+      return convertWireToOsdkObject(client, linkTypeApiName, object) as T;
     },
     e =>
       handleGetLinkedObjectError(

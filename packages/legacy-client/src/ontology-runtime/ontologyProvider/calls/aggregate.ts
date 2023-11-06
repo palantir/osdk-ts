@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
 import type {
@@ -41,7 +41,7 @@ import { wrapResult } from "./util/wrapResult";
 export function aggregate<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
->(client: ThinClient<any>, body: {
+>(client: ThinClient<OntologyDefinition<any>>, body: {
   objectSet: ObjectSetDefinition;
   aggregation: AggregationClause[];
   groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;

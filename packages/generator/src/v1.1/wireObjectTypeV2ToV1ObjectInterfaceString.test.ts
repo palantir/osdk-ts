@@ -23,6 +23,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("generates object interface", async () => {
     const objectInterface = wireObjectTypeV2ToObjectInterfaceStringV1(
       TodoWireOntology.objectTypes["Todo"],
+      TodoWireOntology.linkTypes["Todo"],
     );
     expect(
       await formatTs(objectInterface),
@@ -35,7 +36,10 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         GeoPoint,
         Attachment,
         TimeSeries,
+        MultiLink,
+        SingleLink,
       } from '@osdk/legacy-client';
+      import type { Person } from './Person';
 
       /**
        * Its a todo item.
@@ -49,6 +53,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
          */
         readonly body: string | undefined;
         readonly complete: boolean | undefined;
+        readonly Assignee: SingleLink<Person>;
       }
       "
     `);
