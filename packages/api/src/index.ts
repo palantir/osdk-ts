@@ -46,3 +46,9 @@ export type {
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";
+
+export type {
+  QueryDataTypeDefinition,
+  QueryDefinition,
+  QueryParameterDefinition,
+} from "./ontology/QueryDefinition";
