@@ -92,5 +92,8 @@ export type OsdkLegacyObjectFrom<
 > = K extends string ?
     & OsdkLegacyPropertiesFrom<O, K>
     & OsdkLegacyLinksFrom<O, K>
-    & OntologyObject<K>
+    & OntologyObject<
+      K,
+      ValidLegacyPropertyTypes[O["objects"][K]["primaryKeyType"]]
+    >
   : never;

@@ -22,11 +22,9 @@ import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 describe(() => {
   it("works", () => {
     const actions: Actions<
-      typeof MockOntology,
-      "ObjectTypeWithAllPropertyTypes" | "Task" | "Todo"
+      typeof MockOntology
     > = {} as Actions<
-      typeof MockOntology,
-      "ObjectTypeWithAllPropertyTypes" | "Task" | "Todo"
+      typeof MockOntology
     >;
 
     const mockTaskObject: OsdkLegacyObjectFrom<typeof MockOntology, "Task"> =
@@ -37,7 +35,7 @@ describe(() => {
     });
 
     actions.updateTask({
-      task: [mockTaskObject],
+      task: mockTaskObject,
     });
   });
 });

@@ -21,7 +21,63 @@ export function go(basePath: string) {
   generateClientSdkVersionOneDotOne(
     {
       rid: "ridHere",
-      actionTypes: [],
+      actionTypes: [
+        {
+          apiName: "actionTakesAllParameterTypes",
+          description: "An action which takes an Object Set",
+          parameters: {
+            objectSet: {
+              dataType: {
+                type: "objectSet",
+                objectTypeApiName: "Todo",
+              },
+              required: true,
+            },
+            object: {
+              dataType: {
+                type: "object",
+                objectApiName: "Person",
+                objectTypeApiName: "Person",
+              },
+              required: false,
+            },
+            string: {
+              dataType: {
+                type: "string",
+              },
+              required: true,
+            },
+            "time-stamp": {
+              dataType: {
+                type: "timestamp",
+              },
+              required: true,
+            },
+            dateArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "date",
+                },
+              },
+              required: false,
+            },
+            attachmentArray: {
+              dataType: {
+                type: "array",
+                subType: {
+                  type: "attachment",
+                },
+              },
+              required: true,
+            },
+          },
+          rid:
+            "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+          operations: [],
+          status: "ACTIVE",
+        },
+      ],
       apiName: "OntologyApiName",
       objectTypes: {
         Todo: {

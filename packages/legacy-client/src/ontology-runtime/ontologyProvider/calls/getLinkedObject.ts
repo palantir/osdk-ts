@@ -47,7 +47,11 @@ export function getLinkedObject<T extends OntologyObject>(
           select: [],
         },
       );
-      return convertWireToOsdkObject(client, linkTypeApiName, object) as T;
+      return convertWireToOsdkObject(
+        client,
+        linkTypeApiName,
+        object,
+      ) as unknown as T;
     },
     e =>
       handleGetLinkedObjectError(

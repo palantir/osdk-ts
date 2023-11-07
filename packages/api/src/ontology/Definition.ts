@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
 
 export type ObjectInfoFrom<
@@ -48,37 +49,6 @@ export interface OntologyDefinition<K extends string, A extends string = any> {
   actions: {
     [AA in A]: ActionDefinition<AA, K>;
   };
-}
-
-export interface ActionDefinition<
-  A extends String,
-  K extends String,
-> {
-  apiName: A;
-  description?: string;
-  displayName?: string;
-  parameters: Record<string, ActionParameterDefinition<K>>;
-}
-
-export interface ValidActionParameterTypes {
-  string: string;
-  datetime: Date;
-  double: number;
-  boolean: boolean;
-  integer: number;
-  timestamp: Date;
-  short: number;
-  long: number;
-  float: number;
-  decimal: number;
-  byte: number;
-}
-
-export interface ActionParameterDefinition<K> {
-  displayName: string;
-  type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
-  multiplicity?: boolean;
-  nullable?: boolean;
 }
 
 export interface ObjectDefinition<

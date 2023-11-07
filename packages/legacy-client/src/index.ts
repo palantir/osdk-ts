@@ -18,6 +18,7 @@ export {
   BaseFoundryClient,
   type BaseObjectSet,
   type FoundryClientOptions,
+  type ObjectSet,
   type Ontology,
 } from "./client";
 export {
@@ -64,6 +65,8 @@ export {
   visitError,
 } from "./ontology-runtime";
 export type {
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
   AggregateObjectsError,
   AggregationGroup,
   AggregationResult,

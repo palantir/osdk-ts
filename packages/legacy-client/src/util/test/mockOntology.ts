@@ -53,22 +53,20 @@ export const MockOntology = {
     createTask: {
       apiName: "createTask",
       parameters: {
-        id: { displayName: "createTask", type: "integer", nullable: true },
+        id: { type: "integer", nullable: true },
       },
     },
     updateTask: {
       apiName: "updateTask",
       parameters: {
         task: {
-          displayName: "updateTask",
           type: {
-            object: "Todo",
+            object: "Task",
           },
-          multiplicity: true,
+          multiplicity: false,
           nullable: true,
         },
         value: {
-          displayName: "value",
           type: "boolean",
           nullable: true,
         },

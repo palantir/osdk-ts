@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { LocalDate, Timestamp } from "..";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
 export interface ValidActionParameterTypes {
   string: string;
-  datetime: Date;
+  datetime: LocalDate;
   double: number;
   boolean: boolean;
   integer: number;
-  timestamp: Date;
+  timestamp: Timestamp;
   short: number;
   long: number;
   float: number;
@@ -42,52 +43,48 @@ type NonNullableKeys<T> = {
 
 type ActionArgs<
   O extends OntologyDefinition<any>,
-  K extends keyof O["actions"],
-  B extends ObjectTypesFrom<O>,
+  A extends keyof O["actions"],
 > =
   & {
-    [A in NullableKeys<O["actions"][K]["parameters"]>]?: ActionParameterType<
+    [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
       O,
-      K,
       A,
-      B
+      P
     >;
   }
   & {
-    [A in NonNullableKeys<O["actions"][K]["parameters"]>]: ActionParameterType<
+    [P in NonNullableKeys<O["actions"][A]["parameters"]>]: ActionParameterType<
       O,
-      K,
       A,
-      B
+      P
     >;
   };
 
 export type ActionParameterType<
   O extends OntologyDefinition<any>,
-  K extends keyof O["actions"],
-  P extends keyof O["actions"][K]["parameters"],
-  B extends ObjectTypesFrom<O>,
-> = O["actions"][K]["parameters"][P] extends { multiplicity: true }
-  ? ActionParameterBaseType<O, K, P, B>[]
-  : ActionParameterBaseType<O, K, P, B>;
+  A extends keyof O["actions"],
+  P extends keyof O["actions"][A]["parameters"],
+> = O["actions"][A]["parameters"][P] extends { multiplicity: true }
+  ? ActionParameterBaseType<O, A, P>[]
+  : ActionParameterBaseType<O, A, P>;
 
 export type ActionParameterBaseType<
   O extends OntologyDefinition<any>,
-  K extends keyof O["actions"],
-  P extends keyof O["actions"][K]["parameters"],
-  B extends ObjectTypesFrom<O>,
-> = O["actions"][K]["parameters"][P]["type"] extends { objectSet: B }
-  ? ObjectSet<OsdkLegacyObjectFrom<O, B>>
-  : O["actions"][K]["parameters"][P]["type"] extends { object: B }
-    ? OsdkLegacyObjectFrom<O, B>
-  : O["actions"][K]["parameters"][P]["type"] extends
+  A extends keyof O["actions"],
+  P extends keyof O["actions"][A]["parameters"],
+> = O["actions"][A]["parameters"][P]["type"] extends { objectSet: infer K }
+  ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
+  : O["actions"][A]["parameters"][P]["type"] extends { object: infer K }
+    ? OsdkLegacyObjectFrom<O, K>
+  : O["actions"][A]["parameters"][P]["type"] extends
     keyof ValidActionParameterTypes
-    ? ValidActionParameterTypes[O["actions"][K]["parameters"][P]["type"]]
+    ? ValidActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]
   : never;
 
 export type Actions<
   O extends OntologyDefinition<any>,
-  B extends ObjectTypesFrom<O>,
 > = {
-  [K in keyof O["actions"]]: (arg: ActionArgs<O, K, B>) => Promise<any>;
+  [A in keyof O["actions"]]: (
+    params: ActionArgs<O, A>,
+  ) => Promise<any>;
 };

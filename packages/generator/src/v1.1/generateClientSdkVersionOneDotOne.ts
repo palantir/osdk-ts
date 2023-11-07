@@ -17,6 +17,7 @@
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { generateActions } from "./generateActions";
 import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
@@ -36,5 +37,6 @@ export async function generateClientSdkVersionOneDotOne(
     fs,
     path.join(outDir, "objects"),
   );
+  await generateActions(ontology, fs, outDir);
   await generateIndexFile(fs, outDir);
 }

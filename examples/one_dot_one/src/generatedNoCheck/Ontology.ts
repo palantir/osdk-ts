@@ -1,6 +1,7 @@
 import type { OntologyDefinition } from '@osdk/api';
-import type { Ontology as ClientOntology } from '@osdk/legacy-client';
+import { Timestamp, type Ontology as ClientOntology } from '@osdk/legacy-client';
 import type { Objects } from './ontologyObjects';
+import type { Actions } from './actions';
 import { Todo } from './objects/Todo';
 import { Person } from './objects/Person';
 import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
@@ -16,8 +17,23 @@ export const Ontology = {
     Person,
     ObjectTypeWithAllPropertyTypes,
   },
-} satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes'>;
+  actions: {
+    actionTakesAllParameterTypes: {
+      apiName: 'actionTakesAllParameterTypes',
+      parameters: {
+        objectSet: { multiplicity: false, type: { objectSet: 'Todo' }, nullable: false },
+        object: { multiplicity: false, type: { object: 'Person' }, nullable: true },
+        string: { multiplicity: false, type: 'string', nullable: false },
+        'time-stamp': { multiplicity: false, type: 'timestamp', nullable: false },
+        dateArray: { multiplicity: true, type: 'datetime', nullable: true },
+        attachmentArray: { multiplicity: true, type: 'attachment', nullable: false },
+      },
+      description: 'An action which takes an Object Set',
+    },
+  },
+} satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes', 'actionTakesAllParameterTypes'>;
 
 export interface Ontology extends ClientOntology<typeof Ontology> {
   objects: Objects;
+  actions: Actions;
 }

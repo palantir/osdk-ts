@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./ParameterValue";
-
-export interface OntologyObject<
-  T extends string = string,
-  P extends ParameterValue = ParameterValue,
+export interface ActionDefinition<
+  A extends String,
+  K extends String,
 > {
-  __rid: string;
-  __apiName: T;
-  __primaryKey: P;
+  apiName: A;
+  description?: string;
+  displayName?: string;
+  parameters: Record<string, ActionParameterDefinition<K>>;
 }
 
-export function isOntologyObject(obj: any): obj is OntologyObject {
-  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
-    && "__primaryKey" in obj;
+export interface ValidActionParameterTypes {
+  attachment: any;
+  string: string;
+  datetime: Date;
+  double: number;
+  boolean: boolean;
+  integer: number;
+  timestamp: Date;
+  short: number;
+  long: number;
+  float: number;
+  decimal: number;
+  byte: number;
+}
+
+export interface ActionParameterDefinition<K> {
+  type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
+  multiplicity?: boolean;
+  nullable?: boolean;
 }

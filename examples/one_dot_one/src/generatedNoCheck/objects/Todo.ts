@@ -40,14 +40,17 @@ export const Todo = {
     id: {
       multiplicity: false,
       type: 'integer',
+      nullable: true,
     },
     body: {
       multiplicity: false,
       type: 'string',
+      nullable: true,
     },
     complete: {
       multiplicity: false,
       type: 'boolean',
+      nullable: true,
     },
   },
 } satisfies ObjectDefinition<'Todo', 'Person'>;
