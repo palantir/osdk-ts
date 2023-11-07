@@ -25,6 +25,7 @@ import { logVersionMiddleware } from "./yargs/logVersionMiddleware";
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
+    .version(false)
     .option(
       "verbose",
       {

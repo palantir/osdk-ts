@@ -18,6 +18,7 @@ import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
+import siteDelete from "./delete";
 import upload from "./upload";
 import versions from "./versions";
 
@@ -39,6 +40,7 @@ const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
       })
       .command(versions)
       .command(upload)
+      .command(siteDelete)
       .demandCommand();
   },
   handler: async (args) => {

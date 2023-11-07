@@ -48,7 +48,5 @@ export default async function invokeSiteUpload(args: UploadArgs) {
     archive.finalize(),
   ]);
 
-  consola.success(
-    "Found versions",
-  );
+  consola.success("Upload complete");
 }
