@@ -24,7 +24,7 @@ export function go(basePath: string) {
       actionTypes: [
         {
           apiName: "actionTakesAllParameterTypes",
-          description: "An action which takes an Object Set",
+          description: "An action which takes different types of parameters",
           parameters: {
             objectSet: {
               dataType: {
@@ -34,6 +34,7 @@ export function go(basePath: string) {
               required: true,
             },
             object: {
+              description: "A person Object",
               dataType: {
                 type: "object",
                 objectApiName: "Person",

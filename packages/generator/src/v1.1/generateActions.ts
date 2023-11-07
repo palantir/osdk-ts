@@ -36,6 +36,11 @@ export async function generateActions(
     addedObjects.forEach(importedObjects.add, importedObjects);
     modifiedObjects.forEach(importedObjects.add, importedObjects);
 
+    let jsDocBlock = ["/**"];
+    if (action.description) {
+      jsDocBlock.push(`* ${action.description}`);
+    }
+
     let parameterBlock = "";
     if (entries.length > 0) {
       parameterBlock = `params: { \n`;
@@ -49,12 +54,19 @@ export async function generateActions(
           importedObjects,
         );
         parameterBlock += `${getTypeScriptType};\n`;
+
+        jsDocBlock.push(
+          `* @param {${getTypeScriptType}} params.${parameterName}`,
+        );
       }
       parameterBlock += "}, ";
     }
 
+    jsDocBlock.push(`*/`);
     signatures.push(
-      `${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
+      `
+      ${jsDocBlock.join("\n")}
+      ${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
         Promise<Result<ActionResponseFromOptions<O, Edits<${
         addedObjects.length > 0
           ? addedObjects.join(" | ")
