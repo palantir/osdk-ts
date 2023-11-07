@@ -16,6 +16,7 @@
 
 import type {
   ActionDefinition,
+  ActionModifiedEntity,
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "@osdk/api";
@@ -24,10 +25,12 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/gateway/types";
+import { getModifiedEntityTypes } from "./getEditedEntities";
 
 export function wireActionTypeV2ToSdkActionDefinition(
   input: ActionTypeV2,
 ): ActionDefinition<any, any> {
+  const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     apiName: input.apiName,
     parameters: Object.fromEntries(
@@ -37,6 +40,10 @@ export function wireActionTypeV2ToSdkActionDefinition(
     ),
     displayName: input.displayName,
     description: input.description,
+    modifiedEntities: createModifiedEntities(
+      modifiedEntityTypes.addedObjects,
+      modifiedEntityTypes.modifiedObjects,
+    ),
   };
 }
 
@@ -89,4 +96,28 @@ function actionPropertyToSdkPropertyDefinition(
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
   }
+}
+
+function createModifiedEntities<K extends string>(
+  addedObjects: Set<K>,
+  modifiedObjects: Set<K>,
+): Record<K, ActionModifiedEntity> {
+  let entities: Record<K, ActionModifiedEntity> = {} as Record<
+    K,
+    ActionModifiedEntity
+  >;
+
+  for (const key of addedObjects) {
+    entities[key] = { created: true, modified: false };
+  }
+
+  for (const key of modifiedObjects) {
+    if (entities[key]) {
+      entities[key] = { ...entities[key], modified: true };
+    } else {
+      entities[key] = { created: false, modified: true };
+    }
+  }
+
+  return entities;
 }

@@ -43,6 +43,7 @@ export type {
 
 export type {
   ActionDefinition,
+  ActionModifiedEntity,
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";

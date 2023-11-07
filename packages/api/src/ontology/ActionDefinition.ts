@@ -15,28 +15,30 @@
  */
 
 export interface ActionDefinition<
-  A extends String,
-  K extends String,
+  A extends string,
+  K extends string,
 > {
   apiName: A;
   description?: string;
   displayName?: string;
   parameters: Record<string, ActionParameterDefinition<K>>;
+  modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+}
+
+export interface ActionModifiedEntity {
+  created: boolean;
+  modified: boolean;
 }
 
 export interface ValidActionParameterTypes {
-  attachment: any;
-  string: string;
-  datetime: Date;
-  double: number;
   boolean: boolean;
+  string: string;
   integer: number;
-  timestamp: Date;
-  short: number;
   long: number;
-  float: number;
-  decimal: number;
-  byte: number;
+  double: number;
+  datetime: Date;
+  timestamp: Date;
+  attachment: any;
 }
 
 export interface ActionParameterDefinition<K> {

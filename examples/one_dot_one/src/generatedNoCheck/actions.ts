@@ -10,6 +10,7 @@ import type {
   ActionResponseFromOptions,
 } from '@osdk/legacy-client';
 import type { Todo } from './objects/Todo';
+import type { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
 import type { Person } from './objects/Person';
 export interface Actions {
   actionTakesAllParameterTypes<O extends ActionExecutionOptions>(
@@ -22,5 +23,5 @@ export interface Actions {
       attachmentArray: Attachment[];
     },
     options?: O,
-  ): Promise<Result<ActionResponseFromOptions<O, Edits<void, void>>, ActionError>>;
+  ): Promise<Result<ActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>>;
 }

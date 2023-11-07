@@ -38,6 +38,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Objects } from './ontologyObjects';
+      import type { Actions } from './actions';
       import { Todo } from './objects/Todo';
       import { Person } from './objects/Person';
 
@@ -51,10 +52,12 @@ describe(generateMetadataFile, () => {
           Todo,
           Person,
         },
+        actions: {},
       } satisfies OntologyDefinition<'Todo' | 'Person'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
+        actions: Actions;
       }
       "
     `);

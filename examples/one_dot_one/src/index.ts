@@ -74,7 +74,16 @@ export function go(basePath: string) {
           },
           rid:
             "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
-          operations: [],
+          operations: [{
+            type: "createObject",
+            objectTypeApiName: "Todo",
+          }, {
+            type: "modifyObject",
+            objectTypeApiName: "Todo",
+          }, {
+            type: "modifyObject",
+            objectTypeApiName: "ObjectTypeWithAllPropertyTypes",
+          }],
           status: "ACTIVE",
         },
       ],

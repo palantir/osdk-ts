@@ -1,5 +1,5 @@
 import type { OntologyDefinition } from '@osdk/api';
-import { Timestamp, type Ontology as ClientOntology } from '@osdk/legacy-client';
+import type { Ontology as ClientOntology } from '@osdk/legacy-client';
 import type { Objects } from './ontologyObjects';
 import type { Actions } from './actions';
 import { Todo } from './objects/Todo';
@@ -29,6 +29,10 @@ export const Ontology = {
         attachmentArray: { multiplicity: true, type: 'attachment', nullable: false },
       },
       description: 'An action which takes an Object Set',
+      modifiedEntities: {
+        Todo: { created: true, modified: true },
+        ObjectTypeWithAllPropertyTypes: { created: false, modified: true },
+      },
     },
   },
 } satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes', 'actionTakesAllParameterTypes'>;

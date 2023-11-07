@@ -55,6 +55,9 @@ export const MockOntology = {
       parameters: {
         id: { type: "integer", nullable: true },
       },
+      modifiedEntities: {
+        Task: { modified: false, created: true },
+      },
     },
     updateTask: {
       apiName: "updateTask",
@@ -70,6 +73,9 @@ export const MockOntology = {
           type: "boolean",
           nullable: true,
         },
+      },
+      modifiedEntities: {
+        Task: { modified: true, created: false },
       },
     },
   },
