@@ -321,7 +321,96 @@ export function go(basePath: string) {
           },
         },
       },
-      queryTypes: [],
+      queryTypes: [{
+        apiName: "queryTakesAllParameterTypes",
+        version: "version",
+        rid: "query.rid",
+        description: "description of the query that takes all parameter types",
+        displayName: "qTAPT",
+        output: { type: "string" },
+        parameters: {
+          double: {
+            dataType: { type: "double" },
+            description: "a double parameter",
+          },
+          float: {
+            dataType: { type: "float" },
+          },
+          integer: {
+            dataType: { type: "integer" },
+          },
+          long: {
+            dataType: { type: "long" },
+          },
+          attachment: {
+            dataType: { type: "attachment" },
+          },
+          boolean: {
+            dataType: { type: "boolean" },
+          },
+          date: {
+            dataType: { type: "date" },
+          },
+          string: {
+            dataType: { type: "string" },
+          },
+          timestamp: {
+            dataType: { type: "timestamp" },
+          },
+          object: {
+            dataType: {
+              type: "object",
+              objectApiName: "Todo",
+              objectTypeApiName: "Todo",
+            },
+          },
+          objectSet: {
+            dataType: {
+              type: "objectSet",
+              objectApiName: "Todo",
+              objectTypeApiName: "Todo",
+            },
+          },
+          array: {
+            dataType: { type: "array", subType: { type: "string" } },
+            description: "an array of strings",
+          },
+          set: {
+            dataType: { type: "set", subType: { type: "string" } },
+            description: "a set of strings",
+          },
+          unionNonNullable: {
+            dataType: {
+              type: "union",
+              unionTypes: [{
+                type: "string",
+              }, { type: "integer" }],
+            },
+            description: "a union of strings and integers",
+          },
+          unionNullable: {
+            dataType: {
+              type: "union",
+              unionTypes: [
+                { type: "string" },
+                { type: "integer" },
+                { type: "null" },
+              ],
+            },
+            description: "a union of strings and integers but its optional",
+          },
+          struct: {
+            dataType: {
+              type: "struct",
+              fields: [
+                { name: "name", fieldType: { type: "string" } },
+                { name: "id", fieldType: { type: "integer" } },
+              ],
+            },
+            description: "a struct with some fields",
+          },
+        },
+      }],
       linkTypes: {
         Person: [{
           apiName: "Todos",

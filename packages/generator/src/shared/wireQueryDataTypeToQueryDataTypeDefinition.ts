@@ -15,7 +15,7 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
-import type { QueryDataType, QueryDataType_Union } from "@osdk/gateway/types";
+import type { QueryDataType } from "@osdk/gateway/types";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition(
   input: QueryDataType,
@@ -83,7 +83,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
         type: {
           type: "union",
           union: input.unionTypes.reduce((acc, t) => {
-            if (t.type === null) {
+            if (t.type === "null") {
               return acc;
             }
             acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
@@ -117,6 +117,12 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
   }
 }
 
-function isNullable(input: QueryDataType_Union) {
-  return input.unionTypes.some(t => t.type === "null");
+function isNullable(input: QueryDataType): boolean {
+  if (input.type === "null") {
+    return true;
+  }
+  if (input.type === "union") {
+    return input.unionTypes.some(t => isNullable(t));
+  }
+  return false;
 }

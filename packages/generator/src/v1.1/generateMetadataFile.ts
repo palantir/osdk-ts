@@ -17,6 +17,7 @@
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
+import { wireQueryTypeV2ToSdkQueryDefinition } from "../shared/wireQueryTypeV2ToSdkQueryDefinition";
 import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
@@ -59,11 +60,26 @@ export async function generateMetadataFile(
           ],
         ),
       ))
+    },
+    queries:
+    ${
+      JSON.stringify(
+        Object.fromEntries(
+          ontology.queryTypes.map(
+            query => [
+              query.apiName,
+              wireQueryTypeV2ToSdkQueryDefinition(query),
+            ],
+          ),
+        ),
+      )
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
       ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(
         "|",
       )
+    }, ${
+      ontology.queryTypes.map(queryType => `"${queryType.apiName}"`).join("|")
     }>;
     
 export interface Ontology extends ClientOntology<typeof Ontology> {
