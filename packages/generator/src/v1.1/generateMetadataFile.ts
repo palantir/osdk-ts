@@ -16,7 +16,6 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
 import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
@@ -27,16 +26,20 @@ export async function generateMetadataFile(
   outDir: string,
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
-  const actions = ontology.actionTypes;
+  const actionNames = ontology.actionTypes.map(action => action.apiName);
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
   import type { Objects } from "./ontologyObjects";
-  import type { Actions } from "./actions";
+  import type { Actions } from "./ontologyActions";
   ${
       objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+        .join("\n")
+    }
+  ${
+      actionNames.map((name) => `import {${name}} from "./actions/${name}";`)
         .join("\n")
     }
 
@@ -49,16 +52,8 @@ export async function generateMetadataFile(
     objects: {
         ${commaSeparatedIdentifiers(objectNames)}
     },
-    actions: 
-      ${
-      JSON.stringify(Object.fromEntries(
-        ontology.actionTypes.map(
-          action => [
-            action.apiName,
-            wireActionTypeV2ToSdkActionDefinition(action),
-          ],
-        ),
-      ))
+    actions: {
+      ${commaSeparatedIdentifiers(actionNames)}
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
       ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(

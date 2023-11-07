@@ -18,7 +18,29 @@ import type { WireOntologyDefinition } from "../../WireOntologyDefinition";
 
 export const TodoWireOntology = {
   rid: "ridHere",
-  actionTypes: [],
+  actionTypes: [
+    {
+      apiName: "markTodoCompleted",
+      description: "An action which takes different types of parameters",
+      parameters: {
+        object: {
+          description: "A Todo to mark completed",
+          dataType: {
+            type: "object",
+            objectApiName: "Todo",
+            objectTypeApiName: "Todo",
+          },
+          required: false,
+        },
+      },
+      rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      operations: [{
+        type: "modifyObject",
+        objectTypeApiName: "Todo",
+      }],
+      status: "ACTIVE",
+    },
+  ],
   apiName: "OntologyApiName",
   objectTypes: {
     Todo: {

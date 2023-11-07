@@ -30,7 +30,7 @@ export interface ActionModifiedEntity {
   modified: boolean;
 }
 
-export interface ValidActionParameterTypes {
+export interface ValidBaseActionParameterTypes {
   boolean: boolean;
   string: string;
   integer: number;
@@ -41,8 +41,23 @@ export interface ValidActionParameterTypes {
   attachment: any;
 }
 
-export interface ActionParameterDefinition<K> {
-  type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
+export interface ObjectActionDataType<K extends string> {
+  type: "object";
+  object: K;
+}
+
+export interface ObjectSetActionDataType<K extends string> {
+  type: "objectSet";
+  objectSet: K;
+}
+
+export type ValidActionParameterTypes<K extends string = never> =
+  | keyof ValidBaseActionParameterTypes
+  | ObjectActionDataType<K>
+  | ObjectSetActionDataType<K>;
+
+export interface ActionParameterDefinition<K extends string = never> {
+  type: ValidActionParameterTypes<K>;
   description?: string;
   multiplicity?: boolean;
   nullable?: boolean;

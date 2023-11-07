@@ -38,9 +38,10 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Objects } from './ontologyObjects';
-      import type { Actions } from './actions';
+      import type { Actions } from './ontologyActions';
       import { Todo } from './objects/Todo';
       import { Person } from './objects/Person';
+      import { markTodoCompleted } from './actions/markTodoCompleted';
 
       export const Ontology = {
         metadata: {
@@ -52,8 +53,10 @@ describe(generateMetadataFile, () => {
           Todo,
           Person,
         },
-        actions: {},
-      } satisfies OntologyDefinition<'Todo' | 'Person'>;
+        actions: {
+          markTodoCompleted,
+        },
+      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;

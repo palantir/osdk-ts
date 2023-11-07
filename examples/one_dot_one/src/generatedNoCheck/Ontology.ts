@@ -1,10 +1,11 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
 import type { Objects } from './ontologyObjects';
-import type { Actions } from './actions';
+import type { Actions } from './ontologyActions';
 import { Todo } from './objects/Todo';
 import { Person } from './objects/Person';
 import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
+import { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes';
 
 export const Ontology = {
   metadata: {
@@ -18,22 +19,7 @@ export const Ontology = {
     ObjectTypeWithAllPropertyTypes,
   },
   actions: {
-    actionTakesAllParameterTypes: {
-      apiName: 'actionTakesAllParameterTypes',
-      parameters: {
-        objectSet: { multiplicity: false, type: { objectSet: 'Todo' }, nullable: false },
-        object: { multiplicity: false, type: { object: 'Person' }, nullable: true, description: 'A person Object' },
-        string: { multiplicity: false, type: 'string', nullable: false },
-        'time-stamp': { multiplicity: false, type: 'timestamp', nullable: false },
-        dateArray: { multiplicity: true, type: 'datetime', nullable: true },
-        attachmentArray: { multiplicity: true, type: 'attachment', nullable: false },
-      },
-      description: 'An action which takes different types of parameters',
-      modifiedEntities: {
-        Todo: { created: true, modified: true },
-        ObjectTypeWithAllPropertyTypes: { created: false, modified: true },
-      },
-    },
+    actionTakesAllParameterTypes,
   },
 } satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes', 'actionTakesAllParameterTypes'>;
 

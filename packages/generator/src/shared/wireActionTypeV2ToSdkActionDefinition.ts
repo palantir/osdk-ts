@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
-  ValidActionParameterTypes,
 } from "@osdk/api";
 import type {
   ActionParameterType,
@@ -79,7 +78,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
 
 function actionPropertyToSdkPropertyDefinition(
   parameterType: ActionParameterType,
-): keyof ValidActionParameterTypes | { objectSet: any } | { object: any } {
+): ActionParameterDefinition<string>["type"] {
   switch (parameterType.type) {
     case "string":
     case "boolean":
@@ -92,9 +91,9 @@ function actionPropertyToSdkPropertyDefinition(
     case "date":
       return "datetime";
     case "objectSet":
-      return { objectSet: parameterType.objectTypeApiName };
+      return { type: "objectSet", objectSet: parameterType.objectTypeApiName! };
     case "object":
-      return { object: parameterType.objectTypeApiName };
+      return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
   }

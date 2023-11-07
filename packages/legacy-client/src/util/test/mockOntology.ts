@@ -64,6 +64,7 @@ export const MockOntology = {
       parameters: {
         task: {
           type: {
+            type: "object",
             object: "Task",
           },
           multiplicity: false,

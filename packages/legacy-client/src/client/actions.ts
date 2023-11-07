@@ -78,10 +78,11 @@ export type ActionParameterBaseType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   P extends keyof O["actions"][A]["parameters"],
-> = O["actions"][A]["parameters"][P]["type"] extends { objectSet: infer K }
+> = O["actions"][A]["parameters"][P]["type"] extends
+  { type: "objectSet"; objectSet: infer K }
   ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
-  : O["actions"][A]["parameters"][P]["type"] extends { object: infer K }
-    ? OsdkLegacyObjectFrom<O, K>
+  : O["actions"][A]["parameters"][P]["type"] extends
+    { type: "object"; object: infer K } ? OsdkLegacyObjectFrom<O, K>
   : O["actions"][A]["parameters"][P]["type"] extends
     keyof ValidLegacyActionParameterTypes
     ? ValidLegacyActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]

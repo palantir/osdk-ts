@@ -80,7 +80,7 @@ export async function generateActions(
   }
 
   await fs.writeFile(
-    `${outDir}/actions.ts`,
+    `${outDir}/ontologyActions.ts`,
     await formatTs(`
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${
