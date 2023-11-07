@@ -40,3 +40,10 @@ export type {
   PropertyKeysFrom,
   ValidPropertyTypes,
 } from "./ontology/Definition";
+
+export type {
+  ActionDefinition,
+  ActionModifiedEntity,
+  ActionParameterDefinition,
+  ValidActionParameterTypes,
+} from "./ontology/ActionDefinition";

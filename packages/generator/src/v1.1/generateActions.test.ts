@@ -17,14 +17,14 @@
 import { describe, expect, it } from "vitest";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generateActions } from "./generateActions";
 
-describe(generateObjectsInterfaceFile, () => {
-  it("generates objects", async () => {
+describe(generateActions, () => {
+  it("generates action interface", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
 
-    await generateObjectsInterfaceFile(
+    await generateActions(
       TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
@@ -32,17 +32,29 @@ describe(generateObjectsInterfaceFile, () => {
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(
-      helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
-    ).toMatchInlineSnapshot(`
-      "import { BaseObjectSet } from '@osdk/legacy-client';
-      import { Person, Todo } from './objects';
-
-      export interface Objects {
-        Todo: BaseObjectSet<Todo>;
-        Person: BaseObjectSet<Person>;
-      }
-      "
-    `);
+    expect(helper.getFiles()[`${BASE_PATH}/ontologyActions.ts`])
+      .toMatchInlineSnapshot(`
+        "import type {
+          ActionError,
+          ActionExecutionOptions,
+          ActionResponseFromOptions,
+          Edits,
+          Result,
+        } from '@osdk/legacy-client';
+        import type { Todo } from './objects/Todo';
+        export interface Actions {
+          /**
+           * An action which takes different types of parameters
+           * @param {Todo} params.object
+           */
+          markTodoCompleted<O extends ActionExecutionOptions>(
+            params: {
+              object?: Todo;
+            },
+            options?: O,
+          ): Promise<Result<ActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
+        }
+        "
+      `);
   });
 });

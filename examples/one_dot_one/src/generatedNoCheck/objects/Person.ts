@@ -1,15 +1,5 @@
 import { ObjectDefinition } from '@osdk/api';
-import type {
-  OntologyObject,
-  LocalDate,
-  Timestamp,
-  GeoShape,
-  GeoPoint,
-  Attachment,
-  TimeSeries,
-  MultiLink,
-  SingleLink,
-} from '@osdk/legacy-client';
+import type { MultiLink, OntologyObject } from '@osdk/legacy-client';
 import type { Todo } from './Todo';
 
 /**
@@ -35,6 +25,7 @@ export const Person = {
     email: {
       multiplicity: false,
       type: 'string',
+      nullable: true,
     },
   },
 } satisfies ObjectDefinition<'Person', 'Todo'>;

@@ -39,11 +39,13 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       return {
         multiplicity: false,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
       };
     case "array": {
       return {
         multiplicity: true,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
       };
     }
     default:

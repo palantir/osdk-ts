@@ -41,6 +41,10 @@ export async function getObject<T extends OntologyObject>(
       },
     );
 
-    return convertWireToOsdkObject(client, objectApiName, object) as T;
+    return convertWireToOsdkObject(
+      client,
+      objectApiName,
+      object,
+    ) as unknown as T;
   }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
 }

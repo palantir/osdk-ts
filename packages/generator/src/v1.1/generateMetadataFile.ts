@@ -26,14 +26,20 @@ export async function generateMetadataFile(
   outDir: string,
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
+  const actionNames = ontology.actionTypes.map(action => action.apiName);
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
   import type { Objects } from "./ontologyObjects";
+  import type { Actions } from "./ontologyActions";
   ${
       objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+        .join("\n")
+    }
+  ${
+      actionNames.map((name) => `import {${name}} from "./actions/${name}";`)
         .join("\n")
     }
 
@@ -45,11 +51,19 @@ export async function generateMetadataFile(
     },
     objects: {
         ${commaSeparatedIdentifiers(objectNames)}
+    },
+    actions: {
+      ${commaSeparatedIdentifiers(actionNames)}
     }
-  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}>;
+  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
+      ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(
+        "|",
+      )
+    }>;
     
 export interface Ontology extends ClientOntology<typeof Ontology> {
     objects: Objects;
+    actions: Actions;
 }`),
   );
 }

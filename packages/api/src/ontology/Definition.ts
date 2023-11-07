@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
 
 export type ObjectInfoFrom<
@@ -40,10 +41,13 @@ export type PropertyDefinitionFrom<
   P extends PropertyKeysFrom<O, K>,
 > = PropertyDefinitionsFrom<O, K>[P];
 
-export interface OntologyDefinition<K extends string> {
+export interface OntologyDefinition<K extends string, A extends string = any> {
   metadata: OntologyMetadata;
   objects: {
     [KK in K]: ObjectDefinition<KK, K>;
+  };
+  actions: {
+    [AA in A]: ActionDefinition<AA, K>;
   };
 }
 

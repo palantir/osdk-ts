@@ -1,15 +1,5 @@
 import { ObjectDefinition } from '@osdk/api';
-import type {
-  OntologyObject,
-  LocalDate,
-  Timestamp,
-  GeoShape,
-  GeoPoint,
-  Attachment,
-  TimeSeries,
-  MultiLink,
-  SingleLink,
-} from '@osdk/legacy-client';
+import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
 import type { Person } from './Person';
 
 /**
@@ -40,14 +30,17 @@ export const Todo = {
     id: {
       multiplicity: false,
       type: 'integer',
+      nullable: true,
     },
     body: {
       multiplicity: false,
       type: 'string',
+      nullable: true,
     },
     complete: {
       multiplicity: false,
       type: 'boolean',
+      nullable: true,
     },
   },
 } satisfies ObjectDefinition<'Todo', 'Person'>;

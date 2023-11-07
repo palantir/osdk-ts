@@ -56,8 +56,6 @@ describe("generator", () => {
         GeoShape,
         GeoShapeType,
         IntegerType,
-        isErr,
-        isOk,
         LocalDate,
         LongType,
         ObjectType,
@@ -72,6 +70,8 @@ describe("generator", () => {
         TimeSeriesType,
         Timestamp,
         TimestampType,
+        isErr,
+        isOk,
         visitError,
       } from '@osdk/legacy-client';
       export type {
@@ -101,8 +101,8 @@ describe("generator", () => {
         Unauthorized,
         UnknownError,
       } from '@osdk/legacy-client';
-      export { Ontology } from './Ontology';
       export { FoundryClient } from './FoundryClient';
+      export { Ontology } from './Ontology';
       "
     `);
 

@@ -1,9 +1,11 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
-import type { Objects } from './ontologyObjects';
-import { Todo } from './objects/Todo';
-import { Person } from './objects/Person';
+import { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes';
 import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
+import { Person } from './objects/Person';
+import { Todo } from './objects/Todo';
+import type { Actions } from './ontologyActions';
+import type { Objects } from './ontologyObjects';
 
 export const Ontology = {
   metadata: {
@@ -16,8 +18,12 @@ export const Ontology = {
     Person,
     ObjectTypeWithAllPropertyTypes,
   },
-} satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes'>;
+  actions: {
+    actionTakesAllParameterTypes,
+  },
+} satisfies OntologyDefinition<'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes', 'actionTakesAllParameterTypes'>;
 
 export interface Ontology extends ClientOntology<typeof Ontology> {
   objects: Objects;
+  actions: Actions;
 }

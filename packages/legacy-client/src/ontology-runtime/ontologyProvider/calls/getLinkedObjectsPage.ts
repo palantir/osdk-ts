@@ -41,7 +41,11 @@ export async function getLinkedObjectsPage<T extends OntologyObject>(
   );
   return {
     data: pagePromise.data.map(object => {
-      return convertWireToOsdkObject(client, linkTypeApiName, object) as T;
+      return convertWireToOsdkObject(
+        client,
+        linkTypeApiName,
+        object,
+      ) as unknown as T;
     }),
     nextPageToken: pagePromise.nextPageToken,
   };

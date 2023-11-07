@@ -16,10 +16,13 @@
 
 import type { ParameterValue } from "./ParameterValue";
 
-export interface OntologyObject<T extends string = string> {
+export interface OntologyObject<
+  T extends string = string,
+  P extends ParameterValue = ParameterValue,
+> {
   __rid: string;
   __apiName: T;
-  __primaryKey: ParameterValue;
+  __primaryKey: P;
 }
 
 export function isOntologyObject(obj: any): obj is OntologyObject {
