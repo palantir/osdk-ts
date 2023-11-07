@@ -1,17 +1,17 @@
 import type {
-  ObjectSet,
-  LocalDate,
-  Timestamp,
+  ActionError,
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
   Attachment,
   Edits,
-  ActionExecutionOptions,
-  ActionError,
+  LocalDate,
+  ObjectSet,
   Result,
-  ActionResponseFromOptions,
+  Timestamp,
 } from '@osdk/legacy-client';
-import type { Todo } from './objects/Todo';
 import type { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
 import type { Person } from './objects/Person';
+import type { Todo } from './objects/Todo';
 export interface Actions {
   /**
    * An action which takes different types of parameters

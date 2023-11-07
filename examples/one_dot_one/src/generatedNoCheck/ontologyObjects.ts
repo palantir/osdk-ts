@@ -1,5 +1,5 @@
 import { BaseObjectSet } from '@osdk/legacy-client';
-import { Todo, Person, ObjectTypeWithAllPropertyTypes } from './objects';
+import { ObjectTypeWithAllPropertyTypes, Person, Todo } from './objects';
 
 export interface Objects {
   Todo: BaseObjectSet<Todo>;

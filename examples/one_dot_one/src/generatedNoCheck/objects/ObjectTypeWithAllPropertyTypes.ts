@@ -1,15 +1,5 @@
 import { ObjectDefinition } from '@osdk/api';
-import type {
-  OntologyObject,
-  LocalDate,
-  Timestamp,
-  GeoShape,
-  GeoPoint,
-  Attachment,
-  TimeSeries,
-  MultiLink,
-  SingleLink,
-} from '@osdk/legacy-client';
+import type { Attachment, GeoPoint, GeoShape, LocalDate, OntologyObject, Timestamp } from '@osdk/legacy-client';
 
 /**
  * A type with all property types

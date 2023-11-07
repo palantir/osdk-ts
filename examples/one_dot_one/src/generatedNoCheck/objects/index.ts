@@ -1,3 +1,3 @@
-export * from './Todo';
-export * from './Person';
 export * from './ObjectTypeWithAllPropertyTypes';
+export * from './Person';
+export * from './Todo';

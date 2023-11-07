@@ -21,6 +21,7 @@ export function formatTs(contents: string) {
     parser: "typescript",
     singleQuote: true,
     trailingComma: "all",
+    plugins: ["prettier-plugin-organize-imports"],
     tabWidth: 2,
     printWidth: 120,
   });

@@ -35,15 +35,11 @@ describe(generateActions, () => {
     expect(helper.getFiles()[`${BASE_PATH}/ontologyActions.ts`])
       .toMatchInlineSnapshot(`
         "import type {
-          ObjectSet,
-          LocalDate,
-          Timestamp,
-          Attachment,
-          Edits,
-          ActionExecutionOptions,
           ActionError,
-          Result,
+          ActionExecutionOptions,
           ActionResponseFromOptions,
+          Edits,
+          Result,
         } from '@osdk/legacy-client';
         import type { Todo } from './objects/Todo';
         export interface Actions {
