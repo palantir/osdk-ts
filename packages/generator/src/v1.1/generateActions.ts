@@ -49,14 +49,14 @@ export async function generateActions(
       ) {
         parameterBlock += `"${parameterName}"`;
         parameterBlock += parameterData.required ? ": " : "?: ";
-        const getTypeScriptType = handleDataType(
+        const typeScriptType = getTypeScriptTypeFromDataType(
           parameterData.dataType,
           importedObjects,
         );
-        parameterBlock += `${getTypeScriptType};\n`;
+        parameterBlock += `${typeScriptType};\n`;
 
         jsDocBlock.push(
-          `* @param {${getTypeScriptType}} params.${parameterName}`,
+          `* @param {${typeScriptType}} params.${parameterName}`,
         );
       }
       parameterBlock += "}, ";
@@ -95,7 +95,7 @@ export async function generateActions(
   );
 }
 
-function handleDataType(
+function getTypeScriptTypeFromDataType(
   actionParameter: ActionParameterType,
   importedObjects: Set<string>,
 ): string {
@@ -111,7 +111,9 @@ function handleDataType(
       return `${objectType}`;
     }
     case "array":
-      return handleDataType(actionParameter.subType, importedObjects) + `[]`;
+      return `Array<${
+        getTypeScriptTypeFromDataType(actionParameter.subType, importedObjects)
+      }>`;
     case "string":
       return `string`;
     case "boolean":

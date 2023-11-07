@@ -114,7 +114,7 @@ function createModifiedEntities<K extends string>(
 
   for (const key of modifiedObjects) {
     if (entities[key]) {
-      entities[key] = { ...entities[key], modified: true };
+      entities[key].modified = true;
     } else {
       entities[key] = { created: false, modified: true };
     }
