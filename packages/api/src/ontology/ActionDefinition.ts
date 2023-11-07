@@ -43,6 +43,7 @@ export interface ValidActionParameterTypes {
 
 export interface ActionParameterDefinition<K> {
   type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
+  description?: string;
   multiplicity?: boolean;
   nullable?: boolean;
 }

@@ -65,12 +65,14 @@ function wireActionParameterV2ToSdkParameterDefinition(
         multiplicity: false,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
         nullable: value.required ? false : true,
+        description: value.description,
       };
     case "array":
       return {
         multiplicity: true,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
         nullable: value.required ? false : true,
+        description: value.description,
       };
   }
 }

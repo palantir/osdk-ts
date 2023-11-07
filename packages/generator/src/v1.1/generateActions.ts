@@ -26,7 +26,7 @@ export async function generateActions(
   outDir: string,
 ) {
   const importedObjects = new Set<string>();
-  let signatures = [];
+  let actionSignatures = [];
   for (const action of ontology.actionTypes) {
     const entries = Object.entries(action.parameters);
 
@@ -63,7 +63,7 @@ export async function generateActions(
     }
 
     jsDocBlock.push(`*/`);
-    signatures.push(
+    actionSignatures.push(
       `
       ${jsDocBlock.join("\n")}
       ${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
@@ -89,7 +89,7 @@ export async function generateActions(
       ).join("\n")
     }
     export interface Actions {
-    ${signatures.join("\n")}
+    ${actionSignatures.join("\n")}
     }
   `),
   );

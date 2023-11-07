@@ -14,7 +14,7 @@ import type { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAll
 import type { Person } from './objects/Person';
 export interface Actions {
   /**
-   * An action which takes an Object Set
+   * An action which takes different types of parameters
    * @param {ObjectSet<Todo>} params.objectSet
    * @param {Person} params.object
    * @param {string} params.string
