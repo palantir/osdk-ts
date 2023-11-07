@@ -16,6 +16,7 @@
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
 import type { QueryDataType } from "@osdk/gateway/types";
+import { isNullableQueryDataType } from "./isNullableQueryDataType";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition(
   input: QueryDataType,
@@ -66,7 +67,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
       };
 
     case "union":
-      const allowNulls = isNullable(input);
+      const allowNulls = isNullableQueryDataType(input);
 
       // special case for a union where one half is nullable to skip the union step and just allow nulls directly
       if (allowNulls && input.unionTypes.length === 2) {
@@ -115,14 +116,4 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
       const _: never = input;
       throw new Error(`Unsupported QueryDataType.type ${(input as any).type}`);
   }
-}
-
-function isNullable(input: QueryDataType): boolean {
-  if (input.type === "null") {
-    return true;
-  }
-  if (input.type === "union") {
-    return input.unionTypes.some(t => isNullable(t));
-  }
-  return false;
 }

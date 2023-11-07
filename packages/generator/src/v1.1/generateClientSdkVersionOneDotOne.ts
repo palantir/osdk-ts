@@ -23,6 +23,7 @@ import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
+import { generateQueries } from "./generateQueries";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
@@ -38,5 +39,6 @@ export async function generateClientSdkVersionOneDotOne(
     path.join(outDir, "objects"),
   );
   await generateActions(ontology, fs, outDir);
+  await generateQueries(ontology, fs, outDir);
   await generateIndexFile(fs, outDir);
 }
