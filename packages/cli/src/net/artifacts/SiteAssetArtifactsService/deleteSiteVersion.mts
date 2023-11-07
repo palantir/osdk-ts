@@ -15,11 +15,11 @@
  */
 
 import { consola, LogLevels } from "consola";
-import { ExitProcessError } from "../ExitProcessError.js";
-import { createFetch } from "./createFetch.mjs";
-import { fetchWebsiteRepositoryRid } from "./fetchWebsiteRepositoryRid.mjs";
+import { ExitProcessError } from "../../../ExitProcessError.js";
+import { createFetch } from "../../createFetch.mjs";
+import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
+import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
-import type { ThirdPartyAppRid } from "./ThirdPartyAppRid.js";
 
 export async function deleteSiteVersion(
   baseUrl: string,

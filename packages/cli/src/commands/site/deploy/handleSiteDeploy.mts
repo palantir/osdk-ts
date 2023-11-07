@@ -15,17 +15,23 @@
  */
 
 import { consola } from "consola";
+
 import { artifacts } from "../../../net/index.mjs";
-import type { DeleteArgs } from "./DeleteArgs.js";
+import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export default async function siteDeleteCommand(args: DeleteArgs) {
-  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
-    args.baseUrl,
-    args.appRid,
-    args.siteVersion,
-  );
+export default async function handleSiteDeploy(args: SiteDeployArgs) {
+  if (args.siteVersion) {
+    await artifacts.conjure.ArtifactsSitesAdminV2Service.deploySiteVersion(
+      args.baseUrl,
+      args.appRid,
+      args.siteVersion,
+    );
+  } else if (args.clearVersion) {
+    await artifacts.conjure.ArtifactsSitesAdminV2Service.clearSiteVersion(
+      args.baseUrl,
+      args.appRid,
+    );
+  }
 
-  consola.success(
-    "Delete successful",
-  );
+  consola.success("Deploy successful");
 }

@@ -14,18 +14,7 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import { artifacts } from "../../../net/index.mjs";
-import type { DeleteArgs } from "./DeleteArgs.js";
-
-export default async function siteDeleteCommand(args: DeleteArgs) {
-  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
-    args.baseUrl,
-    args.appRid,
-    args.siteVersion,
-  );
-
-  consola.success(
-    "Delete successful",
-  );
-}
+export { deleteSiteVersion } from "./deleteSiteVersion.mjs";
+export { fetchSiteVersions } from "./fetchSiteVersions.mjs";
+export type { SiteAssetVersions } from "./SiteAssetVersions.mjs";
+export { uploadZippedSiteAsset } from "./uploadSiteVersion.mjs";

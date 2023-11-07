@@ -19,6 +19,7 @@ import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import siteDelete from "./delete";
+import siteDeploy from "./deploy";
 import upload from "./upload";
 import versions from "./versions";
 
@@ -38,9 +39,11 @@ const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
           demandOption: true,
         },
       })
+      .group(["appRid", "baseUrl"], "Common Arguments")
       .command(versions)
       .command(upload)
       .command(siteDelete)
+      .command(siteDeploy)
       .demandCommand();
   },
   handler: async (args) => {
@@ -49,31 +52,3 @@ const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
 };
 
 export default site;
-
-// export default function addSiteCommand(yargs: yargs.Argv<{}>) {
-//   return yargs.command(
-//     "site",
-//     "Manage your site",
-//     (originalYargs) => {
-//       const yargs: yargs.Argv<CommonSiteArgs> = originalYargs
-//         .options({
-//           appRid: {
-//             type: "string",
-//             demandOption: true,
-//             coerce: (a) => a as ThirdPartyAppRid,
-//           },
-//           baseUrl: {
-//             type: "string",
-//             demandOption: true,
-//           },
-//         })
-//         .demandCommand();
-
-//       yargs.command(versions);
-//       yargs.command(upload);
-//       return yargs;
-//     },
-//     (args) => {
-//     },
-//   );
-// }

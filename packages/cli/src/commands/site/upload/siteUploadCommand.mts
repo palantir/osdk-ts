@@ -19,7 +19,8 @@ import { consola } from "consola";
 import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
-import { uploadZippedSiteAsset } from "../../../net/uploadSiteVersion.mjs";
+import { artifacts } from "../../../net/index.mjs";
+
 import type { UploadArgs } from "./UploadArgs.js";
 
 export default async function invokeSiteUpload(args: UploadArgs) {
@@ -39,7 +40,7 @@ export default async function invokeSiteUpload(args: UploadArgs) {
   const archive = archiver("zip").directory(args.dir, false);
 
   await Promise.all([
-    uploadZippedSiteAsset(
+    artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
       args.baseUrl,
       args.appRid,
       args.siteVersion,

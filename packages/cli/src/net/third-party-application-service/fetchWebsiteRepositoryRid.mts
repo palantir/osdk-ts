@@ -15,9 +15,9 @@
  */
 
 import { consola } from "consola";
-import { createFetch } from "./createFetch.mjs";
-import type { RepositoryRid } from "./RepositoryRid.js";
-import type { ThirdPartyAppRid } from "./ThirdPartyAppRid.js";
+import { createFetch } from "../createFetch.mjs";
+import type { RepositoryRid } from "../RepositoryRid.js";
+import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 
 export async function fetchWebsiteRepositoryRid(
   baseUrl: string,
