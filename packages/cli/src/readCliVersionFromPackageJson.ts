@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import * as fs from "node:fs";
 
-export const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
-  command: "versions",
-  describe: "List application versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
-    await command.default(args);
-  },
-};
+export async function readCliVersionFromPackageJson() {
+  const { findUp } = await import("find-up");
+  const result = await findUp("package.json");
+  if (!result) {
+    return "(unknown version. No package.json found)";
+  }
 
-export default command;
+  const packageJson = JSON.parse(await fs.promises.readFile(result, "utf-8"));
+  if (packageJson.version) {
+    return `v${packageJson.version}`;
+  } else {
+    return "(unknown version. No version in package.json found)";
+  }
+}

@@ -16,9 +16,9 @@
 
 import { consola } from "consola";
 import { getSiteVersions } from "../../../net/getSiteVersions.mjs";
-import type { CommonSiteArgs } from "../addSiteCommand.js";
+import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
-export default async function invokeSiteVersionsCommand(args: CommonSiteArgs) {
+export default async function siteVersionsCommand(args: CommonSiteArgs) {
   consola.start("Fetching versions");
   const versions = await getSiteVersions(args.baseUrl, args.appRid);
   if (versions.length == 0) {

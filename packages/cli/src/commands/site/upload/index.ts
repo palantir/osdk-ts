@@ -15,7 +15,7 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../addSiteCommand";
+import type { CommonSiteArgs } from "../CommonSiteArgs";
 import type { UploadArgs } from "./UploadArgs";
 
 export const command: CommandModule<
