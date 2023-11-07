@@ -31,7 +31,6 @@ describe(generatePerActionDataFiles, () => {
     );
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
-    console.log(helper.getFiles());
     expect(helper.getFiles()).toMatchObject({
       [`${BASE_PATH}/markTodoCompleted.ts`]: expect.anything(),
       [`${BASE_PATH}/index.ts`]: expect.anything(),

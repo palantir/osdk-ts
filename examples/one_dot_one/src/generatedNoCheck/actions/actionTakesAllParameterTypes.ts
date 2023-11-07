@@ -6,6 +6,7 @@ export const actionTakesAllParameterTypes = {
     objectSet: {
       multiplicity: false,
       type: {
+        type: 'objectSet',
         objectSet: 'Todo',
       },
       nullable: false,
@@ -13,6 +14,7 @@ export const actionTakesAllParameterTypes = {
     object: {
       multiplicity: false,
       type: {
+        type: 'object',
         object: 'Person',
       },
       nullable: true,
