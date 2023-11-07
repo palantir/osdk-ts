@@ -87,7 +87,7 @@ export type ActionParameterBaseType<
     ? ValidLegacyActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]
   : never;
 
-export type EditedObjects<
+export type ModifiedObjects<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > = {
@@ -121,10 +121,10 @@ export type CreatedObjectOrVoid<
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
-export type EditedObjectsOrVoid<
+export type ModifiedObjectsOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> = ValuesOf<EditedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+> = ValuesOf<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
@@ -136,7 +136,7 @@ export type ActionReturnType<
   Result<
     ActionResponseFromOptions<
       Op,
-      Edits<CreatedObjectOrVoid<O, A>, EditedObjectsOrVoid<O, A>>
+      Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
     >,
     ActionError
   >
