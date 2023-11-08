@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export interface ModelApiNullType {}
+import type { QueryAggregationKeyType } from "./QueryAggregationKeyType";
+import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation";
+
+export interface ThreeDimensionalAggregation {
+  keyType: QueryAggregationKeyType;
+  valueType: TwoDimensionalAggregation;
+}

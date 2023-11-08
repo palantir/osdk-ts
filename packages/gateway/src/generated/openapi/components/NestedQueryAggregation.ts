@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+import type { QueryAggregation } from "./QueryAggregation";
+
+export interface NestedQueryAggregation {
+  key: any;
+  groups: Array<QueryAggregation>;
 }

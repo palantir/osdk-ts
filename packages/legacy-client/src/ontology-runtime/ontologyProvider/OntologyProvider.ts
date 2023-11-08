@@ -436,9 +436,6 @@ export class OntologyProvider {
             {
               parameters: params ? this.getRemappedParameters(params) : {},
             },
-            {
-              preview: true,
-            },
           );
         const remappedResponse = await this.remapQueryResponseType(
           response.value,

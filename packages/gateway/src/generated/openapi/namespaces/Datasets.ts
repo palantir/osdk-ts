@@ -43,7 +43,13 @@ export function createDataset<TResponse>(
   _request: OpenApiRequest<Dataset, TResponse>,
   request: CreateDatasetRequest,
 ): Promise<TResponse> {
-  return _request("POST", `/v1/datasets`, request, __undefined, __undefined);
+  return _request(
+    "POST",
+    `/v1/datasets`,
+    request,
+    __undefined,
+    __undefined,
+  );
 }
 
 /**

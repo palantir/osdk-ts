@@ -14,5 +14,13 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+import type { DeploymentApiName } from "./DeploymentApiName";
+import type { DeploymentDescription } from "./DeploymentDescription";
+
+/**
+ * Name and description associated with a model deployment.
+ */
+export interface DeploymentListing {
+  apiName: DeploymentApiName;
+  description?: DeploymentDescription;
 }
