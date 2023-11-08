@@ -33,6 +33,10 @@ describe("generateQueries", () => {
         "import type { QueryError, QueryResponse, Result } from '@osdk/legacy-client';
 
         export interface Queries {
+          /**
+           * @param {boolean} params.completed
+           * @returns number
+           */
           getCount(params: { completed: boolean }): Promise<Result<QueryResponse<number>, QueryError>>;
         }
         "

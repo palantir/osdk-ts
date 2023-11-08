@@ -19,7 +19,6 @@ import type {
   QueryAggregationRangeSubType,
   QueryAggregationValueType,
   QueryDataType,
-  QueryParameterV2,
 } from "@osdk/gateway/types";
 import type { MinimalFs } from "../MinimalFs";
 import { isNullableQueryDataType } from "../shared/isNullableQueryDataType";
@@ -35,16 +34,45 @@ export async function generateQueries(
   const signatures: string[] = [];
 
   for (const query of ontology.queryTypes) {
+    const jsDocBlock = ["/**"];
+    if (query.description) {
+      jsDocBlock.push(`* ${query.description}`);
+    }
+
     const outputType = handleQueryDataType(
       query.output,
       importedObjects,
     );
-    const param = handleQueryParameters(
-      query.parameters,
-      importedObjects,
+
+    const paramEntries = [];
+
+    for (const [name, parameter] of Object.entries(query.parameters)) {
+      const nullable = isNullableQueryDataType(parameter.dataType);
+      const type = handleQueryDataType(
+        parameter.dataType,
+        importedObjects,
+      );
+      paramEntries.push(`"${name}"${nullable ? "?" : ""}: ${type}`);
+
+      jsDocBlock.push(
+        `* @param {${type}} params.${name} ${parameter.description ?? ""}`,
+      );
+    }
+
+    const param = paramEntries.length === 0
+      ? ""
+      : `params: { ${paramEntries.join("; ")} }`;
+
+    jsDocBlock.push(
+      `* @returns ${handleQueryDataType(query.output, importedObjects)}`,
+      "*/",
     );
+
     signatures.push(
-      `${query.apiName}(${param}): Promise<Result<QueryResponse<${outputType}>, QueryError>>;`,
+      `
+      ${jsDocBlock.join("\n")}
+      ${query.apiName}(${param}): Promise<Result<QueryResponse<${outputType}>, QueryError>>;
+      `,
     );
   }
 
@@ -63,27 +91,6 @@ export async function generateQueries(
     }
   `),
   );
-}
-
-function handleQueryParameters(
-  parameters: Record<string, QueryParameterV2>,
-  importedObjects: Set<string>,
-) {
-  const parametersEntries = Object.entries(parameters);
-  if (parametersEntries.length === 0) {
-    return "";
-  }
-
-  const typeEntries = parametersEntries.map(([name, parameter]) => {
-    const nullable = isNullableQueryDataType(parameter.dataType);
-    const type = handleQueryDataType(
-      parameter.dataType,
-      importedObjects,
-    );
-    return `"${name}"${nullable ? "?" : ""}: ${type}`;
-  });
-
-  return `params: { ${typeEntries.join("; ")}}`;
 }
 
 function handleQueryDataType(
