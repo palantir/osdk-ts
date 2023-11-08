@@ -28,17 +28,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
     expect(
       await formatTs(objectInterface),
     ).toMatchInlineSnapshot(`
-      "import type {
-        OntologyObject,
-        LocalDate,
-        Timestamp,
-        GeoShape,
-        GeoPoint,
-        Attachment,
-        TimeSeries,
-        MultiLink,
-        SingleLink,
-      } from '@osdk/legacy-client';
+      "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
       import type { Person } from './Person';
 
       /**

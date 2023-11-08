@@ -14,28 +14,69 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
+import { describe, expectTypeOf, it } from "vitest";
+import type {
+  ActionError,
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
+  Edits,
+  Result,
+} from "..";
 import type { MockOntology } from "../util/test";
 import type { Actions } from "./actions";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
-describe(() => {
-  it("works", () => {
+describe("actions", () => {
+  it("types work", async () => {
     const actions: Actions<
       typeof MockOntology
     > = {} as Actions<
       typeof MockOntology
     >;
 
-    const mockTaskObject: OsdkLegacyObjectFrom<typeof MockOntology, "Task"> =
-      {} as OsdkLegacyObjectFrom<typeof MockOntology, "Task">;
+    expectTypeOf<Parameters<typeof actions.createTask>>().toMatchTypeOf<
+      [
+        {
+          id?: number;
+        },
+        ActionExecutionOptions?,
+      ]
+    >();
 
-    actions.createTask({
-      id: 1,
-    });
+    expectTypeOf<ReturnType<typeof actions.createTask>>().toMatchTypeOf<
+      Promise<
+        Result<
+          ActionResponseFromOptions<
+            ActionExecutionOptions,
+            Edits<OsdkLegacyObjectFrom<typeof MockOntology, "Task">, void>
+          >,
+          ActionError
+        >
+      >
+    >();
 
-    actions.updateTask({
-      task: mockTaskObject,
-    });
+    expectTypeOf<Parameters<typeof actions.updateTask>>().toMatchTypeOf<
+      [
+        {
+          task?: OsdkLegacyObjectFrom<typeof MockOntology, "Task">;
+        },
+        ActionExecutionOptions?,
+      ]
+    >();
+
+    expectTypeOf<ReturnType<typeof actions.updateTask>>().toMatchTypeOf<
+      Promise<
+        Result<
+          ActionResponseFromOptions<
+            ActionExecutionOptions,
+            Edits<
+              void,
+              OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+            >
+          >,
+          ActionError
+        >
+      >
+    >();
   });
 });

@@ -16,18 +16,20 @@
 
 import type {
   ActionDefinition,
+  ActionModifiedEntity,
   ActionParameterDefinition,
-  ValidActionParameterTypes,
 } from "@osdk/api";
 import type {
   ActionParameterType,
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/gateway/types";
+import { getModifiedEntityTypes } from "./getEditedEntities";
 
 export function wireActionTypeV2ToSdkActionDefinition(
   input: ActionTypeV2,
 ): ActionDefinition<any, any> {
+  const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
     apiName: input.apiName,
     parameters: Object.fromEntries(
@@ -37,6 +39,10 @@ export function wireActionTypeV2ToSdkActionDefinition(
     ),
     displayName: input.displayName,
     description: input.description,
+    modifiedEntities: createModifiedEntities(
+      modifiedEntityTypes.addedObjects,
+      modifiedEntityTypes.modifiedObjects,
+    ),
   };
 }
 
@@ -58,19 +64,21 @@ function wireActionParameterV2ToSdkParameterDefinition(
         multiplicity: false,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
         nullable: value.required ? false : true,
+        description: value.description,
       };
     case "array":
       return {
         multiplicity: true,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
         nullable: value.required ? false : true,
+        description: value.description,
       };
   }
 }
 
 function actionPropertyToSdkPropertyDefinition(
   parameterType: ActionParameterType,
-): keyof ValidActionParameterTypes | { objectSet: any } | { object: any } {
+): ActionParameterDefinition<string>["type"] {
   switch (parameterType.type) {
     case "string":
     case "boolean":
@@ -83,10 +91,34 @@ function actionPropertyToSdkPropertyDefinition(
     case "date":
       return "datetime";
     case "objectSet":
-      return { objectSet: parameterType.objectTypeApiName };
+      return { type: "objectSet", objectSet: parameterType.objectTypeApiName! };
     case "object":
-      return { object: parameterType.objectTypeApiName };
+      return { type: "object", object: parameterType.objectTypeApiName };
     case "array":
       return actionPropertyToSdkPropertyDefinition(parameterType.subType);
   }
+}
+
+function createModifiedEntities<K extends string>(
+  addedObjects: Set<K>,
+  modifiedObjects: Set<K>,
+): Record<K, ActionModifiedEntity> {
+  let entities: Record<K, ActionModifiedEntity> = {} as Record<
+    K,
+    ActionModifiedEntity
+  >;
+
+  for (const key of addedObjects) {
+    entities[key] = { created: true, modified: false };
+  }
+
+  for (const key of modifiedObjects) {
+    if (entities[key]) {
+      entities[key].modified = true;
+    } else {
+      entities[key] = { created: false, modified: true };
+    }
+  }
+
+  return entities;
 }

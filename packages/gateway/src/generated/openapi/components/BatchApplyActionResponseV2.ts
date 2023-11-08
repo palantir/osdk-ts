@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-import type { BaseType } from "./BaseType";
-
-export interface MapType {
-  keyType: BaseType;
-  valueType: BaseType;
+export interface BatchApplyActionResponseV2 {
 }

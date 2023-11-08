@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export type ColumnName = string;
+import type { QueryAggregationKeyType } from "./QueryAggregationKeyType";
+import type { QueryAggregationValueType } from "./QueryAggregationValueType";
+
+export interface TwoDimensionalAggregation {
+  keyType: QueryAggregationKeyType;
+  valueType: QueryAggregationValueType;
+}

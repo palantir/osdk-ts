@@ -83,7 +83,7 @@ function handleQueryParameters(
     return `"${name}"${nullable ? "?" : ""}: ${type}`;
   });
 
-  return `parameters: { ${typeEntries.join("; ")}}`;
+  return `params: { ${typeEntries.join("; ")}}`;
 }
 
 function handleQueryDataType(

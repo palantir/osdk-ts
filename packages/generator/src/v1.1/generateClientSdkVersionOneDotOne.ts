@@ -22,6 +22,7 @@ import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 import { generateQueries } from "./generateQueries";
 
@@ -40,5 +41,6 @@ export async function generateClientSdkVersionOneDotOne(
   );
   await generateActions(ontology, fs, outDir);
   await generateQueries(ontology, fs, outDir);
+  await generatePerActionDataFiles(ontology, fs, path.join(outDir, "actions"));
   await generateIndexFile(fs, outDir);
 }

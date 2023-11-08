@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-import type { BaseType } from "./BaseType";
+import type { DateType } from "./DateType";
+import type { DoubleType } from "./DoubleType";
+import type { TimestampType } from "./TimestampType";
 
-export interface SetType {
-  itemType: BaseType;
+export interface QueryAggregationValueType_Date extends DateType {
+  type: "date";
 }
+
+export interface QueryAggregationValueType_Double extends DoubleType {
+  type: "double";
+}
+
+export interface QueryAggregationValueType_Timestamp extends TimestampType {
+  type: "timestamp";
+}
+
+export type QueryAggregationValueType =
+  | QueryAggregationValueType_Date
+  | QueryAggregationValueType_Double
+  | QueryAggregationValueType_Timestamp;

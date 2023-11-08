@@ -255,13 +255,11 @@ export function applyAction<TResponse>(
 }
 
 /**
- * :::callout{theme=warning title=Warning}
- * This endpoint is in preview and may be modified or removed at any time.
- * To use this endpoint, add `preview=true` to the request query parameters.
- * :::
- *
- * Applies multiple actions using corresponding parameters, currently limited to the same action type.
+ * Applies multiple actions (of the same Action Type) using the given parameters.
  * Changes to the Ontology are eventually consistent and may take some time to be visible.
+ *
+ * Up to 20 actions may be applied in one call. Actions that only modify objects in Object Storage v2 and do not
+ * call Functions may receive a higher limit.
  *
  * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) are not currently supported by
  * this endpoint.
@@ -274,15 +272,12 @@ export function applyActionBatch<TResponse>(
   ontologyRid: OntologyRid,
   actionType: ActionTypeApiName,
   request: BatchApplyActionRequest,
-  queryParameters?: {
-    preview?: PreviewMode;
-  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v1/ontologies/${ontologyRid}/actions/${actionType}/applyBatch`,
     request,
-    queryParameters,
+    __undefined,
     __undefined,
   );
 }
@@ -442,12 +437,14 @@ export function executeQuery<TResponse>(
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
  *
- * This endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
- * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned.
+ * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
+ * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
  *
  * Each page may be smaller or larger than the requested page size. However, it
  * is guaranteed that if there are more results available, at least one result will be present
- * in the response, up to 10,000 results.
+ * in the response.
+ *
+ * Note that null value properties will not be returned.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
@@ -503,12 +500,14 @@ export function getObject<TResponse>(
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
  *
- * This endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
- * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned.
+ * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
+ * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
  *
  * Each page may be smaller or larger than the requested page size. However, it
  * is guaranteed that if there are more results available, at least one result will be present
- * in the response, up to 10,000 results.
+ * in the response.
+ *
+ * Note that null value properties will not be returned.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */

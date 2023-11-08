@@ -16,6 +16,7 @@
 
 import type { ActionParameterType } from "@osdk/gateway/types";
 import type { MinimalFs } from "../MinimalFs";
+import { getModifiedEntityTypes } from "../shared/getEditedEntities";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
@@ -25,9 +26,20 @@ export async function generateActions(
   outDir: string,
 ) {
   const importedObjects = new Set<string>();
-  let signatures = [];
-  for (const object of ontology.actionTypes) {
-    const entries = Object.entries(object.parameters);
+  let actionSignatures = [];
+  for (const action of ontology.actionTypes) {
+    const entries = Object.entries(action.parameters);
+
+    const modifiedEntityTypes = getModifiedEntityTypes(action);
+    const addedObjects = Array.from(modifiedEntityTypes.addedObjects);
+    const modifiedObjects = Array.from(modifiedEntityTypes.modifiedObjects);
+    addedObjects.forEach(importedObjects.add, importedObjects);
+    modifiedObjects.forEach(importedObjects.add, importedObjects);
+
+    let jsDocBlock = ["/**"];
+    if (action.description) {
+      jsDocBlock.push(`* ${action.description}`);
+    }
 
     let parameterBlock = "";
     if (entries.length > 0) {
@@ -37,25 +49,38 @@ export async function generateActions(
       ) {
         parameterBlock += `"${parameterName}"`;
         parameterBlock += parameterData.required ? ": " : "?: ";
-        const getTypeScriptType = handleDataType(
+        const typeScriptType = getTypeScriptTypeFromDataType(
           parameterData.dataType,
           importedObjects,
         );
-        parameterBlock += `${getTypeScriptType};\n`;
+        parameterBlock += `${typeScriptType};\n`;
+
+        jsDocBlock.push(
+          `* @param {${typeScriptType}} params.${parameterName}`,
+        );
       }
       parameterBlock += "}, ";
     }
 
-    // TODO: Handle kebab case here
-    // TODO: Handle jsdoc
-    signatures.push(
-      `${object.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
-        Promise<Result<ActionResponseFromOptions<O, Edits<void, void>>, ActionError>>;`,
+    jsDocBlock.push(`*/`);
+    actionSignatures.push(
+      `
+      ${jsDocBlock.join("\n")}
+      ${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
+        Promise<Result<ActionResponseFromOptions<O, Edits<${
+        addedObjects.length > 0
+          ? addedObjects.join(" | ")
+          : "void"
+      }, ${
+        modifiedObjects.length > 0
+          ? modifiedObjects.join(" | ")
+          : "void"
+      }>>, ActionError>>;`,
     );
   }
 
   await fs.writeFile(
-    `${outDir}/actions.ts`,
+    `${outDir}/ontologyActions.ts`,
     await formatTs(`
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${
@@ -64,13 +89,13 @@ export async function generateActions(
       ).join("\n")
     }
     export interface Actions {
-    ${signatures.join("\n")}
+    ${actionSignatures.join("\n")}
     }
   `),
   );
 }
 
-function handleDataType(
+function getTypeScriptTypeFromDataType(
   actionParameter: ActionParameterType,
   importedObjects: Set<string>,
 ): string {
@@ -86,7 +111,9 @@ function handleDataType(
       return `${objectType}`;
     }
     case "array":
-      return handleDataType(actionParameter.subType, importedObjects) + `[]`;
+      return `Array<${
+        getTypeScriptTypeFromDataType(actionParameter.subType, importedObjects)
+      }>`;
     case "string":
       return `string`;
     case "boolean":

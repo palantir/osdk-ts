@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ConstraintType } from "./ConstraintType";
+import type { QueryAggregation } from "./QueryAggregation";
 
-export interface TabularType {
-  constraints: Array<ConstraintType>;
+export interface QueryTwoDimensionalAggregation {
+  groups: Array<QueryAggregation>;
 }

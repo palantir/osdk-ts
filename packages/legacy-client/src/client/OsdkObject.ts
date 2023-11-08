@@ -86,14 +86,22 @@ export type OsdkLegacyLinksFrom<
     : never;
 };
 
+export type OsdkLegacyPrimaryKeyType<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = ValidLegacyPropertyTypes[O["objects"][K]["primaryKeyType"]];
+
+export type OsdkLegacyOntologyObject<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = K extends string ? OntologyObject<K, OsdkLegacyPrimaryKeyType<O, K>>
+  : never;
+
 export type OsdkLegacyObjectFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = K extends string ?
     & OsdkLegacyPropertiesFrom<O, K>
     & OsdkLegacyLinksFrom<O, K>
-    & OntologyObject<
-      K,
-      ValidLegacyPropertyTypes[O["objects"][K]["primaryKeyType"]]
-    >
+    & OsdkLegacyOntologyObject<O, K>
   : never;

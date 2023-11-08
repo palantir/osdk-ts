@@ -1,15 +1,15 @@
 import type {
-  QueryResponse,
-  QueryError,
-  Result,
   Attachment,
   LocalDate,
-  Timestamp,
   ObjectSet,
+  QueryError,
+  QueryResponse,
+  Result,
+  Timestamp,
 } from '@osdk/legacy-client';
 import type { Todo } from './objects/Todo';
 export interface Queries {
-  queryTakesAllParameterTypes(parameters: {
+  queryTakesAllParameterTypes(params: {
     double: number;
     float: number;
     integer: number;

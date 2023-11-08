@@ -15,22 +15,28 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { LocalDate, Timestamp } from "..";
+import type {
+  ActionError,
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
+  Attachment,
+  Edits,
+  LocalDate,
+  Result,
+  Timestamp,
+} from "..";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
-export interface ValidActionParameterTypes {
-  string: string;
-  datetime: LocalDate;
-  double: number;
+export interface ValidLegacyActionParameterTypes {
   boolean: boolean;
+  string: string;
   integer: number;
-  timestamp: Timestamp;
-  short: number;
   long: number;
-  float: number;
-  decimal: number;
-  byte: number;
+  double: number;
+  datetime: LocalDate;
+  timestamp: Timestamp;
+  attachment: Attachment;
 }
 
 type NullableKeys<T> = {
@@ -72,19 +78,76 @@ export type ActionParameterBaseType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   P extends keyof O["actions"][A]["parameters"],
-> = O["actions"][A]["parameters"][P]["type"] extends { objectSet: infer K }
+> = O["actions"][A]["parameters"][P]["type"] extends
+  { type: "objectSet"; objectSet: infer K }
   ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
-  : O["actions"][A]["parameters"][P]["type"] extends { object: infer K }
-    ? OsdkLegacyObjectFrom<O, K>
   : O["actions"][A]["parameters"][P]["type"] extends
-    keyof ValidActionParameterTypes
-    ? ValidActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]
+    { type: "object"; object: infer K } ? OsdkLegacyObjectFrom<O, K>
+  : O["actions"][A]["parameters"][P]["type"] extends
+    keyof ValidLegacyActionParameterTypes
+    ? ValidLegacyActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]
   : never;
+
+export type ModifiedObjects<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+> = {
+  [
+    K in keyof O["actions"][A][
+      "modifiedEntities"
+    ] as O["actions"][A]["modifiedEntities"][K] extends { modified: true } ? K
+      : never
+  ]: OsdkLegacyObjectFrom<O, K>;
+};
+
+export type CreatedObjects<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+> = {
+  [
+    K in keyof O["actions"][A][
+      "modifiedEntities"
+    ] as O["actions"][A]["modifiedEntities"][K] extends { created: true } ? K
+      : never
+  ]: OsdkLegacyObjectFrom<O, K>;
+};
+
+export type ValuesOf<T> = T extends { [key: string]: infer U } ? U
+  : void;
+
+export type CreatedObjectOrVoid<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+> = ValuesOf<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+  ? OsdkLegacyObjectFrom<O, K>
+  : void;
+
+export type ModifiedObjectsOrVoid<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+> = ValuesOf<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+  ? OsdkLegacyObjectFrom<O, K>
+  : void;
+
+export type ActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends ActionExecutionOptions,
+> = Promise<
+  Result<
+    ActionResponseFromOptions<
+      Op,
+      Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+    >,
+    ActionError
+  >
+>;
 
 export type Actions<
   O extends OntologyDefinition<any>,
 > = {
-  [A in keyof O["actions"]]: (
+  [A in keyof O["actions"]]: <Op extends ActionExecutionOptions>(
     params: ActionArgs<O, A>,
-  ) => Promise<any>;
+    options?: Op,
+  ) => ActionReturnType<O, A, Op>;
 };

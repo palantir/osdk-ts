@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { StructField } from "./StructField";
-
-export interface StructType {
-  fields: Array<StructField>;
+export interface QueryAggregation {
+  key: any;
+  value: any;
 }

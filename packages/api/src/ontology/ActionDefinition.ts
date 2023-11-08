@@ -15,32 +15,50 @@
  */
 
 export interface ActionDefinition<
-  A extends String,
-  K extends String,
+  A extends string,
+  K extends string,
 > {
   apiName: A;
   description?: string;
   displayName?: string;
   parameters: Record<string, ActionParameterDefinition<K>>;
+  modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
 }
 
-export interface ValidActionParameterTypes {
-  attachment: any;
-  string: string;
-  datetime: Date;
-  double: number;
+export interface ActionModifiedEntity {
+  created: boolean;
+  modified: boolean;
+}
+
+export interface ValidBaseActionParameterTypes {
   boolean: boolean;
+  string: string;
   integer: number;
-  timestamp: Date;
-  short: number;
   long: number;
-  float: number;
-  decimal: number;
-  byte: number;
+  double: number;
+  datetime: Date;
+  timestamp: Date;
+  attachment: any;
 }
 
-export interface ActionParameterDefinition<K> {
-  type: keyof ValidActionParameterTypes | { objectSet: K } | { object: K };
+export interface ObjectActionDataType<K extends string> {
+  type: "object";
+  object: K;
+}
+
+export interface ObjectSetActionDataType<K extends string> {
+  type: "objectSet";
+  objectSet: K;
+}
+
+export type ValidActionParameterTypes<K extends string = never> =
+  | keyof ValidBaseActionParameterTypes
+  | ObjectActionDataType<K>
+  | ObjectSetActionDataType<K>;
+
+export interface ActionParameterDefinition<K extends string = never> {
+  type: ValidActionParameterTypes<K>;
+  description?: string;
   multiplicity?: boolean;
   nullable?: boolean;
 }

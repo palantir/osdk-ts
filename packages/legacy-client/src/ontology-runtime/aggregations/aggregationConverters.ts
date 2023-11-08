@@ -19,39 +19,35 @@ import type {
   AggregateObjectsResponseItemV2,
   AggregationMetricResultV2,
 } from "@osdk/gateway/types";
-import type { ObjectSetDefinition } from "../baseTypes";
 import { LocalDate, Timestamp } from "../baseTypes";
 import { buildBucketObject } from "../ontologyProvider/AggregationUtils";
 import type {
-  BaseGroupValue,
-  Bucketing,
-  GroupValue,
-} from "./aggregationConverter";
-import { visitInternalBucketing } from "./Aggregations";
-import type {
-  AggregationClause,
   AggregationGroup,
   AggregationResult,
   BucketGroup,
-  BucketKey,
   BucketValue,
   InternalBucketing,
   Metrics,
   MetricValue,
 } from "./Aggregations";
+import { visitInternalBucketing } from "./Aggregations";
 import { GroupKeyType } from "./groupBy/GroupKeyType";
-import { MetricValueType } from "./metrics";
+import type { InternalAggregationRequest } from "./internalAggregationRequest";
+import { MetricValueType } from "./metrics/metrics";
+
+export type BaseGroupValue = number | string | boolean;
+export type Bucketing<T> = { startValue?: T; endValue: T } | {
+  startValue: T;
+  endValue?: T;
+};
+export type GroupValue = BaseGroupValue | Bucketing<BaseGroupValue>;
 
 export function convertToAggregationResult<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 >(
   aggregationResponse: AggregateObjectSetResponseV2,
-  aggregationRequest: {
-    objectSet: ObjectSetDefinition;
-    aggregation: AggregationClause[];
-    groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;
-  },
+  aggregationRequest: InternalAggregationRequest,
 ): AggregationResult<TBucketGroup, TMetrics> {
   if (
     aggregationRequest.groupBy

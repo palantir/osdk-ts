@@ -1,10 +1,11 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
-import type { Objects } from './ontologyObjects';
-import type { Actions } from './actions';
-import { Todo } from './objects/Todo';
-import { Person } from './objects/Person';
+import { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes';
 import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
+import { Person } from './objects/Person';
+import { Todo } from './objects/Todo';
+import type { Actions } from './ontologyActions';
+import type { Objects } from './ontologyObjects';
 
 export const Ontology = {
   metadata: {
@@ -18,18 +19,7 @@ export const Ontology = {
     ObjectTypeWithAllPropertyTypes,
   },
   actions: {
-    actionTakesAllParameterTypes: {
-      apiName: 'actionTakesAllParameterTypes',
-      parameters: {
-        objectSet: { multiplicity: false, type: { objectSet: 'Todo' }, nullable: false },
-        object: { multiplicity: false, type: { object: 'Person' }, nullable: true },
-        string: { multiplicity: false, type: 'string', nullable: false },
-        'time-stamp': { multiplicity: false, type: 'timestamp', nullable: false },
-        dateArray: { multiplicity: true, type: 'datetime', nullable: true },
-        attachmentArray: { multiplicity: true, type: 'attachment', nullable: false },
-      },
-      description: 'An action which takes an Object Set',
-    },
+    actionTakesAllParameterTypes,
   },
   queries: {
     queryTakesAllParameterTypes: {

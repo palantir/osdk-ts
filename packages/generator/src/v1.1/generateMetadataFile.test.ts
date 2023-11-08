@@ -37,9 +37,11 @@ describe(generateMetadataFile, () => {
     ).toMatchInlineSnapshot(`
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
-      import type { Objects } from './ontologyObjects';
-      import { Todo } from './objects/Todo';
+      import { markTodoCompleted } from './actions/markTodoCompleted';
       import { Person } from './objects/Person';
+      import { Todo } from './objects/Todo';
+      import type { Actions } from './ontologyActions';
+      import type { Objects } from './ontologyObjects';
 
       export const Ontology = {
         metadata: {
@@ -51,10 +53,14 @@ describe(generateMetadataFile, () => {
           Todo,
           Person,
         },
-      } satisfies OntologyDefinition<'Todo' | 'Person'>;
+        actions: {
+          markTodoCompleted,
+        },
+      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
+        actions: Actions;
       }
       "
     `);
