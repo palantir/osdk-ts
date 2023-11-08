@@ -15,7 +15,6 @@
  */
 
 import type { AsyncOperation } from "../components/AsyncOperation";
-import type { PreviewMode } from "../components/PreviewMode";
 import type { OpenApiRequest } from "../request";
 
 /**
@@ -26,15 +25,12 @@ import type { OpenApiRequest } from "../request";
 export function getOperation<TResponse>(
   _request: OpenApiRequest<AsyncOperation, TResponse>,
   operationId: string,
-  queryParameters?: {
-    preview?: PreviewMode;
-  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/operations/${operationId}`,
     __undefined,
-    queryParameters,
+    __undefined,
     __undefined,
   );
 }

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DeploymentMetadata } from "./DeploymentMetadata";
+import type { DeploymentListing } from "./DeploymentListing";
 
 export interface ListDeploymentsResponse {
-  deployments: Array<DeploymentMetadata>;
+  deployments: Array<DeploymentListing>;
 }

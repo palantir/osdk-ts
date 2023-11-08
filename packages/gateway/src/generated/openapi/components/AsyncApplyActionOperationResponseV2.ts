@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export interface AsyncApplyActionOperationResponseV2 {}
+export interface AsyncApplyActionOperationResponseV2 {
+}

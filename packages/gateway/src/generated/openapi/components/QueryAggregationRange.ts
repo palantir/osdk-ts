@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+export interface QueryAggregationRange {
+  /** Inclusive start. */
+  startValue?: any;
+  /** Exclusive end. */
+  endValue?: any;
 }

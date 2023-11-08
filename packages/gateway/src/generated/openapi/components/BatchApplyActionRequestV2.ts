@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+import type { BatchApplyActionRequestItem } from "./BatchApplyActionRequestItem";
+
+export interface BatchApplyActionRequestV2 {
+  requests: Array<BatchApplyActionRequestItem>;
 }

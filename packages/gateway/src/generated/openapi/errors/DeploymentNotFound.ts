@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import type { BaseType } from "./BaseType";
+import type { DeploymentApiName } from "../components/DeploymentApiName";
+import type { OntologyApiName } from "../components/OntologyApiName";
 
-export interface ArrayType {
-  itemType: BaseType;
+/** The requested model deployment is not found, or the client token does not have access to it. */
+export interface DeploymentNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "DeploymentNotFound";
+  errorInstanceId: string;
+  parameters: {
+    ontologyApiName: OntologyApiName;
+    deploymentApiName: DeploymentApiName;
+  };
 }

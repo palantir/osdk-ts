@@ -26,6 +26,8 @@ import type { AsyncApplyActionResponseV2 } from "../components/AsyncApplyActionR
 import type { AttachmentMetadataResponse } from "../components/AttachmentMetadataResponse";
 import type { AttachmentRid } from "../components/AttachmentRid";
 import type { AttachmentV2 } from "../components/AttachmentV2";
+import type { BatchApplyActionRequestV2 } from "../components/BatchApplyActionRequestV2";
+import type { BatchApplyActionResponseV2 } from "../components/BatchApplyActionResponseV2";
 import type { CountObjectsResponseV2 } from "../components/CountObjectsResponseV2";
 import type { DeploymentApiName } from "../components/DeploymentApiName";
 import type { DeploymentMetadata } from "../components/DeploymentMetadata";
@@ -47,13 +49,12 @@ import type { ObjectSet } from "../components/ObjectSet";
 import type { ObjectSetRid } from "../components/ObjectSetRid";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 import type { ObjectTypeV2 } from "../components/ObjectTypeV2";
-import type { OntologyApiName } from "../components/OntologyApiName";
+import type { OntologyIdentifier } from "../components/OntologyIdentifier";
 import type { OntologyObjectV2 } from "../components/OntologyObjectV2";
 import type { OntologyV2 } from "../components/OntologyV2";
 import type { OrderBy } from "../components/OrderBy";
 import type { PageSize } from "../components/PageSize";
 import type { PageToken } from "../components/PageToken";
-import type { PreviewMode } from "../components/PreviewMode";
 import type { PropertyApiName } from "../components/PropertyApiName";
 import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString";
 import type { QueryApiName } from "../components/QueryApiName";
@@ -92,7 +93,7 @@ export function listOntologiesV2<TResponse>(
  */
 export function getOntologyV2<TResponse>(
   _request: OpenApiRequest<OntologyV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
 ): Promise<TResponse> {
   return _request(
     "GET",
@@ -113,7 +114,7 @@ export function getOntologyV2<TResponse>(
  */
 export function listActionTypesV2<TResponse>(
   _request: OpenApiRequest<ListActionTypesResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   queryParameters?: {
     pageSize?: PageSize;
     pageToken?: PageToken;
@@ -135,7 +136,7 @@ export function listActionTypesV2<TResponse>(
  */
 export function getActionTypeV2<TResponse>(
   _request: OpenApiRequest<ActionTypeV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   actionType: ActionTypeApiName,
 ): Promise<TResponse> {
   return _request(
@@ -158,7 +159,7 @@ export function getActionTypeV2<TResponse>(
  */
 export function listObjectTypesV2<TResponse>(
   _request: OpenApiRequest<ListObjectTypesV2Response, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   queryParameters?: {
     pageSize?: PageSize;
     pageToken?: PageToken;
@@ -180,7 +181,7 @@ export function listObjectTypesV2<TResponse>(
  */
 export function getObjectTypeV2<TResponse>(
   _request: OpenApiRequest<ObjectTypeV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
 ): Promise<TResponse> {
   return _request(
@@ -200,7 +201,7 @@ export function getObjectTypeV2<TResponse>(
  */
 export function listOutgoingLinkTypesV2<TResponse>(
   _request: OpenApiRequest<ListOutgoingLinkTypesResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   queryParameters?: {
     pageSize?: PageSize;
@@ -224,7 +225,7 @@ export function listOutgoingLinkTypesV2<TResponse>(
  */
 export function getOutgoingLinkTypeV2<TResponse>(
   _request: OpenApiRequest<LinkTypeSideV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   linkType: LinkTypeApiName,
 ): Promise<TResponse> {
@@ -243,18 +244,20 @@ export function getOutgoingLinkTypeV2<TResponse>(
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
  *
- * This endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
- * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned.
+ * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
+ * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
  *
  * Each page may be smaller or larger than the requested page size. However, it
  * is guaranteed that if there are more results available, at least one result will be present
- * in the response, up to 10,000 results.
+ * in the response.
+ *
+ * Note that null value properties will not be returned.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
 export function listObjectsV2<TResponse>(
   _request: OpenApiRequest<ListObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   queryParameters: {
     pageSize?: PageSize;
@@ -279,7 +282,7 @@ export function listObjectsV2<TResponse>(
  */
 export function getObjectV2<TResponse>(
   _request: OpenApiRequest<OntologyObjectV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   queryParameters: {
@@ -302,7 +305,7 @@ export function getObjectV2<TResponse>(
  */
 export function countObjects<TResponse>(
   _request: OpenApiRequest<CountObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
 ): Promise<TResponse> {
   return _request(
@@ -340,7 +343,7 @@ export function countObjects<TResponse>(
  */
 export function searchObjectsV2<TResponse>(
   _request: OpenApiRequest<SearchObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: SearchObjectsRequestV2,
 ): Promise<TResponse> {
@@ -356,7 +359,7 @@ export function searchObjectsV2<TResponse>(
 /** Temporary endpoint for search. */
 export function deprecatedSearchObjectsV2<TResponse>(
   _request: OpenApiRequest<SearchObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: SearchObjectsRequestV2,
 ): Promise<TResponse> {
@@ -376,7 +379,7 @@ export function deprecatedSearchObjectsV2<TResponse>(
  */
 export function aggregateObjectsV2<TResponse>(
   _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: AggregateObjectsRequestV2,
 ): Promise<TResponse> {
@@ -394,7 +397,7 @@ export function aggregateObjectsV2<TResponse>(
  */
 export function deprecatedAggregateObjectsV2<TResponse>(
   _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: AggregateObjectsRequestV2,
 ): Promise<TResponse> {
@@ -413,18 +416,20 @@ export function deprecatedAggregateObjectsV2<TResponse>(
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
  *
- * This endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
- * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned.
+ * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
+ * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
  *
  * Each page may be smaller or larger than the requested page size. However, it
  * is guaranteed that if there are more results available, at least one result will be present
- * in the response, up to 10,000 results.
+ * in the response.
+ *
+ * Note that null value properties will not be returned.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
 export function listLinkedObjectsV2<TResponse>(
   _request: OpenApiRequest<ListLinkedObjectsResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   linkType: LinkTypeApiName,
@@ -453,7 +458,7 @@ export function listLinkedObjectsV2<TResponse>(
  */
 export function getLinkedObjectV2<TResponse>(
   _request: OpenApiRequest<OntologyObjectV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   linkType: LinkTypeApiName,
@@ -479,7 +484,7 @@ export function getLinkedObjectV2<TResponse>(
  */
 export function getAttachmentsV2<TResponse>(
   _request: OpenApiRequest<AttachmentMetadataResponse, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -501,7 +506,7 @@ export function getAttachmentsV2<TResponse>(
  */
 export function getAttachmentByRidV2<TResponse>(
   _request: OpenApiRequest<AttachmentV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -524,7 +529,7 @@ export function getAttachmentByRidV2<TResponse>(
  */
 export function getAttachmentContentV2<TResponse>(
   _request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -550,7 +555,7 @@ export function getAttachmentContentV2<TResponse>(
  */
 export function getAttachmentContentByRidV2<TResponse>(
   _request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -575,7 +580,7 @@ export function getAttachmentContentByRidV2<TResponse>(
  */
 export function getFirstPoint<TResponse>(
   _request: OpenApiRequest<TimeSeriesPoint, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -597,7 +602,7 @@ export function getFirstPoint<TResponse>(
  */
 export function getLastPoint<TResponse>(
   _request: OpenApiRequest<TimeSeriesPoint, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -619,7 +624,7 @@ export function getLastPoint<TResponse>(
  */
 export function streamPoints<TResponse>(
   _request: OpenApiRequest<ReadableStream<Uint8Array> | Blob, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
@@ -649,13 +654,38 @@ export function streamPoints<TResponse>(
  */
 export function applyActionV2<TResponse>(
   _request: OpenApiRequest<SyncApplyActionResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   action: ActionTypeApiName,
   request: ApplyActionRequestV2,
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/actions/${action}/apply`,
+    request,
+    __undefined,
+    __undefined,
+  );
+}
+
+/**
+ * Applies multiple actions (of the same Action Type) using the given parameters.
+ * Changes to the Ontology are eventually consistent and may take some time to be visible.
+ *
+ * Up to 20 actions may be applied in one call. Actions that only modify objects in Object Storage v2 and do not
+ * call Functions may receive a higher limit.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:read-data api:write-data`.
+ */
+export function applyActionBatchV2<TResponse>(
+  _request: OpenApiRequest<BatchApplyActionResponseV2, TResponse>,
+  ontology: OntologyIdentifier,
+  action: ActionTypeApiName,
+  request: BatchApplyActionRequestV2,
+): Promise<TResponse> {
+  return _request(
+    "POST",
+    `/v2/ontologies/${ontology}/actions/${action}/applyBatch`,
     request,
     __undefined,
     __undefined,
@@ -675,7 +705,7 @@ export function applyActionV2<TResponse>(
  */
 export function applyActionAsyncV2<TResponse>(
   _request: OpenApiRequest<AsyncApplyActionResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   action: ActionTypeApiName,
   request: AsyncApplyActionRequestV2,
 ): Promise<TResponse> {
@@ -698,11 +728,10 @@ export function applyActionAsyncV2<TResponse>(
  */
 export function listQueryTypesV2<TResponse>(
   _request: OpenApiRequest<ListQueryTypesResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   queryParameters?: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -716,21 +745,19 @@ export function listQueryTypesV2<TResponse>(
 
 /**
  * Gets a specific query type with the given API name.
+ *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
 export function getQueryTypeV2<TResponse>(
   _request: OpenApiRequest<QueryTypeV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   queryApiName: QueryApiName,
-  queryParameters?: {
-    preview?: PreviewMode;
-  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/queryTypes/${queryApiName}`,
     __undefined,
-    queryParameters,
+    __undefined,
     __undefined,
   );
 }
@@ -745,18 +772,15 @@ export function getQueryTypeV2<TResponse>(
  */
 export function executeQueryV2<TResponse>(
   _request: OpenApiRequest<ExecuteQueryResponse, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   queryApiName: QueryApiName,
   request: ExecuteQueryRequest,
-  queryParameters?: {
-    preview?: PreviewMode;
-  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/queries/${queryApiName}/execute`,
     request,
-    queryParameters,
+    __undefined,
     __undefined,
   );
 }
@@ -768,7 +792,7 @@ export function executeQueryV2<TResponse>(
  */
 export function getObjectSetV2<TResponse>(
   _request: OpenApiRequest<ObjectSet, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   objectSetRid: ObjectSetRid,
 ): Promise<TResponse> {
   return _request(
@@ -783,11 +807,16 @@ export function getObjectSetV2<TResponse>(
 /**
  * Load the ontology objects present in the `ObjectSet` from the provided object set definition.
  *
+ * For Object Storage V1 backed objects, this endpoint returns a maximum of 10,000 objects. After 10,000 objects have been returned and if more objects
+ * are available, attempting to load another page will result in an `ObjectsExceededLimit` error being returned. There is no limit on Object Storage V2 backed objects.
+ *
+ * Note that null value properties will not be returned.
+ *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
 export function loadObjectSetV2<TResponse>(
   _request: OpenApiRequest<LoadObjectSetResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   request: LoadObjectSetRequestV2,
 ): Promise<TResponse> {
   return _request(
@@ -806,7 +835,7 @@ export function loadObjectSetV2<TResponse>(
  */
 export function aggregateObjectSetV2<TResponse>(
   _request: OpenApiRequest<AggregateObjectSetResponseV2, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   request: AggregateObjectSetRequestV2,
 ): Promise<TResponse> {
   return _request(
@@ -823,7 +852,7 @@ export function aggregateObjectSetV2<TResponse>(
  */
 export function listDeployments<TResponse>(
   _request: OpenApiRequest<ListDeploymentsResponse, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
 ): Promise<TResponse> {
   return _request(
     "GET",
@@ -839,7 +868,7 @@ export function listDeployments<TResponse>(
  */
 export function getDeployment<TResponse>(
   _request: OpenApiRequest<DeploymentMetadata, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   deployment: DeploymentApiName,
 ): Promise<TResponse> {
   return _request(
@@ -858,7 +887,7 @@ export function getDeployment<TResponse>(
  */
 export function transformDeployment<TResponse>(
   _request: OpenApiRequest<TransformDataResponse, TResponse>,
-  ontology: OntologyApiName,
+  ontology: OntologyIdentifier,
   deployment: DeploymentApiName,
   request: TransformDataRequest,
 ): Promise<TResponse> {

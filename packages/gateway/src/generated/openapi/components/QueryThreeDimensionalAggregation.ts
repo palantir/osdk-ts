@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+import type { NestedQueryAggregation } from "./NestedQueryAggregation";
+
+export interface QueryThreeDimensionalAggregation {
+  groups: Array<NestedQueryAggregation>;
 }

@@ -24,5 +24,5 @@ import type { DeploymentDescription } from "./DeploymentDescription";
 export interface DeploymentMetadata {
   apiName: DeploymentApiName;
   description?: DeploymentDescription;
-  api?: DeploymentApi;
+  api: DeploymentApi;
 }

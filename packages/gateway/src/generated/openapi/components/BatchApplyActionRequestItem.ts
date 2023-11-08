@@ -14,5 +14,9 @@
  * limitations under the License.
  */
 
-export interface LocalFilePath {
+import type { DataValue } from "./DataValue";
+import type { ParameterId } from "./ParameterId";
+
+export interface BatchApplyActionRequestItem {
+  parameters: Record<ParameterId, DataValue>;
 }
