@@ -16,6 +16,7 @@
 
 import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
+import type { QueryDefinition } from "./QueryDefinition";
 
 export type ObjectInfoFrom<
   O extends OntologyDefinition<any>,
@@ -41,13 +42,20 @@ export type PropertyDefinitionFrom<
   P extends PropertyKeysFrom<O, K>,
 > = PropertyDefinitionsFrom<O, K>[P];
 
-export interface OntologyDefinition<K extends string, A extends string = any> {
+export interface OntologyDefinition<
+  K extends string,
+  A extends string = any,
+  Q extends string = any,
+> {
   metadata: OntologyMetadata;
   objects: {
     [KK in K]: ObjectDefinition<KK, K>;
   };
   actions: {
     [AA in A]: ActionDefinition<AA, K>;
+  };
+  queries: {
+    [QQ in Q]: QueryDefinition<Q>;
   };
 }
 

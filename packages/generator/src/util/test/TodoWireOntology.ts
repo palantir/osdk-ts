@@ -87,7 +87,17 @@ export const TodoWireOntology = {
       status: "ACTIVE",
     },
   },
-  queryTypes: [],
+  queryTypes: [{
+    apiName: "getCount",
+    output: {
+      type: "integer",
+    },
+    parameters: {
+      completed: { dataType: { type: "boolean" } },
+    },
+    rid: "rid.query.1",
+    version: "0",
+  }],
   linkTypes: {
     Person: [{
       apiName: "Todos",

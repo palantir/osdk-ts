@@ -14,33 +14,4 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause";
-
-export type F = GroupByClause<
-  {
-    metadata: any;
-    objects: {
-      Todo: {
-        apiName: "Todo";
-        primaryKeyType: "double";
-        links: {};
-        properties: {
-          text: {
-            type: "string";
-          };
-          id: {
-            type: "double";
-          };
-        };
-      };
-    };
-    actions: {};
-    queries: {};
-  },
-  "Todo"
->;
-
-describe("GroupByClause", () => {
-  it("works", () => {});
-});
+export type Queries<O> = O & any;

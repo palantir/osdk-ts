@@ -14,33 +14,14 @@
  * limitations under the License.
  */
 
-import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause";
+import type { QueryDataType } from "@osdk/gateway/types";
 
-export type F = GroupByClause<
-  {
-    metadata: any;
-    objects: {
-      Todo: {
-        apiName: "Todo";
-        primaryKeyType: "double";
-        links: {};
-        properties: {
-          text: {
-            type: "string";
-          };
-          id: {
-            type: "double";
-          };
-        };
-      };
-    };
-    actions: {};
-    queries: {};
-  },
-  "Todo"
->;
-
-describe("GroupByClause", () => {
-  it("works", () => {});
-});
+export function isNullableQueryDataType(input: QueryDataType): boolean {
+  if (input.type === "null") {
+    return true;
+  }
+  if (input.type === "union") {
+    return input.unionTypes.some(t => isNullableQueryDataType(t));
+  }
+  return false;
+}
