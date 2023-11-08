@@ -35,6 +35,7 @@ export interface Actions {
   ): Promise<Result<ActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>>;
 
   /**
+   * Creates a new Todo
    */
   createTodo<O extends ActionExecutionOptions>(
     options?: O,

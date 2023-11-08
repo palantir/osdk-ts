@@ -88,7 +88,7 @@ export function go(basePath: string) {
           status: "ACTIVE",
         },
         {
-          apiName: "createTodo",
+          apiName: "create-todo",
           description: "Creates a new Todo",
           parameters: {},
           status: "ACTIVE",
