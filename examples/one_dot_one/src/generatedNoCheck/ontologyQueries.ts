@@ -11,6 +11,7 @@ import type {
   TwoDimensionalAggregation,
 } from '@osdk/legacy-client';
 import type { Todo } from './objects/Todo';
+
 export interface Queries {
   queryTakesAllParameterTypes(params: {
     double: number;

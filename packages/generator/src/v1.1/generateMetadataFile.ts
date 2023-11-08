@@ -16,7 +16,6 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireQueryTypeV2ToSdkQueryDefinition } from "../shared/wireQueryTypeV2ToSdkQueryDefinition";
 import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
@@ -28,6 +27,8 @@ export async function generateMetadataFile(
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
   const actionNames = ontology.actionTypes.map(action => action.apiName);
+  const queryNames = ontology.queryTypes.map(query => query.apiName);
+
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(`
@@ -35,6 +36,7 @@ export async function generateMetadataFile(
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
   import type { Objects } from "./ontologyObjects";
   import type { Actions } from "./ontologyActions";
+  import type { Queries } from "./ontologyQueries";
   ${
       objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
         .join("\n")
@@ -42,6 +44,11 @@ export async function generateMetadataFile(
   ${
       actionNames.map((name) => `import {${name}} from "./actions/${name}";`)
         .join("\n")
+    }
+  ${
+      queryNames.map(name => `import {${name}} from "./queries/${name}";`).join(
+        "\n",
+      )
     }
 
   export const Ontology = {
@@ -56,18 +63,8 @@ export async function generateMetadataFile(
     actions: {
         ${commaSeparatedIdentifiers(actionNames)}
     },
-    queries: 
-    ${
-      JSON.stringify(
-        Object.fromEntries(
-          ontology.queryTypes.map(
-            query => [
-              query.apiName,
-              wireQueryTypeV2ToSdkQueryDefinition(query),
-            ],
-          ),
-        ),
-      )
+    queries: {
+        ${commaSeparatedIdentifiers(queryNames)}
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
       ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(
@@ -80,6 +77,7 @@ export async function generateMetadataFile(
 export interface Ontology extends ClientOntology<typeof Ontology> {
     objects: Objects;
     actions: Actions;
+    queries: Queries;
 }`),
   );
 }

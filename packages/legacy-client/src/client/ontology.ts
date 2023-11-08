@@ -18,6 +18,7 @@ import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { Actions } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
+import type { Queries } from "./queries";
 
 export class Ontology<O extends OntologyDefinition<any>> {
   #client: ThinClient<O>;
@@ -33,7 +34,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
     throw new Error("not implemented");
   }
 
-  get queries(): never {
+  get queries(): Queries<O> {
     throw new Error("not implemented");
   }
 

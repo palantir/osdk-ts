@@ -52,7 +52,7 @@ export async function generateQueries(
   }
 
   await fs.writeFile(
-    `${outDir}/queries.ts`,
+    `${outDir}/ontologyQueries.ts`,
     await formatTs(`
     import type { QueryResponse, QueryError, Result, ${
       Array.from(importedTypes).join()
@@ -62,6 +62,7 @@ export async function generateQueries(
         `import type { ${importedObject} } from "./objects/${importedObject}";`
       ).join("\n")
     }
+
     export interface Queries {
     ${signatures.join("\n")}
     }
