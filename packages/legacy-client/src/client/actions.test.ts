@@ -27,13 +27,11 @@ import type { Actions } from "./actions";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 
 describe("actions", () => {
-  it("types work", async () => {
-    const actions: Actions<
-      typeof MockOntology
-    > = {} as Actions<
-      typeof MockOntology
-    >;
+  const actions: Actions<
+    typeof MockOntology
+  > = {} as any;
 
+  it("creates proper parameters", async () => {
     expectTypeOf<Parameters<typeof actions.createTask>>().toMatchTypeOf<
       [
         {
@@ -54,7 +52,17 @@ describe("actions", () => {
         >
       >
     >();
+  });
 
+  it("skips empty parameters", () => {
+    expectTypeOf<Parameters<typeof actions.createTodo>>().toMatchTypeOf<
+      [
+        ActionExecutionOptions?,
+      ]
+    >();
+  });
+
+  it("maps Object types correctly", () => {
     expectTypeOf<Parameters<typeof actions.updateTask>>().toMatchTypeOf<
       [
         {

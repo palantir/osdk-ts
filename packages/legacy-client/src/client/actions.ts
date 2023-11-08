@@ -39,15 +39,15 @@ export interface ValidLegacyActionParameterTypes {
   attachment: Attachment;
 }
 
-type NullableKeys<T> = {
+export type NullableKeys<T> = {
   [K in keyof T]: T[K] extends { nullable: true } ? K : never;
 }[keyof T];
 
-type NonNullableKeys<T> = {
+export type NonNullableKeys<T> = {
   [K in keyof T]: T[K] extends { nullable: true } ? never : K;
 }[keyof T];
 
-type ActionArgs<
+export type ActionArgs<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > =
@@ -129,25 +129,38 @@ export type ModifiedObjectsOrVoid<
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
-export type ActionReturnType<
+export type WrappedActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
 > = Promise<
   Result<
-    ActionResponseFromOptions<
-      Op,
-      Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-    >,
+    ActionReturnType<O, A, Op>,
     ActionError
   >
 >;
 
+export type ActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends ActionExecutionOptions,
+> = ActionResponseFromOptions<
+  Op,
+  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+>;
+
+type IsEmpty<T extends Record<string, unknown>> = keyof T extends never ? true
+  : false;
+
 export type Actions<
   O extends OntologyDefinition<any>,
 > = {
-  [A in keyof O["actions"]]: <Op extends ActionExecutionOptions>(
-    params: ActionArgs<O, A>,
-    options?: Op,
-  ) => ActionReturnType<O, A, Op>;
+  [A in keyof O["actions"]]: IsEmpty<O["actions"][A]["parameters"]> extends true
+    ? <Op extends ActionExecutionOptions>(
+      options?: Op,
+    ) => WrappedActionReturnType<O, A, Op>
+    : <Op extends ActionExecutionOptions>(
+      params: ActionArgs<O, A>,
+      options?: Op,
+    ) => WrappedActionReturnType<O, A, Op>;
 };

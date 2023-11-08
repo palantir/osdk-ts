@@ -59,6 +59,13 @@ export const MockOntology = {
         Task: { modified: false, created: true },
       },
     },
+    createTodo: {
+      apiName: "createTodo",
+      parameters: {},
+      modifiedEntities: {
+        Todo: { modified: false, created: true },
+      },
+    },
     updateTask: {
       apiName: "updateTask",
       parameters: {
@@ -82,5 +89,5 @@ export const MockOntology = {
   },
 } satisfies OntologyDefinition<
   "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes",
-  "createTask" | "updateTask"
+  "createTask" | "updateTask" | "createTodo"
 >;

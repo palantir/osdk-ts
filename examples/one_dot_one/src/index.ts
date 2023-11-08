@@ -87,6 +87,19 @@ export function go(basePath: string) {
           }],
           status: "ACTIVE",
         },
+        {
+          apiName: "createTodo",
+          description: "Creates a new Todo",
+          parameters: {},
+          status: "ACTIVE",
+          rid: "ri.a.b.c.d",
+          operations: [
+            {
+              type: "createObject",
+              objectTypeApiName: "Todo",
+            },
+          ],
+        },
       ],
       apiName: "OntologyApiName",
       objectTypes: {
