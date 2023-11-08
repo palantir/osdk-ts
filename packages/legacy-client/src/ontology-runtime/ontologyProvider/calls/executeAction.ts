@@ -130,7 +130,7 @@ function getParameterValueMapping(
   } else if (value instanceof GeoPoint) {
     return value.toGeoJson();
   } else if (isOntologyObjectSet(value)) {
-    return value.objectSetDefinition;
+    return value.definition;
   } else if (typeof value === "object") {
     // Since structs are valid arguments for Queries, we map the values
     return Object.entries(value).reduce((acc, [key, structValue]) => {
@@ -144,6 +144,6 @@ function getParameterValueMapping(
 
 function isOntologyObjectSet(
   obj: any,
-): obj is { objectSetDefinition: ObjectSetDefinition } {
-  return obj && obj.objectSetDefinition;
+): obj is { definition: ObjectSetDefinition } {
+  return obj && obj.definition;
 }

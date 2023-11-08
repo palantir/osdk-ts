@@ -103,4 +103,39 @@ describe(Ontology, () => {
       expect(createdObject.__primaryKey).toEqual(mockTodoObject.__primaryKey);
     });
   });
+
+  it("proxies action calls transforms arguments", async () => {
+    const ontology = new Ontology(client);
+
+    const taskOs = ontology.objects.Task;
+    mockFetchResponse(fetch, mockTodoObject);
+    const taskObjectResult = await ontology.objects.Task.get(1);
+    const taskObject = unwrapResultOrThrow(taskObjectResult);
+
+    mockFetchResponse(fetch, {});
+    const actionResponse = await ontology.actions.updateTask({
+      task: taskObject,
+      tasks: taskOs,
+    }, {});
+
+    expectFetchToBeCalledWithBody(
+      fetch,
+      `Ontology/actions/updateTask/apply`,
+      {
+        parameters: {
+          task: 1,
+          tasks: {
+            type: "base",
+            objectType: "Task",
+          },
+        },
+        options: {
+          mode: "VALIDATE_AND_EXECUTE",
+          returnEdits: "NONE",
+        },
+      },
+    );
+
+    assert(actionResponse.type === "ok");
+  });
 });

@@ -77,6 +77,14 @@ export const MockOntology = {
           multiplicity: false,
           nullable: true,
         },
+        tasks: {
+          type: {
+            type: "objectSet",
+            objectSet: "Task",
+          },
+          multiplicity: false,
+          nullable: true,
+        },
         value: {
           type: "boolean",
           nullable: true,
