@@ -27,6 +27,8 @@ import type {
 } from "..";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { IsEmptyRecord } from "./utils/IsEmptyRecord";
+import type { ValuesOfMap } from "./utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
   boolean: boolean;
@@ -112,20 +114,17 @@ export type CreatedObjects<
   ]: OsdkLegacyObjectFrom<O, K>;
 };
 
-export type ValuesOf<T> = T extends { [key: string]: infer U } ? U
-  : void;
-
 export type CreatedObjectOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> = ValuesOf<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+> = ValuesOfMap<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
 export type ModifiedObjectsOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> = ValuesOf<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+> = ValuesOfMap<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
@@ -149,18 +148,16 @@ export type ActionReturnType<
   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
 >;
 
-type IsEmpty<T extends Record<string, unknown>> = keyof T extends never ? true
-  : false;
-
 export type Actions<
   O extends OntologyDefinition<any>,
 > = {
-  [A in keyof O["actions"]]: IsEmpty<O["actions"][A]["parameters"]> extends true
-    ? <Op extends ActionExecutionOptions>(
-      options?: Op,
-    ) => WrappedActionReturnType<O, A, Op>
-    : <Op extends ActionExecutionOptions>(
-      params: ActionArgs<O, A>,
-      options?: Op,
-    ) => WrappedActionReturnType<O, A, Op>;
+  [A in keyof O["actions"]]:
+    IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+      ? <Op extends ActionExecutionOptions>(
+        options?: Op,
+      ) => WrappedActionReturnType<O, A, Op>
+      : <Op extends ActionExecutionOptions>(
+        params: ActionArgs<O, A>,
+        options?: Op,
+      ) => WrappedActionReturnType<O, A, Op>;
 };
