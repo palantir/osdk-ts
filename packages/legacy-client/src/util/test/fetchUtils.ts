@@ -20,10 +20,11 @@ import { MOCK_BASE_URL } from "./mocks/mockMetadata";
 
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
-  response: object,
+  response: any,
 ) {
   fetch.mockResolvedValue({
     json: () => Promise.resolve(response),
+    blob: () => Promise.resolve(response),
     status: 200,
     ok: true,
   } as any);
@@ -43,12 +44,30 @@ export function expectFetchToBeCalledWithBody(
     },
   );
 }
+
+export function expectFetchToBeCalledWithBlob(
+  fetch: MockedFunction<typeof globalThis.fetch>,
+  endpoint: string,
+  body: Blob,
+  baseUrl?: string,
+) {
+  expect(fetch).toBeCalledWith(
+    `${baseUrl ?? MOCK_BASE_URL}${endpoint}`,
+    {
+      body,
+      headers: expect.anything(),
+      method: "POST",
+    },
+  );
+}
+
 export function expectFetchToBeCalledWithGet(
   fetch: MockedFunction<typeof globalThis.fetch>,
   endpoint: string,
+  baseUrl?: string,
 ) {
   expect(fetch).toBeCalledWith(
-    `${MOCK_BASE_URL}${endpoint}`,
+    `${baseUrl ?? MOCK_BASE_URL}${endpoint}`,
     {
       headers: expect.anything(),
       method: "GET",

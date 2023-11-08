@@ -19,14 +19,15 @@ import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockOntology } from "../../../util/test";
 import {
-  expectFetchToBeCalledWithBlob,
+  expectFetchToBeCalledWithGet,
   mockFetchResponse,
 } from "../../../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../../../util/test/mocks/mockMetadata";
 import { unwrapResultOrThrow } from "../../../util/test/resultUtils";
-import { uploadAttachment } from "./uploadAttachment";
 
-describe(uploadAttachment, () => {
+import { getAttachment } from "./getAttachment";
+
+describe(getAttachment, () => {
   let client: ThinClient<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   beforeEach(() => {
@@ -38,22 +39,20 @@ describe(uploadAttachment, () => {
       fetch,
     );
   });
-  it("uploads attachment", async () => {
+  it("gets attachment", async () => {
     const obj = { name: "James Doe" };
     const blob = new Blob([JSON.stringify(obj, null, 2)], {
       type: "application/json",
     });
-    mockFetchResponse(fetch, {
-      rid: "ri.a.b.c.d",
-    });
-    const attachmentResult = await uploadAttachment(client, "test.txt", blob);
+
+    mockFetchResponse(fetch, blob);
+    const attachmentResult = await getAttachment(client, "ri.a.b.c.d");
     const attachment = unwrapResultOrThrow(attachmentResult);
-    expectFetchToBeCalledWithBlob(
+    expectFetchToBeCalledWithGet(
       fetch,
-      `attachments/upload?filename=test.txt`,
-      blob,
+      `attachments/ri.a.b.c.d/content`,
       `${MOCK_ORIGIN}/api/v1/`,
     );
-    expect(attachment.attachmentRid).toEqual("ri.a.b.c.d");
+    expect(attachment).toEqual(blob);
   });
 });

@@ -34,7 +34,7 @@ export function uploadAttachment(
   return wrapResult(
     async () => {
       const response = await gatewayUploadAttachment(
-        createOpenApiRequest(client.stack, client.fetch),
+        createOpenApiRequest(client.stack, client.fetch, undefined),
         data,
         {
           filename,

@@ -16,11 +16,18 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 
-export function createOpenApiRequest<TExpectedResponse>(
+export function createOpenApiRequest<
+  TExpectedResponse,
+  AsReadableStream extends boolean = false,
+>(
   basePath: string,
   fetchFn: typeof fetch,
   contextPath: string = "/api",
-): OpenApiRequest<TExpectedResponse> {
+  asReadableStream?: AsReadableStream,
+): OpenApiRequest<
+  AsReadableStream extends true ? ReadableStream<Uint8Array>
+    : Exclude<TExpectedResponse, ReadableStream<Uint8Array>>
+> {
   return async function openApiRequest(
     method: string,
     endpointPath: string,
@@ -57,14 +64,35 @@ export function createOpenApiRequest<TExpectedResponse>(
       }
     });
 
+    const body = getBody(data);
+
     const response = await fetchFn(url.toString(), {
-      body: JSON.stringify(data),
+      body,
       method: method,
       headers: headersInit,
     });
 
+    if (responseMediaType && responseMediaType === "*/*") {
+      if (asReadableStream) {
+        return response.body;
+      }
+      return response.blob();
+    }
+
     return response.json();
   };
+}
+
+function getBody(body: any): BodyInit | null | undefined {
+  if (body == null) {
+    return body;
+  }
+
+  if (globalThis.Blob && body instanceof globalThis.Blob) {
+    return body;
+  }
+
+  return JSON.stringify(body);
 }
 
 function withHttps(url: string): string {
