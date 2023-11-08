@@ -31,7 +31,6 @@ export async function generateQueries(
   fs: MinimalFs,
   outDir: string,
 ) {
-  const importedTypes = new Set<string>(["Range"]);
   const importedObjects = new Set<string>();
   const signatures: string[] = [];
 
@@ -39,12 +38,10 @@ export async function generateQueries(
     const outputType = handleQueryDataType(
       query.output,
       importedObjects,
-      importedTypes,
     );
     const param = handleQueryParameters(
       query.parameters,
       importedObjects,
-      importedTypes,
     );
     signatures.push(
       `${query.apiName}(${param}): Promise<Result<QueryResponse<${outputType}>, QueryError>>;`,
@@ -54,9 +51,7 @@ export async function generateQueries(
   await fs.writeFile(
     `${outDir}/ontologyQueries.ts`,
     await formatTs(`
-    import type { QueryResponse, QueryError, Result, ${
-      Array.from(importedTypes).join()
-    } } from "@osdk/legacy-client";
+    import type { QueryResponse, QueryError, Result, Timestamp, LocalDate, Range, Attachment, ObjectSet, TwoDimensionalAggregation, ThreeDimensionalAggregation  } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
         `import type { ${importedObject} } from "./objects/${importedObject}";`
@@ -73,7 +68,6 @@ export async function generateQueries(
 function handleQueryParameters(
   parameters: Record<string, QueryParameterV2>,
   importedObjects: Set<string>,
-  importedTypes: Set<string>,
 ) {
   const parametersEntries = Object.entries(parameters);
   if (parametersEntries.length === 0) {
@@ -85,7 +79,6 @@ function handleQueryParameters(
     const type = handleQueryDataType(
       parameter.dataType,
       importedObjects,
-      importedTypes,
     );
     return `"${name}"${nullable ? "?" : ""}: ${type}`;
   });
@@ -96,7 +89,6 @@ function handleQueryParameters(
 function handleQueryDataType(
   dataType: QueryDataType,
   importedObjects: Set<string>,
-  importedTypes: Set<string>,
 ): string {
   switch (dataType.type) {
     case "boolean":
@@ -110,21 +102,16 @@ function handleQueryDataType(
       return "number";
 
     case "date":
-      importedTypes.add("LocalDate");
       return "LocalDate";
 
     case "timestamp":
-      importedTypes.add("Timestamp");
       return "Timestamp";
 
     case "attachment":
-      importedTypes.add("Attachment");
       return "Attachment";
 
     case "array":
-      return `Array<${
-        handleQueryDataType(dataType.subType, importedObjects, importedTypes)
-      }>`;
+      return `Array<${handleQueryDataType(dataType.subType, importedObjects)}>`;
 
     case "object": {
       const objectType = dataType.objectTypeApiName!;
@@ -135,38 +122,33 @@ function handleQueryDataType(
     case "objectSet": {
       const objectType = dataType.objectTypeApiName!;
       importedObjects.add(objectType);
-      importedTypes.add("ObjectSet");
       return `ObjectSet<${objectType}>`;
     }
 
     case "set":
-      return `Set<${
-        handleQueryDataType(dataType.subType, importedObjects, importedTypes)
-      }>`;
+      return `Set<${handleQueryDataType(dataType.subType, importedObjects)}>`;
 
     case "struct":
       const properties = dataType.fields.map(field => {
         const isNullable = isNullableQueryDataType(field.fieldType);
         return `${field.name}${isNullable ? "?" : ""}: ${
-          handleQueryDataType(field.fieldType, importedObjects, importedTypes)
+          handleQueryDataType(field.fieldType, importedObjects)
         }`;
       });
       return `{ ${properties.join(",\n")} }`;
 
     case "union":
       return dataType.unionTypes.map(type =>
-        handleQueryDataType(type, importedObjects, importedTypes)
+        handleQueryDataType(type, importedObjects)
       ).join("|");
 
     case "twoDimensionalAggregation":
-      importedTypes.add("TwoDimensionalAggregation");
       dataType.valueType;
       return `TwoDimensionalAggregation<
         ${aggregationKeyToTypescriptType(dataType.keyType)},
         ${aggregationValueToTypescriptType(dataType.valueType)}
       >`;
     case "threeDimensionalAggregation":
-      importedTypes.add("ThreeDimensionalAggregation");
       return `ThreeDimensionalAggregation<
         ${aggregationKeyToTypescriptType(dataType.keyType)},
         ${aggregationKeyToTypescriptType(dataType.valueType.keyType)},
@@ -199,11 +181,11 @@ function aggregationKeyToTypescriptType(
     case "string":
       return "string";
     case "date":
-      return "LocalDate"; // TODO needs import at top of file
+      return "LocalDate";
     case "timestamp":
-      return "Timestamp"; // TODO needs import at top of file
+      return "Timestamp";
     case "range":
-      return `Range<${aggregationRangeToTypescriptType(keyType.subType)}>`; // TODO needs import at top of file
+      return `Range<${aggregationRangeToTypescriptType(keyType.subType)}>`;
     default:
       const _: never = keyType;
       throw new Error(
@@ -217,12 +199,12 @@ function aggregationRangeToTypescriptType(
 ) {
   switch (subType.type) {
     case "date":
-      return "LocalDate"; // TODO needs import at top of file
+      return "LocalDate";
     case "double":
     case "integer":
       return "number";
     case "timestamp":
-      return "Timestamp"; // TODO needs import at top of file
+      return "Timestamp";
     default:
       const _: never = subType;
       throw new Error(
@@ -236,11 +218,11 @@ function aggregationValueToTypescriptType(
 ) {
   switch (valueType.type) {
     case "date":
-      return "LocalDate"; // TODO needs import at top of file
+      return "LocalDate";
     case "double":
       return "number";
     case "timestamp":
-      return "Timestamp"; // TODO needs import at top of file
+      return "Timestamp";
     default:
       const _: never = valueType;
       throw new Error(
