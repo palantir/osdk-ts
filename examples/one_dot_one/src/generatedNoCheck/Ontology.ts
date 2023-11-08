@@ -1,6 +1,7 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
 import { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes';
+import { createTodo } from './actions/createTodo';
 import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
 import { Person } from './objects/Person';
 import { Todo } from './objects/Todo';
@@ -22,13 +23,14 @@ export const Ontology = {
   },
   actions: {
     actionTakesAllParameterTypes,
+    createTodo,
   },
   queries: {
     queryTakesAllParameterTypes,
   },
 } satisfies OntologyDefinition<
   'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes',
-  'actionTakesAllParameterTypes',
+  'actionTakesAllParameterTypes' | 'createTodo',
   'queryTakesAllParameterTypes'
 >;
 

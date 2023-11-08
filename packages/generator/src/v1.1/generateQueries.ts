@@ -55,7 +55,9 @@ export async function generateQueries(
       paramEntries.push(`"${name}"${nullable ? "?" : ""}: ${type}`);
 
       jsDocBlock.push(
-        `* @param {${type}} params.${name} ${parameter.description ?? ""}`,
+        `* @param {${sanitizeDocTypeName(type)}} params.${name}${
+          parameter.description ? ` - ${parameter.description}` : ""
+        }`,
       );
     }
 
@@ -64,7 +66,7 @@ export async function generateQueries(
       : `params: { ${paramEntries.join("; ")} }`;
 
     jsDocBlock.push(
-      `* @returns ${handleQueryDataType(query.output, importedObjects)}`,
+      `* @returns ${sanitizeDocTypeName(outputType)}`,
       "*/",
     );
 
@@ -236,4 +238,8 @@ function aggregationValueToTypescriptType(
         `Unsupported QueryAggregationValueType ${(valueType as any).type}`,
       );
   }
+}
+
+function sanitizeDocTypeName(type: string) {
+  return type.replace(/\s/g, "");
 }

@@ -13,6 +13,28 @@ import type {
 import type { Todo } from './objects/Todo';
 
 export interface Queries {
+  /**
+   * description of the query that takes all parameter types
+   * @param {number} params.double - a double parameter
+   * @param {number} params.float
+   * @param {number} params.integer
+   * @param {number} params.long
+   * @param {Attachment} params.attachment
+   * @param {boolean} params.boolean
+   * @param {LocalDate} params.date
+   * @param {string} params.string
+   * @param {Timestamp} params.timestamp
+   * @param {Todo} params.object
+   * @param {ObjectSet<Todo>} params.objectSet
+   * @param {Array<string>} params.array - an array of strings
+   * @param {Set<string>} params.set - a set of strings
+   * @param {string|number} params.unionNonNullable - a union of strings and integers
+   * @param {string|number|null} params.unionNullable - a union of strings and integers but its optional
+   * @param {{name:string,id:number}} params.struct - a struct with some fields
+   * @param {TwoDimensionalAggregation<string,number>} params.twoDimensionalAggregation
+   * @param {ThreeDimensionalAggregation<Range<LocalDate>,Range<Timestamp>,LocalDate>} params.threeDimensionalAggregation
+   * @returns string
+   */
   queryTakesAllParameterTypes(params: {
     double: number;
     float: number;

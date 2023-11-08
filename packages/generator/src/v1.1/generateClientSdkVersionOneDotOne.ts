@@ -16,6 +16,7 @@
 
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateActions } from "./generateActions";
 import { generateFoundryClientFile } from "./generateFoundryClientFile";
@@ -32,17 +33,26 @@ export async function generateClientSdkVersionOneDotOne(
   fs: MinimalFs,
   outDir: string,
 ) {
+  const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir);
-  await generateMetadataFile(ontology, fs, outDir);
-  await generateObjectsInterfaceFile(ontology, fs, outDir);
+  await generateMetadataFile(sanitizedOntology, fs, outDir);
+  await generateObjectsInterfaceFile(sanitizedOntology, fs, outDir);
   await generatePerObjectInterfaceAndDataFiles(
-    ontology,
+    sanitizedOntology,
     fs,
     path.join(outDir, "objects"),
   );
-  await generateActions(ontology, fs, outDir);
-  await generatePerActionDataFiles(ontology, fs, path.join(outDir, "actions"));
-  await generateQueries(ontology, fs, outDir);
-  await generatePerQueryDataFiles(ontology, fs, path.join(outDir, "queries"));
+  await generateActions(sanitizedOntology, fs, outDir);
+  await generatePerActionDataFiles(
+    sanitizedOntology,
+    fs,
+    path.join(outDir, "actions"),
+  );
+  await generateQueries(sanitizedOntology, fs, outDir);
+  await generatePerQueryDataFiles(
+    sanitizedOntology,
+    fs,
+    path.join(outDir, "queries"),
+  );
   await generateIndexFile(fs, outDir);
 }
