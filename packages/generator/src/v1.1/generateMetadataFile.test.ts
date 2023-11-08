@@ -42,6 +42,7 @@ describe(generateMetadataFile, () => {
       import { Todo } from './objects/Todo';
       import type { Actions } from './ontologyActions';
       import type { Objects } from './ontologyObjects';
+      import type { Queries } from './ontologyQueries';
 
       export const Ontology = {
         metadata: {
@@ -56,11 +57,13 @@ describe(generateMetadataFile, () => {
         actions: {
           markTodoCompleted,
         },
+        queries: {},
       } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        queries: Queries;
       }
       "
     `);
