@@ -419,6 +419,36 @@ export function go(basePath: string) {
             },
             description: "a struct with some fields",
           },
+          twoDimensionalAggregation: {
+            dataType: {
+              type: "twoDimensionalAggregation",
+              keyType: {
+                type: "date",
+              },
+              valueType: {
+                type: "double",
+              },
+            },
+          },
+          threeDimensionalAggregation: {
+            dataType: {
+              type: "threeDimensionalAggregation",
+              keyType: {
+                type: "range",
+                subType: {
+                  type: "integer",
+                },
+              },
+              valueType: {
+                keyType: {
+                  type: "timestamp",
+                },
+                valueType: {
+                  type: "date",
+                },
+              },
+            },
+          },
         },
       }],
       linkTypes: {

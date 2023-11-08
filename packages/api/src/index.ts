@@ -52,4 +52,6 @@ export type {
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalQueryAggregationDefinition,
 } from "./ontology/QueryDefinition";

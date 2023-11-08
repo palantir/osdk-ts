@@ -87,6 +87,26 @@ export const Ontology = {
             nullable: false,
           },
         },
+        twoDimensionalAggregation: {
+          dataType: {
+            type: {
+              type: 'twoDimensionalAggregation',
+              twoDimensionalAggregation: { keyType: 'date', valueType: 'double' },
+            },
+          },
+        },
+        threeDimensionalAggregation: {
+          dataType: {
+            type: {
+              type: 'threeDimensionalAggregation',
+              threeDimensionalAggregation: {
+                keyType: 'range',
+                keySubtype: 'integer',
+                valueType: { keyType: 'timestamp', valueType: 'date' },
+              },
+            },
+          },
+        },
       },
       output: { type: 'string', nullable: false },
     },

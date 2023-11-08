@@ -5,7 +5,9 @@ import type {
   QueryError,
   QueryResponse,
   Result,
+  ThreeDimensionalAggregationType,
   Timestamp,
+  TwoDimensionalAggregationType,
 } from '@osdk/legacy-client';
 import type { Todo } from './objects/Todo';
 export interface Queries {
@@ -26,5 +28,7 @@ export interface Queries {
     unionNonNullable: string | number;
     unionNullable?: string | number | null;
     struct: { name: string; id: number };
+    twoDimensionalAggregation: TwoDimensionalAggregationType<LocalDate, number>;
+    threeDimensionalAggregation: ThreeDimensionalAggregationType<Range<number>, Timestamp, LocalDate>;
   }): Promise<Result<QueryResponse<string>, QueryError>>;
 }

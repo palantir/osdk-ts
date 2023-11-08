@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import type { QueryDataTypeDefinition } from "@osdk/api";
-import type { QueryDataType } from "@osdk/gateway/types";
+import type {
+  QueryDataTypeDefinition,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalQueryAggregationDefinition,
+} from "@osdk/api";
+import type {
+  QueryDataType,
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "@osdk/gateway/types";
 import { isNullableQueryDataType } from "./isNullableQueryDataType";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition(
@@ -106,6 +114,22 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
         nullable: false,
       };
 
+    case "twoDimensionalAggregation":
+      return {
+        type: {
+          type: "twoDimensionalAggregation",
+          twoDimensionalAggregation: get2DQueryAggregationProps(input),
+        },
+      };
+
+    case "threeDimensionalAggregation":
+      return {
+        type: {
+          type: "threeDimensionalAggregation",
+          threeDimensionalAggregation: get3DQueryAggregationProps(input),
+        },
+      };
+
     case "null":
     case "unsupported":
       throw new Error(
@@ -115,5 +139,39 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
     default:
       const _: never = input;
       throw new Error(`Unsupported QueryDataType.type ${(input as any).type}`);
+  }
+}
+
+function get2DQueryAggregationProps(
+  input: TwoDimensionalAggregation,
+): TwoDimensionalQueryAggregationDefinition {
+  if (input.keyType.type === "range") {
+    return {
+      keyType: input.keyType.type,
+      keySubtype: input.keyType.subType.type,
+      valueType: input.valueType.type,
+    };
+  } else {
+    return {
+      keyType: input.keyType.type,
+      valueType: input.valueType.type,
+    };
+  }
+}
+
+function get3DQueryAggregationProps(
+  input: ThreeDimensionalAggregation,
+): ThreeDimensionalQueryAggregationDefinition {
+  if (input.keyType.type === "range") {
+    return {
+      keyType: input.keyType.type,
+      keySubtype: input.keyType.subType.type,
+      valueType: get2DQueryAggregationProps(input.valueType),
+    };
+  } else {
+    return {
+      keyType: input.keyType.type,
+      valueType: get2DQueryAggregationProps(input.valueType),
+    };
   }
 }

@@ -80,6 +80,7 @@ export const MockOntology = {
       },
     },
   },
+  queries: {},
 } satisfies OntologyDefinition<
   "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes",
   "createTask" | "updateTask"

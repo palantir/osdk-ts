@@ -41,7 +41,9 @@ export type QueryDataType =
   | ObjectSetQueryDataType<any>
   | SetQueryDataType
   | UnionQueryDataType
-  | StructQueryDataType;
+  | StructQueryDataType
+  | TwoDimensionalAggregationDataType
+  | ThreeDimensionalAggregationDataType;
 
 export interface ValidBaseQueryDataTypes {
   double: number;
@@ -79,3 +81,33 @@ export interface StructQueryDataType {
   type: "struct";
   struct: ReadonlyArray<{ name: string; fieldType: QueryDataTypeDefinition }>;
 }
+
+export interface TwoDimensionalAggregationDataType {
+  type: "twoDimensionalAggregation";
+  twoDimensionalAggregation: TwoDimensionalQueryAggregationDefinition;
+}
+
+export interface ThreeDimensionalAggregationDataType {
+  type: "threeDimensionalAggregation";
+  threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
+}
+
+export type TwoDimensionalQueryAggregationDefinition =
+  & { valueType: "date" | "double" | "timestamp" }
+  & ({
+    keyType: "boolean" | "date" | "double" | "integer" | "string" | "timestamp";
+  } | {
+    keyType: "range";
+    keySubtype: "date" | "double" | "integer" | "timestamp";
+  });
+
+export type ThreeDimensionalQueryAggregationDefinition =
+  & {
+    valueType: TwoDimensionalQueryAggregationDefinition;
+  }
+  & ({
+    keyType: "boolean" | "date" | "double" | "integer" | "string" | "timestamp";
+  } | {
+    keyType: "range";
+    keySubtype: "date" | "double" | "integer" | "timestamp";
+  });

@@ -89,9 +89,11 @@ export type {
   Result,
   SearchObjectsError,
   SingleLink,
+  ThreeDimensionalAggregationType,
   TimeSeries,
   TimeSeriesError,
   TimeSeriesPoint,
+  TwoDimensionalAggregationType,
   Unauthorized,
   UnknownError,
 } from "./ontology-runtime";

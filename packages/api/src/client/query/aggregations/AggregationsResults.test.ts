@@ -37,6 +37,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
       };
     };
     actions: {};
+    queries: {};
   },
   "Todo",
   {
@@ -69,6 +70,7 @@ type Q = AggregationResultsWithoutGroups<
       };
     };
     actions: {};
+    queries: {};
   },
   "Todo",
   {

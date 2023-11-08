@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { QueryDataType, QueryParameterV2 } from "@osdk/gateway/types";
+import type {
+  QueryAggregationKeyType,
+  QueryAggregationRangeSubType,
+  QueryAggregationValueType,
+  QueryDataType,
+  QueryParameterV2,
+} from "@osdk/gateway/types";
 import type { MinimalFs } from "../MinimalFs";
 import { isNullableQueryDataType } from "../shared/isNullableQueryDataType";
 import { formatTs } from "../util/test/formatTs";
@@ -151,6 +157,21 @@ function handleQueryDataType(
         handleQueryDataType(type, importedObjects, importedTypes)
       ).join("|");
 
+    case "twoDimensionalAggregation":
+      importedTypes.add("TwoDimensionalAggregationType");
+      dataType.valueType;
+      return `TwoDimensionalAggregationType<
+        ${aggregationKeyToTypescriptType(dataType.keyType)},
+        ${aggregationValueToTypescriptType(dataType.valueType)}
+      >`;
+    case "threeDimensionalAggregation":
+      importedTypes.add("ThreeDimensionalAggregationType");
+      return `ThreeDimensionalAggregationType<
+        ${aggregationKeyToTypescriptType(dataType.keyType)},
+        ${aggregationKeyToTypescriptType(dataType.valueType.keyType)},
+        ${aggregationValueToTypescriptType(dataType.valueType.valueType)}
+      >`;
+
     case "null":
       return "null";
 
@@ -161,6 +182,68 @@ function handleQueryDataType(
       const _: never = dataType;
       throw new Error(
         `Cannot generate queries for type ${(dataType as any).type}`,
+      );
+  }
+}
+
+function aggregationKeyToTypescriptType(
+  keyType: QueryAggregationKeyType,
+) {
+  switch (keyType.type) {
+    case "boolean":
+      return "boolean";
+    case "double":
+    case "integer":
+      return "number";
+    case "string":
+      return "string";
+    case "date":
+      return "LocalDate"; // TODO needs import at top of file
+    case "timestamp":
+      return "Timestamp"; // TODO needs import at top of file
+    case "range":
+      return `Range<${aggregationRangeToTypescriptType(keyType.subType)}>`; // TODO needs import at top of file
+    default:
+      const _: never = keyType;
+      throw new Error(
+        `Unknown TwoDimensionalAggregation keyType ${(keyType as any).type}`,
+      );
+  }
+}
+
+function aggregationRangeToTypescriptType(
+  subType: QueryAggregationRangeSubType,
+) {
+  switch (subType.type) {
+    case "date":
+      return "LocalDate"; // TODO needs import at top of file
+    case "double":
+    case "integer":
+      return "number";
+    case "timestamp":
+      return "Timestamp"; // TODO needs import at top of file
+    default:
+      const _: never = subType;
+      throw new Error(
+        `Unsupported QueryAggregationRangeSubType ${(subType as any).type}`,
+      );
+  }
+}
+
+function aggregationValueToTypescriptType(
+  valueType: QueryAggregationValueType,
+) {
+  switch (valueType.type) {
+    case "date":
+      return "LocalDate"; // TODO needs import at top of file
+    case "double":
+      return "number";
+    case "timestamp":
+      return "Timestamp"; // TODO needs import at top of file
+    default:
+      const _: never = valueType;
+      throw new Error(
+        `Unsupported QueryAggregationValueType ${(valueType as any).type}`,
       );
   }
 }
