@@ -423,7 +423,7 @@ export function go(basePath: string) {
             dataType: {
               type: "twoDimensionalAggregation",
               keyType: {
-                type: "date",
+                type: "string",
               },
               valueType: {
                 type: "double",
@@ -436,12 +436,15 @@ export function go(basePath: string) {
               keyType: {
                 type: "range",
                 subType: {
-                  type: "integer",
+                  type: "date",
                 },
               },
               valueType: {
                 keyType: {
-                  type: "timestamp",
+                  type: "range",
+                  subType: {
+                    type: "timestamp",
+                  },
                 },
                 valueType: {
                   type: "date",

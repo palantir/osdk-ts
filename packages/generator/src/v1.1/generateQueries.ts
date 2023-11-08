@@ -31,7 +31,7 @@ export async function generateQueries(
   fs: MinimalFs,
   outDir: string,
 ) {
-  const importedTypes = new Set<string>();
+  const importedTypes = new Set<string>(["Range"]);
   const importedObjects = new Set<string>();
   const signatures: string[] = [];
 
@@ -158,15 +158,15 @@ function handleQueryDataType(
       ).join("|");
 
     case "twoDimensionalAggregation":
-      importedTypes.add("TwoDimensionalAggregationType");
+      importedTypes.add("TwoDimensionalAggregation");
       dataType.valueType;
-      return `TwoDimensionalAggregationType<
+      return `TwoDimensionalAggregation<
         ${aggregationKeyToTypescriptType(dataType.keyType)},
         ${aggregationValueToTypescriptType(dataType.valueType)}
       >`;
     case "threeDimensionalAggregation":
-      importedTypes.add("ThreeDimensionalAggregationType");
-      return `ThreeDimensionalAggregationType<
+      importedTypes.add("ThreeDimensionalAggregation");
+      return `ThreeDimensionalAggregation<
         ${aggregationKeyToTypescriptType(dataType.keyType)},
         ${aggregationKeyToTypescriptType(dataType.valueType.keyType)},
         ${aggregationValueToTypescriptType(dataType.valueType.valueType)}
