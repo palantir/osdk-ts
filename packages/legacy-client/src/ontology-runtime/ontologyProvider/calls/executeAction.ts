@@ -112,7 +112,9 @@ function remapOptions(
   };
 }
 
-function getParameterValueMapping(value: any): any {
+function getParameterValueMapping(
+  value: any,
+): PrimitiveParameterValue {
   if (isOntologyObject(value)) {
     return getParameterValueMapping(value.__primaryKey);
   } else if (value instanceof LocalDate) {

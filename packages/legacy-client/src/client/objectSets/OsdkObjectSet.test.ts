@@ -31,6 +31,10 @@ import {
 } from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
+import {
+  mockTaskObject,
+  mockTodoObject,
+} from "../../util/test/mocks/mockObjects";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
@@ -355,18 +359,3 @@ function createBaseTodoObjectSet(
 
   return os;
 }
-
-const mockTodoObject: OntologyObjectV2 = {
-  __apiName: "Todo",
-  __primaryKey: 1,
-  __rid: "ri.a.b.c.d",
-  id: "123",
-  body: "body",
-  complete: false,
-};
-
-const mockTaskObject: OntologyObjectV2 = {
-  __apiName: "Task",
-  __primaryKey: 1,
-  id: 1,
-};
