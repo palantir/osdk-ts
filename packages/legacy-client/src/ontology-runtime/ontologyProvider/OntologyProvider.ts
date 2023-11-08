@@ -18,7 +18,6 @@ import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import {
   aggregateObjectSetV2,
-  applyActionV2,
   executeQueryV2,
   getFirstPoint,
   getLastPoint,
@@ -54,7 +53,6 @@ import type {
   DateType,
   DecimalType,
   DoubleType,
-  Edits,
   FloatType,
   GeoJson,
   GeoJsonPoint,
@@ -85,7 +83,6 @@ import type {
   TwoDimensionalAggregationType,
 } from "../baseTypes";
 import {
-  ActionResponse,
   GeoPoint,
   GeoShape,
   isAttachment,
@@ -105,17 +102,14 @@ import { wrapResult } from "./calls/util/wrapResult";
 import {
   AggregateObjectsErrorHandler,
   AttachmentsErrorHandler,
-  ExecuteActionErrorHandler,
   ExecuteQueryErrorHandler,
   handleAggregateObjectsError,
   handleAttachmentsError,
-  handleExecuteActionError,
   handleExecuteQueryError,
   handleTimeSeriesError,
   TimeSeriesErrorHandler,
 } from "./ErrorHandlers";
 import type {
-  ActionError,
   AggregateObjectsError,
   AttachmentsError,
   QueryError,
@@ -322,107 +316,6 @@ export class OntologyProvider {
         ),
     );
   }
-
-  applyAction(apiName: string, params: {
-    [parameterId: string]: ParameterValue;
-  }): Promise<
-    Result<
-      ActionResponse<Edits<OntologyObject, OntologyObject> | undefined>,
-      ActionError
-    >
-  > {
-    return wrapResult(
-      async () => {
-        const response = await applyActionV2(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          {
-            parameters: this.getRemappedParameters(params),
-          },
-        );
-        return ActionResponse.of(this.#client, response);
-      },
-      e =>
-        handleExecuteActionError(
-          new ExecuteActionErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
-  }
-
-  async applyActionGetResponse(
-    apiName: string,
-    params: {
-      [parameterId: string]: ParameterValue;
-    },
-    provider: OntologyProvider,
-  ): Promise<
-    Result<
-      ActionResponse<Edits<OntologyObject, OntologyObject> | undefined>,
-      ActionError
-    >
-  > {
-    return wrapResult(
-      async () => {
-        const response = await applyActionV2(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          {
-            parameters: this.getRemappedParameters(params),
-            options: {
-              returnEdits: "ALL",
-            },
-          },
-        );
-        return ActionResponse.of(this.#client, response, provider);
-      },
-      e =>
-        handleExecuteActionError(
-          new ExecuteActionErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
-  }
-
-  async validateAction(
-    apiName: string,
-    params: {
-      [parameterId: string]: ParameterValue;
-    },
-  ): Promise<
-    Result<
-      ActionResponse<Edits<OntologyObject, OntologyObject> | undefined>,
-      ActionError
-    >
-  > {
-    return wrapResult(
-      async () => {
-        const response = await applyActionV2(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          {
-            parameters: this.getRemappedParameters(params),
-            options: {
-              mode: "VALIDATE_ONLY",
-            },
-          },
-        );
-        return ActionResponse.of(this.#client, response);
-      },
-      e =>
-        handleExecuteActionError(
-          new ExecuteActionErrorHandler(),
-          e,
-          e.parameters,
-        ),
-    );
-  }
-
   executeQuery(apiName: string, responseType: QueryValueType, params?: {
     [parameterId: string]: ParameterValue;
   }): Promise<Result<QueryResponse<ParameterValue>, QueryError>> {
