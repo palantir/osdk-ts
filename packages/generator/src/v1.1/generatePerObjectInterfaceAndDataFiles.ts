@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";
@@ -31,7 +32,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
       const links = ontology.linkTypes[object.apiName];
       const uniqueApiNames = new Set(links?.map(a => a.objectTypeApiName));
       await fs.writeFile(
-        `${outDir}/${object.apiName}.ts`,
+        path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
         import { ObjectDefinition } from "@osdk/api";
         ${
@@ -62,7 +63,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
   );
 
   await fs.writeFile(
-    `${outDir}/index.ts`,
+    path.join(outDir, "index.ts"),
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>

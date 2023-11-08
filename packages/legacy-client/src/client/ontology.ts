@@ -15,9 +15,8 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import type { ActionExecutionOptions } from "../ontology-runtime";
-import { executeAction } from "../ontology-runtime/ontologyProvider/calls/executeAction";
-import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
+import type { Actions } from "./actions";
+import { createActionProxy } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 
@@ -59,39 +58,4 @@ export function createObjectSetCreator<
       },
     },
   ) as Objects<O>;
-}
-
-export function createActionProxy<
-  O extends OntologyDefinition<any>,
->(client: ThinClient<O>): Actions<O> {
-  return new Proxy(
-    {},
-    {
-      get: (_target, p: keyof O["actions"], _receiver) => {
-        if (typeof p === "string") {
-          if (Object.keys(client.ontology.actions[p].parameters).length === 0) {
-            return async function<Op extends ActionExecutionOptions>(
-              options?: Op,
-            ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
-              return executeAction<O, typeof p, Op>(
-                client,
-                p,
-                undefined,
-                options,
-              );
-            };
-          }
-
-          return async function<Op extends ActionExecutionOptions>(
-            params: ActionArgs<O, typeof p>,
-            options?: Op,
-          ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
-            return executeAction<O, typeof p, Op>(client, p, params, options);
-          };
-        }
-
-        return undefined;
-      },
-    },
-  ) as Actions<O>;
 }

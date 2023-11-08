@@ -15,6 +15,7 @@
  */
 
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
 import { formatTs } from "../util/test/formatTs";
@@ -32,7 +33,7 @@ export async function generatePerActionDataFiles(
         extractReferencedObjectsFromAction(action),
       );
       await fs.writeFile(
-        `${outDir}/${action.apiName}.ts`,
+        path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
           import { ActionDefinition } from "@osdk/api";
   
@@ -56,7 +57,7 @@ export async function generatePerActionDataFiles(
   );
 
   await fs.writeFile(
-    `${outDir}/index.ts`,
+    path.join(outDir, `index.ts`),
     await formatTs(`
       ${
       ontology.actionTypes.map(action => `export * from "./${action.apiName}";`)
