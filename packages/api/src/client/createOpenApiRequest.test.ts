@@ -114,7 +114,6 @@ describe("createOpenApiRequest", () => {
 
     const stream = new ReadableStream();
     mockFetch.mockResolvedValue({
-      json: () => Promise.resolve({ test: 1 }),
       body: stream,
     });
 
@@ -158,7 +157,6 @@ describe("createOpenApiRequest", () => {
 
     const blob = new Blob();
     mockFetch.mockResolvedValue({
-      json: () => Promise.resolve({ test: 1 }),
       blob: () => Promise.resolve(blob),
     });
 
