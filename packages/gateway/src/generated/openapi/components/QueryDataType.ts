@@ -29,7 +29,9 @@ import type { QuerySetType } from "./QuerySetType";
 import type { QueryStructType } from "./QueryStructType";
 import type { QueryUnionType } from "./QueryUnionType";
 import type { StringType } from "./StringType";
+import type { ThreeDimensionalAggregation } from "./ThreeDimensionalAggregation";
 import type { TimestampType } from "./TimestampType";
+import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation";
 import type { UnsupportedType } from "./UnsupportedType";
 
 export interface QueryDataType_Array extends QueryArrayType {
@@ -84,8 +86,20 @@ export interface QueryDataType_Struct extends QueryStructType {
   type: "struct";
 }
 
+export interface QueryDataType_ThreeDimensionalAggregation
+  extends ThreeDimensionalAggregation
+{
+  type: "threeDimensionalAggregation";
+}
+
 export interface QueryDataType_Timestamp extends TimestampType {
   type: "timestamp";
+}
+
+export interface QueryDataType_TwoDimensionalAggregation
+  extends TwoDimensionalAggregation
+{
+  type: "twoDimensionalAggregation";
 }
 
 export interface QueryDataType_Union extends QueryUnionType {
@@ -114,7 +128,9 @@ export type QueryDataType =
   | QueryDataType_Set
   | QueryDataType_String
   | QueryDataType_Struct
+  | QueryDataType_ThreeDimensionalAggregation
   | QueryDataType_Timestamp
+  | QueryDataType_TwoDimensionalAggregation
   | QueryDataType_Union
   | QueryDataType_Null
   | QueryDataType_Unsupported;

@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export interface DateType {}
+export interface DateType {
+}

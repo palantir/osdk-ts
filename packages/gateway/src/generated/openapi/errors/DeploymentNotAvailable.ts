@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import type { ColumnConstraint } from "./ColumnConstraint";
+import type { DeploymentApiName } from "../components/DeploymentApiName";
+import type { OntologyApiName } from "../components/OntologyApiName";
 
-export interface ConstraintType_Array extends ColumnConstraint {
-  type: "array";
+/** The requested model deployment does not have a model deployed. It may be disabled or failed. */
+export interface DeploymentNotAvailable {
+  errorCode: "INTERNAL";
+  errorName: "DeploymentNotAvailable";
+  errorInstanceId: string;
+  parameters: {
+    ontologyApiName: OntologyApiName;
+    deploymentApiName: DeploymentApiName;
+  };
 }
-
-export type ConstraintType = ConstraintType_Array;

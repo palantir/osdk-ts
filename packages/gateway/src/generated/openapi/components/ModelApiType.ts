@@ -21,9 +21,9 @@ import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
 import type { ModelApiArrayType } from "./ModelApiArrayType";
 import type { ModelApiMapType } from "./ModelApiMapType";
-import type { ModelApiNullType } from "./ModelApiNullType";
 import type { ModelApiStructType } from "./ModelApiStructType";
 import type { ModelApiUnionType } from "./ModelApiUnionType";
+import type { NullType } from "./NullType";
 import type { StringType } from "./StringType";
 import type { TimestampType } from "./TimestampType";
 
@@ -55,7 +55,7 @@ export interface ModelApiType_Map extends ModelApiMapType {
   type: "map";
 }
 
-export interface ModelApiType_Null extends ModelApiNullType {
+export interface ModelApiType_Null extends NullType {
   type: "null";
 }
 

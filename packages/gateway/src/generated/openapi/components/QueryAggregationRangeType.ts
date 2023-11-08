@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type { BaseType } from "./BaseType";
-import type { ColumnName } from "./ColumnName";
+import type { QueryAggregationRangeSubType } from "./QueryAggregationRangeSubType";
 
-export interface ColumnConstraint {
-  columnType: BaseType;
-  name: ColumnName;
-  nullable?: boolean;
+export interface QueryAggregationRangeType {
+  subType: QueryAggregationRangeSubType;
 }

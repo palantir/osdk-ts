@@ -14,10 +14,4 @@
  * limitations under the License.
  */
 
-import type { BaseType } from "./BaseType";
-import type { StructFieldName } from "./StructFieldName";
-
-export interface StructField {
-  name: StructFieldName;
-  fieldType: BaseType;
-}
+export type OntologyIdentifier = string;

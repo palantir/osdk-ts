@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export interface LongType {}
+export interface LongType {
+}
