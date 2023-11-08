@@ -19,8 +19,8 @@ export interface Actions {
    * @param {Person} params.object
    * @param {string} params.string
    * @param {Timestamp} params.time-stamp
-   * @param {LocalDate[]} params.dateArray
-   * @param {Attachment[]} params.attachmentArray
+   * @param {Array<LocalDate>} params.dateArray
+   * @param {Array<Attachment>} params.attachmentArray
    */
   actionTakesAllParameterTypes<O extends ActionExecutionOptions>(
     params: {
@@ -28,9 +28,16 @@ export interface Actions {
       object?: Person;
       string: string;
       'time-stamp': Timestamp;
-      dateArray?: LocalDate[];
-      attachmentArray: Attachment[];
+      dateArray?: Array<LocalDate>;
+      attachmentArray: Array<Attachment>;
     },
     options?: O,
   ): Promise<Result<ActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>>;
+
+  /**
+   * Creates a new Todo
+   */
+  createTodo<O extends ActionExecutionOptions>(
+    options?: O,
+  ): Promise<Result<ActionResponseFromOptions<O, Edits<Todo, void>>, ActionError>>;
 }

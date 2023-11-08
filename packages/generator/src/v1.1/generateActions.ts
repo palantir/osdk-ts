@@ -15,6 +15,7 @@
  */
 
 import type { ActionParameterType } from "@osdk/gateway/types";
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { getModifiedEntityTypes } from "../shared/getEditedEntities";
 import { formatTs } from "../util/test/formatTs";
@@ -80,7 +81,7 @@ export async function generateActions(
   }
 
   await fs.writeFile(
-    `${outDir}/ontologyActions.ts`,
+    path.join(outDir, `ontologyActions.ts`),
     await formatTs(`
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${

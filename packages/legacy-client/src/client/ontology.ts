@@ -17,6 +17,7 @@
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { Attachments } from "../ontology-runtime/baseTypes/attachments";
 import type { Actions } from "./actions";
+import { createActionProxy } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 
@@ -31,7 +32,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
   }
 
   get actions(): Actions<O> {
-    throw new Error("not implemented");
+    return createActionProxy(this.#client);
   }
 
   get queries(): never {

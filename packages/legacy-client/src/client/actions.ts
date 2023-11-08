@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type {
   ActionError,
   ActionExecutionOptions,
@@ -25,8 +25,11 @@ import type {
   Result,
   Timestamp,
 } from "..";
+import { executeAction } from "../ontology-runtime/ontologyProvider/calls/executeAction";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { IsEmptyRecord } from "./utils/IsEmptyRecord";
+import type { ValuesOfMap } from "./utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
   boolean: boolean;
@@ -39,15 +42,15 @@ export interface ValidLegacyActionParameterTypes {
   attachment: Attachment;
 }
 
-type NullableKeys<T> = {
+export type NullableKeys<T> = {
   [K in keyof T]: T[K] extends { nullable: true } ? K : never;
 }[keyof T];
 
-type NonNullableKeys<T> = {
+export type NonNullableKeys<T> = {
   [K in keyof T]: T[K] extends { nullable: true } ? never : K;
 }[keyof T];
 
-type ActionArgs<
+export type ActionArgs<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > =
@@ -112,42 +115,85 @@ export type CreatedObjects<
   ]: OsdkLegacyObjectFrom<O, K>;
 };
 
-export type ValuesOf<T> = T extends { [key: string]: infer U } ? U
-  : void;
-
 export type CreatedObjectOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> = ValuesOf<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+> = ValuesOfMap<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
 export type ModifiedObjectsOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> = ValuesOf<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
+> = ValuesOfMap<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
   ? OsdkLegacyObjectFrom<O, K>
   : void;
 
-export type ActionReturnType<
+export type WrappedActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
 > = Promise<
   Result<
-    ActionResponseFromOptions<
-      Op,
-      Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-    >,
+    ActionReturnType<O, A, Op>,
     ActionError
   >
+>;
+
+export type ActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends ActionExecutionOptions,
+> = ActionResponseFromOptions<
+  Op,
+  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
 >;
 
 export type Actions<
   O extends OntologyDefinition<any>,
 > = {
-  [A in keyof O["actions"]]: <Op extends ActionExecutionOptions>(
-    params: ActionArgs<O, A>,
-    options?: Op,
-  ) => ActionReturnType<O, A, Op>;
+  [A in keyof O["actions"]]:
+    IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+      ? <Op extends ActionExecutionOptions>(
+        options?: Op,
+      ) => WrappedActionReturnType<O, A, Op>
+      : <Op extends ActionExecutionOptions>(
+        params: ActionArgs<O, A>,
+        options?: Op,
+      ) => WrappedActionReturnType<O, A, Op>;
 };
+
+export function createActionProxy<
+  O extends OntologyDefinition<any>,
+>(client: ThinClient<O>): Actions<O> {
+  return new Proxy(
+    {},
+    {
+      get: (_target, p: keyof O["actions"], _receiver) => {
+        if (typeof p === "string") {
+          if (Object.keys(client.ontology.actions[p].parameters).length === 0) {
+            return async function<Op extends ActionExecutionOptions>(
+              options?: Op,
+            ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
+              return executeAction<O, typeof p, Op>(
+                client,
+                p,
+                undefined,
+                options,
+              );
+            };
+          }
+
+          return async function<Op extends ActionExecutionOptions>(
+            params: ActionArgs<O, typeof p>,
+            options?: Op,
+          ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
+            return executeAction<O, typeof p, Op>(client, p, params, options);
+          };
+        }
+
+        return undefined;
+      },
+    },
+  ) as Actions<O>;
+}

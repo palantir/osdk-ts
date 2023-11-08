@@ -16,11 +16,7 @@
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
-import type {
-  GetObjectError,
-  OntologyProvider,
-  Result,
-} from "../ontologyProvider";
+import type { GetObjectError, Result } from "../ontologyProvider";
 import { getObject } from "../ontologyProvider/calls/getObject";
 import type { OntologyObject } from "./OntologyObject";
 
@@ -128,14 +124,13 @@ export const ActionResponse = {
   >(
     client: ThinClient<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
-    provider?: OntologyProvider,
   ): ActionResponse<Edits<OntologyObject, OntologyObject> | undefined> => {
     const validation = {
       result: ActionValidationResult[
         response.validation?.result as keyof typeof ActionValidationResult
       ],
     };
-    if (provider && response.edits?.type === "edits") {
+    if (response.edits?.type === "edits") {
       const added = [];
       const modified = [];
       for (const edit of response.edits.edits) {
