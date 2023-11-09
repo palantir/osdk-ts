@@ -47,3 +47,11 @@ export type {
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";
+
+export type {
+  QueryDataTypeDefinition,
+  QueryDefinition,
+  QueryParameterDefinition,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalQueryAggregationDefinition,
+} from "./ontology/QueryDefinition";

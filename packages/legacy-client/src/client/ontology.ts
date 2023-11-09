@@ -20,6 +20,7 @@ import type { Actions } from "./actions";
 import { createActionProxy } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
+import type { Queries } from "./queries";
 
 export class Ontology<O extends OntologyDefinition<any>> {
   #client: ThinClient<O>;
@@ -35,7 +36,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
     return createActionProxy(this.#client);
   }
 
-  get queries(): never {
+  get queries(): Queries<O> {
     throw new Error("not implemented");
   }
 
