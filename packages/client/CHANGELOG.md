@@ -1,5 +1,12 @@
 # @osdk/client
 
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies [90cc3ae]
+  - @osdk/gateway@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes
