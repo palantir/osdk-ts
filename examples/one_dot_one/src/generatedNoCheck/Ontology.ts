@@ -8,6 +8,7 @@ import { Todo } from './objects/Todo';
 import type { Actions } from './ontologyActions';
 import type { Objects } from './ontologyObjects';
 import type { Queries } from './ontologyQueries';
+import { getTodoCount } from './queries/getTodoCount';
 import { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes';
 
 export const Ontology = {
@@ -27,11 +28,12 @@ export const Ontology = {
   },
   queries: {
     queryTakesAllParameterTypes,
+    getTodoCount,
   },
 } satisfies OntologyDefinition<
   'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes',
   'actionTakesAllParameterTypes' | 'createTodo',
-  'queryTakesAllParameterTypes'
+  'queryTakesAllParameterTypes' | 'getTodoCount'
 >;
 
 export interface Ontology extends ClientOntology<typeof Ontology> {

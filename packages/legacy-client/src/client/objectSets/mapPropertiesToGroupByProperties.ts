@@ -55,6 +55,8 @@ export function mapPropertiesToGroupByProperties<
         case "geopoint":
         case "geoshape":
         case "attachment":
+        case "numericTimeseries":
+        case "stringTimeseries":
           return acc;
         default:
           const _: never = definition.type;

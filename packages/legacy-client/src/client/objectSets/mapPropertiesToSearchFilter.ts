@@ -34,6 +34,13 @@ export function mapPropertiesToSearchFilter<T extends OntologyObject>(
 ): ObjectTypeFilter<T> {
   return Object.entries(properties).reduce(
     (acc, [propertyName, propertyDefinition]) => {
+      if (
+        propertyDefinition.type === "numericTimeseries"
+        || propertyDefinition.type === "stringTimeseries"
+      ) {
+        return acc;
+      }
+
       acc[propertyName] = mapPropertyTypeToSearchFilter(
         propertyName,
         propertyDefinition,
@@ -93,6 +100,12 @@ function mapPropertyTypeToSearchFilter(
       return GeoPointFilter(propertyApiName);
     case "geoshape":
       return GeoShapeFilter(propertyApiName);
+    case "numericTimeseries":
+    case "stringTimeseries":
+      throw new Error(
+        `Invalid property for filtering ${propertyDefinition.type}`,
+      );
+
     default:
       const _: never = propertyDefinition.type;
       throw new Error(`Unknown property type ${propertyDefinition.type}`);

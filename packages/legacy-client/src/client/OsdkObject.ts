@@ -32,6 +32,7 @@ import type {
   MultiLink,
   OntologyObject,
   SingleLink,
+  TimeSeries,
   Timestamp,
 } from "../ontology-runtime/baseTypes";
 
@@ -51,6 +52,8 @@ export interface ValidLegacyPropertyTypes {
   attachment: Attachment;
   geopoint: GeoPoint;
   geoshape: GeoShape;
+  numericTimeseries: TimeSeries<number>;
+  stringTimeseries: TimeSeries<string>;
 }
 
 type MaybeArray<T extends PropertyDefinition, U> = T["multiplicity"] extends

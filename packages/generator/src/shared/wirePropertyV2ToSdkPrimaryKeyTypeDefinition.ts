@@ -23,13 +23,33 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   switch (input.dataType.type) {
     case "integer":
     case "double":
-    case "string": {
+    case "string":
+    case "boolean":
+    case "attachment":
+    case "byte":
+    case "decimal":
+    case "float":
+    case "geopoint":
+    case "geoshape":
+    case "long":
+    case "short": {
       return input.dataType.type;
     }
-    default: {
-      throw new Error(
-        `Not implemented: wirePropertyToSdkPropertyDefinition(${input.dataType.type})`,
-      );
+    case "date": {
+      return "datetime";
     }
+    case "timestamp": {
+      return "timestamp";
+    }
+    case "timeseries":
+    case "array":
+      throw new Error(
+        `Type not supported for primaryKey: ${input.dataType.type}`,
+      );
+    default:
+      const _: never = input.dataType;
+      throw new Error(
+        `Unknown type encountered for primaryKey: ${input.dataType}`,
+      );
   }
 }

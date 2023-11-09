@@ -16,17 +16,8 @@
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
-import {
-  aggregateObjectSetV2,
-  executeQueryV2,
-  getFirstPoint,
-  getLastPoint,
-  streamPoints,
-} from "@osdk/gateway/requests";
-import type {
-  StreamTimeSeriesPointsRequest,
-  StreamTimeSeriesPointsRequest as StreamPointsBody,
-} from "@osdk/gateway/types";
+import { aggregateObjectSetV2, executeQueryV2 } from "@osdk/gateway/requests";
+
 import type {
   AggregationClause,
   AggregationResult,
@@ -94,26 +85,16 @@ import type {
 import { visitTypeUnion } from "../common/visitior";
 import { mapAggregation, mapBucketing } from "./AggregationUtils";
 import { getObject } from "./calls/getObject";
-import { wrapIterator } from "./calls/util/wrapIterator";
 import { wrapResult } from "./calls/util/wrapResult";
 import {
   AggregateObjectsErrorHandler,
   ExecuteQueryErrorHandler,
   handleAggregateObjectsError,
   handleExecuteQueryError,
-  handleTimeSeriesError,
-  TimeSeriesErrorHandler,
 } from "./ErrorHandlers";
-import type {
-  AggregateObjectsError,
-  QueryError,
-  TimeSeriesError,
-} from "./Errors";
+import type { AggregateObjectsError, QueryError } from "./Errors";
 import type { OntologyObjectFactory } from "./OntologyObjectFactory";
-import {
-  iterateReadableStream,
-  parseStreamedResponse,
-} from "./parseStreamedResponse";
+
 import { isOk } from "./Result";
 import type { Result } from "./Result";
 
@@ -128,143 +109,6 @@ export class OntologyProvider {
   ) {
     this.#client = client;
     this.#objectFactory = objectFactory;
-  }
-
-  getFirstPoint<T extends string | number>(
-    apiName: string,
-    primaryKey: any,
-    propertyName: string,
-  ): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return wrapResult(
-      async () => {
-        const point = await getFirstPoint(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          primaryKey,
-          propertyName,
-        );
-        return {
-          time: Timestamp.fromISOString(point.time),
-          value: point.value as T,
-        };
-      },
-      e => handleTimeSeriesError(new TimeSeriesErrorHandler(), e, e.parameters),
-    );
-  }
-
-  getLastPoint<T extends string | number>(
-    apiName: string,
-    primaryKey: any,
-    propertyName: string,
-  ): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return wrapResult(
-      async () => {
-        const point = await getLastPoint(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          primaryKey,
-          propertyName,
-        );
-        return {
-          time: Timestamp.fromISOString(point.time),
-          value: point.value as T,
-        };
-      },
-      e => handleTimeSeriesError(new TimeSeriesErrorHandler(), e, e.parameters),
-    );
-  }
-
-  getAllTimeSeriesPoints<T extends string | number>(
-    apiName: string,
-    primaryKey: any,
-    propertyName: string,
-    body: StreamPointsBody,
-  ): Promise<Result<Array<TimeSeriesPoint<T>>, TimeSeriesError>> {
-    return wrapResult(
-      async () => {
-        const streamPointsIterator = await streamPoints(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          apiName,
-          primaryKey,
-          propertyName,
-          body,
-        );
-
-        const allPoints: Array<TimeSeriesPoint<T>> = [];
-
-        const reader = getReader(streamPointsIterator);
-        for await (
-          const point of parseStreamedResponse(iterateReadableStream(reader))
-        ) {
-          allPoints.push({
-            time: Timestamp.fromISOString(point.time),
-            value: point.value as T,
-          });
-        }
-        return allPoints;
-      },
-      e => handleTimeSeriesError(new TimeSeriesErrorHandler(), e, e.parameters),
-    );
-  }
-
-  async *iterateTimeSeriesPoints<T extends string | number>(
-    apiName: string,
-    primaryKey: any,
-    propertyName: string,
-    body: StreamPointsBody,
-  ): AsyncGenerator<Result<TimeSeriesPoint<T>, TimeSeriesError>, any, unknown> {
-    yield* wrapIterator(
-      () => {
-        return this.iterateTimeSeriesPointsInternal(
-          apiName,
-          primaryKey,
-          propertyName,
-          body,
-        );
-      },
-      e => handleTimeSeriesError(new TimeSeriesErrorHandler(), e, e.parameters),
-    );
-  }
-
-  private async *iterateTimeSeriesPointsInternal<T extends string | number>(
-    apiName: string,
-    primaryKey: any,
-    propertyName: string,
-    body: StreamTimeSeriesPointsRequest,
-  ): AsyncGenerator<TimeSeriesPoint<T>> {
-    const streamPointsResponse = await streamPoints(
-      createOpenApiRequest(this.#client.stack, this.#client.fetch),
-      this.#client.ontology.metadata.ontologyApiName,
-      apiName,
-      primaryKey,
-      propertyName,
-      body,
-    );
-    const reader = getReader(streamPointsResponse);
-    const streamPointsIterator = iterateReadableStream(reader);
-    const firstChunk = await streamPointsIterator.next();
-
-    const remainingChunksPromise: Promise<any[]> = new Promise(
-      (resolve, _reject) => {
-        const remainingPoints = this.processStream(streamPointsIterator);
-        resolve(remainingPoints);
-      },
-    );
-
-    yield {
-      time: Timestamp.fromISOString((firstChunk.value as any).time),
-      value: (firstChunk.value as any).value as T,
-    };
-    const remainingChunks = await remainingChunksPromise;
-    for (const point of remainingChunks) {
-      yield {
-        time: Timestamp.fromISOString(point.time),
-        value: point.value as T,
-      };
-    }
   }
 
   aggregate<
@@ -740,17 +584,4 @@ export class OntologyProvider {
   ): obj is { objectSetDefinition: ObjectSetDefinition } {
     return obj && obj.objectSetDefinition;
   }
-}
-
-function getReader(streamOrBlob: ReadableStream<Uint8Array> | Blob) {
-  if (isBlob(streamOrBlob)) {
-    return streamOrBlob.stream().getReader();
-  }
-  return streamOrBlob.getReader();
-}
-
-function isBlob(
-  streamOrBlob: ReadableStream<Uint8Array> | Blob,
-): streamOrBlob is Blob {
-  return (streamOrBlob as Blob).stream != null;
 }

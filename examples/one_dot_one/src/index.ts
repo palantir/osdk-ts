@@ -341,6 +341,22 @@ export function go(basePath: string) {
                 },
               },
             },
+            numericTimeseries: {
+              dataType: {
+                type: "timeseries",
+                itemType: {
+                  type: "double",
+                },
+              },
+            },
+            stringTimeseries: {
+              dataType: {
+                type: "timeseries",
+                itemType: {
+                  type: "string",
+                },
+              },
+            },
           },
         },
       },
@@ -466,6 +482,14 @@ export function go(basePath: string) {
             },
           },
         },
+      }, {
+        apiName: "getTodoCount",
+        output: {
+          type: "integer",
+        },
+        parameters: {},
+        rid: "query.rid2",
+        version: "0.1.2",
       }],
       linkTypes: {
         Person: [{

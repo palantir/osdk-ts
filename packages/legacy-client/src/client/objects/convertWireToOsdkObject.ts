@@ -26,6 +26,7 @@ import {
   GeoShape,
   LocalDate,
   type OntologyObject,
+  TimeSeriesProperty,
   Timestamp,
 } from "../../ontology-runtime/baseTypes";
 import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
@@ -153,6 +154,14 @@ function setPropertyAccessors<
           (value) => Timestamp.fromISOString(value),
         );
         break;
+      case "numericTimeseries":
+      case "stringTimeseries":
+        setPropertyAccessor(
+          obj,
+          k,
+          (_value) =>
+            TimeSeriesProperty(client, k, apiName, obj["__primaryKey"]),
+        );
       case "string":
       case "boolean":
       case "double":
