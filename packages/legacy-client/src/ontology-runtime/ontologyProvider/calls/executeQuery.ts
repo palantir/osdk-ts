@@ -147,7 +147,7 @@ function isOntologyObjectSet(
 
 async function remapQueryResponseType(
   client: ThinClient<OntologyDefinition<any>>,
-  definition: QueryDataTypeDefinition,
+  definition: QueryDataTypeDefinition<any>,
   responseValue: PrimitiveParameterValue,
 ): Promise<ParameterValue> {
   // TODO can the backend really not send us null responses?

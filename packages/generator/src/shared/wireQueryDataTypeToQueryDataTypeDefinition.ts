@@ -29,9 +29,9 @@ import type {
 } from "@osdk/gateway/types";
 import { isNullableQueryDataType } from "./isNullableQueryDataType";
 
-export function wireQueryDataTypeToQueryDataTypeDefinition(
+export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
   input: QueryDataType,
-): QueryDataTypeDefinition {
+): QueryDataTypeDefinition<K> {
   switch (input.type) {
     case "double":
     case "float":
@@ -51,14 +51,14 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
       return {
         type: {
           type: "object",
-          object: input.objectTypeApiName,
+          object: input.objectTypeApiName as K,
         },
         nullable: false,
       };
 
     case "objectSet":
       return {
-        type: { type: "objectSet", objectSet: input.objectTypeApiName },
+        type: { type: "objectSet", objectSet: input.objectTypeApiName as K },
         nullable: false,
       };
 
@@ -100,7 +100,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
             }
             acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
             return acc;
-          }, [] as QueryDataTypeDefinition[]),
+          }, [] as QueryDataTypeDefinition<K>[]),
         },
         nullable: allowNulls,
       };

@@ -14,34 +14,34 @@
  * limitations under the License.
  */
 
-export interface QueryDefinition<Q extends string> {
+export interface QueryDefinition<Q extends string, K extends string> {
   apiName: Q;
   description?: string;
   displayName?: string;
   rid: string;
   version: string;
-  parameters: Record<string, QueryParameterDefinition>;
-  output: QueryDataTypeDefinition;
+  parameters: Record<string, QueryParameterDefinition<K>>;
+  output: QueryDataTypeDefinition<K>;
 }
 
-export interface QueryParameterDefinition {
+export interface QueryParameterDefinition<K extends string> {
   description?: string;
-  dataType: QueryDataTypeDefinition;
+  dataType: QueryDataTypeDefinition<K>;
 }
 
-export interface QueryDataTypeDefinition {
-  type: QueryDataType;
+export interface QueryDataTypeDefinition<K extends string> {
+  type: QueryDataType<K>;
   multiplicity?: boolean;
   nullable?: boolean;
 }
 
-export type QueryDataType =
+export type QueryDataType<K extends string> =
   | keyof ValidBaseQueryDataTypes
-  | ObjectQueryDataType<any>
-  | ObjectSetQueryDataType<any>
-  | SetQueryDataType
-  | UnionQueryDataType
-  | StructQueryDataType
+  | ObjectQueryDataType<K>
+  | ObjectSetQueryDataType<K>
+  | SetQueryDataType<K>
+  | UnionQueryDataType<K>
+  | StructQueryDataType<K>
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType;
 
@@ -67,19 +67,19 @@ export interface ObjectSetQueryDataType<K extends string> {
   objectSet: K;
 }
 
-export interface SetQueryDataType {
+export interface SetQueryDataType<K extends string> {
   type: "set";
-  set: QueryDataTypeDefinition;
+  set: QueryDataTypeDefinition<K>;
 }
 
-export interface UnionQueryDataType {
+export interface UnionQueryDataType<K extends string> {
   type: "union";
-  union: ReadonlyArray<QueryDataTypeDefinition>;
+  union: ReadonlyArray<QueryDataTypeDefinition<K>>;
 }
 
-export interface StructQueryDataType {
+export interface StructQueryDataType<K extends string> {
   type: "struct";
-  struct: Record<string, QueryDataTypeDefinition>;
+  struct: Record<string, QueryDataTypeDefinition<K>>;
 }
 
 export interface TwoDimensionalAggregationDataType {

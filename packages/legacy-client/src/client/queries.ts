@@ -99,7 +99,7 @@ export type QueryNamesFrom<O extends OntologyDefinition<any>> =
 
 type QueryDataType<
   O extends OntologyDefinition<any>,
-  D extends QueryDataTypeDefinition,
+  D extends QueryDataTypeDefinition<any>,
 > = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"]>>
   : QueryDataTypeBase<O, D["type"]>;
 
@@ -123,7 +123,7 @@ type QueryDataTypeBase<
     ? OsdkLegacyOntologyObject<O, T["object"]>
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyOntologyObject<O, K>>
-  : T extends SetQueryDataType ? Set<QueryDataType<O, T["set"]>>
+  : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"]>>
   : T extends TwoDimensionalAggregationDataType ? TwoDimensionalAggregation<
       QueryAggregationKey<T["twoDimensionalAggregation"]>,
       QueryAggregationValue<T["twoDimensionalAggregation"]["valueType"]>
@@ -135,7 +135,7 @@ type QueryDataTypeBase<
         T["threeDimensionalAggregation"]["valueType"]["valueType"]
       >
     >
-  : T extends StructQueryDataType ?
+  : T extends StructQueryDataType<any> ?
       & {
         [S in NonNullableKeys<T["struct"]>]: QueryDataType<
           O,
@@ -148,14 +148,15 @@ type QueryDataTypeBase<
           T["struct"][S]
         >;
       }
-  : T extends UnionQueryDataType ? QueryDefinitionArrayToUnion<O, T["union"]>
+  : T extends UnionQueryDataType<any>
+    ? QueryDefinitionArrayToUnion<O, T["union"]>
   : never;
 
 type QueryDefinitionArrayToUnion<
   O extends OntologyDefinition<any>,
-  T extends ReadonlyArray<QueryDataTypeDefinition>,
+  T extends ReadonlyArray<QueryDataTypeDefinition<any>>,
 > = T extends ReadonlyArray<infer U>
-  ? U extends QueryDataTypeDefinition ? QueryDataType<O, U> : never
+  ? U extends QueryDataTypeDefinition<any> ? QueryDataType<O, U> : never
   : never;
 
 type QueryAggregationKey<K extends AggregationKeyDataType> = K extends

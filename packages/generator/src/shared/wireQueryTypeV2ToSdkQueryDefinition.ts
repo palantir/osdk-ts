@@ -20,7 +20,7 @@ import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeT
 
 export function wireQueryTypeV2ToSdkQueryDefinition(
   input: QueryTypeV2,
-): QueryDefinition<any> {
+): QueryDefinition<any, any> {
   return {
     apiName: input.apiName,
     description: input.description,
@@ -38,7 +38,7 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
 
 function wireQueryParameterV2ToQueryParameterDefinition(
   parameter: QueryParameterV2,
-): QueryParameterDefinition {
+): QueryParameterDefinition<any> {
   return {
     description: parameter.description,
     dataType: wireQueryDataTypeToQueryDataTypeDefinition(parameter.dataType),
