@@ -44,6 +44,7 @@ import { executeQuery } from "../ontology-runtime/ontologyProvider/calls/execute
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyOntologyObject } from "./OsdkObject";
 import type { IsEmptyRecord } from "./utils";
+import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
 
 export type Queries<O extends OntologyDefinition<any>> = {
   [Q in keyof O["queries"]]: IsEmptyRecord<QueryParameters<O, Q>> extends true
@@ -71,23 +72,23 @@ export type QueryParameters<
   Q extends QueryNamesFrom<O>,
 > = QueryDefinition<O, Q>["parameters"];
 
-export type NullableKeys<T> = {
-  [K in keyof T]: T[K] extends { nullable: true } ? K : never;
+export type NullableArgKeys<T> = {
+  [K in keyof T]: T[K] extends { dataType: { nullable: true } } ? K : never;
 }[keyof T];
 
-export type NonNullableKeys<T> = {
-  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
+export type NonNullableArgKeys<T> = {
+  [K in keyof T]: T[K] extends { dataType: { nullable: true } } ? never : K;
 }[keyof T];
 
 type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
   & {
-    [P in NonNullableKeys<QueryParameters<O, Q>>]: QueryDataType<
+    [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
   }
   & {
-    [P in NullableKeys<QueryParameters<O, Q>>]?: QueryDataType<
+    [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;

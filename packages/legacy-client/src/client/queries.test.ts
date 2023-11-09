@@ -57,10 +57,10 @@ describe("queries", () => {
       objectSet: undefined as any,
       array: [],
       set: new Set(),
-      // unionNullable: "",
-      struct: undefined as any,
+      struct: { name: "name", id: 1 },
       twoDimensionalAggregation: undefined as any,
       threeDimensionalAggregation: undefined as any,
+      // unionNullable not required
     });
   });
 });

@@ -171,7 +171,7 @@ export const MockOntology = {
               type: "struct",
               struct: {
                 name: { type: "string", nullable: false },
-                id: { type: "integer", nullable: false },
+                id: { type: "integer", nullable: true },
               },
             },
             nullable: false,
