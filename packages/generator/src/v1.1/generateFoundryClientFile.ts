@@ -35,7 +35,7 @@ export async function generateFoundryClientFile(
         }
 
         get ontology(): Ontology {
-          return this.ontology;
+          return super.ontology;
         }
     }`),
   );

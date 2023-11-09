@@ -499,6 +499,12 @@ export function go(basePath: string) {
           objectTypeApiName: "Todo",
           status: "ACTIVE",
           foreignKeyPropertyApiName: "id",
+        }, {
+          apiName: "Friends",
+          cardinality: "MANY",
+          displayName: "Friends",
+          objectTypeApiName: "Person",
+          status: "ACTIVE",
         }],
         Todo: [{
           apiName: "Assignee",

@@ -59,7 +59,7 @@ ${
     linkTypes.map(linkType =>
       `readonly ${linkType.apiName}: ${
         linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
-      }<${linkType.objectTypeApiName}>;`
+      }<${linkType.objectTypeApiName}>`
     ).join(";\n")
   }
 }
