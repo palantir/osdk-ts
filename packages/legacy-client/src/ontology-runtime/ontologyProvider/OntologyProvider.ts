@@ -22,10 +22,8 @@ import {
   getFirstPoint,
   getLastPoint,
   streamPoints,
-  uploadAttachment,
 } from "@osdk/gateway/requests";
 import type {
-  AttachmentV2,
   StreamTimeSeriesPointsRequest,
   StreamTimeSeriesPointsRequest as StreamPointsBody,
 } from "@osdk/gateway/types";
@@ -46,7 +44,6 @@ import type {
 import { convertToAggregationResult } from "../aggregations/aggregationConverters";
 import type {
   ArrayType,
-  Attachment,
   AttachmentType,
   BooleanType,
   ByteType,
@@ -101,17 +98,14 @@ import { wrapIterator } from "./calls/util/wrapIterator";
 import { wrapResult } from "./calls/util/wrapResult";
 import {
   AggregateObjectsErrorHandler,
-  AttachmentsErrorHandler,
   ExecuteQueryErrorHandler,
   handleAggregateObjectsError,
-  handleAttachmentsError,
   handleExecuteQueryError,
   handleTimeSeriesError,
   TimeSeriesErrorHandler,
 } from "./ErrorHandlers";
 import type {
   AggregateObjectsError,
-  AttachmentsError,
   QueryError,
   TimeSeriesError,
 } from "./Errors";
@@ -345,33 +339,6 @@ export class OntologyProvider {
           e,
           e.parameters,
         ),
-    );
-  }
-
-  uploadAttachment(
-    filename: string,
-    data: Blob,
-  ): Promise<Result<Attachment, AttachmentsError>> {
-    return wrapResult(
-      async () => {
-        const response = await uploadAttachment(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          data,
-          {
-            filename,
-          },
-          {
-            "Content-Length": data.length,
-            "Content-Type": data.type,
-          },
-        );
-        return remapAttachmentResponse(
-          this.#client,
-          response,
-        );
-      },
-      e =>
-        handleAttachmentsError(new AttachmentsErrorHandler(), e, e.parameters),
     );
   }
 
@@ -773,13 +740,6 @@ export class OntologyProvider {
   ): obj is { objectSetDefinition: ObjectSetDefinition } {
     return obj && obj.objectSetDefinition;
   }
-}
-
-async function remapAttachmentResponse(
-  _client: ThinClient<OntologyDefinition<any>>,
-  _response: AttachmentV2,
-): Promise<Attachment> {
-  throw new Error("remove");
 }
 
 function getReader(streamOrBlob: ReadableStream<Uint8Array> | Blob) {

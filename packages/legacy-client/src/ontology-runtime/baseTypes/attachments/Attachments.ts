@@ -15,34 +15,24 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import type { AttachmentsError } from "../../ontologyProvider";
-import { OntologyProvider } from "../../ontologyProvider";
+import { uploadAttachment } from "../../ontologyProvider/calls/uploadAttachment";
+import type { AttachmentsError } from "../../ontologyProvider/Errors";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment } from "./Attachment";
 
-export class Attachments {
-  #provider: OntologyProvider;
-
-  private constructor(
-    client: ThinClient<OntologyDefinition<any>>,
-  ) {
-    this.#provider = new OntologyProvider(client);
-  }
-
-  public static initializeAttachmentsClient(
-    client: ThinClient<OntologyDefinition<any>>,
-  ): Attachments {
-    return new Attachments(client);
-  }
-
-  public async upload(
+export interface Attachments {
+  upload(
     fileName: string,
     data: Blob,
-  ): Promise<Result<Attachment, AttachmentsError>> {
-    return this.#provider.uploadAttachment(fileName, data);
-  }
-
-  public static isAttachment(obj: any): boolean {
-    return obj?.type === "Attachment";
-  }
+  ): Promise<Result<Attachment, AttachmentsError>>;
 }
+
+export const Attachments = (
+  thinClient: ThinClient<OntologyDefinition<any>>,
+) => {
+  return {
+    upload(fileName: string, data: Blob) {
+      return uploadAttachment(thinClient, fileName, data);
+    },
+  };
+};

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { describe, expect, it, vi } from "vitest";
+import type { OpenApiRequest } from "@osdk/gateway/types";
+import { describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createOpenApiRequest } from "./createOpenApiRequest";
 
 describe("createOpenApiRequest", () => {
@@ -25,11 +26,17 @@ describe("createOpenApiRequest", () => {
       json: () => Promise.resolve({ test: 1 }),
     });
 
-    const request = createOpenApiRequest("https://example.com", mockFetch);
+    const request = createOpenApiRequest<{ test: number }>(
+      "https://example.com",
+      mockFetch,
+    );
     const mockBody = {
       foo: "bar",
     };
 
+    expectTypeOf<typeof request>().toEqualTypeOf<
+      OpenApiRequest<{ test: number }>
+    >();
     expect(
       await request("POST", "/foo", mockBody, {
         query: "bar",
@@ -60,7 +67,10 @@ describe("createOpenApiRequest", () => {
       json: () => Promise.resolve({ test: 1 }),
     });
 
-    const request = createOpenApiRequest("example.com", mockFetch);
+    const request = createOpenApiRequest(
+      "example.com",
+      mockFetch,
+    );
     expect(
       await request("POST", "/foo"),
     ).toEqual(
@@ -95,6 +105,94 @@ describe("createOpenApiRequest", () => {
       {
         method: "POST",
         headers: new Headers(),
+      },
+    );
+  });
+
+  it("should return readable stream", async () => {
+    const mockFetch = vi.fn();
+
+    const stream = new ReadableStream();
+    mockFetch.mockResolvedValue({
+      body: stream,
+    });
+
+    const request = createOpenApiRequest(
+      "http://example.com",
+      mockFetch,
+      undefined,
+      true,
+    );
+
+    const response = await request(
+      "POST",
+      "/foo",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "*/*",
+    );
+
+    expectTypeOf<typeof response>().toEqualTypeOf<ReadableStream<Uint8Array>>();
+    expect(
+      response,
+    ).toEqual(
+      stream,
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://example.com/api/foo",
+      {
+        method: "POST",
+        headers: new Headers({
+          "accept": "*/*",
+        }),
+      },
+    );
+  });
+
+  it("should return blob", async () => {
+    const mockFetch = vi.fn();
+
+    const blob = new Blob();
+    mockFetch.mockResolvedValue({
+      blob: () => Promise.resolve(blob),
+    });
+
+    const request = createOpenApiRequest<
+      ReadableStream<Uint8Array> | Blob
+    >(
+      "http://example.com",
+      mockFetch,
+      undefined,
+      false,
+    );
+
+    const response = await request(
+      "POST",
+      "/foo",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      "*/*",
+    );
+
+    expectTypeOf<typeof response>().toEqualTypeOf<Blob>();
+    expect(
+      response,
+    ).toEqual(
+      blob,
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://example.com/api/foo",
+      {
+        method: "POST",
+        headers: new Headers({
+          "accept": "*/*",
+        }),
       },
     );
   });
