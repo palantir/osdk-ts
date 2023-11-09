@@ -208,13 +208,13 @@ export function createQueryProxy<O extends OntologyDefinition<any>>(
           return async function(
             params: QueryParameters<O, typeof q>,
           ): Promise<WrappedQueryReturnType<O, typeof q>> {
-            return executeQuery(client, q, params);
+            return executeQuery(client, q, params) as any;
           };
         } else {
           return async function(): Promise<
             WrappedQueryReturnType<O, typeof q>
           > {
-            return executeQuery(client, q);
+            return executeQuery(client, q) as any;
           };
         }
       }

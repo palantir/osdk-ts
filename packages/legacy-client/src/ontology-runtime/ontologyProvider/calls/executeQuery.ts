@@ -26,8 +26,8 @@ import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type {
+  QueryNamesFrom,
   QueryParameters,
-  QueryReturnType,
   WrappedQueryReturnType,
 } from "../../../client/queries";
 import type {
@@ -57,7 +57,7 @@ import { wrapResult } from "./util/wrapResult";
 
 export function executeQuery<
   O extends OntologyDefinition<any, any, any>,
-  Q extends string,
+  Q extends QueryNamesFrom<O>,
 >(
   client: ThinClient<O>,
   apiName: Q,
@@ -68,7 +68,7 @@ export function executeQuery<
       const response: { value: PrimitiveParameterValue } = await executeQueryV2(
         createOpenApiRequest(client.stack, client.fetch),
         client.ontology.metadata.ontologyApiName,
-        apiName,
+        apiName as string,
         {
           parameters: params ? getRemappedParameters(params) : {},
         },
@@ -78,9 +78,10 @@ export function executeQuery<
         client.ontology.queries[apiName].output,
         response.value,
       );
+
       return {
         value: remappedResponse,
-      } as { value: QueryReturnType<O, Q> };
+      } as any;
     },
     e =>
       handleExecuteQueryError(

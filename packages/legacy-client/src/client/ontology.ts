@@ -37,7 +37,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
   }
 
   get queries(): Queries<O> {
-    return createQueryProxy(this.#client);
+    return createQueryProxy(this.#client) as any;
   }
 
   get attachments(): Attachments {
