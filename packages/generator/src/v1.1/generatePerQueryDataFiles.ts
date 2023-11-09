@@ -41,7 +41,10 @@ export async function generatePerQueryDataFiles(
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`
-  ${ontology.queryTypes.map(query => `export * from "./${query.apiName}";`)}
+  ${
+      ontology.queryTypes.map(query => `export * from "./${query.apiName}";`)
+        .join("\n")
+    }
   `),
   );
 }

@@ -1,5 +1,13 @@
 import { ObjectDefinition } from '@osdk/api';
-import type { Attachment, GeoPoint, GeoShape, LocalDate, OntologyObject, Timestamp } from '@osdk/legacy-client';
+import type {
+  Attachment,
+  GeoPoint,
+  GeoShape,
+  LocalDate,
+  OntologyObject,
+  TimeSeries,
+  Timestamp,
+} from '@osdk/legacy-client';
 
 /**
  * A type with all property types
@@ -36,6 +44,8 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly attachmentArray: Attachment[] | undefined;
   readonly geoPointArray: GeoPoint[] | undefined;
   readonly geoShapeArray: GeoShape[] | undefined;
+  readonly numericTimeseries: TimeSeries<number> | undefined;
+  readonly stringTimeseries: TimeSeries<string> | undefined;
 }
 
 export const ObjectTypeWithAllPropertyTypes = {
@@ -186,6 +196,16 @@ export const ObjectTypeWithAllPropertyTypes = {
     geoShapeArray: {
       multiplicity: true,
       type: 'geoshape',
+      nullable: true,
+    },
+    numericTimeseries: {
+      multiplicity: false,
+      type: 'numericTimeseries',
+      nullable: true,
+    },
+    stringTimeseries: {
+      multiplicity: false,
+      type: 'stringTimeseries',
       nullable: true,
     },
   },

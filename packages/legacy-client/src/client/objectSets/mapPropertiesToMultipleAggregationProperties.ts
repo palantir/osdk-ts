@@ -58,6 +58,10 @@ export function mapPropertiesToMultipleAggregationProperties<
           );
           break;
 
+        case "numericTimeseries":
+        case "stringTimeseries":
+          break;
+
         default:
           const _: never = definition.type;
       }

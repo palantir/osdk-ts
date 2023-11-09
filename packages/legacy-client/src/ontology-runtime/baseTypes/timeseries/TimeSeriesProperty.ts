@@ -15,75 +15,39 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import {
-  OntologyProvider,
-  type Result,
-  type TimeSeriesError,
-} from "../../ontologyProvider";
+
+import { getFirstPoint } from "../../ontologyProvider/calls/getFirstPoint";
+import { getLastPoint } from "../../ontologyProvider/calls/getLastPoint";
 import type { TimeSeries } from "./TimeSeries";
-import type { TimeSeriesPoint } from "./TimeSeriesPoint";
-import { TimeSeriesQuery } from "./TimeSeriesQuery";
+import { createTimeSeriesQuery, type TimeSeriesQuery } from "./TimeSeriesQuery";
 
-export class TimeSeriesProperty<T extends number | string>
-  implements TimeSeries<T>
-{
-  public type = "TimeSeries" as const;
-
-  #client: ThinClient<OntologyDefinition<any>>;
-  #propertyName: string;
-  #apiName: string;
-  #primaryKey: string;
-
-  static constructTimeSeries<T extends string | number>(
-    client: ThinClient<OntologyDefinition<any>>,
-    propertyName: string,
-    apiName: string,
-    primaryKey: string,
-  ): TimeSeriesProperty<T> {
-    return new TimeSeriesProperty<T>(
-      client,
-      propertyName,
-      apiName,
-      primaryKey,
-    );
-  }
-
-  getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    const ontologyProvider = new OntologyProvider(this.#client);
-    return ontologyProvider.getFirstPoint(
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-    );
-  }
-
-  getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    const ontologyProvider = new OntologyProvider(this.#client);
-    return ontologyProvider.getLastPoint(
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-    );
-  }
-
-  get points(): TimeSeriesQuery<T> {
-    return new TimeSeriesQuery(
-      this.#client,
-      this.#propertyName,
-      this.#apiName,
-      this.#primaryKey,
-    );
-  }
-
-  private constructor(
-    client: ThinClient<OntologyDefinition<any>>,
-    propertyName: string,
-    apiName: string,
-    primaryKey: string,
-  ) {
-    this.#client = client;
-    this.#propertyName = propertyName;
-    this.#apiName = apiName;
-    this.#primaryKey = primaryKey;
-  }
+export function isTimeSeries<T extends number | string>(
+  obj: any,
+): obj is TimeSeries<T> {
+  return obj?.type === "TimeSeries";
 }
+
+export const TimeSeriesProperty = <T extends number | string>(
+  thinClient: ThinClient<OntologyDefinition<any>>,
+  propertyName: string,
+  apiName: string,
+  primaryKey: string,
+): TimeSeries<T> => {
+  return {
+    type: "TimeSeries" as const,
+    getFirstPoint() {
+      return getFirstPoint(thinClient, propertyName, apiName, primaryKey);
+    },
+    getLastPoint() {
+      return getLastPoint(thinClient, propertyName, apiName, primaryKey);
+    },
+    get points(): TimeSeriesQuery<T> {
+      return createTimeSeriesQuery(
+        thinClient,
+        propertyName,
+        apiName,
+        primaryKey,
+      );
+    },
+  };
+};

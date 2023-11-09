@@ -101,7 +101,9 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "timestamp":
       return "Timestamp";
     case "timeseries":
-      return `TimeSeries<number>`;
+      return property.itemType.type === "string"
+        ? `TimeSeries<string>`
+        : `TimeSeries<number>`;
     default:
       const _: never = property;
       throw new Error(`Unknown property type ${property}`);

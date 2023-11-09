@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type {
   StreamTimeSeriesPointsRequest,
   TimeRange,
@@ -21,9 +22,14 @@ import type {
 import type { Timestamp } from "../timestamp";
 import type { TimeSeriesDuration } from "./TimeSeriesDuration";
 import { DurationUnit, WhenUnit } from "./TimeSeriesDuration";
-import { TimeSeriesTerminalOperations } from "./TimeSeriesTerminalOperations";
+import type {
+  TimeSeriesTerminalOperations,
+} from "./TimeSeriesTerminalOperations";
+import {
+  createTimeSeriesTerminalOperations,
+} from "./TimeSeriesTerminalOperations";
 
-export class TimeSeriesQuery<T extends string | number>
+export interface TimeSeriesQuery<T extends string | number>
   extends TimeSeriesTerminalOperations<T>
 {
   /**
@@ -37,13 +43,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromYearsAgo(5)
    *                          .all();
    */
-  fromYearsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.YEARS,
-      value,
-    });
-  }
+  fromYearsAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in months from today.
@@ -56,13 +56,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromMonthsAgo(5)
    *                          .all();
    */
-  fromMonthsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.MONTHS,
-      value,
-    });
-  }
+  fromMonthsAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in weeks from today.
@@ -75,13 +69,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromWeeksAgo(5)
    *                          .all();
    */
-  fromWeeksAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.WEEKS,
-      value,
-    });
-  }
+  fromWeeksAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in days from today.
@@ -94,9 +82,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromDaysAgo(5)
    *                          .all();
    */
-  fromDaysAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({ when: WhenUnit.BEFORE, unit: DurationUnit.DAYS, value });
-  }
+  fromDaysAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in hours from today.
@@ -109,13 +95,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromHoursAgo(5)
    *                          .all();
    */
-  fromHoursAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.HOURS,
-      value,
-    });
-  }
+  fromHoursAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in minutes from today.
@@ -128,13 +108,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromMinutesAgo(5)
    *                          .all();
    */
-  fromMinutesAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.MINUTES,
-      value,
-    });
-  }
+  fromMinutesAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in seconds from today.
@@ -147,13 +121,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromSecondsAgo(5)
    *                          .all();
    */
-  fromSecondsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.SECONDS,
-      value,
-    });
-  }
+  fromSecondsAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points from a specified duration in milliseconds from today.
@@ -166,13 +134,7 @@ export class TimeSeriesQuery<T extends string | number>
    *                          .fromMillisecondsAgo(5)
    *                          .all();
    */
-  fromMillisecondsAgo(value: number): TimeSeriesTerminalOperations<T> {
-    return this.from({
-      when: WhenUnit.BEFORE,
-      unit: DurationUnit.MILLISECONDS,
-      value,
-    });
-  }
+  fromMillisecondsAgo(value: number): TimeSeriesTerminalOperations<T>;
 
   /**
    * Creates a query to grab Time Series points between a specified start and end time.
@@ -191,42 +153,122 @@ export class TimeSeriesQuery<T extends string | number>
       startTime: Timestamp;
       endTime?: Timestamp;
     },
-  ): TimeSeriesTerminalOperations<T> {
-    let body: StreamTimeSeriesPointsRequest = {};
-    if (Object.keys(range).length !== 0) {
-      const absoluteRange = { type: "absolute" } as TimeRange;
-      if (range.startTime) {
-        absoluteRange.startTime = range?.startTime?.toISOString();
-      }
-      if (range.endTime) {
-        absoluteRange.endTime = range?.endTime?.toISOString();
-      }
-      body = { range: absoluteRange };
-    } else {
-      throw new Error("Argument .range() needs at least one input.");
-    }
-    return new TimeSeriesTerminalOperations<T>(
-      this.client,
-      this.propertyName,
-      this.apiName,
-      this.primaryKey,
-      body,
-    );
-  }
-
-  private from(from: TimeSeriesDuration): TimeSeriesTerminalOperations<T> {
-    let body: StreamTimeSeriesPointsRequest = {};
-    if (Object.keys(from).length !== 0) {
-      body = { range: { type: "relative", startTime: from } };
-    } else {
-      throw new Error("Argument .from() needs at least one input.");
-    }
-    return new TimeSeriesTerminalOperations<T>(
-      this.client,
-      this.propertyName,
-      this.apiName,
-      this.primaryKey,
-      body,
-    );
-  }
+  ): TimeSeriesTerminalOperations<T>;
 }
+
+export const createTimeSeriesQuery = <T extends number | string>(
+  client: ThinClient<OntologyDefinition<any>>,
+  propertyName: string,
+  apiName: string,
+  primaryKey: string,
+): TimeSeriesQuery<T> => {
+  const baseQuery = createTimeSeriesTerminalOperations<T>(
+    client,
+    propertyName,
+    apiName,
+    primaryKey,
+  );
+
+  const fromRelativeQuery = (relativeDuration: TimeSeriesDuration) => {
+    return createTimeSeriesTerminalOperations<T>(
+      client,
+      propertyName,
+      apiName,
+      primaryKey,
+      {
+        range: {
+          type: "relative",
+          startTime: relativeDuration,
+        },
+      },
+    );
+  };
+
+  return {
+    ...baseQuery,
+    fromYearsAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.YEARS,
+        value,
+      });
+    },
+    fromMonthsAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.MONTHS,
+        value,
+      });
+    },
+    fromWeeksAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.WEEKS,
+        value,
+      });
+    },
+    fromDaysAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.DAYS,
+        value,
+      });
+    },
+    fromHoursAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.HOURS,
+        value,
+      });
+    },
+    fromMinutesAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.MINUTES,
+        value,
+      });
+    },
+    fromSecondsAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.SECONDS,
+        value,
+      });
+    },
+    fromMillisecondsAgo(value: number) {
+      return fromRelativeQuery({
+        when: WhenUnit.BEFORE,
+        unit: DurationUnit.MILLISECONDS,
+        value,
+      });
+    },
+    range(
+      range: { startTime?: Timestamp; endTime: Timestamp } | {
+        startTime: Timestamp;
+        endTime?: Timestamp;
+      },
+    ) {
+      let body: StreamTimeSeriesPointsRequest = {};
+      if (Object.keys(range).length !== 0) {
+        const absoluteRange = { type: "absolute" } as TimeRange;
+        if (range.startTime) {
+          absoluteRange.startTime = range?.startTime?.toISOString();
+        }
+        if (range.endTime) {
+          absoluteRange.endTime = range?.endTime?.toISOString();
+        }
+        body = { range: absoluteRange };
+      } else {
+        throw new Error("Argument .range() needs at least one input.");
+      }
+
+      return createTimeSeriesTerminalOperations<T>(
+        client,
+        propertyName,
+        apiName,
+        primaryKey,
+        body,
+      );
+    },
+  };
+};

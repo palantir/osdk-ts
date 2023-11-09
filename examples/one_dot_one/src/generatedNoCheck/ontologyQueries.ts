@@ -55,4 +55,9 @@ export interface Queries {
     twoDimensionalAggregation: TwoDimensionalAggregation<string, number>;
     threeDimensionalAggregation: ThreeDimensionalAggregation<Range<LocalDate>, Range<Timestamp>, LocalDate>;
   }): Promise<Result<QueryResponse<string>, QueryError>>;
+
+  /**
+   * @returns number
+   */
+  getTodoCount(): Promise<Result<QueryResponse<number>, QueryError>>;
 }

@@ -79,6 +79,12 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "array":
       return objectPropertyTypeToSdkPropertyDefinition(propertyType.subType);
     case "timeseries":
-      throw new Error(`Unsupported property type ${propertyType.type}`);
+      if (propertyType.itemType.type === "string") {
+        return "stringTimeseries";
+      }
+      return "numericTimeseries";
+    default:
+      const _: never = propertyType;
+      throw new Error(`Unexecpected data type ${propertyType}`);
   }
 }

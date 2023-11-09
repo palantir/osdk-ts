@@ -22,6 +22,7 @@ import type {
   QueryThreeDimensionalAggregation,
   QueryTwoDimensionalAggregation,
   ThreeDimensionalAggregation,
+  TimeSeries,
   TwoDimensionalAggregation,
 } from "..";
 import type { GeoJson, GeoJsonPoint, GeoPoint, GeoShape } from "./geoshapes";
@@ -42,6 +43,7 @@ export type ParameterValue =
   | Set<ParameterValue>
   | TwoDimensionalAggregation<QueryBucketKey, BucketValue>
   | ThreeDimensionalAggregation<QueryBucketKey, QueryBucketKey, BucketValue>
+  | TimeSeries<any>
   | ParameterValue[]
   | {
     [key: string]: ParameterValue;

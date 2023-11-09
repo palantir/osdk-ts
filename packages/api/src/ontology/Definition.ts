@@ -114,6 +114,9 @@ export interface ValidPropertyTypes {
   decimal: number;
   byte: number;
 
+  numericTimeseries: any;
+  stringTimeseries: any;
+
   attachment: any;
   geopoint: any;
   geoshape: any;
