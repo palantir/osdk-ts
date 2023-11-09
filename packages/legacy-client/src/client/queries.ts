@@ -71,34 +71,23 @@ export type QueryParameters<
   Q extends QueryNamesFrom<O>,
 > = QueryDefinition<O, Q>["parameters"];
 
-type OptionalQueryParameters<
-  O extends OntologyDefinition<any>,
-  Q extends QueryNamesFrom<O>,
-> = {
-  [P in keyof QueryParameters<O, Q>]:
-    QueryParameters<O, Q>[P]["dataType"] extends { nullable: true }
-      ? QueryParameters<O, Q>[P]
-      : never;
-};
+export type NullableKeys<T> = {
+  [K in keyof T]: T[K] extends { nullable: true } ? K : never;
+}[keyof T];
 
-type RequiredQueryParameters<
-  O extends OntologyDefinition<any>,
-  Q extends QueryNamesFrom<O>,
-> = {
-  [P in keyof QueryParameters<O, Q>]:
-    QueryParameters<O, Q>[P]["dataType"] extends { nullable: true } ? never
-      : QueryParameters<O, Q>[P];
-};
+export type NonNullableKeys<T> = {
+  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
+}[keyof T];
 
 type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
   & {
-    [P in keyof RequiredQueryParameters<O, Q>]: QueryDataType<
+    [P in NonNullableKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
   }
   & {
-    [P in keyof OptionalQueryParameters<O, Q>]?: QueryDataType<
+    [P in NullableKeys<QueryParameters<O, Q>>]?: QueryDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
@@ -107,29 +96,30 @@ type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
 export type QueryNamesFrom<O extends OntologyDefinition<any>> =
   keyof O["queries"];
 
-type OptionalStructParameters<
-  S extends Record<string, QueryDataTypeDefinition>,
-> = {
-  [P in keyof S]: S[P]["nullable"] extends true ? S[P] : never;
-};
-
-type RequiredStructParameters<
-  S extends Record<string, QueryDataTypeDefinition>,
-> = {
-  [P in keyof S]: S[P]["nullable"] extends true ? never : S[P];
-};
-
 type QueryDataType<
   O extends OntologyDefinition<any>,
   D extends QueryDataTypeDefinition,
 > = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"]>>
   : QueryDataTypeBase<O, D["type"]>;
 
+interface ValidLegacyBaseQueryDataTypes {
+  double: number;
+  float: number;
+  integer: number;
+  long: number;
+  boolean: boolean;
+  string: string;
+  date: LocalDate;
+  timestamp: Timestamp;
+  attachment: any; // TODO surely we can be more strict here
+}
+
 type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any>,
-> = T extends keyof ValidBaseQueryDataTypes ? ValidBaseQueryDataTypes[T]
-  : T extends ObjectQueryDataType<infer K> ? OsdkLegacyOntologyObject<O, K>
+> = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
+  : T extends ObjectQueryDataType<any>
+    ? OsdkLegacyOntologyObject<O, T["object"]>
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyOntologyObject<O, K>>
   : T extends SetQueryDataType
@@ -147,13 +137,13 @@ type QueryDataTypeBase<
     >
   : T extends StructQueryDataType ?
       & {
-        [S in keyof RequiredStructParameters<T["struct"]>]: QueryDataTypeBase<
+        [S in NonNullableKeys<T["struct"]>]: QueryDataTypeBase<
           O,
           T["struct"][S]
         >;
       }
       & {
-        [S in keyof OptionalStructParameters<T["struct"]>]?: QueryDataTypeBase<
+        [S in NullableKeys<T["struct"]>]?: QueryDataTypeBase<
           O,
           T["struct"][S]
         >;
