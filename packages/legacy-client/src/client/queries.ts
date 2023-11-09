@@ -138,13 +138,13 @@ type QueryDataTypeBase<
     >
   : T extends StructQueryDataType ?
       & {
-        [S in NonNullableKeys<T["struct"]>]: QueryDataTypeBase<
+        [S in NonNullableKeys<T["struct"]>]: QueryDataType<
           O,
           T["struct"][S]
         >;
       }
       & {
-        [S in NullableKeys<T["struct"]>]?: QueryDataTypeBase<
+        [S in NullableKeys<T["struct"]>]?: QueryDataType<
           O,
           T["struct"][S]
         >;
