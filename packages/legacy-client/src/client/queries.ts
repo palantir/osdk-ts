@@ -24,6 +24,7 @@ import type {
   SetQueryDataType,
   SimpleAggregationKeyDataType,
   StructQueryDataType,
+  ThinClient,
   ThreeDimensionalAggregationDataType,
   TwoDimensionalAggregationDataType,
   UnionQueryDataType,
@@ -39,6 +40,7 @@ import type {
   Timestamp,
   TwoDimensionalAggregation,
 } from "../ontology-runtime";
+import { executeQuery } from "../ontology-runtime/ontologyProvider/calls/executeQuery";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyOntologyObject } from "./OsdkObject";
 import type { IsEmptyRecord } from "./utils";
@@ -49,12 +51,12 @@ export type Queries<O extends OntologyDefinition<any>> = {
     : (param: QueryArgs<O, Q>) => WrappedQueryReturnType<O, Q>;
 };
 
-type WrappedQueryReturnType<
+export type WrappedQueryReturnType<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 > = Promise<Result<QueryResponse<QueryReturnType<O, Q>>, QueryError>>;
 
-type QueryReturnType<
+export type QueryReturnType<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 > = QueryDataType<O, QueryDefinition<O, Q>["output"]>;
@@ -64,21 +66,58 @@ type QueryDefinition<
   Q extends QueryNamesFrom<O>,
 > = O["queries"][Q];
 
-type QueryParameters<
+export type QueryParameters<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 > = QueryDefinition<O, Q>["parameters"];
 
+type OptionalQueryParameters<
+  O extends OntologyDefinition<any>,
+  Q extends QueryNamesFrom<O>,
+> = {
+  [P in keyof QueryParameters<O, Q>]:
+    QueryParameters<O, Q>[P]["dataType"] extends { nullable: true }
+      ? QueryParameters<O, Q>[P]
+      : never;
+};
+
+type RequiredQueryParameters<
+  O extends OntologyDefinition<any>,
+  Q extends QueryNamesFrom<O>,
+> = {
+  [P in keyof QueryParameters<O, Q>]:
+    QueryParameters<O, Q>[P]["dataType"] extends { nullable: true } ? never
+      : QueryParameters<O, Q>[P];
+};
+
 type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
-  {
-    // TODO handle optional
-    [P in keyof QueryParameters<O, Q>]: QueryDataType<
+  & {
+    [P in keyof RequiredQueryParameters<O, Q>]: QueryDataType<
+      O,
+      QueryParameters<O, Q>[P]["dataType"]
+    >;
+  }
+  & {
+    [P in keyof OptionalQueryParameters<O, Q>]?: QueryDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
   };
 
-type QueryNamesFrom<O extends OntologyDefinition<any>> = keyof O["queries"];
+export type QueryNamesFrom<O extends OntologyDefinition<any>> =
+  keyof O["queries"];
+
+type OptionalStructParameters<
+  S extends Record<string, QueryDataTypeDefinition>,
+> = {
+  [P in keyof S]: S[P]["nullable"] extends true ? S[P] : never;
+};
+
+type RequiredStructParameters<
+  S extends Record<string, QueryDataTypeDefinition>,
+> = {
+  [P in keyof S]: S[P]["nullable"] extends true ? never : S[P];
+};
 
 type QueryDataType<
   O extends OntologyDefinition<any>,
@@ -106,8 +145,27 @@ type QueryDataTypeBase<
         T["threeDimensionalAggregation"]["valueType"]["valueType"]
       >
     >
-  : T extends UnionQueryDataType ? unknown // TODO fixme (how do you map an array into a union?)
-  : T extends StructQueryDataType ? unknown // TODO fixme (turn into a record for easier mapped types?)
+  : T extends StructQueryDataType ?
+      & {
+        [S in keyof RequiredStructParameters<T["struct"]>]: QueryDataTypeBase<
+          O,
+          T["struct"][S]
+        >;
+      }
+      & {
+        [S in keyof OptionalStructParameters<T["struct"]>]?: QueryDataTypeBase<
+          O,
+          T["struct"][S]
+        >;
+      }
+  : T extends UnionQueryDataType ? QueryDefinitionArrayToUnion<O, T["union"]>
+  : never;
+
+type QueryDefinitionArrayToUnion<
+  O extends OntologyDefinition<any>,
+  T extends ReadonlyArray<QueryDataTypeDefinition>,
+> = T extends ReadonlyArray<infer U>
+  ? U extends QueryDataTypeDefinition ? QueryDataType<O, U> : never
   : never;
 
 type QueryAggregationKey<K extends AggregationKeyDataType> = K extends
@@ -135,4 +193,33 @@ interface AggregationValueTypes {
   double: number;
   date: LocalDate;
   timestamp: Timestamp;
+}
+
+export function createQueryProxy<O extends OntologyDefinition<any>>(
+  client: ThinClient<O>,
+): Queries<O> {
+  return new Proxy({}, {
+    get(_target, q: QueryNamesFrom<O> & string, _receiver) {
+      const queryDefinition = client.ontology.queries[q];
+      if (queryDefinition) {
+        const hasParams = Object.keys(queryDefinition.parameters).length > 0;
+
+        if (hasParams) {
+          return async function(
+            params: QueryParameters<O, typeof q>,
+          ): Promise<WrappedQueryReturnType<O, typeof q>> {
+            return executeQuery(client, q, params);
+          };
+        } else {
+          return async function(): Promise<
+            WrappedQueryReturnType<O, typeof q>
+          > {
+            return executeQuery(client, q);
+          };
+        }
+      }
+
+      return undefined;
+    },
+  }) as Queries<O>;
 }
