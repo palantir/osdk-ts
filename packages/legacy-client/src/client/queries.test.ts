@@ -22,7 +22,6 @@ import { LocalDate, Timestamp } from "../ontology-runtime";
 import { MockOntology } from "../util/test";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
 import type { Queries } from "./queries";
-import type { NonNullableKeys } from "./utils/NullableKeys";
 
 describe("queries", () => {
   let client: ThinClient<typeof MockOntology>;
@@ -42,12 +41,6 @@ describe("queries", () => {
   });
 
   describe("type tests", () => {
-    const keys:
-      & NonNullableKeys<
-        typeof MockOntology.queries.queryTakesAllParameterTypes.parameters.struct.dataType.type.struct
-      >
-      & string;
-
     const nowString = (new Date()).toISOString();
     queries.queryTakesAllParameterTypes({
       unionNonNullable: "string",
