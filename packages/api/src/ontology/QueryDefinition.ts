@@ -79,7 +79,7 @@ export interface UnionQueryDataType {
 
 export interface StructQueryDataType {
   type: "struct";
-  struct: ReadonlyArray<{ name: string; fieldType: QueryDataTypeDefinition }>;
+  struct: Record<string, QueryDataTypeDefinition>;
 }
 
 export interface TwoDimensionalAggregationDataType {
@@ -92,22 +92,25 @@ export interface ThreeDimensionalAggregationDataType {
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
 }
 
+export type AggregationKeyDataType =
+  | SimpleAggregationKeyDataType
+  | RangeAggregationKeyDataType;
+
+export interface SimpleAggregationKeyDataType {
+  keyType: "boolean" | "string";
+}
+
+export interface RangeAggregationKeyDataType {
+  keyType: "range";
+  keySubtype: "date" | "double" | "integer" | "timestamp";
+}
+
 export type TwoDimensionalQueryAggregationDefinition =
-  & { valueType: "date" | "double" | "timestamp" }
-  & ({
-    keyType: "boolean" | "date" | "double" | "integer" | "string" | "timestamp";
-  } | {
-    keyType: "range";
-    keySubtype: "date" | "double" | "integer" | "timestamp";
-  });
+  & AggregationKeyDataType
+  & { valueType: "date" | "double" | "timestamp" };
 
 export type ThreeDimensionalQueryAggregationDefinition =
+  & AggregationKeyDataType
   & {
     valueType: TwoDimensionalQueryAggregationDefinition;
-  }
-  & ({
-    keyType: "boolean" | "date" | "double" | "integer" | "string" | "timestamp";
-  } | {
-    keyType: "range";
-    keySubtype: "date" | "double" | "integer" | "timestamp";
-  });
+  };

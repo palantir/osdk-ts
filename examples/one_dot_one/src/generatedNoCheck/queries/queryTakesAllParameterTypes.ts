@@ -54,10 +54,7 @@ export const queryTakesAllParameterTypes = {
       dataType: {
         type: {
           type: 'struct',
-          struct: [
-            { name: 'name', fieldType: { type: 'string', nullable: false } },
-            { name: 'id', fieldType: { type: 'integer', nullable: false } },
-          ],
+          struct: { name: { type: 'string', nullable: false }, id: { type: 'integer', nullable: false } },
         },
         nullable: false,
       },
