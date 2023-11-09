@@ -81,7 +81,9 @@ async function processStream<T extends string | number>(
 ): Promise<any[]> {
   const allPoints: Array<TimeSeriesPoint<T>> = [];
   for await (const points of streamIterator) {
-    Array.prototype.push.apply(allPoints, points);
+    for (const point of points) {
+      allPoints.push(point);
+    }
   }
   return allPoints;
 }
