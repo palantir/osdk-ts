@@ -19,8 +19,10 @@ import { createThinClient } from "@osdk/api";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, vi } from "vitest";
 import { LocalDate, Timestamp } from "../ontology-runtime";
+import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
+import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import type { Queries } from "./queries";
 
 describe("queries", () => {
@@ -45,6 +47,9 @@ describe("queries", () => {
     const nowLocalDate = LocalDate.fromISOString(nowString);
     const nowTimestamp = Timestamp.fromISOString(nowString);
 
+    const todo: Todo = {} as Todo;
+    const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
+
     queries.queryTakesAllParameterTypes({
       unionNonNullable: "string",
       double: 0,
@@ -56,8 +61,8 @@ describe("queries", () => {
       date: nowLocalDate,
       string: "",
       timestamp: nowTimestamp,
-      object: undefined as any,
-      objectSet: undefined as any,
+      object: todo,
+      objectSet: todoObjectSet,
       array: ["string"],
       set: new Set(["string"]),
       struct: { name: "name" /* id not required */ },
