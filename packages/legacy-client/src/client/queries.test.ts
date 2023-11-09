@@ -42,6 +42,9 @@ describe("queries", () => {
 
   describe("type tests", () => {
     const nowString = (new Date()).toISOString();
+    const nowLocalDate = LocalDate.fromISOString(nowString);
+    const nowTimestamp = Timestamp.fromISOString(nowString);
+
     queries.queryTakesAllParameterTypes({
       unionNonNullable: "string",
       double: 0,
@@ -50,16 +53,23 @@ describe("queries", () => {
       long: 0,
       attachment: undefined,
       boolean: false,
-      date: LocalDate.fromISOString(nowString),
+      date: nowLocalDate,
       string: "",
-      timestamp: Timestamp.fromISOString(nowString),
+      timestamp: nowTimestamp,
       object: undefined as any,
       objectSet: undefined as any,
-      array: [],
-      set: new Set(),
+      array: ["string"],
+      set: new Set(["string"]),
       struct: { name: "name" /* id not required */ },
-      twoDimensionalAggregation: undefined as any,
-      threeDimensionalAggregation: undefined as any,
+      twoDimensionalAggregation: {
+        groups: [{ key: "foo", value: 1 }],
+      },
+      threeDimensionalAggregation: {
+        groups: [{
+          key: { startValue: nowLocalDate },
+          value: [{ key: { startValue: nowTimestamp }, value: nowLocalDate }],
+        }],
+      },
       // unionNullable not required
     });
   });

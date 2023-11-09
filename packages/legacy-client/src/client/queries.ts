@@ -123,8 +123,7 @@ type QueryDataTypeBase<
     ? OsdkLegacyOntologyObject<O, T["object"]>
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyOntologyObject<O, K>>
-  : T extends SetQueryDataType
-    ? Set<QueryDataTypeBase<O, QueryDataTypeBase<O, T["set"]>>>
+  : T extends SetQueryDataType ? Set<QueryDataTypeBase<O, T["set"]>>
   : T extends TwoDimensionalAggregationDataType ? TwoDimensionalAggregation<
       QueryAggregationKey<T["twoDimensionalAggregation"]>,
       QueryAggregationValue<T["twoDimensionalAggregation"]["valueType"]>
