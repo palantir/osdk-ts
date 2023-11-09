@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 0.0.3
+
+### Patch Changes
+
+- a2b7874: Addin TimeSeries support and fixing issues during code-gen time with Queries
+- Updated dependencies [a2b7874]
+  - @osdk/api@0.0.7
+
 ## 0.0.2
 
 ### Patch Changes
