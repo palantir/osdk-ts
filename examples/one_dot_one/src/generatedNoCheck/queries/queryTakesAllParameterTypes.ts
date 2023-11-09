@@ -81,4 +81,4 @@ export const queryTakesAllParameterTypes = {
     },
   },
   output: { type: 'string', nullable: false },
-} satisfies QueryDefinition<'queryTakesAllParameterTypes'>;
+} satisfies QueryDefinition<'queryTakesAllParameterTypes', 'Todo'>;

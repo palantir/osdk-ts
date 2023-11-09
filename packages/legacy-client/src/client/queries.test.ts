@@ -17,40 +17,48 @@
 import type { ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import type { MockedFunction } from "vitest";
-import { beforeEach, describe, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { LocalDate, Timestamp } from "../ontology-runtime";
 import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
+import {
+  expectFetchToBeCalledWithBody,
+  mockFetchResponse,
+} from "../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import type { Queries } from "./queries";
+import { createQueryProxy } from "./queries";
 
-describe("queries", () => {
+describe("Queries", () => {
   let client: ThinClient<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  const queries: Queries<
-    typeof MockOntology
-  > = {} as any;
+  let queries: Queries<typeof MockOntology>;
 
   beforeEach(() => {
-    fetch = vi.fn();
-    client = createThinClient(
-      MockOntology,
-      MOCK_ORIGIN,
-      () => "Token",
-      fetch,
-    );
+    try {
+      fetch = vi.fn();
+      client = createThinClient(
+        MockOntology,
+        MOCK_ORIGIN,
+        () => "Token",
+        fetch,
+      );
+      queries = createQueryProxy<typeof MockOntology>(client);
+    } catch (e) {
+      console.error(e);
+    }
   });
 
-  describe("type tests", () => {
-    const nowString = (new Date()).toISOString();
-    const nowLocalDate = LocalDate.fromISOString(nowString);
-    const nowTimestamp = Timestamp.fromISOString(nowString);
+  it("type tests", async () => {
+    const nowLocalDate = LocalDate.now();
+    const nowTimestamp = Timestamp.now();
 
     const todo: Todo = {} as Todo;
     const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
+    mockFetchResponse(fetch, { value: "resultString" });
 
-    queries.queryTakesAllParameterTypes({
+    const response = await queries.queryTakesAllParameterTypes({
       unionNonNullable: "string",
       double: 0,
       float: 0,
@@ -77,5 +85,47 @@ describe("queries", () => {
       },
       // unionNullable not required
     });
+
+    expectFetchToBeCalledWithBody(
+      fetch,
+      `Ontology/queries/queryTakesAllParameterTypes/execute`,
+      {
+        "parameters": {
+          "unionNonNullable": "string",
+          "double": 0,
+          "float": 0,
+          "integer": 0,
+          "long": 0,
+          "boolean": false,
+          "date": nowLocalDate.toISOString(),
+          "string": "",
+          "timestamp": nowTimestamp.toISOString(),
+          "object": {},
+          "objectSet": {
+            "apiName": "Todo",
+            "description": "",
+            "definition": { "type": "base", "objectType": "Todo" },
+          },
+          "array": ["string"],
+          "set": ["string"],
+          "struct": { "name": "name" },
+          "twoDimensionalAggregation": {
+            "groups": [{ "key": "foo", "value": 1 }],
+          },
+          "threeDimensionalAggregation": {
+            "groups": [{
+              "key": { "startValue": nowLocalDate.toISOString() },
+              "value": [{
+                "key": { "startValue": nowTimestamp.toISOString() },
+                "value": nowLocalDate.toISOString(),
+              }],
+            }],
+          },
+        },
+      },
+    );
+
+    expect(response.type).toBe("ok");
+    expect((response as any).value.value).toBe("resultString");
   });
 });

@@ -42,7 +42,7 @@ import type {
 } from "../ontology-runtime";
 import { executeQuery } from "../ontology-runtime/ontologyProvider/calls/executeQuery";
 import type { ObjectSet } from "./interfaces";
-import type { OsdkLegacyOntologyObject } from "./OsdkObject";
+import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 import type { IsEmptyRecord } from "./utils";
 import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
 
@@ -119,10 +119,9 @@ type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any>,
 > = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
-  : T extends ObjectQueryDataType<any>
-    ? OsdkLegacyOntologyObject<O, T["object"]>
+  : T extends ObjectQueryDataType<any> ? OsdkLegacyObjectFrom<O, T["object"]>
   : T extends ObjectSetQueryDataType<infer K>
-    ? ObjectSet<OsdkLegacyOntologyObject<O, K>>
+    ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
   : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"]>>
   : T extends TwoDimensionalAggregationDataType ? TwoDimensionalAggregation<
       QueryAggregationKey<T["twoDimensionalAggregation"]>,
@@ -199,13 +198,13 @@ export function createQueryProxy<O extends OntologyDefinition<any>>(
           return async function(
             params: QueryParameters<O, typeof q>,
           ): Promise<WrappedQueryReturnType<O, typeof q>> {
-            return executeQuery(client, q, params) as any;
+            return executeQuery(client, q, params);
           };
         } else {
           return async function(): Promise<
             WrappedQueryReturnType<O, typeof q>
           > {
-            return executeQuery(client, q) as any;
+            return executeQuery(client, q);
           };
         }
       }

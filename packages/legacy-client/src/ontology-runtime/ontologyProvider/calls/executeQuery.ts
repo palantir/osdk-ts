@@ -56,7 +56,7 @@ import { getObject } from "./getObject";
 import { wrapResult } from "./util/wrapResult";
 
 export function executeQuery<
-  O extends OntologyDefinition<any, any, any>,
+  O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 >(
   client: ThinClient<O>,
@@ -81,7 +81,7 @@ export function executeQuery<
 
       return {
         value: remappedResponse,
-      } as any;
+      } as any; // TODO this still needs to get removed
     },
     e =>
       handleExecuteQueryError(
