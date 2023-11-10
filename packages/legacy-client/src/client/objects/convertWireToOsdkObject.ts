@@ -76,14 +76,14 @@ function createPrototype<
             client,
             objDef.apiName,
             this.__primaryKey,
-            targetType,
+            k,
           );
         } else {
           return createSingleLinkStep(
             client,
             objDef.apiName,
             this.__primaryKey,
-            targetType,
+            k,
           );
         }
       },

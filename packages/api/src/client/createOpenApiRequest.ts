@@ -41,6 +41,10 @@ export function createOpenApiRequest<
   ) {
     const url = new URL(`${contextPath}${endpointPath}`, withHttps(basePath));
     for (const [key, value] of Object.entries(queryArguments || {})) {
+      if (value == null) {
+        continue;
+      }
+
       if (Array.isArray(value)) {
         for (const item of value) {
           url.searchParams.append(key, item);

@@ -49,7 +49,7 @@ export function getLinkedObject<T extends OntologyObject>(
       );
       return convertWireToOsdkObject(
         client,
-        linkTypeApiName,
+        object["__apiName"],
         object,
       ) as unknown as T;
     },

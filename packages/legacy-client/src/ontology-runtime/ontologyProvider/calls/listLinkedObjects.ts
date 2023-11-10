@@ -15,6 +15,7 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
 import {
@@ -52,7 +53,9 @@ export function listLinkedObjects<T extends OntologyObject>(
         }
       } while (page.nextPageToken);
 
-      return allObjects;
+      return allObjects.map(obj =>
+        convertWireToOsdkObject(client, obj["__apiName"], obj)
+      ) as unknown as T[];
     },
     e =>
       handleListLinkedObjectsError(

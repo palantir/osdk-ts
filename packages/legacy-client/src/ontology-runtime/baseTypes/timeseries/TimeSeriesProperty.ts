@@ -30,22 +30,32 @@ export function isTimeSeries<T extends number | string>(
 export const TimeSeriesProperty = <T extends number | string>(
   thinClient: ThinClient<OntologyDefinition<any>>,
   propertyName: string,
-  apiName: string,
-  primaryKey: string,
+  objectTypeApiName: string,
+  primaryKey: any,
 ): TimeSeries<T> => {
   return {
     type: "TimeSeries" as const,
     getFirstPoint() {
-      return getFirstPoint(thinClient, propertyName, apiName, primaryKey);
+      return getFirstPoint(
+        thinClient,
+        objectTypeApiName,
+        primaryKey,
+        propertyName,
+      );
     },
     getLastPoint() {
-      return getLastPoint(thinClient, propertyName, apiName, primaryKey);
+      return getLastPoint(
+        thinClient,
+        objectTypeApiName,
+        primaryKey,
+        propertyName,
+      );
     },
     get points(): TimeSeriesQuery<T> {
       return createTimeSeriesQuery(
         thinClient,
         propertyName,
-        apiName,
+        objectTypeApiName,
         primaryKey,
       );
     },
