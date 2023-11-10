@@ -14,41 +14,35 @@
  * limitations under the License.
  */
 
+import type { BaseAPIError } from "./baseApiError";
+
 export interface PalantirApiError extends Error {
-  errorType?: string;
-  message: string;
+  errorType: string;
   errorName: string;
-  errorInstanceId?: string;
-  statusCode?: number;
-  parameters?: any;
+  errorInstanceId: string;
+  statusCode: number;
+  parameters: any;
 }
 
 export class PalantirApiError extends Error implements PalantirApiError {
-  message: string;
-  errorName: string;
-  errorType?: string;
-  statusCode?: number;
-  errorInstanceId?: string;
-  parameters?: any;
+  public errorName: string;
+  public errorType: string;
+  public statusCode: number;
+  public errorInstanceId: string;
+  public parameters: any;
 
-  constructor(
-    message: string,
-    errorName: string,
-    errorType?: string,
-    statusCode?: number,
-    errorInstanceId?: string,
-    parameters?: any,
-  ) {
-    super();
-    this.errorName = errorName;
-    this.errorType = errorType;
+  constructor(baseError: BaseAPIError, statusCode: number) {
+    super(baseError.errorName);
+    this.errorName = baseError.errorName;
+    this.errorType = baseError.errorCode;
     this.statusCode = statusCode;
-    this.errorInstanceId = errorInstanceId;
-    this.message = message;
-    this.parameters = parameters;
+    this.errorInstanceId = baseError.errorInstanceId;
+    this.parameters = baseError.parameters;
   }
 }
 
-export function isPalantirApiError(e: any): e is PalantirApiError {
-  return e.errorName && e.errorInstanceId;
+export class UnknownError extends Error {
+  constructor(message: string, public originalError?: any) {
+    super(message);
+  }
 }
