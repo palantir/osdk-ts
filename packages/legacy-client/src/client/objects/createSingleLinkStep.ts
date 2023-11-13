@@ -28,7 +28,7 @@ export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
   client: ThinClient<any>,
   sourceObjectType: string,
   sourcePrimaryKey: ParameterValue,
-  targetLinkType: T["__apiName"], // TODO: Make this link type
+  targetLinkType: string,
 ): SingleLink<T> {
   return {
     async get(): Promise<Result<T, GetLinkedObjectError>> {
