@@ -29,20 +29,19 @@ export function createCachedOntologyTransform<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
   T,
-  A extends any[],
 >(
-  creator: (ontology: O, type: K, ...args: A) => T,
+  creator: (ontology: O, type: K) => T,
 ) {
   // We can use the ObjectDefinition as the key because it will be a globally unique singleton
   // Use Map instead of WeakMap here so usage for things like object prototypes do not churn over time
   const cache = new Map<ObjectDefinition<any, any>, T>();
 
-  return (ontology: O, type: K, ...args: A) => {
+  return (ontology: O, type: K) => {
     const objectDefinition = ontology.objects[type];
     let result = cache.get(objectDefinition);
 
     if (result == null) {
-      result = creator(ontology, type, ...args);
+      result = creator(ontology, type);
       cache.set(objectDefinition, result);
     }
 

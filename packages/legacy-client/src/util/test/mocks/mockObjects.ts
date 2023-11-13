@@ -16,17 +16,21 @@
 
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 
-export const mockTodoObject = {
-  __apiName: "Todo",
-  __primaryKey: 1,
-  __rid: "ri.a.b.c.d",
-  id: "123",
-  body: "body",
-  complete: false,
-} satisfies OntologyObjectV2;
+export function getMockTodoObject(): OntologyObjectV2 {
+  return {
+    __apiName: "Todo",
+    __primaryKey: 1,
+    __rid: "ri.a.b.c.d",
+    id: "123",
+    body: "body",
+    complete: false,
+  };
+}
 
-export const mockTaskObject = {
-  __apiName: "Task",
-  __primaryKey: 1,
-  id: 1,
-} satisfies OntologyObjectV2;
+export function getMockTaskObject(): OntologyObjectV2 {
+  return {
+    __apiName: "Task",
+    __primaryKey: 1,
+    id: 1,
+  };
+}
