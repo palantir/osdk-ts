@@ -40,6 +40,8 @@ export function getParameterValueMapping(
     return value.attachmentRid!;
   } else if (Array.isArray(value)) {
     return value.map(a => getParameterValueMapping(a));
+  } else if (value instanceof Set) {
+    return Array.from(value, getParameterValueMapping);
   } else if (GeoShape.isGeoShape(value)) {
     return value.toGeoJson();
   } else if (value instanceof GeoPoint) {

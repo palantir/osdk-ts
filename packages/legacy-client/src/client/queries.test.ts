@@ -101,10 +101,7 @@ describe("Queries", () => {
           "string": "",
           "timestamp": nowTimestamp.toISOString(),
           "object": {},
-          "objectSet": {
-            "apiName": "Todo",
-            "definition": { "type": "base", "objectType": "Todo" },
-          },
+          "objectSet": { "type": "base", "objectType": "Todo" },
           "array": ["string"],
           "set": ["string"],
           "struct": { "name": "name" },
