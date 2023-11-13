@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "../../client";
 import type {
-  Attachment,
   BucketValue,
-  ObjectSetDefinition,
-  QueryBucketKey,
   QueryThreeDimensionalAggregation,
   QueryTwoDimensionalAggregation,
+} from "../aggregations";
+import type {
+  Attachment,
+  ObjectSetDefinition,
+  QueryBucketKey,
   ThreeDimensionalAggregation,
   TimeSeries,
   TwoDimensionalAggregation,
-} from "..";
+} from "../baseTypes";
 import type { GeoJson, GeoJsonPoint, GeoPoint, GeoShape } from "./geoshapes";
 import type { LocalDate } from "./localDate";
 import type { OntologyObject } from "./OntologyObject";
@@ -44,6 +47,7 @@ export type ParameterValue =
   | TwoDimensionalAggregation<QueryBucketKey, BucketValue>
   | ThreeDimensionalAggregation<QueryBucketKey, QueryBucketKey, BucketValue>
   | TimeSeries<any>
+  | ObjectSet<any>
   | ParameterValue[]
   | {
     [key: string]: ParameterValue;
