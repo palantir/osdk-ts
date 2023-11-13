@@ -116,26 +116,6 @@ export function convertWireToOsdkObject<
   return obj as OsdkLegacyObjectFrom<O, T>;
 }
 
-export function convertWireToOsdkObject2<
-  T extends ObjectTypesFrom<O> & string,
-  O extends OntologyDefinition<any>,
->(
-  client: ThinClient<O>,
-  apiName: T,
-  obj: OntologyObjectV2,
-): OsdkLegacyObjectFrom<O, T> {
-  const proto = getPrototype(client.ontology, apiName);
-  Object.setPrototypeOf(obj, proto);
-  Object.defineProperty(obj, OriginClient, {
-    enumerable: false,
-    writable: false,
-    value: client,
-  });
-  setPropertyAccessors<T, O>(client, apiName, obj);
-
-  return obj as OsdkLegacyObjectFrom<O, T>;
-}
-
 function setPropertyAccessors<
   T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,

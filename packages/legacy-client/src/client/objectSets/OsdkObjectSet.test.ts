@@ -37,10 +37,7 @@ import {
   getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
-import {
-  convertWireToOsdkObject,
-  convertWireToOsdkObject2,
-} from "../objects/convertWireToOsdkObject";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
@@ -333,9 +330,8 @@ describe("OsdkObjectSet", () => {
       fetch2,
     );
 
-    const todo2 = convertWireToOsdkObject2(
+    const todo2 = convertWireToOsdkObject(
       client2,
-      "Todo",
       getMockTodoObject(),
     );
 

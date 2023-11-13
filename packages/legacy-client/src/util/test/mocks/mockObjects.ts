@@ -29,7 +29,7 @@ export function getMockTodoObject() {
 
 export function getMockTaskObject() {
   return {
-    __apiName: "Task",
+    __apiName: "Task" as const,
     __primaryKey: 1,
     id: 1,
   } satisfies OntologyObjectV2;
