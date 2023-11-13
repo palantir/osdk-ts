@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectPropertyType, ObjectTypeV2 } from "@osdk/gateway/types";
+import type {
+  LinkTypeSideV2,
+  ObjectPropertyType,
+  ObjectTypeV2,
+} from "@osdk/gateway/types";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
+  linkTypes: LinkTypeSideV2[] = [],
 ) {
-  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint } from "@osdk/legacy-client";
+  const uniqueLinkTargets = new Set<string>(
+    linkTypes.map(a => a.objectTypeApiName).filter(a => a !== input.apiName),
+  );
+  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink } from "@osdk/legacy-client";
+${
+    Array.from(uniqueLinkTargets).map(linkTarget =>
+      `import type { ${linkTarget} } from "./${linkTarget}";`
+    ).join("\n")
+  }
 
 /**
  * ${input.description}
@@ -42,6 +55,13 @@ ${
       } | undefined`
     ).join(";\n")
   }
+${
+    linkTypes.map(linkType =>
+      `readonly ${linkType.apiName}: ${
+        linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+      }<${linkType.objectTypeApiName}>;`
+    ).join(";\n")
+  }
 }
   `;
 }
@@ -59,7 +79,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "integer":
       return "number";
     case "attachment":
-      throw new Error("not implemented");
+      return "Attachment";
     case "byte":
       return "number";
     case "date":
@@ -79,10 +99,14 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "short":
       return "number";
     case "timestamp":
-      return "TimeStamp";
+      return "Timestamp";
     case "timeseries":
+      return property.itemType.type === "string"
+        ? `TimeSeries<string>`
+        : `TimeSeries<number>`;
     default:
-      throw new Error("not implemented");
+      const _: never = property;
+      throw new Error(`Unknown property type ${property}`);
   }
 }
 

@@ -2,7 +2,6 @@ export {
   ActionExecutionMode,
   ActionResponse,
   ActionValidationResult,
-  AggregatableObjectSet,
   ArrayType,
   AttachmentType,
   BooleanType,
@@ -17,8 +16,6 @@ export {
   GeoShape,
   GeoShapeType,
   IntegerType,
-  isErr,
-  isOk,
   LocalDate,
   LongType,
   ObjectType,
@@ -33,6 +30,8 @@ export {
   TimeSeriesType,
   Timestamp,
   TimestampType,
+  isErr,
+  isOk,
   visitError,
 } from '@osdk/legacy-client';
 export type {
@@ -62,5 +61,5 @@ export type {
   Unauthorized,
   UnknownError,
 } from '@osdk/legacy-client';
-export { Ontology } from './Ontology';
 export { FoundryClient } from './FoundryClient';
+export { Ontology } from './Ontology';

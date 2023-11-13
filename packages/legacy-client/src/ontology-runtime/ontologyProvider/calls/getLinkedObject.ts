@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
+import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
 import {
   GetLinkedObjectErrorHandler,
@@ -23,11 +25,10 @@ import {
 } from "../ErrorHandlers";
 import type { GetLinkedObjectError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { wrapResult } from "./util/wrapResult";
 
 export function getLinkedObject<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -36,8 +37,8 @@ export function getLinkedObject<T extends OntologyObject>(
   return wrapResult(
     async () => {
       const object = await getLinkedObjectV2(
-        createOpenApiRequest(context.client.stack, context.client.fetch),
-        context.ontology.metadata.ontologyApiName,
+        createOpenApiRequest(client.stack, client.fetch),
+        client.ontology.metadata.ontologyApiName,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
@@ -46,7 +47,11 @@ export function getLinkedObject<T extends OntologyObject>(
           select: [],
         },
       );
-      return context.createObject<T>(context, linkTypeApiName, object);
+      return convertWireToOsdkObject(
+        client,
+        linkTypeApiName,
+        object,
+      ) as unknown as T;
     },
     e =>
       handleGetLinkedObjectError(

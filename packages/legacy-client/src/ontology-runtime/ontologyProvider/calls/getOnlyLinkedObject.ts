@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject, ParameterValue } from "../../baseTypes";
 import type { GetLinkedObjectError, LinkedObjectNotFound } from "../Errors";
 import { isErr, type Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { listLinkedObjects } from "./listLinkedObjects";
 import { createErrorResponse } from "./util/ResponseCreators";
 
@@ -27,13 +27,13 @@ import { createErrorResponse } from "./util/ResponseCreators";
 export async function getOnlyLinkedObject<
   T extends OntologyObject = OntologyObject,
 >(
-  context: ClientContext,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceObjectType: string,
   sourcePrimaryKey: ParameterValue,
   targetObjectType: T["__apiName"],
 ): Promise<Result<T, GetLinkedObjectError>> {
   const result = await listLinkedObjects(
-    context,
+    client,
     sourceObjectType,
     sourcePrimaryKey,
     targetObjectType,

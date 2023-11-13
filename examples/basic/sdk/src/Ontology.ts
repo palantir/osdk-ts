@@ -25,4 +25,6 @@ export const Ontology = {
     Employee: Employee,
     Todo: Todo,
   },
+  actions: {},
+  queries: {},
 } satisfies OntologyDefinition<"Employee" | "Todo">;

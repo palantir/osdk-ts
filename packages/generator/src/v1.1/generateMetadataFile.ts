@@ -26,15 +26,29 @@ export async function generateMetadataFile(
   outDir: string,
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
+  const actionNames = ontology.actionTypes.map(action => action.apiName);
+  const queryNames = ontology.queryTypes.map(query => query.apiName);
+
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
   import type { Objects } from "./ontologyObjects";
+  import type { Actions } from "./ontologyActions";
+  import type { Queries } from "./ontologyQueries";
   ${
       objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
         .join("\n")
+    }
+  ${
+      actionNames.map((name) => `import {${name}} from "./actions/${name}";`)
+        .join("\n")
+    }
+  ${
+      queryNames.map(name => `import {${name}} from "./queries/${name}";`).join(
+        "\n",
+      )
     }
 
   export const Ontology = {
@@ -45,11 +59,25 @@ export async function generateMetadataFile(
     },
     objects: {
         ${commaSeparatedIdentifiers(objectNames)}
+    },
+    actions: {
+        ${commaSeparatedIdentifiers(actionNames)}
+    },
+    queries: {
+        ${commaSeparatedIdentifiers(queryNames)}
     }
-  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}>;
+  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
+      ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(
+        "|",
+      )
+    }, ${
+      ontology.queryTypes.map(queryType => `"${queryType.apiName}"`).join("|")
+    }>;
     
 export interface Ontology extends ClientOntology<typeof Ontology> {
     objects: Objects;
+    actions: Actions;
+    queries: Queries;
 }`),
   );
 }

@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import {
-  type BaseObjectSetDefinition,
-  type FilteredPropertiesTerminalOperations,
-  type FilterObjectSetDefinition,
-  type ObjectSetDefinition,
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import type {
+  BaseObjectSetDefinition,
+  FilteredPropertiesTerminalOperationsWithGet,
+  FilterObjectSetDefinition,
+  ObjectSetDefinition,
 } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
 import type {
   BaseObjectSet,
@@ -31,8 +34,9 @@ import type {
 } from "../interfaces";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
-import { createObjectSetOrderByStep } from "./createObjectSetOrderByStep";
+import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
@@ -41,15 +45,14 @@ export function createOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  clientContext: ClientContext,
+  client: ThinClient<O>,
   apiName: K,
   objectSetDefinition: ObjectSetDefinition,
-  ontologyDefinition: O,
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const objectSet: ObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     union(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
-        clientContext,
+        client,
         apiName,
         {
           type: "union",
@@ -58,12 +61,11 @@ export function createOsdkObjectSet<
             ...otherObjectSets.map((s) => s.definition),
           ],
         },
-        ontologyDefinition,
       );
     },
     intersect(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
-        clientContext,
+        client,
         apiName,
         {
           type: "intersect",
@@ -72,12 +74,11 @@ export function createOsdkObjectSet<
             ...otherObjectSets.map((s) => s.definition),
           ],
         },
-        ontologyDefinition,
       );
     },
     subtract(...otherObjectSets): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
       return createOsdkObjectSet(
-        clientContext,
+        client,
         apiName,
         {
           type: "subtract",
@@ -86,11 +87,10 @@ export function createOsdkObjectSet<
             ...otherObjectSets.map((s) => s.definition),
           ],
         },
-        ontologyDefinition,
       );
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      const objectProperties = ontologyDefinition.objects[apiName].properties;
+      const objectProperties = client.ontology.objects[apiName].properties;
       const filters = mapPropertiesToSearchFilter<OsdkLegacyObjectFrom<O, K>>(
         objectProperties,
       );
@@ -102,31 +102,50 @@ export function createOsdkObjectSet<
       };
 
       return createOsdkObjectSet(
-        clientContext,
+        client,
         apiName,
         newDefinition,
-        ontologyDefinition,
       );
     },
     select<T extends keyof SelectableProperties<OsdkLegacyObjectFrom<O, K>>>(
       properties: T[],
-    ): FilteredPropertiesTerminalOperations<OsdkLegacyObjectFrom<O, K>, T[]> {
-      throw new Error("not implemented");
+    ): FilteredPropertiesTerminalOperationsWithGet<
+      OsdkLegacyObjectFrom<O, K>,
+      T[]
+    > {
+      return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
+        client,
+        apiName,
+        objectSetDefinition,
+        properties,
+      );
     },
   };
 
   return {
     definition: objectSetDefinition,
     ...objectSet,
-    ...createObjectSetSearchAround<O, K>(
-      clientContext,
+    ...createObjectSetSearchAround(
+      client,
       apiName,
       objectSetDefinition,
-      ontologyDefinition,
     ),
-    ...createObjectSetTerminalLoadStep<O, K>(),
-    ...createObjectSetOrderByStep<O, K>(),
-    ...createObjectSetAggregationStep<O, K>(),
+    ...createObjectSetBaseOrderByStepMethod(
+      client,
+      apiName,
+      objectSetDefinition,
+    ),
+    ...createObjectSetAggregationStep(
+      client,
+      apiName,
+      objectSetDefinition,
+      [],
+    ),
+    ...createObjectSetTerminalLoadStep(
+      client,
+      apiName,
+      objectSetDefinition,
+    ),
   };
 }
 
@@ -134,9 +153,8 @@ export function createBaseOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O> & string,
 >(
-  clientContext: ClientContext,
+  client: ThinClient<O>,
   apiName: K,
-  ontologyDefinition: O,
 ): BaseObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const baseObjectSetDefinition: BaseObjectSetDefinition = {
     type: "base",
@@ -145,22 +163,26 @@ export function createBaseOsdkObjectSet<
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["__apiName"],
-    description: ontologyDefinition.objects[apiName].description ?? "",
+    description: client.ontology.objects[apiName].description ?? "",
     get(primaryKey) {
-      return getObject(clientContext, apiName, primaryKey);
+      return getObject(client, apiName, primaryKey);
     },
     select(properties) {
-      throw new Error("not implemented");
+      return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
+        client,
+        apiName,
+        baseObjectSetDefinition,
+        properties,
+      );
     },
   };
 
   return {
     ...objectSet,
     ...createOsdkObjectSet<O, K>(
-      clientContext,
+      client,
       apiName,
       baseObjectSetDefinition,
-      ontologyDefinition,
     ),
   };
 }

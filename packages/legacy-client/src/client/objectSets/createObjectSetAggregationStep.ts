@@ -14,22 +14,186 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { AggregatableObjectSetStep } from "../../ontology-runtime";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import {
+  assertBucketingInternal,
+  ComputeStep,
+  isCountOperation,
+  isMultipleAggregationOperation,
+  MetricValueType,
+} from "../../ontology-runtime";
+import type {
+  AggregatableObjectSetStep,
+  BucketValue,
+  InternalBucketing,
+  ObjectSetDefinition,
+} from "../../ontology-runtime";
 import type {
   AggregateSelection,
   GroupBySelections,
   MultipleAggregateSelection,
 } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
+import { mapPropertiesToAggregatableProperties } from "./mapPropertiesToAggregatableProperties";
+import { mapPropertiesToGroupByProperties } from "./mapPropertiesToGroupByProperties";
+import { mapPropertiesToMultipleAggregationProperties } from "./mapPropertiesToMultipleAggregationProperties";
+
+const getAggregatableProperties = createCachedOntologyTransform(
+  mapPropertiesToAggregatableProperties,
+);
+const getGroupableProperties = createCachedOntologyTransform(
+  mapPropertiesToGroupByProperties,
+);
+const getMultipleAggregationProperties = createCachedOntologyTransform(
+  mapPropertiesToMultipleAggregationProperties,
+);
 
 export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): AggregatableObjectSetStep<
+>(
+  client: ThinClient<O>,
+  type: K,
+  definition: ObjectSetDefinition,
+  groupByClauses: Array<InternalBucketing<string, BucketValue>>,
+): AggregatableObjectSetStep<
   AggregateSelection<OsdkLegacyObjectFrom<O, K>>,
   MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
   GroupBySelections<OsdkLegacyObjectFrom<O, K>>
 > {
-  return {} as any;
+  const aggregatableProperties = getAggregatableProperties(
+    client.ontology,
+    type,
+  );
+  const groupableProperties = getGroupableProperties(
+    client.ontology,
+    type,
+  );
+  const multipleAggregationProperties = getMultipleAggregationProperties(
+    client.ontology,
+    type,
+  );
+
+  return {
+    aggregate(aggregateBuilder) {
+      const aggregate = aggregateBuilder(multipleAggregationProperties);
+      return new ComputeStep(
+        client,
+        definition,
+        groupByClauses,
+        Object.keys(aggregate).map(key => {
+          const aggregation = aggregate[key];
+          if (isCountOperation(aggregation)) {
+            return {
+              type: aggregation.operation,
+              name: key,
+              metricValueType: MetricValueType.NUMERIC,
+              namedAggregation: false,
+            };
+          }
+          if (isMultipleAggregationOperation(aggregation)) {
+            return {
+              type: aggregation.operation,
+              name: key,
+              field: aggregation.propertyApiName,
+              metricValueType: aggregation.metricValueType,
+              namedAggregation: false,
+            };
+          }
+          const _: never = aggregation;
+          throw new Error(
+            `Unknown aggregation type: ${(aggregation as any).type}`,
+          );
+        }),
+      );
+    },
+
+    approximateDistinct(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "approximateDistinct",
+        name: "distinctCount",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+
+    groupBy(propertySelector) {
+      const groupByClause = propertySelector(groupableProperties);
+      assertBucketingInternal(groupByClause);
+      return createObjectSetAggregationStep<O, K>(
+        client,
+        type,
+        definition,
+        [
+          ...groupByClauses,
+          groupByClause,
+        ],
+      ) as AggregatableObjectSetStep<
+        AggregateSelection<OsdkLegacyObjectFrom<O, K>>,
+        MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
+        GroupBySelections<OsdkLegacyObjectFrom<O, K>>,
+        any // TODO infer the TBucketGroup shape from groupByClause to be more strict here
+      >;
+    },
+
+    count() {
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "count",
+        name: "count",
+        metricValueType: MetricValueType.NUMERIC,
+        namedAggregation: true,
+      }]);
+    },
+
+    min(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "min",
+        name: "min",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+
+    max(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "max",
+        name: "max",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+
+    avg(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "avg",
+        name: "avg",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+
+    sum(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "sum",
+        name: "sum",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+  };
 }

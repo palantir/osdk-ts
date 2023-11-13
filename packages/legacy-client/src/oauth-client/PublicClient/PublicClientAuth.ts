@@ -130,6 +130,7 @@ export class PublicClientAuth implements Auth {
         );
         shouldMakeAuthRequest = false;
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.warn(
           "Failed to get OAuth2 token using PCKE, removing PCKE and starting a new auth flow",
           e,
@@ -303,6 +304,7 @@ export class PublicClientAuth implements Auth {
       localStorage.setItem(this.palantirRefreshToken, this.token.refreshToken);
       return true;
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.warn(
         "Failed to get OAuth2 refresh token. Removing refresh token",
         e,

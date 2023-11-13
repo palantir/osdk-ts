@@ -16,7 +16,7 @@
 
 import type { ActionParameterType } from "./ActionParameterType";
 
-/** Details about a parameter of an action or query. */
+/** Details about a parameter of an action. */
 export interface ActionParameterV2 {
   description?: string;
   dataType: ActionParameterType;

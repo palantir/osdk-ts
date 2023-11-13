@@ -14,45 +14,47 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { ClientContext } from "../ontology-runtime/ontologyProvider/calls/ClientContext";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import { Attachments } from "../ontology-runtime/baseTypes/attachments";
+import type { Actions } from "./actions";
+import { createActionProxy } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
+import { type Queries } from "./queries";
+import { createQueryProxy } from "./queryProxy";
 
 export class Ontology<O extends OntologyDefinition<any>> {
-  #definition: O;
-  #clientContext: ClientContext;
-  constructor(clientContext: ClientContext, definition: O) {
-    this.#definition = definition;
-    this.#clientContext = clientContext;
+  #client: ThinClient<O>;
+  constructor(client: ThinClient<O>) {
+    this.#client = client;
   }
 
   get objects(): Objects<O> {
-    return createObjectSetCreator(this.#clientContext, this.#definition);
+    return createObjectSetCreator(this.#client);
   }
 
-  get actions(): never {
-    throw new Error("not implemented");
+  get actions(): Actions<O> {
+    return createActionProxy(this.#client);
   }
 
-  get queries(): never {
-    throw new Error("not implemented");
+  get queries(): Queries<O> {
+    return createQueryProxy(this.#client);
   }
 
-  get attachments(): never {
-    throw new Error("not implemented");
+  get attachments(): Attachments {
+    return Attachments(this.#client);
   }
 }
 
 export function createObjectSetCreator<
   O extends OntologyDefinition<any>,
->(clientContext: ClientContext, definition: O): Objects<O> {
+>(client: ThinClient<O>): Objects<O> {
   return new Proxy(
     {},
     {
       get: (_target, p, _receiver) => {
         if (typeof p === "string") {
-          return createBaseOsdkObjectSet(clientContext, p, definition);
+          return createBaseOsdkObjectSet(client, p);
         }
 
         return undefined;

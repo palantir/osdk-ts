@@ -14,13 +14,69 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import type {
+  ObjectSetDefinition,
+  OrderByClause,
+} from "../../ontology-runtime";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
 
-export function createObjectSetOrderByStep<
+export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
-  return {} as any;
+>(
+  client: ThinClient<O>,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  orderByClauses: OrderByClause[] = [],
+): Omit<ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>, "all" | "page"> {
+  return {
+    orderBy(predicate) {
+      const objectProperties = client.ontology.objects[apiName].properties;
+      const orderBy = mapPropertiesToOrderBy<OsdkLegacyObjectFrom<O, K>>(
+        objectProperties,
+      );
+      const orderByClause = predicate(orderBy);
+
+      return createObjectSetOrderByStep(
+        client,
+        apiName,
+        objectSet,
+        [...orderByClauses, orderByClause],
+      );
+    },
+  };
+}
+
+function createObjectSetOrderByStep<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+>(
+  client: ThinClient<O>,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  orderByClauses: OrderByClause[] = [],
+): ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>> {
+  return {
+    ...createObjectSetBaseOrderByStepMethod(
+      client,
+      apiName,
+      objectSet,
+      orderByClauses,
+    ),
+    ...createObjectSetTerminalLoadStep(
+      client,
+      apiName,
+      objectSet,
+      [],
+      orderByClauses,
+    ),
+  };
 }

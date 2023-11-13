@@ -16,12 +16,9 @@
 
 export { createClient, createThinClient, isOk } from "./client";
 export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
-export { default as createOpenApiRequest } from "./client/internal/net/createOpenApiRequest";
-export type {
-  BaseGroupValue,
-  Bucketing,
-  GroupValue,
-} from "./client/internal/net/types";
+
+export { createOpenApiRequest } from "./client/createOpenApiRequest";
+
 export type { WhereClause } from "./client/query";
 export type { OsdkObject } from "./ontology";
 
@@ -43,3 +40,29 @@ export type {
   PropertyKeysFrom,
   ValidPropertyTypes,
 } from "./ontology/Definition";
+
+export type {
+  ActionDefinition,
+  ActionModifiedEntity,
+  ActionParameterDefinition,
+  ValidActionParameterTypes,
+} from "./ontology/ActionDefinition";
+
+export type {
+  AggregationKeyDataType,
+  ObjectQueryDataType,
+  ObjectSetQueryDataType,
+  QueryDataTypeDefinition,
+  QueryDefinition,
+  QueryParameterDefinition,
+  RangeAggregationKeyDataType,
+  SetQueryDataType,
+  SimpleAggregationKeyDataType,
+  StructQueryDataType,
+  ThreeDimensionalAggregationDataType,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalAggregationDataType,
+  TwoDimensionalQueryAggregationDefinition,
+  UnionQueryDataType,
+  ValidBaseQueryDataTypes,
+} from "./ontology/QueryDefinition";

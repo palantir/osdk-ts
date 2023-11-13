@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { PalantirApiError } from "../../../Errors";
 import type { OntologyObject } from "../../baseTypes";
 import type { Page } from "../../paging";
 import {
-  handleListObjectsError,
-  ListObjectsErrorHandler,
+  handleListLinkedObjectsError,
+  ListLinkedObjectsErrorHandler,
 } from "../ErrorHandlers";
-import type { ListObjectsError } from "../Errors";
+import type { ListLinkedObjectsError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { createPageIterator } from "./util/createPageIterator";
 import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,
@@ -37,11 +37,11 @@ export async function pageLinkedObjects<T extends OntologyObject>(
     pageSize?: number;
     pageToken?: string;
   },
-): Promise<Result<Page<T>, ListObjectsError>> {
-  const response = createPageIterator<T, ListObjectsError>(
+): Promise<Result<Page<T>, ListLinkedObjectsError>> {
+  const response = createPageIterator<T, ListLinkedObjectsError>(
     async () => {
       return getLinkedObjectsPage<T>(
-        context,
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
@@ -50,15 +50,15 @@ export async function pageLinkedObjects<T extends OntologyObject>(
     },
     () =>
       iterateLinkedObjects(
-        context,
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
         options,
       ),
     (palantirApiError: PalantirApiError) => {
-      return handleListObjectsError(
-        new ListObjectsErrorHandler(),
+      return handleListLinkedObjectsError(
+        new ListLinkedObjectsErrorHandler(),
         palantirApiError,
         palantirApiError.parameters,
       );

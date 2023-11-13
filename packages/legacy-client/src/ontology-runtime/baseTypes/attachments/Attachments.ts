@@ -14,42 +14,25 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../../oauth-client";
-import type {
-  AttachmentsError,
-  OntologyMetadata,
-} from "../../ontologyProvider";
-import { OntologyProvider } from "../../ontologyProvider";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import { uploadAttachment } from "../../ontologyProvider/calls/uploadAttachment";
+import type { AttachmentsError } from "../../ontologyProvider/Errors";
 import type { Result } from "../../ontologyProvider/Result";
 import type { Attachment } from "./Attachment";
 
-export class Attachments {
-  #provider: OntologyProvider;
-
-  private constructor(
-    auth: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
-  ) {
-    this.#provider = new OntologyProvider(auth, stack, ontologyMetadata);
-  }
-
-  public static initializeAttachmentsClient(
-    auth: Auth,
-    stack: string,
-    ontologyMetadata: OntologyMetadata,
-  ): Attachments {
-    return new Attachments(auth, stack, ontologyMetadata);
-  }
-
-  public async upload(
+export interface Attachments {
+  upload(
     fileName: string,
     data: Blob,
-  ): Promise<Result<Attachment, AttachmentsError>> {
-    return this.#provider.uploadAttachment(fileName, data);
-  }
-
-  public static isAttachment(obj: any): boolean {
-    return obj?.type === "Attachment";
-  }
+  ): Promise<Result<Attachment, AttachmentsError>>;
 }
+
+export const Attachments = (
+  thinClient: ThinClient<OntologyDefinition<any>>,
+) => {
+  return {
+    upload(fileName: string, data: Blob) {
+      return uploadAttachment(thinClient, fileName, data);
+    },
+  };
+};

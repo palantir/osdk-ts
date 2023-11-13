@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/gateway/types";
+import type { PropertyDefinition, ValidPropertyTypes } from "@osdk/api";
+import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2,
@@ -23,16 +23,68 @@ export function wirePropertyV2ToSdkPropertyDefinition(
   switch (input.dataType.type) {
     case "integer":
     case "string":
-    case "boolean": {
+    case "byte":
+    case "decimal":
+    case "double":
+    case "float":
+    case "long":
+    case "short":
+    case "boolean":
+    case "date":
+    case "attachment":
+    case "geopoint":
+    case "geoshape":
+    case "timestamp":
+    case "timeseries":
       return {
-        type: input.dataType.type,
-        // TODO: These wire objects don't have nullable, readonly
+        multiplicity: false,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
+      };
+    case "array": {
+      return {
+        multiplicity: true,
+        type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
+        nullable: true,
       };
     }
-    default: {
+    default:
+      const _: never = input.dataType;
       throw new Error(
-        `Not implemented: wirePropertyToSdkPropertyDefinition(${input.dataType.type})`,
+        `Unexpected data type ${JSON.stringify(input.dataType)}`,
       );
-    }
+  }
+}
+
+function objectPropertyTypeToSdkPropertyDefinition(
+  propertyType: ObjectPropertyType,
+): keyof ValidPropertyTypes {
+  switch (propertyType.type) {
+    case "integer":
+    case "string":
+    case "byte":
+    case "decimal":
+    case "double":
+    case "float":
+    case "long":
+    case "short":
+    case "boolean":
+    case "attachment":
+    case "geopoint":
+    case "geoshape":
+    case "timestamp":
+      return propertyType.type;
+    case "date":
+      return "datetime";
+    case "array":
+      return objectPropertyTypeToSdkPropertyDefinition(propertyType.subType);
+    case "timeseries":
+      if (propertyType.itemType.type === "string") {
+        return "stringTimeseries";
+      }
+      return "numericTimeseries";
+    default:
+      const _: never = propertyType;
+      throw new Error(`Unexecpected data type ${propertyType}`);
   }
 }

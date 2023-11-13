@@ -23,8 +23,8 @@ import type {
   PropertyKeysFrom,
 } from "../../ontology";
 import type { NOOP } from "../../util";
+import { createOpenApiRequest } from "../createOpenApiRequest";
 import type { Wire } from "../internal/net";
-import { createOpenApiRequest } from "../internal/net";
 import type { PageResult } from "../PageResult";
 import type { ThinClient } from "../ThinClient";
 

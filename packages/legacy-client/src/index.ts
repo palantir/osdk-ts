@@ -18,6 +18,7 @@ export {
   BaseFoundryClient,
   type BaseObjectSet,
   type FoundryClientOptions,
+  type ObjectSet,
   type Ontology,
 } from "./client";
 export {
@@ -31,7 +32,6 @@ export {
   ActionExecutionMode,
   ActionResponse,
   ActionValidationResult,
-  AggregatableObjectSet,
   ArrayType,
   AttachmentType,
   BooleanType,
@@ -65,6 +65,8 @@ export {
   visitError,
 } from "./ontology-runtime";
 export type {
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
   AggregateObjectsError,
   AggregationGroup,
   AggregationResult,
@@ -78,16 +80,22 @@ export type {
   ListLinkedObjectsError,
   ListObjectsError,
   LoadObjectSetError,
+  MultiLink,
   OntologyObject,
   Page,
   PermissionDenied,
   QueryError,
   QueryResponse,
+  Range,
+  RangeType,
   Result,
   SearchObjectsError,
+  SingleLink,
+  ThreeDimensionalAggregation,
   TimeSeries,
   TimeSeriesError,
   TimeSeriesPoint,
+  TwoDimensionalAggregation,
   Unauthorized,
   UnknownError,
 } from "./ontology-runtime";

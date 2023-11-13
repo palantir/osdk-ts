@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
+import type { QueryDefinition } from "./QueryDefinition";
 
 export type ObjectInfoFrom<
   O extends OntologyDefinition<any>,
@@ -40,10 +42,20 @@ export type PropertyDefinitionFrom<
   P extends PropertyKeysFrom<O, K>,
 > = PropertyDefinitionsFrom<O, K>[P];
 
-export interface OntologyDefinition<K extends string> {
+export interface OntologyDefinition<
+  K extends string,
+  A extends string = any,
+  Q extends string = any,
+> {
   metadata: OntologyMetadata;
   objects: {
     [KK in K]: ObjectDefinition<KK, K>;
+  };
+  actions: {
+    [AA in A]: ActionDefinition<AA, K>;
+  };
+  queries: {
+    [QQ in Q]: QueryDefinition<QQ, K>;
   };
 }
 
@@ -85,6 +97,7 @@ export interface PropertyDefinition {
   displayName?: string;
   description?: string;
   type: keyof ValidPropertyTypes; // FIXME WHAT ARE THE TYPES
+  multiplicity?: boolean;
   nullable?: boolean;
 }
 
@@ -94,11 +107,30 @@ export interface ValidPropertyTypes {
   double: number;
   boolean: boolean;
   integer: number;
+  timestamp: Date;
+  short: number;
+  long: number;
+  float: number;
+  decimal: number;
+  byte: number;
+
+  numericTimeseries: any;
+  stringTimeseries: any;
+
+  attachment: any;
+  geopoint: any;
+  geoshape: any;
 }
 
+type MaybeArray<T extends PropertyDefinition, U> = T["multiplicity"] extends
+  true ? Array<U> : U;
+
+type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
+  ? U | undefined
+  : U;
+
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  T["nullable"] extends false ? ValidPropertyTypes[T["type"]]
-    : ValidPropertyTypes[T["type"]] | undefined;
+  MaybeNullable<T, MaybeArray<T, ValidPropertyTypes[T["type"]]>>;
 
 export type OsdkObjectLink<
   K extends string,

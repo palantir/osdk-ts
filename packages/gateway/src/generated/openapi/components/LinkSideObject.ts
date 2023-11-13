@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 import type { PropertyValue } from "./PropertyValue";
 
 export interface LinkSideObject {
   primaryKey: PropertyValue;
-  objectType: PropertyApiName;
+  objectType: ObjectTypeApiName;
 }

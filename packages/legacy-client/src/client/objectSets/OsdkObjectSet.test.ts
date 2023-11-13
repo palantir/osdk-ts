@@ -14,33 +14,48 @@
  * limitations under the License.
  */
 
-import { createThinClient } from "@osdk/api";
-import { describe, expect, it, vi } from "vitest";
+import type { ThinClient } from "@osdk/api";
+import { createThinClient, isOk } from "@osdk/api";
+import type {
+  AggregateObjectSetResponseV2,
+  LoadObjectSetResponseV2,
+  OntologyObjectV2,
+} from "@osdk/gateway/types";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedFunction,
+  vi,
+} from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
-import type { ClientContext } from "../../ontology-runtime/ontologyProvider/calls/ClientContext";
 import { MockOntology } from "../../util/test";
-import { createOsdkObjectSet } from "./OsdkObjectSet";
+import {
+  getMockTaskObject,
+  getMockTodoObject,
+} from "../../util/test/mocks/mockObjects";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
+import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
-  it("creates a search on an ObjectSet", () => {
-    const baseObjectSet: ObjectSetDefinition = {
-      type: "base",
-      objectType: "Todo",
-    };
+  const origin = "https://mock.com";
+  const baseUrl = `${origin}/api/v2/ontologies/`;
 
-    const context: ClientContext = {
-      client: createThinClient(MockOntology, "", () => "", vi.fn()),
-      ontology: MockOntology,
-      createObject: vi.fn(),
-    };
-
-    const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
-      context,
-      "Todo",
-      baseObjectSet,
+  let fetch: MockedFunction<typeof globalThis.fetch>;
+  let client: ThinClient<typeof MockOntology>;
+  beforeEach(() => {
+    fetch = vi.fn();
+    client = createThinClient(
       MockOntology,
+      origin,
+      () => "Token",
+      fetch,
     );
+  });
 
+  it("creates a search on an ObjectSet", () => {
+    const os = createBaseTodoObjectSet(client);
     const whereObjectSet = os.where(a => a.id.eq("123"));
 
     expect(whereObjectSet.definition).toEqual({
@@ -55,30 +70,336 @@ describe("OsdkObjectSet", () => {
   });
 
   it("creates a searchAround on an ObjectSet", () => {
-    const baseObjectSet: ObjectSetDefinition = {
-      type: "base",
-      objectType: "Todo",
-    };
-
-    const context: ClientContext = {
-      client: createThinClient(MockOntology, "", () => "", vi.fn()),
-      ontology: MockOntology,
-      createObject: vi.fn(),
-    };
-
-    const os = createOsdkObjectSet<typeof MockOntology, "Todo">(
-      context,
-      "Todo",
-      baseObjectSet,
-      MockOntology,
-    );
-
-    const searchAroundObjectSet = os.searchAroundTask();
+    const os = createBaseTodoObjectSet(client);
+    const searchAroundObjectSet = os.searchAroundLinkedTask();
 
     expect(searchAroundObjectSet.definition).toEqual({
       type: "searchAround",
       objectSet: baseObjectSet,
-      link: "Task",
+      link: "linkedTask",
     });
   });
+
+  it("creates the count aggregation", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.count().compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "count", name: "count" }],
+      }),
+    );
+  });
+
+  it("creates the min aggregation", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.min(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "min", name: "min", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the max aggregation", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.max(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "max", name: "max", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the sum aggregation", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.sum(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "sum", name: "sum", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the avg aggregation", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.avg(s => s.points).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "avg", name: "avg", field: "points" }],
+      }),
+    );
+  });
+
+  it("creates the groupBy clauses", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.groupBy(s => s.complete.exact()).groupBy(s => s.body.exact())
+      .count().compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [{ type: "exact", field: "complete" }, {
+          type: "exact",
+          field: "body",
+        }],
+        aggregation: [{ type: "count", name: "count" }],
+      }),
+    );
+  });
+
+  it("creates complex aggregation queries", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await (os.aggregate(b => ({
+      foo: b.complete.approximateDistinct(),
+      bar: b.body.approximateDistinct(),
+    })).compute());
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{
+          type: "approximateDistinct",
+          name: "foo",
+          field: "complete",
+        }, { type: "approximateDistinct", name: "bar", field: "body" }],
+      }),
+    );
+  });
+
+  it("creates approximateDistinct queries", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockAggregateResponse({ data: [] });
+    await os.approximateDistinct(s => s.complete).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{
+          type: "approximateDistinct",
+          name: "distinctCount",
+          field: "complete",
+        }],
+      }),
+    );
+  });
+
+  it("supports select methods - all", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const result = await os.select(["id", "body", "complete"]).all();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: ["id", "body", "complete"],
+      }),
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports select methods - page", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const result = await os.select(["id", "body", "complete"]).page({
+      pageSize: 5,
+      pageToken: "fakePageToken",
+    });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: ["id", "body", "complete"],
+        pageSize: 5,
+        pageToken: "fakePageToken",
+      }),
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports select methods - get", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const result = await os.select(["id", "body", "complete"]).get("123");
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      `${baseUrl}Ontology/objects/Todo/123?select=id&select=body&select=complete`,
+      {
+        method: "GET",
+        body: undefined,
+        headers: expect.anything(),
+      },
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports round-trip of circular links", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const todoResponse = await os.get("1");
+
+    if (!isOk(todoResponse)) {
+      expect.fail("todo response was not ok");
+    }
+
+    mockObjectPage([getMockTaskObject()]);
+    const taskResponse = await todoResponse.value.linkedTask.get();
+
+    if (!isOk(taskResponse)) {
+      expect.fail("task response was not ok");
+    }
+
+    mockObjectPage([getMockTodoObject()]);
+    const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
+
+    if (!isOk(linkedTodosResponse)) {
+      expect.fail("linked todos response was not ok");
+    }
+
+    expect(linkedTodosResponse.value.length).toEqual(1);
+  });
+
+  it("loads a page", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const page = await os.page({ pageSize: 1 });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: [],
+        pageSize: 1,
+      }),
+    );
+    expect(page.type).toEqual("ok");
+  });
+
+  it("handles multiple clients correctly", async () => {
+    const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client1 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch1,
+    );
+    const todo1 = convertWireToOsdkObject(client1, "Todo", getMockTodoObject());
+
+    const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client2 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch2,
+    );
+    const todo2 = convertWireToOsdkObject(client2, "Todo", getMockTodoObject());
+
+    // same prototype
+    expect(Object.getPrototypeOf(todo1)).toBe(Object.getPrototypeOf(todo2));
+
+    fetch1.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+    fetch2.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+
+    // different client/fetch
+    await todo1.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledTimes(0);
+
+    await todo2.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledOnce();
+  });
+
+  function mockObjectPage(
+    objects: OntologyObjectV2[],
+  ) {
+    const response: LoadObjectSetResponseV2 = {
+      data: objects,
+    };
+
+    fetch.mockResolvedValue({
+      json: () => {
+        return Promise.resolve(response);
+      },
+      status: 200,
+      ok: true,
+    } as any);
+  }
+
+  function mockAggregateResponse(response: AggregateObjectSetResponseV2) {
+    fetch.mockResolvedValue({
+      json: () => Promise.resolve(response),
+      status: 200,
+      ok: true,
+    } as any);
+  }
+
+  function expectedJestResponse(
+    endpoint: string,
+    body: object,
+  ): [string, RequestInit] {
+    return [
+      `${baseUrl}${endpoint}`,
+      {
+        body: JSON.stringify(body),
+        headers: expect.anything(),
+        method: "POST",
+      },
+    ];
+  }
 });
+
+const baseObjectSet: ObjectSetDefinition = {
+  type: "base",
+  objectType: "Todo",
+};
+
+function createBaseTodoObjectSet(
+  client: ThinClient<typeof MockOntology>,
+) {
+  const os = createBaseOsdkObjectSet<typeof MockOntology, "Todo">(
+    client,
+    "Todo",
+  );
+
+  return os;
+}

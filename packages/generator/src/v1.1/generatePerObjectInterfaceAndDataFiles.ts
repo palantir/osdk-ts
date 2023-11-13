@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";
@@ -28,21 +29,41 @@ export async function generatePerObjectInterfaceAndDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
+      const links = ontology.linkTypes[object.apiName];
+      const uniqueApiNames = new Set(links?.map(a => a.objectTypeApiName));
       await fs.writeFile(
-        `${outDir}/${object.apiName}.ts`,
+        path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
         import { ObjectDefinition } from "@osdk/api";
-        ${wireObjectTypeV2ToObjectInterfaceStringV1(object)}
+        ${
+          wireObjectTypeV2ToObjectInterfaceStringV1(
+            object,
+            links,
+          )
+        }
 
          export const ${object.apiName} = ${
-          JSON.stringify(wireObjectTypeV2ToSdkObjectDefinition(object), null, 2)
-        } satisfies ObjectDefinition<"${object.apiName}", "${object.apiName}">;`),
+          JSON.stringify(
+            wireObjectTypeV2ToSdkObjectDefinition(
+              object,
+              links,
+            ),
+            null,
+            2,
+          )
+        } satisfies ObjectDefinition<"${object.apiName}", ${
+          uniqueApiNames.size > 0
+            ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join(
+              "|",
+            )
+            : "never"
+        }>;`),
       );
     }),
   );
 
   await fs.writeFile(
-    `${outDir}/index.ts`,
+    path.join(outDir, "index.ts"),
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>

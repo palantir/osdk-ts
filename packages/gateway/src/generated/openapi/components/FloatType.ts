@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export interface FloatType {}
+export interface FloatType {
+}

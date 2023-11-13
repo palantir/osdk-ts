@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../oauth-client/Auth";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject } from "../baseTypes";
 
 export interface OntologyObjectFactory {
   create(
+    client: ThinClient<OntologyDefinition<any>>,
     objectTypeId: string,
-    authClient: Auth,
-    stack: string,
     objectRid: string,
     properties: object,
   ): OntologyObject;

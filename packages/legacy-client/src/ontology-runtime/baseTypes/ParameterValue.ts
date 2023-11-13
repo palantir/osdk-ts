@@ -15,15 +15,16 @@
  */
 
 import type {
+  Attachment,
   BucketValue,
   ObjectSetDefinition,
   QueryBucketKey,
   QueryThreeDimensionalAggregation,
   QueryTwoDimensionalAggregation,
   ThreeDimensionalAggregation,
+  TimeSeries,
   TwoDimensionalAggregation,
 } from "..";
-import type { AttachmentProperty } from "./attachments";
 import type { GeoJson, GeoJsonPoint, GeoPoint, GeoShape } from "./geoshapes";
 import type { LocalDate } from "./localDate";
 import type { OntologyObject } from "./OntologyObject";
@@ -38,10 +39,11 @@ export type ParameterValue =
   | GeoShape
   | GeoPoint
   | OntologyObject
-  | AttachmentProperty
+  | Attachment
   | Set<ParameterValue>
   | TwoDimensionalAggregation<QueryBucketKey, BucketValue>
   | ThreeDimensionalAggregation<QueryBucketKey, QueryBucketKey, BucketValue>
+  | TimeSeries<any>
   | ParameterValue[]
   | {
     [key: string]: ParameterValue;

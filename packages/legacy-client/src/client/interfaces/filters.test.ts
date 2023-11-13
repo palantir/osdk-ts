@@ -15,11 +15,7 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type {
-  BooleanFilter,
-  NumericFilter,
-  StringFilter,
-} from "../../ontology-runtime";
+import type { BooleanFilter, StringFilter } from "../../ontology-runtime";
 import type { Todo } from "../../util/test/TodoObject";
 import type { ObjectTypeFilter } from "./filters";
 
@@ -27,7 +23,7 @@ describe("Filters", () => {
   it("correct types", () => {
     expectTypeOf<ObjectTypeFilter<Todo>>().toMatchTypeOf<{
       complete: BooleanFilter;
-      id: NumericFilter;
+      id: StringFilter;
       body: StringFilter;
     }>();
   });

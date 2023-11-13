@@ -1,8 +1,15 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
-import type { Objects } from './ontologyObjects';
-import { Todo } from './objects/Todo';
+import { actionTakesAllParameterTypes } from './actions/actionTakesAllParameterTypes';
+import { createTodo } from './actions/createTodo';
+import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
 import { Person } from './objects/Person';
+import { Todo } from './objects/Todo';
+import type { Actions } from './ontologyActions';
+import type { Objects } from './ontologyObjects';
+import type { Queries } from './ontologyQueries';
+import { getTodoCount } from './queries/getTodoCount';
+import { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes';
 
 export const Ontology = {
   metadata: {
@@ -13,9 +20,24 @@ export const Ontology = {
   objects: {
     Todo,
     Person,
+    ObjectTypeWithAllPropertyTypes,
   },
-} satisfies OntologyDefinition<'Todo' | 'Person'>;
+  actions: {
+    actionTakesAllParameterTypes,
+    createTodo,
+  },
+  queries: {
+    queryTakesAllParameterTypes,
+    getTodoCount,
+  },
+} satisfies OntologyDefinition<
+  'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes',
+  'actionTakesAllParameterTypes' | 'createTodo',
+  'queryTakesAllParameterTypes' | 'getTodoCount'
+>;
 
 export interface Ontology extends ClientOntology<typeof Ontology> {
   objects: Objects;
+  actions: Actions;
+  queries: Queries;
 }

@@ -33,8 +33,8 @@ describe(generateFoundryClientFile, () => {
     expect(
       helper.getFiles()[`${BASE_PATH}/FoundryClient.ts`],
     ).toMatchInlineSnapshot(`
-      "import { BaseFoundryClient } from '@osdk/legacy-client';
-      import type { Auth, FoundryClientOptions } from '@osdk/legacy-client';
+      "import type { Auth, FoundryClientOptions } from '@osdk/legacy-client';
+      import { BaseFoundryClient } from '@osdk/legacy-client';
       import { Ontology } from './Ontology';
 
       export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {

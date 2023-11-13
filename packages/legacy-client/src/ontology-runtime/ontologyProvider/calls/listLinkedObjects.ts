@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { OntologyObject } from "../../baseTypes";
+import type { Page } from "../../paging";
 import {
   handleListLinkedObjectsError,
   ListLinkedObjectsErrorHandler,
 } from "../ErrorHandlers";
 import type { ListLinkedObjectsError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { wrapResult } from "./util/wrapResult";
 
 export function listLinkedObjects<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: T["__apiName"],
@@ -34,29 +35,23 @@ export function listLinkedObjects<T extends OntologyObject>(
   return wrapResult(
     async () => {
       const allObjects: T[] = [];
-      let page = await getLinkedObjectsPage<T>(
-        context,
-        sourceApiName,
-        primaryKey,
-        linkTypeApiName,
-      );
-      for (const object of page.data) {
-        allObjects.push(object);
-      }
-      while (page.nextPageToken) {
+
+      let page: Page<T> | undefined;
+      do {
         page = await getLinkedObjectsPage<T>(
-          context,
+          client,
           sourceApiName,
           primaryKey,
           linkTypeApiName,
           {
-            pageToken: page.nextPageToken,
+            pageToken: page?.nextPageToken,
           },
         );
         for (const object of page.data) {
           allObjects.push(object);
         }
-      }
+      } while (page.nextPageToken);
+
       return allObjects;
     },
     e =>

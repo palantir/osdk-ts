@@ -36,6 +36,8 @@ export type huh = AggregatableKeys<
         };
       };
     };
+    actions: {};
+    queries: {};
   },
   "Todo"
 >;
@@ -58,6 +60,8 @@ export type Q = AggregationClause<
         };
       };
     };
+    actions: {};
+    queries: {};
   },
   "Todo"
 >;

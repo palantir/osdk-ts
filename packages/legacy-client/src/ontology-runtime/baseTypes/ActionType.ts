@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
-import type {
-  GetObjectError,
-  OntologyProvider,
-  Result,
-} from "../ontologyProvider";
+import type { GetObjectError, Result } from "../ontologyProvider";
+import { getObject } from "../ontologyProvider/calls/getObject";
 import type { OntologyObject } from "./OntologyObject";
 
 export type ActionExecutionOptions = {
@@ -124,15 +122,15 @@ export const ActionResponse = {
     TAddedObjects extends OntologyObject,
     TModifiedObjects extends OntologyObject,
   >(
+    client: ThinClient<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
-    provider?: OntologyProvider,
   ): ActionResponse<Edits<OntologyObject, OntologyObject> | undefined> => {
     const validation = {
       result: ActionValidationResult[
         response.validation?.result as keyof typeof ActionValidationResult
       ],
     };
-    if (provider && response.edits?.type === "edits") {
+    if (response.edits?.type === "edits") {
       const added = [];
       const modified = [];
       for (const edit of response.edits.edits) {
@@ -140,16 +138,14 @@ export const ActionResponse = {
           added.push({
             apiName: edit.objectType,
             primaryKey: edit.primaryKey,
-            get: () =>
-              provider.get<TAddedObjects>(edit.objectType, edit.primaryKey),
+            get: () => getObject(client, edit.objectType, edit.primaryKey),
           });
         }
         if (edit.type === "modifyObject") {
           modified.push({
             apiName: edit.objectType,
             primaryKey: edit.primaryKey,
-            get: () =>
-              provider.get<TModifiedObjects>(edit.objectType, edit.primaryKey),
+            get: () => getObject(client, edit.objectType, edit.primaryKey),
           });
         }
       }

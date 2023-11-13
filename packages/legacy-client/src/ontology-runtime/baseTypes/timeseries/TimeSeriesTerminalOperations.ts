@@ -14,67 +14,21 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import type { StreamTimeSeriesPointsRequest as StreamPointsBody } from "@osdk/gateway/types";
-import type { Auth } from "../../../oauth-client";
-import {
-  OntologyProvider,
-  type Result,
-  type TimeSeriesError,
-} from "../../ontologyProvider";
-import type { OntologyMetadata } from "../../ontologyProvider/OntologyMetadata";
+import { type Result, type TimeSeriesError } from "../../ontologyProvider";
+import { getAllTimeSeriesPoints } from "../../ontologyProvider/calls/getAllTimeSeriesPoints";
+import { iterateTimeSeriesPoints } from "../../ontologyProvider/calls/iterateTimeSeriesPoints";
 import type { TimeSeriesPoint } from "./TimeSeriesPoint";
 
-export class TimeSeriesTerminalOperations<T extends number | string> {
-  #provider: OntologyProvider;
-  #ontologyMetadata: OntologyMetadata;
-  #auth: Auth;
-  protected stack: string;
-  protected propertyName: string;
-  protected apiName: string;
-  protected primaryKey: string;
-  protected body: StreamPointsBody;
-
-  constructor(
-    auth: Auth,
-    stack: string,
-    propertyName: string,
-    apiName: string,
-    primaryKey: string,
-    ontologyMetadata: OntologyMetadata,
-    body: StreamPointsBody = {},
-  ) {
-    this.#provider = new OntologyProvider(auth, stack, ontologyMetadata);
-    this.#ontologyMetadata = ontologyMetadata;
-    this.#auth = auth;
-
-    this.stack = stack;
-    this.propertyName = propertyName;
-    this.apiName = apiName;
-    this.primaryKey = primaryKey;
-    this.body = body;
-  }
-
-  protected getAuth(): Auth {
-    return this.#auth;
-  }
-
-  protected getOntologyMetadata(): OntologyMetadata {
-    return this.#ontologyMetadata;
-  }
+export interface TimeSeriesTerminalOperations<T extends number | string> {
   /**
    * Get all the Time Series points.
    *
    * @example
    * const allPoints = object.property.points.all()
    */
-  all(): Promise<Result<Array<TimeSeriesPoint<T>>>> {
-    return this.#provider.getAllTimeSeriesPoints(
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
-      this.body,
-    );
-  }
+  all(): Promise<Result<Array<TimeSeriesPoint<T>>>>;
 
   /**
    * Create an iterator to asynchronously iterate through Time Series points.
@@ -88,14 +42,36 @@ export class TimeSeriesTerminalOperations<T extends number | string> {
    *         // Handle Time Series Point
    * }
    */
-  iterate(): TimeSeriesIterator<T> {
-    return this.#provider.iterateTimeSeriesPoints(
-      this.apiName,
-      this.primaryKey,
-      this.propertyName,
-      this.body,
-    );
-  }
+  iterate(): TimeSeriesIterator<T>;
+}
+
+export function createTimeSeriesTerminalOperations<T extends number | string>(
+  client: ThinClient<OntologyDefinition<any>>,
+  propertyName: string,
+  apiName: string,
+  primaryKey: string,
+  body: StreamPointsBody = {},
+) {
+  return {
+    all(): Promise<Result<Array<TimeSeriesPoint<T>>>> {
+      return getAllTimeSeriesPoints(
+        client,
+        apiName,
+        primaryKey,
+        propertyName,
+        body,
+      );
+    },
+    iterate(): TimeSeriesIterator<T> {
+      return iterateTimeSeriesPoints(
+        client,
+        apiName,
+        primaryKey,
+        propertyName,
+        body,
+      );
+    },
+  };
 }
 export type TimeSeriesIterator<T extends string | number> = AsyncGenerator<
   Result<TimeSeriesPoint<T>, TimeSeriesError>,

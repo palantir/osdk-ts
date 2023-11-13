@@ -14,13 +14,49 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  ThinClient,
+} from "@osdk/api";
+import type {
+  ObjectSetDefinition,
+  OrderByClause,
+} from "../../ontology-runtime";
+import { loadAllObjects } from "../../ontology-runtime/ontologyProvider/calls/loadObjects";
+import { loadObjectsPage } from "../../ontology-runtime/ontologyProvider/calls/loadObjectsPage";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
 export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(): ObjectSetTerminalLoadStep<OsdkLegacyObjectFrom<O, K>> {
-  return {} as any;
+>(
+  client: ThinClient<O>,
+  apiName: K,
+  objectSet: ObjectSetDefinition,
+  selectedProperties: string[] = [],
+  orderByClauses: OrderByClause[] = [],
+): ObjectSetTerminalLoadStep<OsdkLegacyObjectFrom<O, K>> {
+  return {
+    async page(options) {
+      return loadObjectsPage<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
+    },
+    async all() {
+      return loadAllObjects<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+      );
+    },
+  };
 }

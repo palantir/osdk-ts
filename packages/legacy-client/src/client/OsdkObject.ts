@@ -14,27 +14,63 @@
  * limitations under the License.
  */
 
-import type {
-  LinkDefinitionFrom,
-  LinkKeysFrom,
-  LinkTargetTypeFrom,
-  ObjectTypesFrom,
-  OntologyDefinition,
-  OsdkObjectPropertyType,
-  PropertyDefinitionFrom,
-  PropertyKeysFrom,
+import {
+  type LinkDefinitionFrom,
+  type LinkKeysFrom,
+  type LinkTargetTypeFrom,
+  type ObjectTypesFrom,
+  type OntologyDefinition,
+  type PropertyDefinition,
+  type PropertyDefinitionFrom,
+  type PropertyKeysFrom,
 } from "@osdk/api";
 import type {
+  Attachment,
+  GeoPoint,
+  GeoShape,
+  LocalDate,
   MultiLink,
   OntologyObject,
   SingleLink,
+  TimeSeries,
+  Timestamp,
 } from "../ontology-runtime/baseTypes";
+
+export interface ValidLegacyPropertyTypes {
+  string: string;
+  datetime: LocalDate;
+  double: number;
+  boolean: boolean;
+  integer: number;
+  timestamp: Timestamp;
+  short: number;
+  long: number;
+  float: number;
+  decimal: number;
+  byte: number;
+
+  attachment: Attachment;
+  geopoint: GeoPoint;
+  geoshape: GeoShape;
+  numericTimeseries: TimeSeries<number>;
+  stringTimeseries: TimeSeries<string>;
+}
+
+type MaybeArray<T extends PropertyDefinition, U> = T["multiplicity"] extends
+  true ? Array<U> : U;
+
+type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
+  ? U | undefined
+  : U;
+
+export type OsdkObjectLegacyPropertyType<T extends PropertyDefinition> =
+  MaybeNullable<T, MaybeArray<T, ValidLegacyPropertyTypes[T["type"]]>>;
 
 export type OsdkLegacyPropertiesFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = {
-  [P in PropertyKeysFrom<O, K>]: OsdkObjectPropertyType<
+  [P in PropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
     PropertyDefinitionFrom<O, K, P>
   >;
 };
@@ -53,11 +89,22 @@ export type OsdkLegacyLinksFrom<
     : never;
 };
 
+export type OsdkLegacyPrimaryKeyType<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = ValidLegacyPropertyTypes[O["objects"][K]["primaryKeyType"]];
+
+export type OsdkLegacyOntologyObject<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = K extends string ? OntologyObject<K, OsdkLegacyPrimaryKeyType<O, K>>
+  : never;
+
 export type OsdkLegacyObjectFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = K extends string ?
     & OsdkLegacyPropertiesFrom<O, K>
     & OsdkLegacyLinksFrom<O, K>
-    & OntologyObject<K>
+    & OsdkLegacyOntologyObject<O, K>
   : never;

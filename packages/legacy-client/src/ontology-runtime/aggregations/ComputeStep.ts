@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../oauth-client";
-import type { BaseObjectType, ObjectSetDefinition } from "../baseTypes";
-import {
-  type AggregateObjectsError,
-  type OntologyMetadata,
-  OntologyProvider,
-  type Result,
-} from "../ontologyProvider";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { ObjectSetDefinition } from "../baseTypes";
+import { type AggregateObjectsError, type Result } from "../ontologyProvider";
+import { aggregate } from "../ontologyProvider/calls/aggregate";
 import type {
   AggregationClause,
   AggregationResult,
@@ -36,45 +32,32 @@ export class ComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > implements AggregationComputeStep<TBucketGroup, TMetrics> {
-  #auth: Auth;
-  #stack: string;
-  #objectType: BaseObjectType;
-  #ontologyMetadata: OntologyMetadata;
+  #client: ThinClient<OntologyDefinition<any>>;
   #definition: ObjectSetDefinition;
   #aggregationClauses: AggregationClause[];
+  #groupByClauses: Array<InternalBucketing<string, BucketValue>>;
 
   constructor(
-    auth: Auth,
-    stack: string,
-    objectType: BaseObjectType,
-    ontologyMetadata: OntologyMetadata,
+    client: ThinClient<OntologyDefinition<any>>,
     definition: ObjectSetDefinition,
-    protected groupByClauses: Array<InternalBucketing<string, BucketValue>> =
-      [],
+    groupByClauses: Array<InternalBucketing<string, BucketValue>> = [],
     aggregationClauses: AggregationClause[] = [],
   ) {
-    this.#auth = auth;
-    this.#stack = stack;
-    this.#objectType = objectType;
-    this.#ontologyMetadata = ontologyMetadata;
+    this.#client = client;
     this.#definition = definition;
+    this.#groupByClauses = groupByClauses;
     this.#aggregationClauses = aggregationClauses;
   }
 
   public async compute(): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   > {
-    const provider = new OntologyProvider(
-      this.#auth,
-      this.#stack,
-      this.#ontologyMetadata,
-    );
-
-    const result = await provider.aggregate<TBucketGroup, TMetrics>(
+    const result = await aggregate<TBucketGroup, TMetrics>(
+      this.#client,
       {
         objectSet: this.#definition,
         aggregation: this.#aggregationClauses,
-        groupBy: this.groupByClauses,
+        groupBy: this.#groupByClauses,
       },
     );
 

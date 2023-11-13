@@ -14,89 +14,40 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../../../oauth-client";
-import {
-  type OntologyMetadata,
-  OntologyProvider,
-  type Result,
-  type TimeSeriesError,
-} from "../../ontologyProvider";
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
+
+import { getFirstPoint } from "../../ontologyProvider/calls/getFirstPoint";
+import { getLastPoint } from "../../ontologyProvider/calls/getLastPoint";
 import type { TimeSeries } from "./TimeSeries";
-import type { TimeSeriesPoint } from "./TimeSeriesPoint";
-import { TimeSeriesQuery } from "./TimeSeriesQuery";
+import { createTimeSeriesQuery, type TimeSeriesQuery } from "./TimeSeriesQuery";
 
-export class TimeSeriesProperty<T extends number | string>
-  implements TimeSeries<T>
-{
-  public type = "TimeSeries" as const;
-
-  #provider: OntologyProvider;
-  #ontologyMetadata: OntologyMetadata;
-  #authClient: Auth;
-  #stack: string;
-  #propertyName: string;
-  #apiName: string;
-  #primaryKey: string;
-
-  static constructTimeSeries<T extends string | number>(
-    propertyName: string,
-    authClient: Auth,
-    stack: string,
-    apiName: string,
-    primaryKey: string,
-    ontologyMetadata: OntologyMetadata,
-  ): TimeSeriesProperty<T> {
-    return new TimeSeriesProperty<T>(
-      authClient,
-      stack,
-      propertyName,
-      apiName,
-      primaryKey,
-      ontologyMetadata,
-    );
-  }
-
-  getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.#provider.getFirstPoint(
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-    );
-  }
-
-  getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
-    return this.#provider.getLastPoint(
-      this.#apiName,
-      this.#primaryKey,
-      this.#propertyName,
-    );
-  }
-
-  get points(): TimeSeriesQuery<T> {
-    return new TimeSeriesQuery(
-      this.#authClient,
-      this.#stack,
-      this.#propertyName,
-      this.#apiName,
-      this.#primaryKey,
-      this.#ontologyMetadata,
-    );
-  }
-
-  private constructor(
-    authClient: Auth,
-    stack: string,
-    propertyName: string,
-    apiName: string,
-    primaryKey: string,
-    ontologyMetadata: OntologyMetadata,
-  ) {
-    this.#authClient = authClient;
-    this.#stack = stack;
-    this.#propertyName = propertyName;
-    this.#apiName = apiName;
-    this.#primaryKey = primaryKey;
-    this.#provider = new OntologyProvider(authClient, stack, ontologyMetadata);
-    this.#ontologyMetadata = ontologyMetadata;
-  }
+export function isTimeSeries<T extends number | string>(
+  obj: any,
+): obj is TimeSeries<T> {
+  return obj?.type === "TimeSeries";
 }
+
+export const TimeSeriesProperty = <T extends number | string>(
+  thinClient: ThinClient<OntologyDefinition<any>>,
+  propertyName: string,
+  apiName: string,
+  primaryKey: string,
+): TimeSeries<T> => {
+  return {
+    type: "TimeSeries" as const,
+    getFirstPoint() {
+      return getFirstPoint(thinClient, propertyName, apiName, primaryKey);
+    },
+    getLastPoint() {
+      return getLastPoint(thinClient, propertyName, apiName, primaryKey);
+    },
+    get points(): TimeSeriesQuery<T> {
+      return createTimeSeriesQuery(
+        thinClient,
+        propertyName,
+        apiName,
+        primaryKey,
+      );
+    },
+  };
+};

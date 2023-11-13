@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition, ThinClient } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
+import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
 import { GetObjectErrorHandler, handleGetObjectError } from "../ErrorHandlers";
 import type { GetObjectError } from "../Errors";
 import type { Result } from "../Result";
-import type { ClientContext } from "./ClientContext";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getObject<T extends OntologyObject>(
-  context: ClientContext,
+  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
-  selectedProperties: Array<keyof T> = [],
+  selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T, GetObjectError>> {
   return wrapResult(async () => {
     const object = await getObjectV2(
-      createOpenApiRequest(context.client.stack, context.client.fetch),
-      context.ontology.metadata.ontologyApiName,
+      createOpenApiRequest(client.stack, client.fetch),
+      client.ontology.metadata.ontologyApiName,
       objectApiName,
       primaryKey.toString(),
       {
@@ -40,6 +41,10 @@ export async function getObject<T extends OntologyObject>(
       },
     );
 
-    return context.createObject<T>(context, objectApiName, object);
+    return convertWireToOsdkObject(
+      client,
+      objectApiName,
+      object,
+    ) as unknown as T;
   }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
 }
