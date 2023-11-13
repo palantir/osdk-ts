@@ -98,9 +98,12 @@ export function convertWireToOsdkObject<
   O extends OntologyDefinition<any>,
 >(
   client: ThinClient<O>,
-  apiName: T,
   obj: OntologyObjectV2,
 ): OsdkLegacyObjectFrom<O, T> {
+  if (obj["__apiName"] == null) {
+    throw new Error(`No apiname found on object`);
+  }
+  const apiName = obj["__apiName"] as T;
   const proto = getPrototype(client.ontology, apiName, client);
   Object.setPrototypeOf(obj, proto);
   setPropertyAccessors<T, O>(client, apiName, obj);

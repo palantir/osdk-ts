@@ -31,10 +31,12 @@ import {
 } from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
+import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
   mockTaskObject,
   mockTodoObject,
 } from "../../util/test/mocks/mockObjects";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
@@ -242,12 +244,12 @@ describe("OsdkObjectSet", () => {
         pageToken: "fakePageToken",
       }),
     );
-    expect(result.type).toEqual("ok");
+    const selectedObjects = unwrapResultOrThrow(result);
   });
 
   it("supports select methods - get", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockFetchResponse(fetch, mockTodoObject);
     const result = await os.select(["id", "body", "complete"]).get("123");
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -258,12 +260,12 @@ describe("OsdkObjectSet", () => {
         headers: expect.anything(),
       },
     );
-    expect(result.type).toEqual("ok");
+    const selectedObjects = unwrapResultOrThrow(result);
   });
 
   it("supports round-trip of circular links", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockFetchResponse(fetch, mockTodoObject);
     const todoResponse = await os.get("1");
 
     if (!isOk(todoResponse)) {
@@ -312,7 +314,7 @@ describe("OsdkObjectSet", () => {
       data: objects,
     };
 
-    fetch.mockResolvedValue({
+    fetch.mockResolvedValueOnce({
       json: () => {
         return Promise.resolve(response);
       },

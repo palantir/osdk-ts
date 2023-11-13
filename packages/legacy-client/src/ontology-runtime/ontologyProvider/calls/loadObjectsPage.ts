@@ -62,7 +62,7 @@ export async function loadObjectsPage<
 
       return {
         data: page.data.map(object =>
-          convertWireToOsdkObject(client, objectApiName as string, object) as T
+          convertWireToOsdkObject(client, object) as T
         ),
         nextPageToken: page.nextPageToken,
       };

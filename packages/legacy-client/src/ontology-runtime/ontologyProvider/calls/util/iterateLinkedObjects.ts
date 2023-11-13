@@ -47,11 +47,7 @@ export async function* iterateLinkedObjects<T extends OntologyObject>(
       client.ontology.objects[sourceApiName].links[linkTypeApiName];
 
     for (const object of page.data) {
-      yield convertWireToOsdkObject(
-        client,
-        object["__apiName"],
-        object,
-      ) as unknown as T;
+      yield convertWireToOsdkObject(client, object) as unknown as T;
     }
 
     nextPageToken = page.nextPageToken;

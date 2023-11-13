@@ -113,5 +113,6 @@ describe(createObjectSetAggregationStep, () => {
       `Ontology/objectSets/aggregate`,
       aggregationBody,
     );
+    const aggregationValue = unwrapResultOrThrow(result);
   });
 });
