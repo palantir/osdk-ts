@@ -42,7 +42,7 @@ import {
   mockFetchResponse,
 } from "../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
-import { mockTodoObject } from "../util/test/mocks/mockObjects";
+import { getMockTodoObject } from "../util/test/mocks/mockObjects";
 import { unwrapResultOrThrow } from "../util/test/resultUtils";
 import { type Actions, createActionProxy } from "./actions";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
@@ -176,18 +176,20 @@ describe("Actions", () => {
 
       const value = unwrapResultOrThrow(actionResponse);
       assert(value.edits.type === "edits");
-      mockFetchResponse(fetch, mockTodoObject);
+      mockFetchResponse(fetch, getMockTodoObject());
       const loadAddedObject = await value.edits.added[0].get();
 
       expectFetchToBeCalledWithGet(fetch, `Ontology/objects/Todo/1`);
       const createdObject = unwrapResultOrThrow(loadAddedObject);
-      expect(createdObject.__primaryKey).toEqual(mockTodoObject.__primaryKey);
+      expect(createdObject.__primaryKey).toEqual(
+        getMockTodoObject().__primaryKey,
+      );
     });
   });
 
   it("proxies action calls transforms arguments", async () => {
     const taskOs = createBaseOsdkObjectSet(client, "Task");
-    mockFetchResponse(fetch, mockTodoObject);
+    mockFetchResponse(fetch, getMockTodoObject());
     const taskObjectResult = await taskOs.get(1);
     const taskObject = unwrapResultOrThrow(taskObjectResult);
 

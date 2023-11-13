@@ -32,8 +32,8 @@ import {
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
 import {
-  mockTaskObject,
-  mockTodoObject,
+  getMockTaskObject,
+  getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
@@ -208,7 +208,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - all", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const result = await os.select(["id", "body", "complete"]).all();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -225,7 +225,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - page", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const result = await os.select(["id", "body", "complete"]).page({
       pageSize: 5,
       pageToken: "fakePageToken",
@@ -247,7 +247,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - get", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const result = await os.select(["id", "body", "complete"]).get("123");
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -263,21 +263,21 @@ describe("OsdkObjectSet", () => {
 
   it("supports round-trip of circular links", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const todoResponse = await os.get("1");
 
     if (!isOk(todoResponse)) {
       expect.fail("todo response was not ok");
     }
 
-    mockObjectPage([mockTaskObject]);
+    mockObjectPage([getMockTaskObject()]);
     const taskResponse = await todoResponse.value.linkedTask.get();
 
     if (!isOk(taskResponse)) {
       expect.fail("task response was not ok");
     }
 
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
 
     if (!isOk(linkedTodosResponse)) {
@@ -289,7 +289,7 @@ describe("OsdkObjectSet", () => {
 
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const page = await os.page({ pageSize: 1 });
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
