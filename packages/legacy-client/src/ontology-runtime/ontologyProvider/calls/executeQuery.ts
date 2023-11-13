@@ -36,16 +36,8 @@ import type {
   Range,
   Rangeable,
 } from "../../aggregations";
-import {
-  GeoPoint,
-  GeoShape,
-  isAttachment,
-  isOntologyObject,
-  LocalDate,
-  Timestamp,
-} from "../../baseTypes";
+import { LocalDate, Timestamp } from "../../baseTypes";
 import type {
-  ObjectSetDefinition,
   ParameterValue,
   PrimitiveParameterValue,
   QueryBucketKey,
@@ -53,6 +45,7 @@ import type {
 import { ExecuteQueryErrorHandler, handleExecuteQueryError } from "..";
 import { isOk } from "../Result";
 import { getObject } from "./getObject";
+import { getParameterValueMapping } from "./util/getParameterValueMapping";
 import { wrapResult } from "./util/wrapResult";
 
 export function executeQuery<
@@ -81,7 +74,7 @@ export function executeQuery<
 
       return {
         value: remappedResponse,
-      } as any; // TODO this still needs to get removed
+      } as any;
     },
     e =>
       handleExecuteQueryError(
@@ -105,44 +98,6 @@ function getRemappedParameters(
   );
 
   return remappedParams;
-}
-
-function getParameterValueMapping(
-  value: ParameterValue,
-): PrimitiveParameterValue {
-  if (isOntologyObject(value)) {
-    return getParameterValueMapping(value.__primaryKey);
-  } else if (value instanceof LocalDate) {
-    return value.toISOString();
-  } else if (value instanceof Timestamp) {
-    return value.toISOString();
-  } else if (isAttachment(value)) {
-    return value.attachmentRid!;
-  } else if (Array.isArray(value)) {
-    return value.map(a => getParameterValueMapping(a));
-  } else if (value instanceof Set) {
-    return Array.from(value, getParameterValueMapping);
-  } else if (GeoShape.isGeoShape(value)) {
-    return value.toGeoJson();
-  } else if (value instanceof GeoPoint) {
-    return value.toGeoJson();
-  } else if (isOntologyObjectSet(value)) {
-    return value.objectSetDefinition;
-  } else if (typeof value === "object") {
-    // Since structs are valid arguments for Queries, we map the values
-    return Object.entries(value).reduce((acc, [key, structValue]) => {
-      acc[key] = getParameterValueMapping(structValue);
-      return acc;
-    }, {} as { [key: string]: PrimitiveParameterValue });
-  }
-
-  return value as string | number | boolean;
-}
-
-function isOntologyObjectSet(
-  obj: any,
-): obj is { objectSetDefinition: ObjectSetDefinition } {
-  return obj && obj.objectSetDefinition;
 }
 
 async function remapQueryResponseType(

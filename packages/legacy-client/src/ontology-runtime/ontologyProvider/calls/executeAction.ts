@@ -26,26 +26,17 @@ import type {
   ActionReturnType,
   WrappedActionReturnType,
 } from "../../../client/actions";
-import type {
-  ActionExecutionOptions,
-  ObjectSetDefinition,
-  PrimitiveParameterValue,
-} from "../../baseTypes";
+import type { ActionExecutionOptions } from "../../baseTypes";
 import {
   ActionExecutionMode,
   ActionResponse,
-  GeoPoint,
-  GeoShape,
-  isAttachment,
-  isOntologyObject,
-  LocalDate,
   ReturnEditsMode,
-  Timestamp,
 } from "../../baseTypes";
 import {
   ExecuteActionErrorHandler,
   handleExecuteActionError,
 } from "../ErrorHandlers";
+import { getParameterValueMapping } from "./util/getParameterValueMapping";
 import { wrapResult } from "./util/wrapResult";
 
 export async function executeAction<
@@ -110,40 +101,4 @@ function remapOptions(
     mode: "VALIDATE_AND_EXECUTE",
     returnEdits: options.returnEdits === ReturnEditsMode.ALL ? "ALL" : "NONE",
   };
-}
-
-function getParameterValueMapping(
-  value: any,
-): PrimitiveParameterValue {
-  if (isOntologyObject(value)) {
-    return getParameterValueMapping(value.__primaryKey);
-  } else if (value instanceof LocalDate) {
-    return value.toISOString();
-  } else if (value instanceof Timestamp) {
-    return value.toISOString();
-  } else if (isAttachment(value)) {
-    return value.attachmentRid!;
-  } else if (Array.isArray(value)) {
-    return value.map(a => getParameterValueMapping(a));
-  } else if (GeoShape.isGeoShape(value)) {
-    return value.toGeoJson();
-  } else if (value instanceof GeoPoint) {
-    return value.toGeoJson();
-  } else if (isOntologyObjectSet(value)) {
-    return value.definition;
-  } else if (typeof value === "object") {
-    // Since structs are valid arguments for Queries, we map the values
-    return Object.entries(value).reduce((acc, [key, structValue]) => {
-      acc[key] = getParameterValueMapping(structValue);
-      return acc;
-    }, {} as { [key: string]: PrimitiveParameterValue });
-  }
-
-  return value as string | number | boolean;
-}
-
-function isOntologyObjectSet(
-  obj: any,
-): obj is { definition: ObjectSetDefinition } {
-  return obj && obj.definition;
 }

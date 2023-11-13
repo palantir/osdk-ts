@@ -24,7 +24,6 @@ import type {
   SetQueryDataType,
   SimpleAggregationKeyDataType,
   StructQueryDataType,
-  ThinClient,
   ThreeDimensionalAggregationDataType,
   TwoDimensionalAggregationDataType,
   UnionQueryDataType,
@@ -40,7 +39,6 @@ import type {
   Timestamp,
   TwoDimensionalAggregation,
 } from "../ontology-runtime";
-import { executeQuery } from "../ontology-runtime/ontologyProvider/calls/executeQuery";
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 import type { IsEmptyRecord } from "./utils";
@@ -183,33 +181,4 @@ interface AggregationValueTypes {
   double: number;
   date: LocalDate;
   timestamp: Timestamp;
-}
-
-export function createQueryProxy<O extends OntologyDefinition<any>>(
-  client: ThinClient<O>,
-): Queries<O> {
-  return new Proxy({}, {
-    get(_target, q: QueryNamesFrom<O> & string, _receiver) {
-      const queryDefinition = client.ontology.queries[q];
-      if (queryDefinition) {
-        const hasParams = Object.keys(queryDefinition.parameters).length > 0;
-
-        if (hasParams) {
-          return async function(
-            params: QueryParameters<O, typeof q>,
-          ): Promise<WrappedQueryReturnType<O, typeof q>> {
-            return executeQuery(client, q, params);
-          };
-        } else {
-          return async function(): Promise<
-            WrappedQueryReturnType<O, typeof q>
-          > {
-            return executeQuery(client, q);
-          };
-        }
-      }
-
-      return undefined;
-    },
-  }) as Queries<O>;
 }

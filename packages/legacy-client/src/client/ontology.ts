@@ -20,7 +20,8 @@ import type { Actions } from "./actions";
 import { createActionProxy } from "./actions";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
-import { createQueryProxy, type Queries } from "./queries";
+import { type Queries } from "./queries";
+import { createQueryProxy } from "./queryProxy";
 
 export class Ontology<O extends OntologyDefinition<any>> {
   #client: ThinClient<O>;

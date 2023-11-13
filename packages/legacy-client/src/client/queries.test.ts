@@ -28,7 +28,7 @@ import {
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import type { Queries } from "./queries";
-import { createQueryProxy } from "./queries";
+import { createQueryProxy } from "./queryProxy";
 
 describe("Queries", () => {
   let client: ThinClient<typeof MockOntology>;
@@ -103,7 +103,6 @@ describe("Queries", () => {
           "object": {},
           "objectSet": {
             "apiName": "Todo",
-            "description": "",
             "definition": { "type": "base", "objectType": "Todo" },
           },
           "array": ["string"],
