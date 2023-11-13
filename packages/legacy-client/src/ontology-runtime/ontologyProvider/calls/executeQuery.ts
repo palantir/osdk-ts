@@ -16,6 +16,7 @@
 
 import type {
   AggregationKeyDataType,
+  ObjectSetQueryDataType,
   OntologyDefinition,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
@@ -25,6 +26,7 @@ import { createOpenApiRequest } from "@osdk/api";
 import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
+import { createOsdkObjectSet } from "../../../client/objectSets/OsdkObjectSet";
 import type {
   QueryNamesFrom,
   QueryParameters,
@@ -38,6 +40,7 @@ import type {
 } from "../../aggregations";
 import { LocalDate, Timestamp } from "../../baseTypes";
 import type {
+  ObjectSetDefinition,
   ParameterValue,
   PrimitiveParameterValue,
   QueryBucketKey,
@@ -264,7 +267,12 @@ async function remapQueryResponseType(
         }
 
         case "objectSet":
-          throw new Error("ObjectSet type not supported in response");
+          return createOsdkObjectSet(
+            client,
+            (definition.type as ObjectSetQueryDataType<any>).objectSet,
+            responseValue as ObjectSetDefinition,
+          );
+
         case "union":
           throw new Error("Union type is not supported in response");
         default:
