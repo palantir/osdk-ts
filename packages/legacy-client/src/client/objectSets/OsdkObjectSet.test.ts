@@ -43,16 +43,16 @@ describe("OsdkObjectSet", () => {
   const origin = "https://mock.com";
   const baseUrl = `${origin}/api/v2/ontologies/`;
 
-  let fetch: MockedFunction<typeof globalThis.fetch>;
-  let client: ThinClient<typeof MockOntology>;
+  let fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
+  let client: ThinClient<typeof MockOntology> = createThinClient(
+    MockOntology,
+    origin,
+    () => "Token",
+    fetch,
+  );
+
   beforeEach(() => {
-    fetch = vi.fn();
-    client = createThinClient(
-      MockOntology,
-      origin,
-      () => "Token",
-      fetch,
-    );
+    fetch.mockClear();
   });
 
   it("creates a search on an ObjectSet", () => {

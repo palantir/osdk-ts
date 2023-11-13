@@ -67,7 +67,7 @@ function createPrototype<
 
   // add the relevant keys for the link types associated with this object type
   for (
-    const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
+    const [k, { multiplicity }] of Object.entries(objDef.links)
   ) {
     Object.defineProperty(proto, k, {
       get: function() {

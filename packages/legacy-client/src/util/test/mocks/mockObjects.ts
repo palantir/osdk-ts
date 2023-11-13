@@ -25,6 +25,15 @@ export const mockTodoObject = {
   complete: false,
 } satisfies OntologyObjectV2;
 
+export const mockTodoObject2 = {
+  __apiName: "Todo",
+  __primaryKey: 2,
+  __rid: "ri.a.b.c.d",
+  id: "124",
+  body: "body",
+  complete: false,
+} satisfies OntologyObjectV2;
+
 export const mockTaskObject = {
   __apiName: "Task",
   __primaryKey: 1,
