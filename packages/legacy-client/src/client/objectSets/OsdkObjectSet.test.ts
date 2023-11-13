@@ -36,7 +36,6 @@ import {
   getMockTaskObject,
   getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
@@ -45,15 +44,16 @@ describe("OsdkObjectSet", () => {
   const baseUrl = `${origin}/api/v2/ontologies/`;
 
   let fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
-  let client: ThinClient<typeof MockOntology> = createThinClient(
-    MockOntology,
-    origin,
-    () => "Token",
-    fetch,
-  );
+  let client: ThinClient<typeof MockOntology>;
 
   beforeEach(() => {
-    fetch.mockClear();
+    fetch = vi.fn();
+    client = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch,
+    );
   });
 
   it("creates a search on an ObjectSet", () => {
@@ -245,7 +245,7 @@ describe("OsdkObjectSet", () => {
         pageToken: "fakePageToken",
       }),
     );
-    const selectedObjects = unwrapResultOrThrow(result);
+    expect(result.type).toEqual("ok");
   });
 
   it("supports select methods - get", async () => {
@@ -261,7 +261,7 @@ describe("OsdkObjectSet", () => {
         headers: expect.anything(),
       },
     );
-    const selectedObjects = unwrapResultOrThrow(result);
+    expect(result.type).toEqual("ok");
   });
 
   it("supports round-trip of circular links", async () => {

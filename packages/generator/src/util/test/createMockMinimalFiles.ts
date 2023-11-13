@@ -32,6 +32,7 @@ export function createMockMinimalFiles() {
     dumpFilesToConsole: () => {
       for (const [path, contents] of Object.entries(getFiles())) {
         console.group(path);
+        console.log(contents);
         console.groupEnd();
       }
     },
