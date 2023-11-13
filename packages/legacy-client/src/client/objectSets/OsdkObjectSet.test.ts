@@ -35,6 +35,7 @@ import {
   getMockTaskObject,
   getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
@@ -303,6 +304,49 @@ describe("OsdkObjectSet", () => {
       }),
     );
     expect(page.type).toEqual("ok");
+  });
+
+  it("handles multiple clients correctly", async () => {
+    const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client1 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch1,
+    );
+    const todo1 = convertWireToOsdkObject(client1, "Todo", getMockTodoObject());
+
+    const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client2 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch2,
+    );
+    const todo2 = convertWireToOsdkObject(client2, "Todo", getMockTodoObject());
+
+    // same prototype
+    expect(Object.getPrototypeOf(todo1)).toBe(Object.getPrototypeOf(todo2));
+
+    fetch1.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+    fetch2.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+
+    // different client/fetch
+    await todo1.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledTimes(0);
+
+    await todo2.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledOnce();
   });
 
   function mockObjectPage(
