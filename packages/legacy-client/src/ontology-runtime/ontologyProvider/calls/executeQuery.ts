@@ -28,6 +28,7 @@ import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import { createOsdkObjectSet } from "../../../client/objectSets/OsdkObjectSet";
 import type {
+  QueryDataType,
   QueryNamesFrom,
   QueryParameters,
   WrappedQueryReturnType,
@@ -69,15 +70,16 @@ export function executeQuery<
           parameters: params ? getRemappedParameters(params) : {},
         },
       );
-      const remappedResponse = await remapQueryResponseType(
-        client,
-        client.ontology.queries[apiName].output,
-        response.value,
-      );
+      const remappedResponse: QueryDataType<O, QueryDataTypeDefinition<any>> =
+        await remapQueryResponseType(
+          client,
+          client.ontology.queries[apiName].output,
+          response.value,
+        );
 
       return {
         value: remappedResponse,
-      } as any;
+      };
     },
     e =>
       handleExecuteQueryError(
@@ -103,16 +105,29 @@ function getRemappedParameters(
   return remappedParams;
 }
 
-async function remapQueryResponseType(
-  client: ThinClient<OntologyDefinition<any>>,
-  definition: QueryDataTypeDefinition<any>,
+async function remapQueryResponseType<
+  O extends OntologyDefinition<any>,
+  K extends string,
+>(
+  client: ThinClient<O>,
+  definition: QueryDataTypeDefinition<K>,
   responseValue: PrimitiveParameterValue,
-): Promise<ParameterValue> {
-  // TODO can the backend really not send us null responses?
+): Promise<QueryDataType<O, QueryDataTypeDefinition<K>>> {
+  // handle null responses
+  if (responseValue == null) {
+    if (definition.nullable) {
+      return undefined;
+    } else {
+      throw new Error("Got null response when nullable was not allowed");
+    }
+  }
 
   // handle arrays
   if (definition.multiplicity) {
-    const definitionWithoutMultiplicity = { type: definition.type };
+    const definitionWithoutMultiplicity = {
+      type: definition.type,
+      nullable: definition.nullable,
+    };
     return await Promise.all(
       (responseValue as PrimitiveParameterValue[]).map(it =>
         remapQueryResponseType(client, definitionWithoutMultiplicity, it)
