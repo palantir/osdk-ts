@@ -43,7 +43,7 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         sourceApiName,
         sourcePrimaryKey,
         targetApiName,
-        primaryKey.toString(),
+        primaryKey!.toString(),
       );
     },
 

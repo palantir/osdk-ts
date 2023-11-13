@@ -103,7 +103,6 @@ function getRemappedParameters(
 
 async function remapQueryResponseType<
   O extends OntologyDefinition<any>,
-  Q extends QueryNamesFrom<O>,
   K extends string,
 >(
   client: ThinClient<O>,

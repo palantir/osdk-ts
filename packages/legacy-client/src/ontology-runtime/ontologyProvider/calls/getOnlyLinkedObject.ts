@@ -54,7 +54,7 @@ export async function getOnlyLinkedObject<
         linkType: targetObjectType,
         linkedObjectType: sourceObjectType,
         linkedObjectPrimaryKey: {
-          primaryKey: sourcePrimaryKey.toString(),
+          primaryKey: sourcePrimaryKey!.toString(),
         },
       } satisfies LinkedObjectNotFound,
     );
@@ -70,7 +70,7 @@ export async function getOnlyLinkedObject<
         linkType: targetObjectType,
         linkedObjectType: sourceObjectType,
         linkedObjectPrimaryKey: {
-          primaryKey: sourcePrimaryKey.toString(),
+          primaryKey: sourcePrimaryKey!.toString(),
         },
       } satisfies LinkedObjectNotFound,
     );

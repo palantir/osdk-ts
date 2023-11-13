@@ -34,6 +34,7 @@ import type { OntologyObject } from "./OntologyObject";
 import type { Timestamp } from "./timestamp";
 
 export type ParameterValue =
+  | undefined
   | string
   | number
   | boolean
