@@ -124,4 +124,10 @@ describe("Queries", () => {
     expect(response.type).toBe("ok");
     expect((response as any).value.value).toBe("resultString");
   });
+
+  it("foo", () => {
+    expectTypeOf<
+      QueryReturnType<typeof MockOntology, "queryTakesAllParameterTypes">
+    >().toMatchTypeOf<string>();
+  });
 });
