@@ -20,6 +20,7 @@ import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import type { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
 import { convertWireToOsdkObject } from "../../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../../baseTypes";
+import type { WireOntologyObjectV2 } from "../../WireOntologyObjectV2";
 
 export async function* iterateLinkedObjects<T extends OntologyObject>(
   client: ThinClient<OntologyDefinition<any>>,
@@ -44,7 +45,10 @@ export async function* iterateLinkedObjects<T extends OntologyObject>(
     );
 
     for (const object of page.data) {
-      yield convertWireToOsdkObject(client, object) as unknown as T;
+      yield convertWireToOsdkObject(
+        client,
+        object as WireOntologyObjectV2<T["__apiName"]>,
+      ) as unknown as T;
     }
 
     nextPageToken = page.nextPageToken;

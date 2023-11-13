@@ -14,23 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+export type NullableKeys<T> = {
+  [K in keyof T]: T[K] extends { nullable: true } ? K : never;
+}[keyof T];
 
-export function getMockTodoObject() {
-  return {
-    __apiName: "Todo" as const,
-    __primaryKey: 1,
-    __rid: "ri.a.b.c.d",
-    id: "123",
-    body: "body",
-    complete: false,
-  } satisfies OntologyObjectV2;
-}
-
-export function getMockTaskObject() {
-  return {
-    __apiName: "Task",
-    __primaryKey: 1,
-    id: 1,
-  } satisfies OntologyObjectV2;
-}
+export type NonNullableKeys<T> = {
+  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
+}[keyof T];

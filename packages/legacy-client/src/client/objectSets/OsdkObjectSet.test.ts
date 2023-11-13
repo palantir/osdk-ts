@@ -33,10 +33,14 @@ import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
 import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
-  mockTaskObject,
-  mockTodoObject,
+  getMockTaskObject,
+  getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
+import {
+  convertWireToOsdkObject,
+  convertWireToOsdkObject2,
+} from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
 describe("OsdkObjectSet", () => {
@@ -210,7 +214,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - all", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const result = await os.select(["id", "body", "complete"]).all();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -227,7 +231,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - page", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const result = await os.select(["id", "body", "complete"]).page({
       pageSize: 5,
       pageToken: "fakePageToken",
@@ -249,7 +253,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - get", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockFetchResponse(fetch, mockTodoObject);
+    mockFetchResponse(fetch, getMockTodoObject());
     const result = await os.select(["id", "body", "complete"]).get("123");
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -265,21 +269,21 @@ describe("OsdkObjectSet", () => {
 
   it("supports round-trip of circular links", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockFetchResponse(fetch, mockTodoObject);
+    mockFetchResponse(fetch, getMockTodoObject());
     const todoResponse = await os.get("1");
 
     if (!isOk(todoResponse)) {
       expect.fail("todo response was not ok");
     }
 
-    mockObjectPage([mockTaskObject]);
+    mockObjectPage([getMockTaskObject()]);
     const taskResponse = await todoResponse.value.linkedTask.get();
 
     if (!isOk(taskResponse)) {
       expect.fail("task response was not ok");
     }
 
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
 
     if (!isOk(linkedTodosResponse)) {
@@ -291,7 +295,7 @@ describe("OsdkObjectSet", () => {
 
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([mockTodoObject]);
+    mockObjectPage([getMockTodoObject()]);
     const page = await os.page({ pageSize: 1 });
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -305,6 +309,58 @@ describe("OsdkObjectSet", () => {
       }),
     );
     expect(page.type).toEqual("ok");
+  });
+
+  it("handles multiple clients correctly", async () => {
+    const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client1 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch1,
+    );
+
+    const todo1 = convertWireToOsdkObject(
+      client1,
+      getMockTodoObject(),
+    );
+
+    const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
+    const client2 = createThinClient(
+      MockOntology,
+      origin,
+      () => "Token",
+      fetch2,
+    );
+
+    const todo2 = convertWireToOsdkObject2(
+      client2,
+      "Todo",
+      getMockTodoObject(),
+    );
+
+    // same prototype
+    expect(Object.getPrototypeOf(todo1)).toBe(Object.getPrototypeOf(todo2));
+
+    fetch1.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+    fetch2.mockResolvedValue({
+      json: () => Promise.resolve({ data: [getMockTaskObject()] }),
+      status: 200,
+      ok: true,
+    } as any);
+
+    // different client/fetch
+    await todo1.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledTimes(0);
+
+    await todo2.linkedTask.get();
+    expect(fetch1).toHaveBeenCalledOnce();
+    expect(fetch2).toHaveBeenCalledOnce();
   });
 
   function mockObjectPage(

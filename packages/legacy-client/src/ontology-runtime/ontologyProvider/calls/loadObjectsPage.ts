@@ -33,6 +33,7 @@ import {
 } from "../ErrorHandlers";
 import type { LoadObjectSetError } from "../Errors";
 import type { Result } from "../Result";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 import { wrapResult } from "./util/wrapResult";
 
 export async function loadObjectsPage<
@@ -58,11 +59,17 @@ export async function loadObjectsPage<
           selectedProperties,
           options,
         ),
-      );
+      ) as {
+        data: WireOntologyObjectV2<T["__apiName"]>[];
+        nextPageToken?: string;
+      };
 
       return {
         data: page.data.map(object =>
-          convertWireToOsdkObject(client, object) as T
+          convertWireToOsdkObject(
+            client,
+            object,
+          ) as unknown as T
         ),
         nextPageToken: page.nextPageToken,
       };

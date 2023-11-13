@@ -133,7 +133,7 @@ const objectWithAllPropertyTypes = {
   __rid:
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 1,
-  __apiName: "ObjectTypeWithAllPropertyTypes",
+  __apiName: "ObjectTypeWithAllPropertyTypes" as const,
   id: 1,
   string: "string",
   boolean: true,

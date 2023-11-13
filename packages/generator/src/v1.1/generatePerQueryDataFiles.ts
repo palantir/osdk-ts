@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { QueryDataType, QueryTypeV2 } from "@osdk/gateway/types";
 import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireQueryTypeV2ToSdkQueryDefinition } from "../shared/wireQueryTypeV2ToSdkQueryDefinition";
@@ -27,6 +28,7 @@ export async function generatePerQueryDataFiles(
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(ontology.queryTypes.map(async query => {
+    const objectTypes = getObjectTypesFromQuery(query);
     await fs.writeFile(
       path.join(outDir, `${query.apiName}.ts`),
       await formatTs(`
@@ -34,7 +36,11 @@ export async function generatePerQueryDataFiles(
 
         export const ${query.apiName} = ${
         JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-      } satisfies QueryDefinition<"${query.apiName}">;`),
+      } satisfies QueryDefinition<"${query.apiName}", ${
+        objectTypes.length > 0
+          ? objectTypes.map(apiName => `"${apiName}"`).join("|")
+          : "never"
+      }>;`),
     );
   }));
 
@@ -47,4 +53,71 @@ export async function generatePerQueryDataFiles(
     }
   `),
   );
+}
+
+function getObjectTypesFromQuery(query: QueryTypeV2) {
+  const types = new Set<string>();
+
+  for (const { dataType } of Object.values(query.parameters)) {
+    getObjectTypesFromDataType(dataType, types);
+  }
+  getObjectTypesFromDataType(query.output, types);
+
+  return Array.from(types);
+}
+
+function getObjectTypesFromDataType(
+  dataType: QueryDataType,
+  types: Set<string>,
+) {
+  switch (dataType.type) {
+    case "array":
+    case "set":
+      getObjectTypesFromDataType(dataType.subType, types);
+      return;
+
+    case "object":
+      types.add(dataType.objectTypeApiName);
+      return;
+
+    case "objectSet":
+      types.add(dataType.objectTypeApiName!);
+      return;
+
+    case "struct":
+      for (const prop of Object.values(dataType.fields)) {
+        getObjectTypesFromDataType(prop.fieldType, types);
+      }
+      return;
+
+    case "union":
+      for (const type of dataType.unionTypes) {
+        getObjectTypesFromDataType(type, types);
+      }
+      return;
+
+    case "attachment":
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "null":
+    case "string":
+    case "threeDimensionalAggregation":
+    case "timestamp":
+    case "twoDimensionalAggregation":
+    case "unsupported":
+      /* complete no-op */
+      return;
+
+    default:
+      const _: never = dataType;
+      throw new Error(
+        `Cannot find object types from unsupported QueryDataType ${
+          (dataType as any).type
+        }`,
+      );
+  }
 }

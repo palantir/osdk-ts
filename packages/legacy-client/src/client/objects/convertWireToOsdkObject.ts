@@ -29,6 +29,7 @@ import {
   TimeSeriesProperty,
   Timestamp,
 } from "../../ontology-runtime/baseTypes";
+import type { WireOntologyObjectV2 } from "../../ontology-runtime/ontologyProvider/WireOntologyObjectV2";
 import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
 import type {
   OsdkLegacyLinksFrom,
@@ -38,6 +39,8 @@ import type {
 import { createMultiLinkStep } from "./createMultiLinkStep";
 import { createSingleLinkStep } from "./createSingleLinkStep";
 
+const OriginClient = Symbol();
+
 const getPrototype = createCachedOntologyTransform(createPrototype);
 function createPrototype<
   T extends keyof O["objects"] & string,
@@ -45,7 +48,6 @@ function createPrototype<
 >(
   ontology: O,
   type: T,
-  client: ThinClient<O>,
 ) {
   const objDef = ontology.objects[type];
   const proto = {};
@@ -71,6 +73,7 @@ function createPrototype<
   ) {
     Object.defineProperty(proto, k, {
       get: function() {
+        const client = this[OriginClient] as ThinClient<any>;
         if (multiplicity == true) {
           return createMultiLinkStep(
             client,
@@ -98,14 +101,36 @@ export function convertWireToOsdkObject<
   O extends OntologyDefinition<any>,
 >(
   client: ThinClient<O>,
+  obj: WireOntologyObjectV2<T>,
+): OsdkLegacyObjectFrom<O, T> {
+  const apiName = obj["__apiName"];
+  const proto = getPrototype(client.ontology, apiName);
+  Object.setPrototypeOf(obj, proto);
+  Object.defineProperty(obj, OriginClient, {
+    enumerable: false,
+    writable: false,
+    value: client,
+  });
+  setPropertyAccessors<T, O>(client, apiName, obj);
+
+  return obj as OsdkLegacyObjectFrom<O, T>;
+}
+
+export function convertWireToOsdkObject2<
+  T extends ObjectTypesFrom<O> & string,
+  O extends OntologyDefinition<any>,
+>(
+  client: ThinClient<O>,
+  apiName: T,
   obj: OntologyObjectV2,
 ): OsdkLegacyObjectFrom<O, T> {
-  if (obj["__apiName"] == null) {
-    throw new Error(`No apiname found on object`);
-  }
-  const apiName = obj["__apiName"] as T;
-  const proto = getPrototype(client.ontology, apiName, client);
+  const proto = getPrototype(client.ontology, apiName);
   Object.setPrototypeOf(obj, proto);
+  Object.defineProperty(obj, OriginClient, {
+    enumerable: false,
+    writable: false,
+    value: client,
+  });
   setPropertyAccessors<T, O>(client, apiName, obj);
 
   return obj as OsdkLegacyObjectFrom<O, T>;

@@ -29,6 +29,7 @@ import { executeAction } from "../ontology-runtime/ontologyProvider/calls/execut
 import type { ObjectSet } from "./interfaces";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 import type { IsEmptyRecord } from "./utils/IsEmptyRecord";
+import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
 import type { ValuesOfMap } from "./utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
@@ -41,14 +42,6 @@ export interface ValidLegacyActionParameterTypes {
   timestamp: Timestamp;
   attachment: Attachment;
 }
-
-export type NullableKeys<T> = {
-  [K in keyof T]: T[K] extends { nullable: true } ? K : never;
-}[keyof T];
-
-export type NonNullableKeys<T> = {
-  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
-}[keyof T];
 
 export type ActionArgs<
   O extends OntologyDefinition<any>,

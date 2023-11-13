@@ -49,9 +49,20 @@ export type {
 } from "./ontology/ActionDefinition";
 
 export type {
+  AggregationKeyDataType,
+  ObjectQueryDataType,
+  ObjectSetQueryDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
+  RangeAggregationKeyDataType,
+  SetQueryDataType,
+  SimpleAggregationKeyDataType,
+  StructQueryDataType,
+  ThreeDimensionalAggregationDataType,
   ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
+  UnionQueryDataType,
+  ValidBaseQueryDataTypes,
 } from "./ontology/QueryDefinition";
