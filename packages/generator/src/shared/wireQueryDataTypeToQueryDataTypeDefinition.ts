@@ -20,15 +20,18 @@ import type {
   TwoDimensionalQueryAggregationDefinition,
 } from "@osdk/api";
 import type {
+  QueryAggregationKeyType,
+  QueryAggregationKeyType_Boolean,
+  QueryAggregationKeyType_String,
   QueryDataType,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
 } from "@osdk/gateway/types";
 import { isNullableQueryDataType } from "./isNullableQueryDataType";
 
-export function wireQueryDataTypeToQueryDataTypeDefinition(
+export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
   input: QueryDataType,
-): QueryDataTypeDefinition {
+): QueryDataTypeDefinition<K> {
   switch (input.type) {
     case "double":
     case "float":
@@ -48,14 +51,14 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
       return {
         type: {
           type: "object",
-          object: input.objectTypeApiName,
+          object: input.objectTypeApiName as K,
         },
         nullable: false,
       };
 
     case "objectSet":
       return {
-        type: { type: "objectSet", objectSet: input.objectTypeApiName },
+        type: { type: "objectSet", objectSet: input.objectTypeApiName as K },
         nullable: false,
       };
 
@@ -97,7 +100,7 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
             }
             acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
             return acc;
-          }, [] as QueryDataTypeDefinition[]),
+          }, [] as QueryDataTypeDefinition<K>[]),
         },
         nullable: allowNulls,
       };
@@ -106,10 +109,10 @@ export function wireQueryDataTypeToQueryDataTypeDefinition(
       return {
         type: {
           type: "struct",
-          struct: input.fields.map(f => ({
-            name: f.name,
-            fieldType: wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
-          })),
+          struct: Object.fromEntries(input.fields.map(f => [
+            f.name,
+            wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
+          ])),
         },
         nullable: false,
       };
@@ -152,10 +155,15 @@ function get2DQueryAggregationProps(
       valueType: input.valueType.type,
     };
   } else {
-    return {
-      keyType: input.keyType.type,
-      valueType: input.valueType.type,
-    };
+    if (guardInvalidKeyTypes(input.keyType)) {
+      return {
+        keyType: input.keyType.type,
+        valueType: input.valueType.type,
+      };
+    }
+    throw new Error(
+      `Cannot create 2D aggregation with ${input.keyType.type} as its type`,
+    );
   }
 }
 
@@ -169,9 +177,23 @@ function get3DQueryAggregationProps(
       valueType: get2DQueryAggregationProps(input.valueType),
     };
   } else {
-    return {
-      keyType: input.keyType.type,
-      valueType: get2DQueryAggregationProps(input.valueType),
-    };
+    if (guardInvalidKeyTypes(input.keyType)) {
+      return {
+        keyType: input.keyType.type,
+        valueType: get2DQueryAggregationProps(input.valueType),
+      };
+    }
+    throw new Error(
+      `Cannot create 3D aggregation with ${input.keyType.type} as its type`,
+    );
   }
+}
+
+/**
+ * Guard against aggregation key types that are allowed by the backend types but are illegal to actually use
+ */
+function guardInvalidKeyTypes(
+  key: QueryAggregationKeyType,
+): key is QueryAggregationKeyType_Boolean | QueryAggregationKeyType_String {
+  return key.type === "string" || key.type === "boolean";
 }
