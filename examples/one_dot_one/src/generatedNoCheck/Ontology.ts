@@ -11,11 +11,30 @@ import type { Queries } from './ontologyQueries';
 import { getTodoCount } from './queries/getTodoCount';
 import { queryTakesAllParameterTypes } from './queries/queryTakesAllParameterTypes';
 
-export const Ontology = {
+export const Ontology: {
   metadata: {
-    ontologyRid: 'ridHere',
-    ontologyApiName: 'OntologyApiName',
-    userAgent: 'foundry-typescript-osdk/0.0.1',
+    ontologyRid: 'ridHere';
+    ontologyApiName: 'OntologyApiName';
+    userAgent: 'foundry-typescript-osdk/0.0.1';
+  };
+  objects: {
+    Todo: typeof Todo;
+    Person: typeof Person;
+    ObjectTypeWithAllPropertyTypes: typeof ObjectTypeWithAllPropertyTypes;
+  };
+  actions: {
+    actionTakesAllParameterTypes: typeof actionTakesAllParameterTypes;
+    createTodo: typeof createTodo;
+  };
+  queries: {
+    queryTakesAllParameterTypes: typeof queryTakesAllParameterTypes;
+    getTodoCount: typeof getTodoCount;
+  };
+} = {
+  metadata: {
+    ontologyRid: 'ridHere' as const,
+    ontologyApiName: 'OntologyApiName' as const,
+    userAgent: 'foundry-typescript-osdk/0.0.1' as const,
   },
   objects: {
     Todo,
