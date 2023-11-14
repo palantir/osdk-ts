@@ -19,6 +19,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectPropertyType,
+  OsdkObjectRawPropertyType,
   PropertyKeysFrom,
 } from "./Definition";
 
@@ -28,6 +29,13 @@ export type OsdkObjectFrom<
   T_PropertyKeys extends PropertyKeysFrom<T_Ontology, T_ObjectTypeKey> =
     PropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
 > =
+  & {
+    "$raw": {
+      [P in T_PropertyKeys]: OsdkObjectRawPropertyType<
+        ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
+      >;
+    };
+  }
   & {
     [P in T_PropertyKeys]: OsdkObjectPropertyType<
       ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]

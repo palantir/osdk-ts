@@ -25,6 +25,16 @@ export type { OsdkObject, OsdkObjectFrom } from "./ontology";
 // FIXME: Should this be Objects or Object?
 export * as Objects from "./client/object";
 
+/*
+ * FIXME
+ * I don't know that we want to support exporting these like this. Maybe just exposing the types
+ * is the right balance and if someone wants to use the polyfill themselves, they can
+ * import it into their own project?
+ *
+ * Exporting now for simplicity.
+ */
+export { Intl, Temporal, toTemporalInstant } from "@js-temporal/polyfill";
+
 export type {
   LinkDefinitionFrom,
   LinkKeysFrom,
