@@ -16,6 +16,7 @@
 
 import { createClient, createThinClient } from "@osdk/api";
 import { Ontology } from "@osdk/examples.basic.sdk";
+import invariant from "tiny-invariant";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped";
 import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin";
@@ -26,16 +27,22 @@ import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeeP
 import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin";
 import type { OntologyType } from "./OntologyType";
 import { typeChecks } from "./typeChecks";
+import type {} from "./__global";
 
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      FOUNDRY_USER_TOKEN: string;
-      FOUNDRY_STACK: string;
-    }
-  }
-}
+invariant(process.env.FOUNDRY_STACK != undefined);
+invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
 
+/**
+ * TLDR: If you're starting out, just use `client` and ignore `thinClient`.
+ *
+ * The client and thinClient simply demonstrate two different ways to use the OSDK.
+ *
+ * The `client`, being concrete, won't tree shake as well. So if you're doing something
+ * like really tiny lazily loaded pages, there may be a cost you don't want to pay.
+ *
+ * That said, the `client` provides entire intellisense/discovery of what you can
+ * do and thus is the suggested starting point.
+ */
 export const client = createClient(
   Ontology as OntologyType,
   process.env.FOUNDRY_STACK,
