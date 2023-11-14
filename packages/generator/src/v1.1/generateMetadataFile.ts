@@ -17,6 +17,7 @@
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
+import { commaSeparatedTypeIdentifiers } from "../util/commaSeparatedTypeIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
@@ -51,11 +52,26 @@ export async function generateMetadataFile(
       )
     }
 
-  export const Ontology = {
+  export const Ontology : {
     metadata: {
-        ontologyRid: "${ontology.rid}",
-        ontologyApiName: "${ontology.apiName}",
-        userAgent: "foundry-typescript-osdk/0.0.1",
+      ontologyRid: "${ontology.rid}",
+      ontologyApiName: "${ontology.apiName}",
+      userAgent: "foundry-typescript-osdk/0.0.1",
+    },
+    objects: {
+      ${commaSeparatedTypeIdentifiers(objectNames)}
+    },
+    actions: {
+      ${commaSeparatedTypeIdentifiers(actionNames)}
+    },
+    queries: {
+      ${commaSeparatedTypeIdentifiers(queryNames)}
+    },
+  } = {
+    metadata: {
+        ontologyRid: "${ontology.rid}" as const,
+        ontologyApiName: "${ontology.apiName}" as const,
+        userAgent: "foundry-typescript-osdk/0.0.1" as const,
     },
     objects: {
         ${commaSeparatedIdentifiers(objectNames)}
