@@ -96,6 +96,17 @@ export const MockOntology = {
     },
   },
   queries: {
+    queryTakesNoParameters: {
+      apiName: "queryTakesNoParameters",
+      description: "a query that does not require parameters",
+      rid: "query.rid",
+      version: "version",
+      parameters: {},
+      output: {
+        type: "integer",
+        nullable: true,
+      },
+    },
     queryTakesAllParameterTypes: {
       apiName: "queryTakesAllParameterTypes",
       description: "description of the query that takes all parameter types",
