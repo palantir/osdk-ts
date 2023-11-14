@@ -62,10 +62,16 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         },
         rid: "ridForTodo",
       },
-      [],
+      [{
+        apiName: "this",
+        cardinality: "ONE",
+        displayName: "thisLink",
+        status: "ACTIVE",
+        objectTypeApiName: "Todo",
+      }],
     );
     expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`
-      "import type { OntologyObject } from '@osdk/legacy-client';
+      "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
 
       export interface Todo extends OntologyObject {
         readonly __apiName: 'Todo';
@@ -73,6 +79,9 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         readonly break: number | undefined;
         /** @deprecated */
         readonly break_: number | undefined;
+        readonly this: SingleLink<Todo>;
+        /** @deprecated */
+        readonly this_: SingleLink<Todo>;
       }
       "
     `);

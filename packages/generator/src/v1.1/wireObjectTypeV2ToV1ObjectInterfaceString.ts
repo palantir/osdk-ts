@@ -66,11 +66,21 @@ ${
     }).join(";\n")
   }
 ${
-    linkTypes.map(linkType =>
-      `readonly ${linkType.apiName}: ${
-        linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
-      }<${linkType.objectTypeApiName}>`
-    ).join(";\n")
+    linkTypes.flatMap(linkType => {
+      const entries = [
+        `readonly ${linkType.apiName}: ${
+          linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+        }<${linkType.objectTypeApiName}>`,
+      ];
+
+      if (isReservedKeyword(linkType.apiName)) {
+        entries.push(`/** @deprecated */
+        readonly ${linkType.apiName}_: ${
+          linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+        }<${linkType.objectTypeApiName}>`);
+      }
+      return entries;
+    }).join(";\n")
   }
 }
   `;
