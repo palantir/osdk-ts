@@ -1,5 +1,14 @@
 # @osdk/generator
 
+## 0.0.4
+
+### Patch Changes
+
+- 1674b35: Releasing clients for integration
+- Updated dependencies [1674b35]
+  - @osdk/api@0.0.8
+  - @osdk/gateway@0.0.3
+
 ## 0.0.3
 
 ### Patch Changes

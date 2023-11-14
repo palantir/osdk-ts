@@ -1,5 +1,15 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.3
+
+### Patch Changes
+
+- 1674b35: Releasing clients for integration
+- Updated dependencies [1674b35]
+  - @osdk/api@0.0.8
+  - @osdk/generator@0.0.4
+  - @osdk/legacy-client@0.0.4
+
 ## 0.0.2
 
 ### Patch Changes
