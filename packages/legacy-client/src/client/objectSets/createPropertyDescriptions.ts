@@ -33,7 +33,7 @@ export function createPropertyDescriptions<
       [propertyName, property],
     ) => [propertyName, {
       apiName: propertyName,
-      description: property.description,
+      description: property.description ?? "",
     }]),
   ) as unknown as Properties<OsdkLegacyObjectFrom<O, K>>;
 }

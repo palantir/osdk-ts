@@ -22,6 +22,6 @@ import type {
 export type Properties<O> = {
   [K in keyof OmitLinksProperties<OmitMetadataProperties<O>>]: {
     apiName: K;
-    description?: string;
+    description: string;
   };
 };

@@ -33,7 +33,7 @@ export type BaseObjectSet<O extends OntologyObject> =
 export type BaseObjectSetOperations<O extends OntologyObject> = {
   apiName: O["__apiName"];
 
-  description?: string;
+  description: string;
 
   properties: Properties<O>;
 
