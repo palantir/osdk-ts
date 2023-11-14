@@ -16,6 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
+import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
 
 export const MockOntology = {
   metadata: {
@@ -53,6 +54,7 @@ export const MockOntology = {
       },
     },
     ObjectTypeWithAllPropertyTypes,
+    ObjectTypeWithReservedNames,
   },
   actions: {
     createTask: {
@@ -242,6 +244,9 @@ export const MockOntology = {
     },
   },
 } satisfies OntologyDefinition<
-  "Task" | "Todo" | "ObjectTypeWithAllPropertyTypes",
+  | "Task"
+  | "Todo"
+  | "ObjectTypeWithAllPropertyTypes"
+  | "ObjectTypeWithReservedNames",
   "createTask" | "updateTask" | "createTodo"
 >;

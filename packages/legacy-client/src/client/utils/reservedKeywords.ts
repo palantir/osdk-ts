@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// This must match the reservedKeywords definition in packages/legacy-client
+// This must match the reservedKeywords definition in packages/generator
 const reservedKeywords = new Set([
   "break",
   "case",
