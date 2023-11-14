@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  PropertyDefinition,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { Properties } from "../interfaces/utils/Properties";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
@@ -26,8 +22,10 @@ export function createPropertyDescriptions<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O> & string,
 >(
-  properties: Record<string, PropertyDefinition>,
+  ontology: O,
+  type: K,
 ): Properties<OsdkLegacyObjectFrom<O, K>> {
+  const properties = ontology.objects[type].properties;
   return Object.fromEntries(
     Object.entries(properties).map((
       [propertyName, property],

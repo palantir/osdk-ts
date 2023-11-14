@@ -34,6 +34,7 @@ import type {
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
 import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
@@ -167,8 +168,9 @@ export function createBaseOsdkObjectSet<
 
     description: client.ontology.objects[apiName].description ?? "",
 
-    properties: createPropertyDescriptions(
-      client.ontology.objects[apiName].properties,
+    properties: createCachedOntologyTransform(createPropertyDescriptions)(
+      client.ontology,
+      apiName,
     ),
 
     get(primaryKey) {
