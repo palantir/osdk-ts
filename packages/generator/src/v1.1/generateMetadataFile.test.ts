@@ -45,11 +45,27 @@ describe(generateMetadataFile, () => {
       import type { Queries } from './ontologyQueries';
       import { getCount } from './queries/getCount';
 
-      export const Ontology = {
+      export const Ontology: {
         metadata: {
-          ontologyRid: 'ridHere',
-          ontologyApiName: 'OntologyApiName',
-          userAgent: 'foundry-typescript-osdk/0.0.1',
+          ontologyRid: 'ridHere';
+          ontologyApiName: 'OntologyApiName';
+          userAgent: 'foundry-typescript-osdk/0.0.1';
+        };
+        objects: {
+          Todo: typeof Todo;
+          Person: typeof Person;
+        };
+        actions: {
+          markTodoCompleted: typeof markTodoCompleted;
+        };
+        queries: {
+          getCount: typeof getCount;
+        };
+      } = {
+        metadata: {
+          ontologyRid: 'ridHere' as const,
+          ontologyApiName: 'OntologyApiName' as const,
+          userAgent: 'foundry-typescript-osdk/0.0.1' as const,
         },
         objects: {
           Todo,

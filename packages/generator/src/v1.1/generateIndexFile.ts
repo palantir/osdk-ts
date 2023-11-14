@@ -35,7 +35,7 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       DecimalType,
       DoubleType,
       FloatType,
-      FoundryApiError, 
+      FoundryApiError,
       GeoPoint,
       GeoPointType,
       GeoShape,
@@ -46,9 +46,9 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       LocalDate,
       LongType,
       ObjectType,
-      Op, 
+      Op,
       Polygon,
-      ReturnEditsMode, 
+      ReturnEditsMode,
       SetType,
       ShortType,
       StringType,
@@ -57,7 +57,10 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       TimeSeriesType,
       Timestamp,
       TimestampType,
-      visitError, 
+      visitError,
+      PublicClientAuth,
+      ConfidentialClientAuth,
+      UserTokenAuth
     } from '@osdk/legacy-client';
     export type {
       ActionError,

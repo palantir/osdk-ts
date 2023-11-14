@@ -29,7 +29,7 @@ export interface Queries {
    * @param {Array<string>} params.array - an array of strings
    * @param {Set<string>} params.set - a set of strings
    * @param {string|number} params.unionNonNullable - a union of strings and integers
-   * @param {string|number|null} params.unionNullable - a union of strings and integers but its optional
+   * @param {string|number} params.unionNullable - a union of strings and integers but its optional
    * @param {{name:string,id:number}} params.struct - a struct with some fields
    * @param {TwoDimensionalAggregation<string,number>} params.twoDimensionalAggregation
    * @param {ThreeDimensionalAggregation<Range<LocalDate>,Range<Timestamp>,LocalDate>} params.threeDimensionalAggregation
@@ -50,7 +50,7 @@ export interface Queries {
     array: Array<string>;
     set: Set<string>;
     unionNonNullable: string | number;
-    unionNullable?: string | number | null;
+    unionNullable?: string | number;
     struct: { name: string; id: number };
     twoDimensionalAggregation: TwoDimensionalAggregation<string, number>;
     threeDimensionalAggregation: ThreeDimensionalAggregation<Range<LocalDate>, Range<Timestamp>, LocalDate>;
