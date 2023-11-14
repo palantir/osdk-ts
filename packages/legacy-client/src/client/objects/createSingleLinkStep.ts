@@ -27,7 +27,7 @@ import { getOnlyLinkedObject } from "../../ontology-runtime/ontologyProvider/cal
 export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
   client: ThinClient<any>,
   sourceObjectType: string,
-  sourcePrimaryKey: ParameterValue,
+  sourcePrimaryKey: NonNullable<ParameterValue>,
   targetLinkType: string,
 ): SingleLink<T> {
   return {

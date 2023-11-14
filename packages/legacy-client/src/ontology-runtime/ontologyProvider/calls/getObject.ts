@@ -36,7 +36,7 @@ export async function getObject<T extends OntologyObject>(
       createOpenApiRequest(client.stack, client.fetch),
       client.ontology.metadata.ontologyApiName,
       objectApiName,
-      primaryKey!.toString(),
+      primaryKey.toString(),
       {
         select: selectedProperties.map(x => x.toString()),
       },
