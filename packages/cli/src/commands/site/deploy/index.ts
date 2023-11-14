@@ -33,7 +33,9 @@ export const command: CommandModule<
           // group: "Deploy Version",
           // implies: { "clearVersion": "false" },
         },
-        clearVersion: {
+        undeploy: {
+          alias: "clearVersion",
+          description: "Causes the site to no longer be deployed",
           type: "boolean",
           conflicts: "siteVersion",
           // group: "Deploy Version",
