@@ -15,12 +15,23 @@
  */
 
 import { consola } from "consola";
-import { getSiteVersions } from "../../../net/getSiteVersions.mjs";
-import type { CommonSiteArgs } from "../addSiteCommand.js";
+import { colorize } from "consola/utils";
+import { artifacts } from "../../../net/index.mjs";
+import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
-export default async function invokeSiteVersionsCommand(args: CommonSiteArgs) {
-  consola.start("Fetching versions");
-  const versions = await getSiteVersions(args.baseUrl, args.appRid);
+export default async function siteVersionsCommand(args: CommonSiteArgs) {
+  consola.start("Fetching versions & deployed version");
+  const [versions, deployedVersion] = await Promise.all([
+    artifacts.SiteAssetArtifactsService.fetchSiteVersions(
+      args.baseUrl,
+      args.appRid,
+    ),
+    artifacts.conjure.ArtifactsSitesAdminV2Service.fetchDeployedVersion(
+      args.baseUrl,
+      args.appRid,
+    ),
+  ]);
+
   if (versions.length == 0) {
     consola.warn(
       "Successfully connected to server, but no versions were found.",
@@ -28,7 +39,15 @@ export default async function invokeSiteVersionsCommand(args: CommonSiteArgs) {
     return;
   }
 
-  consola.success(
-    "Found versions:\n" + versions.map(a => `    * ${a}`).join("\n"),
-  );
+  consola.success("Found versions:");
+  for (const version of versions) {
+    consola.log(
+      `    - ${version}${
+        deployedVersion
+          && version === deployedVersion.version
+          ? colorize("green", ` (deployed)`)
+          : ""
+      }`,
+    );
+  }
 }

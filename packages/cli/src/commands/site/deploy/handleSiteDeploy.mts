@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import { consola } from "consola";
 
-export const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
-  command: "versions",
-  describe: "List application versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
-    await command.default(args);
-  },
-};
+import { artifacts } from "../../../net/index.mjs";
+import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export default command;
+export default async function handleSiteDeploy(args: SiteDeployArgs) {
+  if (args.siteVersion) {
+    await artifacts.conjure.ArtifactsSitesAdminV2Service.deploySiteVersion(
+      args.baseUrl,
+      args.appRid,
+      args.siteVersion,
+    );
+  } else if (args.clearVersion) {
+    await artifacts.conjure.ArtifactsSitesAdminV2Service.clearSiteVersion(
+      args.baseUrl,
+      args.appRid,
+    );
+  }
+
+  consola.success("Deploy successful");
+}
