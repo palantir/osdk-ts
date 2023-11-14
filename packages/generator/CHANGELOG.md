@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 0.0.5
+
+### Patch Changes
+
+- 70719db: Fixing nits, and adding support for legacy reservered word backcompat
+
 ## 0.0.4
 
 ### Patch Changes
