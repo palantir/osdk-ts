@@ -34,11 +34,13 @@ import type {
 } from "../interfaces";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
 import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import { createPropertyDescriptions } from "./createPropertyDescriptions";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
 
 export function createOsdkObjectSet<
@@ -163,7 +165,14 @@ export function createBaseOsdkObjectSet<
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["__apiName"],
+
     description: client.ontology.objects[apiName].description ?? "",
+
+    properties: createCachedOntologyTransform(createPropertyDescriptions)(
+      client.ontology,
+      apiName,
+    ),
+
     get(primaryKey) {
       return getObject(client, apiName, primaryKey);
     },

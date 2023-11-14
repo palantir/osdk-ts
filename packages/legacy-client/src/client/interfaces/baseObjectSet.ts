@@ -24,6 +24,7 @@ import type {
 } from "../../ontology-runtime/ontologyProvider";
 import type { ObjectSet } from "./objectSet";
 import type { SelectableProperties } from "./utils/OmitProperties";
+import type { Properties } from "./utils/Properties";
 
 export type BaseObjectSet<O extends OntologyObject> =
   & BaseObjectSetOperations<O>
@@ -33,6 +34,8 @@ export type BaseObjectSetOperations<O extends OntologyObject> = {
   apiName: O["__apiName"];
 
   description: string;
+
+  properties: Properties<O>;
 
   get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
 
