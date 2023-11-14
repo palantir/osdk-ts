@@ -25,6 +25,7 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
 ): ObjectDefinition<any, any> {
   return {
     apiName: input.apiName,
+    description: input.description,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
       input.properties[input.primaryKey],
     ),

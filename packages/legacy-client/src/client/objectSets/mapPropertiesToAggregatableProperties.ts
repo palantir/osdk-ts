@@ -15,10 +15,10 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { AggregatableProperty } from "../../ontology-runtime";
-import { DefaultAggregatableProperty } from "../../ontology-runtime";
 import type { AggregateSelection } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { AggregatableProperty } from "./aggregations";
+import { DefaultAggregatableProperty } from "./aggregations";
 
 export function mapPropertiesToAggregatableProperties<
   O extends OntologyDefinition<any>,

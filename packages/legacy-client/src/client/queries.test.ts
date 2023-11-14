@@ -16,16 +16,10 @@
 
 import type { ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
+import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
-import type { ObjectSet } from "../client";
-import type {
-  QueryThreeDimensionalAggregation,
-  Range,
-  ThreeDimensionalAggregation,
-  TwoDimensionalAggregation,
-} from "../ontology-runtime";
-import { LocalDate, Timestamp } from "../ontology-runtime";
+import type { ObjectSet, Range } from "../client";
 import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
 import {
@@ -34,6 +28,11 @@ import {
 } from "../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
 import { unwrapResultOrThrow } from "../util/test/resultUtils";
+import type {
+  ThreeDimensionalAggregation,
+  TwoDimensionalAggregation,
+} from "./baseTypes";
+import { LocalDate, Timestamp } from "./baseTypes";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";

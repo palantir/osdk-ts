@@ -37,8 +37,13 @@ export const MockOntology = {
     Todo: {
       apiName: "Todo",
       primaryKeyType: "string",
+      description: "A todo object",
       properties: {
-        id: { type: "string", nullable: true },
+        id: {
+          type: "string",
+          nullable: true,
+          description: "The id of the Todo Object",
+        },
         body: { type: "string", nullable: true },
         complete: { type: "boolean", nullable: true },
         points: { type: "integer", nullable: true },

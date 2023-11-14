@@ -16,7 +16,7 @@
 
 import type { Client } from "@osdk/api";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType";
+import type { Employee, OntologyType } from "../OntologyType";
 
 export async function fetchEmployeePage(client: Client<OntologyType>) {
   const result = await client.objectSet("Employee").fetchPageOrThrow();
@@ -34,12 +34,23 @@ export async function fetchEmployeePage(client: Client<OntologyType>) {
   >(result);
 
   console.log("fetchEmployeePage(): ");
+  printEmployees(result.data);
+
+  console.log({
+    apiname: result.data[0].__apiName,
+    name: result.data[0].__name,
+  });
+  console.log(result.data[0]);
+
+  console.log();
+}
+
+function printEmployees(employees: Employee[]) {
   console.table(
-    result.data.map(({ adUsername, businessTitle, employeeNumber }) => ({
+    employees.map(({ adUsername, businessTitle, employeeNumber }) => ({
       adUsername,
       businessTitle,
       employeeNumber,
     })),
   );
-  console.log();
 }

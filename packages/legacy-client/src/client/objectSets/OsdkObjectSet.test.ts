@@ -29,13 +29,13 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
-import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
 import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
   getMockTaskObject,
   getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
+import type { ObjectSetDefinition } from "../baseTypes";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 
@@ -54,6 +54,15 @@ describe("OsdkObjectSet", () => {
       () => "Token",
       fetch,
     );
+  });
+
+  it("exposes descriptions", () => {
+    const os = createBaseTodoObjectSet(client);
+    expect(os.description).toEqual("A todo object");
+    expect(os.properties.id.apiName).toEqual("id");
+    expect(os.properties.id.description).toEqual("The id of the Todo Object");
+    expect(os.properties.body.apiName).toEqual("body");
+    expect(os.properties.body.description).toEqual("");
   });
 
   it("creates a search on an ObjectSet", () => {

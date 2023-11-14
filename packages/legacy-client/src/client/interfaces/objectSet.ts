@@ -15,14 +15,14 @@
  */
 
 import type {
-  AggregatableObjectSetStep,
   FilteredPropertiesTerminalOperations,
-  ListObjectsError,
   ObjectSetDefinition,
   OntologyObject,
-  Page,
-  Result,
-} from "../../ontology-runtime";
+} from "../baseTypes";
+import type { ListObjectsError } from "../errors";
+import type { AggregatableObjectSetStep } from "../objectSets/aggregations";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
 import type {
   AggregateSelection,
   GroupBySelections,

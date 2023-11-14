@@ -15,14 +15,11 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import type {
-  GetLinkedObjectError,
-  OntologyObject,
-  ParameterValue,
-  Result,
-  SingleLink,
-} from "../../ontology-runtime";
-import { getOnlyLinkedObject } from "../../ontology-runtime/ontologyProvider/calls/getOnlyLinkedObject";
+
+import type { OntologyObject, ParameterValue, SingleLink } from "../baseTypes";
+import type { GetLinkedObjectError } from "../errors";
+import { getOnlyLinkedObject } from "../net/getOnlyLinkedObject";
+import type { Result } from "../Result";
 
 export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
   client: ThinClient<any>,

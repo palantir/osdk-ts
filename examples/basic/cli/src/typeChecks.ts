@@ -19,6 +19,12 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import type { OntologyType } from "./OntologyType";
 
+/**
+ * As a consumer of OSDK, you will not need to use this file ever. It is simply here
+ * as a mechanism for us building the OSDK to be sure that we have not broken types
+ * across changes.
+ * @param client
+ */
 export function typeChecks(client: Client<OntologyType>) {
   // client.objectSet("Employee") is the same as client.objects.Employee
   {

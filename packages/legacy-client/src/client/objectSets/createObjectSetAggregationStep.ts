@@ -19,25 +19,26 @@ import type {
   OntologyDefinition,
   ThinClient,
 } from "@osdk/api";
-import {
-  assertBucketingInternal,
-  ComputeStep,
-  isCountOperation,
-  isMultipleAggregationOperation,
-  MetricValueType,
-} from "../../ontology-runtime";
-import type {
-  AggregatableObjectSetStep,
-  BucketValue,
-  InternalBucketing,
-  ObjectSetDefinition,
-} from "../../ontology-runtime";
+
+import type { ObjectSetDefinition } from "../baseTypes";
 import type {
   AggregateSelection,
   GroupBySelections,
   MultipleAggregateSelection,
 } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type {
+  AggregatableObjectSetStep,
+  BucketValue,
+  InternalBucketing,
+} from "./aggregations";
+import {
+  assertBucketingInternal,
+  ComputeStep,
+  isCountOperation,
+  isMultipleAggregationOperation,
+  MetricValueType,
+} from "./aggregations";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { mapPropertiesToAggregatableProperties } from "./mapPropertiesToAggregatableProperties";
 import { mapPropertiesToGroupByProperties } from "./mapPropertiesToGroupByProperties";

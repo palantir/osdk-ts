@@ -19,16 +19,17 @@ import type {
   OntologyDefinition,
   ThinClient,
 } from "@osdk/api";
+
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   ObjectSetDefinition,
-  OrderByClause,
-} from "../../ontology-runtime";
-import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
-import { loadAllObjects } from "../../ontology-runtime/ontologyProvider/calls/loadObjects";
-import { loadObjectsPage } from "../../ontology-runtime/ontologyProvider/calls/loadObjectsPage";
+} from "..";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
+import { getObject } from "../net/getObject";
+import { loadAllObjects } from "../net/loadObjects";
+import { loadObjectsPage } from "../net/loadObjectsPage";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OrderByClause } from "./filters";
 
 export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
   O extends OntologyDefinition<any>,
