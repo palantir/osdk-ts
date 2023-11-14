@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
-  command: "versions",
-  describe: "List application versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      FOUNDRY_USER_TOKEN: string;
+      FOUNDRY_STACK: string;
+    }
+  }
+}

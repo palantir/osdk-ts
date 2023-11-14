@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import { consola } from "consola";
+import { artifacts } from "../../../net/index.mjs";
+import type { DeleteArgs } from "./DeleteArgs.js";
 
-export const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
-  command: "versions",
-  describe: "List application versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
-    await command.default(args);
-  },
-};
+export default async function siteDeleteCommand(args: DeleteArgs) {
+  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
+    args.baseUrl,
+    args.appRid,
+    args.siteVersion,
+  );
 
-export default command;
+  consola.success(
+    "Delete successful",
+  );
+}

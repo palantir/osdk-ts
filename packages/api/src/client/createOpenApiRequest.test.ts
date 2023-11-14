@@ -53,6 +53,8 @@ describe("createOpenApiRequest", () => {
       {
         method: "POST",
         headers: new Headers({
+          "Content-Type": "application/json",
+          "Accept": "application/json",
           "Custom-Header": "Custom-Value",
         }),
         body: JSON.stringify(mockBody),
@@ -81,7 +83,12 @@ describe("createOpenApiRequest", () => {
       "https://example.com/api/foo",
       {
         method: "POST",
-        headers: new Headers(),
+        headers: new Headers(
+          {
+            "content-type": "application/json",
+            "accept": "application/json",
+          },
+        ),
       },
     );
   });
@@ -104,7 +111,10 @@ describe("createOpenApiRequest", () => {
       "https://example.com/api/foo",
       {
         method: "POST",
-        headers: new Headers(),
+        headers: new Headers({
+          "content-type": "application/json",
+          "accept": "application/json",
+        }),
       },
     );
   });
@@ -146,6 +156,7 @@ describe("createOpenApiRequest", () => {
       {
         method: "POST",
         headers: new Headers({
+          "content-type": "application/json",
           "accept": "*/*",
         }),
       },
@@ -191,6 +202,7 @@ describe("createOpenApiRequest", () => {
       {
         method: "POST",
         headers: new Headers({
+          "content-type": "application/json",
           "accept": "*/*",
         }),
       },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../addSiteCommand";
+import type { CommonSiteArgs } from "../CommonSiteArgs";
 
 export interface UploadArgs extends CommonSiteArgs {
   siteVersion: string;

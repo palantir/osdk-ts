@@ -40,7 +40,7 @@ export function uploadAttachment(
           filename,
         },
         {
-          "Content-Length": data.length,
+          "Content-Length": data.size,
           "Content-Type": data.type,
         },
       );

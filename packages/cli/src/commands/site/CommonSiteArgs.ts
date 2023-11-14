@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { CliCommonArgs } from "../../CliCommonArgs.js";
+import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 
-export const command: CommandModule<
-  CommonSiteArgs,
-  CommonSiteArgs
-> = {
-  command: "versions",
-  describe: "List application versions",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+export interface CommonSiteArgs extends CliCommonArgs {
+  appRid: ThirdPartyAppRid;
+  baseUrl: string;
+}

@@ -14,25 +14,37 @@
  * limitations under the License.
  */
 
+import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import addSiteCommand from "./commands/site/addSiteCommand";
+import type { CliCommonArgs } from "./CliCommonArgs";
+import site from "./commands/site";
 import { ExitProcessError } from "./ExitProcessError.js";
+import { logVersionMiddleware } from "./yargs/logVersionMiddleware";
 
 export async function cli(args: string[] = process.argv) {
-  const base = yargs(hideBin(args)).env("OSDK");
-
-  const Consola = await import("consola");
-  // Consola.default.level = Consola.LogLevels.debug;
-
-  addSiteCommand(base);
-
-  base.demandCommand().strict();
+  const base: Argv<CliCommonArgs> = yargs(hideBin(args))
+    .env("OSDK")
+    .version(false)
+    .option(
+      "verbose",
+      {
+        alias: "v",
+        type: "boolean",
+        description: "Enable verbose logging",
+        count: true,
+      },
+    )
+    .demandCommand()
+    .middleware(logVersionMiddleware, true)
+    .strict()
+    .command(site);
 
   try {
     return base.parseAsync();
   } catch (e) {
     if (e instanceof ExitProcessError) {
+      const Consola = await import("consola");
       Consola.consola.error(e.message);
     }
   }

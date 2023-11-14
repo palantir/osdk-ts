@@ -23,15 +23,25 @@ import type {
 } from "./Definition";
 
 export type OsdkObjectFrom<
-  K extends ObjectTypesFrom<T>,
-  T extends OntologyDefinition<any>,
-  PP extends PropertyKeysFrom<T, K>,
+  T_ObjectTypeKey extends ObjectTypesFrom<T_Ontology>,
+  T_Ontology extends OntologyDefinition<any>,
+  T_PropertyKeys extends PropertyKeysFrom<T_Ontology, T_ObjectTypeKey> =
+    PropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
 > =
   & {
-    [P in PP]: OsdkObjectPropertyType<
-      ObjectInfoFrom<T, K>["properties"][P]
+    [P in T_PropertyKeys]: OsdkObjectPropertyType<
+      ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
     >;
   }
   & {
-    __name: K;
+    /**@deprecated Use __apiName */
+    __name: T_ObjectTypeKey;
+
+    __apiName: T_ObjectTypeKey;
+    __primaryKey: ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"];
+    /**
+     * Future versions will require explicitly asking for this field. For now we are marking
+     * as always optional to avoid breaking changes.
+     */
+    __rid?: string;
   }; // TODO

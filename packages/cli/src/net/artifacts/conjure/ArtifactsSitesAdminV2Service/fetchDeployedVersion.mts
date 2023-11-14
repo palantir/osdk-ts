@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-import { createFetch } from "./createFetch.mjs";
-import { fetchWebsiteRepositoryRid } from "./fetchWebsiteRepositoryRid.mjs";
-import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
-import type { ThirdPartyAppRid } from "./ThirdPartyAppRid.js";
+import { createFetch } from "../../../createFetch.mjs";
+import { fetchWebsiteRepositoryRid } from "../../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
+import type { ThirdPartyAppRid } from "../../../ThirdPartyAppRid.js";
+import type { SiteVersion } from "./SiteVersion.mjs";
 
-export interface SiteAssetVersions {
-  versions: string[];
+interface UpdateDeployedVersionRequest {
+  siteVersion: {
+    version: string;
+  };
 }
 
-export async function getSiteVersions(
+function getSitesAdminV2ServiceBaseUrl(baseUrl: string) {
+  return `${baseUrl}/artifacts/api/sites/v2/admin`;
+}
+
+// This is from conjure but the others are not. Interestingly
+export async function fetchDeployedVersion(
   baseUrl: string,
   thirdPartyAppRid: ThirdPartyAppRid,
 ) {
@@ -31,14 +38,19 @@ export async function getSiteVersions(
     baseUrl,
     thirdPartyAppRid,
   );
-
-  const url = `${getSiteAssetBaseUrl(baseUrl, repositoryRid)}/versions`;
+  const url = `${
+    getSitesAdminV2ServiceBaseUrl(baseUrl)
+  }/repository/${repositoryRid}/deployed-version`;
   const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
 
-  const result = await fetch(url);
-  if (result.status === 200) {
-    const response: SiteAssetVersions = await result.json();
-    return response.versions;
+  const result = await fetch(url, {
+    method: "GET",
+  });
+
+  if (result.status === 204) {
+    return undefined;
+  } else if (result.status >= 200 && result.status < 300) {
+    return await result.json() as SiteVersion;
   } else {
     throw new Error(
       `Unexpected response code ${result.status} (${result.statusText})`,

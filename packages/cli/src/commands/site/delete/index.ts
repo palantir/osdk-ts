@@ -15,19 +15,27 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { CommonSiteArgs } from "../CommonSiteArgs";
+import type { DeleteArgs } from "./DeleteArgs";
 
 export const command: CommandModule<
   CommonSiteArgs,
-  CommonSiteArgs
+  DeleteArgs
 > = {
-  command: "versions",
-  describe: "List application versions",
+  command: "delete",
+  describe: "Delete an uploaded version",
   builder: (argv) => {
-    return argv;
+    return argv
+      .option("siteVersion", {
+        type: "string",
+        demandOption: true,
+      })
+      .option("dir", {
+        type: "string",
+      });
   },
   handler: async (args) => {
-    const command = await import("./siteVersionsCommand.mjs");
+    const command = await import("./siteDeleteCommand.mjs");
     await command.default(args);
   },
 };

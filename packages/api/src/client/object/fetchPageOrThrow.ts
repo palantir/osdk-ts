@@ -27,6 +27,7 @@ import { createOpenApiRequest } from "../createOpenApiRequest";
 import type { Wire } from "../internal/net";
 import type { PageResult } from "../PageResult";
 import type { ThinClient } from "../ThinClient";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
 
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
@@ -74,14 +75,15 @@ export async function fetchPageOrThrow<
   const r = await loadObjectSetV2(
     createOpenApiRequest(
       client.stack,
-      client.fetchJson as typeof fetch,
+      client.fetch as typeof fetch,
     ),
     client.ontology.metadata.ontologyApiName,
     body,
   );
 
-  return {
-    data: r.data.map((d) => ({ ...d, __name: objectType })),
-    nextPageToken: r.nextPageToken,
-  } as any;
+  convertWireToOsdkObjects(client, objectType, r.data);
+
+  // any is okay here because we have properly converted the wire objects via prototypes
+  // which don't type out correctly.
+  return r as any;
 }
