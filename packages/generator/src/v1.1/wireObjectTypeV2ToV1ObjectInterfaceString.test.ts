@@ -48,4 +48,42 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       "
     `);
   });
+
+  it("adds backcompat entries for reserved keyword property names", async () => {
+    const objectInterface = wireObjectTypeV2ToObjectInterfaceStringV1(
+      {
+        apiName: "Todo",
+        status: "ACTIVE",
+        primaryKey: "break",
+        properties: {
+          "break": {
+            dataType: { type: "integer" },
+          },
+        },
+        rid: "ridForTodo",
+      },
+      [{
+        apiName: "this",
+        cardinality: "ONE",
+        displayName: "thisLink",
+        status: "ACTIVE",
+        objectTypeApiName: "Todo",
+      }],
+    );
+    expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`
+      "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
+
+      export interface Todo extends OntologyObject {
+        readonly __apiName: 'Todo';
+        readonly __primaryKey: number;
+        readonly break: number | undefined;
+        /** @deprecated please migrate to 'break' instead */
+        readonly break_: number | undefined;
+        readonly this: SingleLink<Todo>;
+        /** @deprecated please migrate to 'this' instead */
+        readonly this_: SingleLink<Todo>;
+      }
+      "
+    `);
+  });
 });

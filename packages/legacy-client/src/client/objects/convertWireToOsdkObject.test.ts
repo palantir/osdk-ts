@@ -127,6 +127,33 @@ describe("convertWireToOsdkObject", () => {
       JSON.stringify(wireObject, null, 2),
     );
   });
+
+  it("handles reserved word backcompat in property and link names", () => {
+    const wireObject = {
+      catch: 1,
+      __primaryKey: 1,
+      __apiName: "ObjectTypeWithReservedNames",
+      __rid: "rid.1",
+    } as const;
+    const object = convertWireToOsdkObject<
+      "ObjectTypeWithReservedNames",
+      typeof MockOntology
+    >(client, wireObject);
+
+    expect(object.catch).toEqual(1);
+    expect((object as any).catch_).toEqual(1);
+
+    expect((object as any).const_.get).toBeTypeOf("function");
+
+    expect(object.toString()).toMatchInlineSnapshot(`
+      "{
+        \\"catch_\\": 1,
+        \\"__primaryKey\\": 1,
+        \\"__apiName\\": \\"ObjectTypeWithReservedNames\\",
+        \\"__rid\\": \\"rid.1\\"
+      }"
+    `);
+  });
 });
 
 const objectWithAllPropertyTypes = {

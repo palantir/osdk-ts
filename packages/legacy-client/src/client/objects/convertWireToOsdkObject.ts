@@ -36,6 +36,7 @@ import type {
   OsdkLegacyObjectFrom,
   OsdkLegacyPropertiesFrom,
 } from "../OsdkObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 import { createMultiLinkStep } from "./createMultiLinkStep";
 import { createSingleLinkStep } from "./createSingleLinkStep";
 
@@ -59,13 +60,25 @@ function createPrototype<
     const obj: Record<string, unknown> = {};
     const self = this as OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>;
     for (const prop of Object.keys(objDef.properties)) {
-      obj[prop] = self[prop];
+      const propName = isReservedKeyword(prop) ? `${prop}_` : prop;
+      obj[propName] = self[prop];
     }
     obj["__primaryKey"] = self.__primaryKey;
     obj["__apiName"] = type;
     obj["__rid"] = self.__rid;
     return JSON.stringify(obj, undefined, 2);
   };
+
+  // add any property reserved keyword back-compat getters
+  for (const prop of Object.keys(objDef.properties)) {
+    if (isReservedKeyword(prop)) {
+      Object.defineProperty(proto, `${prop}_`, {
+        get: function() {
+          return this[prop];
+        },
+      });
+    }
+  }
 
   // add the relevant keys for the link types associated with this object type
   for (
@@ -91,6 +104,14 @@ function createPrototype<
         }
       },
     });
+
+    if (isReservedKeyword(k)) {
+      Object.defineProperty(proto, `${k}_`, {
+        get: function() {
+          return this[k];
+        },
+      });
+    }
   }
 
   return proto as OsdkLegacyLinksFrom<O, T>;

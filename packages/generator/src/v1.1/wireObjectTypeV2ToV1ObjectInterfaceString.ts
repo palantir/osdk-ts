@@ -19,6 +19,7 @@ import type {
   ObjectPropertyType,
   ObjectTypeV2,
 } from "@osdk/gateway/types";
+import { isReservedKeyword } from "../util/reservedKeywords";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   input: ObjectTypeV2,
@@ -34,10 +35,9 @@ ${
     ).join("\n")
   }
 
-/**
- * ${input.description}
- */
-export interface ${input.apiName} extends OntologyObject {
+  ${
+    getDescriptionIfPresent(input.description)
+  }export interface ${input.apiName} extends OntologyObject {
   readonly __apiName: "${input.apiName}";
   readonly __primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(
@@ -45,22 +45,46 @@ export interface ${input.apiName} extends OntologyObject {
     )
   };
 ${
-    Object.entries(input.properties).map((
+    Object.entries(input.properties).flatMap((
       [propertyName, propertyDefinition],
-    ) =>
-      `${
-        getDescriptionIfPresent(propertyDefinition.description)
-      }readonly ${propertyName}: ${
-        wirePropertyTypeV2ToTypeScriptType(propertyDefinition.dataType)
-      } | undefined`
-    ).join(";\n")
+    ) => {
+      const propertyType = wirePropertyTypeV2ToTypeScriptType(
+        propertyDefinition.dataType,
+      );
+      const entries = [
+        `${
+          getDescriptionIfPresent(propertyDefinition.description)
+        }readonly ${propertyName}: ${propertyType} | undefined`,
+      ];
+
+      if (isReservedKeyword(propertyName)) {
+        entries.push(
+          `/** @deprecated please migrate to '${propertyName}' instead */
+          readonly ${propertyName}_: ${propertyType} | undefined`,
+        );
+      }
+
+      return entries;
+    }).join(";\n")
   }
 ${
-    linkTypes.map(linkType =>
-      `readonly ${linkType.apiName}: ${
-        linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
-      }<${linkType.objectTypeApiName}>`
-    ).join(";\n")
+    linkTypes.flatMap(linkType => {
+      const entries = [
+        `readonly ${linkType.apiName}: ${
+          linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+        }<${linkType.objectTypeApiName}>`,
+      ];
+
+      if (isReservedKeyword(linkType.apiName)) {
+        entries.push(
+          `/** @deprecated please migrate to '${linkType.apiName}' instead */
+        readonly ${linkType.apiName}_: ${
+            linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+          }<${linkType.objectTypeApiName}>`,
+        );
+      }
+      return entries;
+    }).join(";\n")
   }
 }
   `;
