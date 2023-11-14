@@ -50,6 +50,7 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
 
 export const ObjectTypeWithAllPropertyTypes = {
   apiName: 'ObjectTypeWithAllPropertyTypes',
+  description: 'A type with all property types',
   primaryKeyType: 'integer',
   links: {},
   properties: {

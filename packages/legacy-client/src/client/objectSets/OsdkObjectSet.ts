@@ -39,6 +39,7 @@ import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep
 import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
 import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import { createPropertyDescriptions } from "./createPropertyDescriptions";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
 
 export function createOsdkObjectSet<
@@ -163,7 +164,13 @@ export function createBaseOsdkObjectSet<
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
     apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["__apiName"],
-    description: client.ontology.objects[apiName].description ?? "",
+
+    description: client.ontology.objects[apiName].description,
+
+    properties: createPropertyDescriptions(
+      client.ontology.objects[apiName].properties,
+    ),
+
     get(primaryKey) {
       return getObject(client, apiName, primaryKey);
     },

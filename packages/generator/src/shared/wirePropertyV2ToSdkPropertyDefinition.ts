@@ -38,12 +38,14 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
       return {
         multiplicity: false,
+        description: input.description,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
         nullable: true,
       };
     case "array": {
       return {
         multiplicity: true,
+        description: input.description,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
         nullable: true,
       };

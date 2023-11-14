@@ -19,6 +19,7 @@ export interface Todo extends OntologyObject {
 
 export const Todo = {
   apiName: 'Todo',
+  description: 'Its a todo item.',
   primaryKeyType: 'integer',
   links: {
     Assignee: {
@@ -34,6 +35,7 @@ export const Todo = {
     },
     body: {
       multiplicity: false,
+      description: 'The text of the todo',
       type: 'string',
       nullable: true,
     },

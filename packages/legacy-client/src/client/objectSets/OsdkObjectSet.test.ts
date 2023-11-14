@@ -56,6 +56,15 @@ describe("OsdkObjectSet", () => {
     );
   });
 
+  it("exposes descriptions", () => {
+    const os = createBaseTodoObjectSet(client);
+    expect(os.description).toEqual("A todo object");
+    expect(os.properties.id.apiName).toEqual("id");
+    expect(os.properties.id.description).toEqual("The id of the Todo object");
+    expect(os.properties.body.apiName).toEqual("body");
+    expect(os.properties.body.description).toBeUndefined();
+  });
+
   it("creates a search on an ObjectSet", () => {
     const os = createBaseTodoObjectSet(client);
     const whereObjectSet = os.where(a => a.id.eq("123"));
