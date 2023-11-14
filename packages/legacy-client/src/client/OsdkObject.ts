@@ -34,7 +34,7 @@ import type {
   SingleLink,
   TimeSeries,
   Timestamp,
-} from "../ontology-runtime/baseTypes";
+} from "./baseTypes";
 
 export interface ValidLegacyPropertyTypes {
   string: string;

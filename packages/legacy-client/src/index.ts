@@ -22,12 +22,6 @@ export {
   type Ontology,
 } from "./client";
 export {
-  type Auth,
-  ConfidentialClientAuth,
-  PublicClientAuth,
-  UserTokenAuth,
-} from "./oauth-client";
-export {
   type ActionError,
   ActionExecutionMode,
   ActionResponse,
@@ -63,7 +57,7 @@ export {
   Timestamp,
   TimestampType,
   visitError,
-} from "./ontology-runtime";
+} from "./client";
 export type {
   ActionExecutionOptions,
   ActionResponseFromOptions,
@@ -98,4 +92,10 @@ export type {
   TwoDimensionalAggregation,
   Unauthorized,
   UnknownError,
-} from "./ontology-runtime";
+} from "./client";
+export {
+  type Auth,
+  ConfidentialClientAuth,
+  PublicClientAuth,
+  UserTokenAuth,
+} from "./oauth-client";

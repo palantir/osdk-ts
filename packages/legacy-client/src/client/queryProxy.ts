@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import { executeQuery } from "../ontology-runtime/ontologyProvider/calls/executeQuery";
+import { executeQuery } from "./net/executeQuery";
 import type {
   Queries,
   QueryNamesFrom,

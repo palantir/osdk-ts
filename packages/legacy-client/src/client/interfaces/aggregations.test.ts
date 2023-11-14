@@ -15,6 +15,8 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
+
+import type { Todo } from "../../util/test/TodoObject";
 import type {
   AggregatableProperty,
   ApproximateDistinctCountAggregatableProperty,
@@ -23,8 +25,7 @@ import type {
   MultipleAggregatableProperty,
   NumericGroupBy,
   StringGroupBy,
-} from "../../ontology-runtime";
-import type { Todo } from "../../util/test/TodoObject";
+} from "../objectSets/aggregations";
 import type {
   AggregateSelection,
   GroupBySelections,

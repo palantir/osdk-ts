@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, SingleLink } from "../../ontology-runtime";
+import type { OntologyObject, SingleLink } from "../../client/baseTypes";
 import type { Task } from "./TaskObject";
 
 /**

@@ -22,7 +22,7 @@ import type {
   LocalDate,
   OntologyObject,
   Timestamp,
-} from "../../ontology-runtime/baseTypes";
+} from "../../client/baseTypes";
 
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly __apiName: "ObjectTypeWithAllPropertyTypes";

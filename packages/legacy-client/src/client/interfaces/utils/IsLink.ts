@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MultiLink, SingleLink } from "../../../ontology-runtime";
+import type { MultiLink, SingleLink } from "../../baseTypes";
 
 export type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true
   : false;

@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  LocalDate,
-  OntologyObject,
-  OrderByClause,
-  OrderByOption,
-  Timestamp,
-} from "../../ontology-runtime";
+import type { LocalDate, OntologyObject, Timestamp } from "../baseTypes";
+import type { OrderByClause, OrderByOption } from "../objectSets/filters";
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 type IsOrderableProperty<T> = T extends

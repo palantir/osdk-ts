@@ -15,14 +15,14 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { MultipleAggregatableProperty } from "../../ontology-runtime";
+import type { MultipleAggregateSelection } from "../interfaces/aggregations";
 import {
   ApproximateDistinctCountAggregatableProperty,
   CountOperation,
   LocalDatePropertyMetric,
   NumericPropertyMetric,
-} from "../../ontology-runtime";
-import type { MultipleAggregateSelection } from "../interfaces/aggregations";
+} from "../objectSets/aggregations";
+import type { MultipleAggregatableProperty } from "../objectSets/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
 export function mapPropertiesToMultipleAggregationProperties<

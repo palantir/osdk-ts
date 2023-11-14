@@ -15,14 +15,14 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { GroupBySelections } from "../interfaces/aggregations";
 import {
   BooleanGroupBy,
   LocalDateGroupBy,
   NumericGroupBy,
   StringGroupBy,
   TimestampGroupBy,
-} from "../../ontology-runtime";
-import type { GroupBySelections } from "../interfaces/aggregations";
+} from "../objectSets/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 
 export function mapPropertiesToGroupByProperties<

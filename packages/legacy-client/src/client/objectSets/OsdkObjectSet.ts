@@ -24,8 +24,7 @@ import type {
   FilteredPropertiesTerminalOperationsWithGet,
   FilterObjectSetDefinition,
   ObjectSetDefinition,
-} from "../../ontology-runtime";
-import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
+} from "../baseTypes";
 import type {
   BaseObjectSet,
   BaseObjectSetOperations,
@@ -33,6 +32,7 @@ import type {
   ObjectSetOperations,
 } from "../interfaces";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
+import { getObject } from "../net/getObject";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";

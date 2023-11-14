@@ -17,11 +17,9 @@
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   OntologyObject,
-} from "../../ontology-runtime";
-import type {
-  GetObjectError,
-  Result,
-} from "../../ontology-runtime/ontologyProvider";
+} from "../baseTypes";
+import type { GetObjectError } from "../errors";
+import type { Result } from "../Result";
 import type { ObjectSet } from "./objectSet";
 import type { SelectableProperties } from "./utils/OmitProperties";
 import type { Properties } from "./utils/Properties";

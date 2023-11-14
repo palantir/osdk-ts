@@ -15,7 +15,8 @@
  */
 
 import type { PropertyDefinition } from "@osdk/api";
-import type { OntologyObject } from "../../ontology-runtime";
+import type { OntologyObject } from "../baseTypes";
+import type { ObjectTypeFilter } from "../interfaces/filters";
 import {
   ArrayFilter,
   AttachmentFilter,
@@ -26,8 +27,7 @@ import {
   NumericFilter,
   StringFilter,
   TimestampFilter,
-} from "../../ontology-runtime";
-import type { ObjectTypeFilter } from "../interfaces/filters";
+} from "../objectSets/filters";
 
 export function mapPropertiesToSearchFilter<T extends OntologyObject>(
   properties: Record<string, PropertyDefinition>,
