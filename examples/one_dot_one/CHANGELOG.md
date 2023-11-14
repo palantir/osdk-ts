@@ -1,5 +1,14 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.4
+
+### Patch Changes
+
+- 70719db: Fixing nits, and adding support for legacy reservered word backcompat
+- Updated dependencies [70719db]
+  - @osdk/generator@0.0.5
+  - @osdk/legacy-client@0.0.5
+
 ## 0.0.3
 
 ### Patch Changes
