@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 0.0.3
+
+### Patch Changes
+
+- 1674b35: Releasing clients for integration
+
 ## 0.0.2
 
 ### Patch Changes
