@@ -47,7 +47,6 @@ const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .demandCommand();
   },
   handler: async (args) => {
-    console.log("Curious site handlers");
   },
 };
 
