@@ -147,9 +147,9 @@ function handleQueryDataType(
       return `{ ${properties.join(",\n")} }`;
 
     case "union":
-      return dataType.unionTypes.filter(subType =>
-        !isNullableQueryDataType(subType)
-      ).map(type => handleQueryDataType(type, importedObjects)).join("|");
+      return dataType.unionTypes.map(type =>
+        handleQueryDataType(type, importedObjects)
+      ).filter(type => type !== "null").join("|");
 
     case "twoDimensionalAggregation":
       dataType.valueType;
