@@ -301,27 +301,18 @@ function remapQueryBucketKeyType(
   queryBucketKeyType: AggregationKeyDataType,
   value: any,
 ): QueryBucketKey {
-  if (typeof queryBucketKeyType === "string") {
-    switch (queryBucketKeyType) {
+  if (typeof queryBucketKeyType.keyType === "string") {
+    switch (queryBucketKeyType.keyType) {
       case "string":
         return value as string;
       case "boolean":
         return value as boolean;
+      case "range":
+        return remapRangeType(queryBucketKeyType, value);
       default:
         const _: never = queryBucketKeyType;
     }
-  } else {
-    if (queryBucketKeyType.keyType === "range") {
-      return remapRangeType(queryBucketKeyType, value);
-    } else {
-      throw new Error(
-        `Cannot remapQueryBucketKeyType with unsupported type ${
-          JSON.stringify(queryBucketKeyType)
-        }`,
-      );
-    }
   }
-
   throw new Error(
     `Unsupported queryBucketKeyType ${
       JSON.stringify(queryBucketKeyType)

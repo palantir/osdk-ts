@@ -20,6 +20,7 @@ import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import type { ObjectSet } from "../client";
 import type {
+  QueryThreeDimensionalAggregation,
   Range,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
@@ -139,6 +140,25 @@ describe("Queries", () => {
 
       const value = unwrapResultOrThrow(response);
       expect(value).toEqual({ value: 1 });
+    });
+
+    it("handles aggregation return types", async () => {
+      mockFetchResponse(
+        fetch,
+        {
+          value: {
+            groups: [{ groups: [{ key: false, value: 4 }], key: "s1" }],
+          } satisfies QueryThreeDimensionalAggregation,
+        },
+      );
+      const response = await queries.queryReturnsAggregation();
+
+      const value = unwrapResultOrThrow(response);
+      expect(value).toEqual({
+        value: {
+          groups: [{ key: "s1", value: [{ key: false, value: 4 }] }],
+        },
+      });
     });
   });
 
