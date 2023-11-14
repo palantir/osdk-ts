@@ -22,6 +22,7 @@ import type {
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   ObjectSetDefinition,
+  OrderByClause,
 } from "../../ontology-runtime";
 import { getObject } from "../../ontology-runtime/ontologyProvider/calls/getObject";
 import { loadAllObjects } from "../../ontology-runtime/ontologyProvider/calls/loadObjects";
@@ -38,6 +39,7 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
   apiName: K,
   objectSetDefinition: ObjectSetDefinition,
   properties: ReadonlyArray<T>,
+  orderByClause: OrderByClause[] = [],
 ): FilteredPropertiesTerminalOperationsWithGet<
   OsdkLegacyObjectFrom<O, K>,
   T[]
@@ -48,7 +50,7 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         client,
         apiName,
         objectSetDefinition,
-        [],
+        orderByClause,
         properties,
       );
     },
@@ -57,7 +59,7 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         client,
         apiName,
         objectSetDefinition,
-        [],
+        orderByClause,
         properties,
         options,
       );

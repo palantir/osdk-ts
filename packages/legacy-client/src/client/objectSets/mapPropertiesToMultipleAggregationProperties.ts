@@ -48,6 +48,7 @@ export function mapPropertiesToMultipleAggregationProperties<
         case "boolean":
         case "short":
           acc[property] = NumericPropertyMetric(property);
+          break;
 
         case "attachment":
         case "geopoint":

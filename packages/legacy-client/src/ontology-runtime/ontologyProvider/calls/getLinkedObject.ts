@@ -25,6 +25,7 @@ import {
 } from "../ErrorHandlers";
 import type { GetLinkedObjectError } from "../Errors";
 import type { Result } from "../Result";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 import { wrapResult } from "./util/wrapResult";
 
 export function getLinkedObject<T extends OntologyObject>(
@@ -49,8 +50,7 @@ export function getLinkedObject<T extends OntologyObject>(
       );
       return convertWireToOsdkObject(
         client,
-        linkTypeApiName,
-        object,
+        object as WireOntologyObjectV2<T["__apiName"]>,
       ) as unknown as T;
     },
     e =>

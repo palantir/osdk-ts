@@ -25,6 +25,7 @@ import type {
 } from "../../ontology-runtime";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
 import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
 
@@ -36,7 +37,10 @@ export function createObjectSetBaseOrderByStepMethod<
   apiName: K,
   objectSet: ObjectSetDefinition,
   orderByClauses: OrderByClause[] = [],
-): Omit<ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>, "all" | "page"> {
+): Omit<
+  ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>,
+  "all" | "page" | "select"
+> {
   return {
     orderBy(predicate) {
       const objectProperties = client.ontology.objects[apiName].properties;
@@ -78,5 +82,14 @@ function createObjectSetOrderByStep<
       [],
       orderByClauses,
     ),
+    select(properties) {
+      return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
+        client,
+        apiName,
+        objectSet,
+        properties,
+        orderByClauses,
+      );
+    },
   };
 }

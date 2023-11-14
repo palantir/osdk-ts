@@ -44,6 +44,7 @@ import type {
 } from "../../baseTypes";
 import { ExecuteQueryErrorHandler, handleExecuteQueryError } from "..";
 import { isOk } from "../Result";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 import { getObject } from "./getObject";
 import { getParameterValueMapping } from "./util/getParameterValueMapping";
 import { wrapResult } from "./util/wrapResult";
@@ -156,8 +157,7 @@ async function remapQueryResponseType(
           // in the case we change it to return the full type
           return convertWireToOsdkObject(
             client,
-            complexType.object,
-            responseValue,
+            responseValue as WireOntologyObjectV2<any>,
           );
         }
 

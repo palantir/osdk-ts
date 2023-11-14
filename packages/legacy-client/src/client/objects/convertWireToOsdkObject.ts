@@ -29,6 +29,7 @@ import {
   TimeSeriesProperty,
   Timestamp,
 } from "../../ontology-runtime/baseTypes";
+import type { WireOntologyObjectV2 } from "../../ontology-runtime/ontologyProvider/WireOntologyObjectV2";
 import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
 import type {
   OsdkLegacyLinksFrom,
@@ -68,7 +69,7 @@ function createPrototype<
 
   // add the relevant keys for the link types associated with this object type
   for (
-    const [k, { multiplicity, targetType }] of Object.entries(objDef.links)
+    const [k, { multiplicity }] of Object.entries(objDef.links)
   ) {
     Object.defineProperty(proto, k, {
       get: function() {
@@ -78,14 +79,14 @@ function createPrototype<
             client,
             objDef.apiName,
             this.__primaryKey,
-            targetType,
+            k,
           );
         } else {
           return createSingleLinkStep(
             client,
             objDef.apiName,
             this.__primaryKey,
-            targetType,
+            k,
           );
         }
       },
@@ -100,9 +101,9 @@ export function convertWireToOsdkObject<
   O extends OntologyDefinition<any>,
 >(
   client: ThinClient<O>,
-  apiName: T,
-  obj: OntologyObjectV2,
+  obj: WireOntologyObjectV2<T>,
 ): OsdkLegacyObjectFrom<O, T> {
+  const apiName = obj["__apiName"];
   const proto = getPrototype(client.ontology, apiName);
   Object.setPrototypeOf(obj, proto);
   Object.defineProperty(obj, OriginClient, {

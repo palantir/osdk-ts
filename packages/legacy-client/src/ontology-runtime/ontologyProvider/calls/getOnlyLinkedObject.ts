@@ -30,13 +30,13 @@ export async function getOnlyLinkedObject<
   client: ThinClient<OntologyDefinition<any>>,
   sourceObjectType: string,
   sourcePrimaryKey: ParameterValue,
-  targetObjectType: T["__apiName"],
+  targetLinkType: string,
 ): Promise<Result<T, GetLinkedObjectError>> {
-  const result = await listLinkedObjects(
+  const result = await listLinkedObjects<T>(
     client,
     sourceObjectType,
     sourcePrimaryKey,
-    targetObjectType,
+    targetLinkType,
   );
 
   if (isErr(result)) {
@@ -48,10 +48,10 @@ export async function getOnlyLinkedObject<
       {
         name: "Too many objects",
         message:
-          `There are multiple ${targetObjectType} objects for this object, but there should only be one`,
+          `There are multiple ${targetLinkType} objects for this object, but there should only be one`,
         errorName: "LinkedObjectNotFound",
         errorType: "NOT_FOUND",
-        linkType: targetObjectType,
+        linkType: targetLinkType,
         linkedObjectType: sourceObjectType,
         linkedObjectPrimaryKey: {
           primaryKey: sourcePrimaryKey.toString(),
@@ -67,7 +67,7 @@ export async function getOnlyLinkedObject<
         message: "Expected to receive a single object but received none",
         errorType: "NOT_FOUND",
         errorName: "LinkedObjectNotFound",
-        linkType: targetObjectType,
+        linkType: targetLinkType,
         linkedObjectType: sourceObjectType,
         linkedObjectPrimaryKey: {
           primaryKey: sourcePrimaryKey.toString(),

@@ -22,6 +22,7 @@ import type { OntologyObject } from "../../baseTypes";
 import { GetObjectErrorHandler, handleGetObjectError } from "../ErrorHandlers";
 import type { GetObjectError } from "../Errors";
 import type { Result } from "../Result";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getObject<T extends OntologyObject>(
@@ -39,11 +40,10 @@ export async function getObject<T extends OntologyObject>(
       {
         select: selectedProperties.map(x => x.toString()),
       },
-    );
+    ) as WireOntologyObjectV2<T["__apiName"]>;
 
     return convertWireToOsdkObject(
       client,
-      objectApiName,
       object,
     ) as unknown as T;
   }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
