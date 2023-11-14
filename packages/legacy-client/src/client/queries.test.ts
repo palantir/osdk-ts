@@ -17,7 +17,7 @@
 import type { ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import type { MockedFunction } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { LocalDate, Timestamp } from "../ontology-runtime";
 import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
@@ -27,7 +27,7 @@ import {
 } from "../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
-import type { Queries } from "./queries";
+import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
 describe("Queries", () => {
@@ -50,7 +50,7 @@ describe("Queries", () => {
     }
   });
 
-  it("type tests", async () => {
+  it("converts data to and from the wire", async () => {
     const nowLocalDate = LocalDate.now();
     const nowTimestamp = Timestamp.now();
 
@@ -125,7 +125,7 @@ describe("Queries", () => {
     expect((response as any).value.value).toBe("resultString");
   });
 
-  it("foo", () => {
+  it("type tests", () => {
     expectTypeOf<
       QueryReturnType<typeof MockOntology, "queryTakesAllParameterTypes">
     >().toMatchTypeOf<string>();
