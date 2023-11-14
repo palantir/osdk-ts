@@ -55,12 +55,8 @@ export function createOpenApiRequest<
     }
 
     const headersInit: HeadersInit = new Headers();
-    if (requestMediaType != null) {
-      headersInit.set("Content-Type", requestMediaType);
-    }
-    if (responseMediaType != null) {
-      headersInit.set("Accept", responseMediaType);
-    }
+    headersInit.set("Content-Type", requestMediaType ?? "application/json");
+    headersInit.set("Accept", responseMediaType ?? "application/json");
 
     Object.entries(headers || {}).forEach(([key, value]) => {
       if (value != null) {
