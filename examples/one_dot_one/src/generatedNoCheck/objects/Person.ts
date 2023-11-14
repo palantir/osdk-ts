@@ -10,6 +10,7 @@ export interface Person extends OntologyObject {
   readonly __primaryKey: string;
   readonly email: string | undefined;
   readonly Todos: MultiLink<Todo>;
+  readonly Friends: MultiLink<Person>;
 }
 
 export const Person = {
@@ -20,6 +21,10 @@ export const Person = {
       multiplicity: true,
       targetType: 'Todo',
     },
+    Friends: {
+      multiplicity: true,
+      targetType: 'Person',
+    },
   },
   properties: {
     email: {
@@ -28,4 +33,4 @@ export const Person = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'Person', 'Todo'>;
+} satisfies ObjectDefinition<'Person', 'Todo' | 'Person'>;

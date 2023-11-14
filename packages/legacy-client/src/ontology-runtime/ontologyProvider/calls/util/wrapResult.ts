@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { PalantirApiError } from "../../../../Errors";
+import type { PalantirApiError } from "../../../../Errors";
+import { isPalantirApiError } from "../../../../Errors";
 import type { FoundryApiError } from "../../Errors";
 import type { Result } from "../../Result";
 import { createErrorResponse, createOkResponse } from "./ResponseCreators";
@@ -27,7 +28,7 @@ export async function wrapResult<T, E extends FoundryApiError>(
     const result = await apiCall();
     return createOkResponse(result);
   } catch (e) {
-    if (e instanceof PalantirApiError) {
+    if (isPalantirApiError(e)) {
       return createErrorResponse(errorHandler(e));
     } else {
       // TODO this unknown used to be an UnknownError but it had casting problems

@@ -16,7 +16,14 @@
 
 import type { LocalDate, Timestamp } from "../..";
 import type {
+  ArrayFilter,
+  Attachment,
+  AttachmentFilter,
   BooleanFilter,
+  GeoPoint,
+  GeoPointFilter,
+  GeoShape,
+  GeoShapeFilter,
   LocalDateFilter,
   NumericFilter,
   OntologyObject,
@@ -31,7 +38,15 @@ export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
 ) => WhereClause;
 
 type IsFilterableProperty<T> = NonNullable<T> extends
-  number | LocalDate | Timestamp | string | boolean ? true : false;
+  | number
+  | LocalDate
+  | Timestamp
+  | string
+  | boolean
+  | GeoShape
+  | GeoPoint
+  | Attachment ? true
+  : false;
 
 type FilterableProperties<T extends OntologyObject> = {
   [K in keyof T as IsFilterableProperty<T[K]> extends true ? K : never]: T[K];
@@ -52,4 +67,18 @@ type FilterFromType<T> = T extends number ? NumericFilter
   : T extends LocalDate ? LocalDateFilter
   : T extends Timestamp ? TimestampFilter
   : T extends boolean ? BooleanFilter
+  : T extends GeoPoint ? GeoPointFilter
+  : T extends GeoShape ? GeoShapeFilter
+  : T extends Attachment ? AttachmentFilter
+  : T extends Array<
+    infer U extends
+      | string
+      | number
+      | boolean
+      | LocalDate
+      | Timestamp
+      | GeoShape
+      | GeoPoint
+      | Attachment
+  > ? IsFilterableProperty<U> extends true ? ArrayFilter<U> : never
   : never;

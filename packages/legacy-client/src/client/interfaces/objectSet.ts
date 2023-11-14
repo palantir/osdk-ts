@@ -73,6 +73,10 @@ export type ObjectSetOrderByStep<O extends OntologyObject> = {
   orderBy: (
     predicate: OrderByFunction<O>,
   ) => ObjectSetOrderByStep<O>;
+
+  select<T extends keyof SelectableProperties<O>>(
+    properties: readonly T[],
+  ): FilteredPropertiesTerminalOperations<O, T[]>;
 } & ObjectSetTerminalLoadStep<O>;
 
 export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {

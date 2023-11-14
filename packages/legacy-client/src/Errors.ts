@@ -48,3 +48,7 @@ export class PalantirApiError extends Error implements PalantirApiError {
     this.parameters = parameters;
   }
 }
+
+export function isPalantirApiError(e: any): e is PalantirApiError {
+  return e.errorName && e.errorInstanceId;
+}

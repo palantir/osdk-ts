@@ -28,7 +28,7 @@ import { wrapResult } from "./util/wrapResult";
 
 export async function getFirstPoint<T extends string | number>(
   client: ThinClient<OntologyDefinition<any>>,
-  apiName: string,
+  objectApiName: string,
   primaryKey: any,
   propertyName: string,
 ): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>> {
@@ -37,7 +37,7 @@ export async function getFirstPoint<T extends string | number>(
       const point = await gatewayGetFirstPoint(
         createOpenApiRequest(client.stack, client.fetch),
         client.ontology.metadata.ontologyApiName,
-        apiName,
+        objectApiName,
         primaryKey,
         propertyName,
       );

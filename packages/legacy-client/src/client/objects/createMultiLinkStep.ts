@@ -32,7 +32,7 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
   client: ThinClient<any>,
   sourceApiName: string,
   sourcePrimaryKey: ParameterValue,
-  targetApiName: T["__apiName"],
+  targetApiName: string,
 ): MultiLink<T> {
   return {
     get(

@@ -38,7 +38,7 @@ describe("convertWireToOsdkObject", () => {
     const object = convertWireToOsdkObject<
       "ObjectTypeWithAllPropertyTypes",
       typeof MockOntology
-    >(client, "ObjectTypeWithAllPropertyTypes", objectWithAllPropertyTypes);
+    >(client, objectWithAllPropertyTypes);
 
     const expectedGeoPoint = GeoPoint.fromGeoJson({
       type: "Point",
@@ -90,7 +90,7 @@ describe("convertWireToOsdkObject", () => {
     const object1 = convertWireToOsdkObject<
       "Task",
       typeof MockOntology
-    >(client, "Task", {
+    >(client, {
       __rid: "rid.1",
       __primaryKey: 1,
       __apiName: "Task",
@@ -100,7 +100,7 @@ describe("convertWireToOsdkObject", () => {
     const object2 = convertWireToOsdkObject<
       "Task",
       typeof MockOntology
-    >(client, "Task", {
+    >(client, {
       __rid: "rid.2",
       __primaryKey: 2,
       __apiName: "Task",
@@ -121,7 +121,7 @@ describe("convertWireToOsdkObject", () => {
     const object = convertWireToOsdkObject<
       "Task",
       typeof MockOntology
-    >(client, "Task", wireObject);
+    >(client, wireObject);
 
     expect(object.toString()).toEqual(
       JSON.stringify(wireObject, null, 2),
@@ -133,7 +133,7 @@ const objectWithAllPropertyTypes = {
   __rid:
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 1,
-  __apiName: "objectTypeWithAllPropertyTypes",
+  __apiName: "ObjectTypeWithAllPropertyTypes" as const,
   id: 1,
   string: "string",
   boolean: true,

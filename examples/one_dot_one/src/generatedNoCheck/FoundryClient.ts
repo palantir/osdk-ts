@@ -8,6 +8,6 @@ export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<
   }
 
   get ontology(): Ontology {
-    return this.ontology;
+    return super.ontology;
   }
 }

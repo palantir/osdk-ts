@@ -16,21 +16,7 @@
 
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 
-export function getMockTodoObject() {
-  return {
-    __apiName: "Todo" as const,
-    __primaryKey: 1,
-    __rid: "ri.a.b.c.d",
-    id: "123",
-    body: "body",
-    complete: false,
-  } satisfies OntologyObjectV2;
-}
-
-export function getMockTaskObject() {
-  return {
-    __apiName: "Task" as const,
-    __primaryKey: 1,
-    id: 1,
-  } satisfies OntologyObjectV2;
-}
+// This is part of the contract even though it is not defined in the API Spec
+export type WireOntologyObjectV2<T extends string> = OntologyObjectV2 & {
+  __apiName: T;
+};

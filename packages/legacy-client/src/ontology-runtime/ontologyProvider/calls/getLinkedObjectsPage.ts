@@ -19,6 +19,7 @@ import { createOpenApiRequest } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { convertWireToOsdkObject } from "../../../client/objects/convertWireToOsdkObject";
 import type { OntologyObject } from "../../baseTypes";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 
 export async function getLinkedObjectsPage<T extends OntologyObject>(
   client: ThinClient<OntologyDefinition<T["__apiName"]>>,
@@ -43,8 +44,7 @@ export async function getLinkedObjectsPage<T extends OntologyObject>(
     data: pagePromise.data.map(object => {
       return convertWireToOsdkObject(
         client,
-        linkTypeApiName,
-        object,
+        object as WireOntologyObjectV2<T["__apiName"]>,
       ) as unknown as T;
     }),
     nextPageToken: pagePromise.nextPageToken,

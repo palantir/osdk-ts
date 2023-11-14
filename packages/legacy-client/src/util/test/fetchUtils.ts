@@ -22,7 +22,7 @@ export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
   response: any,
 ) {
-  fetch.mockResolvedValue({
+  fetch.mockResolvedValueOnce({
     json: () => Promise.resolve(response),
     blob: () => Promise.resolve(response),
     status: 200,

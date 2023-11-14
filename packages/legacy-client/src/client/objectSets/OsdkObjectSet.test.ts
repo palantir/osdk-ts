@@ -31,6 +31,7 @@ import {
 } from "vitest";
 import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
+import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
   getMockTaskObject,
   getMockTodoObject,
@@ -42,8 +43,9 @@ describe("OsdkObjectSet", () => {
   const origin = "https://mock.com";
   const baseUrl = `${origin}/api/v2/ontologies/`;
 
-  let fetch: MockedFunction<typeof globalThis.fetch>;
+  let fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
   let client: ThinClient<typeof MockOntology>;
+
   beforeEach(() => {
     fetch = vi.fn();
     client = createThinClient(
@@ -248,7 +250,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports select methods - get", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([getMockTodoObject()]);
+    mockFetchResponse(fetch, getMockTodoObject());
     const result = await os.select(["id", "body", "complete"]).get("123");
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -264,7 +266,7 @@ describe("OsdkObjectSet", () => {
 
   it("supports round-trip of circular links", async () => {
     const os = createBaseTodoObjectSet(client);
-    mockObjectPage([getMockTodoObject()]);
+    mockFetchResponse(fetch, getMockTodoObject());
     const todoResponse = await os.get("1");
 
     if (!isOk(todoResponse)) {
@@ -314,7 +316,11 @@ describe("OsdkObjectSet", () => {
       () => "Token",
       fetch1,
     );
-    const todo1 = convertWireToOsdkObject(client1, "Todo", getMockTodoObject());
+
+    const todo1 = convertWireToOsdkObject(
+      client1,
+      getMockTodoObject(),
+    );
 
     const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
     const client2 = createThinClient(
@@ -323,7 +329,11 @@ describe("OsdkObjectSet", () => {
       () => "Token",
       fetch2,
     );
-    const todo2 = convertWireToOsdkObject(client2, "Todo", getMockTodoObject());
+
+    const todo2 = convertWireToOsdkObject(
+      client2,
+      getMockTodoObject(),
+    );
 
     // same prototype
     expect(Object.getPrototypeOf(todo1)).toBe(Object.getPrototypeOf(todo2));
@@ -356,7 +366,7 @@ describe("OsdkObjectSet", () => {
       data: objects,
     };
 
-    fetch.mockResolvedValue({
+    fetch.mockResolvedValueOnce({
       json: () => {
         return Promise.resolve(response);
       },
