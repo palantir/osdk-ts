@@ -29,18 +29,19 @@ import type {
   UnionQueryDataType,
   ValidBaseQueryDataTypes,
 } from "@osdk/api";
+
 import type {
   LocalDate,
-  QueryError,
   QueryResponse,
-  Range,
-  Result,
   ThreeDimensionalAggregation,
   Timestamp,
   TwoDimensionalAggregation,
-} from "../ontology-runtime";
+} from "./baseTypes";
+import type { QueryError } from "./errors";
 import type { ObjectSet } from "./interfaces";
+import type { Range } from "./objectSets/aggregations";
 import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { Result } from "./Result";
 import type { IsEmptyRecord } from "./utils";
 import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
 

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  MultiLink,
-  OntologyObject,
-  SingleLink,
-} from "../../ontology-runtime";
+import type { MultiLink, OntologyObject, SingleLink } from "../baseTypes";
 import type { ObjectSet } from ".";
 import type { IsLink } from "./utils/IsLink";
 

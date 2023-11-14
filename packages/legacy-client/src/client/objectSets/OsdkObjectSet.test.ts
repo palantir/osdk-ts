@@ -29,13 +29,13 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
-import type { ObjectSetDefinition } from "../../ontology-runtime";
 import { MockOntology } from "../../util/test";
 import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
   getMockTaskObject,
   getMockTodoObject,
 } from "../../util/test/mocks/mockObjects";
+import type { ObjectSetDefinition } from "../baseTypes";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
 

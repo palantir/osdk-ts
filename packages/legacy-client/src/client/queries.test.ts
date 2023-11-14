@@ -18,7 +18,6 @@ import type { ThinClient } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { LocalDate, Timestamp } from "../ontology-runtime";
 import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
 import {
@@ -26,6 +25,7 @@ import {
   mockFetchResponse,
 } from "../util/test/fetchUtils";
 import { MOCK_ORIGIN } from "../util/test/mocks/mockMetadata";
+import { LocalDate, Timestamp } from "./baseTypes";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import type { Queries } from "./queries";
 import { createQueryProxy } from "./queryProxy";

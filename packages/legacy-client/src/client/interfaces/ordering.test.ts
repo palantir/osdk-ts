@@ -15,8 +15,8 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { OrderByOption } from "../../ontology-runtime";
 import type { Todo } from "../../util/test/TodoObject";
+import type { OrderByOption } from "../objectSets/filters";
 import type { OrderBy } from "./ordering";
 
 describe("Ordering", () => {

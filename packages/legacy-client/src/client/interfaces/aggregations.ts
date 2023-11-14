@@ -30,7 +30,7 @@
  * limitations under the License.
  */
 
-import type { LocalDate, Timestamp } from "../..";
+import type { LocalDate, OntologyObject, Timestamp } from "../baseTypes";
 import type {
   AggregatableProperty,
   ApproximateDistinctCountAggregatableProperty,
@@ -43,10 +43,9 @@ import type {
   LocalDateGroupBy,
   MultipleAggregatableProperty,
   NumericGroupBy,
-  OntologyObject,
   StringGroupBy,
   TimestampGroupBy,
-} from "../../ontology-runtime";
+} from "../objectSets/aggregations";
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypesGroupByFunction<

@@ -15,18 +15,13 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import type {
-  GetLinkedObjectError,
-  ListLinkedObjectsError,
-  MultiLink,
-  OntologyObject,
-  Page,
-  ParameterValue,
-} from "../../ontology-runtime";
-import { getLinkedObject } from "../../ontology-runtime/ontologyProvider/calls/getLinkedObject";
-import { listLinkedObjects } from "../../ontology-runtime/ontologyProvider/calls/listLinkedObjects";
-import { pageLinkedObjects } from "../../ontology-runtime/ontologyProvider/calls/pageLinkedObjects";
-import type { Result } from "../../ontology-runtime/ontologyProvider/Result";
+import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
+import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
+import { getLinkedObject } from "../net/getLinkedObject";
+import { listLinkedObjects } from "../net/listLinkedObjects";
+import { pageLinkedObjects } from "../net/pageLinkedObjects";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
 
 export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
   client: ThinClient<any>,

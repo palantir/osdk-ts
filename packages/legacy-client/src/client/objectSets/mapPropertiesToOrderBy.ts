@@ -15,9 +15,9 @@
  */
 
 import type { PropertyDefinition } from "@osdk/api";
-import type { OntologyObject } from "../../ontology-runtime";
-import { OrderByOption } from "../../ontology-runtime";
+import type { OntologyObject } from "../baseTypes";
 import type { OrderBy } from "../interfaces/ordering";
+import { OrderByOption } from "../objectSets/filters";
 
 export function mapPropertiesToOrderBy<T extends OntologyObject>(
   properties: Record<string, PropertyDefinition>,

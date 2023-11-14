@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MultiLink, OntologyObject } from "../../ontology-runtime";
+import type { MultiLink, OntologyObject } from "../../client/baseTypes";
 import type { Todo } from "./TodoObject";
 
 export interface Task extends OntologyObject {

@@ -15,9 +15,9 @@
  */
 
 import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import { Attachments } from "../ontology-runtime/baseTypes/attachments";
-import type { Actions } from "./actions";
-import { createActionProxy } from "./actions";
+import type { Actions } from "./actions/actions";
+import { createActionProxy } from "./actions/createActionProxy";
+import { Attachments } from "./baseTypes";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
 import { type Queries } from "./queries";

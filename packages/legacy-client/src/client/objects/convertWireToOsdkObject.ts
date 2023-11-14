@@ -28,8 +28,8 @@ import {
   type OntologyObject,
   TimeSeriesProperty,
   Timestamp,
-} from "../../ontology-runtime/baseTypes";
-import type { WireOntologyObjectV2 } from "../../ontology-runtime/ontologyProvider/WireOntologyObjectV2";
+} from "../baseTypes";
+import type { WireOntologyObjectV2 } from "../net/WireOntologyObjectV2";
 import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
 import type {
   OsdkLegacyLinksFrom,

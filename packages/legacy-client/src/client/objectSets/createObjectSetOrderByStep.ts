@@ -19,14 +19,12 @@ import type {
   OntologyDefinition,
   ThinClient,
 } from "@osdk/api";
-import type {
-  ObjectSetDefinition,
-  OrderByClause,
-} from "../../ontology-runtime";
+import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
+import type { OrderByClause } from "./filters";
 import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
 
 export function createObjectSetBaseOrderByStepMethod<

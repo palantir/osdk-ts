@@ -19,14 +19,12 @@ import type {
   OntologyDefinition,
   ThinClient,
 } from "@osdk/api";
-import type {
-  ObjectSetDefinition,
-  OrderByClause,
-} from "../../ontology-runtime";
-import { loadAllObjects } from "../../ontology-runtime/ontologyProvider/calls/loadObjects";
-import { loadObjectsPage } from "../../ontology-runtime/ontologyProvider/calls/loadObjectsPage";
+import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
+import { loadAllObjects } from "../net/loadObjects";
+import { loadObjectsPage } from "../net/loadObjectsPage";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OrderByClause } from "./filters";
 
 export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,

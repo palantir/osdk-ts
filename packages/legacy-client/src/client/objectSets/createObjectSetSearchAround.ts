@@ -22,7 +22,7 @@ import type {
 import type {
   ObjectSetDefinition,
   SearchAroundObjectSetDefinition,
-} from "../../ontology-runtime";
+} from "../baseTypes";
 import type { ObjectSet } from "../interfaces/objectSet";
 import type { SearchAround } from "../interfaces/searchAround";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";

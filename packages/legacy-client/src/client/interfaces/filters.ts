@@ -14,23 +14,26 @@
  * limitations under the License.
  */
 
-import type { LocalDate, Timestamp } from "../..";
+import type {
+  Attachment,
+  GeoPoint,
+  GeoShape,
+  LocalDate,
+  OntologyObject,
+  Timestamp,
+} from "../baseTypes";
 import type {
   ArrayFilter,
-  Attachment,
   AttachmentFilter,
   BooleanFilter,
-  GeoPoint,
   GeoPointFilter,
-  GeoShape,
   GeoShapeFilter,
   LocalDateFilter,
   NumericFilter,
-  OntologyObject,
   StringFilter,
   TimestampFilter,
   WhereClause,
-} from "../../ontology-runtime";
+} from "../objectSets/filters";
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError, Result } from "../../ontology-runtime";
+import type { FoundryApiError } from "../../client/errors";
+import type { Result } from "../../client/Result";
 
 export function unwrapResultOrThrow<Response, Error extends FoundryApiError>(
   result: Result<Response, Error>,
