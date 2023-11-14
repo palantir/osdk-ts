@@ -28,7 +28,6 @@
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
-    "@js-temporal/polyfill": "^0.4.4",
     "@osdk/gateway": "workspace:*",
     "@types/geojson": "^7946.0.13",
     "fetch-retry": "^5.0.6",

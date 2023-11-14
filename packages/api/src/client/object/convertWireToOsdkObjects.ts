@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Temporal } from "@js-temporal/polyfill";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type {
   ObjectTypesFrom,
@@ -65,31 +64,34 @@ export function convertWireToOsdkObjects<
   for (const obj of objs) {
     Object.setPrototypeOf(obj, proto);
 
+    // Saving this code in case we want to come back to temporal. For now its not worth the
+    // risk and we can stick to string until we know what we want.
+    // ====================================================================================================
     // FIXME
     // Im not going for performance for now, just something usable by beta users
     // Also not married to the $raw
-    obj["$raw"] = {};
+    // obj["$raw"] = {};
 
-    for (
-      const [key, def] of Object.entries(
-        client.ontology.objects[apiName].properties,
-      )
-    ) {
-      if (!(key in obj)) continue;
-      obj["$raw"][key] = obj[key];
+    // for (
+    //   const [key, def] of Object.entries(
+    //     client.ontology.objects[apiName].properties,
+    //   )
+    // ) {
+    //   if (!(key in obj)) continue;
+    //   obj["$raw"][key] = obj[key];
 
-      if (def.type === "timestamp") {
-        const value = obj[key] as string | undefined;
-        if (value !== undefined) {
-          obj[key] = Temporal.Instant.from(value);
-        }
-      } else if (def.type === "datetime") {
-        const value = obj[key] as string | undefined;
-        if (value !== undefined) {
-          obj[key] = Temporal.PlainDateTime.from(value);
-        }
-      }
-    }
+    //   if (def.type === "timestamp") {
+    //     const value = obj[key] as string | undefined;
+    //     if (value !== undefined) {
+    //       obj[key] = Temporal.Instant.from(value);
+    //     }
+    //   } else if (def.type === "datetime") {
+    //     const value = obj[key] as string | undefined;
+    //     if (value !== undefined) {
+    //       obj[key] = Temporal.PlainDateTime.from(value);
+    //     }
+    //   }
+    // }
   }
 
   return objs as unknown as OsdkObjectFrom<

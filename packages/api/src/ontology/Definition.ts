@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { Temporal } from "@js-temporal/polyfill";
 import type { GeoJSON } from "geojson";
 import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
@@ -108,11 +107,11 @@ export interface PropertyDefinition {
 // is on the right (from, to)
 export interface ValidPropertyTypes {
   string: string;
-  datetime: [string, Temporal.PlainDate];
+  datetime: string;
   double: number;
   boolean: boolean;
   integer: number;
-  timestamp: [string, Temporal.Instant];
+  timestamp: string;
   short: number;
   long: number;
   float: number;
