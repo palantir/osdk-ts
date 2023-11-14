@@ -60,11 +60,8 @@ function createPrototype<
     const obj: Record<string, unknown> = {};
     const self = this as OsdkLegacyPropertiesFrom<O, T> & OntologyObject<T>;
     for (const prop of Object.keys(objDef.properties)) {
-      obj[prop] = self[prop];
-
-      if (isReservedKeyword(prop)) {
-        obj[`${prop}_`] = self[prop];
-      }
+      const propName = isReservedKeyword(prop) ? `${prop}_` : prop;
+      obj[propName] = self[prop];
     }
     obj["__primaryKey"] = self.__primaryKey;
     obj["__apiName"] = type;

@@ -147,7 +147,6 @@ describe("convertWireToOsdkObject", () => {
 
     expect(object.toString()).toMatchInlineSnapshot(`
       "{
-        \\"catch\\": 1,
         \\"catch_\\": 1,
         \\"__primaryKey\\": 1,
         \\"__apiName\\": \\"ObjectTypeWithReservedNames\\",

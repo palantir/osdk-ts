@@ -58,8 +58,10 @@ ${
       ];
 
       if (isReservedKeyword(propertyName)) {
-        entries.push(`/** @deprecated */
-          readonly ${propertyName}_: ${propertyType} | undefined`);
+        entries.push(
+          `/** @deprecated please migrate to '${propertyName}' instead */
+          readonly ${propertyName}_: ${propertyType} | undefined`,
+        );
       }
 
       return entries;
@@ -74,10 +76,12 @@ ${
       ];
 
       if (isReservedKeyword(linkType.apiName)) {
-        entries.push(`/** @deprecated */
+        entries.push(
+          `/** @deprecated please migrate to '${linkType.apiName}' instead */
         readonly ${linkType.apiName}_: ${
-          linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
-        }<${linkType.objectTypeApiName}>`);
+            linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
+          }<${linkType.objectTypeApiName}>`,
+        );
       }
       return entries;
     }).join(";\n")

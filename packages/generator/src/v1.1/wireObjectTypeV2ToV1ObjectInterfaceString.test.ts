@@ -77,10 +77,10 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         readonly __apiName: 'Todo';
         readonly __primaryKey: number;
         readonly break: number | undefined;
-        /** @deprecated */
+        /** @deprecated please migrate to 'break' instead */
         readonly break_: number | undefined;
         readonly this: SingleLink<Todo>;
-        /** @deprecated */
+        /** @deprecated please migrate to 'this' instead */
         readonly this_: SingleLink<Todo>;
       }
       "
