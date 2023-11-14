@@ -16,6 +16,7 @@
 
 import type {
   AggregationKeyDataType,
+  ObjectSetQueryDataType,
   OntologyDefinition,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
@@ -24,8 +25,10 @@ import type {
 import { createOpenApiRequest } from "@osdk/api";
 import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
+import { createOsdkObjectSet } from "..";
 import { LocalDate, Timestamp } from "../baseTypes";
 import type {
+  ObjectSetDefinition,
   ParameterValue,
   PrimitiveParameterValue,
   QueryBucketKey,
@@ -73,9 +76,7 @@ export function executeQuery<
         response.value,
       );
 
-      return {
-        value: remappedResponse,
-      } as any;
+      return { value: remappedResponse as any };
     },
     e =>
       handleExecuteQueryError(
@@ -101,16 +102,29 @@ function getRemappedParameters(
   return remappedParams;
 }
 
-async function remapQueryResponseType(
-  client: ThinClient<OntologyDefinition<any>>,
-  definition: QueryDataTypeDefinition<any>,
+async function remapQueryResponseType<
+  O extends OntologyDefinition<any>,
+  K extends string,
+>(
+  client: ThinClient<O>,
+  definition: QueryDataTypeDefinition<K>,
   responseValue: PrimitiveParameterValue,
 ): Promise<ParameterValue> {
-  // TODO can the backend really not send us null responses?
+  // handle null responses
+  if (responseValue == null) {
+    if (definition.nullable) {
+      return undefined;
+    } else {
+      throw new Error("Got null response when nullable was not allowed");
+    }
+  }
 
   // handle arrays
   if (definition.multiplicity) {
-    const definitionWithoutMultiplicity = { type: definition.type };
+    const definitionWithoutMultiplicity = {
+      type: definition.type,
+      nullable: definition.nullable,
+    };
     return await Promise.all(
       (responseValue as PrimitiveParameterValue[]).map(it =>
         remapQueryResponseType(client, definitionWithoutMultiplicity, it)
@@ -264,7 +278,12 @@ async function remapQueryResponseType(
         }
 
         case "objectSet":
-          throw new Error("ObjectSet type not supported in response");
+          return createOsdkObjectSet(
+            client,
+            (definition.type as ObjectSetQueryDataType<any>).objectSet,
+            responseValue as ObjectSetDefinition,
+          );
+
         case "union":
           throw new Error("Union type is not supported in response");
         default:
@@ -282,27 +301,18 @@ function remapQueryBucketKeyType(
   queryBucketKeyType: AggregationKeyDataType,
   value: any,
 ): QueryBucketKey {
-  if (typeof queryBucketKeyType === "string") {
-    switch (queryBucketKeyType) {
+  if (typeof queryBucketKeyType.keyType === "string") {
+    switch (queryBucketKeyType.keyType) {
       case "string":
         return value as string;
       case "boolean":
         return value as boolean;
+      case "range":
+        return remapRangeType(queryBucketKeyType, value);
       default:
         const _: never = queryBucketKeyType;
     }
-  } else {
-    if (queryBucketKeyType.keyType === "range") {
-      return remapRangeType(queryBucketKeyType, value);
-    } else {
-      throw new Error(
-        `Cannot remapQueryBucketKeyType with unsupported type ${
-          JSON.stringify(queryBucketKeyType)
-        }`,
-      );
-    }
   }
-
   throw new Error(
     `Unsupported queryBucketKeyType ${
       JSON.stringify(queryBucketKeyType)

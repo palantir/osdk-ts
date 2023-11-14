@@ -101,11 +101,39 @@ export const MockOntology = {
     },
   },
   queries: {
+    queryTakesNoParameters: {
+      apiName: "queryTakesNoParameters",
+      description: "a query that does not require parameters",
+      rid: "query.rid.1",
+      version: "version",
+      parameters: {},
+      output: {
+        type: "integer",
+        nullable: true,
+      },
+    },
+    queryReturnsAggregation: {
+      apiName: "queryReturnsAggregation",
+      description: "a query that returns an aggregation",
+      rid: "query.rid.2",
+      version: "version",
+      parameters: {},
+      output: {
+        type: {
+          type: "threeDimensionalAggregation",
+          threeDimensionalAggregation: {
+            keyType: "string",
+            valueType: { keyType: "boolean", valueType: "double" },
+          },
+        },
+        nullable: false,
+      },
+    },
     queryTakesAllParameterTypes: {
       apiName: "queryTakesAllParameterTypes",
       description: "description of the query that takes all parameter types",
       displayName: "qTAPT",
-      rid: "query.rid",
+      rid: "query.rid.3",
       version: "version",
       parameters: {
         double: {

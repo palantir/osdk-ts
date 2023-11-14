@@ -29,7 +29,7 @@ export async function getOnlyLinkedObject<
 >(
   client: ThinClient<OntologyDefinition<any>>,
   sourceObjectType: string,
-  sourcePrimaryKey: ParameterValue,
+  sourcePrimaryKey: NonNullable<ParameterValue>,
   targetLinkType: string,
 ): Promise<Result<T, GetLinkedObjectError>> {
   const result = await listLinkedObjects<T>(

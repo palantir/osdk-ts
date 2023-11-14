@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "../../client";
 import type {
   BucketValue,
   QueryThreeDimensionalAggregation,
@@ -33,6 +34,7 @@ import type { TimeSeries } from "./timeseries";
 import type { Timestamp } from "./timestamp";
 
 export type ParameterValue =
+  | undefined
   | string
   | number
   | boolean
@@ -46,6 +48,7 @@ export type ParameterValue =
   | TwoDimensionalAggregation<QueryBucketKey, BucketValue>
   | ThreeDimensionalAggregation<QueryBucketKey, QueryBucketKey, BucketValue>
   | TimeSeries<any>
+  | ObjectSet<any>
   | ParameterValue[]
   | {
     [key: string]: ParameterValue;

@@ -96,7 +96,7 @@ type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
 export type QueryNamesFrom<O extends OntologyDefinition<any>> =
   keyof O["queries"];
 
-type QueryDataType<
+export type QueryDataType<
   O extends OntologyDefinition<any>,
   D extends QueryDataTypeDefinition<any>,
 > = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"]>>
