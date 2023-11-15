@@ -189,6 +189,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@types/geojson':
+        specifier: ^7946.0.13
+        version: 7946.0.13
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
@@ -1429,6 +1432,10 @@ packages:
   /@types/chai@4.3.8:
     resolution: {integrity: sha512-yW/qTM4mRBBcsA9Xw9FbcImYtFPY7sgr+G/O5RDYVmxiy9a+pE5FyoFUi8JYCZY5nicj8atrr1pcfPiYpeNGOA==}
     dev: true
+
+  /@types/geojson@7946.0.13:
+    resolution: {integrity: sha512-bmrNrgKMOhM3WsafmbGmC+6dsF2Z308vLFsQ3a/bT8X8Sv5clVYpPars/UPq+sAaJP+5OoLAYgwbkS5QEJdLUQ==}
+    dev: false
 
   /@types/is-ci@3.0.1:
     resolution: {integrity: sha512-mnb1ngaGQPm6LFZaNdh3xPOoQMkrQb/KBPhPPN2p2Wk8XgeUqWj6xPnvyQ8rvcK/VFritVmQG8tvQuy7g+9/nQ==}

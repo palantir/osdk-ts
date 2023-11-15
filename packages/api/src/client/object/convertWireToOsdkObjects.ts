@@ -63,6 +63,35 @@ export function convertWireToOsdkObjects<
   const proto = getPrototype(client.ontology, apiName);
   for (const obj of objs) {
     Object.setPrototypeOf(obj, proto);
+
+    // Saving this code in case we want to come back to temporal. For now its not worth the
+    // risk and we can stick to string until we know what we want.
+    // ====================================================================================================
+    // FIXME
+    // Im not going for performance for now, just something usable by beta users
+    // Also not married to the $raw
+    // obj["$raw"] = {};
+
+    // for (
+    //   const [key, def] of Object.entries(
+    //     client.ontology.objects[apiName].properties,
+    //   )
+    // ) {
+    //   if (!(key in obj)) continue;
+    //   obj["$raw"][key] = obj[key];
+
+    //   if (def.type === "timestamp") {
+    //     const value = obj[key] as string | undefined;
+    //     if (value !== undefined) {
+    //       obj[key] = Temporal.Instant.from(value);
+    //     }
+    //   } else if (def.type === "datetime") {
+    //     const value = obj[key] as string | undefined;
+    //     if (value !== undefined) {
+    //       obj[key] = Temporal.PlainDateTime.from(value);
+    //     }
+    //   }
+    // }
   }
 
   return objs as unknown as OsdkObjectFrom<
