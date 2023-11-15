@@ -46,6 +46,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "imports": {
+    "#net": "./src/net/index.mts"
+  },
   "keywords": [],
   "bin": {
     "osdk": "./build/js/cli.js"

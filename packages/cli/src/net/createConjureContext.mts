@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-export { ArtifactsSitesAdminV2Service } from "../generated/artifacts-sites/index.js";
-export * as artifacts from "./artifacts/index.mjs";
-export { createConjureContext } from "./createConjureContext.mjs";
-export * as thirdPartyApplicationService from "./third-party-application-service/index.mjs";
+import type { ConjureContext } from "conjure-lite";
+import { createFetch } from "./createFetch.mjs";
+
+export function createConjureContext(
+  baseUrl: string,
+  servicePath: "/artifacts/api",
+): ConjureContext {
+  return {
+    fetchFn: createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string),
+    baseUrl,
+    servicePath,
+  };
+}
