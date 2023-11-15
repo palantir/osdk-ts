@@ -17,10 +17,10 @@
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import type { CliCommonArgs } from "./CliCommonArgs";
-import site from "./commands/site";
+import type { CliCommonArgs } from "./CliCommonArgs.js";
+import site from "./commands/site/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
-import { logVersionMiddleware } from "./yargs/logVersionMiddleware";
+import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))

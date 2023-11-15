@@ -18,10 +18,10 @@ import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
-import siteDelete from "./delete";
-import siteDeploy from "./deploy";
-import upload from "./upload";
-import versions from "./versions";
+import siteDelete from "./delete/index.js";
+import siteDeploy from "./deploy/index.js";
+import upload from "./upload/index.js";
+import versions from "./versions/index.js";
 
 const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
   command: "site",
