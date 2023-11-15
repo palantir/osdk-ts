@@ -70,7 +70,7 @@ export declare type GroupBySelections<T extends OntologyObject> = {
     K in keyof OmitMetadataProperties<
       GroupableProperties<T>
     >
-  ]: FilterFromType<
+  ]: GroupByFromType<
     T[K],
     K & string
   >;
@@ -107,7 +107,7 @@ export declare type MultipleAggregateSelection<T extends OntologyObject> =
     count: () => CountOperation;
   };
 
-type FilterFromType<T, N extends string> = NonNullable<T> extends number
+type GroupByFromType<T, N extends string> = NonNullable<T> extends number
   ? NumericGroupBy<N>
   : T extends string ? StringGroupBy<N>
   : T extends LocalDate ? LocalDateGroupBy<N>
