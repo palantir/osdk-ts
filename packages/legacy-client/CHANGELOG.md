@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 0.0.6
+
+### Patch Changes
+
+- e22ce70: Adding proper support for reservered keywords in properties
+
 ## 0.0.5
 
 ### Patch Changes

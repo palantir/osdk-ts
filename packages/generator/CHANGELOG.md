@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 0.0.6
+
+### Patch Changes
+
+- e22ce70: Adding proper support for reservered keywords in properties
+- 66cb4ce: Fixing generator for integration
+
 ## 0.0.5
 
 ### Patch Changes
