@@ -104,14 +104,6 @@ function createPrototype<
         }
       },
     });
-
-    if (isReservedKeyword(k)) {
-      Object.defineProperty(proto, `${k}_`, {
-        get: function() {
-          return this[k];
-        },
-      });
-    }
   }
 
   return proto as OsdkLegacyLinksFrom<O, T>;
