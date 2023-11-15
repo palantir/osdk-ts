@@ -15,13 +15,15 @@
  */
 
 import { format } from "prettier";
+// @ts-ignore
+import organizeImports from "prettier-plugin-organize-imports";
 
 export function formatTs(contents: string) {
   return format(contents, {
     parser: "typescript",
     singleQuote: true,
     trailingComma: "all",
-    plugins: ["prettier-plugin-organize-imports"],
+    plugins: [organizeImports],
     tabWidth: 2,
     printWidth: 120,
   });

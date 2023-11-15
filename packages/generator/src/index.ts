@@ -16,3 +16,4 @@
 
 export { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne";
 export { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero";
+export type { WireOntologyDefinition } from "./WireOntologyDefinition";
