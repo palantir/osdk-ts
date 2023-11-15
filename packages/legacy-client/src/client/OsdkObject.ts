@@ -35,6 +35,7 @@ import type {
   TimeSeries,
   Timestamp,
 } from "./baseTypes";
+import type { reservedKeywordsList } from "./utils/reservedKeywords";
 
 export interface ValidLegacyPropertyTypes {
   string: string;
@@ -69,11 +70,22 @@ export type OsdkObjectLegacyPropertyType<T extends PropertyDefinition> =
 export type OsdkLegacyPropertiesFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
-> = {
-  [P in PropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
-    PropertyDefinitionFrom<O, K, P>
-  >;
-};
+> =
+  & {
+    [P in PropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
+      PropertyDefinitionFrom<O, K, P>
+    >;
+  }
+  & {
+    [
+      P in PropertyKeysFrom<
+        O,
+        K
+      > as Extract<P, typeof reservedKeywordsList[number]> extends never ? never
+        : P extends string ? `${P}_`
+        : never
+    ]: OsdkObjectLegacyPropertyType<PropertyDefinitionFrom<O, K, P>>;
+  };
 
 export type OsdkLegacyLinksFrom<
   O extends OntologyDefinition<any>,

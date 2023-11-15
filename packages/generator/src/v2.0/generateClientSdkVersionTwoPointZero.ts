@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";
@@ -26,7 +27,7 @@ export async function generateClientSdkVersionTwoPointZero(
   outDir: string,
 ) {
   fs.writeFile(
-    `${outDir}/index.ts`,
+    path.join(outDir, "index.ts"),
     await formatTs(
       `
         export { Ontology } from "./Ontology";
@@ -40,7 +41,7 @@ export async function generateClientSdkVersionTwoPointZero(
     );
 
   fs.writeFile(
-    `${outDir}/Ontology.ts`,
+    path.join(outDir, "Ontology.ts"),
     await formatTs(
       `
       import type { OntologyDefinition } from "@osdk/api";
@@ -70,7 +71,7 @@ export async function generateClientSdkVersionTwoPointZero(
     const obj = ontology.objectTypes[name];
 
     fs.writeFile(
-      `${outDir}/objects/${name}.ts`,
+      path.join(outDir, `objects`, `${name}.ts`),
       await formatTs(`
     
       import type { ObjectDefinition } from "@osdk/api";

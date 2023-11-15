@@ -74,15 +74,6 @@ ${
           linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
         }<${linkType.objectTypeApiName}>`,
       ];
-
-      if (isReservedKeyword(linkType.apiName)) {
-        entries.push(
-          `/** @deprecated please migrate to '${linkType.apiName}' instead */
-        readonly ${linkType.apiName}_: ${
-            linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"
-          }<${linkType.objectTypeApiName}>`,
-        );
-      }
       return entries;
     }).join(";\n")
   }

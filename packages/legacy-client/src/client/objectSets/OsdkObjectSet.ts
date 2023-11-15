@@ -43,6 +43,10 @@ import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadSt
 import { createPropertyDescriptions } from "./createPropertyDescriptions";
 import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
 
+const getSearchProperties = createCachedOntologyTransform(
+  mapPropertiesToSearchFilter,
+);
+
 export function createOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
@@ -92,10 +96,7 @@ export function createOsdkObjectSet<
       );
     },
     where(predicate): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
-      const objectProperties = client.ontology.objects[apiName].properties;
-      const filters = mapPropertiesToSearchFilter<OsdkLegacyObjectFrom<O, K>>(
-        objectProperties,
-      );
+      const filters = getSearchProperties(client.ontology, apiName);
       const whereClause = predicate(filters);
       const newDefinition: FilterObjectSetDefinition = {
         type: "filter",

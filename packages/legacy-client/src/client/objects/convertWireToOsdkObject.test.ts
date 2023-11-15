@@ -143,8 +143,6 @@ describe("convertWireToOsdkObject", () => {
     expect(object.catch).toEqual(1);
     expect((object as any).catch_).toEqual(1);
 
-    expect((object as any).const_.get).toBeTypeOf("function");
-
     expect(object.toString()).toMatchInlineSnapshot(`
       "{
         \\"catch_\\": 1,

@@ -24,6 +24,7 @@ import {
   TimestampGroupBy,
 } from "../objectSets/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToGroupByProperties<
   O extends OntologyDefinition<any>,
@@ -60,6 +61,9 @@ export function mapPropertiesToGroupByProperties<
           return acc;
         default:
           const _: never = definition.type;
+      }
+      if (isReservedKeyword(property)) {
+        acc[`${property}_`] = acc[property];
       }
       return acc;
     },

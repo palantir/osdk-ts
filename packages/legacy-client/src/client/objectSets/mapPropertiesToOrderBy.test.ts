@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, SingleLink } from "../../client/baseTypes";
-import type { Task } from "./TaskObject";
+import { describe, expect, it } from "vitest";
+import { MockOntology } from "../../util/test";
+import { mapPropertiesToOrderBy } from ".";
 
-/**
- * Its a todo item.
- */
-export interface Todo extends OntologyObject {
-  readonly __apiName: "Todo";
-  readonly __primaryKey: string;
-  readonly id: string | undefined;
-  /**
-   * The text of the todo
-   */
-  readonly body: string | undefined;
-  readonly class: string | undefined;
-  readonly class_: string | undefined;
-  readonly complete: boolean | undefined;
-  readonly points: number | undefined;
-  readonly linkedTask: SingleLink<Task>;
-}
+describe(mapPropertiesToOrderBy, () => {
+  it("maps properties correctly", () => {
+    const aggregatableProperties = mapPropertiesToOrderBy(
+      MockOntology,
+      "Todo",
+    );
+    expect(aggregatableProperties.class.asc()).toMatchObject(
+      {
+        field: "class",
+        direction: "asc",
+      },
+    );
+    expect(aggregatableProperties.class_.asc()).toMatchObject(
+      {
+        field: "class",
+        direction: "asc",
+      },
+    );
+  });
+});

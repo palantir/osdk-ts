@@ -46,6 +46,7 @@ export const MockOntology = {
           description: "The id of the Todo Object",
         },
         body: { type: "string", nullable: true },
+        class: { type: "string", nullable: true },
         complete: { type: "boolean", nullable: true },
         points: { type: "integer", nullable: true },
       },

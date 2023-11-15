@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition } from "@osdk/api";
-import type { OntologyObject } from "../baseTypes";
+import type {
+  ObjectTypesFrom,
+  OntologyDefinition,
+  PropertyDefinition,
+} from "@osdk/api";
 import type { ObjectTypeFilter } from "../interfaces/filters";
 import {
   ArrayFilter,
@@ -28,11 +31,17 @@ import {
   StringFilter,
   TimestampFilter,
 } from "../objectSets/filters";
+import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 
-export function mapPropertiesToSearchFilter<T extends OntologyObject>(
-  properties: Record<string, PropertyDefinition>,
-): ObjectTypeFilter<T> {
-  return Object.entries(properties).reduce(
+export function mapPropertiesToSearchFilter<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+>(
+  ontology: O,
+  type: K,
+) {
+  return Object.entries(ontology.objects[type].properties).reduce(
     (acc, [propertyName, propertyDefinition]) => {
       if (
         propertyDefinition.type === "numericTimeseries"
@@ -45,6 +54,10 @@ export function mapPropertiesToSearchFilter<T extends OntologyObject>(
         propertyName,
         propertyDefinition,
       );
+
+      if (isReservedKeyword(propertyName)) {
+        acc[`${propertyName}_`] = acc[propertyName];
+      }
 
       return acc;
     },
@@ -60,7 +73,7 @@ export function mapPropertiesToSearchFilter<T extends OntologyObject>(
         | GeoShapeFilter
         | ArrayFilter<any>;
     },
-  ) as ObjectTypeFilter<T>;
+  ) as ObjectTypeFilter<OsdkLegacyObjectFrom<O, K>>;
 }
 
 function mapPropertyTypeToSearchFilter(
