@@ -164,6 +164,8 @@ describe("OsdkObjectSet", () => {
   it("creates the groupBy clauses", async () => {
     const os = createBaseTodoObjectSet(client);
     mockAggregateResponse({ data: [] });
+    await os.groupBy(s => s.complete.exact()).groupBy(s => s.body.exact())
+      .count().compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
       ...expectedJestResponse("Ontology/objectSets/aggregate", {

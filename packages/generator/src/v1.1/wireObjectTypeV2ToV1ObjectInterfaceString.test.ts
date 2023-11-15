@@ -80,8 +80,6 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         /** @deprecated please migrate to 'break' instead */
         readonly break_: number | undefined;
         readonly this: SingleLink<Todo>;
-        /** @deprecated please migrate to 'this' instead */
-        readonly this_: SingleLink<Todo>;
       }
       "
     `);
