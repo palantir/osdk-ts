@@ -15,7 +15,7 @@
  */
 
 // This must match the reservedKeywords definition in packages/generator
-const reservedKeywords = new Set([
+export const reservedKeywordsList = [
   "break",
   "case",
   "catch",
@@ -61,7 +61,9 @@ const reservedKeywords = new Set([
   "public",
   "static",
   "yield",
-]);
+] as const;
+
+const reservedKeywords: Set<string> = new Set(reservedKeywordsList);
 
 export function isReservedKeyword(name: string) {
   return reservedKeywords.has(name);

@@ -22,10 +22,15 @@ import type {
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
 import type { OrderByClause } from "./filters";
 import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
+
+const getOrderByProperties = createCachedOntologyTransform(
+  mapPropertiesToOrderBy,
+);
 
 export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
@@ -41,10 +46,7 @@ export function createObjectSetBaseOrderByStepMethod<
 > {
   return {
     orderBy(predicate) {
-      const objectProperties = client.ontology.objects[apiName].properties;
-      const orderBy = mapPropertiesToOrderBy<OsdkLegacyObjectFrom<O, K>>(
-        objectProperties,
-      );
+      const orderBy = getOrderByProperties(client.ontology, apiName);
       const orderByClause = predicate(orderBy);
 
       return createObjectSetOrderByStep(

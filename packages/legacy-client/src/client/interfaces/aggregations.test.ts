@@ -39,6 +39,8 @@ describe("Aggregations", () => {
       id: StringGroupBy<"id">;
       body: StringGroupBy<"body">;
       points: NumericGroupBy<"points">;
+      class: StringGroupBy<"class">;
+      class_: StringGroupBy<"class_">;
     }>().toMatchTypeOf<GroupBySelections<Todo>>();
 
     expectTypeOf<{
@@ -46,6 +48,8 @@ describe("Aggregations", () => {
       id: AggregatableProperty<never>;
       body: AggregatableProperty<number>;
       points: AggregatableProperty<number>;
+      class: AggregatableProperty<number>;
+      class_: AggregatableProperty<number>;
     }>().toMatchTypeOf<AggregateSelection<Todo>>();
 
     expectTypeOf<{
@@ -53,6 +57,8 @@ describe("Aggregations", () => {
       id: ApproximateDistinctCountAggregatableProperty;
       body: ApproximateDistinctCountAggregatableProperty;
       points: MultipleAggregatableProperty<number>;
+      class: ApproximateDistinctCountAggregatableProperty;
+      class_: ApproximateDistinctCountAggregatableProperty;
       count: () => CountOperation;
     }>().toMatchTypeOf<MultipleAggregateSelection<Todo>>();
   });

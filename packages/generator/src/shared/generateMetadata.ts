@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
@@ -25,7 +26,7 @@ export async function generateOntologyMetadata(
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
   fs.writeFile(
-    `${outDir}/Ontology.ts`,
+    path.join(outDir, "Ontology.ts"),
     await formatTs(
       `
           import type { OntologyDefinition } from "@osdk/api";

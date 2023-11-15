@@ -20,6 +20,7 @@ import type {
   QueryAggregationValueType,
   QueryDataType,
 } from "@osdk/gateway/types";
+import path from "path";
 import type { MinimalFs } from "../MinimalFs";
 import { isNullableQueryDataType } from "../shared/isNullableQueryDataType";
 import { formatTs } from "../util/test/formatTs";
@@ -79,7 +80,7 @@ export async function generateQueries(
   }
 
   await fs.writeFile(
-    `${outDir}/ontologyQueries.ts`,
+    path.join(outDir, `ontologyQueries.ts`),
     await formatTs(`
     import type { QueryResponse, QueryError, Result, Timestamp, LocalDate, Range, Attachment, ObjectSet, TwoDimensionalAggregation, ThreeDimensionalAggregation  } from "@osdk/legacy-client";
     ${

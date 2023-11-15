@@ -17,6 +17,7 @@
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { AggregateSelection } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 import type { AggregatableProperty } from "./aggregations";
 import { DefaultAggregatableProperty } from "./aggregations";
 
@@ -32,6 +33,9 @@ export function mapPropertiesToAggregatableProperties<
       acc[property] = DefaultAggregatableProperty(
         property,
       );
+      if (isReservedKeyword(property)) {
+        acc[`${property}_`] = acc[property];
+      }
       return acc;
     },
     {} as Record<string, AggregatableProperty<any>>,
