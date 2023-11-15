@@ -1,5 +1,14 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies [e22ce70]
+- Updated dependencies [66cb4ce]
+  - @osdk/legacy-client@0.0.6
+  - @osdk/generator@0.0.6
+
 ## 0.0.4
 
 ### Patch Changes
