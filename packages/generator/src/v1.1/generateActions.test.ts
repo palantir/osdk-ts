@@ -32,7 +32,7 @@ describe(generateActions, () => {
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(helper.getFiles()[`${BASE_PATH}/ontologyActions.ts`])
+    expect(helper.getFiles()[`${BASE_PATH}/Actions.ts`])
       .toMatchInlineSnapshot(`
         "import type {
           ActionError,
@@ -41,7 +41,7 @@ describe(generateActions, () => {
           Edits,
           Result,
         } from '@osdk/legacy-client';
-        import type { Todo } from './ontology/objects/Todo';
+        import type { Todo } from '../objects/Todo';
         export interface Actions {
           /**
            * An action which takes different types of parameters

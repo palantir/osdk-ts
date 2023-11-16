@@ -80,13 +80,14 @@ export async function generateActions(
     );
   }
 
+  await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, `ontologyActions.ts`),
+    path.join(outDir, "Actions.ts"),
     await formatTs(`
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
-        `import type { ${importedObject} } from "./ontology/objects/${importedObject}";`
+        `import type { ${importedObject} } from "../objects/${importedObject}";`
       ).join("\n")
     }
     export interface Actions {

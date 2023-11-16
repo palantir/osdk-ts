@@ -34,27 +34,31 @@ export async function generateClientSdkVersionOneDotOne(
   fs: MinimalFs,
   outDir: string,
 ) {
+  const objectsDir = path.join(outDir, "ontology", "objects");
+  const actionsDir = path.join(outDir, "ontology", "actions");
+  const queriesDir = path.join(outDir, "ontology", "queries");
+
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir);
   await generateMetadataFile(sanitizedOntology, fs, outDir);
   await generateOntologyIndexFile(fs, path.join(outDir, "ontology"));
-  await generateObjectsInterfaceFile(sanitizedOntology, fs, outDir);
+  await generateObjectsInterfaceFile(sanitizedOntology, fs, objectsDir);
   await generatePerObjectInterfaceAndDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "ontology", "objects"),
+    objectsDir,
   );
-  await generateActions(sanitizedOntology, fs, outDir);
+  await generateActions(sanitizedOntology, fs, actionsDir);
   await generatePerActionDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "ontology", "actions"),
+    actionsDir,
   );
-  await generateQueries(sanitizedOntology, fs, outDir);
+  await generateQueries(sanitizedOntology, fs, queriesDir);
   await generatePerQueryDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "ontology", "queries"),
+    queriesDir,
   );
   await generateIndexFile(fs, outDir);
 }

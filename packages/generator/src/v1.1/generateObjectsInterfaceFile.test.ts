@@ -33,10 +33,11 @@ describe(generateObjectsInterfaceFile, () => {
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
     expect(
-      helper.getFiles()[`${BASE_PATH}/ontologyObjects.ts`],
+      helper.getFiles()[`${BASE_PATH}/Objects.ts`],
     ).toMatchInlineSnapshot(`
       "import { BaseObjectSet } from '@osdk/legacy-client';
-      import { Person, Todo } from './ontology/objects';
+      import type { Person } from './Person';
+      import type { Todo } from './Todo';
 
       export interface Objects {
         Todo: BaseObjectSet<Todo>;

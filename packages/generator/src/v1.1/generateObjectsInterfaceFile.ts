@@ -16,7 +16,6 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
@@ -25,13 +24,16 @@ export async function generateObjectsInterfaceFile(
   fs: MinimalFs,
   outDir: string,
 ) {
+  await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, "ontologyObjects.ts"),
+    path.join(outDir, "Objects.ts"),
     await formatTs(`
     import { BaseObjectSet } from "@osdk/legacy-client";
-    import { ${
-      commaSeparatedIdentifiers(Object.keys(ontology.objectTypes))
-    } } from "./ontology/objects";
+    ${
+      Array.from(Object.keys(ontology.objectTypes)).map(importedObject =>
+        `import type { ${importedObject} } from "./${importedObject}";`
+      ).join("\n")
+    }
     
     export interface Objects {
       ${

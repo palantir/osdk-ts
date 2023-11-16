@@ -19,7 +19,7 @@ import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
 import { generateQueries } from "./generateQueries";
 
-describe("generateQueries", () => {
+describe(generateQueries, () => {
   it("generates queries interface", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
@@ -28,7 +28,7 @@ describe("generateQueries", () => {
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(helper.getFiles()[`${BASE_PATH}/ontologyQueries.ts`])
+    expect(helper.getFiles()[`${BASE_PATH}/Queries.ts`])
       .toMatchInlineSnapshot(`
         "import type { QueryError, QueryResponse, Result } from '@osdk/legacy-client';
 
