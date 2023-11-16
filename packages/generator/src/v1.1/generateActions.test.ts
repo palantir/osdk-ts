@@ -41,7 +41,7 @@ describe(generateActions, () => {
           Edits,
           Result,
         } from '@osdk/legacy-client';
-        import type { Todo } from './objects/Todo';
+        import type { Todo } from './ontology/objects/Todo';
         export interface Actions {
           /**
            * An action which takes different types of parameters
