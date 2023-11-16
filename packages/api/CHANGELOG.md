@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 0.0.10
+
+### Patch Changes
+
+- 9167059: Fixing GeoJson import from namespace
+
 ## 0.0.9
 
 ### Patch Changes
