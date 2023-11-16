@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export * as conjure from "./conjure/index.mjs";
 export * as SiteAssetArtifactsService from "./SiteAssetArtifactsService/index.mjs";

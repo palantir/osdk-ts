@@ -15,8 +15,8 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs";
-import type { DeleteArgs } from "./DeleteArgs";
+import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { DeleteArgs } from "./DeleteArgs.js";
 
 export const command: CommandModule<
   CommonSiteArgs,

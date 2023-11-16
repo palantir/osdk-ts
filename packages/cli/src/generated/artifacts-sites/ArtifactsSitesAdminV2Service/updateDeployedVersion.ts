@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { UpdateDeployedVersionRequest } from "../UpdateDeployedVersionRequest.js";
+export async function updateDeployedVersion(
+  ctx: ConjureContext,
+  repositoryRid: string,
+  version: UpdateDeployedVersionRequest,
+): Promise<void> {
+  return conjureFetch(
+    ctx,
+    `/sites/v2/admin/repository/${repositoryRid}/deployed-version`,
+    "PUT",
+    version,
+  );
 }

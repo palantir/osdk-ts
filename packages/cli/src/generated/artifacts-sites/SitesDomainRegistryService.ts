@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * as ArtifactsSitesAdminV2Service from "./ArtifactsSitesAdminV2Service/index.mjs";
+export { getRegisteredDomains } from "./SitesDomainRegistryService/getRegisteredDomains.js";

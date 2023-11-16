@@ -29,6 +29,7 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "archiver": "^6.0.1",
+    "conjure-lite": "0.0.5",
     "consola": "^3.2.3",
     "find-up": "^6.3.0",
     "yargs": "^17.7.2"
@@ -45,6 +46,9 @@
   "publishConfig": {
     "access": "public"
   },
+  "imports": {
+    "#net": "./src/net/index.mts"
+  },
   "keywords": [],
   "bin": {
     "osdk": "./build/js/cli.js"
@@ -54,5 +58,6 @@
     "build/js",
     "CHANGELOG.md",
     "package.json"
-  ]
+  ],
+  "type": "module"
 }

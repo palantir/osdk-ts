@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export { clearSiteVersion } from "./clearSiteVersion.mjs";
-export { deploySiteVersion } from "./deploySiteVersion.mjs";
-export type { SiteAssetVersions } from "./deploySiteVersion.mjs";
-export { fetchDeployedVersion } from "./fetchDeployedVersion.mjs";
-export type { SiteVersion } from "./SiteVersion.mjs";
+export type SiteDomainRegistrationRequestRid = string;

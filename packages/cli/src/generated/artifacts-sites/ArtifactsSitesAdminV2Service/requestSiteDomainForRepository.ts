@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { SiteDomainInfo } from "../SiteDomainInfo.js";
+import type { SubmitDomainRegistrationRequest } from "../SubmitDomainRegistrationRequest.js";
+export async function requestSiteDomainForRepository(
+  ctx: ConjureContext,
+  repositoryRid: string,
+  request: SubmitDomainRegistrationRequest,
+): Promise<SiteDomainInfo> {
+  return conjureFetch(
+    ctx,
+    `/sites/v2/admin/repository/${repositoryRid}/domains/submit-registration`,
+    "POST",
+    request,
+  );
 }

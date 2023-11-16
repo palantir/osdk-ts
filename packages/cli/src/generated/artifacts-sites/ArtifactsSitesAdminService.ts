@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
-}
+export { deleteSiteDeployment } from "./ArtifactsSitesAdminService/deleteSiteDeployment.js";
+export { deploySite } from "./ArtifactsSitesAdminService/deploySite.js";
+export { getDeployedVersion } from "./ArtifactsSitesAdminService/getDeployedVersion.js";

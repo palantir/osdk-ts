@@ -214,6 +214,9 @@ importers:
       archiver:
         specifier: ^6.0.1
         version: 6.0.1
+      conjure-lite:
+        specifier: 0.0.5
+        version: 0.0.5
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -2140,6 +2143,16 @@ packages:
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
+  /conjure-lite@0.0.5:
+    resolution: {integrity: sha512-QygwCYnuAZ4kLfiPmuuBrL46Z6C5epwkEk0L2YAiLL9QRKhbSpml1t112S+2VJ8uAUlI4BfZOV0h36j6ogO9Qw==}
+    hasBin: true
+    dependencies:
+      dedent: 1.5.1
+      yargs: 17.7.2
+    transitivePeerDependencies:
+      - babel-plugin-macros
+    dev: false
+
   /consola@3.2.3:
     resolution: {integrity: sha512-I5qxpzLv+sJhTVEoLYNcTW+bThDCPsit0vLNKShZx6rLtpilNpmmeTPaeqJb9ZE9dV3DGaeby6Vuhrw38WjeyQ==}
     engines: {node: ^14.18.0 || >=16.10.0}
@@ -2244,6 +2257,15 @@ packages:
     resolution: {integrity: sha512-VfxadyCECXgQlkoEAjeghAr5gY3Hf+IKjKb+X8tGVDtveCjN+USwprd2q3QXBR9T1+x2DG0XZF5/w+7HAtSaXA==}
     engines: {node: '>=10'}
     dev: true
+
+  /dedent@1.5.1:
+    resolution: {integrity: sha512-+LxW+KLWxu3HW3M2w2ympwtqPrqYRzU8fqi6Fhd18fBALe15blJPI/I4+UHveMVG6lJqB4JNd4UG0S5cnVHwIg==}
+    peerDependencies:
+      babel-plugin-macros: ^3.1.0
+    peerDependenciesMeta:
+      babel-plugin-macros:
+        optional: true
+    dev: false
 
   /deep-eql@4.1.3:
     resolution: {integrity: sha512-WaEtAOpRA1MQ0eohqZjpGD8zdI0Ovsm8mmFhaDN8dvDZzyoUMcYDnf5Y6iu7HTXxf8JDS23qWa4a+hKCDyOPzw==}

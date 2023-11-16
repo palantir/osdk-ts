@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { DomainName } from "./DomainName.js";
+import type { SiteVersion } from "./SiteVersion.js";
 
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+export interface DeploySiteRequest {
+  repositoryRid: string;
+  siteDomain: DomainName;
+  siteVersion: SiteVersion;
 }

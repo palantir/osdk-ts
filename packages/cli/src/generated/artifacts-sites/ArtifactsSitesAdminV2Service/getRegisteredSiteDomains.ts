@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { SiteDomainInfo } from "../SiteDomainInfo.js";
+export async function getRegisteredSiteDomains(
+  ctx: ConjureContext,
+  repositoryRid: string,
+): Promise<Array<SiteDomainInfo>> {
+  return conjureFetch(
+    ctx,
+    `/sites/v2/admin/repository/${repositoryRid}/domains/registered`,
+    "GET",
+  );
 }

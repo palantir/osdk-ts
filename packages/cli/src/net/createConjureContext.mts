@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { ConjureContext } from "conjure-lite";
+import { createFetch } from "./createFetch.mjs";
 
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+export function createConjureContext(
+  baseUrl: string,
+  servicePath: "/artifacts/api",
+): ConjureContext {
+  return {
+    fetchFn: createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string),
+    baseUrl,
+    servicePath,
+  };
 }

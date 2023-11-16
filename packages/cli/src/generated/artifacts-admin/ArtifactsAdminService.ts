@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export function getSitesAdminV2ServiceBaseUrl(baseUrl: string) {
-  return `${baseUrl}/artifacts/api/sites/v2/admin`;
-}
+export { clearDeletedUserRepositories } from "./ArtifactsAdminService/clearDeletedUserRepositories.js";
+export { getContainerRegistryDomain } from "./ArtifactsAdminService/getContainerRegistryDomain.js";

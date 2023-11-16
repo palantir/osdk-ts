@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import type { ControlPanelManagedDomainInfo } from "./ControlPanelManagedDomainInfo.js";
+export interface SiteDomainInfo_controlPanelManaged {
+  type: "controlPanelManaged";
+  controlPanelManaged: ControlPanelManagedDomainInfo;
 }
+
+export type SiteDomainInfo = SiteDomainInfo_controlPanelManaged;

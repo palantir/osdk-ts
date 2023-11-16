@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+export * as ArtifactsAdminService from "./ArtifactsAdminService.js";
 
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
-}
+export type { ClearDeletedUserRepositoriesRequest } from "./ClearDeletedUserRepositoriesRequest.js";
+export type { ContainerRegistryDomainResponse } from "./ContainerRegistryDomainResponse.js";

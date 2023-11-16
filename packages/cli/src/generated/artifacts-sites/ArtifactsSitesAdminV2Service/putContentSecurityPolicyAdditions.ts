@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { ContentSecurityPolicyAdditions } from "../ContentSecurityPolicyAdditions.js";
+export async function putContentSecurityPolicyAdditions(
+  ctx: ConjureContext,
+  repositoryRid: string,
+  contentSecurityPolicyAdditions: ContentSecurityPolicyAdditions,
+): Promise<void> {
+  return conjureFetch(
+    ctx,
+    `/sites/v2/admin/repository/${repositoryRid}/csp/additions`,
+    "PUT",
+    contentSecurityPolicyAdditions,
+  );
 }

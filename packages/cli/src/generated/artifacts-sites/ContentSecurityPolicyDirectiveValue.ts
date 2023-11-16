@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
-}
+export type ContentSecurityPolicyDirectiveValue = string;

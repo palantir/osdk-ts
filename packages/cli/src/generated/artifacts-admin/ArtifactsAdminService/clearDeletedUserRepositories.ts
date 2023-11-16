@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { ClearDeletedUserRepositoriesRequest } from "../ClearDeletedUserRepositoriesRequest.js";
+export async function clearDeletedUserRepositories(
+  ctx: ConjureContext,
+  request: ClearDeletedUserRepositoriesRequest,
+): Promise<void> {
+  return conjureFetch(ctx, `/admin/clearDeletedRepositories`, "POST", request);
 }
