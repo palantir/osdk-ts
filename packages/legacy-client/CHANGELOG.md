@@ -1,5 +1,12 @@
 # @osdk/legacy-client
 
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [0860ae9]
+  - @osdk/api@0.0.9
+
 ## 0.0.6
 
 ### Patch Changes

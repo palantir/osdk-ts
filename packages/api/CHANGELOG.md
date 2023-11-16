@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 0.0.9
+
+### Patch Changes
+
+- 0860ae9: Adds type information for geopoint and geoshape
+
 ## 0.0.8
 
 ### Patch Changes
