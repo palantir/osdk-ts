@@ -14,32 +14,16 @@
  * limitations under the License.
  */
 
-import path from "node:path";
+import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
 import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export async function generateObjectsInterfaceFile(
-  ontology: WireOntologyDefinition,
-  fs: MinimalFs,
-  outDir: string,
-) {
+export async function generateOntologyIndexFile(fs: MinimalFs, outDir: string) {
+  await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, "ontologyObjects.ts"),
+    path.join(outDir, "index.ts"),
     await formatTs(`
-    import { BaseObjectSet } from "@osdk/legacy-client";
-    import { ${
-      commaSeparatedIdentifiers(Object.keys(ontology.objectTypes))
-    } } from "./ontology/objects";
-    
-    export interface Objects {
-      ${
-      Object.keys(ontology.objectTypes).map((apiName) =>
-        `${apiName} : BaseObjectSet<${apiName}>;`
-      ).join("\n")
-    }
-    }
-    ;`),
+        export type { ObjectSet } from "@osdk/legacy-client";
+    `),
   );
 }

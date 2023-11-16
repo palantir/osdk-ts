@@ -23,6 +23,7 @@ import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
@@ -36,23 +37,24 @@ export async function generateClientSdkVersionOneDotOne(
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir);
   await generateMetadataFile(sanitizedOntology, fs, outDir);
+  await generateOntologyIndexFile(fs, path.join(outDir, "ontology"));
   await generateObjectsInterfaceFile(sanitizedOntology, fs, outDir);
   await generatePerObjectInterfaceAndDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "objects"),
+    path.join(outDir, "ontology", "objects"),
   );
   await generateActions(sanitizedOntology, fs, outDir);
   await generatePerActionDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "actions"),
+    path.join(outDir, "ontology", "actions"),
   );
   await generateQueries(sanitizedOntology, fs, outDir);
   await generatePerQueryDataFiles(
     sanitizedOntology,
     fs,
-    path.join(outDir, "queries"),
+    path.join(outDir, "ontology", "queries"),
   );
   await generateIndexFile(fs, outDir);
 }
