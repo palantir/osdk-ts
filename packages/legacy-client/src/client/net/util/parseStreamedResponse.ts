@@ -24,7 +24,7 @@ export async function* parseStreamedResponse(
   const utf8decoder = new TextDecoder("utf-8");
 
   let parsedStart = false;
-  let prevChunk: Uint8Array | undefined;
+  let prevChunks: Uint8Array[] = [];
   let openBracesCount = 0;
 
   for await (let chunk of asyncIterable) {
@@ -59,12 +59,12 @@ export async function* parseStreamedResponse(
           if (0 === openBracesCount) {
             yield combineAndParse(
               utf8decoder,
-              prevChunk,
-              chunk.slice(i, j + 1),
+              prevChunks,
+              chunk.subarray(i, j + 1),
             );
 
             // if there was a prevChunk, we've consumed it now
-            prevChunk = undefined;
+            prevChunks = [];
 
             // advance the start index to the final '}' of the current object,
             // which lets us start seeking the beginning of the next object
@@ -77,15 +77,7 @@ export async function* parseStreamedResponse(
       // if we reached the end of our chunk before finding the end of the object
       // store off the relevant remainder of our current chunk and go grab the next one
       if (j === chunk.length) {
-        if (!prevChunk) {
-          prevChunk = chunk.slice(i);
-        } else {
-          // unfortunately, a single object is split across more than two chunks so we need to start combining them
-          const combined = new Uint8Array(prevChunk.length + chunk.length);
-          combined.set(prevChunk);
-          combined.set(chunk, prevChunk.length);
-          prevChunk = combined;
-        }
+        prevChunks.push(chunk.subarray(i));
         break;
       }
     }
@@ -108,17 +100,16 @@ function startsWith(a: Uint8Array, b: Uint8Array) {
 
 function combineAndParse(
   utf8decoder: TextDecoder,
-  prev: Uint8Array | undefined,
+  prev: Uint8Array[],
   curr: Uint8Array,
 ) {
-  if (!prev) {
-    return JSON.parse(utf8decoder.decode(curr));
+  let str = "";
+  for (const chunk of prev) {
+    str += utf8decoder.decode(chunk, { stream: true });
   }
+  str += utf8decoder.decode(curr);
 
-  const bytes = new Uint8Array(prev.length + curr.length);
-  bytes.set(prev);
-  bytes.set(curr, prev.length);
-  return JSON.parse(utf8decoder.decode(bytes));
+  return JSON.parse(str);
 }
 
 export async function* iterateReadableStream(
