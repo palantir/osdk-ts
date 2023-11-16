@@ -1,5 +1,16 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.6
+
+### Patch Changes
+
+- 7fc9fdc: Adjusting package structure to match existing
+- Updated dependencies [7fc9fdc]
+- Updated dependencies [0860ae9]
+  - @osdk/generator@0.0.7
+  - @osdk/api@0.0.9
+  - @osdk/legacy-client@0.0.7
+
 ## 0.0.5
 
 ### Patch Changes
