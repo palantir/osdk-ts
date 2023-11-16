@@ -60,11 +60,14 @@ export class PublicClientAuth implements Auth {
       clientId: string;
       url: string;
       redirectUrl: string;
-      fetchFn: typeof globalThis.fetch;
+      fetchFn?: typeof globalThis.fetch;
       multipassContextPath?: string;
       scopes?: string[];
     },
   ) {
+    if (!options.fetchFn) {
+      options.fetchFn = globalThis.fetch;
+    }
   }
 
   public async getToken(): Promise<Token> {
