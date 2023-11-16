@@ -85,7 +85,7 @@ export async function generateQueries(
     import type { QueryResponse, QueryError, Result, Timestamp, LocalDate, Range, Attachment, ObjectSet, TwoDimensionalAggregation, ThreeDimensionalAggregation  } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
-        `import type { ${importedObject} } from "./objects/${importedObject}";`
+        `import type { ${importedObject} } from "./ontology/objects/${importedObject}";`
       ).join("\n")
     }
 

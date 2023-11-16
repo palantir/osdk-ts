@@ -86,7 +86,7 @@ export async function generateActions(
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
-        `import type { ${importedObject} } from "./objects/${importedObject}";`
+        `import type { ${importedObject} } from "./ontology/objects/${importedObject}";`
       ).join("\n")
     }
     export interface Actions {

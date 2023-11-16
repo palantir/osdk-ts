@@ -39,15 +39,21 @@ export async function generateMetadataFile(
   import type { Actions } from "./ontologyActions";
   import type { Queries } from "./ontologyQueries";
   ${
-      objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+      objectNames.map((name) =>
+        `import {${name}} from "./ontology/objects/${name}";`
+      )
         .join("\n")
     }
   ${
-      actionNames.map((name) => `import {${name}} from "./actions/${name}";`)
+      actionNames.map((name) =>
+        `import {${name}} from "./ontology/actions/${name}";`
+      )
         .join("\n")
     }
   ${
-      queryNames.map(name => `import {${name}} from "./queries/${name}";`).join(
+      queryNames.map(name =>
+        `import {${name}} from "./ontology/queries/${name}";`
+      ).join(
         "\n",
       )
     }
