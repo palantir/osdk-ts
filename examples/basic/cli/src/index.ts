@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createClient, createThinClient } from "@osdk/api";
+import { createThinClient } from "@osdk/api";
+import { createClient } from "@osdk/client";
 import { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees";

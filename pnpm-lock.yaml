@@ -90,6 +90,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../../../packages/api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../../../packages/client
       '@osdk/examples.basic.sdk':
         specifier: workspace:*
         version: link:../sdk
@@ -109,6 +112,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../../../packages/api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../../../packages/client
     devDependencies:
       typescript:
         specifier: ^5.2.2
@@ -251,6 +257,9 @@ importers:
 
   packages/client:
     dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway

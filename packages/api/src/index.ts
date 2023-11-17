@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-export { createClient, createThinClient, isOk } from "./client";
-export type { Client, ObjectSet, ResultOrError, ThinClient } from "./client";
-
 export { createOpenApiRequest } from "./client/createOpenApiRequest";
+export { createThinClient } from "./client/createThinClient";
+export { isOk, type ResultOrError } from "./client/ResultOrError";
+export type { ThinClient } from "./client/ThinClient";
 
-export type { WhereClause } from "./client/query";
 export type { OsdkObject, OsdkObjectFrom } from "./ontology";
-
-// FIXME: Should this be Objects or Object?
-export * as Objects from "./client/object";
 
 export type {
   LinkDefinitionFrom,

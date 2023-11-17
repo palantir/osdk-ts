@@ -15,7 +15,7 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import { aggregateOrThrow } from "@osdk/api/objects";
+import { aggregateOrThrow } from "@osdk/client/objects";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";

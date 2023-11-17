@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import { expectType } from "ts-expect";
 import type { Employee, OntologyType } from "../OntologyType";
 

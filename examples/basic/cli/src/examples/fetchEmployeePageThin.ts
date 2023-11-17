@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import * as OsdkApi from "@osdk/api";
-import { Objects } from "@osdk/api";
-import { fetchPageOrThrow } from "@osdk/api/objects";
+import type { ThinClient } from "@osdk/api";
+import * as OsdkApi from "@osdk/client";
+import { Objects } from "@osdk/client";
+import { fetchPageOrThrow } from "@osdk/client/objects";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType";
 
 export async function fetchEmployeePageThin(
-  thinClient: OsdkApi.ThinClient<OntologyType>,
+  thinClient: ThinClient<OntologyType>,
 ) {
   let result = await fetchPageOrThrow(thinClient, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],

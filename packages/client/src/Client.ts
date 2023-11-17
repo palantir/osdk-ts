@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client";
-export { createClient } from "./createClient";
-export type { ObjectSet } from "./objectSet/ObjectSet";
-export type { PageResult } from "./PageResult";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet";
+import type { ObjectSetCreator } from "./ObjectSetCreator";
 
-// FIXME: Should this be Objects or Object?
-export * as Objects from "./object/index";
+export type ConcreteObjectType<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = O["objects"][K];
+
+export interface Client<O extends OntologyDefinition<any>> {
+  objectSet: <const K extends ObjectTypesFrom<O>>(
+    type: K,
+    opts?: ObjectSetOptions<O, K>,
+  ) => ObjectSet<O, K>;
+
+  objects: ObjectSetCreator<O>;
+}
