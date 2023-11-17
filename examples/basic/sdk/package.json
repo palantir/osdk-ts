@@ -26,7 +26,8 @@
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*"
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.2.2"

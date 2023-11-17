@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/api";
 import { isOk } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import { describe, it } from "vitest";
 import type { Ontology } from "./Ontology";
 

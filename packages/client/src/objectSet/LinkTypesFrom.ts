@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client";
-export { createClient } from "./createClient";
-export type { ObjectSet } from "./objectSet/ObjectSet";
-export type { PageResult } from "./PageResult";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 
-// FIXME: Should this be Objects or Object?
-export * as Objects from "./object/index";
+export type LinkTypesFrom<
+  O extends OntologyDefinition<string>,
+  K extends ObjectTypesFrom<O>,
+> = keyof O["objects"][K]["links"];

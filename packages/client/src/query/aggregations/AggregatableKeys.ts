@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client";
-export { createClient } from "./createClient";
-export type { ObjectSet } from "./objectSet/ObjectSet";
-export type { PageResult } from "./PageResult";
+import type {
+  ObjectInfoFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+  PropertyKeysFrom,
+} from "@osdk/api";
 
-// FIXME: Should this be Objects or Object?
-export * as Objects from "./object/index";
+type Q<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+  P extends PropertyKeysFrom<O, K>,
+> = ObjectInfoFrom<O, K>["properties"][P]["type"] extends "string" ? K
+  : ObjectInfoFrom<O, K>["properties"][P]["type"] extends "double" ? K
+  : never;
+
+export type AggregatableKeys<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypesFrom<O>,
+> = keyof {
+  [P in PropertyKeysFrom<O, K>]: any;
+};

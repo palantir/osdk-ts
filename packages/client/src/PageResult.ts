@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client";
-export { createClient } from "./createClient";
-export type { ObjectSet } from "./objectSet/ObjectSet";
-export type { PageResult } from "./PageResult";
+import type { OsdkObject } from "@osdk/api";
 
-// FIXME: Should this be Objects or Object?
-export * as Objects from "./object/index";
+export interface PageResult<T extends OsdkObject<any>> {
+  data: T[];
+  nextPageToken: string | undefined;
+}
