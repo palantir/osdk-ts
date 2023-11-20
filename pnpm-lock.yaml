@@ -236,9 +236,6 @@ importers:
       '@types/archiver':
         specifier: ^6.0.0
         version: 6.0.0
-      '@types/luxon':
-        specifier: ^3.3.3
-        version: 3.3.3
       '@types/ngeohash':
         specifier: ^0.6.4
         version: 0.6.4
