@@ -38,7 +38,8 @@ export class Ontology<O extends OntologyDefinition<any>> {
   }
 
   get queries(): Queries<O> {
-    return createQueryProxy(this.#client);
+    /* this `as any` is required for ts4.9 compatability */
+    return createQueryProxy(this.#client) as any;
   }
 
   get attachments(): Attachments {

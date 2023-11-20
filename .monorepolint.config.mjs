@@ -52,10 +52,28 @@ function standardPackageRules(shared) {
   return [
     standardTsconfig({
       ...shared,
+      excludePackages: [...shared.excludePackages, "@osdk/examples.basic.**"],
       options: {
         file: "tsconfig.json",
         template: {
-          extends: "tsconfig/base",
+          extends: "../../monorepo/tsconfig/tsconfig.base.json",
+
+          compilerOptions: {
+            rootDir: "src",
+            outDir: "build/types",
+            composite: true,
+          },
+          include: ["./src/**/*", ".eslintrc.cjs"],
+        },
+      },
+    }),
+    standardTsconfig({
+      ...shared,
+      includePackages: ["@osdk/examples.basic.**"],
+      options: {
+        file: "tsconfig.json",
+        template: {
+          extends: "../../../monorepo/tsconfig/tsconfig.base.json",
 
           compilerOptions: {
             rootDir: "src",

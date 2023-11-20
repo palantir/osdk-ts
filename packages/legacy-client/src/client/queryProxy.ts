@@ -36,13 +36,15 @@ export function createQueryProxy<O extends OntologyDefinition<any>>(
           return async function(
             params: QueryParameters<O, typeof q>,
           ): Promise<WrappedQueryReturnType<O, typeof q>> {
-            return executeQuery(client, q, params);
+            /* this `as any` is required for ts4.9 compatability */
+            return executeQuery(client, q, params) as any;
           };
         } else {
           return async function(): Promise<
             WrappedQueryReturnType<O, typeof q>
           > {
-            return executeQuery(client, q);
+            /* this `as any` is required for ts4.9 compatability */
+            return executeQuery(client, q) as any;
           };
         }
       }
