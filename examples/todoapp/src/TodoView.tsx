@@ -1,6 +1,5 @@
 import { Todo } from "@todoedgedemo/sdk/ontology/objects";
 import { useState } from "react";
-import { isElementOfType } from "react-dom/test-utils";
 
 export function TodoView({
   todo,
