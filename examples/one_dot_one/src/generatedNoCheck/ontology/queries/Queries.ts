@@ -10,7 +10,7 @@ import type {
   Timestamp,
   TwoDimensionalAggregation,
 } from '@osdk/legacy-client';
-import type { Todo } from './ontology/objects/Todo';
+import type { Todo } from '../objects/Todo';
 
 export interface Queries {
   /**

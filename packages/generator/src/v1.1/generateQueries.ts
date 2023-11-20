@@ -79,13 +79,14 @@ export async function generateQueries(
     );
   }
 
+  await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, `ontologyQueries.ts`),
+    path.join(outDir, "Queries.ts"),
     await formatTs(`
     import type { QueryResponse, QueryError, Result, Timestamp, LocalDate, Range, Attachment, ObjectSet, TwoDimensionalAggregation, ThreeDimensionalAggregation  } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
-        `import type { ${importedObject} } from "./ontology/objects/${importedObject}";`
+        `import type { ${importedObject} } from "../objects/${importedObject}";`
       ).join("\n")
     }
 

@@ -35,9 +35,9 @@ export async function generateMetadataFile(
     await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
-  import type { Objects } from "./ontologyObjects";
-  import type { Actions } from "./ontologyActions";
-  import type { Queries } from "./ontologyQueries";
+  import type { Objects } from "./ontology/objects/Objects";
+  import type { Actions } from "./ontology/actions/Actions";
+  import type { Queries } from "./ontology/queries/Queries";
   ${
       objectNames.map((name) =>
         `import {${name}} from "./ontology/objects/${name}";`

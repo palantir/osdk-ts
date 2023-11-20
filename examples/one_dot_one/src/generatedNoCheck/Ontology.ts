@@ -1,15 +1,15 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
+import type { Actions } from './ontology/actions/Actions';
 import { actionTakesAllParameterTypes } from './ontology/actions/actionTakesAllParameterTypes';
 import { createTodo } from './ontology/actions/createTodo';
 import { ObjectTypeWithAllPropertyTypes } from './ontology/objects/ObjectTypeWithAllPropertyTypes';
+import type { Objects } from './ontology/objects/Objects';
 import { Person } from './ontology/objects/Person';
 import { Todo } from './ontology/objects/Todo';
+import type { Queries } from './ontology/queries/Queries';
 import { getTodoCount } from './ontology/queries/getTodoCount';
 import { queryTakesAllParameterTypes } from './ontology/queries/queryTakesAllParameterTypes';
-import type { Actions } from './ontologyActions';
-import type { Objects } from './ontologyObjects';
-import type { Queries } from './ontologyQueries';
 
 export const Ontology: {
   metadata: {
