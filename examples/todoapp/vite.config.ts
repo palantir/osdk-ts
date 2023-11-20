@@ -1,10 +1,19 @@
 import react from "@vitejs/plugin-react";
-import { defineConfig } from "vite";
+import { visualizer } from "rollup-plugin-visualizer";
+import { defineConfig, PluginOption } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    visualizer({
+      filename: "build/site-stats.html",
+    }) as unknown as PluginOption,
+  ],
   server: {
     port: 8080,
+  },
+  build: {
+    outDir: "build/site/",
   },
 });

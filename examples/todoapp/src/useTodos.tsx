@@ -1,7 +1,7 @@
-import { isErr, isOk } from "@todoedgedemo/sdk";
+import { isErr, isOk } from "./generatedNoCheck";
 import getFoundryClient from "./getFoundryClient";
 import useSWR from "swr";
-import { Todo } from "@todoedgedemo/sdk/ontology/objects";
+import { Todo } from "./generatedNoCheck/ontology/objects";
 import { useCallback } from "react";
 
 export function useTodos() {

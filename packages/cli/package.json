@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/generator": "workspace:*",
     "archiver": "^6.0.1",
     "conjure-lite": "0.0.5",
     "consola": "^3.2.3",
@@ -50,7 +51,7 @@
   },
   "keywords": [],
   "bin": {
-    "osdk": "./build/js/cli.js"
+    "osdk": "./bin/osdk.mjs"
   },
   "files": [
     "build/types",

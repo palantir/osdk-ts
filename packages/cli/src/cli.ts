@@ -19,6 +19,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import type { CliCommonArgs } from "./CliCommonArgs.js";
 import site from "./commands/site/index.js";
+import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
@@ -38,7 +39,8 @@ export async function cli(args: string[] = process.argv) {
     .demandCommand()
     .middleware(logVersionMiddleware, true)
     .strict()
-    .command(site);
+    .command(site)
+    .command(typescript);
 
   try {
     return base.parseAsync();

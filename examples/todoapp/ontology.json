@@ -1,0 +1,90 @@
+{
+  "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+  "actionTypes": [
+    {
+      "apiName": "createTodo",
+      "description": "Creates Todo",
+      "parameters": {
+        "Todo": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "rid": "notNeeded?",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo"
+        }
+      ],
+      "status": "ACTIVE"
+    },
+    {
+      "apiName": "completeTodo",
+      "description": "Completes Todo",
+      "parameters": {
+        "Todo": {
+          "description": "A todo Object",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Todo"
+        }
+      ]
+    }
+  ],
+  "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+  "objectTypes": {
+    "Todo": {
+      "apiName": "Todo",
+      "primaryKey": "id",
+      "displayName": "Todo",
+      "description": "Its a todo item.",
+      "properties": {
+        "id": {
+          "dataType": {
+            "type": "string"
+          }
+        },
+        "title": {
+          "dataType": {
+            "type": "string"
+          },
+          "description": "The text of the todo",
+          "displayName": "Title"
+        },
+        "isComplete": {
+          "dataType": {
+            "type": "boolean"
+          }
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ridForTodo"
+    }
+  },
+  "queryTypes": [],
+  "linkTypes": {}
+}

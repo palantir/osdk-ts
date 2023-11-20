@@ -1,4 +1,4 @@
-import { Todo } from "@todoedgedemo/sdk/ontology/objects";
+import { Todo } from "./generatedNoCheck/ontology/objects";
 import { useState } from "react";
 
 export function TodoView({

@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 /*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
@@ -16,13 +14,7 @@
  * limitations under the License.
  */
 
-import * as fs from "node:fs";
-import * as url from "node:url";
-import { go } from "../build/js/index.mjs";
-
-const baseDir = url.fileURLToPath(
-  new URL("../src/generatedNoCheck/", import.meta.url),
-);
-
-fs.mkdirSync(baseDir, { recursive: true });
-go(baseDir);
+export interface TypescriptGenerateArgs {
+  outDir: string;
+  ontologyPath: string;
+}

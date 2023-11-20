@@ -1,10 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
+    "codegen": {
+      "inputs": ["ontology.json"],
+      "outputs": ["src/generatedNoCheck"],
+      "dependsOn": ["^build"]
+    },
+
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["//#dev:typecheck", "dev:transpile"]
+      "dependsOn": ["//#dev:typecheck", "dev:transpile", "codegen"]
     },
 
     "dev:transpile": {
@@ -35,7 +41,7 @@
       "inputs": ["library.cjs"]
     },
 
-    /* Psuedo task to let us depend on deprint config */
+    /* Psuedo task to let us depend on dprint config */
     "//#dprint": {
       "inputs": ["dprint.json"]
     },
@@ -45,9 +51,9 @@
     },
 
     "typecheck": {
-      "inputs": ["src/**/*.ts", "src/**/*.tsx", "tsconfig.json"],
+      "inputs": ["src/**", "src/**/*.mts", "src/**/*.cts", "src/**/*.tsx", "tsconfig.json"],
       "outputs": ["types/**/*.d.ts", "types/**/*.d.ts.map"],
-      "dependsOn": ["mytsup#typecheck", "^typecheck"]
+      "dependsOn": ["mytsup#typecheck", "^typecheck", "codegen"]
     },
 
     "mytsup#typecheck": {
@@ -62,8 +68,13 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    "@osdk/examples.todoapp#build": {
+      "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwindo.config.js"],
+      "dependsOn": ["^build", "^transpile", "^typecheck"]
+    },
+
     "transpile": {
-      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck"],
+      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
       "outputs": ["dist/**", "lib/**"]
     },
