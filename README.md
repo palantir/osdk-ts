@@ -5,7 +5,7 @@
 1. Fork the repo
 2. Create a branch
 3. `pnpm install`
-4. Start dev mode: `pnpm dev --concurrency 20`
+4. Start dev mode: `pnpm dev`
 5. Add your code
 6. Add a changeset
 
@@ -24,5 +24,5 @@
    >
    > Full docs on the `changesets` tool can be found at the [changesets/changests github repo](https://github.com/changesets/changesets).
 
-6. If you're curious what the final build output might look like you can run `pnpm build` from root.
-7. Run all lint rules with `pnpm lint` from root.
+7. If you're curious what the final build output might look like you can run `pnpm build` from root.
+8. Run all lint rules and tests with `pnpm check` from root.
