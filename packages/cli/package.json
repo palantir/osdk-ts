@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -29,13 +29,13 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "archiver": "^6.0.1",
+    "conjure-lite": "0.0.5",
     "consola": "^3.2.3",
     "find-up": "^6.3.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.0",
-    "@types/luxon": "^3.3.3",
     "@types/ngeohash": "^0.6.4",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
@@ -44,6 +44,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "imports": {
+    "#net": "./src/net/index.mts"
   },
   "keywords": [],
   "bin": {
@@ -54,5 +57,6 @@
     "build/js",
     "CHANGELOG.md",
     "package.json"
-  ]
+  ],
+  "type": "module"
 }

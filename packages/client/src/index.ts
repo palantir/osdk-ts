@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export {};
+export type { Client } from "./Client";
+export { createClient } from "./createClient";
+export type { ObjectSet } from "./objectSet/ObjectSet";
+export type { PageResult } from "./PageResult";
+
+// FIXME: Should this be Objects or Object?
+export * as Objects from "./object/index";

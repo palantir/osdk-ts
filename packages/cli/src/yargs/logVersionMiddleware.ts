@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "../CliCommonArgs";
-import { readCliVersionFromPackageJson } from "../readCliVersionFromPackageJson";
+import type { CliCommonArgs } from "../CliCommonArgs.js";
+import { readCliVersionFromPackageJson } from "../readCliVersionFromPackageJson.js";
 
 let firstTime = true;
 export async function logVersionMiddleware(args: CliCommonArgs) {

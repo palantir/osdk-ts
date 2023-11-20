@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/api";
+import type { Client } from "@osdk/client";
 import { expectType } from "ts-expect";
 import type { Employee, OntologyType } from "../OntologyType";
 
@@ -29,9 +29,14 @@ export async function fetchEmployeePage(client: Client<OntologyType>) {
         adUsername: string;
         businessTitle: string | undefined;
         employeeNumber: number | undefined;
+        favPlace: { type: "Point"; coordinates: number[] } | undefined;
+        firstFullTimeStartDate: string | undefined;
       }[];
     }
   >(result);
+
+  console.log(result.data[0].favPlace?.coordinates);
+  console.log(result.data[0].firstFullTimeStartDate);
 
   console.log("fetchEmployeePage(): ");
   printEmployees(result.data);

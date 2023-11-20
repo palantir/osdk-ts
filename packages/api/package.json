@@ -1,6 +1,6 @@
 {
   "name": "@osdk/api",
-  "version": "0.0.8",
+  "version": "0.0.10",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@osdk/gateway": "workspace:*",
+    "@types/geojson": "^7946.0.13",
     "fetch-retry": "^5.0.6",
     "tiny-invariant": "^1.3.1"
   },

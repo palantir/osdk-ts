@@ -70,6 +70,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
         `export * from "./${apiName}";`
       ).join("\n")
     }
+      export type { ObjectSet } from "@osdk/legacy-client";\n
     `),
   );
 }

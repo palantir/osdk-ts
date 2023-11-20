@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type GeoJSON from "geojson";
 import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
 import type { QueryDefinition } from "./QueryDefinition";
@@ -101,13 +102,16 @@ export interface PropertyDefinition {
   nullable?: boolean;
 }
 
+// When these values are not an array, the raw and converted
+// types are the same. When it is an array, the converted type
+// is on the right (from, to)
 export interface ValidPropertyTypes {
   string: string;
-  datetime: Date;
+  datetime: string;
   double: number;
   boolean: boolean;
   integer: number;
-  timestamp: Date;
+  timestamp: string;
   short: number;
   long: number;
   float: number;
@@ -118,26 +122,31 @@ export interface ValidPropertyTypes {
   stringTimeseries: any;
 
   attachment: any;
-  geopoint: any;
-  geoshape: any;
+  geopoint: GeoJSON.Point;
+  geoshape: GeoJSON.Geometry;
 }
 
-type MaybeArray<T extends PropertyDefinition, U> = T["multiplicity"] extends
-  true ? Array<U> : U;
+type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
+  T["multiplicity"] extends true ? Array<U> : U;
 
 type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
   ? U | undefined
   : U;
 
+type Raw<T> = T extends Array<any> ? T[0] : T;
+type Converted<T> = T extends Array<any> ? T[1] : T;
+
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, ValidPropertyTypes[T["type"]]>>;
+  MaybeNullable<T, MaybeArray<T, Converted<ValidPropertyTypes[T["type"]]>>>;
+
+export type OsdkObjectRawPropertyType<T extends PropertyDefinition> =
+  MaybeNullable<T, MaybeArray<T, Raw<ValidPropertyTypes[T["type"]]>>>;
 
 export type OsdkObjectLink<
   K extends string,
   O extends OntologyDefinition<K>,
   T extends LinkDefinition<any>,
-> = T["multiplicity"] extends true ? Array<OsdkObjectLink_Inner<K, O, T>>
-  : OsdkObjectLink_Inner<K, O, T>;
+> = MaybeArray<T, OsdkObjectLink_Inner<K, O, T>>;
 
 type OsdkObjectLink_Inner<
   K extends string,

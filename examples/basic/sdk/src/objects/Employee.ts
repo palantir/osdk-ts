@@ -35,7 +35,7 @@ export const Employee = {
       type: "string",
       nullable: false,
     },
-    startDate: {
+    firstFullTimeStartDate: {
       type: "datetime",
       nullable: true,
     },
@@ -50,6 +50,9 @@ export const Employee = {
     },
     locationType: {
       type: "string",
+    },
+    favPlace: {
+      type: "geopoint",
     },
   },
 
