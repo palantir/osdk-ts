@@ -87,4 +87,118 @@ describe(generateMetadataFile, () => {
       "
     `);
   });
+
+  it("handles object+action+query name conflicts", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    await generateMetadataFile(
+      {
+        rid: "rid",
+        apiName: "apiName",
+        objectTypes: {
+          foo: {
+            apiName: "foo",
+            primaryKey: "id",
+            rid: "rid.object.foo",
+            status: "ACTIVE",
+            properties: {
+              id: {
+                dataType: { type: "integer" },
+              },
+            },
+          },
+        },
+        actionTypes: [{
+          apiName: "foo",
+          rid: "rid.action.foo",
+          status: "ACTIVE",
+          parameters: {},
+          operations: [],
+        }, {
+          apiName: "bar",
+          rid: "rid.action.bar",
+          status: "ACTIVE",
+          parameters: {},
+          operations: [],
+        }],
+        queryTypes: [{
+          apiName: "foo",
+          rid: "rid.query.foo",
+          version: "1",
+          parameters: {},
+          output: { type: "boolean" },
+        }, {
+          apiName: "bar",
+          rid: "rid.query.bar",
+          version: "1",
+          parameters: {},
+          output: { type: "boolean" },
+        }],
+        linkTypes: {},
+      },
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    expect(helper.minimalFiles.writeFile).toBeCalled();
+
+    expect(
+      helper.getFiles()[`${BASE_PATH}/Ontology.ts`],
+    ).toMatchInlineSnapshot(`
+      "import type { OntologyDefinition } from '@osdk/api';
+      import type { Ontology as ClientOntology } from '@osdk/legacy-client';
+      import type { Actions } from './ontology/actions/Actions';
+      import { bar } from './ontology/actions/bar';
+      import { foo as fooAction } from './ontology/actions/foo';
+      import type { Objects } from './ontology/objects/Objects';
+      import { foo } from './ontology/objects/foo';
+      import type { Queries } from './ontology/queries/Queries';
+      import { bar as barQuery } from './ontology/queries/bar';
+      import { foo as fooQuery } from './ontology/queries/foo';
+
+      export const Ontology: {
+        metadata: {
+          ontologyRid: 'rid';
+          ontologyApiName: 'apiName';
+          userAgent: 'foundry-typescript-osdk/0.0.1';
+        };
+        objects: {
+          foo: typeof foo;
+        };
+        actions: {
+          foo: typeof fooAction;
+          bar: typeof bar;
+        };
+        queries: {
+          foo: typeof fooQuery;
+          bar: typeof barQuery;
+        };
+      } = {
+        metadata: {
+          ontologyRid: 'rid' as const,
+          ontologyApiName: 'apiName' as const,
+          userAgent: 'foundry-typescript-osdk/0.0.1' as const,
+        },
+        objects: {
+          foo,
+        },
+        actions: {
+          foo: fooAction,
+          bar,
+        },
+        queries: {
+          foo: fooQuery,
+          bar: barQuery,
+        },
+      } satisfies OntologyDefinition<'foo', 'foo' | 'bar', 'foo' | 'bar'>;
+
+      export interface Ontology extends ClientOntology<typeof Ontology> {
+        objects: Objects;
+        actions: Actions;
+        queries: Queries;
+      }
+      "
+    `);
+  });
 });

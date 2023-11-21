@@ -16,6 +16,9 @@
 
 export function commaSeparatedTypeIdentifiers(
   identifiers: ReadonlyArray<string>,
+  altNames?: ReadonlyMap<string, string>,
 ) {
-  return identifiers.map(i => `${i}: typeof ${i}`).join(",");
+  return identifiers.map(i => `${i}: typeof ${altNames?.get(i) ?? i}`).join(
+    ",",
+  );
 }
