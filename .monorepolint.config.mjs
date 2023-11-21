@@ -41,6 +41,22 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
   return result.stdout;
 };
 
+function getTsconfigOptions(baseTsconfigPath) {
+  return {
+    file: "tsconfig.json",
+    template: {
+      extends: baseTsconfigPath,
+
+      compilerOptions: {
+        rootDir: "src",
+        outDir: "build/types",
+        composite: true,
+      },
+      include: ["./src/**/*", ".eslintrc.cjs"],
+    },
+  };
+}
+
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  */
@@ -49,36 +65,14 @@ function standardPackageRules(shared) {
     standardTsconfig({
       ...shared,
       excludePackages: [...shared.excludePackages, "@osdk/examples.basic.**"],
-      options: {
-        file: "tsconfig.json",
-        template: {
-          extends: "../../monorepo/tsconfig/tsconfig.base.json",
-
-          compilerOptions: {
-            rootDir: "src",
-            outDir: "build/types",
-            composite: true,
-          },
-          include: ["./src/**/*", ".eslintrc.cjs"],
-        },
-      },
+      options: getTsconfigOptions("../../monorepo/tsconfig/tsconfig.base.json"),
     }),
     standardTsconfig({
       ...shared,
       includePackages: ["@osdk/examples.basic.**"],
-      options: {
-        file: "tsconfig.json",
-        template: {
-          extends: "../../../monorepo/tsconfig/tsconfig.base.json",
-
-          compilerOptions: {
-            rootDir: "src",
-            outDir: "build/types",
-            composite: true,
-          },
-          include: ["./src/**/*", ".eslintrc.cjs"],
-        },
-      },
+      options: getTsconfigOptions(
+        "../../../monorepo/tsconfig/tsconfig.base.json",
+      ),
     }),
     // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
     // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
