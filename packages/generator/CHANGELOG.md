@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 0.0.9
+
+### Patch Changes
+
+- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatability in @osdk/api"
+- 848404c: Handle conflicts between object, action, and query names
+- Updated dependencies [f3120fb]
+- Updated dependencies [848404c]
+  - @osdk/gateway@0.0.4
+  - @osdk/api@0.0.11
+
 ## 0.0.8
 
 ### Patch Changes
