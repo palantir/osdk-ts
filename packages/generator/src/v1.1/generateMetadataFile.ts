@@ -30,6 +30,36 @@ export async function generateMetadataFile(
   const actionNames = ontology.actionTypes.map(action => action.apiName);
   const queryNames = ontology.queryTypes.map(query => query.apiName);
 
+  const actionAltNames = new Map<string, string>();
+  const queryAltNames = new Map<string, string>();
+
+  const seenIdentifiers = new Set(objectNames);
+  for (const actionName of actionNames) {
+    if (seenIdentifiers.has(actionName)) {
+      actionAltNames.set(actionName, `${actionName}Action`);
+    } else {
+      seenIdentifiers.add(actionName);
+    }
+  }
+
+  for (const queryName of queryNames) {
+    if (seenIdentifiers.has(queryName)) {
+      queryAltNames.set(queryName, `${queryName}Query`);
+    }
+  }
+
+  const getImportClause = (
+    name: string,
+    altNames: ReadonlyMap<string, string>,
+  ) => {
+    const alt = altNames.get(name);
+    if (alt) {
+      return `${name} as ${alt}`;
+    } else {
+      return name;
+    }
+  };
+
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(`
@@ -46,13 +76,17 @@ export async function generateMetadataFile(
     }
   ${
       actionNames.map((name) =>
-        `import {${name}} from "./ontology/actions/${name}";`
+        `import {${
+          getImportClause(name, actionAltNames)
+        }} from "./ontology/actions/${name}";`
       )
         .join("\n")
     }
   ${
       queryNames.map(name =>
-        `import {${name}} from "./ontology/queries/${name}";`
+        `import {${
+          getImportClause(name, queryAltNames)
+        }} from "./ontology/queries/${name}";`
       ).join(
         "\n",
       )
@@ -68,10 +102,10 @@ export async function generateMetadataFile(
       ${commaSeparatedTypeIdentifiers(objectNames)}
     },
     actions: {
-      ${commaSeparatedTypeIdentifiers(actionNames)}
+      ${commaSeparatedTypeIdentifiers(actionNames, actionAltNames)}
     },
     queries: {
-      ${commaSeparatedTypeIdentifiers(queryNames)}
+      ${commaSeparatedTypeIdentifiers(queryNames, queryAltNames)}
     },
   } = {
     metadata: {
@@ -83,10 +117,10 @@ export async function generateMetadataFile(
         ${commaSeparatedIdentifiers(objectNames)}
     },
     actions: {
-        ${commaSeparatedIdentifiers(actionNames)}
+        ${commaSeparatedIdentifiers(actionNames, actionAltNames)}
     },
     queries: {
-        ${commaSeparatedIdentifiers(queryNames)}
+        ${commaSeparatedIdentifiers(queryNames, queryAltNames)}
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
       ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(

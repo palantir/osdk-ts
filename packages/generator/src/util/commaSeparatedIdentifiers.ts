@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export function commaSeparatedIdentifiers(identifiers: ReadonlyArray<string>) {
-  return identifiers.join(",");
+export function commaSeparatedIdentifiers(
+  identifiers: ReadonlyArray<string>,
+  alternateNames?: ReadonlyMap<string, string>,
+) {
+  return identifiers.map(i => {
+    const alt = alternateNames?.get(i);
+    if (alt) {
+      return `${i}: ${alt}`;
+    }
+    return i;
+  }).join(",");
 }
