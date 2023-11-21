@@ -41,10 +41,6 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
   return result.stdout;
 };
 
-function generateFormattedJson(o) {
-  return formatedGeneratorHelper(JSON.stringify(o), "json");
-}
-
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  */
@@ -82,6 +78,25 @@ function standardPackageRules(shared) {
           },
           include: ["./src/**/*", ".eslintrc.cjs"],
         },
+      },
+    }),
+    // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
+    // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
+    requireDependency({
+      ...shared,
+      excludePackages: [
+        ...shared.excludePackages,
+        "@osdk/examples.one.dot.one",
+        "@osdk/examples.basic.cli",
+      ],
+      options: {
+        devDependencies: { typescript: "^5.2.2" },
+      },
+    }),
+    requireDependency({
+      includePackages: ["@osdk/examples.one.dot.one"],
+      options: {
+        devDependencies: { typescript: "^4.9.0" },
       },
     }),
     packageScript({
