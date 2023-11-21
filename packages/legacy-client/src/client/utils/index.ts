@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export type * from "./IsEmptyRecord";
-export type * from "./ValuesOfMap";
+export type { IsEmptyRecord } from "./IsEmptyRecord";
+export type { ValuesOfMap } from "./ValuesOfMap";

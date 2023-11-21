@@ -126,7 +126,8 @@ export function convertWireToOsdkObject<
   });
   setPropertyAccessors<T, O>(client, apiName, obj);
 
-  return obj as OsdkLegacyObjectFrom<O, T>;
+  /* this `as unknown` is required for ts4.9 compatability */
+  return obj as unknown as OsdkLegacyObjectFrom<O, T>;
 }
 
 function setPropertyAccessors<

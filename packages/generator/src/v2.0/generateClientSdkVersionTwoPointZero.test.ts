@@ -49,6 +49,7 @@ describe("generator", () => {
       );
     }
 
+    // TODO: Certain errors are expected since we can't resolve the static code, but we should fix them.
     const errors = diagnostics.filter(q => q.code !== 2792);
     expect(errors).toHaveLength(0);
   });

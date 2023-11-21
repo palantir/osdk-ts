@@ -14,9 +14,52 @@
  * limitations under the License.
  */
 
-export type * from "./ActionDefinition";
-export type * from "./Definition";
+export type {
+  ActionDefinition,
+  ActionModifiedEntity,
+  ActionParameterDefinition,
+  ObjectActionDataType,
+  ObjectSetActionDataType,
+  ValidActionParameterTypes,
+  ValidBaseActionParameterTypes,
+} from "./ActionDefinition";
+export type {
+  LinkDefinition,
+  LinkDefinitionFrom,
+  LinkKeysFrom,
+  LinkTargetTypeFrom,
+  ObjectDefinition,
+  ObjectInfoFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+  OsdkObjectLink,
+  OsdkObjectPropertyType,
+  OsdkObjectRawPropertyType,
+  PropertyDefinition,
+  PropertyDefinitionFrom,
+  PropertyDefinitionsFrom,
+  PropertyKeysFrom,
+  ValidPropertyTypes,
+} from "./Definition";
 export type { OntologyMetadata } from "./OntologyMetadata";
 export type { OsdkObject } from "./OsdkObject";
 export type { OsdkObjectFrom } from "./OsdkObjectFrom";
-export type * from "./QueryDefinition";
+export type {
+  AggregationKeyDataType,
+  ObjectQueryDataType,
+  ObjectSetQueryDataType,
+  QueryDataType,
+  QueryDataTypeDefinition,
+  QueryDefinition,
+  QueryParameterDefinition,
+  RangeAggregationKeyDataType,
+  SetQueryDataType,
+  SimpleAggregationKeyDataType,
+  StructQueryDataType,
+  ThreeDimensionalAggregationDataType,
+  ThreeDimensionalQueryAggregationDefinition,
+  TwoDimensionalAggregationDataType,
+  TwoDimensionalQueryAggregationDefinition,
+  UnionQueryDataType,
+  ValidBaseQueryDataTypes,
+} from "./QueryDefinition";

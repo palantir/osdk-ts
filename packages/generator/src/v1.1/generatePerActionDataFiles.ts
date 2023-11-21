@@ -67,7 +67,9 @@ export async function generatePerActionDataFiles(
   );
 }
 
-function extractReferencedObjectsFromAction(actionType: ActionTypeV2) {
+function extractReferencedObjectsFromAction(
+  actionType: ActionTypeV2,
+): string[] {
   const referencedObjectsInParameters = Object.values(actionType.parameters)
     .flatMap(({ dataType }) => {
       const objectTypeReference = extractReferencedObjectsFromActionParameter(
@@ -94,7 +96,7 @@ function extractReferencedObjectsFromAction(actionType: ActionTypeV2) {
 
 function extractReferencedObjectsFromActionParameter(
   actionParameter: ActionParameterType,
-) {
+): string | undefined {
   switch (actionParameter.type) {
     case "objectSet":
     case "object":
