@@ -15,13 +15,13 @@ export default function CreateTodoForm({
         ref={formRef}
         onSubmit={async (evt) => {
           evt.preventDefault();
-          if (!inputRef.current) {
-            throw "what";
+          if (!inputRef.current || !formRef.current) {
+            throw "should never happen";
           }
           setPending(true);
           try {
-            await createTodo(inputRef.current?.value);
-            formRef.current?.reset();
+            await createTodo(inputRef.current.value);
+            formRef.current.reset();
           } catch (e) {
             console.error(e);
           } finally {
