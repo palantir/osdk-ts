@@ -32,9 +32,8 @@ export const command: CommandModule<
           demandOption: true,
         },
         ontologyPath: {
-          description: "Causes the site to no longer be deployed",
+          description: "path to the ontology wire json",
           type: "string",
-          conflicts: "siteVersion",
           demandOption: true,
         },
       }).group(
