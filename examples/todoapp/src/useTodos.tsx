@@ -1,46 +1,42 @@
-import { isErr, isOk } from "./generatedNoCheck";
-import getFoundryClient from "./getFoundryClient";
+import { type Result, isOk } from "./generatedNoCheck";
+import { foundryClient } from "./foundryClient";
 import useSWR from "swr";
-import { Todo } from "./generatedNoCheck/ontology/objects";
+import type { Todo } from "./generatedNoCheck/ontology/objects";
 import { useCallback } from "react";
+
+function orThrow<T, E>(result: Result<T, E>) {
+  if (isOk(result)) {
+    return result.value;
+  } else {
+    throw result.error;
+  }
+}
 
 export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
-    "Todo",
-    async () => {
-      const client = await getFoundryClient();
-      const todos = await client.ontology.objects.Todo.all();
-
-      if (isOk(todos)) {
-        return todos.value;
-      } else {
-        throw todos.error;
-      }
-    },
-    {
-      keepPreviousData: true,
-    }
+    "/todos",
+    async () => orThrow(await foundryClient.ontology.objects.Todo.all()),
+    { keepPreviousData: true }
   );
 
   const toggleComplete = useCallback(
     async function (todo: Todo) {
+      const b = !todo.isComplete;
       await mutate(
         async () => {
-          const client = await getFoundryClient();
+          // Unwrap to get throw behavior on error.
+          // Don't return because we want to invalidate cache
+          orThrow(
+            await foundryClient.ontology.actions.completeTodo({
+              is_complete: b,
+              Todo: todo,
+            })
+          );
 
-          const completeResult = await client.ontology.actions.completeTodo({
-            is_complete: !todo.isComplete,
-            Todo: todo,
-          });
-          if (isErr(completeResult)) {
-            throw completeResult.error;
-          }
           return undefined; // invalidate cache
         },
         {
-          optimisticData(todos) {
-            return updateTodos(todos, todo.__primaryKey, !todo.isComplete);
-          },
+          optimisticData: updateTodo.bind(undefined, todo.id!, b),
           rollbackOnError: true,
         }
       );
@@ -52,31 +48,19 @@ export function useTodos() {
     async (title: string) => {
       await mutate(
         async () => {
-          const client = await getFoundryClient();
-          const result = await client.ontology.actions.createTodo({
-            Todo: title,
-            is_complete: false,
-          });
-          if (isErr(result)) {
-            throw result.error;
-          }
+          // Unwrap to get throw behavior on error.
+          // Don't return because we want to invalidate cache
+          orThrow(
+            await foundryClient.ontology.actions.createTodo({
+              Todo: title,
+              is_complete: false,
+            })
+          );
 
-          return undefined;
+          return undefined; // invalidate cache
         },
         {
-          optimisticData: (todos = []) => {
-            return [
-              ...todos,
-              {
-                id: title,
-                title,
-                isComplete: false,
-                __primaryKey: title,
-                __apiName: "Todo",
-                __rid: "",
-              },
-            ];
-          },
+          optimisticData: (todos = []) => [...todos, createFauxTodo(title)],
           rollbackOnError: true,
           throwOnError: true,
         }
@@ -96,18 +80,35 @@ export function useTodos() {
   };
 }
 
-function updateTodos(
-  todos: Todo[] | undefined,
+function createFauxTodo(title: string): Todo {
+  return {
+    id: title,
+    title,
+    isComplete: false,
+    __primaryKey: title,
+    __apiName: "Todo",
+    __rid: "",
+  };
+}
+
+function updateTodo(
   id: string,
-  is_complete: boolean
+  isComplete: boolean,
+  todos: Todo[] | undefined
 ) {
-  return (
-    todos?.map((todo) => {
-      if (todo.id === id) {
-        return { ...todo, isComplete: is_complete };
-      } else {
-        return todo;
-      }
-    }) ?? []
-  );
+  return updateOne(todos, id, (todo) => ({ ...todo, isComplete })) ?? [];
+}
+
+function updateOne<T extends { __primaryKey: Q }, Q>(
+  things: T[] | undefined,
+  primaryKey: Q,
+  update: (thing: T) => T
+) {
+  return things?.map((thing) => {
+    if (thing.__primaryKey === primaryKey) {
+      return update(thing);
+    } else {
+      return thing;
+    }
+  });
 }
