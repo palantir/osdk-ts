@@ -14,4 +14,20 @@
  * limitations under the License.
  */
 
-export {};
+import type * as yargs from "yargs";
+import type { CliCommonArgs } from "../../CliCommonArgs.js";
+import generate from "./generate/generate.js";
+
+const site: yargs.CommandModule<CliCommonArgs, CliCommonArgs> = {
+  command: "typescript",
+  describe: "Manage code",
+  builder: (argv) => {
+    return argv
+      .command(generate)
+      .demandCommand();
+  },
+  handler: async (args) => {
+  },
+};
+
+export default site;

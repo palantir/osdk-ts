@@ -18,9 +18,9 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "osdk typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-    "generate": "node ./bin/generate.js",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -32,6 +32,7 @@
     "@osdk/legacy-client": "workspace:*"
   },
   "devDependencies": {
+    "@osdk/cli": "workspace:*",
     "@types/node": "^18.0.0",
     "typescript": "^4.9.0"
   },

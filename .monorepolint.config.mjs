@@ -12,7 +12,12 @@ import {
 import * as child_process from "node:child_process";
 
 const DELETE_SCRIPT_ENTRTY = { options: [undefined], fixValue: undefined };
-const nonStandardPackages = ["eslint-config-sane", "mytsup", "tsconfig"];
+const nonStandardPackages = [
+  "eslint-config-sane",
+  "mytsup",
+  "tsconfig",
+  "@osdk/examples.todoapp",
+];
 
 const cache = new Map();
 
@@ -196,7 +201,9 @@ function standardPackageRules(shared) {
       },
     }),
     fileContents({
+      ...shared,
       includePackages: ["@osdk/examples.*"],
+      excludePackages: [...shared.excludePackages],
       options: {
         file: ".eslintrc.cjs",
         generator: formatedGeneratorHelper(

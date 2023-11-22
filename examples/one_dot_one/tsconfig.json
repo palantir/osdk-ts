@@ -18,6 +18,9 @@
     },
     {
       "path": "../../packages/legacy-client"
+    },
+    {
+      "path": "../../packages/cli"
     }
   ]
 }
