@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 0.0.12
+
+### Patch Changes
+
+- dfc2b94: Fix OAuth login process
+- Updated dependencies [dfc2b94]
+  - @osdk/gateway@0.0.5
+
 ## 0.0.11
 
 ### Patch Changes
