@@ -162,15 +162,10 @@ export const ActionResponse = {
         validation,
         edits: {
           type: "edits",
-          // @ts-ignore
-          added: added as TAddedObjects extends OntologyObject ? typeof added
-            : never,
-          // @ts-ignore
-          modified: modified as TModifiedObjects extends OntologyObject
-            ? typeof modified
-            : never,
+          added,
+          modified,
         },
-      };
+      } as ActionResponse<Edits<TAddedObjects, TModifiedObjects>>;
     }
     if (response.edits?.type === "largeScaleEdits") {
       return {
