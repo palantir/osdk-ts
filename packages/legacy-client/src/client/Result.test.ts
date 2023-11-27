@@ -15,25 +15,19 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { ActionError, ActionTypeNotFound } from "./errors";
+import type { ActionError } from "./errors";
 import { visitError } from "./Result";
 
 describe("Result", () => {
   describe("visitError", () => {
     it("allows type inference in visitor methods", () => {
-      const actionError: ActionError = {
-        errorType: "NOT_FOUND",
-        errorName: "ActionTypeNotFound",
-        actionType: "foo",
-        name: "name",
-        message: "Message",
-      } satisfies ActionTypeNotFound;
+      const actionError: ActionError = {} as any;
 
       visitError(actionError, {
-        ActionTypeNotFound: (error) => {
+        ActionTypeNotFound(error) {
           expect(error.errorName).toBe("ActionTypeNotFound");
         },
-        default: () => {
+        default: (error) => {
         },
       });
     });

@@ -33,19 +33,16 @@ export function isErr<V, E>(result: Result<V, E>): result is Err<E> {
   return result.type === "error";
 }
 
-export type ErrorVisitor<E extends FoundryApiError, R> =
-  & {
-    [K in ExtractKeysWithType<E, "errorName">]?: (
-      error: Extract<E, {
-        errorName: K;
-      }>,
-    ) => R;
-  }
-  & {
-    default: (error: E) => R;
-  };
+export type ErrorVisitor<E extends FoundryApiError, R> = {
+  [K in E["errorName"] | "default"]?: (
+    error: Extract<E, K extends "default" ? E : { errorName: K }>,
+  ) => R;
+};
 
-export function visitError<E extends FoundryApiError, R>(
+export function visitError<
+  const E extends FoundryApiError,
+  R,
+>(
   error: E,
   visitor: ErrorVisitor<E, R>,
 ): R {
