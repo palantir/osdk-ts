@@ -19,8 +19,8 @@ import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
 import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";
-import type { ParameterValue } from ".";
 import type { OntologyObject } from "./OntologyObject";
+import type { ParameterValue } from "./ParameterValue";
 
 export type ActionExecutionOptions = {
   mode: ActionExecutionMode.VALIDATE_ONLY;
