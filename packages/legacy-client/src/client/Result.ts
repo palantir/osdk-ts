@@ -40,7 +40,7 @@ export type ErrorVisitor<E extends FoundryApiError, R> = {
 };
 
 export function visitError<
-  const E extends FoundryApiError,
+  E extends FoundryApiError,
   R,
 >(
   error: E,
