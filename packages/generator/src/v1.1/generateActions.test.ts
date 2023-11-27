@@ -45,11 +45,11 @@ describe(generateActions, () => {
         export interface Actions {
           /**
            * An action which takes different types of parameters
-           * @param {Todo} params.object
+           * @param {Todo | Todo[\\"__primaryKey\\"]} params.object
            */
           markTodoCompleted<O extends ActionExecutionOptions>(
             params: {
-              object?: Todo;
+              object?: Todo | Todo['__primaryKey'];
             },
             options?: O,
           ): Promise<Result<ActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
