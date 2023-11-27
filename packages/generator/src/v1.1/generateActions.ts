@@ -110,7 +110,7 @@ function getTypeScriptTypeFromDataType(
     case "object": {
       const objectType = actionParameter.objectTypeApiName!;
       importedObjects.add(objectType);
-      return `${objectType}`;
+      return `${objectType} | ${objectType}["__primaryKey"]`;
     }
     case "array":
       return `Array<${

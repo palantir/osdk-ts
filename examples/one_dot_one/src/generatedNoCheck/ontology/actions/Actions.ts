@@ -16,7 +16,7 @@ export interface Actions {
   /**
    * An action which takes different types of parameters
    * @param {ObjectSet<Todo>} params.objectSet
-   * @param {Person} params.object
+   * @param {Person | Person["__primaryKey"]} params.object
    * @param {string} params.string
    * @param {Timestamp} params.time-stamp
    * @param {Array<LocalDate>} params.dateArray
@@ -25,7 +25,7 @@ export interface Actions {
   actionTakesAllParameterTypes<O extends ActionExecutionOptions>(
     params: {
       objectSet: ObjectSet<Todo>;
-      object?: Person;
+      object?: Person | Person['__primaryKey'];
       string: string;
       'time-stamp': Timestamp;
       dateArray?: Array<LocalDate>;

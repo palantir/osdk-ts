@@ -118,7 +118,9 @@ type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any>,
 > = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
-  : T extends ObjectQueryDataType<any> ? OsdkLegacyObjectFrom<O, T["object"]>
+  : T extends ObjectQueryDataType<any> ?
+      | OsdkLegacyObjectFrom<O, T["object"]>
+      | OsdkLegacyObjectFrom<O, T["object"]>["__primaryKey"]
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
   : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"]>>

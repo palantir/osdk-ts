@@ -127,7 +127,7 @@ function handleQueryDataType(
     case "object": {
       const objectType = dataType.objectTypeApiName!;
       importedObjects.add(objectType);
-      return objectType;
+      return `${objectType} | ${objectType}["__primaryKey"]`;
     }
 
     case "objectSet": {

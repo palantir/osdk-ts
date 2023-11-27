@@ -24,7 +24,7 @@ export interface Queries {
    * @param {LocalDate} params.date
    * @param {string} params.string
    * @param {Timestamp} params.timestamp
-   * @param {Todo} params.object
+   * @param {Todo|Todo["__primaryKey"]} params.object
    * @param {ObjectSet<Todo>} params.objectSet
    * @param {Array<string>} params.array - an array of strings
    * @param {Set<string>} params.set - a set of strings
@@ -45,7 +45,7 @@ export interface Queries {
     date: LocalDate;
     string: string;
     timestamp: Timestamp;
-    object: Todo;
+    object: Todo | Todo['__primaryKey'];
     objectSet: ObjectSet<Todo>;
     array: Array<string>;
     set: Set<string>;

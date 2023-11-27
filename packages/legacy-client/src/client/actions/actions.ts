@@ -77,7 +77,8 @@ export type ActionParameterBaseType<
   { type: "objectSet"; objectSet: infer K }
   ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
   : O["actions"][A]["parameters"][P]["type"] extends
-    { type: "object"; object: infer K } ? OsdkLegacyObjectFrom<O, K>
+    { type: "object"; object: infer K }
+    ? OsdkLegacyObjectFrom<O, K> | OsdkLegacyObjectFrom<O, K>["__primaryKey"]
   : O["actions"][A]["parameters"][P]["type"] extends
     keyof ValidLegacyActionParameterTypes
     ? ValidLegacyActionParameterTypes[O["actions"][A]["parameters"][P]["type"]]
