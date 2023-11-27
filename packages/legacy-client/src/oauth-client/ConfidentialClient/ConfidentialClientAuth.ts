@@ -46,6 +46,13 @@ export class ConfidentialClientAuth implements Auth {
       scopes?: string[];
     },
   ) {
+    if (!options.fetchFn) {
+      options.fetchFn = globalThis.fetch;
+    }
+
+    if (!options.scopes) {
+      options.scopes = ["api:read-data", "api:write-data"];
+    }
   }
 
   public async getToken(): Promise<Token> {

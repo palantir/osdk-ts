@@ -68,6 +68,10 @@ export class PublicClientAuth implements Auth {
     if (!options.fetchFn) {
       options.fetchFn = globalThis.fetch;
     }
+
+    if (!options.scopes) {
+      options.scopes = ["api:read-data", "api:write-data"];
+    }
   }
 
   public async getToken(): Promise<Token> {
@@ -150,6 +154,7 @@ export class PublicClientAuth implements Auth {
         this.options.url,
         this.options.redirectUrl,
         this.options.multipassContextPath,
+        this.options.scopes,
       );
       localStorage.setItem(this.palantirPcke, authorizeRequest.codeVerifier);
       window.location.href = authorizeRequest.url;
