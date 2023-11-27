@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 0.0.6
+
+### Patch Changes
+
+- 25de57b: Small fixes
+
 ## 0.0.5
 
 ### Patch Changes
