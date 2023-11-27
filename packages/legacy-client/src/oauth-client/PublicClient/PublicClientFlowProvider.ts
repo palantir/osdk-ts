@@ -69,6 +69,7 @@ export async function getTokenWithCodeVerifier(
   clientId: string,
   redirectUrl: string,
   url: string,
+  serverUrl: string,
   codeVerifier: string,
   fetchFn: typeof fetch = globalThis.fetch,
   multipassContextPath?: string,
@@ -86,7 +87,7 @@ export async function getTokenWithCodeVerifier(
   body.append("redirect_uri", redirectUrl);
   body.append("code_verifier", codeVerifier);
 
-  const tokenUrl = getTokenUri(url, multipassContextPath);
+  const tokenUrl = getTokenUri(serverUrl, multipassContextPath);
   try {
     const response = await fetchFormEncoded(
       fetchFn,
