@@ -122,6 +122,7 @@ export class PublicClientAuth implements Auth {
         this.token = await getTokenWithCodeVerifier(
           this.options.clientId,
           this.options.redirectUrl,
+          callbackUrl,
           this.options.url,
           pcke,
           this.options.fetchFn,
