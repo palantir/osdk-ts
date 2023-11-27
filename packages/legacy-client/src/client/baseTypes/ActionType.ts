@@ -20,6 +20,7 @@ import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";
 import type { OntologyObject } from "./OntologyObject";
+import type { ParameterValue } from "./ParameterValue";
 
 export type ActionExecutionOptions = {
   mode: ActionExecutionMode.VALIDATE_ONLY;
@@ -47,7 +48,8 @@ export enum ActionValidationResult {
 export interface ValidationResponse {
   result: ActionValidationResult;
 }
-declare type ObjectEdit<T extends OntologyObject> = {
+
+export declare type ObjectEdit<T extends OntologyObject> = {
   [K in T["__apiName"]]: {
     apiName: K;
     primaryKey: Extract<T, {
@@ -56,7 +58,10 @@ declare type ObjectEdit<T extends OntologyObject> = {
     get: () => Promise<Result<T, GetObjectError>>;
   };
 }[T["__apiName"]];
-declare type ObjectEdits<T extends OntologyObject> = Array<ObjectEdit<T>>;
+
+export declare type ObjectEdits<T extends OntologyObject> = Array<
+  ObjectEdit<T>
+>;
 
 export type CreatedObjectEdits<T extends OntologyObject> = ObjectEdits<
   T
@@ -120,12 +125,15 @@ export type ActionResponseFromOptions<
 
 export const ActionResponse = {
   of: <
-    TAddedObjects extends OntologyObject,
-    TModifiedObjects extends OntologyObject,
+    TAddedObjects extends OntologyObject<string, NonNullable<ParameterValue>>,
+    TModifiedObjects extends OntologyObject<
+      string,
+      NonNullable<ParameterValue>
+    >,
   >(
     client: ThinClient<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
-  ): ActionResponse<Edits<OntologyObject, OntologyObject> | undefined> => {
+  ): ActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
     const validation = {
       result: ActionValidationResult[
         response.validation?.result as keyof typeof ActionValidationResult
@@ -154,13 +162,10 @@ export const ActionResponse = {
         validation,
         edits: {
           type: "edits",
-          added: added as TAddedObjects extends OntologyObject ? typeof added
-            : never,
-          modified: modified as TModifiedObjects extends OntologyObject
-            ? typeof modified
-            : never,
+          added,
+          modified,
         },
-      };
+      } as ActionResponse<Edits<TAddedObjects, TModifiedObjects>>;
     }
     if (response.edits?.type === "largeScaleEdits") {
       return {

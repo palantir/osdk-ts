@@ -48,6 +48,7 @@ export const MockOntology = {
         body: { type: "string", nullable: true },
         class: { type: "string", nullable: true },
         complete: { type: "boolean", nullable: true },
+        tags: { type: "string", multiplicity: true, nullable: true },
         points: { type: "integer", nullable: true },
       },
       links: {

@@ -25,6 +25,15 @@ describe(mapPropertiesToGroupByProperties, () => {
       MockOntology,
       "Todo",
     );
+
+    expect(aggregatableProperties.tags.exact(10)).toMatchObject({
+      type: "Bucketing",
+      kind: "ExactValueBucketing",
+      keyDataType: GroupKeyType.STRING,
+      propertyApiName: "tags",
+      maxGroupCount: 10,
+    });
+
     expect(aggregatableProperties.class.exact(10)).toMatchObject({
       type: "Bucketing",
       kind: "ExactValueBucketing",
@@ -32,6 +41,7 @@ describe(mapPropertiesToGroupByProperties, () => {
       propertyApiName: "class",
       maxGroupCount: 10,
     });
+
     expect(aggregatableProperties.class_.exact(10)).toEqual({
       type: "Bucketing",
       kind: "ExactValueBucketing",
