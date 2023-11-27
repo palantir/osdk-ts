@@ -41,6 +41,7 @@ describe("Aggregations", () => {
       points: NumericGroupBy<"points">;
       class: StringGroupBy<"class">;
       class_: StringGroupBy<"class_">;
+      tags: StringGroupBy<"tags">;
     }>().toMatchTypeOf<GroupBySelections<Todo>>();
 
     expectTypeOf<{

@@ -59,6 +59,8 @@ export declare type ObjectTypesGroupByFunction<
 type groupableProperties = number | LocalDate | Timestamp | string | boolean;
 
 type IsGroupableProperty<T> = NonNullable<T> extends groupableProperties ? true
+  : NonNullable<T> extends Array<infer U>
+    ? U extends groupableProperties ? true : false
   : false;
 
 type GroupableProperties<T extends OntologyObject> = {
@@ -113,6 +115,7 @@ type GroupByFromType<T, N extends string> = NonNullable<T> extends number
   : T extends LocalDate ? LocalDateGroupBy<N>
   : T extends Timestamp ? TimestampGroupBy<N>
   : T extends boolean ? BooleanGroupBy<N>
+  : T extends Array<infer U> ? GroupByFromType<U, N>
   : never;
 
 type AggregationFromType<T> = NonNullable<T> extends number

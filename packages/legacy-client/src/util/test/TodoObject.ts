@@ -32,5 +32,6 @@ export interface Todo extends OntologyObject {
   readonly class_: string | undefined;
   readonly complete: boolean | undefined;
   readonly points: number | undefined;
+  readonly tags: string[] | undefined;
   readonly linkedTask: SingleLink<Task>;
 }

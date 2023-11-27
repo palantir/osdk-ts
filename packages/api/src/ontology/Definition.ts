@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type GeoJSON from "geojson";
+import type { GeoJSON } from "geojson";
 import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
 import type { QueryDefinition } from "./QueryDefinition";

@@ -47,7 +47,8 @@ export enum ActionValidationResult {
 export interface ValidationResponse {
   result: ActionValidationResult;
 }
-declare type ObjectEdit<T extends OntologyObject> = {
+
+export declare type ObjectEdit<T extends OntologyObject> = {
   [K in T["__apiName"]]: {
     apiName: K;
     primaryKey: Extract<T, {
@@ -56,7 +57,10 @@ declare type ObjectEdit<T extends OntologyObject> = {
     get: () => Promise<Result<T, GetObjectError>>;
   };
 }[T["__apiName"]];
-declare type ObjectEdits<T extends OntologyObject> = Array<ObjectEdit<T>>;
+
+export declare type ObjectEdits<T extends OntologyObject> = Array<
+  ObjectEdit<T>
+>;
 
 export type CreatedObjectEdits<T extends OntologyObject> = ObjectEdits<
   T
@@ -125,7 +129,7 @@ export const ActionResponse = {
   >(
     client: ThinClient<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
-  ): ActionResponse<Edits<OntologyObject, OntologyObject> | undefined> => {
+  ): ActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
     const validation = {
       result: ActionValidationResult[
         response.validation?.result as keyof typeof ActionValidationResult
@@ -154,8 +158,10 @@ export const ActionResponse = {
         validation,
         edits: {
           type: "edits",
+          // @ts-ignore
           added: added as TAddedObjects extends OntologyObject ? typeof added
             : never,
+          // @ts-ignore
           modified: modified as TModifiedObjects extends OntologyObject
             ? typeof modified
             : never,
