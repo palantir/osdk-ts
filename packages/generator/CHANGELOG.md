@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 0.0.11
+
+### Patch Changes
+
+- 11ac931: Adding groupBy for Array types, using primary keys for actions and queries, and re-exporting more types
+- 25de57b: Small fixes
+- Updated dependencies [11ac931]
+- Updated dependencies [25de57b]
+  - @osdk/api@0.0.13
+  - @osdk/gateway@0.0.6
+
 ## 0.0.10
 
 ### Patch Changes
