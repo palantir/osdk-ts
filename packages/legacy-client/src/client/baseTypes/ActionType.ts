@@ -19,6 +19,7 @@ import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
 import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";
+import type { ParameterValue } from ".";
 import type { OntologyObject } from "./OntologyObject";
 
 export type ActionExecutionOptions = {
@@ -124,8 +125,11 @@ export type ActionResponseFromOptions<
 
 export const ActionResponse = {
   of: <
-    TAddedObjects extends OntologyObject,
-    TModifiedObjects extends OntologyObject,
+    TAddedObjects extends OntologyObject<string, NonNullable<ParameterValue>>,
+    TModifiedObjects extends OntologyObject<
+      string,
+      NonNullable<ParameterValue>
+    >,
   >(
     client: ThinClient<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
