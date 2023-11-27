@@ -103,7 +103,12 @@ describe("Actions", () => {
       expectTypeOf<Parameters<typeof actions.updateTask>>().toMatchTypeOf<
         [
           {
-            task?: OsdkLegacyObjectFrom<typeof MockOntology, "Task">;
+            task?:
+              | OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              | OsdkLegacyObjectFrom<
+                typeof MockOntology,
+                "Task"
+              >["__primaryKey"];
           },
           ActionExecutionOptions?,
         ]
@@ -197,6 +202,37 @@ describe("Actions", () => {
     mockFetchResponse(fetch, {});
     const actionResponse = await actions.updateTask({
       task: taskObject,
+      tasks: taskOs,
+    }, {});
+
+    expectFetchToBeCalledWithBody(
+      fetch,
+      `Ontology/actions/updateTask/apply`,
+      {
+        parameters: {
+          task: 1,
+          tasks: {
+            type: "base",
+            objectType: "Task",
+          },
+        },
+        options: {
+          mode: "VALIDATE_AND_EXECUTE",
+          returnEdits: "NONE",
+        },
+      },
+    );
+
+    assert(actionResponse.type === "ok");
+  });
+
+  it("proxies action calls takes object primary key", async () => {
+    const taskOs = createBaseOsdkObjectSet(client, "Task");
+    mockFetchResponse(fetch, getMockTodoObject());
+
+    mockFetchResponse(fetch, {});
+    const actionResponse = await actions.updateTask({
+      task: 1,
       tasks: taskOs,
     }, {});
 

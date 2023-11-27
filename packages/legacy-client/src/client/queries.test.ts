@@ -62,7 +62,10 @@ describe("Queries", () => {
       const nowLocalDate = LocalDate.now();
       const nowTimestamp = Timestamp.now();
 
-      const todo: Todo = {} as Todo;
+      const todo: Todo = {
+        __apiName: "Todo",
+        __primaryKey: "todoPrimaryKey",
+      } as Todo;
       const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
       mockFetchResponse(fetch, { value: "resultString" });
 
@@ -108,7 +111,81 @@ describe("Queries", () => {
             "date": nowLocalDate.toISOString(),
             "string": "",
             "timestamp": nowTimestamp.toISOString(),
-            "object": {},
+            "object": "todoPrimaryKey",
+            "objectSet": { "type": "base", "objectType": "Todo" },
+            "array": ["string"],
+            "set": ["string"],
+            "struct": { "name": "name" },
+            "twoDimensionalAggregation": {
+              "groups": [{ "key": "foo", "value": 1 }],
+            },
+            "threeDimensionalAggregation": {
+              "groups": [{
+                "key": { "startValue": nowLocalDate.toISOString() },
+                "value": [{
+                  "key": { "startValue": nowTimestamp.toISOString() },
+                  "value": nowLocalDate.toISOString(),
+                }],
+              }],
+            },
+          },
+        },
+      );
+
+      expect(response.type).toBe("ok");
+      expect((response as any).value.value).toBe("resultString");
+    });
+
+    it("converts data to and from the wire shapes", async () => {
+      const nowLocalDate = LocalDate.now();
+      const nowTimestamp = Timestamp.now();
+
+      const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
+      mockFetchResponse(fetch, { value: "resultString" });
+
+      const response = await queries.queryTakesAllParameterTypes({
+        unionNonNullable: "string",
+        double: 0,
+        float: 0,
+        integer: 0,
+        long: 0,
+        attachment: undefined,
+        boolean: false,
+        date: nowLocalDate,
+        string: "",
+        timestamp: nowTimestamp,
+        object: "todoPrimaryKey",
+        objectSet: todoObjectSet,
+        array: ["string"],
+        set: new Set(["string"]),
+        struct: { name: "name" /* id not required */ },
+        twoDimensionalAggregation: {
+          groups: [{ key: "foo", value: 1 }],
+        },
+        threeDimensionalAggregation: {
+          groups: [{
+            key: { startValue: nowLocalDate },
+            value: [{ key: { startValue: nowTimestamp }, value: nowLocalDate }],
+          }],
+        },
+        // unionNullable not required
+      });
+
+      expectFetchToBeCalledWithBody(
+        fetch,
+        `Ontology/queries/queryTakesAllParameterTypes/execute`,
+        {
+          "parameters": {
+            "unionNonNullable": "string",
+            "double": 0,
+            "float": 0,
+            "integer": 0,
+            "long": 0,
+            "boolean": false,
+            "date": nowLocalDate.toISOString(),
+            "string": "",
+            "timestamp": nowTimestamp.toISOString(),
+            "object": "todoPrimaryKey",
             "objectSet": { "type": "base", "objectType": "Todo" },
             "array": ["string"],
             "set": ["string"],
@@ -189,7 +266,7 @@ describe("Queries", () => {
         date: LocalDate;
         string: string;
         timestamp: Timestamp;
-        object: Todo;
+        object: Todo | Todo["__primaryKey"];
         objectSet: ObjectSet<Todo>;
         array: string[];
         set: Set<string>;

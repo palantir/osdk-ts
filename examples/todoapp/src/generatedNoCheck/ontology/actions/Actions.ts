@@ -22,12 +22,12 @@ export interface Actions {
 
   /**
    * Completes Todo
-   * @param {Todo} params.Todo
+   * @param {Todo | Todo["__primaryKey"]} params.Todo
    * @param {boolean} params.is_complete
    */
   completeTodo<O extends ActionExecutionOptions>(
     params: {
-      Todo: Todo;
+      Todo: Todo | Todo['__primaryKey'];
       is_complete: boolean;
     },
     options?: O,
