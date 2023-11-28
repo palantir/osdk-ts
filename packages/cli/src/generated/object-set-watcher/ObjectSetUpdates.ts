@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { FoundryObject } from "./object/FoundryObject.js";
+import type { SubscriptionId } from "./SubscriptionId.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface ObjectSetUpdates {
+  id: SubscriptionId;
+  objects: Array<FoundryObject>;
 }

@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { ObjectSetFilterContext } from "./ObjectSetFilterContext.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface ObjectSetContext {
+  objectSetFilterContext: ObjectSetFilterContext | undefined;
 }

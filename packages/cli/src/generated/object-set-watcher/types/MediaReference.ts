@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { MediaValueReference } from "./MediaValueReference.js";
+import type { MimeType } from "./MimeType.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface MediaReference {
+  mimeType: MimeType;
+  reference: MediaValueReference;
 }

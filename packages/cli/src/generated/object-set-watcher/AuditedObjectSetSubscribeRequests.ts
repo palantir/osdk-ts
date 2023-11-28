@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { ObjectSetRid } from "./ObjectSetRid.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface AuditedObjectSetSubscribeRequests {
+  requests: Array<ObjectSetRid>;
 }

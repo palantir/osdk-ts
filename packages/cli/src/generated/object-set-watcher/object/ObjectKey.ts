@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
-}
+import type { PropertyRid } from "./PropertyRid.js";
+import type { PropertyValue } from "./PropertyValue.js";
+export type ObjectKey = Map<PropertyRid, PropertyValue>;

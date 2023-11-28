@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { FilterValue } from "./FilterValue.js";
+import type { UnresolvedFilterParameterId } from "./UnresolvedFilterParameterId.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface ObjectSetFilterContext {
+  parameterOverrides: Map<UnresolvedFilterParameterId, FilterValue>;
 }

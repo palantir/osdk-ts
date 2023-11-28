@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+import type { MediaItemRid } from "./MediaItemRid.js";
+import type { MediaSetRid } from "./MediaSetRid.js";
+import type { MediaSetViewRid } from "./MediaSetViewRid.js";
 
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+export interface MediaViewItemReference {
+  mediaSetRid: MediaSetRid;
+  mediaSetViewRid: MediaSetViewRid;
+  mediaItemRid: MediaItemRid;
 }

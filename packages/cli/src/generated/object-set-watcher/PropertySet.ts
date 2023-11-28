@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+import type { AllPropertiesPropertySet } from "./AllPropertiesPropertySet.js";
+import type { SelectedPropertiesPropertySet } from "./SelectedPropertiesPropertySet.js";
+export interface PropertySet_selected {
+  type: "selected";
+  selected: SelectedPropertiesPropertySet;
 }
+
+export interface PropertySet_allProperties {
+  type: "allProperties";
+  allProperties: AllPropertiesPropertySet;
+}
+
+export type PropertySet = PropertySet_selected | PropertySet_allProperties;

@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
-}
+export type { DatasourceRid } from "./DatasourceRid.js";
+export type { FoundryObject } from "./FoundryObject.js";
+export type { ObjectKey } from "./ObjectKey.js";
+export type { ObjectTypeRid } from "./ObjectTypeRid.js";
+export type { ObjectVersion } from "./ObjectVersion.js";
+export type { PropertyRid } from "./PropertyRid.js";
+export type { PropertyValue } from "./PropertyValue.js";

@@ -14,12 +14,25 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+import type { QosError } from "./QosError.js";
+import type { SubscriptionError } from "./SubscriptionError.js";
+import type { SubscriptionSuccess } from "./SubscriptionSuccess.js";
+export interface ObjectSetSubscribeResponse_success {
+  type: "success";
+  success: SubscriptionSuccess;
 }
+
+export interface ObjectSetSubscribeResponse_error {
+  type: "error";
+  error: SubscriptionError;
+}
+
+export interface ObjectSetSubscribeResponse_qos {
+  type: "qos";
+  qos: QosError;
+}
+
+export type ObjectSetSubscribeResponse =
+  | ObjectSetSubscribeResponse_success
+  | ObjectSetSubscribeResponse_error
+  | ObjectSetSubscribeResponse_qos;

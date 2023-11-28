@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
+import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { BatchEnableWatcherRequest } from "../BatchEnableWatcherRequest.js";
+export async function batchEnableWatcher(
+  ctx: ConjureContext,
+  request: BatchEnableWatcherRequest,
+): Promise<void> {
+  return conjureFetch(
+    ctx,
+    `/object-set-watcher/batchEnableWatcher`,
+    "POST",
+    request,
+  );
 }

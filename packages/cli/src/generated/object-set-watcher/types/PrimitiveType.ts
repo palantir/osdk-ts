@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
-import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
-export interface ContentSecurityPolicyAdditions {
-  policy: Map<
-    ContentSecurityPolicyDirectiveName,
-    Array<ContentSecurityPolicyDirectiveValue>
-  >;
-}
+export type PrimitiveType =
+  | "ATTACHMENT"
+  | "BINARY"
+  | "BOOLEAN"
+  | "BYTE"
+  | "DATE"
+  | "DOUBLE"
+  | "FLOAT"
+  | "GEOHASH"
+  | "GEOSHAPE"
+  | "GEOTIME_SERIES_REFERENCE"
+  | "INTEGER"
+  | "LONG"
+  | "SHORT"
+  | "STRING"
+  | "TIMESTAMP"
+  | "CIPHERTEXT"
+  | "MEDIA_REFERENCE";

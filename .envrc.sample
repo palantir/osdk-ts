@@ -1,2 +1,3 @@
 export FOUNDRY_USER_TOKEN=
 export FOUNDRY_STACK=myhost.mydomain.com
+export MAVEN_CONJURE_BASE_PATH="https://somehost/basepath/internal-conjure"
