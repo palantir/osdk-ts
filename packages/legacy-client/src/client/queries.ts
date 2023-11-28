@@ -81,13 +81,13 @@ export type NonNullableArgKeys<T> = {
 
 type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
   & {
-    [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
+    [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryParameterDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
   }
   & {
-    [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryDataType<
+    [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryParameterDataType<
       O,
       QueryParameters<O, Q>[P]["dataType"]
     >;
@@ -95,6 +95,12 @@ type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
 
 export type QueryNamesFrom<O extends OntologyDefinition<any>> =
   keyof O["queries"];
+
+export type QueryParameterDataType<
+  O extends OntologyDefinition<any>,
+  D extends QueryDataTypeDefinition<any>,
+> = D["multiplicity"] extends true ? Array<QueryDataTypeParameter<O, D["type"]>>
+  : QueryDataTypeParameter<O, D["type"]>;
 
 export type QueryDataType<
   O extends OntologyDefinition<any>,
@@ -114,13 +120,19 @@ interface ValidLegacyBaseQueryDataTypes {
   attachment: any; // TODO surely we can be more strict here
 }
 
+type QueryDataTypeParameter<
+  O extends OntologyDefinition<any>,
+  T extends QueryDataType<O, any>,
+> = T extends ObjectQueryDataType<any> ?
+    | OsdkLegacyObjectFrom<O, T["object"]>
+    | OsdkLegacyObjectFrom<O, T["object"]>["__primaryKey"]
+  : QueryDataTypeBase<O, T>;
+
 type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any>,
 > = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
-  : T extends ObjectQueryDataType<any> ?
-      | OsdkLegacyObjectFrom<O, T["object"]>
-      | OsdkLegacyObjectFrom<O, T["object"]>["__primaryKey"]
+  : T extends ObjectQueryDataType<any> ? OsdkLegacyObjectFrom<O, T["object"]>
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
   : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"]>>

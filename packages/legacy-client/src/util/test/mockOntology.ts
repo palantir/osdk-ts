@@ -242,7 +242,13 @@ export const MockOntology = {
           },
         },
       },
-      output: { type: "string", nullable: false },
+      output: {
+        type: {
+          type: "object",
+          object: "Todo",
+        },
+        nullable: false,
+      },
     },
   },
 } satisfies OntologyDefinition<
