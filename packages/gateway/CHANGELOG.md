@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 0.0.7
+
+### Patch Changes
+
+- ad425f9: Fix query return type for objects
+
 ## 0.0.6
 
 ### Patch Changes

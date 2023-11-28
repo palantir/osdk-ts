@@ -1,5 +1,15 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.12
+
+### Patch Changes
+
+- ad425f9: Fix query return type for objects
+- Updated dependencies [ad425f9]
+  - @osdk/legacy-client@0.0.13
+  - @osdk/generator@0.0.12
+  - @osdk/api@0.0.14
+
 ## 0.0.11
 
 ### Patch Changes

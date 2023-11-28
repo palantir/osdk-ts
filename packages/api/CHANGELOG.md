@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 0.0.14
+
+### Patch Changes
+
+- ad425f9: Fix query return type for objects
+- Updated dependencies [ad425f9]
+  - @osdk/gateway@0.0.7
+
 ## 0.0.13
 
 ### Patch Changes
