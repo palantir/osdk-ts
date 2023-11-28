@@ -39,8 +39,17 @@ export async function cli(args: string[] = process.argv) {
     .demandCommand()
     .middleware(logVersionMiddleware, true)
     .strict()
-    .command(site)
-    .command(typescript);
+    .command({
+      command: "unstable",
+      aliases: ["experimental"],
+      builder: async (argv) => {
+        return argv
+          .command(site)
+          .command(typescript)
+          .demandCommand();
+      },
+      handler: (_args) => {},
+    });
 
   try {
     return base.parseAsync();
