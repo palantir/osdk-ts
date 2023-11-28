@@ -43,6 +43,7 @@ export async function generateQueries(
     const outputType = handleQueryDataType(
       query.output,
       importedObjects,
+      true,
     );
 
     const paramEntries = [];
@@ -52,6 +53,7 @@ export async function generateQueries(
       const type = handleQueryDataType(
         parameter.dataType,
         importedObjects,
+        false,
       );
       paramEntries.push(`"${name}"${nullable ? "?" : ""}: ${type}`);
 
@@ -100,6 +102,7 @@ export async function generateQueries(
 function handleQueryDataType(
   dataType: QueryDataType,
   importedObjects: Set<string>,
+  isReturnValue: boolean,
 ): string {
   switch (dataType.type) {
     case "boolean":
@@ -122,12 +125,16 @@ function handleQueryDataType(
       return "Attachment";
 
     case "array":
-      return `Array<${handleQueryDataType(dataType.subType, importedObjects)}>`;
+      return `Array<${
+        handleQueryDataType(dataType.subType, importedObjects, isReturnValue)
+      }>`;
 
     case "object": {
       const objectType = dataType.objectTypeApiName!;
       importedObjects.add(objectType);
-      return `${objectType} | ${objectType}["__primaryKey"]`;
+      return isReturnValue
+        ? objectType
+        : `${objectType} | ${objectType}["__primaryKey"]`;
     }
 
     case "objectSet": {
@@ -137,20 +144,22 @@ function handleQueryDataType(
     }
 
     case "set":
-      return `Set<${handleQueryDataType(dataType.subType, importedObjects)}>`;
+      return `Set<${
+        handleQueryDataType(dataType.subType, importedObjects, isReturnValue)
+      }>`;
 
     case "struct":
       const properties = dataType.fields.map(field => {
         const isNullable = isNullableQueryDataType(field.fieldType);
         return `${field.name}${isNullable ? "?" : ""}: ${
-          handleQueryDataType(field.fieldType, importedObjects)
+          handleQueryDataType(field.fieldType, importedObjects, isReturnValue)
         }`;
       });
       return `{ ${properties.join(",\n")} }`;
 
     case "union":
       return dataType.unionTypes.map(type =>
-        handleQueryDataType(type, importedObjects)
+        handleQueryDataType(type, importedObjects, isReturnValue)
       ).filter(type => type !== "null").join("|");
 
     case "twoDimensionalAggregation":
