@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
+import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
+
 export interface ContentSecurityPolicyAdditions {
-  policy: /* OOOOOOPS */ any;
+  policy: Map<
+    ContentSecurityPolicyDirectiveName,
+    Array<ContentSecurityPolicyDirectiveValue>
+  >;
 }

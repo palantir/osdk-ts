@@ -32,14 +32,14 @@ function generateConjure() {
     GROUP_ID="$1"
     ARTIFACT_ID="$2"
     PACKAGE_PATH="$3"
-    OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated/${ARTIFACT_ID}")
+    OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated/${ARTIFACT_ID/%-api//}")
 
     rm -rf "$OUT_DIR"
 
     printf "Fetching conjure IR\n  Coordinate: %s\n  Path: %s\n" "$GROUP_ID:$ARTIFACT_ID" "$OUT_DIR"
     "$SCRIPT_DIR/getConjureIr.sh" "$GROUP_ID" "$ARTIFACT_ID"
     echo "  - Generating typescript"
-    $CONJURE_LITE generate --ir "${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json" --outDir "${PACKAGE_PATH}/src/generated/${ARTIFACT_ID}"
+    $CONJURE_LITE generate --ir "${SCRIPT_DIR}/../tmp/${ARTIFACT_ID}.conjure.json" --outDir "$OUT_DIR"
 
     echo "  - Fixing up generated typescript"
     # Fix up the generated IR so lint doesnt choke
@@ -54,3 +54,5 @@ function generateConjure() {
 }
 
 generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/cli"
+generateConjure "com.palantir.artifacts" "artifacts-admin-api" "${SCRIPT_DIR}/../packages/cli"
+generateConjure "com.palantir.artifacts" "artifacts-sites-api" "${SCRIPT_DIR}/../packages/cli"
