@@ -20,6 +20,6 @@ yarn-error.log*
 
 dist/
 lib/
-types/
 build/
 tsconfig.tsbuildinfo
+/tmp/
