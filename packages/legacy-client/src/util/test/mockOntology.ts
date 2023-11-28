@@ -250,6 +250,40 @@ export const MockOntology = {
         nullable: false,
       },
     },
+    queryTakesNestedObjects: {
+      apiName: "queryTakesNestedObjects",
+      description: "a query that takes nested objects inside other types",
+      rid: "query.rid.4",
+      version: "version",
+      output: { type: "boolean" },
+      parameters: {
+        struct: {
+          dataType: {
+            type: {
+              type: "struct",
+              struct: {
+                object: {
+                  type: { type: "object", object: "Todo" },
+                  nullable: false,
+                },
+              },
+            },
+            nullable: false,
+          },
+        },
+        set: {
+          dataType: {
+            type: {
+              type: "set",
+              set: {
+                type: { type: "object", object: "Todo" },
+              },
+            },
+            nullable: false,
+          },
+        },
+      },
+    },
   },
 } satisfies OntologyDefinition<
   | "Task"

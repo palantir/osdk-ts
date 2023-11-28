@@ -15,7 +15,7 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
+import { createThinClient, isOk } from "@osdk/api";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import type { MockedFunction } from "vitest";
 import {
@@ -223,6 +223,34 @@ describe("Queries", () => {
 
       assert(response.type === "ok");
       expect(response.value.value.__apiName).toEqual("Todo");
+    });
+
+    it("accepts objects as PK-only inside a struct and set", async () => {
+      const mockTodoObject: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> =
+        {
+          __apiName: "Todo",
+          __primaryKey: "1",
+        } as unknown as Todo;
+
+      mockFetchResponse(fetch, { value: mockTodoObject });
+
+      const response = await queries.queryTakesNestedObjects({
+        struct: { object: mockTodoObject.__primaryKey },
+        set: new Set([mockTodoObject.__primaryKey]),
+      });
+
+      expectFetchToBeCalledWithBody(
+        fetch,
+        `Ontology/queries/queryTakesNestedObjects/execute`,
+        {
+          parameters: {
+            struct: { object: mockTodoObject.__primaryKey },
+            set: [mockTodoObject.__primaryKey],
+          },
+        },
+      );
+
+      expect(isOk(response)).toBe(true);
     });
 
     it("supports queries that do not require params", async () => {
