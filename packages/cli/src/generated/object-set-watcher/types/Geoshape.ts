@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type Geoshape = /* OOOOOOPS */ any;
+export type Geoshape = any;

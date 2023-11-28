@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type Timestamp = /* OOOOOOPS */ any;
+export type Timestamp = any;

@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type Date = /* OOOOOOPS */ any;
+export type Date = any;
