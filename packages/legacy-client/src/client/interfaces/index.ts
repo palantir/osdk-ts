@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
+export * from "./aggregations";
 export * from "./baseObjectSet";
+export * from "./filters";
 export * from "./objectSet";
+export * from "./ordering";
