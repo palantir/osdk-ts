@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export type ObjectKey = /* OOOOOOPS */ any;
+import type { PropertyRid } from "./PropertyRid.js";
+import type { PropertyValue } from "./PropertyValue.js";
+export type ObjectKey = Map<PropertyRid, PropertyValue>;

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import type { FilterValue } from "./FilterValue.js";
+import type { UnresolvedFilterParameterId } from "./UnresolvedFilterParameterId.js";
+
 export interface ObjectSetFilterContext {
-  parameterOverrides: /* OOOOOOPS */ any;
+  parameterOverrides: Map<UnresolvedFilterParameterId, FilterValue>;
 }

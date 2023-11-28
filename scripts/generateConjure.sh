@@ -26,7 +26,7 @@ XQ=$(checkCommand "xq" "xq" "Try 'brew install python-yq'")
 
 rm -rf "${SCRIPT_DIR}/../tmp"
 
-CONJURE_LITE="npx conjure-lite@0.0.6"
+CONJURE_LITE="$SCRIPT_DIR/../packages/cli/node_modules/.bin/conjure-lite"
 
 function generateConjure() {
     GROUP_ID="$1"

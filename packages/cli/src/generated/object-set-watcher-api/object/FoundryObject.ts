@@ -18,12 +18,14 @@ import type { DatasourceRid } from "./DatasourceRid.js";
 import type { ObjectKey } from "./ObjectKey.js";
 import type { ObjectTypeRid } from "./ObjectTypeRid.js";
 import type { ObjectVersion } from "./ObjectVersion.js";
+import type { PropertyRid } from "./PropertyRid.js";
+import type { PropertyValue } from "./PropertyValue.js";
 
 export interface FoundryObject {
   type: ObjectTypeRid;
   key: ObjectKey;
   datasources: Array<DatasourceRid>;
-  properties: /* OOOOOOPS */ any;
+  properties: Map<PropertyRid, PropertyValue>;
   alive: boolean;
   version: ObjectVersion;
 }
