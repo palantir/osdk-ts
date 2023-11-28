@@ -15,10 +15,18 @@
  */
 
 import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
+import { createThinClient, isOk } from "@osdk/api";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import type { MockedFunction } from "vitest";
-import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
+import {
+  assert,
+  beforeEach,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
 import type { ObjectSet, Range } from "../client";
 import type { Todo } from "../util/test";
 import { MockOntology } from "../util/test";
@@ -34,6 +42,7 @@ import type {
 } from "./baseTypes";
 import { LocalDate, Timestamp } from "./baseTypes";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
+import type { OsdkLegacyObjectFrom } from "./OsdkObject";
 import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
@@ -67,7 +76,7 @@ describe("Queries", () => {
         __primaryKey: "todoPrimaryKey",
       } as Todo;
       const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
-      mockFetchResponse(fetch, { value: "resultString" });
+      mockFetchResponse(fetch, { value: todo });
 
       const response = await queries.queryTakesAllParameterTypes({
         unionNonNullable: "string",
@@ -132,16 +141,22 @@ describe("Queries", () => {
         },
       );
 
-      expect(response.type).toBe("ok");
-      expect((response as any).value.value).toBe("resultString");
+      assert(response.type === "ok");
+      expect(response.value.value.__apiName).toEqual("Todo");
     });
 
-    it("converts data to and from the wire shapes", async () => {
+    it("converts data to and from the wire shapes primaryKey", async () => {
       const nowLocalDate = LocalDate.now();
       const nowTimestamp = Timestamp.now();
 
       const todoObjectSet = createBaseOsdkObjectSet(client, "Todo");
-      mockFetchResponse(fetch, { value: "resultString" });
+      const mockTodoObject: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> =
+        {
+          __apiName: "Todo",
+          __primaryKey: "1",
+        } as unknown as Todo;
+
+      mockFetchResponse(fetch, { value: mockTodoObject });
 
       const response = await queries.queryTakesAllParameterTypes({
         unionNonNullable: "string",
@@ -206,8 +221,36 @@ describe("Queries", () => {
         },
       );
 
-      expect(response.type).toBe("ok");
-      expect((response as any).value.value).toBe("resultString");
+      assert(response.type === "ok");
+      expect(response.value.value.__apiName).toEqual("Todo");
+    });
+
+    it("accepts objects as PK-only inside a struct and set", async () => {
+      const mockTodoObject: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> =
+        {
+          __apiName: "Todo",
+          __primaryKey: "1",
+        } as unknown as Todo;
+
+      mockFetchResponse(fetch, { value: mockTodoObject });
+
+      const response = await queries.queryTakesNestedObjects({
+        struct: { object: mockTodoObject.__primaryKey },
+        set: new Set([mockTodoObject.__primaryKey]),
+      });
+
+      expectFetchToBeCalledWithBody(
+        fetch,
+        `Ontology/queries/queryTakesNestedObjects/execute`,
+        {
+          parameters: {
+            struct: { object: mockTodoObject.__primaryKey },
+            set: [mockTodoObject.__primaryKey],
+          },
+        },
+      );
+
+      expect(isOk(response)).toBe(true);
     });
 
     it("supports queries that do not require params", async () => {
@@ -242,7 +285,7 @@ describe("Queries", () => {
     it("infers the proper return type", () => {
       expectTypeOf<
         QueryReturnType<typeof MockOntology, "queryTakesAllParameterTypes">
-      >().toMatchTypeOf<string>();
+      >().toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();
 
       expectTypeOf<
         QueryReturnType<typeof MockOntology, "queryTakesNoParameters">
