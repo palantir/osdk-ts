@@ -37,3 +37,5 @@ jobs:
       - name: Build, lint, and test
         run: pnpm check
 
+      - name: Verify nothing changed
+        run: git diff --exit-code

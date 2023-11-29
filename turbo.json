@@ -3,7 +3,7 @@
   "pipeline": {
     "codegen": {
       "inputs": ["ontology.json"],
-      "outputs": ["src/generatedNoCheck"],
+      "outputs": ["src/generatedNoCheck/**/*"],
       "dependsOn": ["^transpile", "^typecheck"]
     },
 

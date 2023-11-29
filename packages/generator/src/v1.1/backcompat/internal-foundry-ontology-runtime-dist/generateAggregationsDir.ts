@@ -36,7 +36,6 @@ export async function generateAggregationsDir(
 
   await fs.writeFile(
     path.join(aggregationsDir, "index.ts"),
-    // TRASHFIXME
     await formatTs(`
     ${"" // Skipping this one, its hard to imagine it being used
       // export * from "./AggregatableObjectSet";
