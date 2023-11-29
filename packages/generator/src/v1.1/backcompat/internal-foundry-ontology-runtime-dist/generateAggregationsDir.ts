@@ -43,7 +43,7 @@ export async function generateAggregationsDir(
     // export * from "./CountOperation";
     export * from "./groupBy";
     // export * from "./internalAggregationRequest";
-    // export * from "./metrics";
+    export * from "./metrics";
   `),
   );
 }
