@@ -31,27 +31,27 @@ export async function generateObjectsInterfaceSupportFiles(
     const contents: string[] = [];
 
     contents.push(
-      `import { ObjectTypeFilter, OrderBy, GroupBySelections, AggregateSelection, MultipleAggregateSelection } from "@osdk/legacy-client";`,
+      `import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";`,
     );
     contents.push(`import { ${apiName} } from "../${apiName}";`);
     contents.push(""); // empty line
 
     contents.push(
-      `export type ${apiName}Filter = ObjectTypeFilter<${apiName}>;`,
+      `export type ${apiName}Filter = ObjectSetFilterArg<${apiName}>;`,
     );
     contents.push(
-      `export type ${apiName}OrderBy = OrderBy<${apiName}>;`,
+      `export type ${apiName}OrderBy = ObjectSetOrderByArg<${apiName}>;`,
     );
     contents.push(
-      `export type ${apiName}GroupByProperties = GroupBySelections<${apiName}>;`,
+      `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${apiName}>;`,
     );
     contents.push(
       `/** Aggregation properties for ${apiName}. */`,
-      `export type ${apiName}AggregationProperties = AggregateSelection<${apiName}>;`,
+      `export type ${apiName}AggregationProperties = ObjectSetAggregateArg<${apiName}>;`,
     );
     contents.push(
       `/** Multiple aggregation properties for ${apiName}. */`,
-      `export type ${apiName}MultipleAggregationProperties = MultipleAggregateSelection<${apiName}>;`,
+      `export type ${apiName}MultipleAggregationProperties = ObjectSetMultipleAggregateArg<${apiName}>;`,
     );
 
     await fs.writeFile(fileName, contents.join("\n"));

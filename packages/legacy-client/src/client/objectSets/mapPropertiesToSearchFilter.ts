@@ -19,7 +19,7 @@ import type {
   OntologyDefinition,
   PropertyDefinition,
 } from "@osdk/api";
-import type { ObjectTypeFilter } from "../interfaces/filters";
+import type { ObjectSetFilterArg } from "../interfaces/filters";
 import {
   ArrayFilter,
   AttachmentFilter,
@@ -73,7 +73,7 @@ export function mapPropertiesToSearchFilter<
         | GeoShapeFilter
         | ArrayFilter<any>;
     },
-  ) as ObjectTypeFilter<OsdkLegacyObjectFrom<O, K>>;
+  ) as ObjectSetFilterArg<OsdkLegacyObjectFrom<O, K>>;
 }
 
 function mapPropertyTypeToSearchFilter(

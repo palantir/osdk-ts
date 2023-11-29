@@ -27,9 +27,9 @@ import type {
   StringGroupBy,
 } from "../objectSets/aggregations";
 import type {
-  AggregateSelection,
-  GroupBySelections,
-  MultipleAggregateSelection,
+  ObjectSetAggregateArg,
+  ObjectSetGroupByArg,
+  ObjectSetMultipleAggregateArg,
 } from "./aggregations";
 
 describe("Aggregations", () => {
@@ -42,7 +42,7 @@ describe("Aggregations", () => {
       class: StringGroupBy<"class">;
       class_: StringGroupBy<"class_">;
       tags: StringGroupBy<"tags">;
-    }>().toMatchTypeOf<GroupBySelections<Todo>>();
+    }>().toMatchTypeOf<ObjectSetGroupByArg<Todo>>();
 
     expectTypeOf<{
       complete: AggregatableProperty<never>;
@@ -51,7 +51,7 @@ describe("Aggregations", () => {
       points: AggregatableProperty<number>;
       class: AggregatableProperty<number>;
       class_: AggregatableProperty<number>;
-    }>().toMatchTypeOf<AggregateSelection<Todo>>();
+    }>().toMatchTypeOf<ObjectSetAggregateArg<Todo>>();
 
     expectTypeOf<{
       complete: MultipleAggregatableProperty<number>;
@@ -61,6 +61,6 @@ describe("Aggregations", () => {
       class: ApproximateDistinctCountAggregatableProperty;
       class_: ApproximateDistinctCountAggregatableProperty;
       count: () => CountOperation;
-    }>().toMatchTypeOf<MultipleAggregateSelection<Todo>>();
+    }>().toMatchTypeOf<ObjectSetMultipleAggregateArg<Todo>>();
   });
 });
