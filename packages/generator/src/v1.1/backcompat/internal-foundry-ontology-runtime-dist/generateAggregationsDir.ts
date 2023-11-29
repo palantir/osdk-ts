@@ -19,6 +19,7 @@ import type { MinimalFs } from "../../../MinimalFs";
 import { formatTs } from "../../../util/test/formatTs";
 import { generateAggregationsAggregations } from "./aggregations/generateAggregationsAggregations";
 import { generateGroupBy } from "./aggregations/generateGroupBy";
+import { generateMetrics } from "./aggregations/generateMetrics";
 
 export async function generateAggregationsDir(
   fs: MinimalFs,
@@ -29,6 +30,7 @@ export async function generateAggregationsDir(
 
   await generateGroupBy(fs, aggregationsDir);
   await generateAggregationsAggregations(fs, aggregationsDir);
+  await generateMetrics(fs, aggregationsDir);
 
   await fs.writeFile(
     path.join(aggregationsDir, "index.ts"),
@@ -39,7 +41,7 @@ export async function generateAggregationsDir(
     export * from "./Aggregations";
     // export * from "./ComputeStep";
     // export * from "./CountOperation";
-    // export * from "./groupBy";
+    export * from "./groupBy";
     // export * from "./internalAggregationRequest";
     // export * from "./metrics";
   `),
