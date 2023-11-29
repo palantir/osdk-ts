@@ -17,6 +17,8 @@
 import * as path from "node:path";
 import type { MinimalFs } from "../../../MinimalFs";
 import { formatTs } from "../../../util/test/formatTs";
+import { reexportConsts } from "../util/reexportConsts";
+import { reexportTypes } from "../util/reexportTypes";
 import { generateAggregationsAggregations } from "./aggregations/generateAggregationsAggregations";
 import { generateGroupBy } from "./aggregations/generateGroupBy";
 import { generateMetrics } from "./aggregations/generateMetrics";
@@ -36,14 +38,59 @@ export async function generateAggregationsDir(
     path.join(aggregationsDir, "index.ts"),
     // TRASHFIXME
     await formatTs(`
-    // export * from "./AggregatableObjectSet";
-    // export * from "./aggregationConverters";
+    ${"" // Skipping this one, its hard to imagine it being used
+      // export * from "./AggregatableObjectSet";
+    }
+    ${"" // Skipping this one, its hard to imagine it being used
+      // export * from "./aggregationConverters";
+    }
+    
     export * from "./Aggregations";
-    // export * from "./ComputeStep";
-    // export * from "./CountOperation";
+    export * from "./ComputeStep";
+    export * from "./CountOperation";
     export * from "./groupBy";
-    // export * from "./internalAggregationRequest";
+    export * from "./internalAggregationRequest";
     export * from "./metrics";
   `),
+  );
+
+  await fs.writeFile(
+    path.join(aggregationsDir, "ComputeStep.ts"),
+    await formatTs(
+      `
+      import { ObjectSetDefinition } from "../baseTypes";
+      import { FoundryClientOptions } from "../client";
+      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider";
+      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations";
+      `
+        + reexportConsts(["ComputeStep"])
+        + reexportTypes(
+          ["ComputeStep"],
+          "<TBucketGroup extends BucketGroup, TMetrics extends Metrics | MetricValue> ",
+        )
+        + reexportTypes(
+          ["AggregationComputeStep"],
+          "<TBucketGroup extends BucketGroup, TMetrics extends Metrics | MetricValue>",
+        )
+        + `
+    
+    `,
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(aggregationsDir, "CountOperation.ts"),
+    await formatTs(
+      ``
+        + reexportConsts(["CountOperation", "isCountOperation"])
+        + reexportTypes(["CountOperation"]),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(aggregationsDir, "internalAggregationRequest.ts"),
+    await formatTs(
+      reexportTypes(["InternalAggregationRequest"]),
+    ),
   );
 }
