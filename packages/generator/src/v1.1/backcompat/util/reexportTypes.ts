@@ -20,25 +20,26 @@ export function reexportTypes(
   genericArgsRight = cleanup(genericArgsLeft),
 ) {
   return `
-        import type { ${
+    import type { ${
     typesToExport.map(q => `${q} as OG_${q}`).join(", ")
   }} from "@osdk/legacy-client";
     
         ${
     typesToExport.map(q => `
-            /** @deprecated **/
-            export type ${q}${genericArgsLeft} = OG_${q}${genericArgsRight};
-        `).join("\n\n")
+      /** @deprecated submodule imports arent public api **/
+      export type ${q}${genericArgsLeft} = OG_${q}${genericArgsRight};
+    `).join("\n\n")
   }
     `;
 }
 
-const q = /<(.*?)>/;
-const qq = /^\s?(.+?)( extends .*?)?( = .*?)?\s?$/;
+const captureInBracketsRegex = /<(.*?)>/;
+const captureGenericParamNameRegex = /^\s?(.+?)( extends .*?)?( = .*?)?\s?$/;
 function cleanup(s: string) {
   if (s.length === 0) return "";
-  const l = q.exec(s)?.[1]?.split(",")?.map(a => {
-    return qq.exec(a)?.[1] ?? a;
-  });
-  return `<${l?.join(",")}>`;
+  const genericParameterNames = captureInBracketsRegex.exec(s)?.[1]?.split(",")
+    ?.map(a => {
+      return captureGenericParamNameRegex.exec(a)?.[1] ?? a;
+    });
+  return `<${genericParameterNames?.join(",")}>`;
 }

@@ -18,7 +18,7 @@ import * as path from "node:path";
 import type { MinimalFs } from "../../../../MinimalFs";
 import { formatTs } from "../../../../util/test/formatTs";
 import { reexportConsts } from "../../util/reexportConsts";
-import { reexportTypes } from "../../util/reexportTrash";
+import { reexportTypes } from "../../util/reexportTypes";
 
 export async function generateAggregationsAggregations(
   fs: MinimalFs,

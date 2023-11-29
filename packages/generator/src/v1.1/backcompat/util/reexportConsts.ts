@@ -24,7 +24,7 @@ export function reexportConsts(
       
           ${
     typesToExport.map(q => `
-              /** @deprecated **/
+      /** @deprecated submodule imports arent public api **/
               export const ${q} = OG_${q};
           `).join("\n\n")
   }
