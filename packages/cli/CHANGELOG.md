@@ -1,5 +1,14 @@
 # @osdk/cli
 
+## 0.0.12
+
+### Patch Changes
+
+- 23a3515: Add deprecation notice to objects-api types
+- Updated dependencies [23a3515]
+  - @osdk/generator@0.0.14
+  - @osdk/api@0.0.16
+
 ## 0.0.11
 
 ### Patch Changes
