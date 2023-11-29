@@ -37,15 +37,15 @@ export async function generateObjectsInterfaceSupportFiles(
     contents.push(""); // empty line
 
     contents.push(
-      `/** @deprecated Use ObjectSetFilterArg<${apiName}> instead`,
+      `/** @deprecated Use ObjectSetFilterArg<${apiName}> instead */`,
       `export type ${apiName}Filter = ObjectSetFilterArg<${apiName}>;`,
     );
     contents.push(
-      `/** @deprecated Use ObjectSetOrderByArg<${apiName}> instead`,
+      `/** @deprecated Use ObjectSetOrderByArg<${apiName}> instead */`,
       `export type ${apiName}OrderBy = ObjectSetOrderByArg<${apiName}>;`,
     );
     contents.push(
-      `/** @deprecated Use ObjectSetGroupByArg<${apiName}> instead`,
+      `/** @deprecated Use ObjectSetGroupByArg<${apiName}> instead */`,
       `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${apiName}>;`,
     );
     contents.push(

@@ -1,11 +1,11 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
 import { ObjectTypeWithAllPropertyTypes } from "../ObjectTypeWithAllPropertyTypes";
 
-/** @deprecated Use ObjectSetFilterArg<ObjectTypeWithAllPropertyTypes> instead
+/** @deprecated Use ObjectSetFilterArg<ObjectTypeWithAllPropertyTypes> instead */
 export type ObjectTypeWithAllPropertyTypesFilter = ObjectSetFilterArg<ObjectTypeWithAllPropertyTypes>;
-/** @deprecated Use ObjectSetOrderByArg<ObjectTypeWithAllPropertyTypes> instead
+/** @deprecated Use ObjectSetOrderByArg<ObjectTypeWithAllPropertyTypes> instead */
 export type ObjectTypeWithAllPropertyTypesOrderBy = ObjectSetOrderByArg<ObjectTypeWithAllPropertyTypes>;
-/** @deprecated Use ObjectSetGroupByArg<ObjectTypeWithAllPropertyTypes> instead
+/** @deprecated Use ObjectSetGroupByArg<ObjectTypeWithAllPropertyTypes> instead */
 export type ObjectTypeWithAllPropertyTypesGroupByProperties = ObjectSetGroupByArg<ObjectTypeWithAllPropertyTypes>;
 /**
         * Aggregation properties for ObjectTypeWithAllPropertyTypes
