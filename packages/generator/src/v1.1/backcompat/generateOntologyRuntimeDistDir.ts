@@ -19,6 +19,7 @@ import type { MinimalFs } from "../../MinimalFs";
 import { formatTs } from "../../util/test/formatTs";
 import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir";
 import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir";
+import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir";
 
 export async function generateOntologyRuntimeDistDir(
   outDir: string,
@@ -35,6 +36,11 @@ export async function generateOntologyRuntimeDistDir(
 
   await generateOntologyProviderDir(fs, runtimeDistDir);
   await generateAggregationsDir(fs, runtimeDistDir);
+  await generatePagingDir(runtimeDistDir, fs);
+
+  // Nothing exists for this in the new codebase so we skip
+  // but i already wrote the code so leaving this for now in case we need it
+  // await generateCommonDir(runtimeDistDir, fs);
 
   await fs.writeFile(
     path.join(runtimeDistDir, "index.ts"),
@@ -42,12 +48,22 @@ export async function generateOntologyRuntimeDistDir(
     await formatTs(`
       export * from "./aggregations";
       // export * from "./baseTypes";
+      ${""
+      // Skipping this one, it doesnt have an equiv now
       // export * from "./common";
+    }
       // export * from "./filters";
+      ${""
+      // Skipping this one, it doesnt have an equiv now
       // export * from "./iterator";
+    }
+      ${""
+      // Skipping this one, its not used
       // export * from "./models";
+    }
+    
       export * from "./ontologyProvider";
-      // export * from "./paging";
+      export * from "./paging";
 `),
   );
 }
