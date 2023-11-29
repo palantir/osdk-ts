@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 0.0.9
+
+### Patch Changes
+
+- 23a3515: Add deprecation notice to objects-api types
+
 ## 0.0.8
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.14
+
+### Patch Changes
+
+- 23a3515: Add deprecation notice to objects-api types
+- Updated dependencies [23a3515]
+  - @osdk/legacy-client@0.0.15
+  - @osdk/generator@0.0.14
+  - @osdk/api@0.0.16
+
 ## 0.0.13
 
 ### Patch Changes
