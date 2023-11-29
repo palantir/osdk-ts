@@ -19,6 +19,7 @@ import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateActions } from "./generateActions";
+import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports";
 import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
@@ -67,4 +68,5 @@ export async function generateClientSdkVersionOneDotOne(
     queriesDir,
   );
   await generateIndexFile(fs, outDir);
+  await generateBackCompatDeprecatedExports(fs, outDir);
 }

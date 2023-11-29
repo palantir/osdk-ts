@@ -89,7 +89,7 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       Unauthorized,
       UnknownError, 
     } from '@osdk/legacy-client';
-    export { Ontology } from "./Ontology";
+    export type { Ontology } from "./Ontology";
     export { FoundryClient } from "./FoundryClient";
     `),
   );
