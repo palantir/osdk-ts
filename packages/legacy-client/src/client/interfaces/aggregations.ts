@@ -53,7 +53,7 @@ export declare type ObjectTypesGroupByFunction<
   K extends BucketKey,
   V extends BucketValue,
 > = (
-  objectType: GroupBySelections<T>,
+  objectType: ObjectSetGroupByArg<T>,
 ) => Bucketing<K, V>;
 
 type groupableProperties = number | LocalDate | Timestamp | string | boolean;
@@ -67,7 +67,7 @@ type GroupableProperties<T extends OntologyObject> = {
   [K in keyof T as IsGroupableProperty<T[K]> extends true ? K : never]: T[K];
 };
 
-export declare type GroupBySelections<T extends OntologyObject> = {
+export declare type ObjectSetGroupByArg<T extends OntologyObject> = {
   [
     K in keyof OmitMetadataProperties<
       GroupableProperties<T>
@@ -85,7 +85,7 @@ type AggregatableProperties<T extends OntologyObject> = {
   [K in keyof T as IsAggregatableProperty<T[K]> extends true ? K : never]: T[K];
 };
 
-export declare type AggregateSelection<T extends OntologyObject> = {
+export declare type ObjectSetAggregateArg<T extends OntologyObject> = {
   [
     K in keyof OmitMetadataProperties<
       AggregatableProperties<T>
@@ -95,7 +95,7 @@ export declare type AggregateSelection<T extends OntologyObject> = {
   >;
 };
 
-export declare type MultipleAggregateSelection<T extends OntologyObject> =
+export declare type ObjectSetMultipleAggregateArg<T extends OntologyObject> =
   & {
     [
       K in keyof OmitMetadataProperties<

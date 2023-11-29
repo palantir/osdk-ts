@@ -24,9 +24,9 @@ import type { AggregatableObjectSetStep } from "../objectSets/aggregations";
 import type { Page } from "../Page";
 import type { Result } from "../Result";
 import type {
-  AggregateSelection,
-  GroupBySelections,
-  MultipleAggregateSelection,
+  ObjectSetAggregateArg,
+  ObjectSetGroupByArg,
+  ObjectSetMultipleAggregateArg,
 } from "./aggregations";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
@@ -42,9 +42,9 @@ export type ObjectSet<O extends OntologyObject> =
   & ObjectSetOrderByStep<O>
   & ObjectSetTerminalLoadStep<O>
   & AggregatableObjectSetStep<
-    AggregateSelection<O>,
-    MultipleAggregateSelection<O>,
-    GroupBySelections<O>
+    ObjectSetAggregateArg<O>,
+    ObjectSetMultipleAggregateArg<O>,
+    ObjectSetGroupByArg<O>
   >;
 
 export type ObjectSetOperations<O extends OntologyObject> = {

@@ -23,6 +23,7 @@ import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
 import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles";
 import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
@@ -43,6 +44,11 @@ export async function generateClientSdkVersionOneDotOne(
   await generateMetadataFile(sanitizedOntology, fs, outDir);
   await generateOntologyIndexFile(fs, path.join(outDir, "ontology"));
   await generateObjectsInterfaceFile(sanitizedOntology, fs, objectsDir);
+  await generateObjectsInterfaceSupportFiles(
+    sanitizedOntology,
+    fs,
+    path.join(objectsDir, "objects-api"),
+  );
   await generatePerObjectInterfaceAndDataFiles(
     sanitizedOntology,
     fs,

@@ -26,10 +26,10 @@ type OrderableProperties<T extends OntologyObject> = {
 };
 
 export declare type OrderByFunction<T extends OntologyObject> = (
-  object: OrderBy<T>,
+  object: ObjectSetOrderByArg<T>,
 ) => OrderByClause;
 
-export declare type OrderBy<T extends OntologyObject> = {
+export declare type ObjectSetOrderByArg<T extends OntologyObject> = {
   [
     K in keyof OmitMetadataProperties<
       OrderableProperties<T>

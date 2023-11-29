@@ -19,7 +19,6 @@ import type {
   GeoJsonPoint,
   GeoJsonPolygon,
 } from "../../baseTypes";
-import type { ObjectTypeProperties } from "../../baseTypes/ObjectType";
 import type { ArrayFilter } from "./ArrayFilter";
 import type { AttachmentFilter } from "./AttachmentFilter";
 import type { BooleanFilter } from "./BooleanFilter";
@@ -27,14 +26,6 @@ import type { LocalDateFilter, TimestampFilter } from "./DateTimeFilters";
 import type { GeoPointFilter } from "./GeoPointFilter";
 import type { NumericFilter } from "./NumericFilter";
 import type { StringFilter } from "./StringFilter";
-
-export type ObjectTypeFilterFunction<T extends ObjectTypeProperties> = (
-  objectType: T,
-) => WhereClause;
-
-export type ObjectTypeOrderByFunction<T extends ObjectTypeProperties> = (
-  objectType: T,
-) => OrderByClause;
 
 export type BoundingBoxFilter = {
   topLeft: GeoJsonPoint;

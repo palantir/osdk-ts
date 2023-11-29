@@ -37,7 +37,7 @@ import type {
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
-  objectType: ObjectTypeFilter<T>,
+  objectType: ObjectSetFilterArg<T>,
 ) => WhereClause;
 
 type IsFilterableProperty<T> = NonNullable<T> extends
@@ -55,7 +55,7 @@ type FilterableProperties<T extends OntologyObject> = {
   [K in keyof T as IsFilterableProperty<T[K]> extends true ? K : never]: T[K];
 };
 
-export declare type ObjectTypeFilter<T extends OntologyObject> = {
+export declare type ObjectSetFilterArg<T extends OntologyObject> = {
   [
     K in keyof OmitMetadataProperties<
       FilterableProperties<T>

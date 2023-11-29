@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { MultipleAggregateSelection } from "../interfaces/aggregations";
+import type { ObjectSetMultipleAggregateArg } from "../interfaces/aggregations";
 import {
   ApproximateDistinctCountAggregatableProperty,
   CountOperation,
@@ -79,5 +79,5 @@ export function mapPropertiesToMultipleAggregationProperties<
         | ApproximateDistinctCountAggregatableProperty
       >
       & { count: () => typeof CountOperation },
-  ) as MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>;
+  ) as ObjectSetMultipleAggregateArg<OsdkLegacyObjectFrom<O, K>>;
 }

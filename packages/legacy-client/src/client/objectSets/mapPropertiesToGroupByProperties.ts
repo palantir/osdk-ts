@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { GroupBySelections } from "../interfaces/aggregations";
+import type { ObjectSetGroupByArg } from "../interfaces/aggregations";
 import {
   BooleanGroupBy,
   LocalDateGroupBy,
@@ -67,6 +67,6 @@ export function mapPropertiesToGroupByProperties<
       }
       return acc;
     },
-    {} as Record<string, GroupBySelections<any>>,
-  ) as GroupBySelections<OsdkLegacyObjectFrom<O, K>>;
+    {} as Record<string, ObjectSetGroupByArg<any>>,
+  ) as ObjectSetGroupByArg<OsdkLegacyObjectFrom<O, K>>;
 }
