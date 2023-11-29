@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./actions";
-export * from "./baseTypes";
-export * from "./errors";
-export * from "./foundryClient";
-export * from "./foundryClientOptions";
-export * from "./interfaces";
-export * from "./objects";
-export * from "./objectSets";
-export * from "./ontology";
-export * from "./OntologyMetadata";
-export * from "./Page";
-export * from "./Result";
+export interface OntologyMetadata {
+  stack: string;
+  ontologyRid: string;
+  ontologyApiName: string;
+  userAgent: string;
+}

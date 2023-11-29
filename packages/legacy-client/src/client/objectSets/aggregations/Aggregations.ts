@@ -308,7 +308,7 @@ export interface DurationBucketing<
   unit: TimeUnit;
   value: number;
 }
-declare type AggregatablePropertyNamesForResult<
+export type AggregatablePropertyNamesForResult<
   TAggregatableProperties,
   TResult extends MetricValue,
 > = {

@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./actions";
-export * from "./baseTypes";
-export * from "./errors";
-export * from "./foundryClient";
-export * from "./foundryClientOptions";
-export * from "./interfaces";
-export * from "./objects";
-export * from "./objectSets";
-export * from "./ontology";
-export * from "./OntologyMetadata";
-export * from "./Page";
-export * from "./Result";
+import type { MinimalFs } from "../MinimalFs";
+import { generateOntologyRuntimeDistDir } from "./backcompat/generateOntologyRuntimeDistDir";
+
+export async function generateBackCompatDeprecatedExports(
+  fs: MinimalFs,
+  outDir: string,
+) {
+  await generateOntologyRuntimeDistDir(outDir, fs);
+}

@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
-export * from "./actions";
-export * from "./baseTypes";
-export * from "./errors";
-export * from "./foundryClient";
-export * from "./foundryClientOptions";
-export * from "./interfaces";
-export * from "./objects";
-export * from "./objectSets";
-export * from "./ontology";
-export * from "./OntologyMetadata";
-export * from "./Page";
-export * from "./Result";
+export function reexportConsts(
+  typesToExport: string[],
+) {
+  return `
+          import  { ${
+    typesToExport.map(q => `${q} as OG_${q}`).join(", ")
+  }} from "@osdk/legacy-client";
+      
+          ${
+    typesToExport.map(q => `
+              /** @deprecated **/
+              export const ${q} = OG_${q};
+          `).join("\n\n")
+  }
+      `;
+}
