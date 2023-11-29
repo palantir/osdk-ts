@@ -37,20 +37,29 @@ export async function generateObjectsInterfaceSupportFiles(
     contents.push(""); // empty line
 
     contents.push(
+      `/** @deprecated Use ObjectSetFilterArg<${apiName}> instead */`,
       `export type ${apiName}Filter = ObjectSetFilterArg<${apiName}>;`,
     );
     contents.push(
+      `/** @deprecated Use ObjectSetOrderByArg<${apiName}> instead */`,
       `export type ${apiName}OrderBy = ObjectSetOrderByArg<${apiName}>;`,
     );
     contents.push(
+      `/** @deprecated Use ObjectSetGroupByArg<${apiName}> instead */`,
       `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${apiName}>;`,
     );
     contents.push(
-      `/** Aggregation properties for ${apiName}. */`,
+      `/**
+        * Aggregation properties for ${apiName}
+        * @deprecated Use ObjectSetAggregateArg<${apiName}> instead
+        */`,
       `export type ${apiName}AggregationProperties = ObjectSetAggregateArg<${apiName}>;`,
     );
     contents.push(
-      `/** Multiple aggregation properties for ${apiName}. */`,
+      `/**
+        * Multiple aggregation properties for ${apiName}.
+        * @deprecated Use ObjectSetMultipleAggregateArg<${apiName}> instead
+        */`,
       `export type ${apiName}MultipleAggregationProperties = ObjectSetMultipleAggregateArg<${apiName}>;`,
     );
 
