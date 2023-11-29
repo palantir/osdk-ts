@@ -1,5 +1,14 @@
 # @osdk/examples.todoapp
 
+## 0.0.5
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/legacy-client@0.0.14
+  - @osdk/api@0.0.15
+
 ## 0.0.4
 
 ### Patch Changes

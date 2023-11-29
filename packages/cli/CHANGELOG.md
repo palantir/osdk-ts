@@ -1,5 +1,14 @@
 # @osdk/cli
 
+## 0.0.11
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/generator@0.0.13
+  - @osdk/api@0.0.15
+
 ## 0.0.10
 
 ### Patch Changes

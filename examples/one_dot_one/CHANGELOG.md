@@ -1,5 +1,15 @@
 # @osdk/examples.one.dot.one
 
+## 0.0.13
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/legacy-client@0.0.14
+  - @osdk/generator@0.0.13
+  - @osdk/api@0.0.15
+
 ## 0.0.12
 
 ### Patch Changes

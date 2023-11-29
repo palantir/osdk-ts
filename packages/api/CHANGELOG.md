@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 0.0.15
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/gateway@0.0.8
+
 ## 0.0.14
 
 ### Patch Changes

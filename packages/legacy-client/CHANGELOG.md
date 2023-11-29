@@ -1,5 +1,14 @@
 # @osdk/legacy-client
 
+## 0.0.14
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/gateway@0.0.8
+  - @osdk/api@0.0.15
+
 ## 0.0.13
 
 ### Patch Changes
