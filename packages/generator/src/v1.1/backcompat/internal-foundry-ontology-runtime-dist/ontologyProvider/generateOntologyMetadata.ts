@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-export * from "./actions";
-export * from "./baseTypes";
-export * from "./errors";
-export * from "./foundryClient";
-export * from "./foundryClientOptions";
-export * from "./interfaces";
-export * from "./objects";
-export * from "./objectSets";
-export * from "./ontology";
-export * from "./OntologyMetadata";
-export * from "./Page";
-export * from "./Result";
+import * as path from "node:path";
+import type { MinimalFs } from "../../../../MinimalFs";
+import { formatTs } from "../../../../util/test/formatTs";
+import { reexportTypes } from "../../util/reexportTypes";
+
+export async function generateOntologyMetadata(
+  fs: MinimalFs,
+  ontologyProviderDir: string,
+) {
+  await fs.writeFile(
+    path.join(ontologyProviderDir, "OntologyMetadata.ts"),
+    await formatTs(reexportTypes(
+      [
+        "OntologyMetadata",
+      ],
+    )),
+  );
+}

@@ -1,0 +1,1 @@
+export { NumericGroupBy } from './index';

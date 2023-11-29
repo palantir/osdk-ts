@@ -15,6 +15,7 @@
  */
 
 export * from "./BooleanGroupBy";
+export * from "./GroupKeyType";
 export * from "./LocalDateGroupBy";
 export * from "./NumericGroupBy";
 export * from "./StringGroupBy";

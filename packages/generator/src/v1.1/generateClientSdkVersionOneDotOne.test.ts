@@ -105,7 +105,7 @@ describe("generator", () => {
         UnknownError,
       } from '@osdk/legacy-client';
       export { FoundryClient } from './FoundryClient';
-      export { Ontology } from './Ontology';
+      export type { Ontology } from './Ontology';
       "
     `);
 
