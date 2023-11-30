@@ -35,7 +35,7 @@ import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
   OsdkLegacyPropertiesFrom,
-} from "../OsdkObject";
+} from "../OsdkLegacyObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
 import { createMultiLinkStep } from "./createMultiLinkStep";
 import { createSingleLinkStep } from "./createSingleLinkStep";

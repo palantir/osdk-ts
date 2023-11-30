@@ -31,7 +31,7 @@ import {
   StringFilter,
   TimestampFilter,
 } from "../objectSets/filters";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToSearchFilter<

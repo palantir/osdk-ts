@@ -22,7 +22,7 @@ import type {
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { LoadObjectSetError } from "../errors";
 import type { OrderByClause } from "../objectSets/filters";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { Page } from "../Page";
 import type { Result } from "../Result";
 import { loadObjectsPage } from "./loadObjectsPage";

@@ -17,12 +17,12 @@
 import type {
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectFrom,
   PropertyKeysFrom,
   ThinClient,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 

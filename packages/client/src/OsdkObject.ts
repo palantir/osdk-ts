@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { BaseObjectSet } from "./interfaces";
-import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
-
-export type Objects<
-  O extends OntologyDefinition<any>,
-> = {
-  [K in keyof O["objects"]]: BaseObjectSet<OsdkLegacyObjectFrom<O, K>>;
-};
+export type OsdkObject<N extends string> = { __apiName: N };
