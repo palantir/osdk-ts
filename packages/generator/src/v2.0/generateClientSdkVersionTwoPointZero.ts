@@ -26,6 +26,8 @@ export async function generateClientSdkVersionTwoPointZero(
   fs: MinimalFs,
   outDir: string,
 ) {
+  await fs.mkdir(outDir, { recursive: true });
+
   fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
