@@ -14,8 +14,26 @@
  * limitations under the License.
  */
 
-export const OntologyMetadata = {
-  ontologyRid: "ridHere",
-  ontologyApiName: "OntologyApiName",
-  userAgent: "foundry-typescript-osdk/2.0.0",
-};
+import path from "path";
+import type { MinimalFs } from "../MinimalFs";
+import { formatTs } from "../util/test/formatTs";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+
+export async function generateOntologyMetadataFile(
+  ontology: WireOntologyDefinition,
+  fs: MinimalFs,
+  outDir: string,
+) {
+  fs.writeFile(
+    path.join(outDir, "OntologyMetadata.ts"),
+    await formatTs(
+      `
+      export const OntologyMetadata = {
+        ontologyRid: "${ontology.rid}",
+        ontologyApiName: "${ontology.apiName}",
+        userAgent: "foundry-typescript-osdk/2.0.0",
+      }
+      `,
+    ),
+  );
+}

@@ -16,15 +16,21 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { Employee } from "./objects/Employee";
+import { ObjectTypeWithAllPropertyTypes } from "./objects/ObjectTypeWithAllPropertyTypes";
+import { Person } from "./objects/Person";
 import { Todo } from "./objects/Todo";
 import { OntologyMetadata } from "./OntologyMetadata";
 
 export const Ontology = {
   metadata: OntologyMetadata,
   objects: {
-    Employee: Employee,
     Todo: Todo,
+    Person: Person,
+    Employee: Employee,
+    ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes,
   },
   actions: {},
   queries: {},
-} satisfies OntologyDefinition<"Employee" | "Todo">;
+} satisfies OntologyDefinition<
+  "Todo" | "Person" | "Employee" | "ObjectTypeWithAllPropertyTypes"
+>;

@@ -25,7 +25,7 @@ import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
 import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
-import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
+import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles.1";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
 import { generateQueries } from "./generateQueries";
 

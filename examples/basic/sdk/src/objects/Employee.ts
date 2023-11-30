@@ -18,52 +18,63 @@ import type { ObjectDefinition } from "@osdk/api";
 
 export const Employee = {
   apiName: "Employee",
-
-  primaryKeyType: "double",
-
+  description: "An employee",
+  primaryKeyType: "string",
+  links: {
+    lead: {
+      multiplicity: false,
+      targetType: "Employee",
+    },
+    peeps: {
+      multiplicity: true,
+      targetType: "Employee",
+    },
+  },
   properties: {
-    /** Username as stored in active directory */
     adUsername: {
+      multiplicity: false,
       type: "string",
       nullable: false,
     },
     locationName: {
+      multiplicity: false,
       type: "string",
-      nullable: false,
+      nullable: true,
     },
     locationCity: {
+      multiplicity: false,
       type: "string",
-      nullable: false,
+      nullable: true,
     },
     firstFullTimeStartDate: {
+      multiplicity: false,
       type: "datetime",
       nullable: true,
     },
     businessTitle: {
+      multiplicity: false,
       type: "string",
+      nullable: true,
     },
     employeeNumber: {
+      multiplicity: false,
       type: "double",
+      nullable: true,
     },
     jobProfile: {
+      multiplicity: false,
       type: "string",
+      nullable: true,
     },
     locationType: {
+      multiplicity: false,
       type: "string",
+      nullable: true,
     },
     favPlace: {
-      type: "geopoint",
-    },
-  },
-
-  links: {
-    lead: {
-      targetType: "Employee",
       multiplicity: false,
-    },
-    peeps: {
-      targetType: "Employee",
-      multiplicity: true,
+      type: "geopoint",
+      nullable: true,
     },
   },
 } satisfies ObjectDefinition<"Employee", "Employee">;

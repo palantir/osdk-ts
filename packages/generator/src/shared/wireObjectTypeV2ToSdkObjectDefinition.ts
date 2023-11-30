@@ -38,7 +38,10 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
     properties: Object.fromEntries(
       Object.entries(input.properties).map((
         [key, value],
-      ) => [key, wirePropertyV2ToSdkPropertyDefinition(value)]),
+      ) => [
+        key,
+        wirePropertyV2ToSdkPropertyDefinition(value, input.primaryKey === key),
+      ]),
     ),
   };
 }

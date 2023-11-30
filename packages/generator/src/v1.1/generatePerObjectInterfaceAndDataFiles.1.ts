@@ -29,8 +29,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
-      const links = ontology.linkTypes[object.apiName];
-      const uniqueApiNames = new Set(links?.map(a => a.objectTypeApiName));
+      const links = ontology.linkTypes[object.apiName] ?? [];
       await fs.writeFile(
         path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
@@ -42,8 +41,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
           )
         }
 
-        ${wireObjectTypeV2ToSdkObjectConst(object, links)})
-        `),
+        ${wireObjectTypeV2ToSdkObjectConst(object, links)}`),
       );
     }),
   );

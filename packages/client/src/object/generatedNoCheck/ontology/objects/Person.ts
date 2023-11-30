@@ -14,8 +14,27 @@
  * limitations under the License.
  */
 
-export const OntologyMetadata = {
-  ontologyRid: "ridHere",
-  ontologyApiName: "OntologyApiName",
-  userAgent: "foundry-typescript-osdk/2.0.0",
-};
+import type { ObjectDefinition } from "@osdk/api";
+
+export const Person = {
+  apiName: "Person",
+  description: "A person",
+  primaryKeyType: "string",
+  links: {
+    Todos: {
+      multiplicity: true,
+      targetType: "Todo",
+    },
+    Friends: {
+      multiplicity: true,
+      targetType: "Person",
+    },
+  },
+  properties: {
+    email: {
+      multiplicity: false,
+      type: "string",
+      nullable: true,
+    },
+  },
+} satisfies ObjectDefinition<"Person", "Todo" | "Person">;
