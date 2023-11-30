@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+// eslint seems to incorrectly assume that `export * as Distance from "./DistanceMethods"` in Distance.ts exports the individual methods by name
+/* eslint-disable import/export */
 export * from "./Distance";
+export * from "./DistanceMethods";
+/* eslint-enable import/export */
 export * from "./DistanceUnit";
 export * from "./GeoJson";
 export * from "./GeometryCollection";

@@ -45,9 +45,26 @@ export async function generateGeoshapesDir(
   await fs.writeFile(
     path.join(runtimeDistDir, "Distance.ts"),
     await formatTs(
-      ``
-        + reexportConsts(["DistanceUnit", "Distance"])
-        + reexportTypes(["DistanceUnit", "Distance"]),
+      `export * as Distance from "./DistanceMethods"`
+        + reexportConsts(["DistanceUnit"])
+        + reexportTypes(["DistanceUnit"]),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(runtimeDistDir, "DistanceMethods.ts"),
+    await formatTs(
+      reexportConsts([
+        "ofMillimeters",
+        "ofCentimeters",
+        "ofMeters",
+        "ofKilometers",
+        "ofInches",
+        "ofFeet",
+        "ofYards",
+        "ofMiles",
+        "ofNauticalMiles",
+      ]),
     ),
   );
 
