@@ -77,6 +77,11 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       ListLinkedObjectsError,
       ListObjectsError,
       LoadObjectSetError,
+      ObjectSetAggregateArg,
+      ObjectSetFilterArg,
+      ObjectSetGroupByArg,
+      ObjectSetMultipleAggregateArg,
+      ObjectSetOrderByArg,
       Page,
       PermissionDenied,
       QueryError,
@@ -89,7 +94,7 @@ export async function generateIndexFile(fs: MinimalFs, outDir: string) {
       Unauthorized,
       UnknownError, 
     } from '@osdk/legacy-client';
-    export { Ontology } from "./Ontology";
+    export type { Ontology } from "./Ontology";
     export { FoundryClient } from "./FoundryClient";
     `),
   );

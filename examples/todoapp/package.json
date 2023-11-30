@@ -1,11 +1,11 @@
 {
   "name": "@osdk/examples.todoapp",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.6",
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsc && vite build",
-    "codegen": "osdk typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json",
+    "codegen": "osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"

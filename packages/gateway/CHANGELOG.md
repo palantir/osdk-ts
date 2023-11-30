@@ -1,5 +1,29 @@
 # @osdk/gateway
 
+## 0.0.9
+
+### Patch Changes
+
+- 23a3515: Add deprecation notice to objects-api types
+
+## 0.0.8
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+
+## 0.0.7
+
+### Patch Changes
+
+- ad425f9: Fix query return type for objects
+
+## 0.0.6
+
+### Patch Changes
+
+- 25de57b: Small fixes
+
 ## 0.0.5
 
 ### Patch Changes

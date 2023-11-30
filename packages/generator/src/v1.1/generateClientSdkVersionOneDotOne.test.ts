@@ -92,6 +92,11 @@ describe("generator", () => {
         ListLinkedObjectsError,
         ListObjectsError,
         LoadObjectSetError,
+        ObjectSetAggregateArg,
+        ObjectSetFilterArg,
+        ObjectSetGroupByArg,
+        ObjectSetMultipleAggregateArg,
+        ObjectSetOrderByArg,
         Page,
         PermissionDenied,
         QueryError,
@@ -105,7 +110,7 @@ describe("generator", () => {
         UnknownError,
       } from '@osdk/legacy-client';
       export { FoundryClient } from './FoundryClient';
-      export { Ontology } from './Ontology';
+      export type { Ontology } from './Ontology';
       "
     `);
 

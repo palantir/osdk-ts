@@ -22,9 +22,9 @@ import type {
 
 import type { ObjectSetDefinition } from "../baseTypes";
 import type {
-  AggregateSelection,
-  GroupBySelections,
-  MultipleAggregateSelection,
+  ObjectSetAggregateArg,
+  ObjectSetGroupByArg,
+  ObjectSetMultipleAggregateArg,
 } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import type {
@@ -63,9 +63,9 @@ export function createObjectSetAggregationStep<
   definition: ObjectSetDefinition,
   groupByClauses: Array<InternalBucketing<string, BucketValue>>,
 ): AggregatableObjectSetStep<
-  AggregateSelection<OsdkLegacyObjectFrom<O, K>>,
-  MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
-  GroupBySelections<OsdkLegacyObjectFrom<O, K>>
+  ObjectSetAggregateArg<OsdkLegacyObjectFrom<O, K>>,
+  ObjectSetMultipleAggregateArg<OsdkLegacyObjectFrom<O, K>>,
+  ObjectSetGroupByArg<OsdkLegacyObjectFrom<O, K>>
 > {
   const aggregatableProperties = getAggregatableProperties(
     client.ontology,
@@ -137,9 +137,9 @@ export function createObjectSetAggregationStep<
           groupByClause,
         ],
       ) as AggregatableObjectSetStep<
-        AggregateSelection<OsdkLegacyObjectFrom<O, K>>,
-        MultipleAggregateSelection<OsdkLegacyObjectFrom<O, K>>,
-        GroupBySelections<OsdkLegacyObjectFrom<O, K>>,
+        ObjectSetAggregateArg<OsdkLegacyObjectFrom<O, K>>,
+        ObjectSetMultipleAggregateArg<OsdkLegacyObjectFrom<O, K>>,
+        ObjectSetGroupByArg<OsdkLegacyObjectFrom<O, K>>,
         any // TODO infer the TBucketGroup shape from groupByClause to be more strict here
       >;
     },

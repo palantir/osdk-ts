@@ -1,5 +1,42 @@
 # @osdk/client
 
+## 0.0.9
+
+### Patch Changes
+
+- 23a3515: Add deprecation notice to objects-api types
+- Updated dependencies [23a3515]
+  - @osdk/gateway@0.0.9
+  - @osdk/api@0.0.16
+
+## 0.0.8
+
+### Patch Changes
+
+- 4f73749: Re-add the types to support the ObjectSet APIs
+- Updated dependencies [4f73749]
+  - @osdk/gateway@0.0.8
+  - @osdk/api@0.0.15
+
+## 0.0.7
+
+### Patch Changes
+
+- ad425f9: Fix query return type for objects
+- Updated dependencies [ad425f9]
+  - @osdk/gateway@0.0.7
+  - @osdk/api@0.0.14
+
+## 0.0.6
+
+### Patch Changes
+
+- 25de57b: Small fixes
+- Updated dependencies [11ac931]
+- Updated dependencies [25de57b]
+  - @osdk/api@0.0.13
+  - @osdk/gateway@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

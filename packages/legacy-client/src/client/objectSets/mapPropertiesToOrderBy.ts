@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { OrderBy } from "../interfaces/ordering";
+import type { ObjectSetOrderByArg } from "../interfaces/ordering";
 import { OrderByOption } from "../objectSets/filters";
 import type { OsdkLegacyObjectFrom } from "../OsdkObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
@@ -35,5 +35,5 @@ export function mapPropertiesToOrderBy<
     {} as {
       [key: string]: OrderByOption;
     },
-  ) as OrderBy<OsdkLegacyObjectFrom<O, K>>;
+  ) as ObjectSetOrderByArg<OsdkLegacyObjectFrom<O, K>>;
 }

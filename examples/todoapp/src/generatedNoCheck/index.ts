@@ -52,6 +52,11 @@ export type {
   ListLinkedObjectsError,
   ListObjectsError,
   LoadObjectSetError,
+  ObjectSetAggregateArg,
+  ObjectSetFilterArg,
+  ObjectSetGroupByArg,
+  ObjectSetMultipleAggregateArg,
+  ObjectSetOrderByArg,
   Page,
   PermissionDenied,
   QueryError,
@@ -65,4 +70,4 @@ export type {
   UnknownError,
 } from '@osdk/legacy-client';
 export { FoundryClient } from './FoundryClient';
-export { Ontology } from './Ontology';
+export type { Ontology } from './Ontology';

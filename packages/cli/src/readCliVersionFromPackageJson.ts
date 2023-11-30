@@ -18,7 +18,7 @@ import * as fs from "node:fs";
 
 export async function readCliVersionFromPackageJson() {
   const { findUp } = await import("find-up");
-  const result = await findUp("package.json");
+  const result = await findUp("package.json", { cwd: import.meta.url });
   if (!result) {
     return "(unknown version. No package.json found)";
   }

@@ -59,7 +59,7 @@ export type WrappedQueryReturnType<
 export type QueryReturnType<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
-> = QueryDataType<O, QueryDefinition<O, Q>["output"]>;
+> = QueryDataType<O, QueryDefinition<O, Q>["output"], true>;
 
 type QueryDefinition<
   O extends OntologyDefinition<any>,
@@ -83,13 +83,15 @@ type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
   & {
     [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
-      QueryParameters<O, Q>[P]["dataType"]
+      QueryParameters<O, Q>[P]["dataType"],
+      false
     >;
   }
   & {
     [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryDataType<
       O,
-      QueryParameters<O, Q>[P]["dataType"]
+      QueryParameters<O, Q>[P]["dataType"],
+      false
     >;
   };
 
@@ -99,8 +101,9 @@ export type QueryNamesFrom<O extends OntologyDefinition<any>> =
 export type QueryDataType<
   O extends OntologyDefinition<any>,
   D extends QueryDataTypeDefinition<any>,
-> = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"]>>
-  : QueryDataTypeBase<O, D["type"]>;
+  R extends boolean,
+> = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"], R>>
+  : QueryDataTypeBase<O, D["type"], R>;
 
 interface ValidLegacyBaseQueryDataTypes {
   double: number;
@@ -116,14 +119,17 @@ interface ValidLegacyBaseQueryDataTypes {
 
 type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
-  T extends QueryDataType<O, any>,
+  T extends QueryDataType<O, any, R>,
+  R extends boolean,
 > = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
-  : T extends ObjectQueryDataType<any> ?
+  : T extends ObjectQueryDataType<any>
+    ? R extends true ? OsdkLegacyObjectFrom<O, T["object"]>
+    :
       | OsdkLegacyObjectFrom<O, T["object"]>
       | OsdkLegacyObjectFrom<O, T["object"]>["__primaryKey"]
   : T extends ObjectSetQueryDataType<infer K>
     ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
-  : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"]>>
+  : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"], R>>
   : T extends TwoDimensionalAggregationDataType ? TwoDimensionalAggregation<
       QueryAggregationKey<T["twoDimensionalAggregation"]>,
       QueryAggregationValue<T["twoDimensionalAggregation"]["valueType"]>
@@ -139,24 +145,27 @@ type QueryDataTypeBase<
       & {
         [S in NonNullableKeys<T["struct"]>]: QueryDataType<
           O,
-          T["struct"][S]
+          T["struct"][S],
+          R
         >;
       }
       & {
         [S in NullableKeys<T["struct"]>]?: QueryDataType<
           O,
-          T["struct"][S]
+          T["struct"][S],
+          R
         >;
       }
   : T extends UnionQueryDataType<any>
-    ? QueryDefinitionArrayToUnion<O, T["union"]>
+    ? QueryDefinitionArrayToUnion<O, T["union"], R>
   : never;
 
 type QueryDefinitionArrayToUnion<
   O extends OntologyDefinition<any>,
   T extends ReadonlyArray<QueryDataTypeDefinition<any>>,
+  R extends boolean,
 > = T extends ReadonlyArray<infer U>
-  ? U extends QueryDataTypeDefinition<any> ? QueryDataType<O, U> : never
+  ? U extends QueryDataTypeDefinition<any> ? QueryDataType<O, U, R> : never
   : never;
 
 type QueryAggregationKey<K extends AggregationKeyDataType> = K extends

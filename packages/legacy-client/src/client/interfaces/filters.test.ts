@@ -17,11 +17,11 @@
 import { describe, expectTypeOf, it } from "vitest";
 import type { Todo } from "../../util/test/TodoObject";
 import type { BooleanFilter, StringFilter } from "../objectSets";
-import type { ObjectTypeFilter } from "./filters";
+import type { ObjectSetFilterArg } from "./filters";
 
 describe("Filters", () => {
   it("correct types", () => {
-    expectTypeOf<ObjectTypeFilter<Todo>>().toMatchTypeOf<{
+    expectTypeOf<ObjectSetFilterArg<Todo>>().toMatchTypeOf<{
       complete: BooleanFilter;
       id: StringFilter;
       body: StringFilter;

@@ -23,5 +23,6 @@ export * from "./interfaces";
 export * from "./objects";
 export * from "./objectSets";
 export * from "./ontology";
+export * from "./OntologyMetadata";
 export * from "./Page";
 export * from "./Result";
