@@ -16,10 +16,12 @@
 
 import type { OsdkObjectFrom } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
+import { Ontology } from "@osdk/examples.basic.sdk";
+import { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
+import { expectType } from "ts-expect";
 import type { Mock } from "vitest";
-import { describe, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { followLinkOrThrow } from "./followLinkOrThrow";
-import { Ontology } from "./generatedNoCheck";
 
 describe(followLinkOrThrow, () => {
   it("follows", async () => {
@@ -31,12 +33,45 @@ describe(followLinkOrThrow, () => {
       mockFetch,
     );
 
-    const startingObject: OsdkObjectFrom<"Todo", typeof Ontology> = {} as any;
+    const startingObject: OsdkObjectFrom<"Todo", typeof Ontology> = {
+      __apiName: "Todo",
+      __primaryKey: 1,
+      id: 1,
+    } as any;
 
-    const response = await followLinkOrThrow(
+    const expectedValue: OsdkObjectFrom<"Person", typeof Ontology> = {
+      __apiName: "Person",
+      __primaryKey: "person@company.com",
+      email: "person@company.com",
+    } as any;
+
+    const response: ListLinkedObjectsResponseV2 = {
+      data: [expectedValue],
+      nextPageToken: "1",
+    };
+
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(response),
+      status: 200,
+      ok: true,
+    });
+
+    const link = await followLinkOrThrow(
       thinClient,
       startingObject,
       "Assignee",
     );
+
+    expect(mockFetch).toBeCalledWith(
+      `https://host.com/api/v2/ontologies/OntologyApiName/objects/Todo/1/links/Assignee?pageSize=10`,
+      {
+        method: "GET",
+        headers: expect.anything(),
+        body: undefined,
+      },
+    );
+
+    expectType<OsdkObjectFrom<"Person", typeof Ontology>>(link.data[0]);
+    expect(link.data[0].__apiName).toEqual("Person");
   });
 });

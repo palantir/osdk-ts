@@ -20,6 +20,7 @@ import type {
   OntologyDefinition,
   OsdkObjectPropertyType,
   PropertyKeysFrom,
+  ValidPropertyTypes,
 } from "./Definition";
 
 export type OsdkObjectFrom<
@@ -45,7 +46,9 @@ export type OsdkObjectFrom<
     __name: T_ObjectTypeKey;
 
     __apiName: T_ObjectTypeKey;
-    __primaryKey: ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"];
+    __primaryKey: ValidPropertyTypes[
+      ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"]
+    ];
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
      * as always optional to avoid breaking changes.

@@ -31,7 +31,7 @@ export const Person = {
     email: {
       multiplicity: false,
       type: 'string',
-      nullable: true,
+      nullable: false,
     },
   },
 } satisfies ObjectDefinition<'Person', 'Todo' | 'Person'>;

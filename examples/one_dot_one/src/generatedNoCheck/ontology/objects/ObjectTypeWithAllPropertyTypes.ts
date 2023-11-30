@@ -57,7 +57,7 @@ export const ObjectTypeWithAllPropertyTypes = {
     id: {
       multiplicity: false,
       type: 'integer',
-      nullable: true,
+      nullable: false,
     },
     string: {
       multiplicity: false,

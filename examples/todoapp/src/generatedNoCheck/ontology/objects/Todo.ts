@@ -24,7 +24,7 @@ export const Todo = {
     id: {
       multiplicity: false,
       type: 'string',
-      nullable: true,
+      nullable: false,
     },
     title: {
       multiplicity: false,
