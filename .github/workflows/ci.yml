@@ -39,3 +39,6 @@ jobs:
 
       - name: Verify nothing changed
         run: git diff --exit-code
+
+      - name: Verify nothing added
+        run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
