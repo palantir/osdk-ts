@@ -87,6 +87,7 @@ function createFauxTodo(title: string): Todo {
     isComplete: false,
     __primaryKey: title,
     __apiName: "Todo",
+    __rid: "",
   };
 }
 
