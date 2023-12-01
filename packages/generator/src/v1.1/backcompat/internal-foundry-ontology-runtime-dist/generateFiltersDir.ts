@@ -81,7 +81,7 @@ export async function generateFiltersDir(
   );
 
   await fs.writeFile(
-    path.join(pagingDir, "DateTimeFilter.ts"),
+    path.join(pagingDir, "DateTimeFilters.ts"),
     await formatTs(
       reexportConsts(["TimestampFilter", "LocalDateFilter"])
         + reexportTypes(["TimestampFilter", "LocalDateFilter"]),
