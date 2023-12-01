@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 0.0.15
+
+### Patch Changes
+
+- b59cb10: Adding backcompatibility for internal types
+
 ## 0.0.14
 
 ### Patch Changes
