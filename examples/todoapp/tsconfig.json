@@ -21,8 +21,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["src"],
-  "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "../../packages/legacy-client" }
-  ]
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
