@@ -107,8 +107,7 @@ export async function generateFiltersDir(
   await fs.writeFile(
     path.join(pagingDir, "Op.ts"),
     await formatTs(
-      reexportConsts(["Op"])
-        + reexportTypes(["Op"]),
+      reexportConsts(["Op"]),
     ),
   );
 
