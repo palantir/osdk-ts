@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./actions";
-export * from "./baseTypes";
-export * from "./errors";
-export * from "./foundryClient";
-export * from "./foundryClientOptions";
-export * from "./interfaces";
-export * from "./objects";
-export * from "./objectSets";
-export * from "./ontology";
-export * from "./OntologyMetadata";
-export * from "./OsdkObject";
-export * from "./Page";
-export * from "./queries";
-export * from "./Result";
-export * from "./utils";
+export * from "./IsLink";
+export * from "./OmitProperties";
+export * from "./Properties";
