@@ -17,6 +17,8 @@
 import * as path from "node:path";
 import type { MinimalFs } from "../../../MinimalFs";
 import { formatTs } from "../../../util/test/formatTs";
+import { reexportConsts } from "../util/reexportConsts";
+import { reexportTypes } from "../util/reexportTypes";
 import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir";
 
 export async function generateBaseTypesDir(
@@ -29,7 +31,7 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "index.ts"),
     await formatTs(
-      `// export * from "./ActionType";
+      `export * from "./ActionType";
       // export * from "./attachments";
       export * from "./geoshapes";
       // export * from "./links";
@@ -46,4 +48,54 @@ export async function generateBaseTypesDir(
 
   const geoshapesDir = path.join(baseTypesDir, "geoshapes");
   await generateGeoshapesDir(geoshapesDir, fs);
+
+  await fs.writeFile(
+    path.join(baseTypesDir, "ActionType.ts"),
+    await formatTs(
+      `import { OntologyObject } from "./OntologyObject";
+      `
+        + reexportConsts([
+          "ActionExecutionMode",
+          "ReturnEditsMode",
+          "ActionValidationResult",
+          "ActionResponse",
+        ])
+        + reexportTypes([
+          "ActionExecutionOptions",
+          "ValidationResponse",
+          "BulkEdits",
+        ])
+        + reexportTypes([
+          "CreatedObjectEdits",
+          "ModifiedObjectEdits",
+        ], "<T extends OntologyObject>")
+        + reexportTypes(
+          [
+            "Edits",
+          ],
+          "<TAddedObjects extends OntologyObject | void, TModifiedObjects extends OntologyObject | void>",
+        )
+        + reexportTypes(
+          [
+            "ActionResponse",
+          ],
+          "<TEdits extends Edits<any, any> | undefined = undefined>",
+          "<TEdits>",
+        )
+        + reexportTypes(
+          [
+            "ActionResponseFromOptions",
+          ],
+          "<TOptions extends ActionExecutionOptions | undefined = undefined, TEdits extends Edits<any, any> | undefined = undefined>",
+          "<TOptions, TEdits>",
+        ),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(baseTypesDir, "OntologyObject.ts"),
+    await formatTs(
+      reexportTypes(["OntologyObject"]) + reexportConsts(["isOntologyObject"]),
+    ),
+  );
 }
