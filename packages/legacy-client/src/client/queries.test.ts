@@ -42,7 +42,7 @@ import type {
 } from "./baseTypes";
 import { LocalDate, Timestamp } from "./baseTypes";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
-import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 

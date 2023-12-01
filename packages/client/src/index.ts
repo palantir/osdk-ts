@@ -21,3 +21,5 @@ export type { PageResult } from "./PageResult";
 
 // FIXME: Should this be Objects or Object?
 export * as Objects from "./object/index";
+export type { OsdkObject } from "./OsdkObject";
+export type { OsdkObjectFrom } from "./OsdkObjectFrom";

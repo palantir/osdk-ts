@@ -25,7 +25,7 @@ import type {
 } from "../baseTypes";
 import type { ObjectSet } from "../interfaces/objectSet";
 import type { SearchAround } from "../interfaces/searchAround";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createOsdkObjectSet } from "./OsdkObjectSet";
 
 export function createObjectSetSearchAround<

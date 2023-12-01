@@ -16,7 +16,7 @@
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSetAggregateArg } from "../interfaces/aggregations";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
 import type { AggregatableProperty } from "./aggregations";
 import { DefaultAggregatableProperty } from "./aggregations";

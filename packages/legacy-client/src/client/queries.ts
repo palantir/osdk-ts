@@ -40,7 +40,7 @@ import type {
 import type { QueryError } from "./errors";
 import type { ObjectSet } from "./interfaces";
 import type { Range } from "./objectSets/aggregations";
-import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 import type { Result } from "./Result";
 import type { IsEmptyRecord } from "./utils";
 import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";

@@ -19,8 +19,6 @@ export { createThinClient } from "./client/createThinClient";
 export { isOk, type ResultOrError } from "./client/ResultOrError";
 export type { ThinClient } from "./client/ThinClient";
 
-export type { OsdkObject, OsdkObjectFrom } from "./ontology";
-
 export type {
   LinkDefinitionFrom,
   LinkKeysFrom,

@@ -26,7 +26,7 @@ import type {
   ObjectSetGroupByArg,
   ObjectSetMultipleAggregateArg,
 } from "../interfaces/aggregations";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type {
   AggregatableObjectSetStep,
   BucketValue,

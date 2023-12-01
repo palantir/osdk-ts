@@ -33,7 +33,7 @@ import type {
 } from "../interfaces";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";

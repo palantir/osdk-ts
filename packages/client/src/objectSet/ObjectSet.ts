@@ -18,11 +18,11 @@ import type {
   ObjectInfoFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectFrom,
   PropertyKeysFrom,
   ResultOrError,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import type { AggregationsResults, WhereClause } from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";

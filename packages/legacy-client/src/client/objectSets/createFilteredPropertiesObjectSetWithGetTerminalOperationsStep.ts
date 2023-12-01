@@ -28,7 +28,7 @@ import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import { loadAllObjects } from "../net/loadObjects";
 import { loadObjectsPage } from "../net/loadObjectsPage";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { OrderByClause } from "./filters";
 
 export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<

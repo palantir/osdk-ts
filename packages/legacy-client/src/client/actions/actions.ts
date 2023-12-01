@@ -26,7 +26,7 @@ import type {
   Timestamp,
 } from "../..";
 import type { ObjectSet } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
 import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
 import type { ValuesOfMap } from "../utils/ValuesOfMap";
