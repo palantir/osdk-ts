@@ -1,4 +1,4 @@
-// export * from "./ActionType";
+export * from './ActionType';
 // export * from "./attachments";
 export * from './geoshapes';
 // export * from "./links";

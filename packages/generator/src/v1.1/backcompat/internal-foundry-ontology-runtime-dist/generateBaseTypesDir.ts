@@ -20,6 +20,7 @@ import { formatTs } from "../../../util/test/formatTs";
 import { reexportConsts } from "../util/reexportConsts";
 import { reexportTypes } from "../util/reexportTypes";
 import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir";
+import { generateTimeSeriesDir } from "./baseTypes/generateTimeSeriesDir";
 
 export async function generateBaseTypesDir(
   runtimeDistDir: string,
@@ -41,13 +42,15 @@ export async function generateBaseTypesDir(
       // export * from "./OntologyObject";
       // export * from "./ParameterValue";
       // export * from "./Queries";
-      // export * from "./timeseries";
+      export * from "./timeseries";
       // export * from "./timestamp";`,
     ),
   );
 
   const geoshapesDir = path.join(baseTypesDir, "geoshapes");
   await generateGeoshapesDir(geoshapesDir, fs);
+  const timeseriesDir = path.join(baseTypesDir, "timeseries");
+  await generateTimeSeriesDir(timeseriesDir, fs);
 
   await fs.writeFile(
     path.join(baseTypesDir, "ActionType.ts"),
@@ -58,7 +61,6 @@ export async function generateBaseTypesDir(
           "ActionExecutionMode",
           "ReturnEditsMode",
           "ActionValidationResult",
-          "ActionResponse",
         ])
         + reexportTypes([
           "ActionExecutionOptions",

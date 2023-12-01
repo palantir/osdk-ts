@@ -17,46 +17,70 @@
 import * as path from "node:path";
 import type { MinimalFs } from "../../../../MinimalFs";
 import { formatTs } from "../../../../util/test/formatTs";
-import { reexportConsts } from "../../util/reexportConsts";
 import { reexportTypes } from "../../util/reexportTypes";
 
-export async function generateAggregationsDir(
+export async function generateTimeSeriesDir(
+  timeseriesDir: string,
   fs: MinimalFs,
-  runtimeDistDir: string,
 ) {
-  const aggregationsDir = path.join(runtimeDistDir, "aggregations");
-  await fs.mkdir(aggregationsDir, { recursive: true });
-
+  await fs.mkdir(timeseriesDir, { recursive: true });
   await fs.writeFile(
-    path.join(aggregationsDir, "index.ts"),
+    path.join(timeseriesDir, "index.ts"),
     await formatTs(`
     export * from "./TimeSeries";
     export * from "./TimeSeriesDuration";
     export * from "./TimeSeriesPoint";
-    export * from "./TimeSeriesProperty";
+    ${"" // Internal type
+      // export * from "./TimeSeriesProperty";
+    }
     export * from "./TimeSeriesQuery";
     export * from "./TimeSeriesTerminalOperations";
   `),
   );
 
   await fs.writeFile(
-    path.join(aggregationsDir, "TimeSeries.ts"),
+    path.join(timeseriesDir, "TimeSeries.ts"),
     await formatTs(
-      `
-      
-      import { ObjectSetDefinition } from "../baseTypes";
-      import { FoundryClientOptions } from "../client";
-      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider";
-      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations";
-      `
-        + reexportConsts(["ComputeStep"])
-        + reexportTypes(
-          ["AggregationComputeStep"],
-          "<TBucketGroup extends BucketGroup, TMetrics extends Metrics | MetricValue>",
-        )
-        + `
-    
-    `,
+      reexportTypes(
+        ["TimeSeries"],
+        `<T extends number | string>`,
+      ),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(timeseriesDir, "TimeSeriesDuration.ts"),
+    await formatTs(
+      reexportTypes([`WhenUnit`, `DurationUnit`, `TimeSeriesDuration`]),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(timeseriesDir, "TimeSeriesPoint.ts"),
+    await formatTs(
+      reexportTypes(
+        ["TimeSeriesPoint"],
+        `<T extends number | string>`,
+      ),
+    ),
+  );
+  await fs.writeFile(
+    path.join(timeseriesDir, "TimeSeriesQuery.ts"),
+    await formatTs(
+      reexportTypes(
+        ["TimeSeriesQuery"],
+        `<T extends number | string>`,
+      ),
+    ),
+  );
+
+  await fs.writeFile(
+    path.join(timeseriesDir, "TimeSeriesTerminalOperations.ts"),
+    await formatTs(
+      reexportTypes(
+        ["TimeSeriesTerminalOperations"],
+        `<T extends number | string>`,
+      ),
     ),
   );
 }
