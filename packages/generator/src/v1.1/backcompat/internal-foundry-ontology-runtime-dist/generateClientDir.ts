@@ -33,10 +33,11 @@ export async function generateClientDir(runtimeDistDir: string, fs: MinimalFs) {
   await fs.writeFile(
     path.join(pagingDir, "clientOptions.ts"),
     await formatTs(
-      reexportTypes(
-        ["FoundryClientOptions"],
-        "<TAuth extends Auth = Auth>",
-      ),
+      `import {Auth} from "@osdk/legacy-client";`
+        + reexportTypes(
+          ["FoundryClientOptions"],
+          "<TAuth extends Auth = Auth>",
+        ),
     ),
   );
 }

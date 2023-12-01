@@ -48,90 +48,83 @@ export async function generateFiltersDir(
     path.join(pagingDir, "ArrayFilter.ts"),
     await formatTs(
       `import { Attachment, GeoPoint, GeoShape, LocalDate, Timestamp } from "../baseTypes";`
+        + reexportConsts(["ArrayFilter"])
         + reexportTypes(
           ["ArrayFilter"],
           "<T extends string | number | Timestamp | LocalDate | boolean | GeoShape | GeoPoint | Attachment>",
-        ) + reexportConsts(["ArrayFilter"]),
+        ),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "AttachmentFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["AttachmentFilter"],
-      ) + reexportConsts(["AttachmentFilter"]),
+      reexportConsts(["AttachmentFilter"])
+        + reexportTypes(["AttachmentFilter"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "BooleanFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["BooleanFilter"],
-      ) + reexportConsts(["BooleanFilter"]),
+      reexportConsts(["BooleanFilter"])
+        + reexportTypes(["BooleanFilter"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "GeoPointFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["GeoPointFilter", "BoundingBox"],
-      ) + reexportConsts(["GeoPointFilter"]),
+      reexportConsts(["GeoPointFilter"])
+        + reexportTypes(["GeoPointFilter", "BoundingBox"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "DateTimeFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["TimestampFilter", "LocalDateFilter"],
-      ) + reexportConsts(["TimestampFilter", "LocalDateFilter"]),
+      reexportConsts(["TimestampFilter", "LocalDateFilter"])
+        + reexportTypes(["TimestampFilter", "LocalDateFilter"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "GeoShapeFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["GeoShapeFilter"],
-      ) + reexportConsts(["GeoShapeFilter"]),
+      reexportConsts(["GeoShapeFilter"])
+        + reexportTypes(["GeoShapeFilter"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "NumericFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["NumericFilter"],
-      ) + reexportConsts(["NumericFilter"]),
+      reexportConsts(["NumericFilter"])
+        + reexportTypes(["NumericFilter"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "Op.ts"),
     await formatTs(
-      reexportTypes(
-        ["Op"],
-      ) + reexportConsts(["Op"]),
+      reexportConsts(["Op"])
+        + reexportTypes(["Op"]),
     ),
   );
 
   await fs.writeFile(
     path.join(pagingDir, "OrderByOption.ts"),
     await formatTs(
-      reexportTypes(
-        ["OrderByOption"],
-      ) + reexportConsts(["OrderByOption"]),
+      reexportConsts(["OrderByOption"])
+        + reexportTypes(["OrderByOption"]),
     ),
   );
+
   await fs.writeFile(
     path.join(pagingDir, "StringFilter.ts"),
     await formatTs(
-      reexportTypes(
-        ["StringFilter"],
-      ) + reexportConsts(["StringFilter"]),
+      reexportConsts(["StringFilter"])
+        + reexportTypes(["StringFilter"]),
     ),
   );
 

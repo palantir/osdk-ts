@@ -3,7 +3,7 @@ import { Attachment, GeoPoint, GeoShape, LocalDate, Timestamp } from '../baseTyp
 
 /** @deprecated submodule imports arent public api **/
 export type ArrayFilter<
-  T extends string | number | Timestamp | LocalDate | boolean | GeoShape | GeoPoint | Attachment,
+  T extends string | number | typeof Timestamp | typeof LocalDate | boolean | GeoShape | GeoPoint | Attachment,
 > = OG_ArrayFilter<T>;
 
 /** @deprecated submodule imports arent public api **/
