@@ -34,7 +34,7 @@ import type {
   TimestampFilter,
   WhereClause,
 } from "../objectSets/filters";
-import { OrderByFunction } from "./ordering";
+import type { OrderByFunction } from "./ordering";
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (

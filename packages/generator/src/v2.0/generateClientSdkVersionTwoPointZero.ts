@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
 import { formatTs } from "../util/test/formatTs";

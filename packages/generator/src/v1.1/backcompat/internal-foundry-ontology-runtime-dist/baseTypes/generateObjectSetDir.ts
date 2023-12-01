@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../../../../MinimalFs";
 import { formatTs } from "../../../../util/test/formatTs";
 import { reexportTypes } from "../../util/reexportTypes";

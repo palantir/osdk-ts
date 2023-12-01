@@ -127,6 +127,7 @@ export type {
   BucketKey,
   BucketValue,
   BulkEdits,
+  CommonApiError,
   CompositePrimaryKeyNotSupported,
   ContainsAllTermsInOrderWhereClause,
   ContainsAllTermsWhereClause,
@@ -169,6 +170,7 @@ export type {
   GeoJsonPoint,
   GeoJsonPolygon,
   GeoPointFilter,
+  GeoShapeFilter,
   GetLinkedObjectError,
   GetObjectError,
   GroupedTerminalAggregationOperations,
@@ -317,5 +319,7 @@ export type {
   RefreshResponse,
   SignInResponse,
   SignOutResponse,
+  Token,
+  TokenValue,
   UnsubscribeFunction,
 } from "./oauth-client";
