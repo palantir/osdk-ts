@@ -125,6 +125,8 @@ export async function generateBaseTypesDir(
     await formatTs(
       reexportConsts(
         ["LocalDate"],
+      ) + reexportTypes(
+        ["LocalDate"],
       ),
     ),
   );
@@ -134,7 +136,10 @@ export async function generateBaseTypesDir(
     await formatTs(
       reexportConsts(
         ["Timestamp"],
-      ),
+      )
+        + reexportTypes(
+          ["Timestamp"],
+        ),
     ),
   );
 
