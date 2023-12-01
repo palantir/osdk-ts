@@ -287,6 +287,7 @@ export type {
   TimeSeries,
   TimeSeriesDuration,
   TimeSeriesError,
+  TimeSeriesIterator,
   TimeSeriesPoint,
   TimeSeriesQuery,
   TimeSeriesTerminalOperations,
@@ -305,8 +306,16 @@ export type {
   WithinPolygonWhereClause,
 } from "./client";
 export {
-  type Auth,
   ConfidentialClientAuth,
+  OAuthToken,
   PublicClientAuth,
   UserTokenAuth,
+} from "./oauth-client";
+export type {
+  Auth,
+  AuthSubscription,
+  RefreshResponse,
+  SignInResponse,
+  SignOutResponse,
+  UnsubscribeFunction,
 } from "./oauth-client";

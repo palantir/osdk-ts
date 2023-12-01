@@ -2,7 +2,6 @@ import { OntologyObject } from './OntologyObject';
 
 import {
   ActionExecutionMode as OG_ActionExecutionMode,
-  ActionResponse as OG_ActionResponse,
   ActionValidationResult as OG_ActionValidationResult,
   ReturnEditsMode as OG_ReturnEditsMode,
 } from '@osdk/legacy-client';
@@ -15,9 +14,6 @@ export const ReturnEditsMode = OG_ReturnEditsMode;
 
 /** @deprecated submodule imports arent public api **/
 export const ActionValidationResult = OG_ActionValidationResult;
-
-/** @deprecated submodule imports arent public api **/
-export const ActionResponse = OG_ActionResponse;
 
 import type {
   ActionExecutionOptions as OG_ActionExecutionOptions,
@@ -52,6 +48,8 @@ export type Edits<
   TAddedObjects extends OntologyObject | void,
   TModifiedObjects extends OntologyObject | void,
 > = OG_Edits<TAddedObjects, TModifiedObjects>;
+
+import type { ActionResponse as OG_ActionResponse } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports arent public api **/
 export type ActionResponse<TEdits extends Edits<any, any> | undefined = undefined> = OG_ActionResponse<TEdits>;

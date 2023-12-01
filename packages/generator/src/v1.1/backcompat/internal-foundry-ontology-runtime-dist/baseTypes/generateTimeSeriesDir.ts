@@ -78,7 +78,7 @@ export async function generateTimeSeriesDir(
     path.join(timeseriesDir, "TimeSeriesTerminalOperations.ts"),
     await formatTs(
       reexportTypes(
-        ["TimeSeriesTerminalOperations"],
+        ["TimeSeriesTerminalOperations", "TimeSeriesIterator"],
         `<T extends number | string>`,
       ),
     ),
