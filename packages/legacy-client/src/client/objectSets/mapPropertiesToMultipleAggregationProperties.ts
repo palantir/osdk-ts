@@ -23,7 +23,7 @@ import {
   NumericPropertyMetric,
 } from "../objectSets/aggregations";
 import type { MultipleAggregatableProperty } from "../objectSets/aggregations";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToMultipleAggregationProperties<

@@ -45,7 +45,7 @@ import { MOCK_ORIGIN } from "../../util/test/mocks/mockMetadata";
 import { getMockTodoObject } from "../../util/test/mocks/mockObjects";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { type Actions } from "./actions";
 import { createActionProxy } from "./createActionProxy";
 

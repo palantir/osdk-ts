@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObjectFrom } from "@osdk/api";
+import type { OsdkObjectFrom } from "@osdk/client";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 
 // This little trick makes it easier for me to see

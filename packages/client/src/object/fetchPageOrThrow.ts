@@ -17,7 +17,6 @@
 import type {
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectFrom,
   PropertyKeysFrom,
   ThinClient,
 } from "@osdk/api";
@@ -25,6 +24,7 @@ import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import type { Wire } from "../internal/net";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import type { NOOP } from "../util/NOOP";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";

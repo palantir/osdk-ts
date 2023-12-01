@@ -16,9 +16,9 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 import type { MockOntology, Todo } from "../util/test";
-import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 
-describe("OsdkObject", () => {
+describe("OsdkLegacyObject", () => {
   it("compiles", async () => {
     const x: Todo = {} as Todo;
     const y: OsdkLegacyObjectFrom<typeof MockOntology, "Todo"> = x;
