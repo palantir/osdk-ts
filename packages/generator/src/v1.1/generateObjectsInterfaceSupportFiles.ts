@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join } from "path";
+import { join } from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 

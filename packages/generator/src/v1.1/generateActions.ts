@@ -15,7 +15,7 @@
  */
 
 import type { ActionParameterType } from "@osdk/gateway/types";
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { getModifiedEntityTypes } from "../shared/getEditedEntities";
 import { formatTs } from "../util/test/formatTs";

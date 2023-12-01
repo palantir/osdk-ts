@@ -15,20 +15,19 @@ function App() {
         <CreateTodoForm createTodo={createTodo} />
         <div>
           <div className="flex mb-4">
-            {isLoading || isValidating ? (
-              <div
-                className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
-border border-solid border-yellow-800 border-t-transparent"
-              ></div>
-            ) : (
-              <div className="mr-2 w-4 h-4"></div>
-            )}
+            {isLoading || isValidating
+              ? (
+                <div className="mr-2 w-4 h-4 rounded-full animate-spin shrink-0
+border border-solid border-yellow-800 border-t-transparent">
+                </div>
+              )
+              : <div className="mr-2 w-4 h-4"></div>}
             {isLoading || isValidating ? "Loading" : ""}
           </div>
 
           {error && <h2>{error}</h2>}
-          {todos &&
-            todos.map((todo) => (
+          {todos
+            && todos.map((todo) => (
               <TodoView
                 todo={todo}
                 toggleComplete={toggleComplete}

@@ -21,7 +21,7 @@ import type { OmitMetadataProperties } from "./utils/OmitProperties";
 type IsOrderableProperty<T> = T extends
   number | LocalDate | Timestamp | string | boolean | undefined ? true : false;
 
-type OrderableProperties<T extends OntologyObject> = {
+export type OrderableProperties<T extends OntologyObject> = {
   [K in keyof T as IsOrderableProperty<T[K]> extends true ? K : never]: T[K];
 };
 

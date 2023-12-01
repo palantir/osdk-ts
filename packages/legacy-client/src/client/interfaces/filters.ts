@@ -34,11 +34,15 @@ import type {
   TimestampFilter,
   WhereClause,
 } from "../objectSets/filters";
+import type { OrderByFunction } from "./ordering";
 import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
   objectType: ObjectSetFilterArg<T>,
 ) => WhereClause;
+
+export declare type ObjectTypeOrderByFunction<T extends OntologyObject> =
+  OrderByFunction<T>;
 
 type IsFilterableProperty<T> = NonNullable<T> extends
   | number

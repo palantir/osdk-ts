@@ -15,6 +15,7 @@
  */
 
 import type { MinimalFs } from "../MinimalFs";
+import { generateOAuthClientDistDir } from "./backcompat/generateOAuthDistDir";
 import { generateOntologyRuntimeDistDir } from "./backcompat/generateOntologyRuntimeDistDir";
 
 export async function generateBackCompatDeprecatedExports(
@@ -22,4 +23,5 @@ export async function generateBackCompatDeprecatedExports(
   outDir: string,
 ) {
   await generateOntologyRuntimeDistDir(outDir, fs);
+  await generateOAuthClientDistDir(outDir, fs);
 }
