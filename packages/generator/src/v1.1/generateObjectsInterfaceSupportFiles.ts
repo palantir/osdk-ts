@@ -37,6 +37,10 @@ export async function generateObjectsInterfaceSupportFiles(
     contents.push(""); // empty line
 
     contents.push(
+      `/** @deprecated Use ${apiName} from ontology/objects instead */`,
+      `export type ${apiName} = ${apiName};`,
+    );
+    contents.push(
       `/** @deprecated Use ObjectSetFilterArg<${apiName}> instead */`,
       `export type ${apiName}Filter = ObjectSetFilterArg<${apiName}>;`,
     );
@@ -49,14 +53,16 @@ export async function generateObjectsInterfaceSupportFiles(
       `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${apiName}>;`,
     );
     contents.push(
-      `/**
+      `
+      /**
         * Aggregation properties for ${apiName}
         * @deprecated Use ObjectSetAggregateArg<${apiName}> instead
         */`,
       `export type ${apiName}AggregationProperties = ObjectSetAggregateArg<${apiName}>;`,
     );
     contents.push(
-      `/**
+      `
+      /**
         * Multiple aggregation properties for ${apiName}.
         * @deprecated Use ObjectSetMultipleAggregateArg<${apiName}> instead
         */`,
