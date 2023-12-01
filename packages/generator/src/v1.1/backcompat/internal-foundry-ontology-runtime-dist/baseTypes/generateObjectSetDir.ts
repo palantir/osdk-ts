@@ -19,28 +19,42 @@ import type { MinimalFs } from "../../../../MinimalFs";
 import { formatTs } from "../../../../util/test/formatTs";
 import { reexportTypes } from "../../util/reexportTypes";
 
-export async function generateAttachmentsDir(
-  attachmentsDir: string,
+export async function generateObjectSetDir(
+  objectSetDir: string,
   fs: MinimalFs,
 ) {
-  await fs.mkdir(attachmentsDir, { recursive: true });
+  await fs.mkdir(objectSetDir, { recursive: true });
 
   await fs.writeFile(
-    path.join(attachmentsDir, "index.ts"),
+    path.join(objectSetDir, "index.ts"),
+    await formatTs(`
+    export * from "./ObjectSetDefinition";
+    export * from "./OntologyObjectSet";
+    `),
+  );
+
+  await fs.writeFile(
+    path.join(objectSetDir, "ObjectSetDefinition.ts"),
     await formatTs(
-      `export * from "./Attachment";
-       export * from "./Attachments";
-    `,
+      reexportTypes([
+        "BaseObjectSetDefinition",
+        "ReferenceObjectSetDefinition",
+        "StaticObjectSetDefinition",
+        "IntersectObjectSetDefinition",
+        "SubtractObjectSetDefinition",
+        "SearchAroundObjectSetDefinition",
+        "FilterObjectSetDefinition",
+        "ObjectSetDefinition",
+      ]),
     ),
   );
 
   await fs.writeFile(
-    path.join(attachmentsDir, "Attachment.ts"),
-    await formatTs(reexportTypes(["Attachment", "AttachmentMetadata"])),
-  );
-
-  await fs.writeFile(
-    path.join(attachmentsDir, "Attachments.ts"),
-    await formatTs(reexportTypes(["Attachments"])),
+    path.join(objectSetDir, "OntologyObjectSet.ts"),
+    await formatTs(
+      reexportTypes([
+        "OntologyObjectSet",
+      ]),
+    ),
   );
 }
