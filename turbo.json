@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "codegen": {
-      "inputs": ["ontology.json"],
+      "inputs": ["ontology.json", "@osdk/generator", "@osdk/cli"],
       "outputs": ["src/generatedNoCheck/**/*"],
       "dependsOn": ["^transpile", "^typecheck"]
     },
