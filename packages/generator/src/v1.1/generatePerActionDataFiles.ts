@@ -15,7 +15,7 @@
  */
 
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
 import { formatTs } from "../util/test/formatTs";

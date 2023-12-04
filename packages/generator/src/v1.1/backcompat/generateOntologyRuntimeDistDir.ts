@@ -19,6 +19,8 @@ import type { MinimalFs } from "../../MinimalFs";
 import { formatTs } from "../../util/test/formatTs";
 import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir";
 import { generateBaseTypesDir } from "./internal-foundry-ontology-runtime-dist/generateBaseTypesDir";
+import { generateClientDir } from "./internal-foundry-ontology-runtime-dist/generateClientDir";
+import { generateFiltersDir } from "./internal-foundry-ontology-runtime-dist/generateFiltersDir";
 import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir";
 import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir";
 
@@ -39,6 +41,8 @@ export async function generateOntologyRuntimeDistDir(
   await generateAggregationsDir(fs, runtimeDistDir);
   await generatePagingDir(runtimeDistDir, fs);
   await generateBaseTypesDir(runtimeDistDir, fs);
+  await generateClientDir(runtimeDistDir, fs);
+  await generateFiltersDir(runtimeDistDir, fs);
 
   // Nothing exists for this in the new codebase so we skip
   // but I already wrote the code so leaving this for now in case we need it

@@ -24,5 +24,8 @@ export * from "./objects";
 export * from "./objectSets";
 export * from "./ontology";
 export * from "./OntologyMetadata";
+export * from "./OsdkLegacyObject";
 export * from "./Page";
+export * from "./queries";
 export * from "./Result";
+export * from "./utils";

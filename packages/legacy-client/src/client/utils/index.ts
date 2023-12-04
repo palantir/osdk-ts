@@ -15,4 +15,6 @@
  */
 
 export type { IsEmptyRecord } from "./IsEmptyRecord";
+export type { NonNullableKeys, NullableKeys } from "./NullableKeys";
+export type { reservedKeywordsList } from "./reservedKeywords";
 export type { ValuesOfMap } from "./ValuesOfMap";
