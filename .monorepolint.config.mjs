@@ -261,6 +261,7 @@ export default {
         entries: {
           license: "Apache-2.0",
         },
+        entriesExist: ["version"],
       },
     }),
 
@@ -270,7 +271,7 @@ export default {
           private: true,
         },
       },
-      includePackages: ["@osdk/example.*"],
+      includePackages: ["@osdk/example.*", "@osdk/tests.*"],
     }),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),
