@@ -1,0 +1,7 @@
+{
+  // This is to show that people with really old configs can still use this
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "Node"
+  }
+}

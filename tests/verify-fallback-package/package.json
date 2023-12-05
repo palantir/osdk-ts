@@ -1,0 +1,13 @@
+{
+  "name": "@osdk/tests.verify-fallback-pacakge",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
+    "@osdk/legacy-client": "workspace:*"
+  }
+}

@@ -33,6 +33,9 @@ export function createThinClient<T extends OntologyDefinition<any>>(
   tokenProvider: () => Promise<string> | string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): ThinClient<T> {
+  if (stack.length === 0) {
+    throw new Error("stack cannot be empty");
+  }
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
     async (headers) => {

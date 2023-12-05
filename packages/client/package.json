@@ -44,5 +44,8 @@
     "build/js",
     "CHANGELOG.md",
     "package.json"
-  ]
+  ],
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts"
 }
