@@ -51,5 +51,6 @@ export function createThinClient<T extends OntologyDefinition<any>>(
     stack,
     fetch: retryingFetchWithAuthOrThrow,
     fetchJson: createFetchAsJson(retryingFetchWithAuthOrThrow),
+    tokenProvider,
   };
 }

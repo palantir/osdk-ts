@@ -28,6 +28,7 @@ import type { PageResult } from "../PageResult";
 import type { AggregationsResults, WhereClause } from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { LinkTypesFrom } from "./LinkTypesFrom";
+import type { ObjectSetListener } from "./ObjectSetWatcher";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
@@ -84,9 +85,9 @@ export interface BaseObjectSet<
     type: T & string,
     opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
   ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
-}
 
-// type Q<T extends
+  subscribe: (listener: ObjectSetListener<O, K>) => Promise<() => void>;
+}
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
