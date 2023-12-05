@@ -9,7 +9,6 @@ export default async (options) => {
       "src/index.ts",
       "src/public/*.ts",
       "src/public/*.mts",
-      "src/generated/**/*.ts",
     ],
     format: ["cjs", "esm"],
     outDir: "build/js",
