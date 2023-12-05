@@ -5,7 +5,12 @@ export default async (options) => {
   const babel = (await import("esbuild-plugin-babel")).default;
 
   return {
-    entry: ["src/index.ts", "src/public/*.ts", "src/public/*.mts"],
+    entry: [
+      "src/index.ts",
+      "src/public/*.ts",
+      "src/public/*.mts",
+      "src/generated/**/*.ts",
+    ],
     format: ["cjs", "esm"],
     outDir: "build/js",
     clean: true,
