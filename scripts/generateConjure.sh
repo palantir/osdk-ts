@@ -53,6 +53,9 @@ function generateConjure() {
     (cd "$PACKAGE_PATH" && pnpm run fix-lint)
 }
 
-generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/cli"
 generateConjure "com.palantir.artifacts" "artifacts-admin-api" "${SCRIPT_DIR}/../packages/cli"
 generateConjure "com.palantir.artifacts" "artifacts-sites-api" "${SCRIPT_DIR}/../packages/cli"
+
+generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client"
+generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/client"
+generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client"

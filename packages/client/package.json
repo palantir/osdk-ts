@@ -28,6 +28,7 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/gateway": "workspace:*",
+    "conjure-lite": "^0.1.1",
     "fetch-retry": "^5.0.6",
     "tiny-invariant": "^1.3.1"
   },

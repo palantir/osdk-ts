@@ -330,6 +330,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      conjure-lite:
+        specifier: ^0.1.1
+        version: 0.1.1
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
