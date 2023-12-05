@@ -1,5 +1,14 @@
 # @osdk/generator
 
+## 0.0.16
+
+### Patch Changes
+
+- ed78694: Fixes imports from older module resolution
+- Updated dependencies [ed78694]
+  - @osdk/gateway@0.0.10
+  - @osdk/api@0.0.17
+
 ## 0.0.15
 
 ### Patch Changes
