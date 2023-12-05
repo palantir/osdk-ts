@@ -431,6 +431,18 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
 
+  tests/verify-fallback-package:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../../packages/api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../../packages/client
+      '@osdk/legacy-client':
+        specifier: workspace:*
+        version: link:../../packages/legacy-client
+
 packages:
 
   /@aashutoshrathi/word-wrap@1.2.6:

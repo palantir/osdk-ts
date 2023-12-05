@@ -19,7 +19,6 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyKeysFrom,
-  ResultOrError,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom";
@@ -51,24 +50,30 @@ export interface BaseObjectSet<
   fetchPageOrThrow: <L extends PropertyKeysFrom<O, K>>(
     args?: FetchPageOrThrowArgs<O, K, L>,
   ) => Promise<PageResult<OsdkObjectFrom<K, O, L>>>;
-  fetchPage: <L extends PropertyKeysFrom<O, K>>(
-    args?: FetchPageOrThrowArgs<O, K, L>,
-  ) => Promise<ResultOrError<PageResult<OsdkObjectFrom<K, O, L>>>>;
 
-  asyncIter: () => AsyncIterableIterator<
-    OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
-  >;
-  [Symbol.asyncIterator](): AsyncIterableIterator<
-    OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
-  >;
+  // @alpha
+  // fetchPage: <L extends PropertyKeysFrom<O, K>>(
+  //   args?: FetchPageOrThrowArgs<O, K, L>,
+  // ) => Promise<ResultOrError<PageResult<OsdkObjectFrom<K, O, L>>>>;
+
+  // @alpha
+  // asyncIter: () => AsyncIterableIterator<
+  //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
+  // >;
+
+  // @alpha
+  // [Symbol.asyncIterator](): AsyncIterableIterator<
+  //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
+  // >;
 
   aggregateOrThrow: <const AO extends AggregateOpts<O, K, any>>(
     req: AO,
   ) => Promise<AggregationsResults<O, K, AO>>;
 
-  aggregate: <const AO extends AggregateOpts<O, K, any>>(
-    req: AO,
-  ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
+  // @alpha
+  // aggregate: <const AO extends AggregateOpts<O, K, any>>(
+  //   req: AO,
+  // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
   where: (clause: WhereClause<ObjectInfoFrom<O, K>>) => ObjectSet<O, K>;
 

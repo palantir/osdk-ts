@@ -165,7 +165,7 @@ declare const client: Client<typeof Ontology>;
  * Aggregation with groups and handle errors
  */
 async function aggregateThingsWithGroupsAndHandleErrors() {
-  const result = await client.objectSet("Todo").aggregate({
+  const result = await client.objectSet("Todo").aggregateOrThrow({
     select: { priority: ["max", "avg"], text: "approximateDistinct" },
     groupBy: {
       text: "exact",

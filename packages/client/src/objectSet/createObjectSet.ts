@@ -15,7 +15,6 @@
  */
 
 import type {
-  ObjectInfoFrom,
   ObjectTypesFrom,
   OntologyDefinition,
   PropertyKeysFrom,
@@ -25,12 +24,7 @@ import { modernToLegacyWhereClause } from "../internal/conversions";
 import type { Wire } from "../internal/net";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type {
-  AggregationClause,
-  AggregationsResults,
-  GroupByClause,
-  WhereClause,
-} from "../query";
+import type { AggregationClause, AggregationsResults } from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { LinkTypesFrom } from "./LinkTypesFrom";
 import type { BaseObjectSet, ObjectSet, ObjectSetOptions } from "./ObjectSet";
@@ -49,16 +43,16 @@ export function createObjectSet<
   },
 ): ObjectSet<O, K> {
   const base: BaseObjectSet<O, K> = {
-    aggregate: <
-      AC extends AggregationClause<O, K>,
-      GBC extends GroupByClause<O, K> | undefined = undefined,
-    >(req: {
-      select: AC;
-      where?: WhereClause<ObjectInfoFrom<O, K>>;
-      groupBy?: GBC;
-    }) => {
-      throw "TODO";
-    },
+    // aggregate: <
+    //   AC extends AggregationClause<O, K>,
+    //   GBC extends GroupByClause<O, K> | undefined = undefined,
+    // >(req: {
+    //   select: AC;
+    //   where?: WhereClause<ObjectInfoFrom<O, K>>;
+    //   groupBy?: GBC;
+    // }) => {
+    //   throw "TODO";
+    // },
     aggregateOrThrow: async <
       AC extends AggregationClause<O, K>,
       // GBC extends GroupByClause<O, K>,
@@ -68,9 +62,9 @@ export function createObjectSet<
     ): Promise<AggregationsResults<O, K, AO>> => {
       return aggregateOrThrow(thinClient, objectType, req);
     },
-    fetchPage: async (args?: { nextPageToken?: string }) => {
-      throw "TODO";
-    },
+    // fetchPage: async (args?: { nextPageToken?: string }) => {
+    //   throw "TODO";
+    // },
     fetchPageOrThrow: async <L extends PropertyKeysFrom<O, K>>(
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
@@ -82,9 +76,9 @@ export function createObjectSet<
       ) as any;
     },
 
-    asyncIter: () => {
-      throw "";
-    },
+    // asyncIter: () => {
+    //   throw "";
+    // },
     where: (clause) => {
       return createObjectSet(objectType, thinClient, opts, {
         type: "filter",
@@ -92,9 +86,9 @@ export function createObjectSet<
         where: modernToLegacyWhereClause(clause),
       });
     },
-    [Symbol.asyncIterator]: () => {
-      throw "";
-    },
+    // [Symbol.asyncIterator]: () => {
+    //   throw "";
+    // },
 
     pivotTo: function<T extends LinkTypesFrom<O, K>>(
       type: T & string,

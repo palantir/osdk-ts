@@ -1,6 +1,6 @@
 {
   "name": "@osdk/api",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -45,7 +45,10 @@
     "build/types",
     "build/js",
     "CHANGELOG.md",
-    "package.json"
+    "package.json",
+    "*.d.ts"
   ],
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts"
 }

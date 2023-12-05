@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 0.0.10
+
+### Patch Changes
+
+- ed78694: Fixes imports from older module resolution
+
 ## 0.0.9
 
 ### Patch Changes

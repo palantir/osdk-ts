@@ -4,3 +4,4 @@ packages:
   - "examples/one_dot_one"
   - "examples/todoapp"
   - "monorepo/*"
+  - "tests/*"

@@ -1,5 +1,21 @@
 # @osdk/cli
 
+## 0.0.14
+
+### Patch Changes
+
+- ed78694: Fixes imports from older module resolution
+- Updated dependencies [ed78694]
+  - @osdk/generator@0.0.16
+  - @osdk/api@0.0.17
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies [b59cb10]
+  - @osdk/generator@0.0.15
+
 ## 0.0.12
 
 ### Patch Changes
