@@ -41,7 +41,8 @@
     "build/types",
     "build/js",
     "CHANGELOG.md",
-    "package.json"
+    "package.json",
+    "*.d.ts"
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",

@@ -133,7 +133,15 @@ function standardPackageRules(shared) {
           publishConfig: {
             "access": "public",
           },
-          files: ["build/types", "build/js", "CHANGELOG.md", "package.json"],
+          files: [
+            "build/types",
+            "build/js",
+            "CHANGELOG.md",
+            "package.json",
+
+            // fallback entries for "submodule imports" in legacy projects
+            "*.d.ts",
+          ],
 
           main: "./build/js/index.js",
           module: "./build/js/index.mjs",
