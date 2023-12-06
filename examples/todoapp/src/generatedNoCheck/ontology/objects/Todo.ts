@@ -1,4 +1,4 @@
-import { ObjectDefinition } from '@osdk/api';
+import { ObjectTypeDefinition } from '@osdk/api';
 import type { OntologyObject } from '@osdk/legacy-client';
 
 /**
@@ -38,4 +38,4 @@ export const Todo = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'Todo', never>;
+} satisfies ObjectTypeDefinition<'Todo', never>;

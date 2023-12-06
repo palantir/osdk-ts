@@ -1,4 +1,4 @@
-import { ObjectDefinition } from '@osdk/api';
+import { ObjectTypeDefinition } from '@osdk/api';
 import type {
   Attachment,
   GeoPoint,
@@ -210,4 +210,4 @@ export const ObjectTypeWithAllPropertyTypes = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'ObjectTypeWithAllPropertyTypes', never>;
+} satisfies ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', never>;

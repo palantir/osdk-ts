@@ -92,25 +92,25 @@ export interface ThreeDimensionalAggregationDataType {
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
 }
 
-export type AggregationKeyDataType =
-  | SimpleAggregationKeyDataType
-  | RangeAggregationKeyDataType;
+export type AggregationKeyDataType<V = any> =
+  | SimpleAggregationKeyDataType<V>
+  | RangeAggregationKeyDataType<V>;
 
-export interface SimpleAggregationKeyDataType {
+export interface SimpleAggregationKeyDataType<V = any> {
   keyType: "boolean" | "string";
+  valueType: V;
 }
 
-export interface RangeAggregationKeyDataType {
+export interface RangeAggregationKeyDataType<V = any> {
   keyType: "range";
   keySubtype: "date" | "double" | "integer" | "timestamp";
+  valueType: V;
 }
 
-export type TwoDimensionalQueryAggregationDefinition =
-  & AggregationKeyDataType
-  & { valueType: "date" | "double" | "timestamp" };
+export type TwoDimensionalQueryAggregationDefinition = AggregationKeyDataType<
+  "date" | "double" | "timestamp"
+>;
 
-export type ThreeDimensionalQueryAggregationDefinition =
-  & AggregationKeyDataType
-  & {
-    valueType: TwoDimensionalQueryAggregationDefinition;
-  };
+export type ThreeDimensionalQueryAggregationDefinition = AggregationKeyDataType<
+  TwoDimensionalQueryAggregationDefinition
+>;

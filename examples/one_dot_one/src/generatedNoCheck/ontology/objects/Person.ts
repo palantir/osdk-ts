@@ -1,4 +1,4 @@
-import { ObjectDefinition } from '@osdk/api';
+import { ObjectTypeDefinition } from '@osdk/api';
 import type { MultiLink, OntologyObject } from '@osdk/legacy-client';
 import type { Todo } from './Todo';
 
@@ -34,4 +34,4 @@ export const Person = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'Person', 'Todo' | 'Person'>;
+} satisfies ObjectTypeDefinition<'Person', 'Todo' | 'Person'>;

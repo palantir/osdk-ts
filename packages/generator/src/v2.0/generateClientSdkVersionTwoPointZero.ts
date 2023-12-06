@@ -74,7 +74,7 @@ export async function generateClientSdkVersionTwoPointZero(
       path.join(outDir, `objects`, `${name}.ts`),
       await formatTs(`
     
-      import type { ObjectDefinition } from "@osdk/api";
+      import type { ObjectTypeDefinition } from "@osdk/api";
 
       export const ${name} =  ${
         JSON.stringify(wireObjectTypeV2ToSdkObjectDefinition(obj), null, 2)

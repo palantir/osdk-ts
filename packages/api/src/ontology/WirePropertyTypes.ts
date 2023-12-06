@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeV2 } from "@osdk/gateway/types";
+import type * as GeoJSON from "geojson";
 
-export function wireObjectTypeV2ToObjectDefinitionInterfaceString(
-  input: ObjectTypeV2,
-) {
-  return `
-    export interface ${input.apiName} extends ObjectTypeDefinition<"${input.apiName}", "${input.apiName}">{
-      apiName: "${input.apiName}";
-      properties: {
-        ${
-    Object.entries(input.properties).map(([key, value]) => `
-      /**
-       * ${value.description ?? ""}
-       **/
-      ${key}: {
-          type: "${value.dataType.type}";
-          displayName: "${value.displayName ?? key}";
-        }
-        
-        `)
-  }
-      }
-    }
-  `;
+export interface WirePropertyTypes {
+  string: string;
+  datetime: string;
+  double: number;
+  boolean: boolean;
+  integer: number;
+  timestamp: string;
+  short: number;
+  long: number;
+  float: number;
+  decimal: number;
+  byte: number;
+
+  numericTimeseries: any;
+  stringTimeseries: any;
+
+  attachment: any;
+  geopoint: GeoJSON.Point;
+  geoshape: GeoJSON.Geometry;
 }

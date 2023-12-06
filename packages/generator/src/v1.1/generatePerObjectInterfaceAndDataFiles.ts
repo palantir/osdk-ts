@@ -34,7 +34,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
       await fs.writeFile(
         path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
-        import { ObjectDefinition } from "@osdk/api";
+        import { ObjectTypeDefinition } from "@osdk/api";
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,
@@ -51,7 +51,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
             null,
             2,
           )
-        } satisfies ObjectDefinition<"${object.apiName}", ${
+        } satisfies ObjectTypeDefinition<"${object.apiName}", ${
           uniqueApiNames.size > 0
             ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join(
               "|",

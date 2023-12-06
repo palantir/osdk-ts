@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type {
   ObjectSetDefinition,
@@ -27,7 +27,7 @@ import { createOsdkObjectSet } from "./OsdkObjectSet";
 
 export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   client: ClientContext<O>,
   sourceApiName: K,

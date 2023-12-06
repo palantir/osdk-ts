@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
@@ -29,7 +29,7 @@ import type { OrderByClause } from "./filters";
 
 export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   T extends keyof SelectableProperties<OsdkLegacyObjectFrom<O, K>>,
 >(
   client: ClientContext<O>,

@@ -15,37 +15,37 @@
  */
 
 import type {
-  LinkDefinition,
+  ObjectTypeLinkDefinition,
+  ObjectTypePropertyDefinition,
   OntologyDefinition,
-  PropertyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
   T["multiplicity"] extends true ? Array<U> : U;
 
-type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
-  ? U | undefined
-  : U;
+type MaybeNullable<T extends ObjectTypePropertyDefinition, U> =
+  T["nullable"] extends true ? U | undefined
+    : U;
 
 type Raw<T> = T extends Array<any> ? T[0] : T;
 type Converted<T> = T extends Array<any> ? T[1] : T;
 
-export type OsdkObjectPropertyType<T extends PropertyDefinition> =
+export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition> =
   MaybeNullable<T, MaybeArray<T, Converted<WirePropertyTypes[T["type"]]>>>;
 
-export type OsdkObjectRawPropertyType<T extends PropertyDefinition> =
+export type OsdkObjectRawPropertyType<T extends ObjectTypePropertyDefinition> =
   MaybeNullable<T, MaybeArray<T, Raw<WirePropertyTypes[T["type"]]>>>;
 
 export type OsdkObjectLink<
   K extends string,
   O extends OntologyDefinition<K>,
-  T extends LinkDefinition<any>,
+  T extends ObjectTypeLinkDefinition<any>,
 > = MaybeArray<T, OsdkObjectLink_Inner<K, O, T>>;
 
 type OsdkObjectLink_Inner<
   K extends string,
   O extends OntologyDefinition<K>,
-  T extends LinkDefinition<any>,
+  T extends ObjectTypeLinkDefinition<any>,
 > = T["targetType"] extends keyof O["objects"] ? O["objects"][T["targetType"]]
   : never;

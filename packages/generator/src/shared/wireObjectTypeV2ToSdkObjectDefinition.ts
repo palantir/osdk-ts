@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type { LinkTypeSideV2, ObjectTypeV2 } from "@osdk/gateway/types";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
@@ -22,7 +22,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function wireObjectTypeV2ToSdkObjectDefinition(
   input: ObjectTypeV2,
   linkTypes: LinkTypeSideV2[] = [],
-): ObjectDefinition<any, any> {
+): ObjectTypeDefinition<any, any> {
   return {
     apiName: input.apiName,
     description: input.description,

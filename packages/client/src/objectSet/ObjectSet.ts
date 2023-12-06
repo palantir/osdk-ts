@@ -15,11 +15,11 @@
  */
 
 import type {
-  InterfaceNamesFrom,
+  InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
-  ObjectInfoFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
@@ -32,28 +32,28 @@ import type { ObjectSetListener } from "./ObjectSetWatcher.js";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
-  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
+  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
 > = BaseObjectSet<O, K>;
 
 export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
+  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
 > {
   fetchPageOrThrow: <
     L extends (
-      K extends InterfaceNamesFrom<O> ? InterfacePropertyKeysFrom<O, K>
-        : ObjectPropertyKeysFrom<O, K>
+      K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
+        : ObjectTypePropertyKeysFrom<O, K>
     ),
   >(
     args?: FetchPageOrThrowArgs<O, K, L>,
   ) => Promise<
     PageResult<
-      K extends InterfaceNamesFrom<O> ? OsdkInterfaceFrom<K, O, L>
+      K extends InterfaceKeysFrom<O> ? OsdkInterfaceFrom<K, O, L>
         : OsdkObjectFrom<K, O, L>
     >
   >;
 
-  // qq: <Q extends K>(foo: Q) => ObjectPropertyKeysFrom<O, K>;
+  // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
 
   // @alpha
   // fetchPage: <L extends PropertyKeysFrom<O, K>>(
@@ -79,7 +79,9 @@ export interface BaseObjectSet<
   //   req: AO,
   // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
-  where: (clause: WhereClause<ObjectInfoFrom<O, K>>) => ObjectSet<O, K>;
+  where: (
+    clause: WhereClause<ObjectTypeDefinitionFrom<O, K>>,
+  ) => ObjectSet<O, K>;
 
   pivotTo: <T extends LinkTypesFrom<O, K>>(
     type: T & string,
@@ -91,13 +93,13 @@ export interface BaseObjectSet<
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 > {
-  $where?: WhereClause<ObjectInfoFrom<O, K>>;
+  $where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   type: K & string,
   opts?: ObjectSetOptions<O, K>,

@@ -15,8 +15,8 @@
  */
 
 import type {
-  ObjectDefinition,
-  ObjectTypesFrom,
+  ObjectTypeDefinition,
+  ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 
@@ -27,14 +27,14 @@ import type {
  */
 export function createCachedOntologyTransform<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   T,
 >(
   creator: (ontology: O, type: K) => T,
 ) {
-  // We can use the ObjectDefinition as the key because it will be a globally unique singleton
+  // We can use the ObjectTypeDefinition as the key because it will be a globally unique singleton
   // Use Map instead of WeakMap here so usage for things like object prototypes do not churn over time
-  const cache = new Map<ObjectDefinition<any, any>, T>();
+  const cache = new Map<ObjectTypeDefinition<any, any>, T>();
 
   return (ontology: O, type: K) => {
     const objectDefinition = ontology.objects[type];
