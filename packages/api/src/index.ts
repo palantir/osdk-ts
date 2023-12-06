@@ -21,6 +21,7 @@ export type {
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
+  LinkDefinition,
   LinkDefinitionFrom,
   LinkKeysFrom,
   LinkTargetTypeFrom,
@@ -31,7 +32,6 @@ export type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom as ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
   PropertyDefinition,
   WirePropertyTypes as WirePropertyTypes,
 } from "./ontology/Definition";

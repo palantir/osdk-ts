@@ -19,8 +19,8 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
 } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "../../Definitions.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 import type { AggregationClause } from "./AggregationsClause.js";
 import type { GroupByClause } from "./GroupByClause.js";

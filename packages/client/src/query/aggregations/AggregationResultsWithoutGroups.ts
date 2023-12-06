@@ -19,8 +19,8 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
 } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "../../Definitions.js";
 import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
 import type { AggregationClause } from "./AggregationsClause.js";
 

@@ -22,8 +22,8 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
 } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "./Definitions.js";
 
 export type OsdkObjectFrom<
   T_ObjectTypeKey extends ObjectTypesFrom<T_Ontology>,
