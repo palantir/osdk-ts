@@ -42,7 +42,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
           )
         }
 
-        ${wireObjectTypeV2ToSdkObjectConst(object, links)})
+        ${wireObjectTypeV2ToSdkObjectConst(object, links)}
         `),
       );
     }),
