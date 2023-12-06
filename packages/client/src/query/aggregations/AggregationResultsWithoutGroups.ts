@@ -15,11 +15,11 @@
  */
 
 import type {
+  ObjectPropertyDefinitionFrom,
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectPropertyType,
-  PropertyDefinitionFrom,
-  PropertyKeysFrom,
 } from "@osdk/api";
 import type { StringArrayToUnion } from "../../util/StringArrayToUnion";
 import type { AggregationClause } from "./AggregationsClause";
@@ -32,10 +32,10 @@ export type AggregationResultsWithoutGroups<
   K extends ObjectTypesFrom<O>,
   AC extends AggregationClause<O, K>,
 > = {
-  [P in PropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
+  [P in ObjectPropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
     readonly string[] | string ? {
       [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
-        : OsdkObjectPropertyType<PropertyDefinitionFrom<O, K, P>>;
+        : OsdkObjectPropertyType<ObjectPropertyDefinitionFrom<O, K, P>>;
     }
     : never;
 };

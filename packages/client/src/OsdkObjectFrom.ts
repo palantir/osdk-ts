@@ -15,18 +15,21 @@
  */
 
 import type {
+  InterfaceNamesFrom,
+  InterfacePropertyDefinitionFrom,
+  InterfacePropertyKeysFrom,
   ObjectInfoFrom,
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectPropertyType,
-  PropertyKeysFrom,
 } from "@osdk/api";
 
 export type OsdkObjectFrom<
   T_ObjectTypeKey extends ObjectTypesFrom<T_Ontology>,
   T_Ontology extends OntologyDefinition<any>,
-  T_PropertyKeys extends PropertyKeysFrom<T_Ontology, T_ObjectTypeKey> =
-    PropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
+  T_PropertyKeys extends ObjectPropertyKeysFrom<T_Ontology, T_ObjectTypeKey> =
+    ObjectPropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
 > =
   // & {
   //   "$raw": {
@@ -41,11 +44,32 @@ export type OsdkObjectFrom<
     >;
   }
   & {
-    /**@deprecated Use __apiName */
-    __name: T_ObjectTypeKey;
-
     __apiName: T_ObjectTypeKey;
     __primaryKey: ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"];
+    /**
+     * Future versions will require explicitly asking for this field. For now we are marking
+     * as always optional to avoid breaking changes.
+     */
+    __rid?: string;
+  }; // TODO
+
+export type OsdkInterfaceFrom<
+  T_InterfaceKey extends InterfaceNamesFrom<T_Ontology>,
+  T_Ontology extends OntologyDefinition<any>,
+  T_PropertyKeys extends InterfacePropertyKeysFrom<
+    T_Ontology,
+    T_InterfaceKey
+  > = InterfacePropertyKeysFrom<T_Ontology, T_InterfaceKey>,
+> =
+  & {
+    [P in T_PropertyKeys]: OsdkObjectPropertyType<
+      InterfacePropertyDefinitionFrom<T_Ontology, T_InterfaceKey, P>
+    >;
+  }
+  & {
+    __apiName: T_InterfaceKey;
+    __primaryKey: unknown;
+    // $uniqueId: string; // will be dynamic
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
      * as always optional to avoid breaking changes.

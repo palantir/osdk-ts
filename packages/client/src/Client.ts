@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  InterfaceNamesFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet";
 import type { ObjectSetCreator } from "./ObjectSetCreator";
 
@@ -24,7 +28,7 @@ export type ConcreteObjectType<
 > = O["objects"][K];
 
 export interface Client<O extends OntologyDefinition<any>> {
-  objectSet: <const K extends ObjectTypesFrom<O>>(
+  objectSet: <const K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>>(
     type: K,
     opts?: ObjectSetOptions<O, K>,
   ) => ObjectSet<O, K>;

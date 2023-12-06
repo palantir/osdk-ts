@@ -15,9 +15,9 @@
  */
 
 import type {
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  PropertyKeysFrom,
   ThinClient,
 } from "@osdk/api";
 import { modernToLegacyWhereClause } from "../internal/conversions";
@@ -65,7 +65,7 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async <L extends PropertyKeysFrom<O, K>>(
+    fetchPageOrThrow: async <L extends ObjectPropertyKeysFrom<O, K>>(
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
       return fetchPageOrThrow(
