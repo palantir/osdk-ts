@@ -19,6 +19,7 @@ import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2,
+  isNullable: boolean = true,
 ): PropertyDefinition {
   switch (input.dataType.type) {
     case "integer":
@@ -40,7 +41,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
         multiplicity: false,
         description: input.description,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
-        nullable: true,
+        nullable: isNullable,
       };
     case "array": {
       return {

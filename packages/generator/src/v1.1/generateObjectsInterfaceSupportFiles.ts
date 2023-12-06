@@ -22,6 +22,7 @@ export async function generateObjectsInterfaceSupportFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
 
@@ -35,7 +36,7 @@ export async function generateObjectsInterfaceSupportFiles(
       `import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";`,
     );
     contents.push(
-      `import { ${apiName} as ${localApiName} } from "../${apiName}";`,
+      `import { ${apiName} as ${localApiName} } from "../${apiName}${importExt}";`,
     );
     contents.push(""); // empty line
 

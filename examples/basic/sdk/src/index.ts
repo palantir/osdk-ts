@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { Ontology } from "./Ontology.js";
+export * from "./generatedNoCheck/index.js";
