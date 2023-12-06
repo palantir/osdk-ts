@@ -33,7 +33,7 @@ export type {
   OntologyDefinition,
   OsdkObjectPropertyType,
   PropertyDefinition,
-  ValidPropertyTypes as ValidPropertyTypes,
+  WirePropertyTypes as WirePropertyTypes,
 } from "./ontology/Definition";
 
 export type {

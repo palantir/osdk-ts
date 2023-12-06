@@ -98,7 +98,7 @@ export interface ObjectDefinition<
 > {
   apiName: K;
   description?: string;
-  primaryKeyType: keyof ValidPropertyTypes;
+  primaryKeyType: keyof WirePropertyTypes;
   properties: Record<string, PropertyDefinition>;
   links: Record<string, LinkDefinition<L>>;
 }
@@ -138,13 +138,13 @@ export interface PropertyDefinition {
   readonly?: boolean;
   displayName?: string;
   description?: string;
-  type: keyof ValidPropertyTypes;
+  type: keyof WirePropertyTypes;
   multiplicity?: boolean;
   nullable?: boolean;
 }
 
 // EATODO: Rename to WirePropertyTypes
-export interface ValidPropertyTypes {
+export interface WirePropertyTypes {
   string: string;
   datetime: string;
   double: number;
@@ -177,10 +177,10 @@ type Raw<T> = T extends Array<any> ? T[0] : T;
 type Converted<T> = T extends Array<any> ? T[1] : T;
 
 export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Converted<ValidPropertyTypes[T["type"]]>>>;
+  MaybeNullable<T, MaybeArray<T, Converted<WirePropertyTypes[T["type"]]>>>;
 
 export type OsdkObjectRawPropertyType<T extends PropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Raw<ValidPropertyTypes[T["type"]]>>>;
+  MaybeNullable<T, MaybeArray<T, Raw<WirePropertyTypes[T["type"]]>>>;
 
 export type OsdkObjectLink<
   K extends string,
