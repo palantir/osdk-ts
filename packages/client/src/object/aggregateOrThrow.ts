@@ -18,7 +18,7 @@ import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
@@ -37,7 +37,7 @@ export async function aggregateOrThrow<
   K extends ObjectTypesFrom<T>,
   const AO extends AggregateOpts<T, K, any>,
 >(
-  thinClient: ThinClient<T>,
+  thinClient: ClientContext<T>,
   objectType: K & string,
   req: AO,
 ): Promise<AggregationsResults<T, K, AO>> {

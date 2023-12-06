@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetOrderByStep } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
@@ -33,7 +33,7 @@ export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
   objectSet: ObjectSetDefinition,
   orderByClauses: OrderByClause[] = [],
@@ -60,7 +60,7 @@ function createObjectSetOrderByStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
   objectSet: ObjectSetDefinition,
   orderByClauses: OrderByClause[] = [],

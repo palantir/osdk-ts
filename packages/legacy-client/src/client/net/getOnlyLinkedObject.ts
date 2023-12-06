@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, LinkedObjectNotFound } from "../errors";
 import { isErr, type Result } from "../Result";
@@ -28,7 +28,7 @@ import { createErrorResponse } from "./util/ResponseCreators";
 export async function getOnlyLinkedObject<
   T extends OntologyObject = OntologyObject,
 >(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   sourceObjectType: string,
   sourcePrimaryKey: NonNullable<ParameterValue>,
   targetLinkType: string,

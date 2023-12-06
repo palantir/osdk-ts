@@ -19,7 +19,7 @@ import type {
   StreamTimeSeriesPointsRequest,
   TimeRange,
 } from "@osdk/gateway/types";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Timestamp } from "../timestamp";
 import type { TimeSeriesDuration } from "./TimeSeriesDuration";
 import { DurationUnit, WhenUnit } from "./TimeSeriesDuration";
@@ -158,7 +158,7 @@ export interface TimeSeriesQuery<T extends string | number>
 }
 
 export const createTimeSeriesQuery = <T extends number | string>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   propertyName: string,
   apiName: string,
   primaryKey: string,

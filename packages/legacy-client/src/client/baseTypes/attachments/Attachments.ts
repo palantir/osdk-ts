@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { uploadAttachment } from "../../../client/net/uploadAttachment";
 import type { Result } from "../../../client/Result";
 import type { AttachmentsError } from "../../errors";
@@ -29,7 +29,7 @@ export interface Attachments {
 }
 
 export const Attachments = (
-  thinClient: ThinClient<OntologyDefinition<any>>,
+  thinClient: ClientContext<OntologyDefinition<any>>,
 ) => {
   return {
     upload(fileName: string, data: Blob) {

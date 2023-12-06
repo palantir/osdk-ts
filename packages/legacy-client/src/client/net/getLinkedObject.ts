@@ -17,7 +17,7 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import type { GetLinkedObjectError } from "../errors";
 import {
@@ -30,7 +30,7 @@ import { wrapResult } from "./util/wrapResult";
 import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export function getLinkedObject<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
+  client: ClientContext<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,

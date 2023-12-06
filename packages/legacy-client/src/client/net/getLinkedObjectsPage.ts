@@ -17,13 +17,13 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export async function getLinkedObjectsPage<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
+  client: ClientContext<OntologyDefinition<T["__apiName"]>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,

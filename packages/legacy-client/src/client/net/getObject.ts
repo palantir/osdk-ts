@@ -17,7 +17,7 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import { GetObjectErrorHandler, handleGetObjectError } from "../errors";
 import type { GetObjectError } from "../errors";
@@ -27,7 +27,7 @@ import { wrapResult } from "./util/wrapResult";
 import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export async function getObject<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<T["__apiName"]>>,
+  client: ClientContext<OntologyDefinition<T["__apiName"]>>,
   objectApiName: string,
   primaryKey: T["__primaryKey"],
   selectedProperties: ReadonlyArray<keyof T> = [],

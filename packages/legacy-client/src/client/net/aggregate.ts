@@ -17,7 +17,7 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { AggregateObjectsError } from "../errors";
 import {
@@ -45,7 +45,7 @@ import { wrapResult } from "./util/wrapResult";
 export function aggregate<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
->(client: ThinClient<OntologyDefinition<any>>, body: {
+>(client: ClientContext<OntologyDefinition<any>>, body: {
   objectSet: ObjectSetDefinition;
   aggregation: AggregationClause[];
   groupBy?: Array<InternalBucketing<BucketKey, BucketValue>>;

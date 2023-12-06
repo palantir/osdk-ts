@@ -16,7 +16,7 @@
 
 import { uploadAttachment as gatewayUploadAttachment } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Attachment } from "../baseTypes";
 import { AttachmentProperty } from "../baseTypes";
 import type { AttachmentsError } from "../errors";
@@ -26,7 +26,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export function uploadAttachment(
-  client: ThinClient<any>,
+  client: ClientContext<any>,
   filename: string,
   data: Blob,
 ): Promise<Result<Attachment, AttachmentsError>> {

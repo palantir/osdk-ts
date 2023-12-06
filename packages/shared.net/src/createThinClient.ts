@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "./ThinClient.js";
+import type { ClientContext } from "./ClientContext.js";
 import {
   createFetchAsJson,
   createFetchHeaderMutator,
@@ -31,7 +31,7 @@ export function createThinClient<T extends { metadata: { userAgent: string } }>(
   tokenProvider: () => Promise<string> | string,
   additionalUserAgent?: `${string} (${string})`,
   fetchFn: typeof globalThis.fetch = fetch,
-): ThinClient<T> {
+): ClientContext<T> {
   if (stack.length === 0) {
     throw new Error("stack cannot be empty");
   }

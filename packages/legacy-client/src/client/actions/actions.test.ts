@@ -15,7 +15,7 @@
  */
 
 import { createThinClient } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -50,7 +50,7 @@ import { type Actions } from "./actions";
 import { createActionProxy } from "./createActionProxy";
 
 describe("Actions", () => {
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   let actions: Actions<
     typeof MockOntology

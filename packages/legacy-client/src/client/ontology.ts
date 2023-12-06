@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Actions } from "./actions/actions";
 import { createActionProxy } from "./actions/createActionProxy";
 import { Attachments } from "./baseTypes";
@@ -25,8 +25,8 @@ import { type Queries } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
 export class Ontology<O extends OntologyDefinition<any>> {
-  #client: ThinClient<O>;
-  constructor(client: ThinClient<O>) {
+  #client: ClientContext<O>;
+  constructor(client: ClientContext<O>) {
     this.#client = client;
   }
 
@@ -50,7 +50,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
 
 export function createObjectSetCreator<
   O extends OntologyDefinition<any>,
->(client: ThinClient<O>): Objects<O> {
+>(client: ClientContext<O>): Objects<O> {
   return new Proxy(
     {},
     {

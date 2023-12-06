@@ -16,7 +16,7 @@
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type {
   ObjectSetAggregateArg,
@@ -55,7 +55,7 @@ export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   type: K,
   definition: ObjectSetDefinition,
   groupByClauses: Array<InternalBucketing<string, BucketValue>>,

@@ -20,7 +20,7 @@ import type {
   OntologyObjectV2,
 } from "@osdk/gateway/types";
 import { createThinClient, isOk } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import {
   beforeEach,
   describe,
@@ -45,7 +45,7 @@ describe("OsdkObjectSet", () => {
   const baseUrl = `${origin}/api/v2/ontologies/`;
 
   let fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
 
   beforeEach(() => {
     fetch = vi.fn();
@@ -417,7 +417,7 @@ const baseObjectSet: ObjectSetDefinition = {
 };
 
 function createBaseTodoObjectSet(
-  client: ThinClient<typeof MockOntology>,
+  client: ClientContext<typeof MockOntology>,
 ) {
   const os = createBaseOsdkObjectSet<typeof MockOntology, "Todo">(
     client,

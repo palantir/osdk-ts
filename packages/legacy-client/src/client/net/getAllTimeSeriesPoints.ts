@@ -18,7 +18,7 @@ import { type OntologyDefinition } from "@osdk/api";
 import { streamPoints } from "@osdk/gateway/requests";
 import type { StreamTimeSeriesPointsRequest } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { TimeSeriesPoint } from "../baseTypes";
 import { Timestamp } from "../baseTypes";
 import type { TimeSeriesError } from "../errors";
@@ -31,7 +31,7 @@ import {
 import { wrapResult } from "./util/wrapResult";
 
 export async function getAllTimeSeriesPoints<T extends string | number>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   apiName: string,
   primaryKey: any,
   propertyName: string,

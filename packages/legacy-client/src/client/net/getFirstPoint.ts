@@ -17,7 +17,7 @@
 import { type OntologyDefinition } from "@osdk/api";
 import { getFirstPoint as gatewayGetFirstPoint } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { TimeSeriesPoint } from "../baseTypes";
 import { Timestamp } from "../baseTypes";
 import type { TimeSeriesError } from "../errors";
@@ -27,7 +27,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getFirstPoint<T extends string | number>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   objectApiName: string,
   primaryKey: any,
   propertyName: string,

@@ -15,14 +15,14 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ActionExecutionOptions } from "../..";
 import { executeAction } from "../net/executeAction";
 import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
 
 export function createActionProxy<
   O extends OntologyDefinition<any>,
->(client: ThinClient<O>): Actions<O> {
+>(client: ClientContext<O>): Actions<O> {
   return new Proxy(
     {},
     {

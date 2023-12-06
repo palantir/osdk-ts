@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
 import { getLinkedObject } from "../net/getLinkedObject";
@@ -24,7 +24,7 @@ import type { Page } from "../Page";
 import type { Result } from "../Result";
 
 export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
-  client: ThinClient<any>,
+  client: ClientContext<any>,
   sourceApiName: string,
   sourcePrimaryKey: ParameterValue,
   targetApiName: string,

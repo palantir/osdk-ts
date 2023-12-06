@@ -17,7 +17,7 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { getAttachment } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { AttachmentMetadata } from "../baseTypes";
 import { AttachmentsErrorHandler, handleAttachmentsError } from "../errors";
 import type { AttachmentsError } from "../errors";
@@ -25,7 +25,7 @@ import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getAttachmentMetadata(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Promise<Result<AttachmentMetadata, AttachmentsError>> {
   return wrapResult(

@@ -15,7 +15,7 @@
  */
 
 import * as OsdkApi from "@osdk/client";
-import type { ThinClient } from "@osdk/client";
+import type { ClientContext } from "@osdk/client";
 import { Objects } from "@osdk/client";
 import { fetchPageOrThrow } from "@osdk/client/objects";
 import type { TypeOf } from "ts-expect";
@@ -23,7 +23,7 @@ import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeePageThin(
-  thinClient: ThinClient<OntologyType>,
+  thinClient: ClientContext<OntologyType>,
 ) {
   let result = await fetchPageOrThrow(thinClient, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],

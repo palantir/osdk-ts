@@ -30,9 +30,3 @@ export interface ClientContext<O extends { metadata: { userAgent: string } }> {
 
   tokenProvider: () => Promise<string> | string;
 }
-
-/**
- * @deprecated use `ClientContext`
- */
-export type ThinClient<O extends { metadata: { userAgent: string } }> =
-  ClientContext<O>;

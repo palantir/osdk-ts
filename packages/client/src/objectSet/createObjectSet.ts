@@ -19,7 +19,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { Wire } from "../internal/net/index.js";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
@@ -40,7 +40,7 @@ export function createObjectSet<
   K extends ObjectTypesFrom<O>,
 >(
   objectType: K & string,
-  thinClient: ThinClient<O>,
+  thinClient: ClientContext<O>,
   opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
     type: "base",

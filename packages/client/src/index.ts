@@ -27,4 +27,4 @@ export type { OsdkObjectFrom } from "./OsdkObjectFrom.js";
 export { createThinClient } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
-export type { ThinClient } from "@osdk/shared.net";
+export type { ClientContext } from "@osdk/shared.net";

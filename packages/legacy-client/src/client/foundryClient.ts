@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { createThinClient } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Auth } from "../oauth-client";
 import { USER_AGENT } from "../USER_AGENT";
 import type { FoundryClientOptions } from "./foundryClientOptions";
@@ -26,7 +26,7 @@ export class BaseFoundryClient<
   O extends OntologyDefinition<any>,
   TAuth extends Auth = Auth,
 > {
-  #client: ThinClient<O>;
+  #client: ClientContext<O>;
 
   constructor(
     private foundryClientOptions: FoundryClientOptions<TAuth>,

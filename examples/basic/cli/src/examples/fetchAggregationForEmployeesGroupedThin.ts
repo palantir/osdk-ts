@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/client";
+import type { ClientContext } from "@osdk/client";
 import { aggregateOrThrow } from "@osdk/client/objects";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -22,7 +22,7 @@ import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGroupedThin(
-  thinClient: ThinClient<OntologyType>,
+  thinClient: ClientContext<OntologyType>,
 ) {
   const result = await aggregateOrThrow(thinClient, "Employee", {
     select: {

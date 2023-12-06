@@ -22,7 +22,7 @@ import type {
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Wire } from "../internal/net/index.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -43,7 +43,7 @@ export async function fetchPageOrThrow<
   T extends ObjectTypesFrom<O>,
   const A extends FetchPageOrThrowArgs<O, T, ObjectPropertyKeysFrom<O, T>>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   objectType: T & string,
   args: A,
   objectSet: Wire.ObjectSet = {

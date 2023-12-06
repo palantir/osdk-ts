@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";
@@ -132,7 +132,7 @@ export const ActionResponse = {
       NonNullable<ParameterValue>
     >,
   >(
-    client: ThinClient<OntologyDefinition<any>>,
+    client: ClientContext<OntologyDefinition<any>>,
     response: SyncApplyActionResponseV2,
   ): ActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
     const validation = {

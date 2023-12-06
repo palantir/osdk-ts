@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { getAttachment } from "../../../client/net/getAttachment";
 import { getAttachmentMetadata } from "../../../client/net/getAttachmentMetadata";
 import type { Attachment } from "./Attachment";
@@ -25,7 +25,7 @@ export function isAttachment(obj: any): obj is Attachment {
 }
 
 export const AttachmentProperty = (
-  thinClient: ThinClient<OntologyDefinition<any>>,
+  thinClient: ClientContext<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Attachment => {
   return {

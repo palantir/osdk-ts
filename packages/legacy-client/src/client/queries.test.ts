@@ -16,7 +16,7 @@
 
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { createThinClient, isOk } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -47,7 +47,7 @@ import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
 describe("Queries", () => {
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   let queries: Queries<typeof MockOntology>;
 

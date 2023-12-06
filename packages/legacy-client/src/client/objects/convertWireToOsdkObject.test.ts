@@ -15,7 +15,7 @@
  */
 
 import { createThinClient } from "@osdk/shared.net";
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../..";
@@ -25,7 +25,7 @@ import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
 
 describe("convertWireToOsdkObject", () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
     client = createThinClient(

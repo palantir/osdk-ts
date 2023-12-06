@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { createThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -28,7 +28,7 @@ import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { uploadAttachment } from "./uploadAttachment";
 
 describe(uploadAttachment, () => {
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   beforeEach(() => {
     fetch = vi.fn();
