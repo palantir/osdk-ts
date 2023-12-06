@@ -27,9 +27,17 @@ import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { OsdkObjectFrom } from "..";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
+import type {
+  Message,
+  ObjectSetChanged,
+  ObjectSetSubscribeRequests,
+} from "../generated/object-set-watcher";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
-import type { StreamMessage } from "../generated/object-set-watcher/StreamMessage.js";
+import type {
+  StreamMessage,
+  StreamMessage_objectSetChanged,
+} from "../generated/object-set-watcher/StreamMessage.js";
 import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService";
 import type { Wire } from "../internal/net";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects";
@@ -64,6 +72,8 @@ export class ObjectSetWatcherWebsocket<
   >();
   #listeners = new Map<string, ObjectSetListener<O, any>>();
   #conjureContext: ConjureContext;
+  #metadataContext: ConjureContext;
+  #ossContext: ConjureContext;
 
   private constructor(client: ThinClient<O>) {
     this.#client = client;
@@ -71,7 +81,19 @@ export class ObjectSetWatcherWebsocket<
     const stackUrl = new URL(client.stack);
     this.#conjureContext = {
       baseUrl: stackUrl.origin,
-      servicePath: "object-set-watcher/api",
+      servicePath: "/object-set-watcher/api",
+      fetchFn: client.fetch,
+      tokenProvider: async () => await client.tokenProvider(),
+    };
+    this.#ossContext = {
+      baseUrl: stackUrl.origin,
+      servicePath: "/object-set-service/api",
+      fetchFn: client.fetch,
+      tokenProvider: async () => await client.tokenProvider(),
+    };
+    this.#metadataContext = {
+      baseUrl: stackUrl.origin,
+      servicePath: "/ontology-metadata/api",
       fetchFn: client.fetch,
       tokenProvider: async () => await client.tokenProvider(),
     };
@@ -84,7 +106,7 @@ export class ObjectSetWatcherWebsocket<
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
     const mapping = await getOntologyPropertyMappingForApiName(
       this.#client,
-      this.#conjureContext,
+      this.#metadataContext,
       objectSetBaseType,
     );
     const [temporaryObjectSet] = await Promise.all([
@@ -108,7 +130,16 @@ export class ObjectSetWatcherWebsocket<
 
     // subscribe to object set
     const requestId = crypto.randomUUID();
-    const subscribe = {};
+    const subscribe: ObjectSetSubscribeRequests = {
+      id: requestId,
+      requests: [{
+        objectSet: temporaryObjectSet.objectSetRid,
+        objectSetContext: {
+          objectSetFilterContext: { parameterOverrides: {} },
+        },
+        watchAllLinks: false,
+      }],
+    };
 
     const deferred = new Deferred<() => void>();
 
@@ -122,13 +153,12 @@ export class ObjectSetWatcherWebsocket<
     if (this.#ws == null) {
       const { stack, tokenProvider } = this.#client;
       const base = new URL(stack);
-      // TODO support alternate contextPath values
-      const url =
-        `wss://${base.host}/object-set-watcher/ws/streamSubscriptions`;
+      // TODO: This should be a different endpoint
+      const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
       const token = await tokenProvider();
       this.#ws = new WebSocket(url, [`Bearer-${token}`]);
 
-      this.#ws.addEventListener("error", () => {
+      this.#ws.addEventListener("error", (e) => {
         this.#destroyWebsocket();
       });
 
@@ -149,15 +179,25 @@ export class ObjectSetWatcherWebsocket<
     }
   }
 
-  async #onMessage(message: WebSocket.MessageEvent) {
-    const data = JSON.parse(message.data.toString()) as StreamMessage;
+  #onMessage = async (message: WebSocket.MessageEvent) => {
+    const data = JSON.parse(message.data.toString()) as
+      | StreamMessage
+      | Message;
+
     switch (data.type) {
       case "objectSetChanged": {
-        const { id: subscriptionId, objects } = data.objectSetChanged;
+        if ((data.objectSetChanged as any).confidenceValue) {
+          const listener = this.#listeners.get(data.objectSetChanged.id);
+          listener?.refresh?.();
+          break;
+        }
+
+        const { id: subscriptionId, objects } =
+          (data as StreamMessage_objectSetChanged).objectSetChanged;
         const listener = this.#listeners.get(subscriptionId);
         const convertedObjects = await convertFoundryToOsdkObjects(
           this.#client,
-          this.#conjureContext,
+          this.#metadataContext,
           objects,
         );
         listener?.change?.(convertedObjects);
@@ -222,7 +262,7 @@ export class ObjectSetWatcherWebsocket<
       default:
         const _: never = data;
     }
-  }
+  };
 
   async #enableObjectSetsWatcher(objectTypeRids: string[]) {
     return batchEnableWatcher(this.#conjureContext, {
@@ -237,17 +277,19 @@ export class ObjectSetWatcherWebsocket<
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
     const mapping = await getOntologyPropertyMappingForApiName(
       this.#client,
-      this.#conjureContext,
+      this.#metadataContext,
       objectSetBaseType,
     );
 
-    createTemporaryObjectSet(this.#conjureContext, {
-      // TODO: Get a mapping here
-      objectSet: toConjureObjectSet(objectSet, mapping!),
-      timeToLive: "ONE_DAY",
-      objectSetFilterContext: { parameterOverrides: {} },
-    });
-    return { objectSetRid: "objectSetRid" };
+    const temporaryObjectSet = await createTemporaryObjectSet(
+      this.#ossContext,
+      {
+        objectSet: toConjureObjectSet(objectSet, mapping!),
+        timeToLive: "ONE_DAY",
+        objectSetFilterContext: { parameterOverrides: {} },
+      },
+    );
+    return { objectSetRid: temporaryObjectSet.objectSetRid };
   }
 
   #destroyWebsocket() {
@@ -349,16 +391,18 @@ async function getOntologyPropertyMappingForRid(
   }
 
   if (
-    objectTypeMapping.get(ctx)!.has(objectRid)
+    !objectTypeMapping.get(ctx)!.has(objectRid)
   ) {
-    const entities = await loadOntologyEntities(ctx, {
+    const body = {
       objectTypeVersions: {
-        [objectRid]: undefined,
+        // TODO: Undefined drops this in the body
+        [objectRid]: "0000000a-0692-bbe3-af23-ddbb6c020392",
       },
       linkTypeVersions: {},
       loadRedacted: false,
       includeObjectTypesWithoutSearchableDatasources: true,
-    });
+    };
+    const entities = await loadOntologyEntities(ctx, body);
 
     invariant(entities.objectTypes[objectRid], "object type should be loaded");
 
@@ -391,4 +435,9 @@ async function getOntologyPropertyMappingForRid(
   }
 
   return objectTypeMapping.get(ctx)?.get(objectRid);
+}
+function isObjectSetChanged(
+  message: StreamMessage | ObjectSetChanged,
+): message is ObjectSetChanged {
+  return (message as any)?.type == null;
 }
