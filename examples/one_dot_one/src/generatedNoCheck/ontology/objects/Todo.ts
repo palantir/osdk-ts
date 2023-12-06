@@ -31,7 +31,7 @@ export const Todo = {
     id: {
       multiplicity: false,
       type: 'integer',
-      nullable: false,
+      nullable: true,
     },
     body: {
       multiplicity: false,

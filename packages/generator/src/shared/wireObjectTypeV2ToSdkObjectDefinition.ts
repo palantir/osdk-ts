@@ -22,6 +22,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function wireObjectTypeV2ToSdkObjectDefinition(
   input: ObjectTypeV2,
   linkTypes: LinkTypeSideV2[] = [],
+  v2: boolean,
 ): ObjectDefinition<any, any> {
   return {
     apiName: input.apiName,
@@ -40,7 +41,10 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
         [key, value],
       ) => [
         key,
-        wirePropertyV2ToSdkPropertyDefinition(value, input.primaryKey === key),
+        wirePropertyV2ToSdkPropertyDefinition(
+          value,
+          !(v2 && input.primaryKey === key),
+        ),
       ]),
     ),
   };

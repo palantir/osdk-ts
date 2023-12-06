@@ -20,6 +20,7 @@ import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkOb
 export function wireObjectTypeV2ToSdkObjectConst(
   object: ObjectTypeV2,
   links: LinkTypeSideV2[] = [],
+  v2: boolean = false,
 ) {
   const uniqueLinkTargetTypes = new Set(links.map(a => a.objectTypeApiName));
   return `
@@ -28,6 +29,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       wireObjectTypeV2ToSdkObjectDefinition(
         object,
         links,
+        v2,
       ),
       null,
       2,

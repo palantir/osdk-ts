@@ -83,7 +83,7 @@ export async function generateClientSdkVersionTwoPointZero(
     
       import type { ObjectDefinition } from "@osdk/api";
 
-      ${wireObjectTypeV2ToSdkObjectConst(obj, links)}
+      ${wireObjectTypeV2ToSdkObjectConst(obj, links, true)}
 
       ${
         /* TODO: FIXME
