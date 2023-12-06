@@ -27,7 +27,7 @@ import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
 import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles";
 import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
-import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles.1";
+import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
 import { generateQueries } from "./generateQueries";
 

@@ -20,11 +20,11 @@ import {
   type LinkTargetTypeFrom,
   type ObjectTypesFrom,
   type OntologyDefinition,
-  type OsdkObjectFrom,
   type ThinClient,
 } from "@osdk/api";
 
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
 
