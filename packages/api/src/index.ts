@@ -20,19 +20,25 @@ export { isOk, type ResultOrError } from "./client/ResultOrError";
 export type { ThinClient } from "./client/ThinClient";
 
 export type {
+  InterfaceDefinition,
+  InterfaceInfoFrom,
+  InterfaceNamesFrom,
+  InterfacePropertyDefinitionFrom,
+  InterfacePropertyDefinitionsFrom,
+  InterfacePropertyKeysFrom,
   LinkDefinitionFrom,
   LinkKeysFrom,
   LinkTargetTypeFrom,
   ObjectDefinition,
   ObjectInfoFrom,
-  ObjectTypesFrom,
+  ObjectPropertyDefinitionFrom,
+  ObjectPropertyDefinitionsFrom,
+  ObjectPropertyKeysFrom,
+  ObjectTypesFrom as ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectPropertyType,
   PropertyDefinition,
-  PropertyDefinitionFrom,
-  PropertyDefinitionsFrom,
-  PropertyKeysFrom,
-  ValidPropertyTypes,
+  ValidPropertyTypes as ValidPropertyTypes,
 } from "./ontology/Definition";
 
 export type {

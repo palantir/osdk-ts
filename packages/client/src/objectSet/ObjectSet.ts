@@ -15,13 +15,15 @@
  */
 
 import type {
+  InterfaceNamesFrom,
+  InterfacePropertyKeysFrom,
   ObjectInfoFrom,
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  PropertyKeysFrom,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
+import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import type { AggregationsResults, WhereClause } from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
@@ -29,27 +31,28 @@ import type { LinkTypesFrom } from "./LinkTypesFrom";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
-  K extends ObjectTypesFrom<O>,
-> = BaseObjectSet<O, K>; // & SearchAround<O, K>;
-
-// GOTTA DO THIS STILL
-export type SearchAround<
-  O extends OntologyDefinition<string>,
-  K extends ObjectTypesFrom<O>,
-> = {
-  [L in LinkTypesFrom<O, K> & string as `searchAround_${L}`]: () => ObjectSet<
-    O,
-    L
-  >; // TODO accept args?
-};
+  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
+> = BaseObjectSet<O, K>;
 
 export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
 > {
-  fetchPageOrThrow: <L extends PropertyKeysFrom<O, K>>(
+  fetchPageOrThrow: <
+    L extends (
+      K extends InterfaceNamesFrom<O> ? InterfacePropertyKeysFrom<O, K>
+        : ObjectPropertyKeysFrom<O, K>
+    ),
+  >(
     args?: FetchPageOrThrowArgs<O, K, L>,
-  ) => Promise<PageResult<OsdkObjectFrom<K, O, L>>>;
+  ) => Promise<
+    PageResult<
+      K extends InterfaceNamesFrom<O> ? OsdkInterfaceFrom<K, O, L>
+        : OsdkObjectFrom<K, O, L>
+    >
+  >;
+
+  // qq: <Q extends K>(foo: Q) => ObjectPropertyKeysFrom<O, K>;
 
   // @alpha
   // fetchPage: <L extends PropertyKeysFrom<O, K>>(

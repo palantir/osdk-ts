@@ -18,11 +18,11 @@ import {
   type LinkDefinitionFrom,
   type LinkKeysFrom,
   type LinkTargetTypeFrom,
+  type ObjectPropertyDefinitionFrom,
+  type ObjectPropertyKeysFrom,
   type ObjectTypesFrom,
   type OntologyDefinition,
   type PropertyDefinition,
-  type PropertyDefinitionFrom,
-  type PropertyKeysFrom,
 } from "@osdk/api";
 import type {
   Attachment,
@@ -72,19 +72,19 @@ export type OsdkLegacyPropertiesFrom<
   K extends ObjectTypesFrom<O>,
 > =
   & {
-    [P in PropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
-      PropertyDefinitionFrom<O, K, P>
+    [P in ObjectPropertyKeysFrom<O, K>]: OsdkObjectLegacyPropertyType<
+      ObjectPropertyDefinitionFrom<O, K, P>
     >;
   }
   & {
     [
-      P in PropertyKeysFrom<
+      P in ObjectPropertyKeysFrom<
         O,
         K
       > as Extract<P, typeof reservedKeywordsList[number]> extends never ? never
         : P extends string ? `${P}_`
         : never
-    ]: OsdkObjectLegacyPropertyType<PropertyDefinitionFrom<O, K, P>>;
+    ]: OsdkObjectLegacyPropertyType<ObjectPropertyDefinitionFrom<O, K, P>>;
   };
 
 export type OsdkLegacyLinksFrom<

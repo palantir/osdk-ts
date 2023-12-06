@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// EATODO: move types related to the 'thick' ontology definition to
+// its own package, maybe `@osdk/api.ontology-full`
+// and the ones we ship to `@osdk/api.ontology`?
+
 import type * as GeoJSON from "geojson";
 import type { ActionDefinition } from "./ActionDefinition";
 import type { OntologyMetadata } from "./OntologyMetadata";
@@ -27,26 +31,51 @@ export type ObjectInfoFrom<
 export type ObjectTypesFrom<O extends OntologyDefinition<string>> =
   keyof O["objects"];
 
-export type PropertyKeysFrom<
+export type ObjectPropertyKeysFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = keyof ObjectInfoFrom<O, K>["properties"];
 
-export type PropertyDefinitionsFrom<
+export type ObjectPropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = ObjectInfoFrom<O, K>["properties"];
 
-export type PropertyDefinitionFrom<
+export type ObjectPropertyDefinitionFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
-  P extends PropertyKeysFrom<O, K>,
-> = PropertyDefinitionsFrom<O, K>[P];
+  P extends ObjectPropertyKeysFrom<O, K>,
+> = ObjectPropertyDefinitionsFrom<O, K>[P];
+
+export type InterfaceInfoFrom<
+  O extends OntologyDefinition<any>,
+  K extends InterfaceNamesFrom<O>,
+> = O["interfaces"] extends {} ? O["interfaces"][K] : never;
+
+export type InterfaceNamesFrom<O extends OntologyDefinition<string>> =
+  keyof O["interfaces"];
+
+export type InterfacePropertyKeysFrom<
+  O extends OntologyDefinition<any>,
+  K extends InterfaceNamesFrom<O>,
+> = keyof InterfaceInfoFrom<O, K>["properties"];
+
+export type InterfacePropertyDefinitionsFrom<
+  O extends OntologyDefinition<any>,
+  K extends InterfaceNamesFrom<O>,
+> = InterfaceInfoFrom<O, K>["properties"];
+
+export type InterfacePropertyDefinitionFrom<
+  O extends OntologyDefinition<any>,
+  K extends InterfaceNamesFrom<O>,
+  P extends InterfacePropertyKeysFrom<O, K>,
+> = InterfacePropertyDefinitionsFrom<O, K>[P];
 
 export interface OntologyDefinition<
   K extends string,
   A extends string = any,
   Q extends string = any,
+  I extends string = any,
 > {
   metadata: OntologyMetadata;
   objects: {
@@ -57,6 +86,9 @@ export interface OntologyDefinition<
   };
   queries: {
     [QQ in Q]: QueryDefinition<QQ, K>;
+  };
+  interfaces?: {
+    [II in I]: InterfaceDefinition<II, K>;
   };
 }
 
@@ -69,6 +101,15 @@ export interface ObjectDefinition<
   primaryKeyType: keyof ValidPropertyTypes;
   properties: Record<string, PropertyDefinition>;
   links: Record<string, LinkDefinition<L>>;
+}
+
+export interface InterfaceDefinition<
+  K extends string,
+  _L extends string, // future for links
+> {
+  apiName: K;
+  description?: string;
+  properties: Record<string, PropertyDefinition>;
 }
 
 export type LinkKeysFrom<
@@ -97,14 +138,12 @@ export interface PropertyDefinition {
   readonly?: boolean;
   displayName?: string;
   description?: string;
-  type: keyof ValidPropertyTypes; // FIXME WHAT ARE THE TYPES
+  type: keyof ValidPropertyTypes;
   multiplicity?: boolean;
   nullable?: boolean;
 }
 
-// When these values are not an array, the raw and converted
-// types are the same. When it is an array, the converted type
-// is on the right (from, to)
+// EATODO: Rename to WirePropertyTypes
 export interface ValidPropertyTypes {
   string: string;
   datetime: string;
@@ -126,6 +165,7 @@ export interface ValidPropertyTypes {
   geoshape: GeoJSON.Geometry;
 }
 
+// EATODO: Move these to client
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
   T["multiplicity"] extends true ? Array<U> : U;
 

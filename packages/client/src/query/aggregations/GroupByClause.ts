@@ -15,9 +15,9 @@
  */
 
 import type {
+  ObjectPropertyDefinitionFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  PropertyDefinitionFrom,
 } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys";
 import type { GroupByMapper } from "./GroupByMapper";
@@ -34,8 +34,8 @@ type GroupByEntry<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
   P extends AggregatableKeys<O, K>,
-> = PropertyDefinitionFrom<O, K, P>["type"] extends keyof GroupByMapper
-  ? GroupByMapper[PropertyDefinitionFrom<O, K, P>["type"]]
+> = ObjectPropertyDefinitionFrom<O, K, P>["type"] extends keyof GroupByMapper
+  ? GroupByMapper[ObjectPropertyDefinitionFrom<O, K, P>["type"]]
   : never;
 
 export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];

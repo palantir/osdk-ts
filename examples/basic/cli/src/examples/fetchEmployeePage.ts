@@ -20,6 +20,8 @@ import type { Employee, OntologyType } from "../OntologyType";
 
 export async function fetchEmployeePage(client: Client<OntologyType>) {
   const result = await client.objectSet("Employee").fetchPageOrThrow();
+
+  expectType<string | undefined>(""); // FIXME: this isn't strict enough of a check for below
   expectType<string | undefined>(result.data[0].businessTitle);
 
   // Rough shape is correct
@@ -43,7 +45,6 @@ export async function fetchEmployeePage(client: Client<OntologyType>) {
 
   console.log({
     apiname: result.data[0].__apiName,
-    name: result.data[0].__name,
   });
   console.log(result.data[0]);
 
