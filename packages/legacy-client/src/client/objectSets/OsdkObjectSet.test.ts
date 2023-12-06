@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient, isOk } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
+import { createClientContext, isOk } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import {
   beforeEach,
   describe,
@@ -29,6 +29,7 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
+import { USER_AGENT } from "../../USER_AGENT";
 import { MockOntology } from "../../util/test";
 import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
@@ -44,14 +45,15 @@ describe("OsdkObjectSet", () => {
   const baseUrl = `${origin}/api/v2/ontologies/`;
 
   let fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
 
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       origin,
       () => "Token",
+      undefined,
       fetch,
     );
   });
@@ -319,10 +321,11 @@ describe("OsdkObjectSet", () => {
 
   it("handles multiple clients correctly", async () => {
     const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
-    const client1 = createThinClient(
+    const client1 = createClientContext(
       MockOntology,
       origin,
       () => "Token",
+      USER_AGENT,
       fetch1,
     );
 
@@ -332,10 +335,11 @@ describe("OsdkObjectSet", () => {
     );
 
     const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
-    const client2 = createThinClient(
+    const client2 = createClientContext(
       MockOntology,
       origin,
       () => "Token",
+      USER_AGENT,
       fetch2,
     );
 
@@ -413,7 +417,7 @@ const baseObjectSet: ObjectSetDefinition = {
 };
 
 function createBaseTodoObjectSet(
-  client: ThinClient<typeof MockOntology>,
+  client: ClientContext<typeof MockOntology>,
 ) {
   const os = createBaseOsdkObjectSet<typeof MockOntology, "Todo">(
     client,

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { LoadObjectSetError } from "../errors";
 import type { OrderByClause } from "../objectSets/filters";
@@ -32,7 +29,7 @@ export async function loadAllObjects<
   K extends ObjectTypesFrom<O>,
   T extends OsdkLegacyObjectFrom<O, K>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],

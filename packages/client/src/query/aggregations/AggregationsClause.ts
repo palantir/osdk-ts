@@ -19,7 +19,7 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { AggregatableKeys } from "./AggregatableKeys";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
 
 type StringAggregateOption = "approximateDistinct";
 type NumericAggregateOption =

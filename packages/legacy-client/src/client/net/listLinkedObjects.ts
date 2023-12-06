@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import {
   handleListLinkedObjectsError,
@@ -27,7 +28,7 @@ import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
 import { wrapResult } from "./util/wrapResult";
 
 export function listLinkedObjects<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: T["__apiName"],

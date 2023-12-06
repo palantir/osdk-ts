@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import { executeQuery } from "./net/executeQuery";
 import type {
   Queries,
@@ -24,7 +25,7 @@ import type {
 } from "./queries";
 
 export function createQueryProxy<O extends OntologyDefinition<any>>(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
 ): Queries<O> {
   return new Proxy({}, {
     get(_target, q: QueryNamesFrom<O> & string, _receiver) {

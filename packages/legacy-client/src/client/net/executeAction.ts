@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  createOpenApiRequest,
-  type OntologyDefinition,
-  type ThinClient,
-} from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
 import type { ApplyActionRequestOptions } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type {
   ActionArgs,
   ActionReturnType,
@@ -41,7 +39,7 @@ export async function executeAction<
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
 >(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
   params?: ActionArgs<O, A>,
   options?: Op,

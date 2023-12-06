@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { ClientContext } from "@osdk/shared.net";
 import {
   AttachmentProperty,
   GeoPoint,
@@ -86,7 +83,7 @@ function createPrototype<
   ) {
     Object.defineProperty(proto, k, {
       get: function() {
-        const client = this[OriginClient] as ThinClient<any>;
+        const client = this[OriginClient] as ClientContext<any>;
         if (multiplicity == true) {
           return createMultiLinkStep(
             client,
@@ -113,7 +110,7 @@ export function convertWireToOsdkObject<
   T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   obj: WireOntologyObjectV2<T>,
 ): OsdkLegacyObjectFrom<O, T> {
   const apiName = obj["__apiName"];
@@ -133,7 +130,7 @@ export function convertWireToOsdkObject<
 function setPropertyAccessors<
   T extends ObjectTypesFrom<O> & string,
   O extends OntologyDefinition<any>,
->(client: ThinClient<O>, apiName: T, obj: OntologyObjectV2) {
+>(client: ClientContext<O>, apiName: T, obj: OntologyObjectV2) {
   for (
     const [k, v] of Object.entries(client.ontology.objects[apiName].properties)
   ) {

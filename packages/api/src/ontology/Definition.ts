@@ -98,7 +98,7 @@ export interface ObjectDefinition<
 > {
   apiName: K;
   description?: string;
-  primaryKeyType: keyof ValidPropertyTypes;
+  primaryKeyType: keyof WirePropertyTypes;
   properties: Record<string, PropertyDefinition>;
   links: Record<string, LinkDefinition<L>>;
 }
@@ -138,13 +138,13 @@ export interface PropertyDefinition {
   readonly?: boolean;
   displayName?: string;
   description?: string;
-  type: keyof ValidPropertyTypes;
+  type: keyof WirePropertyTypes;
   multiplicity?: boolean;
   nullable?: boolean;
 }
 
 // EATODO: Rename to WirePropertyTypes
-export interface ValidPropertyTypes {
+export interface WirePropertyTypes {
   string: string;
   datetime: string;
   double: number;
@@ -164,33 +164,3 @@ export interface ValidPropertyTypes {
   geopoint: GeoJSON.Point;
   geoshape: GeoJSON.Geometry;
 }
-
-// EATODO: Move these to client
-type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
-  T["multiplicity"] extends true ? Array<U> : U;
-
-type MaybeNullable<T extends PropertyDefinition, U> = T["nullable"] extends true
-  ? U | undefined
-  : U;
-
-type Raw<T> = T extends Array<any> ? T[0] : T;
-type Converted<T> = T extends Array<any> ? T[1] : T;
-
-export type OsdkObjectPropertyType<T extends PropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Converted<ValidPropertyTypes[T["type"]]>>>;
-
-export type OsdkObjectRawPropertyType<T extends PropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Raw<ValidPropertyTypes[T["type"]]>>>;
-
-export type OsdkObjectLink<
-  K extends string,
-  O extends OntologyDefinition<K>,
-  T extends LinkDefinition<any>,
-> = MaybeArray<T, OsdkObjectLink_Inner<K, O, T>>;
-
-type OsdkObjectLink_Inner<
-  K extends string,
-  O extends OntologyDefinition<K>,
-  T extends LinkDefinition<any>,
-> = T["targetType"] extends keyof O["objects"] ? O["objects"][T["targetType"]]
-  : never;

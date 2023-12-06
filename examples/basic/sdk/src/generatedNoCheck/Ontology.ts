@@ -1,9 +1,9 @@
 import type { OntologyDefinition } from '@osdk/api';
-import { OntologyMetadata } from './OntologyMetadata';
-import { Employee } from './objects/Employee';
-import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes';
-import { Person } from './objects/Person';
-import { Todo } from './objects/Todo';
+import { OntologyMetadata } from './OntologyMetadata.js';
+import { Employee } from './objects/Employee.js';
+import { ObjectTypeWithAllPropertyTypes } from './objects/ObjectTypeWithAllPropertyTypes.js';
+import { Person } from './objects/Person.js';
+import { Todo } from './objects/Todo.js';
 
 export const Ontology = {
   metadata: OntologyMetadata,

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type {
   BaseObjectSetDefinition,
   FilteredPropertiesTerminalOperationsWithGet,
@@ -51,7 +48,7 @@ export function createOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
   objectSetDefinition: ObjectSetDefinition,
 ): ObjectSet<OsdkLegacyObjectFrom<O, K>> {
@@ -156,7 +153,7 @@ export function createBaseOsdkObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O> & string,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
 ): BaseObjectSet<OsdkLegacyObjectFrom<O, K>> {
   const baseObjectSetDefinition: BaseObjectSetDefinition = {

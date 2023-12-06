@@ -16,7 +16,7 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import { createOpenApiRequest } from "./createOpenApiRequest";
+import { createOpenApiRequest } from "./createOpenApiRequest.js";
 
 describe("createOpenApiRequest", () => {
   it("should construct request correctly", async () => {

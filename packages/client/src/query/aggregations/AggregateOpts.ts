@@ -23,7 +23,7 @@ import type {
   AggregationClause,
   GroupByClause,
   WhereClause,
-} from "../../query";
+} from "../../query/index.js";
 
 export type AggregateOpts<
   T extends OntologyDefinition<any>,

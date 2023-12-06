@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { createThinClient, type ThinClient } from "@osdk/api";
 import type {
   AggregateObjectSetRequestV2,
   AggregateObjectSetResponseV2,
 } from "@osdk/gateway/types";
+import { createClientContext } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { USER_AGENT } from "../../USER_AGENT";
 import { MockOntology } from "../../util/test";
 import {
   expectFetchToBeCalledWithBody,
@@ -32,13 +34,14 @@ import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep
 
 describe(createObjectSetAggregationStep, () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
+      USER_AGENT,
       fetch,
     );
   });

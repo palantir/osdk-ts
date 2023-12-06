@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
 import type { TimeSeriesPoint } from "@osdk/gateway/types";
+import type { ClientContext } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockOntology } from "../../util/test";
@@ -31,10 +31,11 @@ import { getFirstPoint } from "./getFirstPoint";
 
 describe(getFirstPoint, () => {
   const fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
-  const client: ThinClient<typeof MockOntology> = createThinClient(
+  const client: ClientContext<typeof MockOntology> = createClientContext(
     MockOntology,
     MOCK_ORIGIN,
     () => "Token",
+    undefined,
     fetch,
   );
   beforeEach(() => {

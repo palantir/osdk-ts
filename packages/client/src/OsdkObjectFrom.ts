@@ -22,9 +22,9 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
-  ValidPropertyTypes,
+  WirePropertyTypes,
 } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "./Definitions.js";
 
 export type OsdkObjectFrom<
   T_ObjectTypeKey extends ObjectTypesFrom<T_Ontology>,
@@ -46,7 +46,7 @@ export type OsdkObjectFrom<
   }
   & {
     __apiName: T_ObjectTypeKey;
-    __primaryKey: ValidPropertyTypes[
+    __primaryKey: WirePropertyTypes[
       ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"]
     ];
     /**

@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import type { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../../baseTypes";
 import { convertWireToOsdkObject } from "../../objects/convertWireToOsdkObject";
 import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 
 export async function* iterateLinkedObjects<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,

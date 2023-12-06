@@ -18,17 +18,21 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
-import { modernToLegacyWhereClause } from "../internal/conversions";
-import type { Wire } from "../internal/net";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type { AggregationClause, AggregationsResults } from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import type { LinkTypesFrom } from "./LinkTypesFrom";
-import type { BaseObjectSet, ObjectSet, ObjectSetOptions } from "./ObjectSet";
-import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket";
+import type { ClientContext } from "@osdk/shared.net";
+import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { Wire } from "../internal/net/index.js";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { AggregationClause, AggregationsResults } from "../query/index.js";
+import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type {
+  BaseObjectSet,
+  ObjectSet,
+  ObjectSetOptions,
+} from "./ObjectSet.js";
+import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
@@ -36,7 +40,7 @@ export function createObjectSet<
   K extends ObjectTypesFrom<O>,
 >(
   objectType: K & string,
-  thinClient: ThinClient<O>,
+  clientCtx: ClientContext<O>,
   opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
     type: "base",
@@ -61,7 +65,7 @@ export function createObjectSet<
     >(
       req: AO,
     ): Promise<AggregationsResults<O, K, AO>> => {
-      return aggregateOrThrow(thinClient, objectType, req);
+      return aggregateOrThrow(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
@@ -70,7 +74,7 @@ export function createObjectSet<
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
       return fetchPageOrThrow(
-        thinClient,
+        clientCtx,
         objectType,
         args ?? {},
         objectSet,
@@ -81,7 +85,7 @@ export function createObjectSet<
     //   throw "";
     // },
     where: (clause) => {
-      return createObjectSet(objectType, thinClient, opts, {
+      return createObjectSet(objectType, clientCtx, opts, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause),
@@ -99,7 +103,7 @@ export function createObjectSet<
     },
 
     subscribe(listener) {
-      const instance = ObjectSetWatcherWebsocket.getInstance(thinClient);
+      const instance = ObjectSetWatcherWebsocket.getInstance(clientCtx);
       return instance.subscribe(this, listener);
     },
   };
@@ -108,7 +112,7 @@ export function createObjectSet<
     return () => {
       return createObjectSet(
         objectType,
-        thinClient,
+        clientCtx,
         {},
         {
           type: "searchAround",

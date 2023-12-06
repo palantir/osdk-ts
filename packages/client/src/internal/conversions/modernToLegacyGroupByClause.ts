@@ -16,7 +16,7 @@
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { AggregationGroupByV2 } from "@osdk/gateway/types";
-import type { AllGroupByValues, GroupByClause } from "../../query";
+import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
 export function modernToLegacyGroupByClause<
   O extends OntologyDefinition<any>,

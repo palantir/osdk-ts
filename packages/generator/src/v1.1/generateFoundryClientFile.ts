@@ -21,13 +21,14 @@ import { formatTs } from "../util/test/formatTs";
 export async function generateFoundryClientFile(
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.writeFile(
     path.join(outDir, "FoundryClient.ts"),
     await formatTs(`
     import { BaseFoundryClient } from "@osdk/legacy-client";
     import type { Auth, FoundryClientOptions } from "@osdk/legacy-client";
-    import { Ontology } from "./Ontology";
+    import { Ontology } from "./Ontology${importExt}";
 
     export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {
         constructor(options: FoundryClientOptions<TAuth>) {

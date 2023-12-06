@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import { loadAllObjects } from "../net/loadObjects";
@@ -30,7 +27,7 @@ export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
   objectSet: ObjectSetDefinition,
   selectedProperties: string[] = [],

@@ -20,11 +20,11 @@ import type {
   OntologyDefinition,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
-  ThinClient,
 } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
 import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import { createOsdkObjectSet } from "..";
 import { LocalDate, Timestamp } from "../baseTypes";
 import type {
@@ -56,7 +56,7 @@ export function executeQuery<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: Q,
   params?: QueryParameters<O, Q>,
 ): WrappedQueryReturnType<O, Q> {
@@ -106,7 +106,7 @@ async function remapQueryResponseType<
   O extends OntologyDefinition<any>,
   K extends string,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   definition: QueryDataTypeDefinition<K>,
   responseValue: PrimitiveParameterValue,
 ): Promise<ParameterValue> {

@@ -15,9 +15,9 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { AggregateOpts } from "./AggregateOpts";
-import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups";
-import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
+import type { AggregateOpts } from "./AggregateOpts.js";
+import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
+import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 
 export type AggregationsResults<
   T extends OntologyDefinition<any>,

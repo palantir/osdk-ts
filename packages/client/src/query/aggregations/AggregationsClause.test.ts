@@ -15,8 +15,8 @@
  */
 
 import { describe, it } from "vitest";
-import type { AggregatableKeys } from "./AggregatableKeys";
-import type { AggregationClause } from "./AggregationsClause";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
 export type huh = AggregatableKeys<
   {

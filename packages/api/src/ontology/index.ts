@@ -41,11 +41,8 @@ export type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom as ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectLink,
-  OsdkObjectPropertyType,
-  OsdkObjectRawPropertyType,
   PropertyDefinition,
-  ValidPropertyTypes,
+  WirePropertyTypes,
 } from "./Definition";
 export type { OntologyMetadata } from "./OntologyMetadata";
 export type {

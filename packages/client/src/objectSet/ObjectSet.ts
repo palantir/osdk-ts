@@ -22,13 +22,13 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom";
-import type { PageResult } from "../PageResult";
-import type { AggregationsResults, WhereClause } from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import type { LinkTypesFrom } from "./LinkTypesFrom";
-import type { ObjectSetListener } from "./ObjectSetWatcher";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { AggregationsResults, WhereClause } from "../query/index.js";
+import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type { ObjectSetListener } from "./ObjectSetWatcher.js";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,

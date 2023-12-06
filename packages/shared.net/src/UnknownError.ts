@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-export { createFetchHeaderMutator } from "./createFetchHeaderMutator";
-export { createFetchOrThrow } from "./createFetchOrThrow";
-export { createRetryingFetch } from "./createRetryingFetch";
-export { createFetchAsJson } from "./FetchAsJson";
-export type { FetchAsJsonFn } from "./FetchAsJson";
-export { stringifyBody } from "./stringifyBody";
+import { PalantirApiError } from "./PalantirApiError.js";
+
+export class UnknownError extends PalantirApiError {
+  originalError: Error | undefined;
+  constructor(message: string, errorType: string, originalError?: Error) {
+    super(message, errorType);
+    this.originalError = originalError;
+  }
+}

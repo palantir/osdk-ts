@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import {
   handleListLinkedObjectsError,
@@ -29,7 +30,7 @@ import { createPageIterator } from "./util/createPageIterator";
 import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   sourceApiName: string,
   primaryKey: any,
   linkTypeApiName: string,

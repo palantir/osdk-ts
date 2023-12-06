@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
-import type { OsdkObject } from "../OsdkObject";
+import type { OsdkObject } from "../OsdkObject.js";
 
 export interface ObjectSetWatcherEvents<
   O extends OntologyDefinition<any>,

@@ -22,8 +22,8 @@ import type {
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "../../query";
-import type { Wire } from "../net";
+} from "../../query/index.js";
+import type { Wire } from "../net/index.js";
 
 export function modernToLegacyWhereClause<
   T extends ObjectDefinition<any, any>,

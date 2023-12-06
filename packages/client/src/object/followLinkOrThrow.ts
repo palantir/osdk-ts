@@ -15,31 +15,28 @@
  */
 
 import {
-  createOpenApiRequest,
   type LinkKeysFrom,
   type LinkTargetTypeFrom,
   type ObjectTypesFrom,
   type OntologyDefinition,
-  type ThinClient,
 } from "@osdk/api";
-
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
-import type { PageResult } from "../PageResult";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
-
+import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export async function followLinkOrThrow<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
   L extends LinkKeysFrom<O, K>,
 >(
-  client: ThinClient<O>,
+  clientCtx: ClientContext<O>,
   sourceObject: OsdkObjectFrom<K, O>,
   link: L,
 ): Promise<PageResult<OsdkObjectFrom<LinkTargetTypeFrom<O, K, L>, O>>> {
   const r = await listLinkedObjectsV2(
-    createOpenApiRequest(client.stack, client.fetch),
-    client.ontology.metadata.ontologyApiName,
+    createOpenApiRequest(clientCtx.stack, clientCtx.fetch),
+    clientCtx.ontology.metadata.ontologyApiName,
     sourceObject.__apiName.toString(),
     sourceObject.__primaryKey,
     link.toString(),
@@ -50,8 +47,8 @@ export async function followLinkOrThrow<
   );
 
   convertWireToOsdkObjects(
-    client,
-    client.ontology.objects[sourceObject.__apiName].links[link.toString()]
+    clientCtx,
+    clientCtx.ontology.objects[sourceObject.__apiName].links[link.toString()]
       .targetType as string,
     r.data,
   );

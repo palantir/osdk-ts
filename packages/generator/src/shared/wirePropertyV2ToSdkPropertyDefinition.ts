@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition, ValidPropertyTypes } from "@osdk/api";
+import type { PropertyDefinition, WirePropertyTypes } from "@osdk/api";
 import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
@@ -61,7 +61,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): keyof ValidPropertyTypes {
+): keyof WirePropertyTypes {
   switch (propertyType.type) {
     case "integer":
     case "string":

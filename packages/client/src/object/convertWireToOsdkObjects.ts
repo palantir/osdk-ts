@@ -18,11 +18,11 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
-import { createCachedOntologyTransform } from "../createCachedOntologyTransform";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
+import type { ClientContext } from "@osdk/shared.net";
+import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 
@@ -52,7 +52,7 @@ export function convertWireToOsdkObjects<
   T_ClientApiName extends ObjectTypesFrom<T_OntologyDefinition> & string,
   T_OntologyDefinition extends OntologyDefinition<any>,
 >(
-  client: ThinClient<T_OntologyDefinition>,
+  client: ClientContext<T_OntologyDefinition>,
   apiName: T_ClientApiName,
   objs: OntologyObjectV2[],
 ): OsdkObjectFrom<

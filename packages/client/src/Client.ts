@@ -19,8 +19,8 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet";
-import type { ObjectSetCreator } from "./ObjectSetCreator";
+import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet.js";
+import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
 export type ConcreteObjectType<
   O extends OntologyDefinition<any>,

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type {
   ObjectSetDefinition,
   SearchAroundObjectSetDefinition,
@@ -32,7 +29,7 @@ export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   sourceApiName: K,
   objectSet: ObjectSetDefinition,
 ): SearchAround<OsdkLegacyObjectFrom<O, K>> {

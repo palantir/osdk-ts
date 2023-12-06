@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
 import * as OsdkApi from "@osdk/client";
+import type { ClientContext } from "@osdk/client";
 import { Objects } from "@osdk/client";
 import { fetchPageOrThrow } from "@osdk/client/objects";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType";
+import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeePageThin(
-  thinClient: ThinClient<OntologyType>,
+  clientCtx: ClientContext<OntologyType>,
 ) {
-  let result = await fetchPageOrThrow(thinClient, "Employee", {
+  let result = await fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
@@ -42,17 +42,17 @@ export async function fetchEmployeePageThin(
   >(false);
 
   // OR
-  let result2 = await Objects.fetchPageOrThrow(thinClient, "Employee", {
+  let result2 = await Objects.fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
   // or
-  let result3 = await OsdkApi.Objects.fetchPageOrThrow(thinClient, "Employee", {
+  let result3 = await OsdkApi.Objects.fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
   // Quick check to make sure we get everything
-  let result4 = await fetchPageOrThrow(thinClient, "Employee", {});
+  let result4 = await fetchPageOrThrow(clientCtx, "Employee", {});
 
   console.log("fetchEmployeePageThin(): ");
   console.table(

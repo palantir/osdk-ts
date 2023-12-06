@@ -19,8 +19,8 @@ import type {
   ObjectTypesFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { AggregatableKeys } from "./AggregatableKeys";
-import type { GroupByMapper } from "./GroupByMapper";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
+import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
   O extends OntologyDefinition<any>,

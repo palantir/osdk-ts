@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import { createOpenApiRequest } from "@osdk/api";
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { getAttachmentContent } from "@osdk/gateway/requests";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { AttachmentsError } from "../errors";
 import { AttachmentsErrorHandler, handleAttachmentsError } from "../errors";
 import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";
 
 export async function getAttachment(
-  client: ThinClient<OntologyDefinition<any>>,
+  client: ClientContext<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Promise<Result<Blob, AttachmentsError>> {
   return wrapResult(

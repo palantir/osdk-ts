@@ -16,7 +16,7 @@
 
 import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import type { Aggregation } from "@osdk/gateway/types";
-import type { AggregationClause } from "../../query";
+import type { AggregationClause } from "../../query/index.js";
 
 export function modernToLegacyAggregationClause<
   T extends OntologyDefinition<any>,

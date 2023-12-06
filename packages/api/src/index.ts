@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export { createOpenApiRequest } from "./client/createOpenApiRequest";
-export { createThinClient } from "./client/createThinClient";
-export { isOk, type ResultOrError } from "./client/ResultOrError";
-export type { ThinClient } from "./client/ThinClient";
-
 export type {
   InterfaceDefinition,
   InterfaceInfoFrom,
@@ -26,6 +21,7 @@ export type {
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
+  LinkDefinition,
   LinkDefinitionFrom,
   LinkKeysFrom,
   LinkTargetTypeFrom,
@@ -34,11 +30,10 @@ export type {
   ObjectPropertyDefinitionFrom,
   ObjectPropertyDefinitionsFrom,
   ObjectPropertyKeysFrom,
-  ObjectTypesFrom as ObjectTypesFrom,
+  ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectPropertyType,
   PropertyDefinition,
-  ValidPropertyTypes as ValidPropertyTypes,
+  WirePropertyTypes,
 } from "./ontology/Definition";
 
 export type {

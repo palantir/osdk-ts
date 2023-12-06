@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createFetchHeaderMutator } from "@osdk/api/utils";
+import { createFetchHeaderMutator } from "@osdk/shared.net";
 import { consola } from "consola";
 
 export function createFetch(

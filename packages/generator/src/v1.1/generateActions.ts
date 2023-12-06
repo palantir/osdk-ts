@@ -25,6 +25,7 @@ export async function generateActions(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   const importedObjects = new Set<string>();
   let actionSignatures = [];
@@ -87,7 +88,7 @@ export async function generateActions(
     import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
-        `import type { ${importedObject} } from "../objects/${importedObject}";`
+        `import type { ${importedObject} } from "../objects/${importedObject}${importExt}";`
       ).join("\n")
     }
     export interface Actions {

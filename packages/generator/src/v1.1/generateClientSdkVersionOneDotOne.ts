@@ -35,38 +35,52 @@ export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  packageType: "commonjs" | "module" = "commonjs",
 ) {
+  const importExt = packageType === "module" ? ".js" : "";
   const objectsDir = path.join(outDir, "ontology", "objects");
   const actionsDir = path.join(outDir, "ontology", "actions");
   const queriesDir = path.join(outDir, "ontology", "queries");
 
   const sanitizedOntology = sanitizeMetadata(ontology);
-  await generateFoundryClientFile(fs, outDir);
-  await generateMetadataFile(sanitizedOntology, fs, outDir);
-  await generateOntologyIndexFile(fs, path.join(outDir, "ontology"));
-  await generateObjectsInterfaceFile(sanitizedOntology, fs, objectsDir);
+  await generateFoundryClientFile(fs, outDir, importExt);
+  await generateMetadataFile(sanitizedOntology, fs, outDir, importExt);
+  await generateOntologyIndexFile(
+    fs,
+    path.join(outDir, "ontology"),
+  );
+  await generateObjectsInterfaceFile(
+    sanitizedOntology,
+    fs,
+    objectsDir,
+    importExt,
+  );
   await generateObjectsInterfaceSupportFiles(
     sanitizedOntology,
     fs,
     path.join(objectsDir, "objects-api"),
+    importExt,
   );
   await generatePerObjectInterfaceAndDataFiles(
     sanitizedOntology,
     fs,
     objectsDir,
+    importExt,
   );
-  await generateActions(sanitizedOntology, fs, actionsDir);
+  await generateActions(sanitizedOntology, fs, actionsDir, importExt);
   await generatePerActionDataFiles(
     sanitizedOntology,
     fs,
     actionsDir,
+    importExt,
   );
-  await generateQueries(sanitizedOntology, fs, queriesDir);
+  await generateQueries(sanitizedOntology, fs, queriesDir, importExt);
   await generatePerQueryDataFiles(
     sanitizedOntology,
     fs,
     queriesDir,
+    importExt,
   );
-  await generateIndexFile(fs, outDir);
+  await generateIndexFile(fs, outDir, importExt);
   await generateBackCompatDeprecatedExports(fs, outDir);
 }

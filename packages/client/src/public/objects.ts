@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "../object";
+export * from "../object/index.js";
