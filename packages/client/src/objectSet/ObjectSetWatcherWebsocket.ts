@@ -19,13 +19,18 @@ import {
   type OntologyDefinition,
   type ThinClient,
 } from "@osdk/api";
+import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
-import type { OsdkObject } from "..";
+import invariant from "tiny-invariant";
+import type { OsdkObjectFrom } from "..";
+import type { ObjectSet as OssObjectSet } from "../generated/object-set-service/api";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
 import type { StreamMessage } from "../generated/object-set-watcher/StreamMessage.js";
+import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects";
 import { Deferred } from "./Deferred";
 import type { ObjectSet } from "./ObjectSet";
 import type { ObjectSetListener } from "./ObjectSetWatcher";
@@ -132,13 +137,18 @@ export class ObjectSetWatcherWebsocket<
     }
   }
 
-  #onMessage(message: WebSocket.MessageEvent) {
+  async #onMessage(message: WebSocket.MessageEvent) {
     const data = JSON.parse(message.data.toString()) as StreamMessage;
     switch (data.type) {
       case "objectSetChanged": {
         const { id: subscriptionId, objects } = data.objectSetChanged;
         const listener = this.#listeners.get(subscriptionId);
-        listener?.change?.(convertFoundryToOsdkObjects(objects));
+        const convertedObjects = await convertFoundryToOsdkObjects(
+          this.#client,
+          this.#conjureContext,
+          objects,
+        );
+        listener?.change?.(convertedObjects);
         break;
       }
 
@@ -248,15 +258,94 @@ function getObjectSetBaseType<
 function toConjureObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(objectSet: ObjectSet<O, K>) {
-  return undefined as any;
+>(objectSet: ObjectSet<O, K>): OssObjectSet {
 }
 
-function convertFoundryToOsdkObjects<
+async function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 >(
+  client: ThinClient<any>,
+  ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Array<OsdkObject<K & string>> {
-  return [];
+): Promise<Array<OsdkObjectFrom<K, O>>> {
+  const osdkObjects: OsdkObjectFrom<K, O>[] = await Promise.all(
+    objects.map(async object => {
+      const propertyMapping = await getOntologyPropertyMapping(ctx, object);
+      const convertedObject: OntologyObjectV2 = Object.fromEntries([
+        ...Object.entries(object.properties).map(([key, value]) => {
+          return [propertyMapping?.propertyIdToApiNameMapping[key], value];
+        }),
+        [
+          propertyMapping
+            ?.propertyIdToApiNameMapping[Object.entries(object.key)[0][0]],
+          Object.entries(object.key)[0][1],
+        ],
+        [
+          "__apiName",
+          propertyMapping?.apiName,
+        ],
+      ]);
+
+      return convertWireToOsdkObjects<K & string, O>(
+        client,
+        propertyMapping?.apiName! as K & string,
+        [
+          convertedObject,
+        ],
+      ) as unknown as OsdkObjectFrom<K, O>;
+    }),
+  );
+
+  return osdkObjects;
+}
+
+type ObjectPropertyMapping = {
+  apiName: string;
+  propertyIdToApiNameMapping: Record<string, string>;
+};
+
+const objectTypeMapping = new WeakMap<
+  ConjureContext,
+  Map<string, ObjectPropertyMapping>
+>();
+
+async function getOntologyPropertyMapping(
+  ctx: ConjureContext,
+  object: FoundryObject,
+) {
+  if (!objectTypeMapping.has(ctx)) {
+    objectTypeMapping.set(ctx, new Map());
+  }
+
+  const objectRid = object.type;
+  if (
+    objectTypeMapping.get(ctx)!.has(objectRid)
+  ) {
+    const entities = await loadOntologyEntities(ctx, {
+      objectTypeVersions: {
+        [objectRid]: undefined,
+      },
+      linkTypeVersions: {},
+      loadRedacted: false,
+      includeObjectTypesWithoutSearchableDatasources: true,
+    });
+
+    invariant(entities.objectTypes[objectRid], "object type should be loaded");
+
+    const propertyMapping: Record<string, string> = Object.fromEntries(
+      Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+        property => {
+          return [property.id, property.apiName!];
+        },
+      ),
+    );
+
+    objectTypeMapping.get(ctx)?.set(objectRid, {
+      apiName: entities.objectTypes[objectRid].apiName!,
+      propertyIdToApiNameMapping: propertyMapping,
+    });
+  }
+
+  return objectTypeMapping.get(ctx)?.get(objectRid);
 }
