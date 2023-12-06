@@ -21,7 +21,7 @@ function checkCommand() {
 REALPATH=$(checkCommand "grealpath" "realpath" "Try 'brew install coreutils'")
 SPONGE=$(checkCommand "sponge" "sponge" "Try 'brew install moreutils'")
 XQ=$(checkCommand "xq" "xq" "Try 'brew install python-yq'")
-
+WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 
 
 rm -rf "${SCRIPT_DIR}/../tmp"

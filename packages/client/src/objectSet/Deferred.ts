@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-import type * as ontology from "../ontology";
-import type { FetchAsJsonFn } from "../util";
+export class Deferred<T> {
+  public resolve!: (value: T | PromiseLike<T>) => void;
+  public reject!: (reason?: any) => void;
+  public promise: Promise<T>;
 
-export interface ThinClient<O extends ontology.OntologyDefinition<any>> {
-  ontology: O;
-  stack: string;
-  /**
-   * The fetch function to use for all requests.
-   *
-   * TODO: Document what is needed to get retry logic
-   */
-  fetch: typeof globalThis.fetch;
-
-  fetchJson: FetchAsJsonFn;
-
-  tokenProvider: () => Promise<string> | string;
+  constructor() {
+    this.promise = new Promise<T>((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
 }
