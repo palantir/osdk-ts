@@ -81,6 +81,12 @@ export class ObjectSetWatcherWebsocket<
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): Promise<() => void> {
+    const objectSetBaseType = await getObjectSetBaseType(objectSet);
+    const mapping = await getOntologyPropertyMappingForApiName(
+      this.#client,
+      this.#conjureContext,
+      objectSetBaseType,
+    );
     const [temporaryObjectSet] = await Promise.all([
       // create a time-bounded object set representation for watching
       this.#createTemporaryObjectSet(objectSet),
@@ -228,9 +234,16 @@ export class ObjectSetWatcherWebsocket<
     objectSet: Wire.ObjectSet,
   ) {
     // TODO do we need to do something when the subscription expires on the server?
+    const objectSetBaseType = await getObjectSetBaseType(objectSet);
+    const mapping = await getOntologyPropertyMappingForApiName(
+      this.#client,
+      this.#conjureContext,
+      objectSetBaseType,
+    );
+
     createTemporaryObjectSet(this.#conjureContext, {
       // TODO: Get a mapping here
-      objectSet: toConjureObjectSet(objectSet, {} as any),
+      objectSet: toConjureObjectSet(objectSet, mapping!),
       timeToLive: "ONE_DAY",
       objectSetFilterContext: { parameterOverrides: {} },
     });
@@ -260,7 +273,10 @@ async function convertFoundryToOsdkObjects<
 ): Promise<Array<OsdkObjectFrom<K, O>>> {
   const osdkObjects: OsdkObjectFrom<K, O>[] = await Promise.all(
     objects.map(async object => {
-      const propertyMapping = await getOntologyPropertyMapping(ctx, object);
+      const propertyMapping = await getOntologyPropertyMappingForRid(
+        ctx,
+        object.type,
+      );
       const convertedObject: OntologyObjectV2 = Object.fromEntries([
         ...Object.entries(object.properties).map(([key, value]) => {
           return [propertyMapping?.propertyIdToApiNameMapping[key], value];
@@ -291,24 +307,47 @@ async function convertFoundryToOsdkObjects<
 
 export type ObjectPropertyMapping = {
   apiName: string;
+  id: string;
   propertyIdToApiNameMapping: Record<string, string>;
   propertyApiNameToIdMapping: Record<string, string>;
 };
 
+// Mapping of ObjectRid to Properties
 const objectTypeMapping = new WeakMap<
   ConjureContext,
   Map<string, ObjectPropertyMapping>
 >();
 
-async function getOntologyPropertyMapping(
+const objectApiNameToRid = new Map<string, string>();
+
+async function getOntologyPropertyMappingForApiName(
+  client: ThinClient<any>,
   ctx: ConjureContext,
-  object: FoundryObject,
+  objectApiName: string,
+) {
+  if (objectApiNameToRid.has(objectApiName)) {
+    return objectTypeMapping.get(ctx)?.get(
+      objectApiNameToRid.get(objectApiName)!,
+    );
+  }
+
+  const wireObjectType = await getObjectTypeV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    objectApiName,
+  );
+
+  return getOntologyPropertyMappingForRid(ctx, wireObjectType.rid);
+}
+
+async function getOntologyPropertyMappingForRid(
+  ctx: ConjureContext,
+  objectRid: string,
 ) {
   if (!objectTypeMapping.has(ctx)) {
     objectTypeMapping.set(ctx, new Map());
   }
 
-  const objectRid = object.type;
   if (
     objectTypeMapping.get(ctx)!.has(objectRid)
   ) {
@@ -343,9 +382,12 @@ async function getOntologyPropertyMapping(
 
     objectTypeMapping.get(ctx)?.set(objectRid, {
       apiName: entities.objectTypes[objectRid].apiName!,
+      id: entities.objectTypes[objectRid].id,
       propertyIdToApiNameMapping,
       propertyApiNameToIdMapping,
     });
+
+    objectApiNameToRid.set(entities.objectTypes[objectRid].apiName!, objectRid);
   }
 
   return objectTypeMapping.get(ctx)?.get(objectRid);

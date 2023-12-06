@@ -34,7 +34,7 @@ export function toConjureObjectSet<
       return {
         type: "base",
         base: {
-          objectTypeId: "TODO",
+          objectTypeId: objectPropertyMapping.id,
         },
       };
     case "static":
