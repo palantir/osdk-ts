@@ -15,7 +15,7 @@
  */
 
 import type { QueryDataType, QueryTypeV2 } from "@osdk/gateway/types";
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireQueryTypeV2ToSdkQueryDefinition } from "../shared/wireQueryTypeV2ToSdkQueryDefinition";
 import { formatTs } from "../util/test/formatTs";

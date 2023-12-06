@@ -24,26 +24,30 @@ export type {
   ValidBaseActionParameterTypes,
 } from "./ActionDefinition";
 export type {
+  InterfaceDefinition,
+  InterfaceInfoFrom,
+  InterfaceNamesFrom,
+  InterfacePropertyDefinitionFrom,
+  InterfacePropertyDefinitionsFrom,
+  InterfacePropertyKeysFrom,
   LinkDefinition,
   LinkDefinitionFrom,
   LinkKeysFrom,
   LinkTargetTypeFrom,
   ObjectDefinition,
   ObjectInfoFrom,
-  ObjectTypesFrom,
+  ObjectPropertyDefinitionFrom,
+  ObjectPropertyDefinitionsFrom,
+  ObjectPropertyKeysFrom,
+  ObjectTypesFrom as ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectLink,
   OsdkObjectPropertyType,
   OsdkObjectRawPropertyType,
   PropertyDefinition,
-  PropertyDefinitionFrom,
-  PropertyDefinitionsFrom,
-  PropertyKeysFrom,
   ValidPropertyTypes,
 } from "./Definition";
 export type { OntologyMetadata } from "./OntologyMetadata";
-export type { OsdkObject } from "./OsdkObject";
-export type { OsdkObjectFrom } from "./OsdkObjectFrom";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,

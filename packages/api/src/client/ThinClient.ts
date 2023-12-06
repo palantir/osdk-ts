@@ -28,4 +28,6 @@ export interface ThinClient<O extends ontology.OntologyDefinition<any>> {
   fetch: typeof globalThis.fetch;
 
   fetchJson: FetchAsJsonFn;
+
+  tokenProvider: () => Promise<string> | string;
 }

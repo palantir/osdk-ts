@@ -1,5 +1,20 @@
 # @osdk/examples.todoapp
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [ed78694]
+  - @osdk/legacy-client@0.0.17
+  - @osdk/api@0.0.17
+
+## 0.0.7
+
+### Patch Changes
+
+- Updated dependencies [b59cb10]
+  - @osdk/legacy-client@0.0.16
+
 ## 0.0.6
 
 ### Patch Changes

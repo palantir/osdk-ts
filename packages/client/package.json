@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -28,11 +28,14 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/gateway": "workspace:*",
+    "conjure-lite": "^0.3.1",
     "fetch-retry": "^5.0.6",
-    "tiny-invariant": "^1.3.1"
+    "isomorphic-ws": "^5.0.0",
+    "tiny-invariant": "^1.3.1",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@osdk/examples.basic.sdk": "workspace:*",
+    "@types/ws": "^8.5.10",
     "ts-expect": "^1.3.0",
     "typescript": "^5.2.2"
   },
@@ -44,6 +47,10 @@
     "build/types",
     "build/js",
     "CHANGELOG.md",
-    "package.json"
-  ]
+    "package.json",
+    "*.d.ts"
+  ],
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts"
 }

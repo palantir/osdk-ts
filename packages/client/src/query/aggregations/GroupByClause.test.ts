@@ -37,6 +37,7 @@ export type F = GroupByClause<
     };
     actions: {};
     queries: {};
+    interfaces: {};
   },
   "Todo"
 >;

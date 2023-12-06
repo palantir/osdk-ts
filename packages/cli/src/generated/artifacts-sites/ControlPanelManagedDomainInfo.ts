@@ -17,6 +17,12 @@
 import type { DomainName } from "./DomainName.js";
 import type { SiteDomainRegistrationRequestRid } from "./SiteDomainRegistrationRequestRid.js";
 
+/**
+ * Domain that is managed through control panel and requires an enrollment-level Information Security Officer
+ * approval to be fully registered.
+ * The domain should be validated with control panel before use, its status can be fetched through
+ * approvals APIs.
+ */
 export interface ControlPanelManagedDomainInfo {
   requestRid: SiteDomainRegistrationRequestRid;
   siteDomain: DomainName;

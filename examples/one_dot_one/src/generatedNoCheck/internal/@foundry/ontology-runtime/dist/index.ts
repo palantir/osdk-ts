@@ -1,5 +1,5 @@
 export * from './aggregations';
-// export * from "./baseTypes";
+export * from './baseTypes';
 
 // export * from "./filters";
 

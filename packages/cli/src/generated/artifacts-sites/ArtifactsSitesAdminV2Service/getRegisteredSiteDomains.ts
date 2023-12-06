@@ -16,6 +16,13 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { SiteDomainInfo } from "../SiteDomainInfo.js";
+
+/**
+ * Get domains that have been successfully registered with the given repository. Visiting a successfully
+ * registered domain should serve the registered repository assets.
+ *
+ * artifacts:sites:read-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function getRegisteredSiteDomains(
   ctx: ConjureContext,
   repositoryRid: string,

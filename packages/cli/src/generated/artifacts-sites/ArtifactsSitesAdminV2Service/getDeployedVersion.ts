@@ -16,6 +16,12 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { SiteVersion } from "../SiteVersion.js";
+
+/**
+ * Get the deployed version that will be served for a given siteasset repository.
+ *
+ * artifacts:sites:read-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function getDeployedVersion(
   ctx: ConjureContext,
   repositoryRid: string,

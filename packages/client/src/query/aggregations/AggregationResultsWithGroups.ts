@@ -15,11 +15,11 @@
  */
 
 import type {
+  ObjectPropertyDefinitionFrom,
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
   OsdkObjectPropertyType,
-  PropertyDefinitionFrom,
-  PropertyKeysFrom,
 } from "@osdk/api";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups";
 import type { AggregationClause } from "./AggregationsClause";
@@ -32,8 +32,8 @@ export type AggregationResultsWithGroups<
   G extends GroupByClause<O, K> | undefined,
 > = {
   group: {
-    [P in keyof G & PropertyKeysFrom<O, K>]: OsdkObjectPropertyType<
-      PropertyDefinitionFrom<O, K, P>
+    [P in keyof G & ObjectPropertyKeysFrom<O, K>]: OsdkObjectPropertyType<
+      ObjectPropertyDefinitionFrom<O, K, P>
     >;
   };
   values: AggregationResultsWithoutGroups<O, K, A>;

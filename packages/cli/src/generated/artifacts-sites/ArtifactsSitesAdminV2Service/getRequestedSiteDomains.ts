@@ -16,6 +16,14 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { SiteDomainInfo } from "../SiteDomainInfo.js";
+
+/**
+ * Get domains that have been requested for a given repository. For control panel domains that require
+ * an approval, this will also include pending requests. Closed/rejected requests will only be included as long
+ * as their domain hasn't been re-requested for another repository.
+ *
+ * artifacts:sites:read-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function getRequestedSiteDomains(
   ctx: ConjureContext,
   repositoryRid: string,

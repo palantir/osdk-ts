@@ -15,6 +15,10 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
+/**
+ * Get all registered domains regardless of whether they're in use or not.
+ */
 export async function getRegisteredDomains(
   ctx: ConjureContext,
 ): Promise<Array<string>> {

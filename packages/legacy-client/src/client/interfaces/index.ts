@@ -19,3 +19,5 @@ export * from "./baseObjectSet";
 export * from "./filters";
 export * from "./objectSet";
 export * from "./ordering";
+export * from "./searchAround";
+export * from "./utils";

@@ -15,6 +15,13 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+
+/**
+ * Clears the deployed version while leaving the associated domain, visiting the associated domain in this state
+ * will return an error.
+ *
+ * artifacts:sites:write-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function clearDeployedVersion(
   ctx: ConjureContext,
   repositoryRid: string,

@@ -27,7 +27,7 @@ import { handleLoadObjectSetError, LoadObjectSetErrorHandler } from "../errors";
 import type { LoadObjectSetError } from "../errors";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import type { OrderByClause } from "../objectSets/filters";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { Page } from "../Page";
 import type { Result } from "../Result";
 import { wrapResult } from "./util/wrapResult";

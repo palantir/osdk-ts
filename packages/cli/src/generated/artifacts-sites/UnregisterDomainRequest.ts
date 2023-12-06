@@ -15,7 +15,6 @@
  */
 
 import type { DomainName } from "./DomainName.js";
-
 export interface UnregisterDomainRequest {
   siteDomain: DomainName;
 }

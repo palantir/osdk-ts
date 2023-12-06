@@ -17,6 +17,12 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { ContentSecurityPolicyHeaderValue } from "../ContentSecurityPolicyHeaderValue.js";
 import type { PreviewContentSecurityPolicyRequest } from "../PreviewContentSecurityPolicyRequest.js";
+
+/**
+ * Preview what the CSP that will be served with the site looks like.
+ *
+ * artifacts:sites:read-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function previewContentSecurityPolicy(
   ctx: ConjureContext,
   repositoryRid: string,

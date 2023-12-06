@@ -16,6 +16,10 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { ContainerRegistryDomainResponse } from "../ContainerRegistryDomainResponse.js";
+
+/**
+ * Get the container registry domain, e.g, papaya-container-registry.palantircloud.com
+ */
 export async function getContainerRegistryDomain(
   ctx: ConjureContext,
 ): Promise<ContainerRegistryDomainResponse> {

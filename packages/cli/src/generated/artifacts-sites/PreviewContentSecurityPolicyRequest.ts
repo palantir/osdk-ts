@@ -15,7 +15,6 @@
  */
 
 import type { DomainName } from "./DomainName.js";
-
 export interface PreviewContentSecurityPolicyRequest {
   baseDomain: DomainName;
 }

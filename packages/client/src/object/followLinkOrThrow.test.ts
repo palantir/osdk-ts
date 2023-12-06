@@ -17,7 +17,7 @@
 import type { OsdkObjectFrom } from "@osdk/api";
 import { createThinClient } from "@osdk/api";
 import { Ontology } from "@osdk/examples.basic.sdk";
-import { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
+import type { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
 import { expectType } from "ts-expect";
 import type { Mock } from "vitest";
 import { describe, expect, it, vi } from "vitest";

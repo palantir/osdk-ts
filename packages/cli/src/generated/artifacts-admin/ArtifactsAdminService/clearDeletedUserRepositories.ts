@@ -16,6 +16,11 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { ClearDeletedUserRepositoriesRequest } from "../ClearDeletedUserRepositoriesRequest.js";
+
+/**
+ * Kicks off a background task that will iterate over all Stemma repositories and delete all contents from
+ * user repositories that no longer exist in Stemma.
+ */
 export async function clearDeletedUserRepositories(
   ctx: ConjureContext,
   request: ClearDeletedUserRepositoriesRequest,

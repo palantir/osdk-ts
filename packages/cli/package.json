@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.0.12",
+  "version": "0.0.14",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -30,7 +30,7 @@
     "@osdk/api": "workspace:*",
     "@osdk/generator": "workspace:*",
     "archiver": "^6.0.1",
-    "conjure-lite": "0.1.1",
+    "conjure-lite": "0.3.1",
     "consola": "^3.2.3",
     "find-up": "^6.3.0",
     "yargs": "^17.7.2"
@@ -57,7 +57,11 @@
     "build/types",
     "build/js",
     "CHANGELOG.md",
-    "package.json"
+    "package.json",
+    "*.d.ts"
   ],
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
   "type": "module"
 }

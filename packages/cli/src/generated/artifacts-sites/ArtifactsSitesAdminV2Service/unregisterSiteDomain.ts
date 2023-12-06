@@ -16,6 +16,15 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { UnregisterDomainRequest } from "../UnregisterDomainRequest.js";
+
+/**
+ * Unregisters a domain from a repository, visiting the domain will no longer serve the repository assets.
+ *
+ * Depending on how the domain for the repository was setup, this might also result in deleting the domain
+ * itself.
+ *
+ * artifacts:sites:manage-domains permission is needed on the repository rid to call this endpoint.
+ */
 export async function unregisterSiteDomain(
   ctx: ConjureContext,
   repositoryRid: string,

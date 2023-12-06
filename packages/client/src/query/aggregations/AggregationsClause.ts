@@ -15,9 +15,9 @@
  */
 
 import type {
+  ObjectPropertyDefinitionsFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  PropertyDefinitionsFrom,
 } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys";
 
@@ -33,12 +33,12 @@ export type AggregationClause<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
 > = {
-  [P in AggregatableKeys<O, K>]?: PropertyDefinitionsFrom<
+  [P in AggregatableKeys<O, K>]?: ObjectPropertyDefinitionsFrom<
     O,
     K
   >[P]["type"] extends "string"
     ? StringAggregateOption | StringAggregateOption[]
-    : PropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
+    : ObjectPropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
       ? NumericAggregateOption | NumericAggregateOption[]
-    : PropertyDefinitionsFrom<O, K>[P]["type"];
+    : ObjectPropertyDefinitionsFrom<O, K>[P]["type"];
 };

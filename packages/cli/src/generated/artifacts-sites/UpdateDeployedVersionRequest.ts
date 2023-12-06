@@ -15,7 +15,6 @@
  */
 
 import type { SiteVersion } from "./SiteVersion.js";
-
 export interface UpdateDeployedVersionRequest {
   siteVersion: SiteVersion;
 }

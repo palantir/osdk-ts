@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { join } from "path";
+import { join } from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
@@ -27,40 +27,49 @@ export async function generateObjectsInterfaceSupportFiles(
 
   for (const { apiName } of Object.values(ontology.objectTypes)) {
     const fileName = join(outDir, `${apiName}.ts`);
+    const localApiName = `OG_${apiName}`;
 
     const contents: string[] = [];
 
     contents.push(
       `import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";`,
     );
-    contents.push(`import { ${apiName} } from "../${apiName}";`);
+    contents.push(
+      `import { ${apiName} as ${localApiName} } from "../${apiName}";`,
+    );
     contents.push(""); // empty line
 
     contents.push(
+      `/** @deprecated Use ${apiName} from ontology/objects instead */`,
+      `export type ${apiName} = ${localApiName};`,
+    );
+    contents.push(
       `/** @deprecated Use ObjectSetFilterArg<${apiName}> instead */`,
-      `export type ${apiName}Filter = ObjectSetFilterArg<${apiName}>;`,
+      `export type ${apiName}Filter = ObjectSetFilterArg<${localApiName}>;`,
     );
     contents.push(
       `/** @deprecated Use ObjectSetOrderByArg<${apiName}> instead */`,
-      `export type ${apiName}OrderBy = ObjectSetOrderByArg<${apiName}>;`,
+      `export type ${apiName}OrderBy = ObjectSetOrderByArg<${localApiName}>;`,
     );
     contents.push(
       `/** @deprecated Use ObjectSetGroupByArg<${apiName}> instead */`,
-      `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${apiName}>;`,
+      `export type ${apiName}GroupByProperties = ObjectSetGroupByArg<${localApiName}>;`,
     );
     contents.push(
-      `/**
+      `
+      /**
         * Aggregation properties for ${apiName}
         * @deprecated Use ObjectSetAggregateArg<${apiName}> instead
         */`,
-      `export type ${apiName}AggregationProperties = ObjectSetAggregateArg<${apiName}>;`,
+      `export type ${apiName}AggregationProperties = ObjectSetAggregateArg<${localApiName}>;`,
     );
     contents.push(
-      `/**
+      `
+      /**
         * Multiple aggregation properties for ${apiName}.
         * @deprecated Use ObjectSetMultipleAggregateArg<${apiName}> instead
         */`,
-      `export type ${apiName}MultipleAggregationProperties = ObjectSetMultipleAggregateArg<${apiName}>;`,
+      `export type ${apiName}MultipleAggregationProperties = ObjectSetMultipleAggregateArg<${localApiName}>;`,
     );
 
     await fs.writeFile(fileName, contents.join("\n"));

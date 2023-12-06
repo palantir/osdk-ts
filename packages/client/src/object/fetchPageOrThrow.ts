@@ -15,16 +15,16 @@
  */
 
 import type {
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectFrom,
-  PropertyKeysFrom,
   ThinClient,
 } from "@osdk/api";
 import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import type { Wire } from "../internal/net";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import type { NOOP } from "../util/NOOP";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
@@ -32,7 +32,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
-  L extends PropertyKeysFrom<O, K>,
+  L extends ObjectPropertyKeysFrom<O, K>,
 > {
   select?: readonly L[];
   nextPageToken?: string;
@@ -41,7 +41,7 @@ export interface FetchPageOrThrowArgs<
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypesFrom<O>,
-  const A extends FetchPageOrThrowArgs<O, T, PropertyKeysFrom<O, T>>,
+  const A extends FetchPageOrThrowArgs<O, T, ObjectPropertyKeysFrom<O, T>>,
 >(
   client: ThinClient<O>,
   objectType: T & string,
@@ -57,7 +57,7 @@ export async function fetchPageOrThrow<
         T,
         O,
         A["select"] extends readonly string[] ? A["select"][number]
-          : PropertyKeysFrom<O, T>
+          : ObjectPropertyKeysFrom<O, T>
       >
     >
   >

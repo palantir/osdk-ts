@@ -17,6 +17,15 @@
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { SiteDomainInfo } from "../SiteDomainInfo.js";
 import type { SubmitDomainRegistrationRequest } from "../SubmitDomainRegistrationRequest.js";
+
+/**
+ * Requests the registration of a domain with the provided repository, this will result in an approvals task
+ * getting created for approval by an admin.
+ *
+ * Once the task has been approved, visiting the domain will serve the deployed version, if any is deployed.
+ *
+ * artifacts:sites:manage-domains permission is needed on the repository rid to call this endpoint.
+ */
 export async function requestSiteDomainForRepository(
   ctx: ConjureContext,
   repositoryRid: string,

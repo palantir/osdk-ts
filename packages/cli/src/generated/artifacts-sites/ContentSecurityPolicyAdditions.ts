@@ -16,9 +16,8 @@
 
 import type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
 import type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
-
 export interface ContentSecurityPolicyAdditions {
-  policy: Map<
+  policy: Record<
     ContentSecurityPolicyDirectiveName,
     Array<ContentSecurityPolicyDirectiveValue>
   >;

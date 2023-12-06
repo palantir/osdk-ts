@@ -16,7 +16,6 @@
 
 import type { DomainName } from "./DomainName.js";
 import type { SiteVersion } from "./SiteVersion.js";
-
 export interface DeploymentInfo {
   siteDomain: DomainName;
   siteVersion: SiteVersion;

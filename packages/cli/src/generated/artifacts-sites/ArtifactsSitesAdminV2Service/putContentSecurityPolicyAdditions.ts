@@ -16,6 +16,12 @@
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
 import type { ContentSecurityPolicyAdditions } from "../ContentSecurityPolicyAdditions.js";
+
+/**
+ * Set the CSP additions configured for a repository.
+ *
+ * artifacts:sites:write-deployment-info permission is needed on the repository rid to call this endpoint.
+ */
 export async function putContentSecurityPolicyAdditions(
   ctx: ConjureContext,
   repositoryRid: string,

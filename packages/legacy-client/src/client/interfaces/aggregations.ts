@@ -56,11 +56,16 @@ export declare type ObjectTypesGroupByFunction<
   objectType: ObjectSetGroupByArg<T>,
 ) => Bucketing<K, V>;
 
-type groupableProperties = number | LocalDate | Timestamp | string | boolean;
+export type GroupableProperty =
+  | number
+  | LocalDate
+  | Timestamp
+  | string
+  | boolean;
 
-type IsGroupableProperty<T> = NonNullable<T> extends groupableProperties ? true
+type IsGroupableProperty<T> = NonNullable<T> extends GroupableProperty ? true
   : NonNullable<T> extends Array<infer U>
-    ? U extends groupableProperties ? true : false
+    ? U extends GroupableProperty ? true : false
   : false;
 
 type GroupableProperties<T extends OntologyObject> = {
@@ -109,7 +114,7 @@ export declare type ObjectSetMultipleAggregateArg<T extends OntologyObject> =
     count: () => CountOperation;
   };
 
-type GroupByFromType<T, N extends string> = NonNullable<T> extends number
+export type GroupByFromType<T, N extends string> = NonNullable<T> extends number
   ? NumericGroupBy<N>
   : T extends string ? StringGroupBy<N>
   : T extends LocalDate ? LocalDateGroupBy<N>
@@ -118,14 +123,14 @@ type GroupByFromType<T, N extends string> = NonNullable<T> extends number
   : T extends Array<infer U> ? GroupByFromType<U, N>
   : never;
 
-type AggregationFromType<T> = NonNullable<T> extends number
+export type AggregationFromType<T> = NonNullable<T> extends number
   ? AggregatableProperty<Double>
   : NonNullable<T> extends boolean ? AggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? AggregatableProperty<LocalDate>
   : NonNullable<T> extends Timestamp ? AggregatableProperty<Timestamp>
   : AggregatableProperty<never>;
 
-type MultipleAggregationFromType<T> = NonNullable<T> extends number
+export type MultipleAggregationFromType<T> = NonNullable<T> extends number
   ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends boolean ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? MultipleAggregatableProperty<LocalDate>

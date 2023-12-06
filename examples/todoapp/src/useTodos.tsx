@@ -1,8 +1,8 @@
-import { type Result, isOk } from "./generatedNoCheck";
-import { foundryClient } from "./foundryClient";
-import useSWR from "swr";
-import type { Todo } from "./generatedNoCheck/ontology/objects";
 import { useCallback } from "react";
+import useSWR from "swr";
+import { foundryClient } from "./foundryClient";
+import { isOk, type Result } from "./generatedNoCheck";
+import type { Todo } from "./generatedNoCheck/ontology/objects";
 
 function orThrow<T, E>(result: Result<T, E>) {
   if (isOk(result)) {
@@ -16,11 +16,11 @@ export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
     "/todos",
     async () => orThrow(await foundryClient.ontology.objects.Todo.all()),
-    { keepPreviousData: true }
+    { keepPreviousData: true },
   );
 
   const toggleComplete = useCallback(
-    async function (todo: Todo) {
+    async function(todo: Todo) {
       const b = !todo.isComplete;
       await mutate(
         async () => {
@@ -30,7 +30,7 @@ export function useTodos() {
             await foundryClient.ontology.actions.completeTodo({
               is_complete: b,
               Todo: todo,
-            })
+            }),
           );
 
           return undefined; // invalidate cache
@@ -38,10 +38,10 @@ export function useTodos() {
         {
           optimisticData: updateTodo.bind(undefined, todo.id!, b),
           rollbackOnError: true,
-        }
+        },
       );
     },
-    [mutate]
+    [mutate],
   );
 
   const createTodo = useCallback(
@@ -54,7 +54,7 @@ export function useTodos() {
             await foundryClient.ontology.actions.createTodo({
               Todo: title,
               is_complete: false,
-            })
+            }),
           );
 
           return undefined; // invalidate cache
@@ -63,11 +63,11 @@ export function useTodos() {
           optimisticData: (todos = []) => [...todos, createFauxTodo(title)],
           rollbackOnError: true,
           throwOnError: true,
-        }
+        },
       );
       return undefined;
     },
-    [mutate]
+    [mutate],
   );
 
   return {
@@ -94,7 +94,7 @@ function createFauxTodo(title: string): Todo {
 function updateTodo(
   id: string,
   isComplete: boolean,
-  todos: Todo[] | undefined
+  todos: Todo[] | undefined,
 ) {
   return updateOne(todos, id, (todo) => ({ ...todo, isComplete })) ?? [];
 }
@@ -102,7 +102,7 @@ function updateTodo(
 function updateOne<T extends { __primaryKey: Q }, Q>(
   things: T[] | undefined,
   primaryKey: Q,
-  update: (thing: T) => T
+  update: (thing: T) => T,
 ) {
   return things?.map((thing) => {
     if (thing.__primaryKey === primaryKey) {

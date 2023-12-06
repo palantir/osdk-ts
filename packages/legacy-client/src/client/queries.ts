@@ -40,7 +40,7 @@ import type {
 import type { QueryError } from "./errors";
 import type { ObjectSet } from "./interfaces";
 import type { Range } from "./objectSets/aggregations";
-import type { OsdkLegacyObjectFrom } from "./OsdkObject";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 import type { Result } from "./Result";
 import type { IsEmptyRecord } from "./utils";
 import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
@@ -61,7 +61,7 @@ export type QueryReturnType<
   Q extends QueryNamesFrom<O>,
 > = QueryDataType<O, QueryDefinition<O, Q>["output"], true>;
 
-type QueryDefinition<
+export type QueryDefinition<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 > = O["queries"][Q];
@@ -79,7 +79,10 @@ export type NonNullableArgKeys<T> = {
   [K in keyof T]: T[K] extends { dataType: { nullable: true } } ? never : K;
 }[keyof T];
 
-type QueryArgs<O extends OntologyDefinition<any>, Q extends QueryNamesFrom<O>> =
+export type QueryArgs<
+  O extends OntologyDefinition<any>,
+  Q extends QueryNamesFrom<O>,
+> =
   & {
     [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
@@ -105,7 +108,7 @@ export type QueryDataType<
 > = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"], R>>
   : QueryDataTypeBase<O, D["type"], R>;
 
-interface ValidLegacyBaseQueryDataTypes {
+export interface ValidLegacyBaseQueryDataTypes {
   double: number;
   float: number;
   integer: number;
@@ -117,7 +120,7 @@ interface ValidLegacyBaseQueryDataTypes {
   attachment: any; // TODO surely we can be more strict here
 }
 
-type QueryDataTypeBase<
+export type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any, R>,
   R extends boolean,
@@ -160,7 +163,7 @@ type QueryDataTypeBase<
     ? QueryDefinitionArrayToUnion<O, T["union"], R>
   : never;
 
-type QueryDefinitionArrayToUnion<
+export type QueryDefinitionArrayToUnion<
   O extends OntologyDefinition<any>,
   T extends ReadonlyArray<QueryDataTypeDefinition<any>>,
   R extends boolean,
@@ -168,21 +171,21 @@ type QueryDefinitionArrayToUnion<
   ? U extends QueryDataTypeDefinition<any> ? QueryDataType<O, U, R> : never
   : never;
 
-type QueryAggregationKey<K extends AggregationKeyDataType> = K extends
+export type QueryAggregationKey<K extends AggregationKeyDataType> = K extends
   SimpleAggregationKeyDataType ? SimpleAggregationKeyTypes[K["keyType"]]
   : K extends RangeAggregationKeyDataType
     ? Range<RangeAggregationKeySubtypes[K["keySubtype"]]>
   : never;
 
-type QueryAggregationValue<V extends keyof AggregationValueTypes> =
+export type QueryAggregationValue<V extends keyof AggregationValueTypes> =
   AggregationValueTypes[V];
 
-interface SimpleAggregationKeyTypes {
+export interface SimpleAggregationKeyTypes {
   boolean: boolean;
   string: string;
 }
 
-interface RangeAggregationKeySubtypes {
+export interface RangeAggregationKeySubtypes {
   date: LocalDate;
   double: number;
   integer: number;

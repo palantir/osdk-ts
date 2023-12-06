@@ -15,60 +15,69 @@
  */
 
 import type {
+  InterfaceNamesFrom,
+  InterfacePropertyKeysFrom,
   ObjectInfoFrom,
+  ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  OsdkObjectFrom,
-  PropertyKeysFrom,
-  ResultOrError,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
+import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom";
 import type { PageResult } from "../PageResult";
 import type { AggregationsResults, WhereClause } from "../query";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
 import type { LinkTypesFrom } from "./LinkTypesFrom";
+import type { ObjectSetListener } from "./ObjectSetWatcher";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
-  K extends ObjectTypesFrom<O>,
-> = BaseObjectSet<O, K>; // & SearchAround<O, K>;
-
-// GOTTA DO THIS STILL
-export type SearchAround<
-  O extends OntologyDefinition<string>,
-  K extends ObjectTypesFrom<O>,
-> = {
-  [L in LinkTypesFrom<O, K> & string as `searchAround_${L}`]: () => ObjectSet<
-    O,
-    L
-  >; // TODO accept args?
-};
+  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
+> = BaseObjectSet<O, K>;
 
 export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>,
 > {
-  fetchPageOrThrow: <L extends PropertyKeysFrom<O, K>>(
+  fetchPageOrThrow: <
+    L extends (
+      K extends InterfaceNamesFrom<O> ? InterfacePropertyKeysFrom<O, K>
+        : ObjectPropertyKeysFrom<O, K>
+    ),
+  >(
     args?: FetchPageOrThrowArgs<O, K, L>,
-  ) => Promise<PageResult<OsdkObjectFrom<K, O, L>>>;
-  fetchPage: <L extends PropertyKeysFrom<O, K>>(
-    args?: FetchPageOrThrowArgs<O, K, L>,
-  ) => Promise<ResultOrError<PageResult<OsdkObjectFrom<K, O, L>>>>;
+  ) => Promise<
+    PageResult<
+      K extends InterfaceNamesFrom<O> ? OsdkInterfaceFrom<K, O, L>
+        : OsdkObjectFrom<K, O, L>
+    >
+  >;
 
-  asyncIter: () => AsyncIterableIterator<
-    OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
-  >;
-  [Symbol.asyncIterator](): AsyncIterableIterator<
-    OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
-  >;
+  // qq: <Q extends K>(foo: Q) => ObjectPropertyKeysFrom<O, K>;
+
+  // @alpha
+  // fetchPage: <L extends PropertyKeysFrom<O, K>>(
+  //   args?: FetchPageOrThrowArgs<O, K, L>,
+  // ) => Promise<ResultOrError<PageResult<OsdkObjectFrom<K, O, L>>>>;
+
+  // @alpha
+  // asyncIter: () => AsyncIterableIterator<
+  //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
+  // >;
+
+  // @alpha
+  // [Symbol.asyncIterator](): AsyncIterableIterator<
+  //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
+  // >;
 
   aggregateOrThrow: <const AO extends AggregateOpts<O, K, any>>(
     req: AO,
   ) => Promise<AggregationsResults<O, K, AO>>;
 
-  aggregate: <const AO extends AggregateOpts<O, K, any>>(
-    req: AO,
-  ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
+  // @alpha
+  // aggregate: <const AO extends AggregateOpts<O, K, any>>(
+  //   req: AO,
+  // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
   where: (clause: WhereClause<ObjectInfoFrom<O, K>>) => ObjectSet<O, K>;
 
@@ -76,9 +85,9 @@ export interface BaseObjectSet<
     type: T & string,
     opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
   ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
-}
 
-// type Q<T extends
+  subscribe: (listener: ObjectSetListener<O, K>) => Promise<() => void>;
+}
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,

@@ -19,5 +19,4 @@ export interface SiteDomainInfo_controlPanelManaged {
   type: "controlPanelManaged";
   controlPanelManaged: ControlPanelManagedDomainInfo;
 }
-
 export type SiteDomainInfo = SiteDomainInfo_controlPanelManaged;

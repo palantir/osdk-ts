@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetOrderByStep } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkObject";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
 import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";

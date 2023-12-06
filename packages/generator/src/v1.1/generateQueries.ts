@@ -20,7 +20,7 @@ import type {
   QueryAggregationValueType,
   QueryDataType,
 } from "@osdk/gateway/types";
-import path from "path";
+import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { isNullableQueryDataType } from "../shared/isNullableQueryDataType";
 import { formatTs } from "../util/test/formatTs";

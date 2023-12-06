@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  InterfaceNamesFrom,
+  ObjectTypesFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import type { Client } from "./Client";
 import type { ObjectSet } from "./objectSet/ObjectSet";
 
@@ -22,7 +26,7 @@ import type { ObjectSet } from "./objectSet/ObjectSet";
  * A type that creates an object set for each object in the ontology.
  */
 export type ObjectSetCreator<D extends OntologyDefinition<any>> = {
-  [T in ObjectTypesFrom<D>]: ObjectSet<D, T>;
+  [T in ObjectTypesFrom<D> | InterfaceNamesFrom<D>]: ObjectSet<D, T>;
 };
 
 /**
