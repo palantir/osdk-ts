@@ -47,9 +47,9 @@ import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
 describe("Queries", () => {
-  let client: ClientContext<typeof MockOntology>;
+  let client: ClientContext<MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let queries: Queries<typeof MockOntology>;
+  let queries: Queries<MockOntology>;
 
   beforeEach(() => {
     try {
@@ -61,7 +61,7 @@ describe("Queries", () => {
         undefined,
         fetch,
       );
-      queries = createQueryProxy<typeof MockOntology>(client);
+      queries = createQueryProxy<MockOntology>(client);
     } catch (e) {
       console.error(e);
     }
@@ -284,6 +284,11 @@ describe("Queries", () => {
 
   describe("type tests", () => {
     it("infers the proper return type", () => {
+      type q = QueryReturnType<
+        typeof MockOntology,
+        "queryTakesAllParameterTypes"
+      >;
+
       expectTypeOf<
         QueryReturnType<typeof MockOntology, "queryTakesAllParameterTypes">
       >().toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();

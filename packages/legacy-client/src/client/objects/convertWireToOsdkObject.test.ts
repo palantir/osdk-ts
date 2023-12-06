@@ -25,7 +25,7 @@ import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
 
 describe("convertWireToOsdkObject", () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let client: ClientContext<typeof MockOntology>;
+  let client: ClientContext<MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
     client = createClientContext(
@@ -40,7 +40,7 @@ describe("convertWireToOsdkObject", () => {
   it("converts a property correctly", () => {
     const object = convertWireToOsdkObject<
       "ObjectTypeWithAllPropertyTypes",
-      typeof MockOntology
+      MockOntology
     >(client, objectWithAllPropertyTypes);
 
     const expectedGeoPoint = GeoPoint.fromGeoJson({
@@ -92,7 +92,7 @@ describe("convertWireToOsdkObject", () => {
   it("reuses the same prototype for subsequent creations", () => {
     const object1 = convertWireToOsdkObject<
       "Task",
-      typeof MockOntology
+      MockOntology
     >(client, {
       __rid: "rid.1",
       __primaryKey: 1,
@@ -102,7 +102,7 @@ describe("convertWireToOsdkObject", () => {
 
     const object2 = convertWireToOsdkObject<
       "Task",
-      typeof MockOntology
+      MockOntology
     >(client, {
       __rid: "rid.2",
       __primaryKey: 2,
@@ -123,7 +123,7 @@ describe("convertWireToOsdkObject", () => {
 
     const object = convertWireToOsdkObject<
       "Task",
-      typeof MockOntology
+      MockOntology
     >(client, wireObject);
 
     expect(object.toString()).toEqual(
@@ -140,7 +140,7 @@ describe("convertWireToOsdkObject", () => {
     } as const;
     const object = convertWireToOsdkObject<
       "ObjectTypeWithReservedNames",
-      typeof MockOntology
+      MockOntology
     >(client, wireObject);
 
     expect(object.catch).toEqual(1);

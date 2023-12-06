@@ -18,25 +18,17 @@ export interface QueryDefinition<Q extends string, K extends string> {
   apiName: Q;
   description?: string;
   displayName?: string;
-  rid: string;
   version: string;
   parameters: Record<string, QueryParameterDefinition<K>>;
   output: QueryDataTypeDefinition<K>;
 }
 
-export interface QueryParameterDefinition<K extends string> {
+export type QueryParameterDefinition<K extends string> = {
   description?: string;
-  dataType: QueryDataTypeDefinition<K>;
-}
+} & QueryDataTypeDefinition<K>;
 
-export interface QueryDataTypeDefinition<K extends string> {
-  type: QueryDataType<K>;
-  multiplicity?: boolean;
-  nullable?: boolean;
-}
-
-export type QueryDataType<K extends string> =
-  | keyof ValidBaseQueryDataTypes
+export type QueryDataTypeDefinition<K extends string> =
+  | PrimitiveDataType
   | ObjectQueryDataType<K>
   | ObjectSetQueryDataType<K>
   | SetQueryDataType<K>
@@ -45,7 +37,13 @@ export type QueryDataType<K extends string> =
   | TwoDimensionalAggregationDataType
   | ThreeDimensionalAggregationDataType;
 
-export interface ValidBaseQueryDataTypes {
+export type BaseQueryDataTypeDefinition<T extends string> = {
+  multiplicity?: boolean;
+  nullable?: boolean;
+  type: T;
+};
+
+export interface WireQueryDataTypes {
   double: number;
   float: number;
   integer: number;
@@ -57,38 +55,49 @@ export interface ValidBaseQueryDataTypes {
   attachment: any; // TODO surely we can be more strict here
 }
 
-export interface ObjectQueryDataType<K extends string> {
-  type: "object";
+export type PrimitiveDataType<
+  Q extends keyof WireQueryDataTypes = keyof WireQueryDataTypes,
+> = BaseQueryDataTypeDefinition<Q>;
+
+export interface ObjectQueryDataType<K extends string>
+  extends BaseQueryDataTypeDefinition<"object">
+{
   object: K;
 }
 
-export interface ObjectSetQueryDataType<K extends string> {
-  type: "objectSet";
+export interface ObjectSetQueryDataType<K extends string>
+  extends BaseQueryDataTypeDefinition<"objectSet">
+{
   objectSet: K;
 }
 
-export interface SetQueryDataType<K extends string> {
-  type: "set";
+export interface SetQueryDataType<K extends string>
+  extends BaseQueryDataTypeDefinition<"set">
+{
   set: QueryDataTypeDefinition<K>;
 }
 
-export interface UnionQueryDataType<K extends string> {
-  type: "union";
+export interface UnionQueryDataType<K extends string>
+  extends BaseQueryDataTypeDefinition<"union">
+{
   union: ReadonlyArray<QueryDataTypeDefinition<K>>;
 }
 
-export interface StructQueryDataType<K extends string> {
-  type: "struct";
+export interface StructQueryDataType<K extends string>
+  extends BaseQueryDataTypeDefinition<"struct">
+{
   struct: Record<string, QueryDataTypeDefinition<K>>;
 }
 
-export interface TwoDimensionalAggregationDataType {
-  type: "twoDimensionalAggregation";
+export interface TwoDimensionalAggregationDataType
+  extends BaseQueryDataTypeDefinition<"twoDimensionalAggregation">
+{
   twoDimensionalAggregation: TwoDimensionalQueryAggregationDefinition;
 }
 
-export interface ThreeDimensionalAggregationDataType {
-  type: "threeDimensionalAggregation";
+export interface ThreeDimensionalAggregationDataType
+  extends BaseQueryDataTypeDefinition<"threeDimensionalAggregation">
+{
   threeDimensionalAggregation: ThreeDimensionalQueryAggregationDefinition;
 }
 

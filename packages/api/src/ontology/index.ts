@@ -50,7 +50,6 @@ export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
-  QueryDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
@@ -63,6 +62,6 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  ValidBaseQueryDataTypes,
+  WireQueryDataTypes,
 } from "./QueryDefinition";
 export type { WirePropertyTypes } from "./WirePropertyTypes";

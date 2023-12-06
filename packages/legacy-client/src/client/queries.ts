@@ -19,6 +19,7 @@ import type {
   ObjectQueryDataType,
   ObjectSetQueryDataType,
   OntologyDefinition,
+  PrimitiveDataType,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
   SetQueryDataType,
@@ -27,7 +28,6 @@ import type {
   ThreeDimensionalAggregationDataType,
   TwoDimensionalAggregationDataType,
   UnionQueryDataType,
-  ValidBaseQueryDataTypes,
 } from "@osdk/api";
 
 import type {
@@ -72,11 +72,11 @@ export type QueryParameters<
 > = QueryDefinition<O, Q>["parameters"];
 
 export type NullableArgKeys<T> = {
-  [K in keyof T]: T[K] extends { dataType: { nullable: true } } ? K : never;
+  [K in keyof T]: T[K] extends { nullable: true } ? K : never;
 }[keyof T];
 
 export type NonNullableArgKeys<T> = {
-  [K in keyof T]: T[K] extends { dataType: { nullable: true } } ? never : K;
+  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
 }[keyof T];
 
 export type QueryArgs<
@@ -86,14 +86,14 @@ export type QueryArgs<
   & {
     [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
-      QueryParameters<O, Q>[P]["dataType"],
+      QueryParameters<O, Q>[P],
       false
     >;
   }
   & {
     [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryDataType<
       O,
-      QueryParameters<O, Q>[P]["dataType"],
+      QueryParameters<O, Q>[P],
       false
     >;
   };
@@ -104,9 +104,10 @@ export type QueryNamesFrom<O extends OntologyDefinition<any>> =
 export type QueryDataType<
   O extends OntologyDefinition<any>,
   D extends QueryDataTypeDefinition<any>,
-  R extends boolean,
-> = D["multiplicity"] extends true ? Array<QueryDataTypeBase<O, D["type"], R>>
-  : QueryDataTypeBase<O, D["type"], R>;
+  T_ReturnValue extends boolean,
+> = D["multiplicity"] extends true
+  ? Array<QueryDataTypeBase<O, D, T_ReturnValue>>
+  : QueryDataTypeBase<O, D, T_ReturnValue>;
 
 export interface ValidLegacyBaseQueryDataTypes {
   double: number;
@@ -124,7 +125,7 @@ export type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any, R>,
   R extends boolean,
-> = T extends keyof ValidBaseQueryDataTypes ? ValidLegacyBaseQueryDataTypes[T]
+> = T extends PrimitiveDataType<infer X> ? ValidLegacyBaseQueryDataTypes[X]
   : T extends ObjectQueryDataType<any>
     ? R extends true ? OsdkLegacyObjectFrom<O, T["object"]>
     :
