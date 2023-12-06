@@ -220,7 +220,7 @@ export class ObjectSetWatcherWebsocket<
     createTemporaryObjectSet(this.#conjureContext, {
       objectSet: toConjureObjectSet(objectSet),
       timeToLive: "ONE_DAY",
-      objectSetFilterContext: { parameterOverrides: {} as Map<any, any> },
+      objectSetFilterContext: { parameterOverrides: {} },
     });
     return { objectSetRid: "objectSetRid" };
   }
