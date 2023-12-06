@@ -15,39 +15,44 @@
  */
 
 import type {
-  InterfaceNamesFrom,
+  InterfaceKeysFrom,
   InterfacePropertyDefinitionFrom,
   InterfacePropertyKeysFrom,
-  ObjectInfoFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 
 export type OsdkObjectFrom<
-  T_ObjectTypeKey extends ObjectTypesFrom<T_Ontology>,
+  T_ObjectTypeKey extends ObjectTypeKeysFrom<T_Ontology>,
   T_Ontology extends OntologyDefinition<any>,
-  T_PropertyKeys extends ObjectPropertyKeysFrom<T_Ontology, T_ObjectTypeKey> =
-    ObjectPropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
+  T_PropertyKeys extends ObjectTypePropertyKeysFrom<
+    T_Ontology,
+    T_ObjectTypeKey
+  > = ObjectTypePropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
 > =
   // & {
   //   "$raw": {
   //     [P in T_PropertyKeys]: OsdkObjectRawPropertyType<
-  //       ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
+  //       ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
   //     >;
   //   };
   // }
   & {
     [P in T_PropertyKeys]: OsdkObjectPropertyType<
-      ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
+      ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
     >;
   }
   & {
     __apiName: T_ObjectTypeKey;
     __primaryKey: WirePropertyTypes[
-      ObjectInfoFrom<T_Ontology, T_ObjectTypeKey>["primaryKeyType"]
+      ObjectTypeDefinitionFrom<
+        T_Ontology,
+        T_ObjectTypeKey
+      >["primaryKeyType"]
     ];
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
@@ -57,7 +62,7 @@ export type OsdkObjectFrom<
   }; // TODO
 
 export type OsdkInterfaceFrom<
-  T_InterfaceKey extends InterfaceNamesFrom<T_Ontology>,
+  T_InterfaceKey extends InterfaceKeysFrom<T_Ontology>,
   T_Ontology extends OntologyDefinition<any>,
   T_PropertyKeys extends InterfacePropertyKeysFrom<
     T_Ontology,

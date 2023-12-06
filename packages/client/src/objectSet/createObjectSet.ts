@@ -15,8 +15,8 @@
  */
 
 import type {
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
@@ -37,7 +37,7 @@ import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket.js";
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   objectType: K & string,
   clientCtx: ClientContext<O>,
@@ -53,7 +53,7 @@ export function createObjectSet<
     //   GBC extends GroupByClause<O, K> | undefined = undefined,
     // >(req: {
     //   select: AC;
-    //   where?: WhereClause<ObjectInfoFrom<O, K>>;
+    //   where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
     //   groupBy?: GBC;
     // }) => {
     //   throw "TODO";
@@ -70,7 +70,7 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async <L extends ObjectPropertyKeysFrom<O, K>>(
+    fetchPageOrThrow: async <L extends ObjectTypePropertyKeysFrom<O, K>>(
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
       return fetchPageOrThrow(

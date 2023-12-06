@@ -15,8 +15,8 @@
  */
 
 import type {
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
@@ -49,7 +49,7 @@ function createPrototype<
 }
 
 export function convertWireToOsdkObjects<
-  T_ClientApiName extends ObjectTypesFrom<T_OntologyDefinition> & string,
+  T_ClientApiName extends ObjectTypeKeysFrom<T_OntologyDefinition> & string,
   T_OntologyDefinition extends OntologyDefinition<any>,
 >(
   client: ClientContext<T_OntologyDefinition>,
@@ -58,7 +58,7 @@ export function convertWireToOsdkObjects<
 ): OsdkObjectFrom<
   T_ClientApiName,
   T_OntologyDefinition,
-  ObjectPropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
+  ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
 >[] {
   const proto = getPrototype(client.ontology, apiName);
   for (const obj of objs) {
@@ -97,6 +97,6 @@ export function convertWireToOsdkObjects<
   return objs as unknown as OsdkObjectFrom<
     T_ClientApiName,
     T_OntologyDefinition,
-    ObjectPropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
+    ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
   >[];
 }

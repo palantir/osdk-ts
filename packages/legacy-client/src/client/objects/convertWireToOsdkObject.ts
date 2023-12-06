@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import {
@@ -107,7 +107,7 @@ function createPrototype<
 }
 
 export function convertWireToOsdkObject<
-  T extends ObjectTypesFrom<O> & string,
+  T extends ObjectTypeKeysFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(
   client: ClientContext<O>,
@@ -128,7 +128,7 @@ export function convertWireToOsdkObject<
 }
 
 function setPropertyAccessors<
-  T extends ObjectTypesFrom<O> & string,
+  T extends ObjectTypeKeysFrom<O> & string,
   O extends OntologyDefinition<any>,
 >(client: ClientContext<O>, apiName: T, obj: OntologyObjectV2) {
   for (

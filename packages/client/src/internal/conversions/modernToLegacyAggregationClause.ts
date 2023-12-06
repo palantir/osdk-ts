@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { Aggregation } from "@osdk/gateway/types";
 import type { AggregationClause } from "../../query/index.js";
 
 export function modernToLegacyAggregationClause<
   T extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<T>,
+  K extends ObjectTypeKeysFrom<T>,
   AC extends AggregationClause<T, K>,
 >(select: AC) {
   return Object.entries(select).flatMap<Aggregation>(([k, v]) => {

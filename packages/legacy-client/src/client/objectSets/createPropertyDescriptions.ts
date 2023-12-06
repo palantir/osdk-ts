@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { Properties } from "../interfaces/utils/Properties";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 
 export function createPropertyDescriptions<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O> & string,
+  K extends ObjectTypeKeysFrom<O> & string,
 >(
   ontology: O,
   type: K,

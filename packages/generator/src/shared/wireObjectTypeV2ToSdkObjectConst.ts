@@ -34,7 +34,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       null,
       2,
     )
-  } satisfies ObjectDefinition<"${object.apiName}", ${
+  } satisfies ObjectTypeDefinition<"${object.apiName}", ${
     uniqueLinkTargetTypes.size > 0
       ? [...uniqueLinkTargetTypes].map(apiName => `"${apiName}"`).join(
         "|",

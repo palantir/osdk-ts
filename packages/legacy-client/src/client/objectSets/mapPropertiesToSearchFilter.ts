@@ -15,9 +15,9 @@
  */
 
 import type {
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyDefinition,
   OntologyDefinition,
-  PropertyDefinition,
 } from "@osdk/api";
 import type { ObjectSetFilterArg } from "../interfaces/filters";
 import {
@@ -36,7 +36,7 @@ import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToSearchFilter<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   ontology: O,
   type: K,
@@ -78,7 +78,7 @@ export function mapPropertiesToSearchFilter<
 
 function mapPropertyTypeToSearchFilter(
   propertyApiName: string,
-  propertyDefinition: PropertyDefinition,
+  propertyDefinition: ObjectTypePropertyDefinition,
 ) {
   if (propertyDefinition.multiplicity) {
     return ArrayFilter(propertyApiName);

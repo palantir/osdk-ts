@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
@@ -67,7 +67,7 @@ export class ObjectSetWatcherWebsocket<
     };
   }
 
-  async subscribe<K extends ObjectTypesFrom<O>>(
+  async subscribe<K extends ObjectTypeKeysFrom<O>>(
     objectSet: ObjectSet<O, K>,
     listener: ObjectSetListener<O, K>,
   ): Promise<() => void> {
@@ -210,7 +210,7 @@ export class ObjectSetWatcherWebsocket<
     });
   }
 
-  async #createTemporaryObjectSet<K extends ObjectTypesFrom<O>>(
+  async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
     objectSet: ObjectSet<O, K>,
   ) {
     // TODO do we need to do something when the subscription expires on the server?
@@ -237,21 +237,21 @@ export class ObjectSetWatcherWebsocket<
 
 function getObjectSetBaseType<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(objectSet: ObjectSet<O, K>) {
   return "baseType";
 }
 
 function toConjureObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(objectSet: ObjectSet<O, K>) {
   return undefined as any;
 }
 
 function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   objects: ReadonlyArray<FoundryObject>,
 ): Array<OsdkObject<K & string>> {

@@ -15,34 +15,33 @@
  */
 
 export type {
-  InterfaceDefinition,
-  InterfaceInfoFrom,
-  InterfaceNamesFrom,
-  InterfacePropertyDefinitionFrom,
-  InterfacePropertyDefinitionsFrom,
-  InterfacePropertyKeysFrom,
-  LinkDefinition,
-  LinkDefinitionFrom,
-  LinkKeysFrom,
-  LinkTargetTypeFrom,
-  ObjectDefinition,
-  ObjectInfoFrom,
-  ObjectPropertyDefinitionFrom,
-  ObjectPropertyDefinitionsFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
-  OntologyDefinition,
-  PropertyDefinition,
-  WirePropertyTypes,
-} from "./ontology/Definition";
-
-export type {
   ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";
-
+export type {
+  InterfaceDefinition,
+  InterfaceDefinitionFrom,
+  InterfaceKeysFrom,
+  InterfacePropertyDefinitionFrom,
+  InterfacePropertyDefinitionsFrom,
+  InterfacePropertyKeysFrom,
+} from "./ontology/InterfaceDefinition";
+export type {
+  ObjectTypeDefinition,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkDefinition,
+  ObjectTypeLinkDefinitionFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  ObjectTypePropertyDefinition,
+  ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyDefinitionsFrom,
+  ObjectTypePropertyKeysFrom,
+} from "./ontology/ObjectTypeDefinition";
+export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
@@ -61,3 +60,4 @@ export type {
   UnionQueryDataType,
   ValidBaseQueryDataTypes,
 } from "./ontology/QueryDefinition";
+export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";

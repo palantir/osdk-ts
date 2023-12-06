@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { LoadObjectSetError } from "../errors";
@@ -26,7 +26,7 @@ import { loadObjectsPage } from "./loadObjectsPage";
 
 export async function loadAllObjects<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   T extends OsdkLegacyObjectFrom<O, K>,
 >(
   client: ClientContext<O>,

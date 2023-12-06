@@ -15,23 +15,23 @@
  */
 
 import type {
-  ObjectInfoFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 
 type Q<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-  P extends ObjectPropertyKeysFrom<O, K>,
-> = ObjectInfoFrom<O, K>["properties"][P]["type"] extends "string" ? K
-  : ObjectInfoFrom<O, K>["properties"][P]["type"] extends "double" ? K
+  K extends ObjectTypeKeysFrom<O>,
+  P extends ObjectTypePropertyKeysFrom<O, K>,
+> = ObjectTypeDefinitionFrom<O, K>["properties"][P]["type"] extends "string" ? K
+  : ObjectTypeDefinitionFrom<O, K>["properties"][P]["type"] extends "double" ? K
   : never;
 
 export type AggregatableKeys<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 > = keyof {
-  [P in ObjectPropertyKeysFrom<O, K>]: any;
+  [P in ObjectTypePropertyKeysFrom<O, K>]: any;
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
@@ -34,7 +34,7 @@ import type {
 
 export async function aggregateOrThrow<
   T extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<T>,
+  K extends ObjectTypeKeysFrom<T>,
   const AO extends AggregateOpts<T, K, any>,
 >(
   clientCtx: ClientContext<T>,

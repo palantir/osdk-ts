@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetOrderByStep } from "../interfaces";
@@ -31,7 +31,7 @@ const getOrderByProperties = createCachedOntologyTransform(
 
 export function createObjectSetBaseOrderByStepMethod<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   client: ClientContext<O>,
   apiName: K,
@@ -58,7 +58,7 @@ export function createObjectSetBaseOrderByStepMethod<
 
 function createObjectSetOrderByStep<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   client: ClientContext<O>,
   apiName: K,

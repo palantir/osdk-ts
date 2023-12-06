@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 
 export const ObjectTypeWithReservedNames = {
   apiName: "ObjectTypeWithReservedNames",
@@ -31,7 +31,7 @@ export const ObjectTypeWithReservedNames = {
       type: "integer",
     },
   },
-} satisfies ObjectDefinition<
+} satisfies ObjectTypeDefinition<
   "ObjectTypeWithReservedNames",
   "ObjectTypeWithReservedNames"
 >;

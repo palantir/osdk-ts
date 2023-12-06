@@ -15,9 +15,9 @@
  */
 
 import {
-  type LinkKeysFrom,
-  type LinkTargetTypeFrom,
-  type ObjectTypesFrom,
+  type ObjectTypeKeysFrom,
+  type ObjectTypeLinkKeysFrom,
+  type ObjectTypeLinkTargetTypeFrom,
   type OntologyDefinition,
 } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
@@ -27,13 +27,15 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export async function followLinkOrThrow<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-  L extends LinkKeysFrom<O, K>,
+  K extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypeLinkKeysFrom<O, K>,
 >(
   clientCtx: ClientContext<O>,
   sourceObject: OsdkObjectFrom<K, O>,
   link: L,
-): Promise<PageResult<OsdkObjectFrom<LinkTargetTypeFrom<O, K, L>, O>>> {
+): Promise<
+  PageResult<OsdkObjectFrom<ObjectTypeLinkTargetTypeFrom<O, K, L>, O>>
+> {
   const r = await listLinkedObjectsV2(
     createOpenApiRequest(clientCtx.stack, clientCtx.fetch),
     clientCtx.ontology.metadata.ontologyApiName,

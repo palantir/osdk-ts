@@ -15,9 +15,9 @@
  */
 
 import type {
-  ObjectPropertyDefinitionFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
@@ -29,13 +29,13 @@ type SubselectKeys<AC extends AggregationClause<any, any>, P extends keyof AC> =
 
 export type AggregationResultsWithoutGroups<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   AC extends AggregationClause<O, K>,
 > = {
-  [P in ObjectPropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
+  [P in ObjectTypePropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
     readonly string[] | string ? {
       [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
-        : OsdkObjectPropertyType<ObjectPropertyDefinitionFrom<O, K, P>>;
+        : OsdkObjectPropertyType<ObjectTypePropertyDefinitionFrom<O, K, P>>;
     }
     : never;
 };
