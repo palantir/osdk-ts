@@ -5,13 +5,14 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "tsc && vite build",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json",
+    "codegen": "rm -rf src/generatedNoCheck/* src/generatedNoCheck2/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json && osdk unstable typescript generate --outDir src/generatedNoCheck2 --beta --ontologyPath ontology.json",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*",
     "@osdk/legacy-client": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
