@@ -100,7 +100,7 @@ export function createObjectSet<
 
     subscribe(listener) {
       const instance = ObjectSetWatcherWebsocket.getInstance(thinClient);
-      return instance.subscribe(this, listener);
+      return instance.subscribe(objectSet, listener);
     },
   };
 

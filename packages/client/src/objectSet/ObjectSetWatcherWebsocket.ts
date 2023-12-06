@@ -24,16 +24,16 @@ import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import type { OsdkObjectFrom } from "..";
-import type { ObjectSet as OssObjectSet } from "../generated/object-set-service/api";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
 import type { StreamMessage } from "../generated/object-set-watcher/StreamMessage.js";
 import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService";
+import type { Wire } from "../internal/net";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects";
 import { Deferred } from "./Deferred";
-import type { ObjectSet } from "./ObjectSet";
 import type { ObjectSetListener } from "./ObjectSetWatcher";
+import { toConjureObjectSet } from "./toConjureObjectSet";
 
 export class ObjectSetWatcherWebsocket<
   O extends OntologyDefinition<any, any, any>,
@@ -76,7 +76,7 @@ export class ObjectSetWatcherWebsocket<
   }
 
   async subscribe<K extends ObjectTypesFrom<O>>(
-    objectSet: ObjectSet<O, K>,
+    objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): Promise<() => void> {
     const [temporaryObjectSet] = await Promise.all([
@@ -224,11 +224,12 @@ export class ObjectSetWatcherWebsocket<
   }
 
   async #createTemporaryObjectSet<K extends ObjectTypesFrom<O>>(
-    objectSet: ObjectSet<O, K>,
+    objectSet: Wire.ObjectSet,
   ) {
     // TODO do we need to do something when the subscription expires on the server?
     createTemporaryObjectSet(this.#conjureContext, {
-      objectSet: toConjureObjectSet(objectSet),
+      // TODO: Get a mapping here
+      objectSet: toConjureObjectSet(objectSet, {} as any),
       timeToLive: "ONE_DAY",
       objectSetFilterContext: { parameterOverrides: {} as Map<any, any> },
     });
@@ -251,14 +252,8 @@ export class ObjectSetWatcherWebsocket<
 function getObjectSetBaseType<
   O extends OntologyDefinition<any>,
   K extends ObjectTypesFrom<O>,
->(objectSet: ObjectSet<O, K>) {
+>(objectSet: Wire.ObjectSet) {
   return "baseType";
-}
-
-function toConjureObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
->(objectSet: ObjectSet<O, K>): OssObjectSet {
 }
 
 async function convertFoundryToOsdkObjects<
@@ -300,9 +295,10 @@ async function convertFoundryToOsdkObjects<
   return osdkObjects;
 }
 
-type ObjectPropertyMapping = {
+export type ObjectPropertyMapping = {
   apiName: string;
   propertyIdToApiNameMapping: Record<string, string>;
+  propertyApiNameToIdMapping: Record<string, string>;
 };
 
 const objectTypeMapping = new WeakMap<
@@ -333,17 +329,28 @@ async function getOntologyPropertyMapping(
 
     invariant(entities.objectTypes[objectRid], "object type should be loaded");
 
-    const propertyMapping: Record<string, string> = Object.fromEntries(
-      Object.values(entities.objectTypes[objectRid].propertyTypes).map(
-        property => {
-          return [property.id, property.apiName!];
-        },
-      ),
-    );
+    const propertyIdToApiNameMapping: Record<string, string> = Object
+      .fromEntries(
+        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+          property => {
+            return [property.id, property.apiName!];
+          },
+        ),
+      );
+
+    const propertyApiNameToIdMapping: Record<string, string> = Object
+      .fromEntries(
+        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+          property => {
+            return [property.id, property.apiName!];
+          },
+        ),
+      );
 
     objectTypeMapping.get(ctx)?.set(objectRid, {
       apiName: entities.objectTypes[objectRid].apiName!,
-      propertyIdToApiNameMapping: propertyMapping,
+      propertyIdToApiNameMapping,
+      propertyApiNameToIdMapping,
     });
   }
 
