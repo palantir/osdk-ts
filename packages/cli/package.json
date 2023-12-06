@@ -30,7 +30,7 @@
     "@osdk/api": "workspace:*",
     "@osdk/generator": "workspace:*",
     "archiver": "^6.0.1",
-    "conjure-lite": "0.1.1",
+    "conjure-lite": "0.3.1",
     "consola": "^3.2.3",
     "find-up": "^6.3.0",
     "yargs": "^17.7.2"
