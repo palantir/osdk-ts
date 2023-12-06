@@ -27,7 +27,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   tokenProvider: () => Promise<string> | string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client<O> {
-  const thinClient = createClientContext<O>(
+  const clientCtx = createClientContext<O>(
     ontology,
     stack,
     tokenProvider,
@@ -36,7 +36,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   );
 
   const objectSetFactory: ObjectSetFactory<O> = (type, opts) =>
-    createObjectSet(type, thinClient, opts);
+    createObjectSet(type, clientCtx, opts);
 
   const client: Client<O> = Object.defineProperties(
     {} as Client<O>,

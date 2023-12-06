@@ -32,9 +32,9 @@ invariant(process.env.FOUNDRY_STACK != undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
 
 /**
- * TLDR: If you're starting out, just use `client` and ignore `thinClient`.
+ * TLDR: If you're starting out, just use `client` and ignore ` clientCtx`.
  *
- * The client and thinClient simply demonstrate two different ways to use the OSDK.
+ * The client and  clientCtx simply demonstrate two different ways to use the OSDK.
  *
  * The `client`, being concrete, won't tree shake as well. So if you're doing something
  * like really tiny lazily loaded pages, there may be a cost you don't want to pay.
@@ -48,7 +48,7 @@ export const client = createClient(
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
-export const thinClient = createClientContext(
+export const clientCtx = createClientContext(
   Ontology as OntologyType,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
@@ -61,9 +61,9 @@ async function runTests() {
     await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
     await fetchAggregationForEmployees(client);
     await fetchAggregationForEmployeesGrouped(client);
-    await fetchEmployeePageThin(thinClient);
+    await fetchEmployeePageThin(clientCtx);
 
-    await fetchAggregationForEmployeesGroupedThin(thinClient);
+    await fetchAggregationForEmployeesGroupedThin(clientCtx);
     await fetchEmployeeLead(client, "bob");
 
     const interfaceImplementationComplete = false;

@@ -94,7 +94,7 @@ describe("aggregateOrThrow", () => {
       json: () => new Promise((resolve) => resolve(aggregationResponse)),
     });
 
-    const thinClient = createClientContext(
+    const clientCtx = createClientContext(
       mockOntology as MockOntology,
       "host.com",
       () => "",
@@ -102,7 +102,7 @@ describe("aggregateOrThrow", () => {
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(thinClient, "Todo", {
+    const notGrouped = await aggregateOrThrow(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
         priority: "avg",
@@ -123,7 +123,7 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(thinClient, "Todo", {
+    const grouped = await aggregateOrThrow(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
       },

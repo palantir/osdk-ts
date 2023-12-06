@@ -22,9 +22,9 @@ import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGroupedThin(
-  thinClient: ClientContext<OntologyType>,
+  clientCtx: ClientContext<OntologyType>,
 ) {
-  const result = await aggregateOrThrow(thinClient, "Employee", {
+  const result = await aggregateOrThrow(clientCtx, "Employee", {
     select: {
       locationCity: "approximateDistinct",
       locationName: "approximateDistinct",

@@ -25,17 +25,17 @@ export function isAttachment(obj: any): obj is Attachment {
 }
 
 export const AttachmentProperty = (
-  thinClient: ClientContext<OntologyDefinition<any>>,
+  clientCtx: ClientContext<OntologyDefinition<any>>,
   attachmentRid: string,
 ): Attachment => {
   return {
     attachmentRid: attachmentRid,
     type: "Attachment" as const,
     getMetadata() {
-      return getAttachmentMetadata(thinClient, attachmentRid);
+      return getAttachmentMetadata(clientCtx, attachmentRid);
     },
     read() {
-      return getAttachment(thinClient, attachmentRid);
+      return getAttachment(clientCtx, attachmentRid);
     },
   };
 };

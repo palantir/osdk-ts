@@ -37,7 +37,7 @@ export async function aggregateOrThrow<
   K extends ObjectTypesFrom<T>,
   const AO extends AggregateOpts<T, K, any>,
 >(
-  thinClient: ClientContext<T>,
+  clientCtx: ClientContext<T>,
   objectType: K & string,
   req: AO,
 ): Promise<AggregationsResults<T, K, AO>> {
@@ -59,10 +59,10 @@ export async function aggregateOrThrow<
   }
   const result = await aggregateObjectsV2(
     createOpenApiRequest(
-      thinClient.stack,
-      thinClient.fetch,
+      clientCtx.stack,
+      clientCtx.fetch,
     ),
-    thinClient.ontology.metadata.ontologyApiName,
+    clientCtx.ontology.metadata.ontologyApiName,
     objectType,
     body,
   );

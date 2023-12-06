@@ -23,9 +23,9 @@ import { expectType } from "ts-expect";
 import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeePageThin(
-  thinClient: ClientContext<OntologyType>,
+  clientCtx: ClientContext<OntologyType>,
 ) {
-  let result = await fetchPageOrThrow(thinClient, "Employee", {
+  let result = await fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
@@ -42,17 +42,17 @@ export async function fetchEmployeePageThin(
   >(false);
 
   // OR
-  let result2 = await Objects.fetchPageOrThrow(thinClient, "Employee", {
+  let result2 = await Objects.fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
   // or
-  let result3 = await OsdkApi.Objects.fetchPageOrThrow(thinClient, "Employee", {
+  let result3 = await OsdkApi.Objects.fetchPageOrThrow(clientCtx, "Employee", {
     select: ["adUsername", "businessTitle", "employeeNumber"],
   });
 
   // Quick check to make sure we get everything
-  let result4 = await fetchPageOrThrow(thinClient, "Employee", {});
+  let result4 = await fetchPageOrThrow(clientCtx, "Employee", {});
 
   console.log("fetchEmployeePageThin(): ");
   console.table(

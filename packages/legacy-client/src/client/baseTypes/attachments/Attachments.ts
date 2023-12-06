@@ -29,11 +29,11 @@ export interface Attachments {
 }
 
 export const Attachments = (
-  thinClient: ClientContext<OntologyDefinition<any>>,
+  clientCtx: ClientContext<OntologyDefinition<any>>,
 ) => {
   return {
     upload(fileName: string, data: Blob) {
-      return uploadAttachment(thinClient, fileName, data);
+      return uploadAttachment(clientCtx, fileName, data);
     },
   };
 };

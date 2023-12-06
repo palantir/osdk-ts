@@ -40,7 +40,7 @@ export function createObjectSet<
   K extends ObjectTypesFrom<O>,
 >(
   objectType: K & string,
-  thinClient: ClientContext<O>,
+  clientCtx: ClientContext<O>,
   opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
     type: "base",
@@ -65,7 +65,7 @@ export function createObjectSet<
     >(
       req: AO,
     ): Promise<AggregationsResults<O, K, AO>> => {
-      return aggregateOrThrow(thinClient, objectType, req);
+      return aggregateOrThrow(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
@@ -74,7 +74,7 @@ export function createObjectSet<
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
       return fetchPageOrThrow(
-        thinClient,
+        clientCtx,
         objectType,
         args ?? {},
         objectSet,
@@ -85,7 +85,7 @@ export function createObjectSet<
     //   throw "";
     // },
     where: (clause) => {
-      return createObjectSet(objectType, thinClient, opts, {
+      return createObjectSet(objectType, clientCtx, opts, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause),
@@ -103,7 +103,7 @@ export function createObjectSet<
     },
 
     subscribe(listener) {
-      const instance = ObjectSetWatcherWebsocket.getInstance(thinClient);
+      const instance = ObjectSetWatcherWebsocket.getInstance(clientCtx);
       return instance.subscribe(this, listener);
     },
   };
@@ -112,7 +112,7 @@ export function createObjectSet<
     return () => {
       return createObjectSet(
         objectType,
-        thinClient,
+        clientCtx,
         {},
         {
           type: "searchAround",
