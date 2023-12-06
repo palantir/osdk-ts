@@ -232,7 +232,7 @@ export class ObjectSetWatcherWebsocket<
       // TODO: Get a mapping here
       objectSet: toConjureObjectSet(objectSet, {} as any),
       timeToLive: "ONE_DAY",
-      objectSetFilterContext: { parameterOverrides: {} as Map<any, any> },
+      objectSetFilterContext: { parameterOverrides: {} },
     });
     return { objectSetRid: "objectSetRid" };
   }
