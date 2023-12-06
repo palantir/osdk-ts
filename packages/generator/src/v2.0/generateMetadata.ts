@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition } from "@osdk/api";
+import path from "path";
+import type { MinimalFs } from "../MinimalFs";
+import { formatTs } from "../util/test/formatTs";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
-export const Todo = {
-  apiName: "Todo",
-  primaryKeyType: "double",
-  properties: {
-    id: {
-      type: "double",
-    },
-    priority: {
-      type: "double",
-    },
-    complete: {
-      type: "boolean",
-    },
-    text: {
-      type: "string",
-    },
-  },
-  links: {},
-} satisfies ObjectDefinition<"Todo", "Todo">;
+export async function generateOntologyMetadataFile(
+  ontology: WireOntologyDefinition,
+  fs: MinimalFs,
+  outDir: string,
+) {
+  fs.writeFile(
+    path.join(outDir, "OntologyMetadata.ts"),
+    await formatTs(
+      `
+      export const OntologyMetadata = {
+        ontologyRid: "${ontology.rid}",
+        ontologyApiName: "${ontology.apiName}",
+        userAgent: "foundry-typescript-osdk/2.0.0",
+      }
+      `,
+    ),
+  );
+}

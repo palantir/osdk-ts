@@ -16,7 +16,7 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
+import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
@@ -42,22 +42,8 @@ export async function generatePerObjectInterfaceAndDataFiles(
           )
         }
 
-         export const ${object.apiName} = ${
-          JSON.stringify(
-            wireObjectTypeV2ToSdkObjectDefinition(
-              object,
-              links,
-            ),
-            null,
-            2,
-          )
-        } satisfies ObjectDefinition<"${object.apiName}", ${
-          uniqueApiNames.size > 0
-            ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join(
-              "|",
-            )
-            : "never"
-        }>;`),
+        ${wireObjectTypeV2ToSdkObjectConst(object, links)}
+        `),
       );
     }),
   );

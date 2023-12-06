@@ -36,6 +36,11 @@ export const command: CommandModule<
           type: "string",
           demandOption: true,
         },
+        beta: {
+          type: "boolean",
+          description: "Should generate beta sdk",
+          demandOption: false,
+        },
       }).group(
         ["outDir", "ontologyPath"],
         "Version To Deploy (requires one of)",

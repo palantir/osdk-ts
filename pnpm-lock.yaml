@@ -116,6 +116,9 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/client
     devDependencies:
+      '@osdk/cli':
+        specifier: workspace:*
+        version: link:../../../packages/cli
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
