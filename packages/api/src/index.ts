@@ -30,10 +30,10 @@ export type {
   ObjectPropertyDefinitionFrom,
   ObjectPropertyDefinitionsFrom,
   ObjectPropertyKeysFrom,
-  ObjectTypesFrom as ObjectTypesFrom,
+  ObjectTypesFrom,
   OntologyDefinition,
   PropertyDefinition,
-  WirePropertyTypes as WirePropertyTypes,
+  WirePropertyTypes,
 } from "./ontology/Definition";
 
 export type {
