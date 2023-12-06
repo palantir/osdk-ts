@@ -1,4 +1,4 @@
-import type { ObjectDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const Todo = {
   apiName: 'Todo',
@@ -23,4 +23,4 @@ export const Todo = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'Todo', never>;
+} satisfies ObjectTypeDefinition<'Todo', never>;
