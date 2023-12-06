@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
 import { uploadAttachment as gatewayUploadAttachment } from "@osdk/gateway/requests";
-
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { Attachment } from "../baseTypes";
 import { AttachmentProperty } from "../baseTypes";
 import type { AttachmentsError } from "../errors";

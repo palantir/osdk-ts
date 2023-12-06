@@ -100,6 +100,9 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1
     devDependencies:
+      '@osdk/cli':
+        specifier: workspace:*
+        version: link:../../../packages/cli
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -125,6 +128,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@osdk/cli':
+        specifier: workspace:*
+        version: link:../../packages/cli
       '@osdk/generator':
         specifier: workspace:*
         version: link:../../packages/generator
@@ -132,9 +138,6 @@ importers:
         specifier: workspace:*
         version: link:../../packages/legacy-client
     devDependencies:
-      '@osdk/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -262,6 +265,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
       '@types/geojson':
         specifier: ^7946.0.13
         version: 7946.0.13
@@ -287,6 +293,9 @@ importers:
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
       archiver:
         specifier: ^6.0.1
         version: 6.0.1
@@ -330,6 +339,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
       conjure-lite:
         specifier: ^0.3.1
         version: 0.3.1
@@ -414,6 +426,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
@@ -433,6 +448,22 @@ importers:
       '@types/ngeohash':
         specifier: ^0.6.4
         version: 0.6.4
+      ts-expect:
+        specifier: ^1.3.0
+        version: 1.3.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+
+  packages/shared.net:
+    dependencies:
+      '@osdk/gateway':
+        specifier: workspace:*
+        version: link:../gateway
+      fetch-retry:
+        specifier: ^5.0.6
+        version: 5.0.6
+    devDependencies:
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0

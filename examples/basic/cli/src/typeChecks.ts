@@ -17,7 +17,7 @@
 import type { Client } from "@osdk/client";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "./OntologyType";
+import type { OntologyType } from "./OntologyType.js";
 
 /**
  * As a consumer of OSDK, you will not need to use this file ever. It is simply here

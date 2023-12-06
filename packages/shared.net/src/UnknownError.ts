@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import type * as ontology from "../ontology";
-import type { FetchAsJsonFn } from "../util";
+import { PalantirApiError } from "./PalantirApiError.js";
 
-export interface ThinClient<O extends ontology.OntologyDefinition<any>> {
-  ontology: O;
-  stack: string;
-  /**
-   * The fetch function to use for all requests.
-   *
-   * TODO: Document what is needed to get retry logic
-   */
-  fetch: typeof globalThis.fetch;
-
-  fetchJson: FetchAsJsonFn;
-
-  tokenProvider: () => Promise<string> | string;
+export class UnknownError extends PalantirApiError {
+  originalError: Error | undefined;
+  constructor(message: string, errorType: string, originalError?: Error) {
+    super(message, errorType);
+    this.originalError = originalError;
+  }
 }

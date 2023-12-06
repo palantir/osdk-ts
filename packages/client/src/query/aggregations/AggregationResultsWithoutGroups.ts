@@ -21,8 +21,8 @@ import type {
   OntologyDefinition,
   OsdkObjectPropertyType,
 } from "@osdk/api";
-import type { StringArrayToUnion } from "../../util/StringArrayToUnion";
-import type { AggregationClause } from "./AggregationsClause";
+import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
 type SubselectKeys<AC extends AggregationClause<any, any>, P extends keyof AC> =
   AC[P] extends readonly string[] | string ? P : never;

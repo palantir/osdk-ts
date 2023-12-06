@@ -15,7 +15,7 @@
  */
 
 import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause";
+import type { GroupByClause } from "./GroupByClause.js";
 
 export type F = GroupByClause<
   {
@@ -37,7 +37,6 @@ export type F = GroupByClause<
     };
     actions: {};
     queries: {};
-    interfaces: {};
   },
   "Todo"
 >;

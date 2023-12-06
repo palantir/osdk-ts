@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { createOpenApiRequest } from "@osdk/api";
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { getAttachment } from "@osdk/gateway/requests";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { AttachmentMetadata } from "../baseTypes";
 import { AttachmentsErrorHandler, handleAttachmentsError } from "../errors";
 import type { AttachmentsError } from "../errors";

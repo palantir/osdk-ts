@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import {
-  type ObjectTypesFrom,
-  type OntologyDefinition,
-  type ThinClient,
-} from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import { ThinClient } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
-import type { OsdkObject } from "..";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
 import type { StreamMessage } from "../generated/object-set-watcher/StreamMessage.js";
-import { Deferred } from "./Deferred";
-import type { ObjectSet } from "./ObjectSet";
-import type { ObjectSetListener } from "./ObjectSetWatcher";
+import type { OsdkObject } from "../OsdkObject.js";
+import { Deferred } from "./Deferred.js";
+import type { ObjectSet } from "./ObjectSet.js";
+import type { ObjectSetListener } from "./ObjectSetWatcher.js";
 
 export class ObjectSetWatcherWebsocket<
   O extends OntologyDefinition<any, any, any>,

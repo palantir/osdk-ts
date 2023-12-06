@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import type { ActionExecutionOptions } from "../..";
 import { executeAction } from "../net/executeAction";
 import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";

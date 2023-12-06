@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * as Wire from "./types";
+export * as Wire from "./types.js";

@@ -20,11 +20,11 @@ import type {
   OntologyDefinition,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
-  ThinClient,
 } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
 import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import { createOsdkObjectSet } from "..";
 import { LocalDate, Timestamp } from "../baseTypes";
 import type {

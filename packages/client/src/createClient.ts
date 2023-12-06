@@ -15,11 +15,11 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
-import type { Client } from "./Client";
-import { createObjectSet } from "./objectSet/createObjectSet";
-import type { ObjectSetFactory } from "./objectSet/ObjectSet";
-import { createObjectSetCreator } from "./ObjectSetCreator";
+import { createThinClient } from "@osdk/shared.net";
+import type { Client } from "./Client.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
+import type { ObjectSetFactory } from "./objectSet/ObjectSet.js";
+import { createObjectSetCreator } from "./ObjectSetCreator.js";
 
 export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
@@ -31,6 +31,7 @@ export function createClient<O extends OntologyDefinition<any>>(
     ontology,
     stack,
     tokenProvider,
+    "@osdk/client/0.0.0 ()",
     fetchFn,
   );
 

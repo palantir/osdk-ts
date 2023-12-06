@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
-
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import { getFirstPoint } from "../../../client/net/getFirstPoint";
 import { getLastPoint } from "../../../client/net/getLastPoint";
 import type { TimeSeries } from "./TimeSeries";

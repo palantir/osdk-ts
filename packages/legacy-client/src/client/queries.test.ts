@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient, isOk } from "@osdk/api";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
+import { createThinClient, isOk } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -58,6 +58,7 @@ describe("Queries", () => {
         MockOntology,
         MOCK_ORIGIN,
         () => "Token",
+        undefined,
         fetch,
       );
       queries = createQueryProxy<typeof MockOntology>(client);

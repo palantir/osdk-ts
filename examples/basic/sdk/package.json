@@ -8,12 +8,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -45,5 +45,6 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import type {
   StreamTimeSeriesPointsRequest,
   TimeRange,
 } from "@osdk/gateway/types";
+import type { ThinClient } from "@osdk/shared.net";
 import type { Timestamp } from "../timestamp";
 import type { TimeSeriesDuration } from "./TimeSeriesDuration";
 import { DurationUnit, WhenUnit } from "./TimeSeriesDuration";

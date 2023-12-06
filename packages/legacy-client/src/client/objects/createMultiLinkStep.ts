@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
 import { getLinkedObject } from "../net/getLinkedObject";

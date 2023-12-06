@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import type { OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, LinkedObjectNotFound } from "../errors";
 import { isErr, type Result } from "../Result";

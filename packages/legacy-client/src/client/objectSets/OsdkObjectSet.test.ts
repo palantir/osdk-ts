@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient, isOk } from "@osdk/api";
 import type {
   AggregateObjectSetResponseV2,
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
+import { createThinClient, isOk } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import {
   beforeEach,
   describe,
@@ -29,6 +29,7 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
+import { USER_AGENT } from "../../USER_AGENT";
 import { MockOntology } from "../../util/test";
 import { mockFetchResponse } from "../../util/test/fetchUtils";
 import {
@@ -52,6 +53,7 @@ describe("OsdkObjectSet", () => {
       MockOntology,
       origin,
       () => "Token",
+      undefined,
       fetch,
     );
   });
@@ -323,6 +325,7 @@ describe("OsdkObjectSet", () => {
       MockOntology,
       origin,
       () => "Token",
+      USER_AGENT,
       fetch1,
     );
 
@@ -336,6 +339,7 @@ describe("OsdkObjectSet", () => {
       MockOntology,
       origin,
       () => "Token",
+      USER_AGENT,
       fetch2,
     );
 

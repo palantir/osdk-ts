@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import type { Actions } from "./actions/actions";
 import { createActionProxy } from "./actions/createActionProxy";
 import { Attachments } from "./baseTypes";

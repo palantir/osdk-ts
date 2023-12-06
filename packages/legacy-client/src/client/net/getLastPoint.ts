@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  createOpenApiRequest,
-  type OntologyDefinition,
-  type ThinClient,
-} from "@osdk/api";
+import { type OntologyDefinition } from "@osdk/api";
 import { getLastPoint as gatewayGetLastPoint } from "@osdk/gateway/requests";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { TimeSeriesPoint } from "../baseTypes";
 import { Timestamp } from "../baseTypes";
 import type { TimeSeriesError } from "../errors";

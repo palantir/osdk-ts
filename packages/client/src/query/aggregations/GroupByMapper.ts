@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { StringGroupByValue } from "./GroupByClause";
+import type { StringGroupByValue } from "./GroupByClause.js";
 
 export interface GroupByMapper {
   string: StringGroupByValue;

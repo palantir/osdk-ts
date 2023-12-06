@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
 import type { TimeSeriesPoint } from "@osdk/gateway/types";
+import type { ThinClient } from "@osdk/shared.net";
+import { createThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockOntology } from "../../util/test";
@@ -35,6 +35,7 @@ describe(getFirstPoint, () => {
     MockOntology,
     MOCK_ORIGIN,
     () => "Token",
+    undefined,
     fetch,
   );
   beforeEach(() => {

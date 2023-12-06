@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { handleLoadObjectSetError, LoadObjectSetErrorHandler } from "../errors";
 import type { LoadObjectSetError } from "../errors";

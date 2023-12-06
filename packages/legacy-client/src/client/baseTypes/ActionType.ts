@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
+import type { ThinClient } from "@osdk/shared.net";
 import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";

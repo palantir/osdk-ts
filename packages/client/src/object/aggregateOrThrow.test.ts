@@ -15,13 +15,13 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
 import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
+import { createThinClient } from "@osdk/shared.net";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import { aggregateOrThrow } from "./aggregateOrThrow";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
 const mockOntology = {
   metadata: {
@@ -98,6 +98,7 @@ describe("aggregateOrThrow", () => {
       mockOntology as MockOntology,
       "host.com",
       () => "",
+      undefined,
       mockFetch,
     );
 

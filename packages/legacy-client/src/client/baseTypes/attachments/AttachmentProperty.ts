@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import { getAttachment } from "../../../client/net/getAttachment";
 import { getAttachmentMetadata } from "../../../client/net/getAttachmentMetadata";
 import type { Attachment } from "./Attachment";

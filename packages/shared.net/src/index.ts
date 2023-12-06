@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-export { createFetchHeaderMutator } from "./createFetchHeaderMutator";
-export { createFetchOrThrow } from "./createFetchOrThrow";
-export { createRetryingFetch } from "./createRetryingFetch";
-export { createFetchAsJson } from "./FetchAsJson";
-export type { FetchAsJsonFn } from "./FetchAsJson";
-export { stringifyBody } from "./stringifyBody";
+export { createOpenApiRequest } from "./client/createOpenApiRequest.js";
+export { createThinClient } from "./createThinClient.js";
+export type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
+export { PalantirApiError } from "./PalantirApiError.js";
+export { isOk, type ResultOrError } from "./ResultOrError.js";
+export type { ThinClient } from "./ThinClient.js";
+export { UnknownError } from "./UnknownError.js";
+export { createFetchHeaderMutator } from "./util/createFetchHeaderMutator.js";

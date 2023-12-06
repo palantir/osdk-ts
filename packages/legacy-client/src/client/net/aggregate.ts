@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
-
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { AggregateObjectsError } from "../errors";
 import {

@@ -122,12 +122,12 @@ function standardPackageRules(shared) {
             ".": {
               types: "./build/types/index.d.ts",
               import: "./build/js/index.mjs",
-              require: "./build/js/index.js",
+              require: "./build/js/index.cjs",
             },
             "./*": {
               types: "./build/types/public/*.d.ts",
               import: "./build/js/public/*.mjs",
-              require: "./build/js/public/*.js",
+              require: "./build/js/public/*.cjs",
             },
           },
           publishConfig: {
@@ -272,6 +272,23 @@ export default {
         },
       },
       includePackages: ["@osdk/example.*", "@osdk/tests.*"],
+    }),
+
+    fileContents({
+      includePackages: ["@osdk/internal.*"],
+      options: {
+        file: "README.md",
+        template: `
+# WARNING
+
+This is an internal only package.
+
+We may regularly break changes in this package for our own internal uses. If you use anything from this
+package you do so at your own risk.
+
+(Also, this is a generated file. Do not change directly.)
+`,
+      },
     }),
 
     alphabeticalDependencies({ includeWorkspaceRoot: true }),

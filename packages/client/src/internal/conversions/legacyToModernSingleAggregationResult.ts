@@ -18,9 +18,9 @@ import invariant from "tiny-invariant";
 import type {
   AggregationClause,
   AggregationResultsWithoutGroups,
-} from "../../query";
-import type { ArrayElement } from "../../util/ArrayElement";
-import type { Wire } from "../net";
+} from "../../query/index.js";
+import type { ArrayElement } from "../../util/ArrayElement.js";
+import type { Wire } from "../net/index.js";
 
 export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<any, any>,

@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import { createThinClient } from "@osdk/api";
-import { createClient } from "@osdk/client";
+import { createClient, createThinClient } from "@osdk/client";
 import { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
-import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees";
-import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped";
-import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin";
-import { fetchEmployeeLead } from "./examples/fetchEmployeeLead";
-import { fetchEmployeePage } from "./examples/fetchEmployeePage";
-import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername";
-import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit";
-import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin";
-import type { OntologyType } from "./OntologyType";
-import { typeChecks } from "./typeChecks";
-import type {} from "./__global";
+import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
+import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
+import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin.js";
+import { fetchEmployeeLead } from "./examples/fetchEmployeeLead.js";
+import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
+import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
+import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
+import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin.js";
+import type { OntologyType } from "./OntologyType.js";
+import { typeChecks } from "./typeChecks.js";
 
 invariant(process.env.FOUNDRY_STACK != undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
@@ -47,13 +45,13 @@ invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
 export const client = createClient(
   Ontology as OntologyType,
   process.env.FOUNDRY_STACK,
-  () => process.env.FOUNDRY_USER_TOKEN,
+  () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
 export const thinClient = createThinClient(
   Ontology as OntologyType,
   process.env.FOUNDRY_STACK,
-  () => process.env.FOUNDRY_USER_TOKEN,
+  () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
 async function runTests() {
@@ -67,6 +65,13 @@ async function runTests() {
 
     await fetchAggregationForEmployeesGroupedThin(thinClient);
     await fetchEmployeeLead(client, "bob");
+
+    const interfaceImplementationComplete = false;
+    if (interfaceImplementationComplete) {
+      const interfaceResults = await client.objects.Emailable
+        .fetchPageOrThrow();
+      interfaceResults.data[0].email;
+    }
 
     await typeChecks(client);
   } catch (e) {

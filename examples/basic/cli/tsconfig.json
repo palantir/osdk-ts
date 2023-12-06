@@ -18,6 +18,9 @@
     },
     {
       "path": "../sdk"
+    },
+    {
+      "path": "../../../packages/cli"
     }
   ]
 }

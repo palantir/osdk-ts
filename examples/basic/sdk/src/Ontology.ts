@@ -15,10 +15,10 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { Emailable } from "./interfaces/Emailable";
-import { Employee } from "./objects/Employee";
-import { Todo } from "./objects/Todo";
-import { OntologyMetadata } from "./OntologyMetadata";
+import { Emailable } from "./interfaces/Emailable.js";
+import { Employee } from "./objects/Employee.js";
+import { Todo } from "./objects/Todo.js";
+import { OntologyMetadata } from "./OntologyMetadata.js";
 
 export const Ontology = {
   metadata: OntologyMetadata,

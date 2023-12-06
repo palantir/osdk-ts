@@ -15,7 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { OntologyType } from "../OntologyType";
+import type { OntologyType } from "../OntologyType.js";
 
 /**
  * Demonstrates looking up an employee and for fun adds an `AND` and `ne`

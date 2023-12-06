@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
+import { createThinClient } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -62,6 +62,7 @@ describe("Actions", () => {
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
+      undefined,
       fetch,
     );
     actions = createActionProxy<typeof MockOntology>(client);

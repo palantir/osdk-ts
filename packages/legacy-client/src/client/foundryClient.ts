@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { createThinClient } from "@osdk/api";
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import { createThinClient } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { Auth } from "../oauth-client";
+import { USER_AGENT } from "../USER_AGENT";
 import type { FoundryClientOptions } from "./foundryClientOptions";
 import { Ontology } from "./ontology";
 
@@ -37,6 +39,7 @@ export class BaseFoundryClient<
         const getToken = await foundryClientOptions.auth.getToken();
         return getToken.accessToken;
       },
+      USER_AGENT,
       foundryClientOptions.fetchFunction,
     );
   }

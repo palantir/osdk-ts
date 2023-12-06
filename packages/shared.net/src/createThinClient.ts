@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "../ontology";
+import type { ThinClient } from "./ThinClient.js";
 import {
   createFetchAsJson,
   createFetchHeaderMutator,
   createFetchOrThrow,
   createRetryingFetch,
-} from "../util";
-import type { ThinClient } from "./ThinClient";
+} from "./util/index.js";
 
 /**
  * The goal of the thin client is to provide a way to tree shake as much as possible.
  */
-
-export function createThinClient<T extends OntologyDefinition<any>>(
+export function createThinClient<T extends { metadata: { userAgent: string } }>(
   ontology: T,
   stack: string,
   tokenProvider: () => Promise<string> | string,
+  additionalUserAgent?: `${string} (${string})`,
   fetchFn: typeof globalThis.fetch = fetch,
 ): ThinClient<T> {
   if (stack.length === 0) {
@@ -41,7 +40,12 @@ export function createThinClient<T extends OntologyDefinition<any>>(
     async (headers) => {
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
-      headers.set("Fetch-User-Agent", ontology.metadata.userAgent);
+      headers.set(
+        "Fetch-User-Agent",
+        `@osdk/shared.net/0.0.0 () ${
+          additionalUserAgent ? additionalUserAgent + " " : ""
+        }${ontology.metadata.userAgent}`,
+      );
       return headers;
     },
   );

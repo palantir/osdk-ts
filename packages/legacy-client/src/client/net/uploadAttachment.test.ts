@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { createThinClient, type ThinClient } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
+import { createThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockOntology } from "../../util/test";
@@ -35,6 +36,7 @@ describe(uploadAttachment, () => {
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
+      undefined,
       fetch,
     );
   });

@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import { createFetchHeaderMutator } from "./createFetchHeaderMutator";
-import { stringifyBody } from "./stringifyBody";
+import type { FetchAsJsonFn } from "../FetchAsJsonFn.js";
+import { createFetchHeaderMutator } from "./createFetchHeaderMutator.js";
+import { stringifyBody } from "./stringifyBody.js";
 
-/**
- * Fetches the given URL, converting the body to JSON, setting the Content-Type header to application/json,
- * and calling .json() on the response.
- */
-export type FetchAsJsonFn = (
-  url: URL,
-  requestInit: Omit<RequestInit, "body"> & { body?: object | undefined },
-) => Promise<any>;
 /**
  * Wraps a fetch function to set the Content-Type header to application/json, to handle JSON.stringify(),
  * and to parse the response as JSON.

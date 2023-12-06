@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-export { createOpenApiRequest } from "./client/createOpenApiRequest";
-export { createThinClient } from "./client/createThinClient";
-export { isOk, type ResultOrError } from "./client/ResultOrError";
-export type { ThinClient } from "./client/ThinClient";
-
 export type {
   InterfaceDefinition,
   InterfaceInfoFrom,

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createThinClient, type ThinClient } from "@osdk/api";
+import { createThinClient } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../..";
+import { USER_AGENT } from "../../USER_AGENT";
 import { MockOntology } from "../../util/test";
 import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
 
@@ -30,6 +32,7 @@ describe("convertWireToOsdkObject", () => {
       MockOntology,
       "https://mock.com",
       () => "Token",
+      USER_AGENT,
       fetch,
     );
   });

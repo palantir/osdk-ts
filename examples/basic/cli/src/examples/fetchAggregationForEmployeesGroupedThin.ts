@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { ThinClient } from "@osdk/client";
 import { aggregateOrThrow } from "@osdk/client/objects";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType";
+import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGroupedThin(
   thinClient: ThinClient<OntologyType>,

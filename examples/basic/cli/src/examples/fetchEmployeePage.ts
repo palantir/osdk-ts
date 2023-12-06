@@ -16,7 +16,7 @@
 
 import type { Client } from "@osdk/client";
 import { expectType } from "ts-expect";
-import type { Employee, OntologyType } from "../OntologyType";
+import type { Employee, OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeePage(client: Client<OntologyType>) {
   const result = await client.objectSet("Employee").fetchPageOrThrow();

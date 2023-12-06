@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OsdkObject } from "./OsdkObject";
+import type { OsdkObject } from "./OsdkObject.js";
 
 export interface PageResult<T extends OsdkObject<any>> {
   data: T[];

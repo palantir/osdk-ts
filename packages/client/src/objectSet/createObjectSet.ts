@@ -18,17 +18,21 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
-import { modernToLegacyWhereClause } from "../internal/conversions";
-import type { Wire } from "../internal/net";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type { AggregationClause, AggregationsResults } from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import type { LinkTypesFrom } from "./LinkTypesFrom";
-import type { BaseObjectSet, ObjectSet, ObjectSetOptions } from "./ObjectSet";
-import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket";
+import { ThinClient } from "@osdk/shared.net";
+import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { Wire } from "../internal/net/index.js";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { AggregationClause, AggregationsResults } from "../query/index.js";
+import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type {
+  BaseObjectSet,
+  ObjectSet,
+  ObjectSetOptions,
+} from "./ObjectSet.js";
+import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<

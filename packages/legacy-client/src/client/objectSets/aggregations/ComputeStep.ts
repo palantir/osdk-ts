@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
+import type { ThinClient } from "@osdk/shared.net";
 import { aggregate } from "../../../client/net/aggregate";
 import type { ObjectSetDefinition } from "../../baseTypes";
 import type { AggregateObjectsError } from "../../errors";

@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import type { StreamTimeSeriesPointsRequest as StreamPointsBody } from "@osdk/gateway/types";
+import type { ThinClient } from "@osdk/shared.net";
 import { getAllTimeSeriesPoints } from "../../../client/net/getAllTimeSeriesPoints";
 import { iterateTimeSeriesPoints } from "../../../client/net/iterateTimeSeriesPoints";
 import type { TimeSeriesError } from "../../errors";

@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
   modernToLegacyAggregationClause,
   modernToLegacyGroupByClause,
   modernToLegacyWhereClause,
-} from "../internal/conversions";
+} from "../internal/conversions/index.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type {
   AggregationResultsWithGroups,
   AggregationsResults,
-} from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
+} from "../query/index.js";
 
 export async function aggregateOrThrow<
   T extends OntologyDefinition<any>,

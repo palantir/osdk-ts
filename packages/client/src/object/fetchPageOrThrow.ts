@@ -18,16 +18,16 @@ import type {
   ObjectPropertyKeysFrom,
   ObjectTypesFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
-import type { Wire } from "../internal/net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
-import type { PageResult } from "../PageResult";
-import type { NOOP } from "../util/NOOP";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
+import type { Wire } from "../internal/net/index.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import type { NOOP } from "../util/NOOP.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,

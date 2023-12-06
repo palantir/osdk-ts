@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ThinClient } from "@osdk/shared.net";
 import type { OntologyObject } from "../baseTypes";
 import { GetObjectErrorHandler, handleGetObjectError } from "../errors";
 import type { GetObjectError } from "../errors";

@@ -8,12 +8,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/gateway": "workspace:*",
+    "@osdk/shared.net": "workspace:*",
     "conjure-lite": "^0.3.1",
     "fetch-retry": "^5.0.6",
     "isomorphic-ws": "^5.0.0",
@@ -52,5 +53,6 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }
