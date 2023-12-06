@@ -150,6 +150,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@osdk/client':
+        specifier: workspace:*
+        version: link:../../packages/client
       '@osdk/legacy-client':
         specifier: workspace:*
         version: link:../../packages/legacy-client
