@@ -291,8 +291,8 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
       conjure-lite:
-        specifier: 0.1.1
-        version: 0.1.1
+        specifier: 0.3.1
+        version: 0.3.1
       consola:
         specifier: ^3.2.3
         version: 3.2.3
@@ -331,8 +331,8 @@ importers:
         specifier: workspace:*
         version: link:../gateway
       conjure-lite:
-        specifier: ^0.1.1
-        version: 0.1.1
+        specifier: ^0.3.1
+        version: 0.3.1
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
@@ -2937,8 +2937,8 @@ packages:
   /concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
-  /conjure-lite@0.1.1:
-    resolution: {integrity: sha512-rR1eZ/ztqHkgitOlQJD7jGuTDZyWxBS684VSBp/GepSJgI/hbTE3jkwJgT1r2XDg/LtKO535tWzAQ+3G173cPg==}
+  /conjure-lite@0.3.1:
+    resolution: {integrity: sha512-JvPI0Psi8VEyVLrjdgGtwZ6Ci+Qd8zOfnjeYIseo1NawTmhNLFkMf/M3m6Dg1n9pNDIg9YnDJNQ29AYwM2keag==}
     hasBin: true
     dependencies:
       dedent: 1.5.1
