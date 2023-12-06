@@ -99,7 +99,7 @@ export function toConjureObjectSet<
   }
 }
 
-async function getObjectSetBaseType(objectSet: Wire.ObjectSet) {
+export async function getObjectSetBaseType(objectSet: Wire.ObjectSet) {
   switch (objectSet.type) {
     case "base":
       return objectSet.objectType;

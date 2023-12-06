@@ -15,10 +15,12 @@
  */
 
 import {
+  createOpenApiRequest,
   type ObjectTypesFrom,
   type OntologyDefinition,
   type ThinClient,
 } from "@osdk/api";
+import { getObjectTypeV2 } from "@osdk/gateway/requests";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
@@ -33,7 +35,7 @@ import type { Wire } from "../internal/net";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects";
 import { Deferred } from "./Deferred";
 import type { ObjectSetListener } from "./ObjectSetWatcher";
-import { toConjureObjectSet } from "./toConjureObjectSet";
+import { getObjectSetBaseType, toConjureObjectSet } from "./toConjureObjectSet";
 
 export class ObjectSetWatcherWebsocket<
   O extends OntologyDefinition<any, any, any>,
@@ -86,11 +88,15 @@ export class ObjectSetWatcherWebsocket<
       this.#ensureWebsocket(),
 
       // look up the object type's rid and ensure that we have enabled object set watcher for that rid
-      this.#getObjectType(
-        this.#client.ontology.metadata.ontologyRid,
-        getObjectSetBaseType(objectSet),
-      ).then(objectTypeMetadata =>
-        this.#enableObjectSetsWatcher([objectTypeMetadata.rid])
+      // TODO ???
+      getObjectSetBaseType(objectSet).then(baseType =>
+        getObjectTypeV2(
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
+          baseType,
+        )
+      ).then(
+        objectType => this.#enableObjectSetsWatcher([objectType.rid]),
       ),
     ]);
 
@@ -212,11 +218,6 @@ export class ObjectSetWatcherWebsocket<
     }
   }
 
-  async #getObjectType(ontologyRid: string, objectApiName: string) {
-    // call getObjectType from conjure
-    return { rid: "rid" };
-  }
-
   async #enableObjectSetsWatcher(objectTypeRids: string[]) {
     return batchEnableWatcher(this.#conjureContext, {
       requests: objectTypeRids,
@@ -247,13 +248,6 @@ export class ObjectSetWatcherWebsocket<
     }
     this.#listeners.clear();
   }
-}
-
-function getObjectSetBaseType<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
->(objectSet: Wire.ObjectSet) {
-  return "baseType";
 }
 
 async function convertFoundryToOsdkObjects<
