@@ -16,7 +16,7 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
+import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
@@ -25,12 +25,13 @@ export async function generatePerObjectInterfaceAndDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       const links = ontology.linkTypes[object.apiName];
-      const uniqueApiNames = new Set(links?.map(a => a.objectTypeApiName));
+
       await fs.writeFile(
         path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
@@ -42,22 +43,8 @@ export async function generatePerObjectInterfaceAndDataFiles(
           )
         }
 
-         export const ${object.apiName} = ${
-          JSON.stringify(
-            wireObjectTypeV2ToSdkObjectDefinition(
-              object,
-              links,
-            ),
-            null,
-            2,
-          )
-        } satisfies ObjectTypeDefinition<"${object.apiName}", ${
-          uniqueApiNames.size > 0
-            ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join(
-              "|",
-            )
-            : "never"
-        }>;`),
+        ${wireObjectTypeV2ToSdkObjectConst(object, links)}
+        `),
       );
     }),
   );
@@ -67,7 +54,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./${apiName}";`
+        `export * from "./${apiName}${importExt}";`
       ).join("\n")
     }
       export type { ObjectSet } from "@osdk/legacy-client";\n

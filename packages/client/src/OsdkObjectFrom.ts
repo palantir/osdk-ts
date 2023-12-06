@@ -22,6 +22,7 @@ import type {
   ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
   OntologyDefinition,
+  WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 
@@ -47,10 +48,12 @@ export type OsdkObjectFrom<
   }
   & {
     __apiName: T_ObjectTypeKey;
-    __primaryKey: ObjectTypeDefinitionFrom<
-      T_Ontology,
-      T_ObjectTypeKey
-    >["primaryKeyType"];
+    __primaryKey: WirePropertyTypes[
+      ObjectTypeDefinitionFrom<
+        T_Ontology,
+        T_ObjectTypeKey
+      >["primaryKeyType"]
+    ];
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
      * as always optional to avoid breaking changes.

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
+import {
+  generateClientSdkVersionOneDotOne,
+  generateClientSdkVersionTwoPointZero,
+} from "@osdk/generator";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
@@ -23,14 +26,35 @@ export default async function handleGenerate(args: TypescriptGenerateArgs) {
   const ontology = JSON.parse(
     await fs.promises.readFile(args.ontologyPath, "utf-8"),
   );
-  await generateClientSdkVersionOneDotOne(ontology, {
-    writeFile: (path, contents) => {
-      return fs.promises.writeFile(path, contents, "utf-8");
-    },
-    mkdir: async (path, options) => {
-      await fs.promises.mkdir(path, options);
-    },
-  }, args.outDir);
+  if (args.beta) {
+    await generateClientSdkVersionTwoPointZero(
+      ontology,
+      {
+        writeFile: (path, contents) => {
+          return fs.promises.writeFile(path, contents, "utf-8");
+        },
+        mkdir: async (path, options) => {
+          await fs.promises.mkdir(path, options);
+        },
+      },
+      args.outDir,
+      args.packageType,
+    );
+  } else {
+    await generateClientSdkVersionOneDotOne(
+      ontology,
+      {
+        writeFile: (path, contents) => {
+          return fs.promises.writeFile(path, contents, "utf-8");
+        },
+        mkdir: async (path, options) => {
+          await fs.promises.mkdir(path, options);
+        },
+      },
+      args.outDir,
+      args.packageType,
+    );
+  }
 
   consola.info("OSDK Generated!");
 }

@@ -17,7 +17,7 @@
 import { isOk } from "@osdk/client";
 import type { Client } from "@osdk/client";
 import { describe, it } from "vitest";
-import type { Ontology } from "./Ontology.js";
+import type { Ontology } from "./generatedNoCheck/Ontology.js";
 
 // This file should really get migrated into various test files in osdk-api instead of in the
 // simulated package

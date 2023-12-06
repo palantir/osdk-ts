@@ -67,11 +67,11 @@ async function runTests() {
     await fetchEmployeeLead(client, "bob");
 
     const interfaceImplementationComplete = false;
-    if (interfaceImplementationComplete) {
-      const interfaceResults = await client.objects.Emailable
-        .fetchPageOrThrow();
-      interfaceResults.data[0].email;
-    }
+    // if (interfaceImplementationComplete) {
+    //   const interfaceResults = await client.objects.Emailable
+    //     .fetchPageOrThrow();
+    //   interfaceResults.data[0].email;
+    // }
 
     await typeChecks(client);
   } catch (e) {

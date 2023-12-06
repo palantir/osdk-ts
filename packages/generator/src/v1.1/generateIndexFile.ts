@@ -18,14 +18,18 @@ import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 
-export async function generateIndexFile(fs: MinimalFs, outDir: string) {
+export async function generateIndexFile(
+  fs: MinimalFs,
+  outDir: string,
+  importExt: string,
+) {
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`
     export * from "@osdk/legacy-client";
-    export type { Ontology } from "./Ontology";
-    export { FoundryClient } from "./FoundryClient";
+    export type { Ontology } from "./Ontology${importExt}";
+    export { FoundryClient } from "./FoundryClient${importExt}";
     `),
   );
 }

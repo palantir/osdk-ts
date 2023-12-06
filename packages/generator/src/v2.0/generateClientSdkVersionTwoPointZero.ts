@@ -16,21 +16,25 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "../shared/wireObjectTypeV2ToSdkObjectDefinition";
+import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { wireObjectTypeV2ToObjectDefinitionInterfaceString } from "./wireObjectTypeV2ToObjectDefinitionInterfaceString";
+import { generateOntologyMetadataFile } from "./generateMetadata";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  packageType: "module" | "commonjs" = "commonjs",
 ) {
+  const importExt = packageType === "module" ? ".js" : "";
+  await fs.mkdir(outDir, { recursive: true });
+
   fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
       `
-        export { Ontology } from "./Ontology";
+        export { Ontology } from "./Ontology${importExt}";
     `,
     ),
   );
@@ -40,17 +44,20 @@ export async function generateClientSdkVersionTwoPointZero(
       ontology.objectTypes,
     );
 
+  await generateOntologyMetadataFile(ontology, fs, outDir);
+
   fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(
       `
       import type { OntologyDefinition } from "@osdk/api";
       ${
-        objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+        objectNames.map((name) =>
+          `import {${name}} from "./objects/${name}${importExt}";`
+        )
           .join("\n")
       }
-      ${/* FIXME: Generate this file */ ""}
-      import { OntologyMetadata } from "./OntologyMetadata";
+      import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       export const Ontology = {
         metadata: OntologyMetadata,
@@ -60,6 +67,8 @@ export async function generateClientSdkVersionTwoPointZero(
           .join("\n")
       }
         },
+        actions: {},
+        queries: {},
       } satisfies OntologyDefinition<${
         objectNames.map(n => `"${n}"`).join("|")
       }>;
@@ -67,25 +76,38 @@ export async function generateClientSdkVersionTwoPointZero(
     ),
   );
 
+  await fs.mkdir(path.join(outDir, "objects"), { recursive: true });
   for (const name of objectNames) {
     const obj = ontology.objectTypes[name];
+    const links = ontology.linkTypes[name] ?? [];
 
-    fs.writeFile(
+    await fs.writeFile(
       path.join(outDir, `objects`, `${name}.ts`),
       await formatTs(`
     
       import type { ObjectTypeDefinition } from "@osdk/api";
 
-      export const ${name} =  ${
-        JSON.stringify(wireObjectTypeV2ToSdkObjectDefinition(obj), null, 2)
-      } satisfies ${name};
+      ${wireObjectTypeV2ToSdkObjectConst(obj, links, true)}
 
       ${
-        wireObjectTypeV2ToObjectDefinitionInterfaceString(
-          obj,
-        )
-      }
+        /* TODO: FIXME
+      //   wireObjectTypeV2ToObjectDefinitionInterfaceString(
+      //     obj,
+      //   )
+      */
+        ""}
     `),
     );
   }
+
+  await fs.writeFile(
+    path.join(outDir, "objects", "index.ts"),
+    await formatTs(`
+    ${
+      Object.keys(ontology.objectTypes).map(apiName =>
+        `export * from "./${apiName}${importExt}";`
+      ).join("\n")
+    }
+    `),
+  );
 }

@@ -25,18 +25,29 @@ export const command: CommandModule<
   describe: "Generate typescript from ontology",
   builder: (argv) => {
     return argv
-      .options({
-        "outDir": {
-          type: "string",
-          description: "Where to place the generated files",
-          demandOption: true,
-        },
-        ontologyPath: {
-          description: "path to the ontology wire json",
-          type: "string",
-          demandOption: true,
-        },
-      }).group(
+      .options(
+        {
+          "outDir": {
+            type: "string",
+            description: "Where to place the generated files",
+            demandOption: true,
+          },
+          ontologyPath: {
+            description: "path to the ontology wire json",
+            type: "string",
+            demandOption: true,
+          },
+          beta: {
+            type: "boolean",
+            description: "Should generate beta sdk",
+            demandOption: false,
+          },
+          packageType: {
+            default: "commonjs",
+            choices: ["commonjs", "module"],
+          },
+        } as const,
+      ).group(
         ["outDir", "ontologyPath"],
         "Version To Deploy (requires one of)",
       );
