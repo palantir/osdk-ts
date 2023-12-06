@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
@@ -94,7 +94,7 @@ describe("aggregateOrThrow", () => {
       json: () => new Promise((resolve) => resolve(aggregationResponse)),
     });
 
-    const thinClient = createThinClient(
+    const thinClient = createClientContext(
       mockOntology as MockOntology,
       "host.com",
       () => "",

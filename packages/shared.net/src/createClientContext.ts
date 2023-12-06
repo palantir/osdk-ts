@@ -25,7 +25,9 @@ import {
 /**
  * The goal of the thin client is to provide a way to tree shake as much as possible.
  */
-export function createThinClient<T extends { metadata: { userAgent: string } }>(
+export function createClientContext<
+  T extends { metadata: { userAgent: string } },
+>(
   ontology: T,
   stack: string,
   tokenProvider: () => Promise<string> | string,

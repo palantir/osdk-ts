@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import type { Auth } from "../oauth-client";
 import { USER_AGENT } from "../USER_AGENT";
@@ -32,7 +32,7 @@ export class BaseFoundryClient<
     private foundryClientOptions: FoundryClientOptions<TAuth>,
     metadata: O,
   ) {
-    this.#client = createThinClient(
+    this.#client = createClientContext(
       metadata,
       foundryClientOptions.url,
       async () => {

@@ -18,7 +18,7 @@ import type {
   AggregateObjectSetRequestV2,
   AggregateObjectSetResponseV2,
 } from "@osdk/gateway/types";
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -37,7 +37,7 @@ describe(createObjectSetAggregationStep, () => {
   let client: ClientContext<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",

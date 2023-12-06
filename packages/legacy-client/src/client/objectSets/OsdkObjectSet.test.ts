@@ -19,7 +19,7 @@ import type {
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
-import { createThinClient, isOk } from "@osdk/shared.net";
+import { createClientContext, isOk } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
   beforeEach,
@@ -49,7 +49,7 @@ describe("OsdkObjectSet", () => {
 
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       origin,
       () => "Token",
@@ -321,7 +321,7 @@ describe("OsdkObjectSet", () => {
 
   it("handles multiple clients correctly", async () => {
     const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
-    const client1 = createThinClient(
+    const client1 = createClientContext(
       MockOntology,
       origin,
       () => "Token",
@@ -335,7 +335,7 @@ describe("OsdkObjectSet", () => {
     );
 
     const fetch2: MockedFunction<typeof globalThis.fetch> = vi.fn();
-    const client2 = createThinClient(
+    const client2 = createClientContext(
       MockOntology,
       origin,
       () => "Token",

@@ -16,7 +16,7 @@
 
 import type { TimeSeriesPoint } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { MockOntology } from "../../util/test";
@@ -31,7 +31,7 @@ import { getLastPoint } from "./getLastPoint";
 
 describe(getLastPoint, () => {
   const fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
-  const client: ClientContext<typeof MockOntology> = createThinClient(
+  const client: ClientContext<typeof MockOntology> = createClientContext(
     MockOntology,
     MOCK_ORIGIN,
     () => "Token",

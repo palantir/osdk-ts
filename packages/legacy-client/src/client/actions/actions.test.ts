@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
@@ -58,7 +58,7 @@ describe("Actions", () => {
 
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",

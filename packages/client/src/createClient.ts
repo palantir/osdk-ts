@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { Client } from "./Client.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSet.js";
@@ -27,7 +27,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   tokenProvider: () => Promise<string> | string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client<O> {
-  const thinClient = createThinClient<O>(
+  const thinClient = createClientContext<O>(
     ontology,
     stack,
     tokenProvider,

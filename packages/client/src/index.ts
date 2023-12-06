@@ -24,7 +24,7 @@ export * as Objects from "./object/index.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { OsdkObjectFrom } from "./OsdkObjectFrom.js";
 
-export { createThinClient } from "@osdk/shared.net";
+export { createClientContext } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
 export type { ClientContext } from "@osdk/shared.net";

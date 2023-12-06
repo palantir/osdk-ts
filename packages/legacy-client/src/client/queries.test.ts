@@ -15,7 +15,7 @@
  */
 
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
-import { createThinClient, isOk } from "@osdk/shared.net";
+import { createClientContext, isOk } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
@@ -54,7 +54,7 @@ describe("Queries", () => {
   beforeEach(() => {
     try {
       fetch = vi.fn();
-      client = createThinClient(
+      client = createClientContext(
         MockOntology,
         MOCK_ORIGIN,
         () => "Token",

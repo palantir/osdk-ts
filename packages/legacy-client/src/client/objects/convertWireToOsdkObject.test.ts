@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createThinClient } from "@osdk/shared.net";
+import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -28,7 +28,7 @@ describe("convertWireToOsdkObject", () => {
   let client: ClientContext<typeof MockOntology>;
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       "https://mock.com",
       () => "Token",

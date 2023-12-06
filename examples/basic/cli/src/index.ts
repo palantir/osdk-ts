@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createClient, createThinClient } from "@osdk/client";
+import { createClient, createClientContext } from "@osdk/client";
 import { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
@@ -48,7 +48,7 @@ export const client = createClient(
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
-export const thinClient = createThinClient(
+export const thinClient = createClientContext(
   Ontology as OntologyType,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
