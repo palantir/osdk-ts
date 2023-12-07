@@ -58,14 +58,23 @@ export function useTodos() {
       const b = !todo.isComplete;
       await mutate(
         async () => {
-          // Unwrap to get throw behavior on error.
-          // Don't return because we want to invalidate cache
-          orThrow(
-            await foundryClient.ontology.actions.completeTodo({
-              is_complete: b,
-              Todo: todo,
-            })
-          );
+          const actionsV2Ready = false;
+
+          if (actionsV2Ready) {
+            foundryClient2.actions.completeTodo({
+              is_complete: true,
+              Todo: "todo",
+            });
+          } else {
+            // Unwrap to get throw behavior on error.
+            // Don't return because we want to invalidate cache
+            orThrow(
+              await foundryClient.ontology.actions.completeTodo({
+                is_complete: b,
+                Todo: todo,
+              })
+            );
+          }
 
           return undefined; // invalidate cache
         },

@@ -21,6 +21,7 @@ import type {
 } from "@osdk/api";
 import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
+import type { Actions } from "./types/Actions.js";
 
 export type ConcreteObjectType<
   O extends OntologyDefinition<any>,
@@ -34,4 +35,6 @@ export interface Client<O extends OntologyDefinition<any>> {
   ) => ObjectSet<O, K>;
 
   objects: ObjectSetCreator<O>;
+
+  actions: Actions<O>;
 }

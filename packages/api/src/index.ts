@@ -18,6 +18,8 @@ export type {
   ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
+  ObjectActionDataType,
+  ObjectSetActionDataType,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";
 export type {
