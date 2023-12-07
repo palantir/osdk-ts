@@ -104,7 +104,7 @@ export function createObjectSet<
 
     subscribe(listener) {
       const instance = ObjectSetWatcherWebsocket.getInstance(clientCtx);
-      return instance.subscribe(this, listener);
+      return instance.subscribe(objectSet, listener);
     },
   };
 
