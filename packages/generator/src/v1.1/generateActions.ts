@@ -29,7 +29,7 @@ export async function generateActions(
 ) {
   const importedObjects = new Set<string>();
   let actionSignatures = [];
-  for (const action of ontology.actionTypes) {
+  for (const action of Object.values(ontology.actionTypes)) {
     const entries = Object.entries(action.parameters);
 
     const modifiedEntityTypes = getModifiedEntityTypes(action);

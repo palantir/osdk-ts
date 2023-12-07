@@ -23,7 +23,6 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("generates object interface", async () => {
     const objectInterface = wireObjectTypeV2ToObjectInterfaceStringV1(
       TodoWireOntology.objectTypes["Todo"],
-      TodoWireOntology.linkTypes["Todo"],
     );
     expect(
       await formatTs(objectInterface),
@@ -52,23 +51,25 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("adds backcompat entries for reserved keyword property names", async () => {
     const objectInterface = wireObjectTypeV2ToObjectInterfaceStringV1(
       {
-        apiName: "Todo",
-        status: "ACTIVE",
-        primaryKey: "break",
-        properties: {
-          "break": {
-            dataType: { type: "integer" },
+        objectType: {
+          apiName: "Todo",
+          status: "ACTIVE",
+          primaryKey: "break",
+          properties: {
+            "break": {
+              dataType: { type: "integer" },
+            },
           },
+          rid: "ridForTodo",
         },
-        rid: "ridForTodo",
+        linkTypes: [{
+          apiName: "this",
+          cardinality: "ONE",
+          displayName: "thisLink",
+          status: "ACTIVE",
+          objectTypeApiName: "Todo",
+        }],
       },
-      [{
-        apiName: "this",
-        cardinality: "ONE",
-        displayName: "thisLink",
-        status: "ACTIVE",
-        objectTypeApiName: "Todo",
-      }],
     );
     expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`
       "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';

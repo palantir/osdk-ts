@@ -15,18 +15,18 @@
  */
 
 import type {
-  LinkTypeSideV2,
   ObjectPropertyType,
-  ObjectTypeV2,
+  ObjectTypeWithLink,
 } from "@osdk/gateway/types";
 import { isReservedKeyword } from "../util/reservedKeywords";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
-  input: ObjectTypeV2,
-  linkTypes: LinkTypeSideV2[] = [],
+  objectTypeWithLinks: ObjectTypeWithLink,
 ) {
   const uniqueLinkTargets = new Set<string>(
-    linkTypes.map(a => a.objectTypeApiName).filter(a => a !== input.apiName),
+    objectTypeWithLinks.linkTypes.map(a => a.objectTypeApiName).filter(a =>
+      a !== objectTypeWithLinks.objectType.apiName
+    ),
   );
   return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink } from "@osdk/legacy-client";
 ${
@@ -36,16 +36,17 @@ ${
   }
 
   ${
-    getDescriptionIfPresent(input.description)
-  }export interface ${input.apiName} extends OntologyObject {
-  readonly __apiName: "${input.apiName}";
+    getDescriptionIfPresent(objectTypeWithLinks.objectType.description)
+  }export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
+  readonly __apiName: "${objectTypeWithLinks.objectType.apiName}";
   readonly __primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(
-      input.properties[input.primaryKey].dataType,
+      objectTypeWithLinks.objectType
+        .properties[objectTypeWithLinks.objectType.primaryKey].dataType,
     )
   };
 ${
-    Object.entries(input.properties).flatMap((
+    Object.entries(objectTypeWithLinks.objectType.properties).flatMap((
       [propertyName, propertyDefinition],
     ) => {
       const propertyType = wirePropertyTypeV2ToTypeScriptType(
@@ -68,7 +69,7 @@ ${
     }).join(";\n")
   }
 ${
-    linkTypes.flatMap(linkType => {
+    objectTypeWithLinks.linkTypes.flatMap(linkType => {
       const entries = [
         `readonly ${linkType.apiName}: ${
           linkType.cardinality === "MANY" ? "MultiLink" : "SingleLink"

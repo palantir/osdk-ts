@@ -26,7 +26,9 @@ export async function generateObjectsInterfaceSupportFiles(
 ) {
   await fs.mkdir(outDir, { recursive: true });
 
-  for (const { apiName } of Object.values(ontology.objectTypes)) {
+  for (
+    const { objectType: { apiName } } of Object.values(ontology.objectTypes)
+  ) {
     const fileName = join(outDir, `${apiName}.ts`);
     const localApiName = `OG_${apiName}`;
 

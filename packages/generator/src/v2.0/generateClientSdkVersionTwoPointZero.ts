@@ -79,7 +79,6 @@ export async function generateClientSdkVersionTwoPointZero(
   await fs.mkdir(path.join(outDir, "objects"), { recursive: true });
   for (const name of objectNames) {
     const obj = ontology.objectTypes[name];
-    const links = ontology.linkTypes[name] ?? [];
 
     await fs.writeFile(
       path.join(outDir, `objects`, `${name}.ts`),
@@ -87,7 +86,7 @@ export async function generateClientSdkVersionTwoPointZero(
     
       import type { ObjectTypeDefinition } from "@osdk/api";
 
-      ${wireObjectTypeV2ToSdkObjectConst(obj, links, true)}
+      ${wireObjectTypeV2ToSdkObjectConst(obj, true)}
 
       ${
         /* TODO: FIXME

@@ -29,8 +29,8 @@ export async function generateOntologyMetadataFile(
     await formatTs(
       `
       export const OntologyMetadata = {
-        ontologyRid: "${ontology.rid}",
-        ontologyApiName: "${ontology.apiName}",
+        ontologyRid: "${ontology.ontology.rid}",
+        ontologyApiName: "${ontology.ontology.apiName}",
         userAgent: "foundry-typescript-osdk/2.0.0",
       }
       `,

@@ -30,20 +30,19 @@ export async function generatePerObjectInterfaceAndDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
-      const links = ontology.linkTypes[object.apiName];
+      const links = object.linkTypes;
 
       await fs.writeFile(
-        path.join(outDir, `${object.apiName}.ts`),
+        path.join(outDir, `${object.objectType.apiName}.ts`),
         await formatTs(`
         import { ObjectTypeDefinition } from "@osdk/api";
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,
-            links,
           )
         }
 
-        ${wireObjectTypeV2ToSdkObjectConst(object, links)}
+        ${wireObjectTypeV2ToSdkObjectConst(object)}
         `),
       );
     }),
