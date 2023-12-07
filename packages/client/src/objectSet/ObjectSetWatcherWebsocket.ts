@@ -15,17 +15,35 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ClientContext } from "@osdk/shared.net";
+import { getObjectTypeV2 } from "@osdk/gateway/requests";
+import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
+import invariant from "tiny-invariant";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
+
+import type {
+  Message,
+  ObjectSetChanged,
+  ObjectSetSubscribeRequests,
+} from "../generated/object-set-watcher/index.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
-import type { StreamMessage } from "../generated/object-set-watcher/StreamMessage.js";
-import type { OsdkObject } from "../OsdkObject.js";
+import type {
+  StreamMessage,
+  StreamMessage_objectSetChanged,
+} from "../generated/object-set-watcher/StreamMessage.js";
+import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
+import type { Wire } from "../internal/net/index.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import { Deferred } from "./Deferred.js";
-import type { ObjectSet } from "./ObjectSet.js";
 import type { ObjectSetListener } from "./ObjectSetWatcher.js";
+import {
+  getObjectSetBaseType,
+  toConjureObjectSet,
+} from "./toConjureObjectSet.js";
 
 export class ObjectSetWatcherWebsocket<
   O extends OntologyDefinition<any, any, any>,
@@ -54,6 +72,8 @@ export class ObjectSetWatcherWebsocket<
   >();
   #listeners = new Map<string, ObjectSetListener<O, any>>();
   #conjureContext: ConjureContext;
+  #metadataContext: ConjureContext;
+  #ossContext: ConjureContext;
 
   private constructor(client: ClientContext<O>) {
     this.#client = client;
@@ -61,16 +81,34 @@ export class ObjectSetWatcherWebsocket<
     const stackUrl = new URL(client.stack);
     this.#conjureContext = {
       baseUrl: stackUrl.origin,
-      servicePath: "object-set-watcher/api",
+      servicePath: "/object-set-watcher/api",
+      fetchFn: client.fetch,
+      tokenProvider: async () => await client.tokenProvider(),
+    };
+    this.#ossContext = {
+      baseUrl: stackUrl.origin,
+      servicePath: "/object-set-service/api",
+      fetchFn: client.fetch,
+      tokenProvider: async () => await client.tokenProvider(),
+    };
+    this.#metadataContext = {
+      baseUrl: stackUrl.origin,
+      servicePath: "/ontology-metadata/api",
       fetchFn: client.fetch,
       tokenProvider: async () => await client.tokenProvider(),
     };
   }
 
   async subscribe<K extends ObjectTypeKeysFrom<O>>(
-    objectSet: ObjectSet<O, K>,
+    objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): Promise<() => void> {
+    const objectSetBaseType = await getObjectSetBaseType(objectSet);
+    const mapping = await getOntologyPropertyMappingForApiName(
+      this.#client,
+      this.#metadataContext,
+      objectSetBaseType,
+    );
     const [temporaryObjectSet] = await Promise.all([
       // create a time-bounded object set representation for watching
       this.#createTemporaryObjectSet(objectSet),
@@ -78,17 +116,30 @@ export class ObjectSetWatcherWebsocket<
       this.#ensureWebsocket(),
 
       // look up the object type's rid and ensure that we have enabled object set watcher for that rid
-      this.#getObjectType(
-        this.#client.ontology.metadata.ontologyRid,
-        getObjectSetBaseType(objectSet),
-      ).then(objectTypeMetadata =>
-        this.#enableObjectSetsWatcher([objectTypeMetadata.rid])
+      // TODO ???
+      getObjectSetBaseType(objectSet).then(baseType =>
+        getObjectTypeV2(
+          createOpenApiRequest(this.#client.stack, this.#client.fetch),
+          this.#client.ontology.metadata.ontologyApiName,
+          baseType,
+        )
+      ).then(
+        objectType => this.#enableObjectSetsWatcher([objectType.rid]),
       ),
     ]);
 
     // subscribe to object set
     const requestId = crypto.randomUUID();
-    const subscribe = {};
+    const subscribe: ObjectSetSubscribeRequests = {
+      id: requestId,
+      requests: [{
+        objectSet: temporaryObjectSet.objectSetRid,
+        objectSetContext: {
+          objectSetFilterContext: { parameterOverrides: {} },
+        },
+        watchAllLinks: false,
+      }],
+    };
 
     const deferred = new Deferred<() => void>();
 
@@ -102,13 +153,12 @@ export class ObjectSetWatcherWebsocket<
     if (this.#ws == null) {
       const { stack, tokenProvider } = this.#client;
       const base = new URL(stack);
-      // TODO support alternate contextPath values
-      const url =
-        `wss://${base.host}/object-set-watcher/ws/streamSubscriptions`;
+      // TODO: This should be a different endpoint
+      const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
       const token = await tokenProvider();
       this.#ws = new WebSocket(url, [`Bearer-${token}`]);
 
-      this.#ws.addEventListener("error", () => {
+      this.#ws.addEventListener("error", (e) => {
         this.#destroyWebsocket();
       });
 
@@ -129,13 +179,28 @@ export class ObjectSetWatcherWebsocket<
     }
   }
 
-  #onMessage(message: WebSocket.MessageEvent) {
-    const data = JSON.parse(message.data.toString()) as StreamMessage;
+  #onMessage = async (message: WebSocket.MessageEvent) => {
+    const data = JSON.parse(message.data.toString()) as
+      | StreamMessage
+      | Message;
+
     switch (data.type) {
       case "objectSetChanged": {
-        const { id: subscriptionId, objects } = data.objectSetChanged;
+        if ((data.objectSetChanged as any).confidenceValue) {
+          const listener = this.#listeners.get(data.objectSetChanged.id);
+          listener?.refresh?.();
+          break;
+        }
+
+        const { id: subscriptionId, objects } =
+          (data as StreamMessage_objectSetChanged).objectSetChanged;
         const listener = this.#listeners.get(subscriptionId);
-        listener?.change?.(convertFoundryToOsdkObjects(objects));
+        const convertedObjects = await convertFoundryToOsdkObjects(
+          this.#client,
+          this.#metadataContext,
+          objects,
+        );
+        listener?.change?.(convertedObjects);
         break;
       }
 
@@ -197,12 +262,7 @@ export class ObjectSetWatcherWebsocket<
       default:
         const _: never = data;
     }
-  }
-
-  async #getObjectType(ontologyRid: string, objectApiName: string) {
-    // call getObjectType from conjure
-    return { rid: "rid" };
-  }
+  };
 
   async #enableObjectSetsWatcher(objectTypeRids: string[]) {
     return batchEnableWatcher(this.#conjureContext, {
@@ -211,15 +271,25 @@ export class ObjectSetWatcherWebsocket<
   }
 
   async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
-    objectSet: ObjectSet<O, K>,
+    objectSet: Wire.ObjectSet,
   ) {
     // TODO do we need to do something when the subscription expires on the server?
-    createTemporaryObjectSet(this.#conjureContext, {
-      objectSet: toConjureObjectSet(objectSet),
-      timeToLive: "ONE_DAY",
-      objectSetFilterContext: { parameterOverrides: {} },
-    });
-    return { objectSetRid: "objectSetRid" };
+    const objectSetBaseType = await getObjectSetBaseType(objectSet);
+    const mapping = await getOntologyPropertyMappingForApiName(
+      this.#client,
+      this.#metadataContext,
+      objectSetBaseType,
+    );
+
+    const temporaryObjectSet = await createTemporaryObjectSet(
+      this.#ossContext,
+      {
+        objectSet: toConjureObjectSet(objectSet, mapping!),
+        timeToLive: "ONE_DAY",
+        objectSetFilterContext: { parameterOverrides: {} },
+      },
+    );
+    return { objectSetRid: temporaryObjectSet.objectSetRid };
   }
 
   #destroyWebsocket() {
@@ -235,25 +305,139 @@ export class ObjectSetWatcherWebsocket<
   }
 }
 
-function getObjectSetBaseType<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
->(objectSet: ObjectSet<O, K>) {
-  return "baseType";
-}
-
-function toConjureObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
->(objectSet: ObjectSet<O, K>) {
-  return undefined as any;
-}
-
-function convertFoundryToOsdkObjects<
+async function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 >(
+  client: ClientContext<any>,
+  ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Array<OsdkObject<K & string>> {
-  return [];
+): Promise<Array<OsdkObjectFrom<K, O>>> {
+  const osdkObjects: OsdkObjectFrom<K, O>[] = await Promise.all(
+    objects.map(async object => {
+      const propertyMapping = await getOntologyPropertyMappingForRid(
+        ctx,
+        object.type,
+      );
+      const convertedObject: OntologyObjectV2 = Object.fromEntries([
+        ...Object.entries(object.properties).map(([key, value]) => {
+          return [propertyMapping?.propertyIdToApiNameMapping[key], value];
+        }),
+        [
+          propertyMapping
+            ?.propertyIdToApiNameMapping[Object.entries(object.key)[0][0]],
+          Object.entries(object.key)[0][1],
+        ],
+        [
+          "__apiName",
+          propertyMapping?.apiName,
+        ],
+      ]);
+
+      return convertWireToOsdkObjects<K & string, O>(
+        client,
+        propertyMapping?.apiName! as K & string,
+        [
+          convertedObject,
+        ],
+      ) as unknown as OsdkObjectFrom<K, O>;
+    }),
+  );
+
+  return osdkObjects;
+}
+
+export type ObjectPropertyMapping = {
+  apiName: string;
+  id: string;
+  propertyIdToApiNameMapping: Record<string, string>;
+  propertyApiNameToIdMapping: Record<string, string>;
+};
+
+// Mapping of ObjectRid to Properties
+const objectTypeMapping = new WeakMap<
+  ConjureContext,
+  Map<string, ObjectPropertyMapping>
+>();
+
+const objectApiNameToRid = new Map<string, string>();
+
+async function getOntologyPropertyMappingForApiName(
+  client: ClientContext<any>,
+  ctx: ConjureContext,
+  objectApiName: string,
+) {
+  if (objectApiNameToRid.has(objectApiName)) {
+    return objectTypeMapping.get(ctx)?.get(
+      objectApiNameToRid.get(objectApiName)!,
+    );
+  }
+
+  const wireObjectType = await getObjectTypeV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    objectApiName,
+  );
+
+  return getOntologyPropertyMappingForRid(ctx, wireObjectType.rid);
+}
+
+async function getOntologyPropertyMappingForRid(
+  ctx: ConjureContext,
+  objectRid: string,
+) {
+  if (!objectTypeMapping.has(ctx)) {
+    objectTypeMapping.set(ctx, new Map());
+  }
+
+  if (
+    !objectTypeMapping.get(ctx)!.has(objectRid)
+  ) {
+    const body = {
+      objectTypeVersions: {
+        // TODO: Undefined drops this in the body
+        [objectRid]: "0000000a-0692-bbe3-af23-ddbb6c020392",
+      },
+      linkTypeVersions: {},
+      loadRedacted: false,
+      includeObjectTypesWithoutSearchableDatasources: true,
+    };
+    const entities = await loadOntologyEntities(ctx, body);
+
+    invariant(entities.objectTypes[objectRid], "object type should be loaded");
+
+    const propertyIdToApiNameMapping: Record<string, string> = Object
+      .fromEntries(
+        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+          property => {
+            return [property.id, property.apiName!];
+          },
+        ),
+      );
+
+    const propertyApiNameToIdMapping: Record<string, string> = Object
+      .fromEntries(
+        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+          property => {
+            return [property.id, property.apiName!];
+          },
+        ),
+      );
+
+    objectTypeMapping.get(ctx)?.set(objectRid, {
+      apiName: entities.objectTypes[objectRid].apiName!,
+      id: entities.objectTypes[objectRid].id,
+      propertyIdToApiNameMapping,
+      propertyApiNameToIdMapping,
+    });
+
+    objectApiNameToRid.set(entities.objectTypes[objectRid].apiName!, objectRid);
+  }
+
+  return objectTypeMapping.get(ctx)?.get(objectRid);
+}
+function isObjectSetChanged(
+  message: StreamMessage | ObjectSetChanged,
+): message is ObjectSetChanged {
+  return (message as any)?.type == null;
 }
