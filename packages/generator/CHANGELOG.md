@@ -1,5 +1,17 @@
 # @osdk/generator
 
+## 1.0.0
+
+### Major Changes
+
+- bfd4d9a: Stable 1.0 version
+
+### Patch Changes
+
+- Updated dependencies [bfd4d9a]
+  - @osdk/api@1.0.0
+  - @osdk/gateway@1.0.0
+
 ## 0.0.16
 
 ### Patch Changes

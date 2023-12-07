@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 1.0.0
+
+### Major Changes
+
+- bfd4d9a: Stable 1.0 version
+
 ## 0.0.10
 
 ### Patch Changes
