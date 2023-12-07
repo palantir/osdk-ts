@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+/**
+ * The given marketplace installation could not be found or the user does not have access to it.
+ */
+export interface MarketplaceInstallationNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "MarketplaceInstallationNotFound";
+  errorInstanceId: string;
+  parameters: {
+    artifactRepository: ArtifactRepositoryRid;
+    packageName: SdkPackageName;
+  };
 }

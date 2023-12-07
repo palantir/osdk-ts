@@ -16,12 +16,6 @@
 
 import type * as gateway from "@osdk/gateway";
 
-export interface WireOntologyDefinition {
-  rid: string;
-  apiName: string;
-  description?: string;
-  objectTypes: { [key: string]: gateway.components.ObjectTypeV2 };
-  actionTypes: gateway.components.ActionTypeV2[];
-  queryTypes: gateway.components.QueryTypeV2[];
-  linkTypes: Record<string, gateway.components.LinkTypeSideV2[]>;
-}
+export interface WireOntologyDefinition
+  extends gateway.components.OntologyFullMetadata
+{}

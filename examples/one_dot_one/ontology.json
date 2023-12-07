@@ -1,7 +1,12 @@
 {
-  "rid": "ridHere",
-  "actionTypes": [
-    {
+  "ontology": {
+    "apiName": "OntologyApiName",
+    "rid": "ridHere",
+    "displayName": "",
+    "description": ""
+  },
+  "actionTypes": {
+    "actionTakesAllParameterTypes": {
       "apiName": "actionTakesAllParameterTypes",
       "description": "An action which takes different types of parameters",
       "parameters": {
@@ -69,7 +74,7 @@
       ],
       "status": "ACTIVE"
     },
-    {
+    "create-todo": {
       "apiName": "create-todo",
       "description": "Creates a new Todo",
       "parameters": {},
@@ -82,268 +87,300 @@
         }
       ]
     }
-  ],
-  "apiName": "OntologyApiName",
+  },
   "objectTypes": {
     "Todo": {
-      "apiName": "Todo",
-      "primaryKey": "id",
-      "displayName": "AwesomeTodoDisplayname",
-      "description": "Its a todo item.",
-      "properties": {
-        "id": {
-          "dataType": {
-            "type": "integer"
-          }
-        },
-        "body": {
-          "dataType": {
-            "type": "string"
-          },
-          "description": "The text of the todo",
-          "displayName": "Body"
-        },
-        "complete": {
-          "dataType": {
-            "type": "boolean"
-          }
-        }
-      },
-      "status": "ACTIVE",
-      "rid": "ridForTodo"
-    },
-    "Person": {
-      "apiName": "Person",
-      "primaryKey": "email",
-      "displayName": "Person",
-      "description": "A person",
-      "properties": {
-        "email": {
-          "dataType": {
-            "type": "string"
-          }
-        }
-      },
-
-      "rid": "ridForPerson",
-      "status": "ACTIVE"
-    },
-    "ObjectTypeWithAllPropertyTypes": {
-      "apiName": "ObjectTypeWithAllPropertyTypes",
-      "primaryKey": "id",
-      "displayName": "ObjectTypeWithAllPropertyTypes",
-      "description": "A type with all property types",
-      "rid": "ridForObjectTypeWithAllPropertyTypes",
-      "status": "ACTIVE",
-      "properties": {
-        "id": {
-          "dataType": {
-            "type": "integer"
-          }
-        },
-        "string": {
-          "dataType": {
-            "type": "string"
-          }
-        },
-        "boolean": {
-          "dataType": {
-            "type": "boolean"
-          }
-        },
-        "date": {
-          "dataType": {
-            "type": "date"
-          }
-        },
-        "dateTime": {
-          "dataType": {
-            "type": "timestamp"
-          }
-        },
-        "decimal": {
-          "dataType": {
-            "type": "decimal"
-          }
-        },
-        "integer": {
-          "dataType": {
-            "type": "integer"
-          }
-        },
-        "long": {
-          "dataType": {
-            "type": "long"
-          }
-        },
-        "short": {
-          "dataType": {
-            "type": "short"
-          }
-        },
-        "float": {
-          "dataType": {
-            "type": "float"
-          }
-        },
-        "double": {
-          "dataType": {
-            "type": "double"
-          }
-        },
-        "byte": {
-          "dataType": {
-            "type": "byte"
-          }
-        },
-        "attachment": {
-          "dataType": {
-            "type": "attachment"
-          }
-        },
-        "geoPoint": {
-          "dataType": {
-            "type": "geopoint"
-          }
-        },
-        "geoShape": {
-          "dataType": {
-            "type": "geoshape"
-          }
-        },
-        "stringArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "string"
+      "objectType": {
+        "apiName": "Todo",
+        "primaryKey": "id",
+        "displayName": "AwesomeTodoDisplayname",
+        "description": "Its a todo item.",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer"
             }
-          }
-        },
-        "booleanArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "The text of the todo",
+            "displayName": "Body"
+          },
+          "complete": {
+            "dataType": {
               "type": "boolean"
             }
           }
         },
-        "dateArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "date"
-            }
-          }
-        },
-        "dateTimeArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "timestamp"
-            }
-          }
-        },
-        "decimalArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "decimal"
-            }
-          }
-        },
-        "integerArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "integer"
-            }
-          }
-        },
-        "longArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "long"
-            }
-          }
-        },
-        "shortArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "short"
-            }
-          }
-        },
-        "floatArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "float"
-            }
-          }
-        },
-        "doubleArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "double"
-            }
-          }
-        },
-        "byteArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "byte"
-            }
-          }
-        },
-        "attachmentArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "attachment"
-            }
-          }
-        },
-        "geoPointArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "geopoint"
-            }
-          }
-        },
-        "geoShapeArray": {
-          "dataType": {
-            "type": "array",
-            "subType": {
-              "type": "geoshape"
-            }
-          }
-        },
-        "numericTimeseries": {
-          "dataType": {
-            "type": "timeseries",
-            "itemType": {
-              "type": "double"
-            }
-          }
-        },
-        "stringTimeseries": {
-          "dataType": {
-            "type": "timeseries",
-            "itemType": {
+        "status": "ACTIVE",
+        "rid": "ridForTodo"
+      },
+      "linkTypes": [
+        {
+          "apiName": "Assignee",
+          "cardinality": "ONE",
+          "displayName": "Assignee",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "email"
+        }
+      ]
+    },
+    "Person": {
+      "objectType": {
+        "apiName": "Person",
+        "primaryKey": "email",
+        "displayName": "Person",
+        "description": "A person",
+        "properties": {
+          "email": {
+            "dataType": {
               "type": "string"
             }
           }
+        },
+        "rid": "ridForPerson",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "Todos",
+          "cardinality": "MANY",
+          "displayName": "Todos",
+          "objectTypeApiName": "Todo",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "id"
+        },
+        {
+          "apiName": "Friends",
+          "cardinality": "MANY",
+          "displayName": "Friends",
+          "objectTypeApiName": "Person",
+          "status": "ACTIVE"
         }
-      }
+      ]
+    },
+    "ObjectTypeWithAllPropertyTypes": {
+      "objectType": {
+        "apiName": "ObjectTypeWithAllPropertyTypes",
+        "primaryKey": "id",
+        "displayName": "ObjectTypeWithAllPropertyTypes",
+        "description": "A type with all property types",
+        "rid": "ridForObjectTypeWithAllPropertyTypes",
+        "status": "ACTIVE",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "string": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "boolean": {
+            "dataType": {
+              "type": "boolean"
+            }
+          },
+          "date": {
+            "dataType": {
+              "type": "date"
+            }
+          },
+          "dateTime": {
+            "dataType": {
+              "type": "timestamp"
+            }
+          },
+          "decimal": {
+            "dataType": {
+              "type": "decimal"
+            }
+          },
+          "integer": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "long": {
+            "dataType": {
+              "type": "long"
+            }
+          },
+          "short": {
+            "dataType": {
+              "type": "short"
+            }
+          },
+          "float": {
+            "dataType": {
+              "type": "float"
+            }
+          },
+          "double": {
+            "dataType": {
+              "type": "double"
+            }
+          },
+          "byte": {
+            "dataType": {
+              "type": "byte"
+            }
+          },
+          "attachment": {
+            "dataType": {
+              "type": "attachment"
+            }
+          },
+          "geoPoint": {
+            "dataType": {
+              "type": "geopoint"
+            }
+          },
+          "geoShape": {
+            "dataType": {
+              "type": "geoshape"
+            }
+          },
+          "stringArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            }
+          },
+          "booleanArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "boolean"
+              }
+            }
+          },
+          "dateArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "date"
+              }
+            }
+          },
+          "dateTimeArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "timestamp"
+              }
+            }
+          },
+          "decimalArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "decimal"
+              }
+            }
+          },
+          "integerArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              }
+            }
+          },
+          "longArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "long"
+              }
+            }
+          },
+          "shortArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "short"
+              }
+            }
+          },
+          "floatArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "float"
+              }
+            }
+          },
+          "doubleArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "double"
+              }
+            }
+          },
+          "byteArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "byte"
+              }
+            }
+          },
+          "attachmentArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "attachment"
+              }
+            }
+          },
+          "geoPointArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "geopoint"
+              }
+            }
+          },
+          "geoShapeArray": {
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "geoshape"
+              }
+            }
+          },
+          "numericTimeseries": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double"
+              }
+            }
+          },
+          "stringTimeseries": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "linkTypes": []
     }
   },
-  "queryTypes": [
-    {
+  "queryTypes": {
+    "queryTakesAllParameterTypes": {
       "apiName": "queryTakesAllParameterTypes",
       "version": "version",
       "rid": "query.rid",
@@ -469,7 +506,7 @@
         }
       }
     },
-    {
+    "getTodoCount": {
       "apiName": "getTodoCount",
       "output": {
         "type": "integer"
@@ -478,34 +515,5 @@
       "rid": "query.rid2",
       "version": "0.1.2"
     }
-  ],
-  "linkTypes": {
-    "Person": [
-      {
-        "apiName": "Todos",
-        "cardinality": "MANY",
-        "displayName": "Todos",
-        "objectTypeApiName": "Todo",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "id"
-      },
-      {
-        "apiName": "Friends",
-        "cardinality": "MANY",
-        "displayName": "Friends",
-        "objectTypeApiName": "Person",
-        "status": "ACTIVE"
-      }
-    ],
-    "Todo": [
-      {
-        "apiName": "Assignee",
-        "cardinality": "ONE",
-        "displayName": "Assignee",
-        "objectTypeApiName": "Person",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "email"
-      }
-    ]
   }
 }

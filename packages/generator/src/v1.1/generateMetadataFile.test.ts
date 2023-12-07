@@ -94,48 +94,60 @@ describe(generateMetadataFile, () => {
 
     await generateMetadataFile(
       {
-        rid: "rid",
-        apiName: "apiName",
+        ontology: {
+          apiName: "apiName",
+          displayName: "",
+          description: "",
+          rid: "rid",
+        },
         objectTypes: {
           foo: {
-            apiName: "foo",
-            primaryKey: "id",
-            rid: "rid.object.foo",
-            status: "ACTIVE",
-            properties: {
-              id: {
-                dataType: { type: "integer" },
+            objectType: {
+              apiName: "foo",
+              primaryKey: "id",
+              rid: "rid.object.foo",
+              status: "ACTIVE",
+              properties: {
+                id: {
+                  dataType: { type: "integer" },
+                },
               },
             },
+            linkTypes: [],
           },
         },
-        actionTypes: [{
-          apiName: "foo",
-          rid: "rid.action.foo",
-          status: "ACTIVE",
-          parameters: {},
-          operations: [],
-        }, {
-          apiName: "bar",
-          rid: "rid.action.bar",
-          status: "ACTIVE",
-          parameters: {},
-          operations: [],
-        }],
-        queryTypes: [{
-          apiName: "foo",
-          rid: "rid.query.foo",
-          version: "1",
-          parameters: {},
-          output: { type: "boolean" },
-        }, {
-          apiName: "bar",
-          rid: "rid.query.bar",
-          version: "1",
-          parameters: {},
-          output: { type: "boolean" },
-        }],
-        linkTypes: {},
+        actionTypes: {
+          "foo": {
+            apiName: "foo",
+            rid: "rid.action.foo",
+            status: "ACTIVE",
+            parameters: {},
+            operations: [],
+          },
+          "bar": {
+            apiName: "bar",
+            rid: "rid.action.bar",
+            status: "ACTIVE",
+            parameters: {},
+            operations: [],
+          },
+        },
+        queryTypes: {
+          "foo": {
+            apiName: "foo",
+            rid: "rid.query.foo",
+            version: "1",
+            parameters: {},
+            output: { type: "boolean" },
+          },
+          "bar": {
+            apiName: "bar",
+            rid: "rid.query.bar",
+            version: "1",
+            parameters: {},
+            output: { type: "boolean" },
+          },
+        },
       },
       helper.minimalFiles,
       BASE_PATH,

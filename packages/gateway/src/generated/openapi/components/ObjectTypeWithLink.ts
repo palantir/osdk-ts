@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
+import type { ObjectTypeV2 } from "./ObjectTypeV2";
 
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+export interface ObjectTypeWithLink {
+  objectType: ObjectTypeV2;
+  linkTypes: Array<LinkTypeSideV2>;
 }

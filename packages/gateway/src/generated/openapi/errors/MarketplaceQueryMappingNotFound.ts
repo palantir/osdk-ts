@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { QueryApiName } from "../components/QueryApiName";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+/** The given query could not be mapped to a Marketplace installation. */
+export interface MarketplaceQueryMappingNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "MarketplaceQueryMappingNotFound";
+  errorInstanceId: string;
+  parameters: {
+    queryType: QueryApiName;
+    artifactRepository: ArtifactRepositoryRid;
+    packageName: SdkPackageName;
+  };
 }

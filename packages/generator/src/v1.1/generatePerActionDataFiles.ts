@@ -29,7 +29,7 @@ export async function generatePerActionDataFiles(
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
-    ontology.actionTypes.map(async (action) => {
+    Object.values(ontology.actionTypes).map(async (action) => {
       const uniqueApiNames = new Set(
         extractReferencedObjectsFromAction(action),
       );
@@ -61,7 +61,9 @@ export async function generatePerActionDataFiles(
     path.join(outDir, `index.ts`),
     await formatTs(`
       ${
-      ontology.actionTypes.map(action => `export * from "./${action.apiName}";`)
+      Object.values(ontology.actionTypes).map(action =>
+        `export * from "./${action.apiName}";`
+      )
         .join("\n")
     }
       `),

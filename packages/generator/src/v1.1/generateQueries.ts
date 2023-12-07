@@ -35,7 +35,7 @@ export async function generateQueries(
   const importedObjects = new Set<string>();
   const signatures: string[] = [];
 
-  for (const query of ontology.queryTypes) {
+  for (const query of Object.values(ontology.queryTypes)) {
     const jsDocBlock = ["/**"];
     if (query.description) {
       jsDocBlock.push(`* ${query.description}`);

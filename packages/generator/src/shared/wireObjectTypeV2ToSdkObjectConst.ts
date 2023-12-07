@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSideV2, ObjectTypeV2 } from "@osdk/gateway/types";
+import type { ObjectTypeWithLink } from "@osdk/gateway/types";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
 
 export function wireObjectTypeV2ToSdkObjectConst(
-  object: ObjectTypeV2,
-  links: LinkTypeSideV2[] = [],
+  object: ObjectTypeWithLink,
   v2: boolean = false,
 ) {
-  const uniqueLinkTargetTypes = new Set(links.map(a => a.objectTypeApiName));
+  const uniqueLinkTargetTypes = new Set(
+    object.linkTypes.map(a => a.objectTypeApiName),
+  );
   return `
-    export const ${object.apiName} = ${
+    export const ${object.objectType.apiName} = ${
     JSON.stringify(
       wireObjectTypeV2ToSdkObjectDefinition(
         object,
-        links,
         v2,
       ),
       null,
       2,
     )
-  } satisfies ObjectTypeDefinition<"${object.apiName}", ${
+  } satisfies ObjectTypeDefinition<"${object.objectType.apiName}", ${
     uniqueLinkTargetTypes.size > 0
       ? [...uniqueLinkTargetTypes].map(apiName => `"${apiName}"`).join(
         "|",

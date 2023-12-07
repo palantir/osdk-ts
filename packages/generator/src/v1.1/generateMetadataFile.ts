@@ -28,8 +28,8 @@ export async function generateMetadataFile(
   importExt: string = "",
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
-  const actionNames = ontology.actionTypes.map(action => action.apiName);
-  const queryNames = ontology.queryTypes.map(query => query.apiName);
+  const actionNames = Object.keys(ontology.actionTypes);
+  const queryNames = Object.keys(ontology.queryTypes);
 
   const actionAltNames = new Map<string, string>();
   const queryAltNames = new Map<string, string>();
@@ -95,8 +95,8 @@ export async function generateMetadataFile(
 
   export const Ontology : {
     metadata: {
-      ontologyRid: "${ontology.rid}",
-      ontologyApiName: "${ontology.apiName}",
+      ontologyRid: "${ontology.ontology.rid}",
+      ontologyApiName: "${ontology.ontology.apiName}",
       userAgent: "foundry-typescript-osdk/0.0.1",
     },
     objects: {
@@ -110,8 +110,8 @@ export async function generateMetadataFile(
     },
   } = {
     metadata: {
-        ontologyRid: "${ontology.rid}" as const,
-        ontologyApiName: "${ontology.apiName}" as const,
+        ontologyRid: "${ontology.ontology.rid}" as const,
+        ontologyApiName: "${ontology.ontology.apiName}" as const,
         userAgent: "foundry-typescript-osdk/0.0.1" as const,
     },
     objects: {
@@ -124,11 +124,15 @@ export async function generateMetadataFile(
         ${commaSeparatedIdentifiers(queryNames, queryAltNames)}
     }
   } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
-      ontology.actionTypes.map(actionType => `"${actionType.apiName}"`).join(
+      Object.values(ontology.actionTypes).map(actionType =>
+        `"${actionType.apiName}"`
+      ).join(
         "|",
       )
     }, ${
-      ontology.queryTypes.map(queryType => `"${queryType.apiName}"`).join("|")
+      Object.values(ontology.queryTypes).map(queryType =>
+        `"${queryType.apiName}"`
+      ).join("|")
     }>;
     
 export interface Ontology extends ClientOntology<typeof Ontology> {

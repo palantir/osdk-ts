@@ -20,14 +20,16 @@ import type { WireOntologyDefinition } from "./WireOntologyDefinition";
 export function validateWireOntologyAssumptions(
   ontology: WireOntologyDefinition,
 ) {
-  invariantNotStartWithDollarSign(ontology.apiName);
+  invariantNotStartWithDollarSign(ontology.ontology.apiName);
 
   for (const [objectKey, objectType] of Object.entries(ontology.objectTypes)) {
-    invariantMapKeyMatchesApiName(objectKey, objectType);
-    invariantNotStartWithDollarSign(objectType.apiName);
+    invariantMapKeyMatchesApiName(objectKey, objectType.objectType);
+    invariantNotStartWithDollarSign(objectType.objectType.apiName);
 
     for (
-      const [propertyKey, propertyType] of Object.entries(objectType.properties)
+      const [propertyKey, propertyType] of Object.entries(
+        objectType.objectType.properties,
+      )
     ) {
       invariantNotStartWithDollarSign(propertyKey);
     }

@@ -28,28 +28,30 @@ export async function generatePerQueryDataFiles(
   importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
-  await Promise.all(ontology.queryTypes.map(async query => {
-    const objectTypes = getObjectTypesFromQuery(query);
-    await fs.writeFile(
-      path.join(outDir, `${query.apiName}.ts`),
-      await formatTs(`
+  await Promise.all(
+    Object.values(ontology.queryTypes).map(async query => {
+      const objectTypes = getObjectTypesFromQuery(query);
+      await fs.writeFile(
+        path.join(outDir, `${query.apiName}.ts`),
+        await formatTs(`
         import { QueryDefinition } from "@osdk/api";
 
         export const ${query.apiName} = ${
-        JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-      } satisfies QueryDefinition<"${query.apiName}", ${
-        objectTypes.length > 0
-          ? objectTypes.map(apiName => `"${apiName}"`).join("|")
-          : "never"
-      }>;`),
-    );
-  }));
+          JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
+        } satisfies QueryDefinition<"${query.apiName}", ${
+          objectTypes.length > 0
+            ? objectTypes.map(apiName => `"${apiName}"`).join("|")
+            : "never"
+        }>;`),
+      );
+    }),
+  );
 
   await fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(`
   ${
-      ontology.queryTypes.map(query =>
+      Object.values(ontology.queryTypes).map(query =>
         `export * from "./${query.apiName}${importExt}";`
       )
         .join("\n")

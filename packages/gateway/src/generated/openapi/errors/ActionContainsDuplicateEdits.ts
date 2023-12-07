@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
-
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+export interface ActionContainsDuplicateEdits {
+  errorCode: "CONFLICT";
+  errorName: "ActionContainsDuplicateEdits";
+  errorInstanceId: string;
+  parameters: {};
 }

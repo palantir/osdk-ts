@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName";
-import type { ActionTypeRid } from "../components/ActionTypeRid";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { LinkTypeApiName } from "../components/LinkTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
-/** The action type is not found, or the user does not have access to it. */
-export interface ActionTypeNotFound {
+/** The given link could not be mapped to a Marketplace installation. */
+export interface MarketplaceLinkMappingNotFound {
   errorCode: "NOT_FOUND";
-  errorName: "ActionTypeNotFound";
+  errorName: "MarketplaceLinkMappingNotFound";
   errorInstanceId: string;
   parameters: {
-    actionType: ActionTypeApiName;
-    rid: ActionTypeRid;
+    objectType: ObjectTypeApiName;
+    linkType: LinkTypeApiName;
+    artifactRepository: ArtifactRepositoryRid;
+    packageName: SdkPackageName;
   };
 }

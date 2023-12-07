@@ -21,20 +21,25 @@ describe(sanitizeMetadata, () => {
   it("sanitized action apiNames", () => {
     const sanitizedOntology = sanitizeMetadata({
       objectTypes: {},
-      actionTypes: [
-        {
+      actionTypes: {
+        "kebab-case": {
           apiName: "kebab-case",
           operations: [],
           parameters: {},
           status: "ACTIVE",
           rid: "ri.a.b.c.d",
         },
-      ],
-      rid: "ri.a.b.c.d",
-      apiName: "ontology",
-      linkTypes: {},
-      queryTypes: [],
+      },
+      ontology: {
+        rid: "ri.a.b.c.d",
+        apiName: "ontology",
+        displayName: "",
+        description: "",
+      },
+      queryTypes: {},
     });
-    expect(sanitizedOntology.actionTypes[0].apiName).toEqual("kebabCase");
+    expect(sanitizedOntology.actionTypes["kebabCase"].apiName).toEqual(
+      "kebabCase",
+    );
   });
 });

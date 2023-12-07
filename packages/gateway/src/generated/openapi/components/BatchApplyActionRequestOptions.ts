@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { ReturnEditsMode } from "./ReturnEditsMode";
 
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+export interface BatchApplyActionRequestOptions {
+  returnEdits?: ReturnEditsMode;
 }

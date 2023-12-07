@@ -21,12 +21,14 @@ export function sanitizeMetadata(
 ): WireOntologyDefinition {
   return {
     ...ontology,
-    actionTypes: ontology.actionTypes.map(actionType => {
-      return {
-        ...actionType,
-        apiName: camelize(actionType.apiName),
-      };
-    }),
+    actionTypes: Object.fromEntries(
+      Object.values(ontology.actionTypes).map(actionType => {
+        return [camelize(actionType.apiName), {
+          ...actionType,
+          apiName: camelize(actionType.apiName),
+        }];
+      }),
+    ),
   };
 }
 function camelize(name: string) {
