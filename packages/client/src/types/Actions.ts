@@ -20,13 +20,13 @@ import type {
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
-import type { NullableProps } from "../NullableProps.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
 } from "../OsdkObjectFrom.js";
-import type { PartialByNotStrict } from "../PartialBy.js";
 import type { NOOP } from "../util/NOOP.js";
+import type { NullableProps } from "../util/NullableProps.js";
+import type { PartialByNotStrict } from "../util/PartialBy.js";
 
 type ActionKeysFrom<O extends OntologyDefinition<any>> = keyof O["actions"];
 

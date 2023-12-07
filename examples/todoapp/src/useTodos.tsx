@@ -58,12 +58,12 @@ export function useTodos() {
       const b = !todo.isComplete;
       await mutate(
         async () => {
-          const actionsV2Ready = false;
+          const actionsV2Ready = true;
 
           if (actionsV2Ready) {
-            foundryClient2.actions.completeTodo({
-              is_complete: true,
-              Todo: "todo",
+            await foundryClient2.actions.completeTodo({
+              is_complete: b,
+              Todo: todo.__primaryKey,
             });
           } else {
             // Unwrap to get throw behavior on error.
