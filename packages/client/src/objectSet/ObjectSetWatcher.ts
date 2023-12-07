@@ -24,6 +24,7 @@ export interface ObjectSetWatcherEvents<
   change: Array<OsdkObject<K & string>>;
   refresh: never;
   cancelled: never;
+  error: unknown;
 }
 
 export type ObjectSetListener<

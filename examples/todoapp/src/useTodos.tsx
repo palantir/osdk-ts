@@ -20,10 +20,7 @@ export function useTodos() {
   );
 
   useEffect(() => {
-    let removed = false;
-    let unsubscribe: () => void;
-
-    foundryClient2.objects.Todo.subscribe({
+    const unsubscribe = foundryClient2.objects.Todo.subscribe({
       cancelled() {
         console.log("todo watcher cancelled");
       },
@@ -31,27 +28,15 @@ export function useTodos() {
         console.log("todo change", data);
       },
       refresh() {
-        console.log("todo refresh");
+        mutate();
       },
-    })
-      .then((unsub) => {
-        if (removed) {
-          unsub;
-        } else {
-          unsubscribe = unsub;
-        }
-      })
-      .catch((error) => {
-        console.log("subscription error", error);
-      });
+      error(data) {
+        console.log("todo watcher error", data);
+      },
+    });
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-      removed = true;
-    };
-  }, []);
+    return unsubscribe;
+  }, [mutate]);
 
   const toggleComplete = useCallback(
     async function (todo: Todo) {

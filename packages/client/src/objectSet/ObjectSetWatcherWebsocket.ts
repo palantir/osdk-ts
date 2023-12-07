@@ -36,7 +36,6 @@ import { loadOntologyEntities } from "../generated/ontology-metadata/api/Ontolog
 import type { Wire } from "../internal/net/index.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
-import { Deferred } from "./Deferred.js";
 import type { ObjectSetListener } from "./ObjectSetWatcher.js";
 import {
   getObjectSetBaseType,
@@ -64,11 +63,16 @@ export class ObjectSetWatcherWebsocket<
 
   #ws: WebSocket | undefined;
   #client: ClientContext<O>;
-  #pendingListeners = new Map<
+
+  /** map of listenerId to listener */
+  #listeners = new Map<
     string,
-    { deferred: Deferred<() => void>; listener: ObjectSetListener<O, any> }
+    { listener: ObjectSetListener<O, any>; subscriptionId?: string }
   >();
-  #listeners = new Map<string, ObjectSetListener<O, any>>();
+
+  /** map of subscriptionId to listenerId */
+  #subscriptionToListenerId = new Map<string, string>();
+
   #conjureContext: ConjureContext;
   #metadataContext: ConjureContext;
   #ossContext: ConjureContext;
@@ -97,16 +101,23 @@ export class ObjectSetWatcherWebsocket<
     };
   }
 
-  async subscribe<K extends ObjectTypeKeysFrom<O>>(
+  subscribe<K extends ObjectTypeKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
-  ): Promise<() => void> {
-    const objectSetBaseType = await getObjectSetBaseType(objectSet);
-    const mapping = await getOntologyPropertyMappingForApiName(
-      this.#client,
-      this.#metadataContext,
-      objectSetBaseType,
-    );
+  ): () => void {
+    let requestId: string;
+    do {
+      requestId = crypto.randomUUID();
+    } while (this.#listeners.has(requestId));
+
+    this.#listeners.set(requestId, { listener });
+    this.#subscribe(requestId, objectSet);
+    return () => {
+      this.#unsubscribe(requestId);
+    };
+  }
+
+  async #subscribe(requestId: string, objectSet: Wire.ObjectSet) {
     const [temporaryObjectSet] = await Promise.all([
       // create a time-bounded object set representation for watching
       this.#createTemporaryObjectSet(objectSet),
@@ -126,8 +137,12 @@ export class ObjectSetWatcherWebsocket<
       ),
     ]);
 
+    // the user may have already unsubscribed before we are ready to request a subscription
+    if (!this.#listeners.has(requestId)) {
+      return;
+    }
+
     // subscribe to object set
-    const requestId = crypto.randomUUID();
     const subscribe: ObjectSetSubscribeRequests = {
       id: requestId,
       requests: [{
@@ -139,12 +154,25 @@ export class ObjectSetWatcherWebsocket<
       }],
     };
 
-    const deferred = new Deferred<() => void>();
-
-    this.#pendingListeners.set(requestId, { deferred, listener });
     this.#ws?.send(JSON.stringify(subscribe));
+  }
 
-    return deferred.promise;
+  #unsubscribe(requestId: string) {
+    const data = this.#listeners.get(requestId);
+    if (data == null) {
+      return;
+    }
+    this.#listeners.delete(requestId);
+    const { subscriptionId } = data;
+    if (subscriptionId != null) {
+      this.#subscriptionToListenerId.delete(subscriptionId);
+    }
+
+    if (this.#listeners.size === 0) {
+      this.#destroyWebsocket();
+    }
+
+    // TODO backend does not yet have an unsubscribe message payload
   }
 
   async #ensureWebsocket() {
@@ -185,46 +213,51 @@ export class ObjectSetWatcherWebsocket<
     switch (data.type) {
       case "objectSetChanged": {
         if ((data.objectSetChanged as any).confidenceValue) {
-          const listener = this.#listeners.get(data.objectSetChanged.id);
-          listener?.refresh?.();
+          this.#getCallbackBySubsciptionId(
+            data.objectSetChanged.id,
+            "refresh",
+          )?.();
           break;
         }
 
         const { id: subscriptionId, objects } =
           (data as StreamMessage_objectSetChanged).objectSetChanged;
-        const listener = this.#listeners.get(subscriptionId);
-        const convertedObjects = await convertFoundryToOsdkObjects(
-          this.#client,
-          this.#metadataContext,
-          objects,
+        const callback = this.#getCallbackBySubsciptionId(
+          subscriptionId,
+          "change",
         );
-        listener?.change?.(convertedObjects);
+
+        if (callback) {
+          callback(
+            await convertFoundryToOsdkObjects(
+              this.#client,
+              this.#metadataContext,
+              objects,
+            ),
+          );
+        }
         break;
       }
 
       case "refreshObjectSet": {
         const { id: subscriptionId } = data.refreshObjectSet;
-        const listener = this.#listeners.get(subscriptionId);
-        listener?.refresh?.();
+        this.#getCallbackBySubsciptionId(subscriptionId, "refresh")?.();
         break;
       }
 
       case "subscribeResponses": {
         const { id: requestId, responses } = data.subscribeResponses;
 
-        const pendingData = this.#pendingListeners.get(requestId);
-
-        if (pendingData == null) {
-          throw new Error(
-            "Got a subscription response for a requestId we weren't expecting",
-          );
+        const listenerData = this.#listeners.get(requestId);
+        if (listenerData == null) {
+          // we got a subscription response for a requestId that we no longer have access to
+          // this can happen if a consumer subscribes and unsubscribes before the subscription can come through
+          return;
         }
 
-        const { deferred, listener } = pendingData;
-        this.#pendingListeners.delete(requestId);
-
         if (responses.length !== 1) {
-          deferred.reject(
+          // the subscriptions that we create currently only contain a single item
+          throw new Error(
             "Got more than one response but we only expect a single one",
           );
         }
@@ -232,26 +265,20 @@ export class ObjectSetWatcherWebsocket<
         const response = responses[0];
         switch (response.type) {
           case "error":
-            deferred.reject(response.error);
+            this.#getCallback(requestId, "error")?.(response.error);
             return;
           case "qos":
-            deferred.reject(response.qos);
+            this.#getCallback(requestId, "error")?.(response.qos);
             this.#destroyWebsocket();
             return;
           case "success":
             const { id: subscriptionId } = response.success;
-            this.#listeners.set(subscriptionId, listener);
-            deferred.resolve(() => {
-              // TODO there isn't actually a network call to unsubscribe the socket yet
-              this.#listeners.delete(subscriptionId);
-              if (this.#listeners.size === 0) {
-                this.#destroyWebsocket();
-              }
-            });
+            listenerData.subscriptionId = subscriptionId;
+            this.#subscriptionToListenerId.set(subscriptionId, requestId);
             break;
           default:
             const _: never = response;
-            deferred.reject(response);
+            this.#getCallback(requestId, "error")?.(response);
         }
 
         break;
@@ -296,10 +323,29 @@ export class ObjectSetWatcherWebsocket<
       this.#ws = undefined;
     }
 
-    for (const listener of this.#listeners.values()) {
+    for (const { listener } of this.#listeners.values()) {
       listener.cancelled?.();
     }
     this.#listeners.clear();
+  }
+
+  #getCallback<T extends keyof ObjectSetListener<any, any>>(
+    requestId: string,
+    type: T,
+  ): ObjectSetListener<any, any>[T] | undefined {
+    const maybeListener = this.#listeners.get(requestId);
+    return maybeListener?.listener?.[type];
+  }
+
+  #getCallbackBySubsciptionId<T extends keyof ObjectSetListener<any, any>>(
+    subscriberId: string,
+    type: T,
+  ): ObjectSetListener<any, any>[T] | undefined {
+    const requestId = this.#subscriptionToListenerId.get(subscriberId);
+    if (requestId) {
+      return this.#getCallback(requestId, type);
+    }
+    return;
   }
 }
 

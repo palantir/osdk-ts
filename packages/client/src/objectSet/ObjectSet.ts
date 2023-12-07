@@ -88,7 +88,7 @@ export interface BaseObjectSet<
     opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
   ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
 
-  subscribe: (listener: ObjectSetListener<O, K>) => Promise<() => void>;
+  subscribe: (listener: ObjectSetListener<O, K>) => () => void;
 }
 
 export interface ObjectSetOptions<
