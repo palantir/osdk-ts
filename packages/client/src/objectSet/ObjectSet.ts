@@ -28,7 +28,7 @@ import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
-import type { ObjectSetListener } from "./ObjectSetWatcher.js";
+import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,

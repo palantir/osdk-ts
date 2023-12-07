@@ -32,7 +32,7 @@ import type {
   ObjectSet,
   ObjectSetOptions,
 } from "./ObjectSet.js";
-import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket.js";
+import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
@@ -103,7 +103,7 @@ export function createObjectSet<
     },
 
     subscribe(listener) {
-      const instance = ObjectSetWatcherWebsocket.getInstance(clientCtx);
+      const instance = ObjectSetListenerWebsocket.getInstance(clientCtx);
       return instance.subscribe(objectSet, listener);
     },
   };

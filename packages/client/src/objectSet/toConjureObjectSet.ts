@@ -20,7 +20,7 @@ import type {
   ObjectSetFilter,
 } from "../generated/object-set-service/api/index.js";
 import type { Wire } from "../internal/net/index.js";
-import type { ObjectPropertyMapping } from "./ObjectSetWatcherWebsocket.js";
+import type { ObjectPropertyMapping } from "./ObjectSetListenerWebsocket.js";
 
 export function toConjureObjectSet<
   O extends OntologyDefinition<any>,

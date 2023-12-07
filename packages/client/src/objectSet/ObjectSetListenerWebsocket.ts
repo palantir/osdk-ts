@@ -36,27 +36,27 @@ import { loadOntologyEntities } from "../generated/ontology-metadata/api/Ontolog
 import type { Wire } from "../internal/net/index.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
-import type { ObjectSetListener } from "./ObjectSetWatcher.js";
+import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
   toConjureObjectSet,
 } from "./toConjureObjectSet.js";
 
-export class ObjectSetWatcherWebsocket<
+export class ObjectSetListenerWebsocket<
   O extends OntologyDefinition<any, any, any>,
 > {
   static #instances = new WeakMap<
     ClientContext<any>,
-    ObjectSetWatcherWebsocket<any>
+    ObjectSetListenerWebsocket<any>
   >();
 
   static getInstance<O extends OntologyDefinition<any, any, any>>(
     client: ClientContext<O>,
   ) {
-    let instance = ObjectSetWatcherWebsocket.#instances.get(client);
+    let instance = ObjectSetListenerWebsocket.#instances.get(client);
     if (instance == null) {
-      instance = new ObjectSetWatcherWebsocket(client);
-      ObjectSetWatcherWebsocket.#instances.set(client, instance);
+      instance = new ObjectSetListenerWebsocket(client);
+      ObjectSetListenerWebsocket.#instances.set(client, instance);
     }
     return instance;
   }
