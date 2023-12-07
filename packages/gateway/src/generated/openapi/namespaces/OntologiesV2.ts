@@ -21,6 +21,7 @@ import type { AggregateObjectSetResponseV2 } from "../components/AggregateObject
 import type { AggregateObjectsRequestV2 } from "../components/AggregateObjectsRequestV2";
 import type { AggregateObjectsResponseV2 } from "../components/AggregateObjectsResponseV2";
 import type { ApplyActionRequestV2 } from "../components/ApplyActionRequestV2";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
 import type { AsyncApplyActionRequestV2 } from "../components/AsyncApplyActionRequestV2";
 import type { AsyncApplyActionResponseV2 } from "../components/AsyncApplyActionResponseV2";
 import type { AttachmentMetadataResponse } from "../components/AttachmentMetadataResponse";
@@ -49,6 +50,7 @@ import type { ObjectSet } from "../components/ObjectSet";
 import type { ObjectSetRid } from "../components/ObjectSetRid";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 import type { ObjectTypeV2 } from "../components/ObjectTypeV2";
+import type { OntologyFullMetadata } from "../components/OntologyFullMetadata";
 import type { OntologyIdentifier } from "../components/OntologyIdentifier";
 import type { OntologyObjectV2 } from "../components/OntologyObjectV2";
 import type { OntologyV2 } from "../components/OntologyV2";
@@ -59,6 +61,7 @@ import type { PropertyApiName } from "../components/PropertyApiName";
 import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString";
 import type { QueryApiName } from "../components/QueryApiName";
 import type { QueryTypeV2 } from "../components/QueryTypeV2";
+import type { SdkPackageName } from "../components/SdkPackageName";
 import type { SearchObjectsRequestV2 } from "../components/SearchObjectsRequestV2";
 import type { SearchObjectsResponseV2 } from "../components/SearchObjectsResponseV2";
 import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName";
@@ -98,6 +101,22 @@ export function getOntologyV2<TResponse>(
   return _request(
     "GET",
     `/v2/ontologies/${ontology}`,
+    __undefined,
+    __undefined,
+    __undefined,
+  );
+}
+
+/**
+ * Get the full Ontology metadata. This includes the objects, links, actions, and queries.
+ */
+export function getOntologyFullMetadata<TResponse>(
+  _request: OpenApiRequest<OntologyFullMetadata, TResponse>,
+  ontology: OntologyIdentifier,
+): Promise<TResponse> {
+  return _request(
+    "GET",
+    `/v2/ontologies/${ontology}/fullMetadata`,
     __undefined,
     __undefined,
     __undefined,
@@ -264,6 +283,9 @@ export function listObjectsV2<TResponse>(
     pageToken?: PageToken;
     select: Array<SelectedPropertyApiName>;
     orderBy?: OrderBy;
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+    excludeRid?: boolean;
   },
 ): Promise<TResponse> {
   return _request(
@@ -287,6 +309,9 @@ export function getObjectV2<TResponse>(
   primaryKey: PropertyValueEscapedString,
   queryParameters: {
     select: Array<SelectedPropertyApiName>;
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+    excludeRid?: boolean;
   },
 ): Promise<TResponse> {
   return _request(
@@ -307,12 +332,16 @@ export function countObjects<TResponse>(
   _request: OpenApiRequest<CountObjectsResponseV2, TResponse>,
   ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objects/${objectType}/count`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -346,12 +375,16 @@ export function searchObjectsV2<TResponse>(
   ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: SearchObjectsRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objects/${objectType}/search`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -382,12 +415,16 @@ export function aggregateObjectsV2<TResponse>(
   ontology: OntologyIdentifier,
   objectType: ObjectTypeApiName,
   request: AggregateObjectsRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objects/${objectType}/aggregate`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -438,6 +475,9 @@ export function listLinkedObjectsV2<TResponse>(
     pageToken?: PageToken;
     select: Array<SelectedPropertyApiName>;
     orderBy?: OrderBy;
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+    excludeRid?: boolean;
   },
 ): Promise<TResponse> {
   return _request(
@@ -465,6 +505,9 @@ export function getLinkedObjectV2<TResponse>(
   linkedObjectPrimaryKey: PropertyValueEscapedString,
   queryParameters: {
     select: Array<SelectedPropertyApiName>;
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+    excludeRid?: boolean;
   },
 ): Promise<TResponse> {
   return _request(
@@ -488,12 +531,16 @@ export function getAttachmentsV2<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -511,12 +558,16 @@ export function getAttachmentByRidV2<TResponse>(
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
   attachmentRid: AttachmentRid,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/${attachmentRid}`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -533,12 +584,16 @@ export function getAttachmentContentV2<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/content`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
     __undefined,
     __anyMediaType,
@@ -560,12 +615,16 @@ export function getAttachmentContentByRidV2<TResponse>(
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
   attachmentRid: AttachmentRid,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/attachments/${property}/${attachmentRid}/content`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
     __undefined,
     __anyMediaType,
@@ -584,12 +643,16 @@ export function getFirstPoint<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/firstPoint`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -606,12 +669,16 @@ export function getLastPoint<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "GET",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/lastPoint`,
     __undefined,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -629,12 +696,16 @@ export function streamPoints<TResponse>(
   primaryKey: PropertyValueEscapedString,
   property: PropertyApiName,
   request: StreamTimeSeriesPointsRequest,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objects/${objectType}/${primaryKey}/timeseries/${property}/streamPoints`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
     __applicationJson,
     __anyMediaType,
@@ -657,12 +728,16 @@ export function applyActionV2<TResponse>(
   ontology: OntologyIdentifier,
   action: ActionTypeApiName,
   request: ApplyActionRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/actions/${action}/apply`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -682,12 +757,16 @@ export function applyActionBatchV2<TResponse>(
   ontology: OntologyIdentifier,
   action: ActionTypeApiName,
   request: BatchApplyActionRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/actions/${action}/applyBatch`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -708,12 +787,16 @@ export function applyActionAsyncV2<TResponse>(
   ontology: OntologyIdentifier,
   action: ActionTypeApiName,
   request: AsyncApplyActionRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/actions/${action}/applyAsync`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -775,12 +858,16 @@ export function executeQueryV2<TResponse>(
   ontology: OntologyIdentifier,
   queryApiName: QueryApiName,
   request: ExecuteQueryRequest,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/queries/${queryApiName}/execute`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -818,12 +905,16 @@ export function loadObjectSetV2<TResponse>(
   _request: OpenApiRequest<LoadObjectSetResponseV2, TResponse>,
   ontology: OntologyIdentifier,
   request: LoadObjectSetRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objectSets/loadObjects`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }
@@ -837,12 +928,16 @@ export function aggregateObjectSetV2<TResponse>(
   _request: OpenApiRequest<AggregateObjectSetResponseV2, TResponse>,
   ontology: OntologyIdentifier,
   request: AggregateObjectSetRequestV2,
+  queryParameters?: {
+    artifactRepository?: ArtifactRepositoryRid;
+    packageName?: SdkPackageName;
+  },
 ): Promise<TResponse> {
   return _request(
     "POST",
     `/v2/ontologies/${ontology}/objectSets/aggregate`,
     request,
-    __undefined,
+    queryParameters,
     __undefined,
   );
 }

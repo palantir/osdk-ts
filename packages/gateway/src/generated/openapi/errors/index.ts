@@ -15,6 +15,7 @@
  */
 
 export * from "./AbortTransactionPermissionDenied";
+export * from "./ActionContainsDuplicateEdits";
 export * from "./ActionEditedPropertiesNotFound";
 export * from "./ActionNotFound";
 export * from "./ActionParameterObjectNotFound";
@@ -80,6 +81,11 @@ export * from "./LinkAlreadyExists";
 export * from "./LinkedObjectNotFound";
 export * from "./LinkTypeNotFound";
 export * from "./MalformedPropertyFilters";
+export * from "./MarketplaceActionMappingNotFound";
+export * from "./MarketplaceInstallationNotFound";
+export * from "./MarketplaceLinkMappingNotFound";
+export * from "./MarketplaceObjectMappingNotFound";
+export * from "./MarketplaceQueryMappingNotFound";
 export * from "./MissingParameter";
 export * from "./MissingPostBody";
 export * from "./MultipleGroupByOnFieldNotSupported";

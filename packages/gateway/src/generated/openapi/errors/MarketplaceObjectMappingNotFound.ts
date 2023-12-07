@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
-export interface BatchApplyActionResponseV2 {
-  edits?: ActionResults;
+/** The given object could not be mapped to a Marketplace installation. */
+export interface MarketplaceObjectMappingNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "MarketplaceObjectMappingNotFound";
+  errorInstanceId: string;
+  parameters: {
+    objectType: ObjectTypeApiName;
+    artifactRepository: ArtifactRepositoryRid;
+    packageName: SdkPackageName;
+  };
 }

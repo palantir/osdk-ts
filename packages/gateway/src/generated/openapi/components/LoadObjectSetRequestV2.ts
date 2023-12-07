@@ -27,4 +27,9 @@ export interface LoadObjectSetRequestV2 {
   select: Array<SelectedPropertyApiName>;
   pageToken?: PageToken;
   pageSize?: PageSize;
+  /**
+   * A flag to exclude the retrieval of the `__rid` property.
+   * Setting this to true may improve performance of this endpoint for object types in OSV2.
+   */
+  excludeRid?: boolean;
 }
