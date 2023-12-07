@@ -46,6 +46,7 @@ export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
+  PrimitiveDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
@@ -58,6 +59,6 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  ValidBaseQueryDataTypes,
+  WireQueryDataTypes,
 } from "./ontology/QueryDefinition";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";

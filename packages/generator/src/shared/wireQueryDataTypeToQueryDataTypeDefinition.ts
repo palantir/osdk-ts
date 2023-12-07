@@ -49,16 +49,15 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
 
     case "object":
       return {
-        type: {
-          type: "object",
-          object: input.objectTypeApiName as K,
-        },
+        type: "object",
+        object: input.objectTypeApiName as K,
         nullable: false,
       };
 
     case "objectSet":
       return {
-        type: { type: "objectSet", objectSet: input.objectTypeApiName as K },
+        type: "objectSet",
+        objectSet: input.objectTypeApiName as K,
         nullable: false,
       };
 
@@ -70,10 +69,8 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
 
     case "set":
       return {
-        type: {
-          type: "set",
-          set: wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
-        },
+        type: "set",
+        set: wireQueryDataTypeToQueryDataTypeDefinition(input.subType),
         nullable: false,
       };
 
@@ -92,45 +89,37 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
       }
 
       return {
-        type: {
-          type: "union",
-          union: input.unionTypes.reduce((acc, t) => {
-            if (t.type === "null") {
-              return acc;
-            }
-            acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
+        type: "union",
+        union: input.unionTypes.reduce((acc, t) => {
+          if (t.type === "null") {
             return acc;
-          }, [] as QueryDataTypeDefinition<K>[]),
-        },
+          }
+          acc.push(wireQueryDataTypeToQueryDataTypeDefinition(t));
+          return acc;
+        }, [] as QueryDataTypeDefinition<K>[]),
         nullable: allowNulls,
       };
 
     case "struct":
       return {
-        type: {
-          type: "struct",
-          struct: Object.fromEntries(input.fields.map(f => [
-            f.name,
-            wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
-          ])),
-        },
+        type: "struct",
+        struct: Object.fromEntries(input.fields.map(f => [
+          f.name,
+          wireQueryDataTypeToQueryDataTypeDefinition(f.fieldType),
+        ])),
         nullable: false,
       };
 
     case "twoDimensionalAggregation":
       return {
-        type: {
-          type: "twoDimensionalAggregation",
-          twoDimensionalAggregation: get2DQueryAggregationProps(input),
-        },
+        type: "twoDimensionalAggregation",
+        twoDimensionalAggregation: get2DQueryAggregationProps(input),
       };
 
     case "threeDimensionalAggregation":
       return {
-        type: {
-          type: "threeDimensionalAggregation",
-          threeDimensionalAggregation: get3DQueryAggregationProps(input),
-        },
+        type: "threeDimensionalAggregation",
+        threeDimensionalAggregation: get3DQueryAggregationProps(input),
       };
 
     case "null":

@@ -16,7 +16,6 @@
 
 import type {
   AggregationKeyDataType,
-  ObjectSetQueryDataType,
   OntologyDefinition,
   QueryDataTypeDefinition,
   RangeAggregationKeyDataType,
@@ -122,8 +121,8 @@ async function remapQueryResponseType<
   // handle arrays
   if (definition.multiplicity) {
     const definitionWithoutMultiplicity = {
-      type: definition.type,
-      nullable: definition.nullable,
+      ...definition,
+      multiplicity: false,
     };
     return await Promise.all(
       (responseValue as PrimitiveParameterValue[]).map(it =>
@@ -149,13 +148,12 @@ async function remapQueryResponseType<
     case "long":
       return responseValue as number;
     default:
-      const complexType = definition.type;
-      switch (complexType.type) {
+      switch (definition.type) {
         case "object": {
           if (typeof responseValue !== "object") {
             const result = await getObject(
               client,
-              complexType.object,
+              definition.object,
               responseValue,
               [],
             );
@@ -186,7 +184,7 @@ async function remapQueryResponseType<
             responseValue.map(async arrayValue =>
               remapQueryResponseType(
                 client,
-                complexType.set,
+                definition.set,
                 arrayValue,
               )
             ),
@@ -205,7 +203,7 @@ async function remapQueryResponseType<
           const responseEntries = Object.entries(responseValue);
           const remappedResponseEntries = await Promise.all(
             responseEntries.map(async ([key, structValue]) => {
-              const structType = complexType.struct[key];
+              const structType = definition.struct[key];
               const remappedValue = await remapQueryResponseType(
                 client,
                 structType,
@@ -229,11 +227,11 @@ async function remapQueryResponseType<
           const typedValue = responseValue as QueryTwoDimensionalAggregation;
           const groups = typedValue.groups.map(group => {
             const key = remapQueryBucketKeyType(
-              complexType.twoDimensionalAggregation,
+              definition.twoDimensionalAggregation,
               group.key,
             );
             const value = remapQueryBucketValueType(
-              complexType.twoDimensionalAggregation.valueType,
+              definition.twoDimensionalAggregation.valueType,
               group.value,
             );
             return {
@@ -251,17 +249,17 @@ async function remapQueryResponseType<
           const typedValue = responseValue as QueryThreeDimensionalAggregation;
           const groups = typedValue.groups.map(group => {
             const key = remapQueryBucketKeyType(
-              complexType.threeDimensionalAggregation,
+              definition.threeDimensionalAggregation,
               group.key,
             );
             const subBuckets = group.groups.map(subGroup => {
               return {
                 key: remapQueryBucketKeyType(
-                  complexType.threeDimensionalAggregation.valueType,
+                  definition.threeDimensionalAggregation.valueType,
                   subGroup.key,
                 ),
                 value: remapQueryBucketValueType(
-                  complexType.threeDimensionalAggregation.valueType.valueType,
+                  definition.threeDimensionalAggregation.valueType.valueType,
                   subGroup.value,
                 ),
               };
@@ -280,18 +278,16 @@ async function remapQueryResponseType<
         case "objectSet":
           return createOsdkObjectSet(
             client,
-            (definition.type as ObjectSetQueryDataType<any>).objectSet,
+            definition.objectSet,
             responseValue as ObjectSetDefinition,
           );
 
         case "union":
           throw new Error("Union type is not supported in response");
         default:
-          const _: never = complexType;
+          const _: never = definition;
           throw new Error(
-            `Cannot remap query response of type ${
-              JSON.stringify(complexType)
-            }`,
+            `Cannot remap query response of type ${JSON.stringify(definition)}`,
           );
       }
   }

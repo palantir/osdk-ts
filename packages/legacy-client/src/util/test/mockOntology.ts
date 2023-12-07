@@ -108,7 +108,6 @@ export const MockOntology = {
     queryTakesNoParameters: {
       apiName: "queryTakesNoParameters",
       description: "a query that does not require parameters",
-      rid: "query.rid.1",
       version: "version",
       parameters: {},
       output: {
@@ -119,16 +118,13 @@ export const MockOntology = {
     queryReturnsAggregation: {
       apiName: "queryReturnsAggregation",
       description: "a query that returns an aggregation",
-      rid: "query.rid.2",
       version: "version",
       parameters: {},
       output: {
-        type: {
-          type: "threeDimensionalAggregation",
-          threeDimensionalAggregation: {
-            keyType: "string",
-            valueType: { keyType: "boolean", valueType: "double" },
-          },
+        type: "threeDimensionalAggregation",
+        threeDimensionalAggregation: {
+          keyType: "string",
+          valueType: { keyType: "boolean", valueType: "double" },
         },
         nullable: false,
       },
@@ -137,150 +133,127 @@ export const MockOntology = {
       apiName: "queryTakesAllParameterTypes",
       description: "description of the query that takes all parameter types",
       displayName: "qTAPT",
-      rid: "query.rid.3",
       version: "version",
       parameters: {
         double: {
           description: "a double parameter",
-          dataType: { type: "double", nullable: false },
+          type: "double",
+          nullable: false,
         },
-        float: { dataType: { type: "float", nullable: false } },
-        integer: { dataType: { type: "integer", nullable: false } },
-        long: { dataType: { type: "long", nullable: false } },
-        attachment: { dataType: { type: "attachment", nullable: false } },
-        boolean: { dataType: { type: "boolean", nullable: false } },
-        date: { dataType: { type: "date", nullable: false } },
-        string: { dataType: { type: "string", nullable: false } },
-        timestamp: { dataType: { type: "timestamp", nullable: false } },
+        float: { type: "float", nullable: false },
+        integer: { type: "integer", nullable: false },
+        long: { type: "long", nullable: false },
+        attachment: { type: "attachment", nullable: false },
+        boolean: { type: "boolean", nullable: false },
+        date: { type: "date", nullable: false },
+        string: { type: "string", nullable: false },
+        timestamp: { type: "timestamp", nullable: false },
         object: {
-          dataType: {
-            type: { type: "object", object: "Todo" },
-            nullable: false,
-          },
+          type: "object",
+          object: "Todo",
+          nullable: false,
         },
         objectSet: {
-          dataType: {
-            type: { type: "objectSet", objectSet: "Todo" },
-            nullable: false,
-          },
+          type: "objectSet",
+          objectSet: "Todo",
+          nullable: false,
         },
         array: {
           description: "an array of strings",
-          dataType: { type: "string", nullable: false, multiplicity: true },
+          type: "string",
+          nullable: false,
+          multiplicity: true,
         },
         set: {
           description: "a set of strings",
-          dataType: {
-            type: { type: "set", set: { type: "string", nullable: false } },
-            nullable: false,
-          },
+
+          type: "set",
+          set: { type: "string", nullable: false },
+          nullable: false,
         },
         unionNonNullable: {
           description: "a union of strings and integers",
-          dataType: {
-            type: {
-              type: "union",
-              union: [
-                { type: "string", nullable: false },
-                { type: "integer", nullable: false },
-              ],
-            },
-            nullable: false,
-          },
+
+          type: "union",
+          union: [
+            { type: "string", nullable: false },
+            { type: "integer", nullable: false },
+          ],
+
+          nullable: false,
         },
         unionNullable: {
           description: "a union of strings and integers but its optional",
-          dataType: {
-            type: {
-              type: "union",
-              union: [
-                { type: "string", nullable: false },
-                { type: "integer", nullable: false },
-              ],
-            },
-            nullable: true,
-          },
+
+          type: "union",
+          union: [
+            { type: "string", nullable: false },
+            { type: "integer", nullable: false },
+          ],
+
+          nullable: true,
         },
         struct: {
           description: "a struct with some fields",
-          dataType: {
-            type: {
-              type: "struct",
-              struct: {
-                name: { type: "string", nullable: false },
-                id: { type: "integer", nullable: true },
-              },
-            },
-            nullable: false,
+
+          type: "struct",
+          struct: {
+            name: { type: "string", nullable: false },
+            id: { type: "integer", nullable: true },
           },
+          nullable: false,
         },
         twoDimensionalAggregation: {
-          dataType: {
-            type: {
-              type: "twoDimensionalAggregation",
-              twoDimensionalAggregation: {
-                keyType: "string",
-                valueType: "double",
-              },
-            },
+          type: "twoDimensionalAggregation",
+          twoDimensionalAggregation: {
+            keyType: "string",
+            valueType: "double",
           },
         },
         threeDimensionalAggregation: {
-          dataType: {
-            type: {
-              type: "threeDimensionalAggregation",
-              threeDimensionalAggregation: {
-                keyType: "range",
-                keySubtype: "date",
-                valueType: {
-                  keyType: "range",
-                  keySubtype: "timestamp",
-                  valueType: "date",
-                },
-              },
+          type: "threeDimensionalAggregation",
+          threeDimensionalAggregation: {
+            keyType: "range",
+            keySubtype: "date",
+            valueType: {
+              keyType: "range",
+              keySubtype: "timestamp",
+              valueType: "date",
             },
           },
         },
       },
       output: {
-        type: {
-          type: "object",
-          object: "Todo",
-        },
+        type: "object",
+        object: "Todo",
         nullable: false,
       },
     },
     queryTakesNestedObjects: {
       apiName: "queryTakesNestedObjects",
       description: "a query that takes nested objects inside other types",
-      rid: "query.rid.4",
       version: "version",
       output: { type: "boolean" },
       parameters: {
         struct: {
-          dataType: {
-            type: {
-              type: "struct",
-              struct: {
-                object: {
-                  type: { type: "object", object: "Todo" },
-                  nullable: false,
-                },
-              },
+          type: "struct",
+          struct: {
+            object: {
+              type: "object",
+              object: "Todo",
+              nullable: false,
             },
-            nullable: false,
           },
+          nullable: false,
         },
         set: {
-          dataType: {
-            type: {
-              type: "set",
-              set: {
-                type: { type: "object", object: "Todo" },
-              },
-            },
-            nullable: false,
+          type: "set",
+          set: {
+            type: "object",
+            object: "Todo",
           },
+
+          nullable: false,
         },
       },
     },
@@ -292,3 +265,6 @@ export const MockOntology = {
   | "ObjectTypeWithReservedNames",
   "createTask" | "updateTask" | "createTodo"
 >;
+type capture = typeof MockOntology;
+export interface MockOntology extends capture {
+}
