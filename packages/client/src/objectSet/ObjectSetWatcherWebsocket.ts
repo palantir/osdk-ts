@@ -22,10 +22,8 @@ import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
-
 import type {
   Message,
-  ObjectSetChanged,
   ObjectSetSubscribeRequests,
 } from "../generated/object-set-watcher/index.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
@@ -435,9 +433,4 @@ async function getOntologyPropertyMappingForRid(
   }
 
   return objectTypeMapping.get(ctx)?.get(objectRid);
-}
-function isObjectSetChanged(
-  message: StreamMessage | ObjectSetChanged,
-): message is ObjectSetChanged {
-  return (message as any)?.type == null;
 }
