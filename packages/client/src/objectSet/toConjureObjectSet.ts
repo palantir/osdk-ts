@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { type ObjectTypesFrom, type OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
-} from "../generated/object-set-service/api";
-import type { Wire } from "../internal/net";
-import type { ObjectPropertyMapping } from "./ObjectSetWatcherWebsocket";
+} from "../generated/object-set-service/api/index.js";
+import type { Wire } from "../internal/net/index.js";
+import type { ObjectPropertyMapping } from "./ObjectSetWatcherWebsocket.js";
 
 export function toConjureObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   objectSet: Wire.ObjectSet,
   objectPropertyMapping: ObjectPropertyMapping,
