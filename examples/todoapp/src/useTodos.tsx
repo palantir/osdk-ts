@@ -16,7 +16,7 @@ export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
     "/todos",
     async () => orThrow(await foundryClient.ontology.objects.Todo.all()),
-    { keepPreviousData: true }
+    { keepPreviousData: true, revalidateOnFocus: false }
   );
 
   useEffect(() => {

@@ -182,20 +182,28 @@ export class ObjectSetListenerWebsocket<
       // TODO: This should be a different endpoint
       const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
       const token = await tokenProvider();
-      this.#ws = new WebSocket(url, [`Bearer-${token}`]);
-      this.#ws.addEventListener("error", this.#destroyWebsocket);
-      this.#ws.addEventListener("close", this.#destroyWebsocket);
-      this.#ws.addEventListener("message", this.#onMessage);
 
-      // allow await-ing the websocket open event
-      return new Promise<void>((resolve, reject) => {
-        this.#ws!.addEventListener("open", () => {
-          resolve();
+      // tokenProvider is async, there could potentially be a race to create the websocket.
+      // Only the first call to reach here will find a null this.#ws, the rest will bail out
+      if (this.#ws == null) {
+        this.#ws = new WebSocket(url, [`Bearer-${token}`]);
+        this.#ws.addEventListener("error", this.#destroyWebsocket);
+        this.#ws.addEventListener("close", this.#destroyWebsocket);
+        this.#ws.addEventListener("message", this.#onMessage);
+      }
+
+      // Allow await-ing the websocket open event if it isn't open already.
+      // This needs to happen even for callers that didn't just create this.#ws
+      if (this.#ws.readyState === WebSocket.CONNECTING) {
+        return new Promise<void>((resolve, reject) => {
+          this.#ws!.addEventListener("open", () => {
+            resolve();
+          });
+          this.#ws!.addEventListener("error", (event: WebSocket.ErrorEvent) => {
+            reject(new Error(event.toString()));
+          });
         });
-        this.#ws!.addEventListener("error", (event: WebSocket.ErrorEvent) => {
-          reject(new Error(event.toString()));
-        });
-      });
+      }
     }
   }
 
