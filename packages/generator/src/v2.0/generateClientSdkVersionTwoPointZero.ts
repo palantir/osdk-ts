@@ -32,10 +32,8 @@ export async function generateClientSdkVersionTwoPointZero(
   const sanitizedOntology = sanitizeMetadata(ontology);
 
   const objectNames = Object.keys(sanitizedOntology.objectTypes);
-  const actionNames = sanitizedOntology.actionTypes.map(action =>
-    action.apiName
-  );
-  const queryNames = sanitizedOntology.queryTypes.map(query => query.apiName);
+  const actionNames = Object.keys(sanitizedOntology.actionTypes);
+  const queryNames = Object.keys(sanitizedOntology.queryTypes);
 
   const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
