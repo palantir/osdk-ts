@@ -57,7 +57,9 @@
           "type": "modifyObject",
           "objectTypeApiName": "Todo"
         }
-      ]
+      ],
+      "status": "ACTIVE",
+      "rid": ""
     }
   },
   "objectTypes": {

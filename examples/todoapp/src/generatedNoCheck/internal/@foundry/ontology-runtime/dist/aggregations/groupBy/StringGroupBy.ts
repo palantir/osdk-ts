@@ -1,0 +1,1 @@
+export { StringGroupBy } from './index';

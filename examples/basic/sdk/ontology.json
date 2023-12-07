@@ -128,7 +128,7 @@
         "status": "ACTIVE",
         "rid": "ridForTodo"
       },
-      "links": [{
+      "linkTypes": [{
         "apiName": "Assignee",
         "cardinality": "ONE",
         "displayName": "Assignee",

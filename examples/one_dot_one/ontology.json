@@ -375,7 +375,8 @@
             }
           }
         }
-      }
+      },
+      "linkTypes": []
     }
   },
   "queryTypes": {
