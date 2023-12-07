@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client";
-export { createClient } from "./createClient";
-export type { ObjectSet } from "./objectSet/ObjectSet";
-export type { PageResult } from "./PageResult";
+export type { Client } from "./Client.js";
+export { createClient } from "./createClient.js";
+export type { ObjectSet } from "./objectSet/ObjectSet.js";
+export type { PageResult } from "./PageResult.js";
 
 // FIXME: Should this be Objects or Object?
-export * as Objects from "./object/index";
-export type { OsdkObject } from "./OsdkObject";
-export type { OsdkObjectFrom } from "./OsdkObjectFrom";
+export * as Objects from "./object/index.js";
+export type { OsdkObject } from "./OsdkObject.js";
+export type { OsdkObjectFrom } from "./OsdkObjectFrom.js";
+
+export { createClientContext } from "@osdk/shared.net";
+export { isOk } from "@osdk/shared.net";
+export type { ResultOrError } from "@osdk/shared.net";
+export type { ClientContext } from "@osdk/shared.net";

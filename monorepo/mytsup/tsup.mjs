@@ -1,5 +1,6 @@
 /**
  * @param {import('tsup').Options} options
+ * @returns {import('tsup').Options}
  */
 export default async (options) => {
   const babel = (await import("esbuild-plugin-babel")).default;
@@ -11,6 +12,11 @@ export default async (options) => {
       "src/public/*.mts",
     ],
     format: ["cjs", "esm"],
+    outExtension: ({ format }) => {
+      return {
+        js: format === "cjs" ? ".cjs" : ".mjs",
+      };
+    },
     outDir: "build/js",
     clean: true,
     silent: true,

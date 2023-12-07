@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { handleLoadObjectSetError, LoadObjectSetErrorHandler } from "../errors";
 import type { LoadObjectSetError } from "../errors";
@@ -35,10 +32,10 @@ import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export async function loadObjectsPage<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   T extends OsdkLegacyObjectFrom<O, K>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   objectApiName: K,
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],

@@ -8,12 +8,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/cli": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/legacy-client": "workspace:*"
   },

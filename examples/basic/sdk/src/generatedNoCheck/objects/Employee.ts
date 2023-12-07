@@ -1,4 +1,4 @@
-import type { ObjectDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const Employee = {
   apiName: 'Employee',
@@ -61,4 +61,4 @@ export const Employee = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'Employee', 'Employee'>;
+} satisfies ObjectTypeDefinition<'Employee', 'Employee'>;

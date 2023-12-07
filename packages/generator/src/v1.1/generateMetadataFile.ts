@@ -25,6 +25,7 @@ export async function generateMetadataFile(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   const objectNames = Object.keys(ontology.objectTypes);
   const actionNames = ontology.actionTypes.map(action => action.apiName);
@@ -65,12 +66,12 @@ export async function generateMetadataFile(
     await formatTs(`
   import type { OntologyDefinition } from "@osdk/api";
   import type { Ontology as ClientOntology } from "@osdk/legacy-client";
-  import type { Objects } from "./ontology/objects/Objects";
-  import type { Actions } from "./ontology/actions/Actions";
-  import type { Queries } from "./ontology/queries/Queries";
+  import type { Objects } from "./ontology/objects/Objects${importExt}";
+  import type { Actions } from "./ontology/actions/Actions${importExt}";
+  import type { Queries } from "./ontology/queries/Queries${importExt}";
   ${
       objectNames.map((name) =>
-        `import {${name}} from "./ontology/objects/${name}";`
+        `import {${name}} from "./ontology/objects/${name}${importExt}";`
       )
         .join("\n")
     }
@@ -78,7 +79,7 @@ export async function generateMetadataFile(
       actionNames.map((name) =>
         `import {${
           getImportClause(name, actionAltNames)
-        }} from "./ontology/actions/${name}";`
+        }} from "./ontology/actions/${name}${importExt}";`
       )
         .join("\n")
     }
@@ -86,7 +87,7 @@ export async function generateMetadataFile(
       queryNames.map(name =>
         `import {${
           getImportClause(name, queryAltNames)
-        }} from "./ontology/queries/${name}";`
+        }} from "./ontology/queries/${name}${importExt}";`
       ).join(
         "\n",
       )

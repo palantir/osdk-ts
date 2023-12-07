@@ -15,22 +15,22 @@
  */
 
 import type {
-  ObjectInfoFrom,
-  ObjectTypesFrom,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type {
   AggregationClause,
   GroupByClause,
   WhereClause,
-} from "../../query";
+} from "../../query/index.js";
 
 export type AggregateOpts<
   T extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<T>,
+  K extends ObjectTypeKeysFrom<T>,
   AC extends AggregationClause<T, K>,
 > = {
   select: AC;
-  where?: WhereClause<ObjectInfoFrom<T, K>>;
+  where?: WhereClause<ObjectTypeDefinitionFrom<T, K>>;
   groupBy?: GroupByClause<T, K>;
 };

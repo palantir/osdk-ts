@@ -27,23 +27,33 @@ export default async function handleGenerate(args: TypescriptGenerateArgs) {
     await fs.promises.readFile(args.ontologyPath, "utf-8"),
   );
   if (args.beta) {
-    await generateClientSdkVersionTwoPointZero(ontology, {
-      writeFile: (path, contents) => {
-        return fs.promises.writeFile(path, contents, "utf-8");
+    await generateClientSdkVersionTwoPointZero(
+      ontology,
+      {
+        writeFile: (path, contents) => {
+          return fs.promises.writeFile(path, contents, "utf-8");
+        },
+        mkdir: async (path, options) => {
+          await fs.promises.mkdir(path, options);
+        },
       },
-      mkdir: async (path, options) => {
-        await fs.promises.mkdir(path, options);
-      },
-    }, args.outDir);
+      args.outDir,
+      args.packageType,
+    );
   } else {
-    await generateClientSdkVersionOneDotOne(ontology, {
-      writeFile: (path, contents) => {
-        return fs.promises.writeFile(path, contents, "utf-8");
+    await generateClientSdkVersionOneDotOne(
+      ontology,
+      {
+        writeFile: (path, contents) => {
+          return fs.promises.writeFile(path, contents, "utf-8");
+        },
+        mkdir: async (path, options) => {
+          await fs.promises.mkdir(path, options);
+        },
       },
-      mkdir: async (path, options) => {
-        await fs.promises.mkdir(path, options);
-      },
-    }, args.outDir);
+      args.outDir,
+      args.packageType,
+    );
   }
 
   consola.info("OSDK Generated!");

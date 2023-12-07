@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { PropertyDefinition, ValidPropertyTypes } from "@osdk/api";
+import type {
+  ObjectTypePropertyDefinition,
+  WirePropertyTypes,
+} from "@osdk/api";
 import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: PropertyV2,
   isNullable: boolean = true,
-): PropertyDefinition {
+): ObjectTypePropertyDefinition {
   switch (input.dataType.type) {
     case "integer":
     case "string":
@@ -61,7 +64,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): keyof ValidPropertyTypes {
+): keyof WirePropertyTypes {
   switch (propertyType.type) {
     case "integer":
     case "string":

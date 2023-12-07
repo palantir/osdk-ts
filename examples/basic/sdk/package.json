@@ -8,17 +8,17 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -47,5 +47,6 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }

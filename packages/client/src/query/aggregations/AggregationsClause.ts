@@ -15,11 +15,11 @@
  */
 
 import type {
-  ObjectPropertyDefinitionsFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyDefinitionsFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { AggregatableKeys } from "./AggregatableKeys";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
 
 type StringAggregateOption = "approximateDistinct";
 type NumericAggregateOption =
@@ -31,14 +31,14 @@ type NumericAggregateOption =
 
 export type AggregationClause<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 > = {
-  [P in AggregatableKeys<O, K>]?: ObjectPropertyDefinitionsFrom<
+  [P in AggregatableKeys<O, K>]?: ObjectTypePropertyDefinitionsFrom<
     O,
     K
   >[P]["type"] extends "string"
     ? StringAggregateOption | StringAggregateOption[]
-    : ObjectPropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
+    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
       ? NumericAggregateOption | NumericAggregateOption[]
-    : ObjectPropertyDefinitionsFrom<O, K>[P]["type"];
+    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"];
 };

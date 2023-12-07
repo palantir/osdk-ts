@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition, ThinClient } from "@osdk/api";
-
+import type { OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import { getFirstPoint } from "../../../client/net/getFirstPoint";
 import { getLastPoint } from "../../../client/net/getLastPoint";
 import type { TimeSeries } from "./TimeSeries";
@@ -28,7 +28,7 @@ export function isTimeSeries<T extends number | string>(
 }
 
 export const TimeSeriesProperty = <T extends number | string>(
-  thinClient: ThinClient<OntologyDefinition<any>>,
+  clientCtx: ClientContext<OntologyDefinition<any>>,
   propertyName: string,
   objectTypeApiName: string,
   primaryKey: any,
@@ -37,7 +37,7 @@ export const TimeSeriesProperty = <T extends number | string>(
     type: "TimeSeries" as const,
     getFirstPoint() {
       return getFirstPoint(
-        thinClient,
+        clientCtx,
         objectTypeApiName,
         primaryKey,
         propertyName,
@@ -45,7 +45,7 @@ export const TimeSeriesProperty = <T extends number | string>(
     },
     getLastPoint() {
       return getLastPoint(
-        thinClient,
+        clientCtx,
         objectTypeApiName,
         primaryKey,
         propertyName,
@@ -53,7 +53,7 @@ export const TimeSeriesProperty = <T extends number | string>(
     },
     get points(): TimeSeriesQuery<T> {
       return createTimeSeriesQuery(
-        thinClient,
+        clientCtx,
         propertyName,
         objectTypeApiName,
         primaryKey,

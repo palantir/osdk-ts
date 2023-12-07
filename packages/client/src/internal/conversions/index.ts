@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { legacyToModernSingleAggregationResult } from "./legacyToModernSingleAggregationResult";
-export { modernToLegacyAggregationClause } from "./modernToLegacyAggregationClause";
-export { modernToLegacyGroupByClause } from "./modernToLegacyGroupByClause";
-export { modernToLegacyWhereClause } from "./modernToLegacyWhereClause";
+export { legacyToModernSingleAggregationResult } from "./legacyToModernSingleAggregationResult.js";
+export { modernToLegacyAggregationClause } from "./modernToLegacyAggregationClause.js";
+export { modernToLegacyGroupByClause } from "./modernToLegacyGroupByClause.js";
+export { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";

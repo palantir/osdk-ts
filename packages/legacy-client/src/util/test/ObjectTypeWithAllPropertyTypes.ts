@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   Attachment,
   GeoPoint,
@@ -180,7 +180,7 @@ export const ObjectTypeWithAllPropertyTypes = {
       type: "geoshape",
     },
   },
-} satisfies ObjectDefinition<
+} satisfies ObjectTypeDefinition<
   "ObjectTypeWithAllPropertyTypes",
   "ObjectTypeWithAllPropertyTypes"
 >;

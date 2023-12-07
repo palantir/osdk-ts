@@ -25,14 +25,16 @@ export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  packageType: "module" | "commonjs" = "commonjs",
 ) {
+  const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
 
   fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
       `
-        export { Ontology } from "./Ontology";
+        export { Ontology } from "./Ontology${importExt}";
     `,
     ),
   );
@@ -50,10 +52,12 @@ export async function generateClientSdkVersionTwoPointZero(
       `
       import type { OntologyDefinition } from "@osdk/api";
       ${
-        objectNames.map((name) => `import {${name}} from "./objects/${name}";`)
+        objectNames.map((name) =>
+          `import {${name}} from "./objects/${name}${importExt}";`
+        )
           .join("\n")
       }
-      import { OntologyMetadata } from "./OntologyMetadata";
+      import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       export const Ontology = {
         metadata: OntologyMetadata,
@@ -81,7 +85,7 @@ export async function generateClientSdkVersionTwoPointZero(
       path.join(outDir, `objects`, `${name}.ts`),
       await formatTs(`
     
-      import type { ObjectDefinition } from "@osdk/api";
+      import type { ObjectTypeDefinition } from "@osdk/api";
 
       ${wireObjectTypeV2ToSdkObjectConst(obj, links, true)}
 
@@ -101,7 +105,7 @@ export async function generateClientSdkVersionTwoPointZero(
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./${apiName}";`
+        `export * from "./${apiName}${importExt}";`
       ).join("\n")
     }
     `),

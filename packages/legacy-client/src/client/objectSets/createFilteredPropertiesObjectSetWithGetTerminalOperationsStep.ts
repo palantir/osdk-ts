@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
-
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   ObjectSetDefinition,
@@ -33,10 +29,10 @@ import type { OrderByClause } from "./filters";
 
 export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
   T extends keyof SelectableProperties<OsdkLegacyObjectFrom<O, K>>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   apiName: K,
   objectSetDefinition: ObjectSetDefinition,
   properties: ReadonlyArray<T>,

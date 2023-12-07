@@ -15,20 +15,20 @@
  */
 
 import type {
-  InterfaceNamesFrom,
-  ObjectTypesFrom,
+  InterfaceKeysFrom,
+  ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet";
-import type { ObjectSetCreator } from "./ObjectSetCreator";
+import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet.js";
+import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
 export type ConcreteObjectType<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 > = O["objects"][K];
 
 export interface Client<O extends OntologyDefinition<any>> {
-  objectSet: <const K extends ObjectTypesFrom<O> | InterfaceNamesFrom<O>>(
+  objectSet: <const K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>>(
     type: K,
     opts?: ObjectSetOptions<O, K>,
   ) => ObjectSet<O, K>;

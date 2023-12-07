@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
   modernToLegacyAggregationClause,
   modernToLegacyGroupByClause,
   modernToLegacyWhereClause,
-} from "../internal/conversions";
+} from "../internal/conversions/index.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type {
   AggregationResultsWithGroups,
   AggregationsResults,
-} from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
+} from "../query/index.js";
 
 export async function aggregateOrThrow<
   T extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<T>,
+  K extends ObjectTypeKeysFrom<T>,
   const AO extends AggregateOpts<T, K, any>,
 >(
-  thinClient: ThinClient<T>,
+  clientCtx: ClientContext<T>,
   objectType: K & string,
   req: AO,
 ): Promise<AggregationsResults<T, K, AO>> {
@@ -62,10 +59,10 @@ export async function aggregateOrThrow<
   }
   const result = await aggregateObjectsV2(
     createOpenApiRequest(
-      thinClient.stack,
-      thinClient.fetch,
+      clientCtx.stack,
+      clientCtx.fetch,
     ),
-    thinClient.ontology.metadata.ontologyApiName,
+    clientCtx.ontology.metadata.ontologyApiName,
     objectType,
     body,
   );

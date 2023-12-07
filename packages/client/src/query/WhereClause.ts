@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectDefinition, PropertyDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypePropertyDefinition,
+} from "@osdk/api";
 
 export type PossibleWhereClauseFilters =
   | "gt"
@@ -43,23 +46,23 @@ type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"gt" | "gte" | "lt" | "lte", number>;
 
-type FilterFor<PD extends PropertyDefinition> = PD["type"] extends "string"
-  ? StringFilter
+type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
+  "string" ? StringFilter
   : NumberFilter; // FIXME we need to represent all types
 
-export interface AndWhereClause<T extends ObjectDefinition<any, any>> {
+export interface AndWhereClause<T extends ObjectTypeDefinition<any, any>> {
   $and: WhereClause<T>[];
 }
 
-export interface OrWhereClause<T extends ObjectDefinition<any, any>> {
+export interface OrWhereClause<T extends ObjectTypeDefinition<any, any>> {
   $or: WhereClause<T>[];
 }
 
-export interface NotWhereClause<T extends ObjectDefinition<any, any>> {
+export interface NotWhereClause<T extends ObjectTypeDefinition<any, any>> {
   $not: WhereClause<T>;
 }
 
-export type WhereClause<T extends ObjectDefinition<any, any>> =
+export type WhereClause<T extends ObjectTypeDefinition<any, any>> =
   | OrWhereClause<T>
   | AndWhereClause<T>
   | NotWhereClause<T>

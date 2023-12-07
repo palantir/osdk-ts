@@ -18,7 +18,7 @@ import type { Client } from "@osdk/client";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType";
+import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGrouped(
   client: Client<OntologyType>,

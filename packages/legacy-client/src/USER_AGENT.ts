@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-export { createFetchHeaderMutator } from "../util/createFetchHeaderMutator.js";
-export { createRetryingFetch } from "../util/createRetryingFetch.js";
+export const USER_AGENT = "@osdk/legacy-client/0.0.0 ()";

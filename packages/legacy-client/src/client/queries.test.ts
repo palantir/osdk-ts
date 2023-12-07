@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient, isOk } from "@osdk/api";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
+import { createClientContext, isOk } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -47,20 +47,21 @@ import type { Queries, QueryReturnType } from "./queries";
 import { createQueryProxy } from "./queryProxy";
 
 describe("Queries", () => {
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
-  let queries: Queries<typeof MockOntology>;
+  let queries: Queries<MockOntology>;
 
   beforeEach(() => {
     try {
       fetch = vi.fn();
-      client = createThinClient(
+      client = createClientContext(
         MockOntology,
         MOCK_ORIGIN,
         () => "Token",
+        undefined,
         fetch,
       );
-      queries = createQueryProxy<typeof MockOntology>(client);
+      queries = createQueryProxy<MockOntology>(client);
     } catch (e) {
       console.error(e);
     }
@@ -283,6 +284,11 @@ describe("Queries", () => {
 
   describe("type tests", () => {
     it("infers the proper return type", () => {
+      type q = QueryReturnType<
+        typeof MockOntology,
+        "queryTakesAllParameterTypes"
+      >;
+
       expectTypeOf<
         QueryReturnType<typeof MockOntology, "queryTakesAllParameterTypes">
       >().toMatchTypeOf<OsdkLegacyObjectFrom<typeof MockOntology, "Todo">>();

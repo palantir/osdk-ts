@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSetOrderByArg } from "../interfaces/ordering";
 import { OrderByOption } from "../objectSets/filters";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
@@ -22,7 +22,7 @@ import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToOrderBy<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(ontology: O, type: K) {
   return Object.entries(ontology.objects[type].properties).reduce(
     (acc, [propertyName]) => {

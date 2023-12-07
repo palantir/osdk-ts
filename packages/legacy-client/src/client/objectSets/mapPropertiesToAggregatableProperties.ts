@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypesFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSetAggregateArg } from "../interfaces/aggregations";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { isReservedKeyword } from "../utils/reservedKeywords";
@@ -23,7 +23,7 @@ import { DefaultAggregatableProperty } from "./aggregations";
 
 export function mapPropertiesToAggregatableProperties<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(ontology: O, apiName: K) {
   return Object.entries(
     ontology.objects[apiName].properties,

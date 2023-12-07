@@ -17,7 +17,7 @@
 import type { Client } from "@osdk/client";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType";
+import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeeLead(
   client: Client<OntologyType>,

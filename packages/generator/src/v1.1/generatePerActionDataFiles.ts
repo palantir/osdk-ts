@@ -25,6 +25,7 @@ export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(

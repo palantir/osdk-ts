@@ -25,6 +25,7 @@ export async function generatePerQueryDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(ontology.queryTypes.map(async query => {
@@ -48,7 +49,9 @@ export async function generatePerQueryDataFiles(
     path.join(outDir, "index.ts"),
     await formatTs(`
   ${
-      ontology.queryTypes.map(query => `export * from "./${query.apiName}";`)
+      ontology.queryTypes.map(query =>
+        `export * from "./${query.apiName}${importExt}";`
+      )
         .join("\n")
     }
   `),

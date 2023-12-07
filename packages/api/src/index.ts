@@ -14,44 +14,39 @@
  * limitations under the License.
  */
 
-export { createOpenApiRequest } from "./client/createOpenApiRequest";
-export { createThinClient } from "./client/createThinClient";
-export { isOk, type ResultOrError } from "./client/ResultOrError";
-export type { ThinClient } from "./client/ThinClient";
-
-export type {
-  InterfaceDefinition,
-  InterfaceInfoFrom,
-  InterfaceNamesFrom,
-  InterfacePropertyDefinitionFrom,
-  InterfacePropertyDefinitionsFrom,
-  InterfacePropertyKeysFrom,
-  LinkDefinitionFrom,
-  LinkKeysFrom,
-  LinkTargetTypeFrom,
-  ObjectDefinition,
-  ObjectInfoFrom,
-  ObjectPropertyDefinitionFrom,
-  ObjectPropertyDefinitionsFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom as ObjectTypesFrom,
-  OntologyDefinition,
-  OsdkObjectPropertyType,
-  PropertyDefinition,
-  ValidPropertyTypes as ValidPropertyTypes,
-} from "./ontology/Definition";
-
 export type {
   ActionDefinition,
   ActionModifiedEntity,
   ActionParameterDefinition,
   ValidActionParameterTypes,
 } from "./ontology/ActionDefinition";
-
+export type {
+  InterfaceDefinition,
+  InterfaceDefinitionFrom,
+  InterfaceKeysFrom,
+  InterfacePropertyDefinitionFrom,
+  InterfacePropertyDefinitionsFrom,
+  InterfacePropertyKeysFrom,
+} from "./ontology/InterfaceDefinition";
+export type {
+  ObjectTypeDefinition,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkDefinition,
+  ObjectTypeLinkDefinitionFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  ObjectTypePropertyDefinition,
+  ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyDefinitionsFrom,
+  ObjectTypePropertyKeysFrom,
+} from "./ontology/ObjectTypeDefinition";
+export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
+  PrimitiveDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
@@ -64,5 +59,6 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  ValidBaseQueryDataTypes,
+  WireQueryDataTypes,
 } from "./ontology/QueryDefinition";
+export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";

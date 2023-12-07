@@ -25,34 +25,31 @@ export type {
 } from "./ActionDefinition";
 export type {
   InterfaceDefinition,
-  InterfaceInfoFrom,
-  InterfaceNamesFrom,
+  InterfaceDefinitionFrom,
+  InterfaceKeysFrom,
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
-  LinkDefinition,
-  LinkDefinitionFrom,
-  LinkKeysFrom,
-  LinkTargetTypeFrom,
-  ObjectDefinition,
-  ObjectInfoFrom,
-  ObjectPropertyDefinitionFrom,
-  ObjectPropertyDefinitionsFrom,
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom as ObjectTypesFrom,
-  OntologyDefinition,
-  OsdkObjectLink,
-  OsdkObjectPropertyType,
-  OsdkObjectRawPropertyType,
-  PropertyDefinition,
-  ValidPropertyTypes,
-} from "./Definition";
+} from "./InterfaceDefinition";
+export type {
+  ObjectTypeDefinition,
+  ObjectTypeDefinitionFrom,
+  ObjectTypeKeysFrom as ObjectTypeKeysFrom,
+  ObjectTypeLinkDefinition,
+  ObjectTypeLinkDefinitionFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  ObjectTypePropertyDefinition,
+  ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyDefinitionsFrom,
+  ObjectTypePropertyKeysFrom,
+} from "./ObjectTypeDefinition";
+export type { OntologyDefinition } from "./OntologyDefinition";
 export type { OntologyMetadata } from "./OntologyMetadata";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
   ObjectSetQueryDataType,
-  QueryDataType,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
@@ -65,5 +62,6 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  ValidBaseQueryDataTypes,
+  WireQueryDataTypes,
 } from "./QueryDefinition";
+export type { WirePropertyTypes } from "./WirePropertyTypes";

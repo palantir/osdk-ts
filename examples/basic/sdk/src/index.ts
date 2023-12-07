@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./generatedNoCheck";
+export * from "./generatedNoCheck/index.js";

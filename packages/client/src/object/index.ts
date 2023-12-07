@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export { aggregateOrThrow } from "./aggregateOrThrow";
-export { fetchPageOrThrow } from "./fetchPageOrThrow";
+export { aggregateOrThrow } from "./aggregateOrThrow.js";
+export { fetchPageOrThrow } from "./fetchPageOrThrow.js";

@@ -15,14 +15,14 @@
  */
 
 import type {
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
-import { createCachedOntologyTransform } from "../createCachedOntologyTransform";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
+import type { ClientContext } from "@osdk/shared.net";
+import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 
@@ -49,16 +49,16 @@ function createPrototype<
 }
 
 export function convertWireToOsdkObjects<
-  T_ClientApiName extends ObjectTypesFrom<T_OntologyDefinition> & string,
+  T_ClientApiName extends ObjectTypeKeysFrom<T_OntologyDefinition> & string,
   T_OntologyDefinition extends OntologyDefinition<any>,
 >(
-  client: ThinClient<T_OntologyDefinition>,
+  client: ClientContext<T_OntologyDefinition>,
   apiName: T_ClientApiName,
   objs: OntologyObjectV2[],
 ): OsdkObjectFrom<
   T_ClientApiName,
   T_OntologyDefinition,
-  ObjectPropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
+  ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
 >[] {
   const proto = getPrototype(client.ontology, apiName);
   for (const obj of objs) {
@@ -97,6 +97,6 @@ export function convertWireToOsdkObjects<
   return objs as unknown as OsdkObjectFrom<
     T_ClientApiName,
     T_OntologyDefinition,
-    ObjectPropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
+    ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
   >[];
 }

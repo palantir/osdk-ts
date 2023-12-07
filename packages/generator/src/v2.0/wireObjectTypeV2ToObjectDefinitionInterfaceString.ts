@@ -20,7 +20,7 @@ export function wireObjectTypeV2ToObjectDefinitionInterfaceString(
   input: ObjectTypeV2,
 ) {
   return `
-    export interface ${input.apiName} extends ObjectDefinition<"${input.apiName}", "${input.apiName}">{
+    export interface ${input.apiName} extends ObjectTypeDefinition<"${input.apiName}", "${input.apiName}">{
       apiName: "${input.apiName}";
       properties: {
         ${

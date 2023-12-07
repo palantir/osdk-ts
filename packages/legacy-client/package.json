@@ -8,12 +8,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -30,6 +30,7 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/gateway": "workspace:*",
+    "@osdk/shared.net": "workspace:*",
     "fetch-retry": "^5.0.6",
     "luxon": "^3.4.3",
     "ngeohash": "^0.6.3",

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ValidPropertyTypes } from "@osdk/api";
+import type { WirePropertyTypes } from "@osdk/api";
 import type { PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,
-): keyof ValidPropertyTypes {
+): keyof WirePropertyTypes {
   switch (input.dataType.type) {
     case "integer":
     case "double":

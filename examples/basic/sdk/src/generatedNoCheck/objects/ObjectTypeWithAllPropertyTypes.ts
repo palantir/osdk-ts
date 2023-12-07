@@ -1,4 +1,4 @@
-import type { ObjectDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const ObjectTypeWithAllPropertyTypes = {
   apiName: 'ObjectTypeWithAllPropertyTypes',
@@ -162,4 +162,4 @@ export const ObjectTypeWithAllPropertyTypes = {
       nullable: true,
     },
   },
-} satisfies ObjectDefinition<'ObjectTypeWithAllPropertyTypes', never>;
+} satisfies ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', never>;

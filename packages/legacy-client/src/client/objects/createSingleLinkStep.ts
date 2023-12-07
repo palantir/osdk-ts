@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 
 import type { OntologyObject, ParameterValue, SingleLink } from "../baseTypes";
 import type { GetLinkedObjectError } from "../errors";
@@ -22,7 +22,7 @@ import { getOnlyLinkedObject } from "../net/getOnlyLinkedObject";
 import type { Result } from "../Result";
 
 export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
-  client: ThinClient<any>,
+  client: ClientContext<any>,
   sourceObjectType: string,
   sourcePrimaryKey: NonNullable<ParameterValue>,
   targetLinkType: string,

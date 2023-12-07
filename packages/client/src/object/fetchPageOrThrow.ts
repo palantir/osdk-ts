@@ -15,24 +15,24 @@
  */
 
 import type {
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
-import { createOpenApiRequest } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
-import type { Wire } from "../internal/net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom";
-import type { PageResult } from "../PageResult";
-import type { NOOP } from "../util/NOOP";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
+import type { Wire } from "../internal/net/index.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import type { NOOP } from "../util/NOOP.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
-  L extends ObjectPropertyKeysFrom<O, K>,
+  K extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypePropertyKeysFrom<O, K>,
 > {
   select?: readonly L[];
   nextPageToken?: string;
@@ -40,10 +40,10 @@ export interface FetchPageOrThrowArgs<
 
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
-  T extends ObjectTypesFrom<O>,
-  const A extends FetchPageOrThrowArgs<O, T, ObjectPropertyKeysFrom<O, T>>,
+  T extends ObjectTypeKeysFrom<O>,
+  const A extends FetchPageOrThrowArgs<O, T, ObjectTypePropertyKeysFrom<O, T>>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   objectType: T & string,
   args: A,
   objectSet: Wire.ObjectSet = {
@@ -57,7 +57,7 @@ export async function fetchPageOrThrow<
         T,
         O,
         A["select"] extends readonly string[] ? A["select"][number]
-          : ObjectPropertyKeysFrom<O, T>
+          : ObjectTypePropertyKeysFrom<O, T>
       >
     >
   >

@@ -8,12 +8,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
-      "require": "./build/js/index.js"
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.js"
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/generator": "workspace:*",
+    "@osdk/shared.net": "workspace:*",
     "archiver": "^6.0.1",
     "conjure-lite": "0.3.1",
     "consola": "^3.2.3",

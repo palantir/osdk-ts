@@ -15,28 +15,32 @@
  */
 
 import type {
-  ObjectPropertyKeysFrom,
-  ObjectTypesFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
-  ThinClient,
 } from "@osdk/api";
-import { modernToLegacyWhereClause } from "../internal/conversions";
-import type { Wire } from "../internal/net";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow";
-import type { AggregationClause, AggregationsResults } from "../query";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import type { LinkTypesFrom } from "./LinkTypesFrom";
-import type { BaseObjectSet, ObjectSet, ObjectSetOptions } from "./ObjectSet";
-import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket";
+import type { ClientContext } from "@osdk/shared.net";
+import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { Wire } from "../internal/net/index.js";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { AggregationClause, AggregationsResults } from "../query/index.js";
+import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type {
+  BaseObjectSet,
+  ObjectSet,
+  ObjectSetOptions,
+} from "./ObjectSet.js";
+import { ObjectSetWatcherWebsocket } from "./ObjectSetWatcherWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
   objectType: K & string,
-  thinClient: ThinClient<O>,
+  clientCtx: ClientContext<O>,
   opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
     type: "base",
@@ -49,7 +53,7 @@ export function createObjectSet<
     //   GBC extends GroupByClause<O, K> | undefined = undefined,
     // >(req: {
     //   select: AC;
-    //   where?: WhereClause<ObjectInfoFrom<O, K>>;
+    //   where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
     //   groupBy?: GBC;
     // }) => {
     //   throw "TODO";
@@ -61,16 +65,16 @@ export function createObjectSet<
     >(
       req: AO,
     ): Promise<AggregationsResults<O, K, AO>> => {
-      return aggregateOrThrow(thinClient, objectType, req);
+      return aggregateOrThrow(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async <L extends ObjectPropertyKeysFrom<O, K>>(
+    fetchPageOrThrow: async <L extends ObjectTypePropertyKeysFrom<O, K>>(
       args?: FetchPageOrThrowArgs<O, K, L>,
     ) => {
       return fetchPageOrThrow(
-        thinClient,
+        clientCtx,
         objectType,
         args ?? {},
         objectSet,
@@ -81,7 +85,7 @@ export function createObjectSet<
     //   throw "";
     // },
     where: (clause) => {
-      return createObjectSet(objectType, thinClient, opts, {
+      return createObjectSet(objectType, clientCtx, opts, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause),
@@ -99,7 +103,7 @@ export function createObjectSet<
     },
 
     subscribe(listener) {
-      const instance = ObjectSetWatcherWebsocket.getInstance(thinClient);
+      const instance = ObjectSetWatcherWebsocket.getInstance(clientCtx);
       return instance.subscribe(objectSet, listener);
     },
   };
@@ -108,7 +112,7 @@ export function createObjectSet<
     return () => {
       return createObjectSet(
         objectType,
-        thinClient,
+        clientCtx,
         {},
         {
           type: "searchAround",

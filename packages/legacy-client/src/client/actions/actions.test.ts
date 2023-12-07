@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ThinClient } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
+import { createClientContext } from "@osdk/shared.net";
+import type { ClientContext } from "@osdk/shared.net";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -50,7 +50,7 @@ import { type Actions } from "./actions";
 import { createActionProxy } from "./createActionProxy";
 
 describe("Actions", () => {
-  let client: ThinClient<typeof MockOntology>;
+  let client: ClientContext<typeof MockOntology>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   let actions: Actions<
     typeof MockOntology
@@ -58,10 +58,11 @@ describe("Actions", () => {
 
   beforeEach(() => {
     fetch = vi.fn();
-    client = createThinClient(
+    client = createClientContext(
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
+      undefined,
       fetch,
     );
     actions = createActionProxy<typeof MockOntology>(client);

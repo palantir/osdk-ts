@@ -15,13 +15,13 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { createThinClient } from "@osdk/api";
 import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
+import { createClientContext } from "@osdk/shared.net";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts";
-import { aggregateOrThrow } from "./aggregateOrThrow";
+import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
 const mockOntology = {
   metadata: {
@@ -94,14 +94,15 @@ describe("aggregateOrThrow", () => {
       json: () => new Promise((resolve) => resolve(aggregationResponse)),
     });
 
-    const thinClient = createThinClient(
+    const clientCtx = createClientContext(
       mockOntology as MockOntology,
       "host.com",
       () => "",
+      undefined,
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(thinClient, "Todo", {
+    const notGrouped = await aggregateOrThrow(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
         priority: "avg",
@@ -122,7 +123,7 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(thinClient, "Todo", {
+    const grouped = await aggregateOrThrow(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
       },

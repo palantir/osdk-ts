@@ -25,16 +25,17 @@ export async function generatePerObjectInterfaceAndDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       const links = ontology.linkTypes[object.apiName];
-      const uniqueApiNames = new Set(links?.map(a => a.objectTypeApiName));
+
       await fs.writeFile(
         path.join(outDir, `${object.apiName}.ts`),
         await formatTs(`
-        import { ObjectDefinition } from "@osdk/api";
+        import { ObjectTypeDefinition } from "@osdk/api";
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,
@@ -53,7 +54,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./${apiName}";`
+        `export * from "./${apiName}${importExt}";`
       ).join("\n")
     }
       export type { ObjectSet } from "@osdk/legacy-client";\n

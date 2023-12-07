@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-export type * from "./aggregations/AggregatableKeys";
-export type * from "./aggregations/AggregationResultsWithGroups";
-export type * from "./aggregations/AggregationResultsWithoutGroups";
-export type * from "./aggregations/AggregationsClause";
-export type * from "./aggregations/AggregationsResults";
+export type * from "./aggregations/AggregatableKeys.js";
+export type * from "./aggregations/AggregationResultsWithGroups.js";
+export type * from "./aggregations/AggregationResultsWithoutGroups.js";
+export type * from "./aggregations/AggregationsClause.js";
+export type * from "./aggregations/AggregationsResults.js";
 export type {
   AllGroupByValues,
   GroupByClause,
-} from "./aggregations/GroupByClause";
+} from "./aggregations/GroupByClause.js";
 export type {
   AndWhereClause,
   NotWhereClause,
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "./WhereClause";
+} from "./WhereClause.js";

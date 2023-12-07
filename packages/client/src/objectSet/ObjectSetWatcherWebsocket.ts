@@ -14,47 +14,47 @@
  * limitations under the License.
  */
 
-import {
-  createOpenApiRequest,
-  type ObjectTypesFrom,
-  type OntologyDefinition,
-  type ThinClient,
-} from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { getObjectTypeV2 } from "@osdk/gateway/requests";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
-import type { OsdkObjectFrom } from "..";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
+
 import type {
   Message,
   ObjectSetChanged,
   ObjectSetSubscribeRequests,
-} from "../generated/object-set-watcher";
+} from "../generated/object-set-watcher/index.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
 import type {
   StreamMessage,
   StreamMessage_objectSetChanged,
 } from "../generated/object-set-watcher/StreamMessage.js";
-import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService";
-import type { Wire } from "../internal/net";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects";
-import { Deferred } from "./Deferred";
-import type { ObjectSetListener } from "./ObjectSetWatcher";
-import { getObjectSetBaseType, toConjureObjectSet } from "./toConjureObjectSet";
+import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
+import type { Wire } from "../internal/net/index.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import { Deferred } from "./Deferred.js";
+import type { ObjectSetListener } from "./ObjectSetWatcher.js";
+import {
+  getObjectSetBaseType,
+  toConjureObjectSet,
+} from "./toConjureObjectSet.js";
 
 export class ObjectSetWatcherWebsocket<
   O extends OntologyDefinition<any, any, any>,
 > {
   static #instances = new WeakMap<
-    ThinClient<any>,
+    ClientContext<any>,
     ObjectSetWatcherWebsocket<any>
   >();
 
   static getInstance<O extends OntologyDefinition<any, any, any>>(
-    client: ThinClient<O>,
+    client: ClientContext<O>,
   ) {
     let instance = ObjectSetWatcherWebsocket.#instances.get(client);
     if (instance == null) {
@@ -65,7 +65,7 @@ export class ObjectSetWatcherWebsocket<
   }
 
   #ws: WebSocket | undefined;
-  #client: ThinClient<O>;
+  #client: ClientContext<O>;
   #pendingListeners = new Map<
     string,
     { deferred: Deferred<() => void>; listener: ObjectSetListener<O, any> }
@@ -75,7 +75,7 @@ export class ObjectSetWatcherWebsocket<
   #metadataContext: ConjureContext;
   #ossContext: ConjureContext;
 
-  private constructor(client: ThinClient<O>) {
+  private constructor(client: ClientContext<O>) {
     this.#client = client;
 
     const stackUrl = new URL(client.stack);
@@ -99,7 +99,7 @@ export class ObjectSetWatcherWebsocket<
     };
   }
 
-  async subscribe<K extends ObjectTypesFrom<O>>(
+  async subscribe<K extends ObjectTypeKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): Promise<() => void> {
@@ -270,7 +270,7 @@ export class ObjectSetWatcherWebsocket<
     });
   }
 
-  async #createTemporaryObjectSet<K extends ObjectTypesFrom<O>>(
+  async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
   ) {
     // TODO do we need to do something when the subscription expires on the server?
@@ -307,9 +307,9 @@ export class ObjectSetWatcherWebsocket<
 
 async function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
-  client: ThinClient<any>,
+  client: ClientContext<any>,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
 ): Promise<Array<OsdkObjectFrom<K, O>>> {
@@ -363,7 +363,7 @@ const objectTypeMapping = new WeakMap<
 const objectApiNameToRid = new Map<string, string>();
 
 async function getOntologyPropertyMappingForApiName(
-  client: ThinClient<any>,
+  client: ClientContext<any>,
   ctx: ConjureContext,
   objectApiName: string,
 ) {

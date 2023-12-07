@@ -1,1 +1,1 @@
-export { Ontology } from './Ontology';
+export { Ontology } from './Ontology.js';

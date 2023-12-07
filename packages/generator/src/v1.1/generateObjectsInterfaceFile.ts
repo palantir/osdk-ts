@@ -23,6 +23,7 @@ export async function generateObjectsInterfaceFile(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
+  importExt: string = "",
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
@@ -31,7 +32,7 @@ export async function generateObjectsInterfaceFile(
     import { BaseObjectSet } from "@osdk/legacy-client";
     ${
       Array.from(Object.keys(ontology.objectTypes)).map(importedObject =>
-        `import type { ${importedObject} } from "./${importedObject}";`
+        `import type { ${importedObject} } from "./${importedObject}${importExt}";`
       ).join("\n")
     }
     

@@ -25,7 +25,6 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
     apiName: input.apiName,
     description: input.description,
     displayName: input.displayName,
-    rid: input.rid,
     version: input.version,
     parameters: Object.fromEntries(
       Object.entries(input.parameters).map((
@@ -41,6 +40,6 @@ function wireQueryParameterV2ToQueryParameterDefinition(
 ): QueryParameterDefinition<any> {
   return {
     description: parameter.description,
-    dataType: wireQueryDataTypeToQueryDataTypeDefinition(parameter.dataType),
+    ...wireQueryDataTypeToQueryDataTypeDefinition(parameter.dataType),
   };
 }

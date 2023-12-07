@@ -1,0 +1,17 @@
+{
+  "extends": "../../monorepo/tsconfig/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/types",
+    "composite": true
+  },
+  "include": [
+    "./src/**/*",
+    ".eslintrc.cjs"
+  ],
+  "references": [
+    {
+      "path": "../gateway"
+    }
+  ]
+}

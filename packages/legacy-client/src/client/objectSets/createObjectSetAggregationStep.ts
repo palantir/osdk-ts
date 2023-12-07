@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypesFrom,
-  OntologyDefinition,
-  ThinClient,
-} from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 
+import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type {
   ObjectSetAggregateArg,
@@ -56,9 +53,9 @@ const getMultipleAggregationProperties = createCachedOntologyTransform(
 
 export function createObjectSetAggregationStep<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypesFrom<O>,
+  K extends ObjectTypeKeysFrom<O>,
 >(
-  client: ThinClient<O>,
+  client: ClientContext<O>,
   type: K,
   definition: ObjectSetDefinition,
   groupByClauses: Array<InternalBucketing<string, BucketValue>>,

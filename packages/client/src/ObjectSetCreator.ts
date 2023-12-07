@@ -15,18 +15,18 @@
  */
 
 import type {
-  InterfaceNamesFrom,
-  ObjectTypesFrom,
+  InterfaceKeysFrom,
+  ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { Client } from "./Client";
-import type { ObjectSet } from "./objectSet/ObjectSet";
+import type { Client } from "./Client.js";
+import type { ObjectSet } from "./objectSet/ObjectSet.js";
 
 /**
  * A type that creates an object set for each object in the ontology.
  */
 export type ObjectSetCreator<D extends OntologyDefinition<any>> = {
-  [T in ObjectTypesFrom<D> | InterfaceNamesFrom<D>]: ObjectSet<D, T>;
+  [T in ObjectTypeKeysFrom<D> | InterfaceKeysFrom<D>]: ObjectSet<D, T>;
 };
 
 /**
