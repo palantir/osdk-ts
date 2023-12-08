@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  InterfaceKeysFrom,
+  ObjectTypeKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import { getObjectTypeV2 } from "@osdk/gateway/requests";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
@@ -54,7 +58,7 @@ export class ObjectSetListenerWebsocket<
 
   static getInstance<O extends OntologyDefinition<any, any, any>>(
     client: ClientContext<O>,
-  ) {
+  ): ObjectSetListenerWebsocket<O> {
     let instance = ObjectSetListenerWebsocket.#instances.get(client);
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
@@ -107,7 +111,7 @@ export class ObjectSetListenerWebsocket<
     };
   }
 
-  subscribe<K extends ObjectTypeKeysFrom<O>>(
+  subscribe<K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): () => void {
@@ -356,7 +360,7 @@ export class ObjectSetListenerWebsocket<
   #getCallbackByRequestId<T extends keyof ObjectSetListener<O, any>>(
     requestId: string,
     type: T,
-  ): ObjectSetListener<any, any>[T] | undefined {
+  ): ObjectSetListener<O, any>[T] | undefined {
     const maybeListener = this.#listeners.get(requestId);
     return maybeListener?.listener?.[type];
   }
@@ -364,7 +368,7 @@ export class ObjectSetListenerWebsocket<
   #getCallback<T extends keyof ObjectSetListener<O, any>>(
     subscriptionId: string,
     type: T,
-  ): ObjectSetListener<any, any>[T] | undefined {
+  ): ObjectSetListener<O, any>[T] | undefined {
     const requestId = this.#subscriptionToListenerId.get(subscriptionId);
     if (requestId) {
       return this.#getCallbackByRequestId(requestId, type);

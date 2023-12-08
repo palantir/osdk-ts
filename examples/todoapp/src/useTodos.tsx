@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import useSWR from "swr";
 import { foundryClient, foundryClient2 } from "./foundryClient";
 import { isOk, type Result } from "./generatedNoCheck";
@@ -22,16 +22,67 @@ export function useTodos() {
   useEffect(() => {
     const unsubscribe = foundryClient2.objects.Todo.subscribe({
       onChange(objects) {
-        console.log("todo change", objects);
-      },
-      onCancelled() {
-        console.log("cancelled");
+        // index incoming objects by apiName and then by pk value
+        const byApiNameByPK = new Map<
+          string,
+          Map<(typeof objects)[0]["__primaryKey"], (typeof objects)[0]>
+        >();
+        for (const object of objects) {
+          const byPk = byApiNameByPK.get(object.__apiName);
+          if (byPk) {
+            byPk.set(object.__primaryKey, object);
+          } else {
+            byApiNameByPK.set(
+              object.__apiName,
+              new Map([[object.__primaryKey, object]])
+            );
+          }
+        }
+
+        // get the new version of an object that has changed, removing it from the list of updates
+        const getUpdate = (
+          apiName: (typeof objects)[0]["__apiName"],
+          primaryKey: (typeof objects)[0]["__primaryKey"]
+        ) => {
+          const byPk = byApiNameByPK.get(apiName);
+          if (byPk) {
+            const value = byPk.get(primaryKey);
+            if (value) {
+              byPk.delete(primaryKey);
+              return value;
+            }
+          }
+        };
+
+        mutate((data) => {
+          // update any Todos that we got a new version for
+          const updated =
+            data?.map((object) => {
+              const updateObject = getUpdate(
+                object.__apiName,
+                object.__primaryKey
+              );
+              return updateObject ?? object;
+            }) ?? [];
+
+          // add any new Todos to the bottom
+          for (const byPk of byApiNameByPK.values()) {
+            for (const object of byPk.values()) {
+              updated.push(object);
+            }
+          }
+
+          return updated as typeof data;
+        });
       },
       onOutOfDate() {
         mutate();
       },
+      onCancelled() {
+        console.log("cancelled");
+      },
       onError(data) {
-        console.log("todo watcher error", data);
+        console.error("Todo subscription error", data);
       },
     });
 
