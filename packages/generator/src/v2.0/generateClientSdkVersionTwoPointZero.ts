@@ -55,7 +55,7 @@ export async function generateClientSdkVersionTwoPointZero(
       `
       import type { OntologyDefinition } from "@osdk/api";
       import * as Actions from "./ontology/actions/index${importExt}";
-      import * as Objects from "./objects/index${importExt}";
+      import * as Objects from "./ontology/objects/index${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       const _Ontology = {
@@ -89,12 +89,12 @@ export async function generateClientSdkVersionTwoPointZero(
     ),
   );
 
-  await fs.mkdir(path.join(outDir, "objects"), { recursive: true });
+  await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const name of objectNames) {
     const obj = ontology.objectTypes[name];
 
     await fs.writeFile(
-      path.join(outDir, `objects`, `${name}.ts`),
+      path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
     
       import type { ObjectTypeDefinition } from "@osdk/api";
@@ -122,7 +122,7 @@ export async function generateClientSdkVersionTwoPointZero(
   );
 
   await fs.writeFile(
-    path.join(outDir, "objects", "index.ts"),
+    path.join(outDir, "ontology", "objects", "index.ts"),
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>

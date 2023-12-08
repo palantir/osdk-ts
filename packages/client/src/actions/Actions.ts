@@ -27,6 +27,7 @@ import type {
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
+import type { ApplyActionOptions } from "./applyAction.js";
 
 type ActionKeysFrom<O extends OntologyDefinition<any>> = keyof O["actions"];
 
@@ -49,8 +50,8 @@ type ActionParameterDefinitionFrom<
 type ActionParameterTypeFrom<
   O extends OntologyDefinition<any>,
   K extends ActionKeysFrom<O>,
-  P extends keyof O["actions"][K]["parameters"],
-> = O["actions"][K]["parameters"][P]["type"];
+  P extends ActionParameterKeysFrom<O, K>,
+> = ActionParameterDefinitionFrom<O, K, P>["type"];
 
 type OsdkActionParameterBaseType<
   O extends OntologyDefinition<any>,
@@ -70,7 +71,7 @@ type OsdkActionParameterBaseType<
 type OsdkActionParameterMaybeArrayType<
   O extends OntologyDefinition<any>,
   K extends ActionKeysFrom<O>,
-  P extends keyof O["actions"][K]["parameters"],
+  P extends ActionParameterKeysFrom<O, K>,
 > = ActionParameterDefinitionFrom<O, K, P>["multiplicity"] extends true
   ? Array<OsdkActionParameterBaseType<O, K, P>>
   : OsdkActionParameterBaseType<O, K, P>;
@@ -99,5 +100,6 @@ type OsdkActionParameters<
 export type Actions<O extends OntologyDefinition<any>> = {
   [K in ActionKeysFrom<O>]: (
     args: NOOP<OsdkActionParameters<O, K>>,
-  ) => void;
+    options?: ApplyActionOptions,
+  ) => Promise<unknown>;
 };

@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { foundryClient, foundryClient2 } from "./foundryClient";
-import { isOk, type Result } from "./generatedNoCheck";
+import { isOk, ReturnEditsMode, type Result } from "./generatedNoCheck";
 import type { Todo } from "./generatedNoCheck/ontology/objects";
 
 function orThrow<T, E>(result: Result<T, E>) {
@@ -69,10 +69,13 @@ export function useTodos() {
             // Unwrap to get throw behavior on error.
             // Don't return because we want to invalidate cache
             orThrow(
-              await foundryClient.ontology.actions.completeTodo({
-                is_complete: b,
-                Todo: todo,
-              })
+              await foundryClient.ontology.actions.completeTodo(
+                {
+                  is_complete: b,
+                  Todo: todo,
+                },
+                { returnEdits: ReturnEditsMode.ALL }
+              )
             );
           }
 

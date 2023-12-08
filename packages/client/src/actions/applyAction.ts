@@ -16,28 +16,51 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
-import type { ApplyActionRequestOptions } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { Actions } from "../types/Actions.js";
+import type { Actions } from "./Actions.js";
 
-export async function executeAction<
+export interface ApplyActionOptions {
+  returnEdits?: boolean;
+  validateOnly?: boolean;
+}
+
+export async function applyAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-  Op extends ApplyActionRequestOptions,
+  Op extends ApplyActionOptions,
 >(
-  client: ClientContext<OntologyDefinition<any>>,
+  client: ClientContext<O>,
   actionApiName: A,
   parameters?: Parameters<Actions<O>[A]>[0],
   options?: Op,
-): Promise<void> {
+): Promise<unknown> {
   const response = await applyActionV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
     actionApiName as string,
     {
       parameters: parameters as any,
-      options: options,
+      options: {
+        mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
+        returnEdits: options?.returnEdits ? "ALL" : "NONE",
+      },
     },
   );
+
+  const bulkEdits = response.edits?.type == "largeScaleEdits"
+    ? response.edits.editedObjectTypes
+    : undefined;
+  const edits = response.edits?.type == "edits" ? response.edits : undefined;
+  const q = edits?.edits[0];
+
+  return {
+    __unstable: {
+      bulkEdits,
+      addedLinksCount: edits?.addedLinksCount,
+      addedObjectCount: edits?.addedObjectCount,
+      modifiedObjectsCount: edits?.modifiedObjectsCount,
+      edits: edits?.edits,
+    },
+  };
 }

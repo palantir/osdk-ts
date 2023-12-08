@@ -1,7 +1,7 @@
 import type { OntologyDefinition } from '@osdk/api';
 import { OntologyMetadata } from './OntologyMetadata';
-import * as Objects from './objects/index';
 import * as Actions from './ontology/actions/index';
+import * as Objects from './ontology/objects/index';
 
 const _Ontology = {
   metadata: OntologyMetadata,

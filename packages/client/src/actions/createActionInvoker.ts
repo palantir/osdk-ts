@@ -15,7 +15,7 @@
  */
 
 import type { ClientContext } from "@osdk/shared.net";
-import { executeAction } from "./executeAction.js";
+import { applyAction } from "./applyAction.js";
 
 export function createActionInvoker<T extends ClientContext<any>>(client: T) {
   return new Proxy(
@@ -24,7 +24,7 @@ export function createActionInvoker<T extends ClientContext<any>>(client: T) {
       get: (target, p, receiver) => {
         if (typeof p === "string") {
           return function(...args: any[]) {
-            return executeAction(client, p, ...args);
+            return applyAction(client, p, ...args);
           };
         }
 

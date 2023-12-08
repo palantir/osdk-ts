@@ -19,9 +19,9 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
+import type { Actions } from "./actions/Actions.js";
 import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
-import type { Actions } from "./types/Actions.js";
 
 export type ConcreteObjectType<
   O extends OntologyDefinition<any>,
