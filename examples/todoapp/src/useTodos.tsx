@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { foundryClient, foundryClient2 } from "./foundryClient";
 import { isOk, type Result } from "./generatedNoCheck";
@@ -75,12 +75,11 @@ export function useTodos() {
           return updated as typeof data;
         });
       },
+
       onOutOfDate() {
         mutate();
       },
-      onCancelled() {
-        console.log("cancelled");
-      },
+
       onError(data) {
         console.error("Todo subscription error", data);
       },

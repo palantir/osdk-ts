@@ -22,13 +22,20 @@ export type ObjectSetListener<
   K extends ObjectTypeKeysFrom<O>,
 > = Partial<
   {
-    /** a specific list of objects have changed */
+    /**
+     * Specific objects have changed and can be immediately updated
+     */
     onChange: (objects: Array<OsdkObjectFrom<K, O>>) => void;
-    /** the subscription has been cancelled and should be re-subscribed if necessary */
-    onCancelled: () => void;
-    /** the objectset has become outdated and should be re-fetched in its entirety */
+
+    /**
+     * The ObjectSet has become outdated and should be re-fetched in its entirety.
+     * This is also sent when the subscription is first initialized.
+     */
     onOutOfDate: () => void;
-    /** there was a fatal error which requires the subscription to be recreated, or the underlying subscription was cancelled */
+
+    /**
+     * There was a fatal error with the subscription process
+     */
     onError: (error: unknown) => void;
   }
 >;

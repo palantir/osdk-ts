@@ -46,7 +46,8 @@ import {
   toConjureObjectSet,
 } from "./toConjureObjectSet.js";
 
-const ONE_DAY = 24 * 60 * 60 * 1000;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
 export class ObjectSetListenerWebsocket<
   O extends OntologyDefinition<any, any, any>,
@@ -68,6 +69,7 @@ export class ObjectSetListenerWebsocket<
   }
 
   #ws: WebSocket | undefined;
+  #lastWsConnect = 0;
   #client: ClientContext<O>;
 
   /** map of listenerId to listener */
@@ -76,12 +78,13 @@ export class ObjectSetListenerWebsocket<
     {
       listener: ObjectSetListener<O, any>;
       subscriptionId?: string;
+      objectSet: Wire.ObjectSet;
       expiry: NodeJS.Timeout;
     }
   >();
 
   /** map of subscriptionId to listenerId */
-  #subscriptionToListenerId = new Map<string, string>();
+  #subscriptionToRequestId = new Map<string, string>();
 
   #conjureContext: ConjureContext;
   #metadataContext: ConjureContext;
@@ -118,8 +121,8 @@ export class ObjectSetListenerWebsocket<
     const requestId = crypto.randomUUID();
     const expiry = setTimeout(() => {
       this.#expire(requestId);
-    }, ONE_DAY);
-    this.#listeners.set(requestId, { listener, expiry });
+    }, ONE_DAY_MS);
+    this.#listeners.set(requestId, { listener, objectSet, expiry });
     this.#subscribe(requestId, objectSet);
     return () => {
       this.#unsubscribe(requestId);
@@ -171,11 +174,19 @@ export class ObjectSetListenerWebsocket<
   }
 
   #expire(requestId: string) {
-    this.#unsubscribe(requestId);
-    this.#listeners.get(requestId)?.listener?.onCancelled?.();
+    // the temporary ObjectSet has expired, we should re-subscribe which will cause the
+    // listener to get an onOutOfDate message when it becomes subscribed again
+    const state = this.#listeners.get(requestId);
+    if (state) {
+      const { subscriptionId, objectSet } = state;
+      if (subscriptionId) {
+        this.#subscriptionToRequestId.delete(subscriptionId);
+      }
+      this.#subscribe(requestId, objectSet);
+    }
   }
 
-  #unsubscribe(requestId: string, isDestroying = false) {
+  #unsubscribe(requestId: string) {
     const data = this.#listeners.get(requestId);
     if (data == null) {
       return;
@@ -184,14 +195,12 @@ export class ObjectSetListenerWebsocket<
     clearTimeout(data.expiry);
     const { subscriptionId } = data;
     if (subscriptionId != null) {
-      this.#subscriptionToListenerId.delete(subscriptionId);
+      this.#subscriptionToRequestId.delete(subscriptionId);
     }
 
-    if (!isDestroying) {
-      if (this.#listeners.size === 0) {
-        this.#destroyWebsocket();
-      }
-
+    if (this.#listeners.size === 0) {
+      this.#destroyWebsocket();
+    } else {
       // TODO backend does not yet have an unsubscribe message payload
     }
   }
@@ -207,10 +216,25 @@ export class ObjectSetListenerWebsocket<
       // tokenProvider is async, there could potentially be a race to create the websocket.
       // Only the first call to reach here will find a null this.#ws, the rest will bail out
       if (this.#ws == null) {
-        this.#ws = new WebSocket(url, [`Bearer-${token}`]);
-        this.#ws.addEventListener("error", this.#destroyWebsocket);
-        this.#ws.addEventListener("close", this.#destroyWebsocket);
-        this.#ws.addEventListener("message", this.#onMessage);
+        // TODO this can probably be exponential backoff with jitter
+        // don't reconnect more quickly than MINIMUM_RECONNECT_DELAY
+        const nextConnectTime = (this.#lastWsConnect ?? 0)
+          + MINIMUM_RECONNECT_DELAY_MS;
+        if (nextConnectTime > Date.now()) {
+          await new Promise((resolve) => {
+            setTimeout(resolve, nextConnectTime - Date.now());
+          });
+        }
+
+        this.#lastWsConnect = Date.now();
+
+        // we again may have lost the race after our minimum backoff time
+        if (this.#ws == null) {
+          this.#ws = new WebSocket(url, [`Bearer-${token}`]);
+          this.#ws.addEventListener("close", this.#onClose);
+          this.#ws.addEventListener("message", this.#onMessage);
+          this.#ws.addEventListener("open", this.#onOpen);
+        }
       }
 
       // Allow await-ing the websocket open event if it isn't open already.
@@ -227,6 +251,13 @@ export class ObjectSetListenerWebsocket<
       }
     }
   }
+
+  #onOpen = () => {
+    // resubscribe all of the listeners
+    for (const [requestId, state] of this.#listeners) {
+      this.#subscribe(requestId, state.objectSet);
+    }
+  };
 
   #onMessage = async (message: WebSocket.MessageEvent) => {
     const data = JSON.parse(message.data.toString()) as
@@ -296,11 +327,13 @@ export class ObjectSetListenerWebsocket<
           case "qos":
             // the server has requested that we tear down our websocket and reconnect to help load balance
             this.#destroyWebsocket();
+            this.#ensureWebsocket();
             return;
           case "success":
             const { id: subscriptionId } = response.success;
             listenerData.subscriptionId = subscriptionId;
-            this.#subscriptionToListenerId.set(subscriptionId, requestId);
+            this.#subscriptionToRequestId.set(subscriptionId, requestId);
+            this.#getCallbackByRequestId(requestId, "onOutOfDate")?.();
             break;
           default:
             const _: never = response;
@@ -315,6 +348,10 @@ export class ObjectSetListenerWebsocket<
     }
   };
 
+  #onClose = () => {
+    this.#destroyWebsocket();
+  };
+
   async #enableObjectSetsWatcher(objectTypeRids: string[]) {
     return batchEnableWatcher(this.#conjureContext, {
       requests: objectTypeRids,
@@ -324,7 +361,6 @@ export class ObjectSetListenerWebsocket<
   async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
   ) {
-    // TODO do we need to do something when the subscription expires on the server?
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
     const mapping = await getOntologyPropertyMappingForApiName(
       this.#client,
@@ -345,16 +381,29 @@ export class ObjectSetListenerWebsocket<
 
   #destroyWebsocket = () => {
     if (this.#ws) {
-      this.#ws.close();
+      this.#ws.removeEventListener("open", this.#onOpen);
+      this.#ws.removeEventListener("message", this.#onMessage);
+      this.#ws.removeEventListener("close", this.#onClose);
+
+      if (
+        this.#ws.readyState !== WebSocket.CLOSING
+        && this.#ws.readyState !== WebSocket.CLOSED
+      ) {
+        this.#ws.close();
+      }
       this.#ws = undefined;
     }
 
-    for (const requestId of this.#listeners.keys()) {
-      this.#unsubscribe(requestId, true);
+    // closing the websocket clears the subscription to requestIds
+    this.#subscriptionToRequestId.clear();
+    for (const state of this.#listeners.values()) {
+      state.subscriptionId = undefined;
     }
 
-    this.#listeners.clear();
-    this.#subscriptionToListenerId.clear();
+    // if we have any listeners that are still depending on us, go ahead and reopen the websocket
+    if (this.#listeners.size > 0) {
+      this.#ensureWebsocket();
+    }
   };
 
   #getCallbackByRequestId<T extends keyof ObjectSetListener<O, any>>(
@@ -369,7 +418,7 @@ export class ObjectSetListenerWebsocket<
     subscriptionId: string,
     type: T,
   ): ObjectSetListener<O, any>[T] | undefined {
-    const requestId = this.#subscriptionToListenerId.get(subscriptionId);
+    const requestId = this.#subscriptionToRequestId.get(subscriptionId);
     if (requestId) {
       return this.#getCallbackByRequestId(requestId, type);
     }
