@@ -15,18 +15,27 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { OsdkObject } from "../OsdkObject.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 
 export type ObjectSetListener<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 > = Partial<
   {
-    /** a specific list of objects have changed */
-    change: (objects: Array<OsdkObject<K & string>>) => void;
-    /** the objectset has become outdated and should be re-fetched in its entirety */
-    refresh: () => void;
-    /** there was a fatal error which requires the subscription to be recreated, or the underlying subscription was cancelled */
-    error: (error: unknown | undefined) => void;
+    /**
+     * Specific objects have changed and can be immediately updated
+     */
+    onChange: (objects: Array<OsdkObjectFrom<K, O>>) => void;
+
+    /**
+     * The ObjectSet has become outdated and should be re-fetched in its entirety.
+     * This is also sent when the subscription is first initialized.
+     */
+    onOutOfDate: () => void;
+
+    /**
+     * There was a fatal error with the subscription process
+     */
+    onError: (error: unknown) => void;
   }
 >;
