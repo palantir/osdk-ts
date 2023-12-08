@@ -24,6 +24,9 @@ export function useTodos() {
       change(objects) {
         console.log("todo change", objects);
       },
+      onCancelled() {
+        console.log("cancelled");
+      },
       refresh() {
         mutate();
       },

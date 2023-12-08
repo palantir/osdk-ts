@@ -42,6 +42,8 @@ import {
   toConjureObjectSet,
 } from "./toConjureObjectSet.js";
 
+const ONE_DAY = 24 * 60 * 60 * 1000;
+
 export class ObjectSetListenerWebsocket<
   O extends OntologyDefinition<any, any, any>,
 > {
@@ -67,7 +69,11 @@ export class ObjectSetListenerWebsocket<
   /** map of listenerId to listener */
   #listeners = new Map<
     string,
-    { listener: ObjectSetListener<O, any>; subscriptionId?: string }
+    {
+      listener: ObjectSetListener<O, any>;
+      subscriptionId?: string;
+      expiry: NodeJS.Timeout;
+    }
   >();
 
   /** map of subscriptionId to listenerId */
@@ -106,7 +112,10 @@ export class ObjectSetListenerWebsocket<
     listener: ObjectSetListener<O, K>,
   ): () => void {
     const requestId = crypto.randomUUID();
-    this.#listeners.set(requestId, { listener });
+    const expiry = setTimeout(() => {
+      this.#expire(requestId);
+    }, ONE_DAY);
+    this.#listeners.set(requestId, { listener, expiry });
     this.#subscribe(requestId, objectSet);
     return () => {
       this.#unsubscribe(requestId);
@@ -157,12 +166,18 @@ export class ObjectSetListenerWebsocket<
     }
   }
 
+  #expire(requestId: string) {
+    this.#unsubscribe(requestId);
+    this.#listeners.get(requestId)?.listener?.onCancelled?.();
+  }
+
   #unsubscribe(requestId: string) {
     const data = this.#listeners.get(requestId);
     if (data == null) {
       return;
     }
     this.#listeners.delete(requestId);
+    clearTimeout(data.expiry);
     const { subscriptionId } = data;
     if (subscriptionId != null) {
       this.#subscriptionToListenerId.delete(subscriptionId);
