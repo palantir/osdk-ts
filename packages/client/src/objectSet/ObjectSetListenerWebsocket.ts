@@ -22,10 +22,8 @@ import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
-
 import type {
   Message,
-  ObjectSetChanged,
   ObjectSetSubscribeRequests,
 } from "../generated/object-set-watcher/index.js";
 import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
@@ -38,39 +36,43 @@ import { loadOntologyEntities } from "../generated/ontology-metadata/api/Ontolog
 import type { Wire } from "../internal/net/index.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
-import { Deferred } from "./Deferred.js";
-import type { ObjectSetListener } from "./ObjectSetWatcher.js";
+import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
   toConjureObjectSet,
 } from "./toConjureObjectSet.js";
 
-export class ObjectSetWatcherWebsocket<
+export class ObjectSetListenerWebsocket<
   O extends OntologyDefinition<any, any, any>,
 > {
   static #instances = new WeakMap<
     ClientContext<any>,
-    ObjectSetWatcherWebsocket<any>
+    ObjectSetListenerWebsocket<any>
   >();
 
   static getInstance<O extends OntologyDefinition<any, any, any>>(
     client: ClientContext<O>,
   ) {
-    let instance = ObjectSetWatcherWebsocket.#instances.get(client);
+    let instance = ObjectSetListenerWebsocket.#instances.get(client);
     if (instance == null) {
-      instance = new ObjectSetWatcherWebsocket(client);
-      ObjectSetWatcherWebsocket.#instances.set(client, instance);
+      instance = new ObjectSetListenerWebsocket(client);
+      ObjectSetListenerWebsocket.#instances.set(client, instance);
     }
     return instance;
   }
 
   #ws: WebSocket | undefined;
   #client: ClientContext<O>;
-  #pendingListeners = new Map<
+
+  /** map of listenerId to listener */
+  #listeners = new Map<
     string,
-    { deferred: Deferred<() => void>; listener: ObjectSetListener<O, any> }
+    { listener: ObjectSetListener<O, any>; subscriptionId?: string }
   >();
-  #listeners = new Map<string, ObjectSetListener<O, any>>();
+
+  /** map of subscriptionId to listenerId */
+  #subscriptionToListenerId = new Map<string, string>();
+
   #conjureContext: ConjureContext;
   #metadataContext: ConjureContext;
   #ossContext: ConjureContext;
@@ -99,54 +101,78 @@ export class ObjectSetWatcherWebsocket<
     };
   }
 
-  async subscribe<K extends ObjectTypeKeysFrom<O>>(
+  subscribe<K extends ObjectTypeKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
-  ): Promise<() => void> {
-    const objectSetBaseType = await getObjectSetBaseType(objectSet);
-    const mapping = await getOntologyPropertyMappingForApiName(
-      this.#client,
-      this.#metadataContext,
-      objectSetBaseType,
-    );
-    const [temporaryObjectSet] = await Promise.all([
-      // create a time-bounded object set representation for watching
-      this.#createTemporaryObjectSet(objectSet),
-
-      this.#ensureWebsocket(),
-
-      // look up the object type's rid and ensure that we have enabled object set watcher for that rid
-      // TODO ???
-      getObjectSetBaseType(objectSet).then(baseType =>
-        getObjectTypeV2(
-          createOpenApiRequest(this.#client.stack, this.#client.fetch),
-          this.#client.ontology.metadata.ontologyApiName,
-          baseType,
-        )
-      ).then(
-        objectType => this.#enableObjectSetsWatcher([objectType.rid]),
-      ),
-    ]);
-
-    // subscribe to object set
+  ): () => void {
     const requestId = crypto.randomUUID();
-    const subscribe: ObjectSetSubscribeRequests = {
-      id: requestId,
-      requests: [{
-        objectSet: temporaryObjectSet.objectSetRid,
-        objectSetContext: {
-          objectSetFilterContext: { parameterOverrides: {} },
-        },
-        watchAllLinks: false,
-      }],
+    this.#listeners.set(requestId, { listener });
+    this.#subscribe(requestId, objectSet);
+    return () => {
+      this.#unsubscribe(requestId);
     };
+  }
 
-    const deferred = new Deferred<() => void>();
+  async #subscribe(requestId: string, objectSet: Wire.ObjectSet) {
+    try {
+      const [temporaryObjectSet] = await Promise.all([
+        // create a time-bounded object set representation for watching
+        this.#createTemporaryObjectSet(objectSet),
 
-    this.#pendingListeners.set(requestId, { deferred, listener });
-    this.#ws?.send(JSON.stringify(subscribe));
+        this.#ensureWebsocket(),
 
-    return deferred.promise;
+        // look up the object type's rid and ensure that we have enabled object set watcher for that rid
+        // TODO ???
+        getObjectSetBaseType(objectSet).then(baseType =>
+          getObjectTypeV2(
+            createOpenApiRequest(this.#client.stack, this.#client.fetch),
+            this.#client.ontology.metadata.ontologyApiName,
+            baseType,
+          )
+        ).then(
+          objectType => this.#enableObjectSetsWatcher([objectType.rid]),
+        ),
+      ]);
+
+      // the consumer may have already unsubscribed before we are ready to request a subscription
+      if (!this.#listeners.has(requestId)) {
+        return;
+      }
+
+      // subscribe to object set
+      const subscribe: ObjectSetSubscribeRequests = {
+        id: requestId,
+        requests: [{
+          objectSet: temporaryObjectSet.objectSetRid,
+          objectSetContext: {
+            objectSetFilterContext: { parameterOverrides: {} },
+          },
+          watchAllLinks: false,
+        }],
+      };
+
+      this.#ws?.send(JSON.stringify(subscribe));
+    } catch (error) {
+      this.#getCallbackByRequestId(requestId, "error")?.(error);
+    }
+  }
+
+  #unsubscribe(requestId: string) {
+    const data = this.#listeners.get(requestId);
+    if (data == null) {
+      return;
+    }
+    this.#listeners.delete(requestId);
+    const { subscriptionId } = data;
+    if (subscriptionId != null) {
+      this.#subscriptionToListenerId.delete(subscriptionId);
+    }
+
+    if (this.#listeners.size === 0) {
+      this.#destroyWebsocket();
+    }
+
+    // TODO backend does not yet have an unsubscribe message payload
   }
 
   async #ensureWebsocket() {
@@ -156,26 +182,28 @@ export class ObjectSetWatcherWebsocket<
       // TODO: This should be a different endpoint
       const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
       const token = await tokenProvider();
-      this.#ws = new WebSocket(url, [`Bearer-${token}`]);
 
-      this.#ws.addEventListener("error", (e) => {
-        this.#destroyWebsocket();
-      });
+      // tokenProvider is async, there could potentially be a race to create the websocket.
+      // Only the first call to reach here will find a null this.#ws, the rest will bail out
+      if (this.#ws == null) {
+        this.#ws = new WebSocket(url, [`Bearer-${token}`]);
+        this.#ws.addEventListener("error", this.#destroyWebsocket);
+        this.#ws.addEventListener("close", this.#destroyWebsocket);
+        this.#ws.addEventListener("message", this.#onMessage);
+      }
 
-      this.#ws.addEventListener("close", () => {
-        this.#destroyWebsocket();
-      });
-
-      this.#ws.addEventListener("message", this.#onMessage);
-
-      return new Promise<void>((resolve, reject) => {
-        this.#ws!.addEventListener("open", () => {
-          resolve();
+      // Allow await-ing the websocket open event if it isn't open already.
+      // This needs to happen even for callers that didn't just create this.#ws
+      if (this.#ws.readyState === WebSocket.CONNECTING) {
+        return new Promise<void>((resolve, reject) => {
+          this.#ws!.addEventListener("open", () => {
+            resolve();
+          });
+          this.#ws!.addEventListener("error", (event: WebSocket.ErrorEvent) => {
+            reject(new Error(event.toString()));
+          });
         });
-        this.#ws!.addEventListener("error", (event: WebSocket.ErrorEvent) => {
-          reject(new Error(event.toString()));
-        });
-      });
+      }
     }
   }
 
@@ -187,46 +215,51 @@ export class ObjectSetWatcherWebsocket<
     switch (data.type) {
       case "objectSetChanged": {
         if ((data.objectSetChanged as any).confidenceValue) {
-          const listener = this.#listeners.get(data.objectSetChanged.id);
-          listener?.refresh?.();
+          this.#getCallback(
+            data.objectSetChanged.id,
+            "refresh",
+          )?.();
           break;
         }
 
         const { id: subscriptionId, objects } =
           (data as StreamMessage_objectSetChanged).objectSetChanged;
-        const listener = this.#listeners.get(subscriptionId);
-        const convertedObjects = await convertFoundryToOsdkObjects(
-          this.#client,
-          this.#metadataContext,
-          objects,
+        const callback = this.#getCallback(
+          subscriptionId,
+          "change",
         );
-        listener?.change?.(convertedObjects);
+
+        if (callback) {
+          callback(
+            await convertFoundryToOsdkObjects(
+              this.#client,
+              this.#metadataContext,
+              objects,
+            ),
+          );
+        }
         break;
       }
 
       case "refreshObjectSet": {
         const { id: subscriptionId } = data.refreshObjectSet;
-        const listener = this.#listeners.get(subscriptionId);
-        listener?.refresh?.();
+        this.#getCallback(subscriptionId, "refresh")?.();
         break;
       }
 
       case "subscribeResponses": {
         const { id: requestId, responses } = data.subscribeResponses;
 
-        const pendingData = this.#pendingListeners.get(requestId);
-
-        if (pendingData == null) {
-          throw new Error(
-            "Got a subscription response for a requestId we weren't expecting",
-          );
+        const listenerData = this.#listeners.get(requestId);
+        if (listenerData == null) {
+          // we got a subscription response for a requestId that we no longer have access to
+          // this can happen if a consumer subscribes and unsubscribes before the subscription can come through
+          return;
         }
 
-        const { deferred, listener } = pendingData;
-        this.#pendingListeners.delete(requestId);
-
         if (responses.length !== 1) {
-          deferred.reject(
+          // the subscriptions that we create currently only contain a single item
+          throw new Error(
             "Got more than one response but we only expect a single one",
           );
         }
@@ -234,26 +267,20 @@ export class ObjectSetWatcherWebsocket<
         const response = responses[0];
         switch (response.type) {
           case "error":
-            deferred.reject(response.error);
+            this.#getCallbackByRequestId(requestId, "error")?.(response.error);
             return;
           case "qos":
-            deferred.reject(response.qos);
+            this.#getCallbackByRequestId(requestId, "error")?.(response.qos);
             this.#destroyWebsocket();
             return;
           case "success":
             const { id: subscriptionId } = response.success;
-            this.#listeners.set(subscriptionId, listener);
-            deferred.resolve(() => {
-              // TODO there isn't actually a network call to unsubscribe the socket yet
-              this.#listeners.delete(subscriptionId);
-              if (this.#listeners.size === 0) {
-                this.#destroyWebsocket();
-              }
-            });
+            listenerData.subscriptionId = subscriptionId;
+            this.#subscriptionToListenerId.set(subscriptionId, requestId);
             break;
           default:
             const _: never = response;
-            deferred.reject(response);
+            this.#getCallbackByRequestId(requestId, "error")?.(response);
         }
 
         break;
@@ -292,16 +319,36 @@ export class ObjectSetWatcherWebsocket<
     return { objectSetRid: temporaryObjectSet.objectSetRid };
   }
 
-  #destroyWebsocket() {
+  #destroyWebsocket = (error?: unknown) => {
     if (this.#ws) {
       this.#ws.close();
       this.#ws = undefined;
     }
 
-    for (const listener of this.#listeners.values()) {
-      listener.cancelled?.();
+    for (const { listener } of this.#listeners.values()) {
+      listener.error?.(error);
     }
     this.#listeners.clear();
+    this.#subscriptionToListenerId.clear();
+  };
+
+  #getCallbackByRequestId<T extends keyof ObjectSetListener<O, any>>(
+    requestId: string,
+    type: T,
+  ): ObjectSetListener<any, any>[T] | undefined {
+    const maybeListener = this.#listeners.get(requestId);
+    return maybeListener?.listener?.[type];
+  }
+
+  #getCallback<T extends keyof ObjectSetListener<O, any>>(
+    subscriptionId: string,
+    type: T,
+  ): ObjectSetListener<any, any>[T] | undefined {
+    const requestId = this.#subscriptionToListenerId.get(subscriptionId);
+    if (requestId) {
+      return this.#getCallbackByRequestId(requestId, type);
+    }
+    return;
   }
 }
 
@@ -435,9 +482,4 @@ async function getOntologyPropertyMappingForRid(
   }
 
   return objectTypeMapping.get(ctx)?.get(objectRid);
-}
-function isObjectSetChanged(
-  message: StreamMessage | ObjectSetChanged,
-): message is ObjectSetChanged {
-  return (message as any)?.type == null;
 }

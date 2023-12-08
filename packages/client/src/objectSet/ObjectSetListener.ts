@@ -17,23 +17,16 @@
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { OsdkObject } from "../OsdkObject.js";
 
-export interface ObjectSetWatcherEvents<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> {
-  change: Array<OsdkObject<K & string>>;
-  refresh: never;
-  cancelled: never;
-}
-
 export type ObjectSetListener<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 > = Partial<
   {
-    [E in keyof ObjectSetWatcherEvents<O, K>]:
-      ObjectSetWatcherEvents<O, K>[E] extends never ? () => void : (
-        data: ObjectSetWatcherEvents<O, K>[E],
-      ) => void;
+    /** a specific list of objects have changed */
+    change: (objects: Array<OsdkObject<K & string>>) => void;
+    /** the objectset has become outdated and should be re-fetched in its entirety */
+    refresh: () => void;
+    /** there was a fatal error which requires the subscription to be recreated, or the underlying subscription was cancelled */
+    error: (error: unknown | undefined) => void;
   }
 >;

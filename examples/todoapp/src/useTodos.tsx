@@ -16,42 +16,24 @@ export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
     "/todos",
     async () => orThrow(await foundryClient.ontology.objects.Todo.all()),
-    { keepPreviousData: true }
+    { keepPreviousData: true, revalidateOnFocus: false }
   );
 
   useEffect(() => {
-    let removed = false;
-    let unsubscribe: () => void;
-
-    foundryClient2.objects.Todo.subscribe({
-      cancelled() {
-        console.log("todo watcher cancelled");
-      },
-      change(data) {
-        console.log("todo change", data);
+    const unsubscribe = foundryClient2.objects.Todo.subscribe({
+      change(objects) {
+        console.log("todo change", objects);
       },
       refresh() {
-        console.log("todo refresh");
+        mutate();
       },
-    })
-      .then((unsub) => {
-        if (removed) {
-          unsub;
-        } else {
-          unsubscribe = unsub;
-        }
-      })
-      .catch((error) => {
-        console.log("subscription error", error);
-      });
+      error(data) {
+        console.log("todo watcher error", data);
+      },
+    });
 
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-      removed = true;
-    };
-  }, []);
+    return unsubscribe;
+  }, [mutate]);
 
   const toggleComplete = useCallback(
     async function (todo: Todo) {
