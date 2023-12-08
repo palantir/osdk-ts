@@ -162,7 +162,7 @@ export class ObjectSetListenerWebsocket<
 
       this.#ws?.send(JSON.stringify(subscribe));
     } catch (error) {
-      this.#getCallbackByRequestId(requestId, "error")?.(error);
+      this.#getCallbackByRequestId(requestId, "onError")?.(error);
     }
   }
 
@@ -171,7 +171,7 @@ export class ObjectSetListenerWebsocket<
     this.#listeners.get(requestId)?.listener?.onCancelled?.();
   }
 
-  #unsubscribe(requestId: string) {
+  #unsubscribe(requestId: string, isDestroying = false) {
     const data = this.#listeners.get(requestId);
     if (data == null) {
       return;
@@ -183,11 +183,13 @@ export class ObjectSetListenerWebsocket<
       this.#subscriptionToListenerId.delete(subscriptionId);
     }
 
-    if (this.#listeners.size === 0) {
-      this.#destroyWebsocket();
-    }
+    if (!isDestroying) {
+      if (this.#listeners.size === 0) {
+        this.#destroyWebsocket();
+      }
 
-    // TODO backend does not yet have an unsubscribe message payload
+      // TODO backend does not yet have an unsubscribe message payload
+    }
   }
 
   async #ensureWebsocket() {
@@ -232,7 +234,7 @@ export class ObjectSetListenerWebsocket<
         if ((data.objectSetChanged as any).confidenceValue) {
           this.#getCallback(
             data.objectSetChanged.id,
-            "refresh",
+            "onOutOfDate",
           )?.();
           break;
         }
@@ -241,7 +243,7 @@ export class ObjectSetListenerWebsocket<
           (data as StreamMessage_objectSetChanged).objectSetChanged;
         const callback = this.#getCallback(
           subscriptionId,
-          "change",
+          "onChange",
         );
 
         if (callback) {
@@ -258,7 +260,7 @@ export class ObjectSetListenerWebsocket<
 
       case "refreshObjectSet": {
         const { id: subscriptionId } = data.refreshObjectSet;
-        this.#getCallback(subscriptionId, "refresh")?.();
+        this.#getCallback(subscriptionId, "onOutOfDate")?.();
         break;
       }
 
@@ -282,10 +284,13 @@ export class ObjectSetListenerWebsocket<
         const response = responses[0];
         switch (response.type) {
           case "error":
-            this.#getCallbackByRequestId(requestId, "error")?.(response.error);
+            this.#getCallbackByRequestId(requestId, "onError")?.(
+              response.error,
+            );
+            this.#unsubscribe(requestId);
             return;
           case "qos":
-            this.#getCallbackByRequestId(requestId, "error")?.(response.qos);
+            // the server has requested that we tear down our websocket and reconnect to help load balance
             this.#destroyWebsocket();
             return;
           case "success":
@@ -295,7 +300,7 @@ export class ObjectSetListenerWebsocket<
             break;
           default:
             const _: never = response;
-            this.#getCallbackByRequestId(requestId, "error")?.(response);
+            this.#getCallbackByRequestId(requestId, "onError")?.(response);
         }
 
         break;
@@ -334,15 +339,16 @@ export class ObjectSetListenerWebsocket<
     return { objectSetRid: temporaryObjectSet.objectSetRid };
   }
 
-  #destroyWebsocket = (error?: unknown) => {
+  #destroyWebsocket = () => {
     if (this.#ws) {
       this.#ws.close();
       this.#ws = undefined;
     }
 
-    for (const { listener } of this.#listeners.values()) {
-      listener.error?.(error);
+    for (const requestId of this.#listeners.keys()) {
+      this.#unsubscribe(requestId, true);
     }
+
     this.#listeners.clear();
     this.#subscriptionToListenerId.clear();
   };

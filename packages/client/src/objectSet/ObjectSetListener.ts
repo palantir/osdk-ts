@@ -23,12 +23,12 @@ export type ObjectSetListener<
 > = Partial<
   {
     /** a specific list of objects have changed */
-    change: (objects: Array<OsdkObject<K & string>>) => void;
+    onChange: (objects: Array<OsdkObject<K & string>>) => void;
     /** the subscription has been cancelled and should be re-subscribed if necessary */
     onCancelled: () => void;
     /** the objectset has become outdated and should be re-fetched in its entirety */
-    refresh: () => void;
+    onOutOfDate: () => void;
     /** there was a fatal error which requires the subscription to be recreated, or the underlying subscription was cancelled */
-    error: (error: unknown | undefined) => void;
+    onError: (error: unknown) => void;
   }
 >;

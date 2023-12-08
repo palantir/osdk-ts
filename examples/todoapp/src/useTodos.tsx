@@ -21,16 +21,16 @@ export function useTodos() {
 
   useEffect(() => {
     const unsubscribe = foundryClient2.objects.Todo.subscribe({
-      change(objects) {
+      onChange(objects) {
         console.log("todo change", objects);
       },
       onCancelled() {
         console.log("cancelled");
       },
-      refresh() {
+      onOutOfDate() {
         mutate();
       },
-      error(data) {
+      onError(data) {
         console.log("todo watcher error", data);
       },
     });
