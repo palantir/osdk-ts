@@ -23,7 +23,7 @@ import { join } from "path/posix";
 import { exit } from "process";
 import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
-import type { TokenErrorResponse, TokenSuccessResponse } from "./token.js";
+import type { TokenResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
 
 export default async function invokeLoginFlow(args: LoginArgs) {
@@ -150,7 +150,7 @@ async function getTokenWithCodeVerifier(
   code: string,
   baseUrl: string,
   codeVerifier: string,
-): Promise<TokenSuccessResponse | TokenErrorResponse> {
+): Promise<TokenResponse> {
   const body = new URLSearchParams();
   body.append("client_id", clientId);
   body.append("grant_type", "authorization_code");
@@ -169,8 +169,7 @@ async function getTokenWithCodeVerifier(
       method: "POST",
     });
 
-    const responseText: TokenSuccessResponse | TokenErrorResponse =
-      await response.json();
+    const responseText: TokenResponse = await response.json();
     return responseText;
   } catch (e) {
     throw new Error(

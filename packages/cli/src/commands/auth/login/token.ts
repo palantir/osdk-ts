@@ -26,6 +26,8 @@ export interface TokenErrorResponse {
   error_description: string;
 }
 
+export type TokenResponse = TokenErrorResponse | TokenSuccessResponse;
+
 export function isTokenErrorResponse(
   response: TokenSuccessResponse | TokenErrorResponse,
 ): response is TokenErrorResponse {
