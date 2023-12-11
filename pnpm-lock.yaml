@@ -296,6 +296,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
+      '@osdk/gateway':
+        specifier: workspace:*
+        version: link:../gateway
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator

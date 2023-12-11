@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
+    "@osdk/gateway": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/shared.net": "workspace:*",
     "archiver": "^6.0.1",

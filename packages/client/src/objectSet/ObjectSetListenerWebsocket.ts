@@ -180,6 +180,7 @@ export class ObjectSetListenerWebsocket<
     if (state) {
       const { subscriptionId, objectSet } = state;
       if (subscriptionId) {
+        state.subscriptionId = undefined;
         this.#subscriptionToRequestId.delete(subscriptionId);
       }
       this.#subscribe(requestId, objectSet);

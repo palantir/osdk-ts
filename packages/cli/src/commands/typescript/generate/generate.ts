@@ -35,7 +35,22 @@ export const command: CommandModule<
           ontologyPath: {
             description: "path to the ontology wire json",
             type: "string",
-            demandOption: true,
+            demandOption: false,
+            conflicts: ["stack", "clientId"],
+          },
+          stack: {
+            description: "the URL to the stack that contains the ontology",
+            type: "string",
+            demandOption: false,
+            conflicts: "ontologyPath",
+            implies: "clientId",
+          },
+          clientId: {
+            description: "the application's client id",
+            type: "string",
+            demandOption: false,
+            conflicts: "ontologyPath",
+            implies: "stack",
           },
           beta: {
             type: "boolean",
@@ -48,8 +63,19 @@ export const command: CommandModule<
           },
         } as const,
       ).group(
-        ["outDir", "ontologyPath"],
-        "Version To Deploy (requires one of)",
+        ["ontologyPath", "outDir"],
+        "Generate from a local file",
+      ).group(["stack", "clientId", "outDir"], "OR Generate from a stack")
+      .check(
+        (argv) => {
+          if (argv.ontologyPath || argv.stack) {
+            return true;
+          } else {
+            throw new Error(
+              "Error: Must specify either ontologyPath or stack and clientId",
+            );
+          }
+        },
       );
   },
   handler: async (args) => {
