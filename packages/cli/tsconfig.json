@@ -14,6 +14,9 @@
       "path": "../api"
     },
     {
+      "path": "../gateway"
+    },
+    {
       "path": "../generator"
     },
     {
