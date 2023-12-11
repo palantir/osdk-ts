@@ -53,7 +53,6 @@ export default async function invokeLoginFlow(args: LoginArgs) {
 
   server.listen(port);
   const clientId = args.applicationId;
-
   const state = generateRandomString();
   const codeVerifier = generateRandomString();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
@@ -95,17 +94,24 @@ export default async function invokeLoginFlow(args: LoginArgs) {
   }
 
   consola.success(`Successfully authenticated!`);
-  consola.log(token);
   return token;
 }
 
 function generateRandomString(length = 128) {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-  const array = getRandomValues(new Uint8Array(length));
-  return Array.from(array, dec => {
-    return characters[dec % characters.length];
-  }).join("");
+  let output: string[] = [];
+  let array = new Uint8Array(1);
+  const maxIndex = 256 - (256 % characters.length);
+
+  while (output.length < length) {
+    getRandomValues(array);
+    if (array[0] < maxIndex) {
+      output.push(characters[array[0] % characters.length]);
+    }
+  }
+
+  return output.join("");
 }
 async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
