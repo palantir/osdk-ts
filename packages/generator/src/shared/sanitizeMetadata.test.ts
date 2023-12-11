@@ -37,6 +37,7 @@ describe(sanitizeMetadata, () => {
         description: "",
       },
       queryTypes: {},
+      __UNSTABLE_interfaceTypes: {},
     });
     expect(sanitizedOntology.actionTypes["kebabCase"].apiName).toEqual(
       "kebabCase",

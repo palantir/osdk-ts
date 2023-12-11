@@ -17,14 +17,15 @@
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { __UNSABLE_WireOntologyDefinitionV2 } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
 
 export async function generateClientSdkVersionTwoPointZero(
-  ontology: WireOntologyDefinition,
+  ontology: __UNSABLE_WireOntologyDefinitionV2,
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
@@ -34,6 +35,9 @@ export async function generateClientSdkVersionTwoPointZero(
   const objectNames = Object.keys(sanitizedOntology.objectTypes);
   const actionNames = Object.keys(sanitizedOntology.actionTypes);
   const queryNames = Object.keys(sanitizedOntology.queryTypes);
+  const interfaceNames = Object.keys(
+    sanitizedOntology.__UNSTABLE_interfaceTypes ?? {},
+  );
 
   const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
@@ -55,7 +59,8 @@ export async function generateClientSdkVersionTwoPointZero(
       `
       import type { OntologyDefinition } from "@osdk/api";
       import * as Actions from "./ontology/actions/index${importExt}";
-      import * as Objects from "./ontology/objects/index${importExt}";
+      import * as Objects from "./ontology/objects${importExt}";
+      import * as Interfaces from "./ontology/interfaces${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       const _Ontology = {
@@ -78,6 +83,14 @@ export async function generateClientSdkVersionTwoPointZero(
         queries: {
           // TODO
         },
+        interfaces: {
+          ${
+        interfaceNames.map((objectName) => {
+          return `${objectName}: Interfaces.${objectName}`;
+        }).join(",\n")
+      }
+              
+        }
       } satisfies OntologyDefinition<${
         objectNames.map(n => `"${n}"`).join("|")
       }>;
@@ -112,6 +125,14 @@ export async function generateClientSdkVersionTwoPointZero(
     );
   }
 
+  await generateOntologyInterfaces(
+    fs,
+    outDir,
+    interfaceNames,
+    ontology,
+    importExt,
+  );
+
   const actionsDir = path.join(outDir, "ontology", "actions");
   await fs.mkdir(actionsDir, { recursive: true });
   await generatePerActionDataFiles(
@@ -122,11 +143,49 @@ export async function generateClientSdkVersionTwoPointZero(
   );
 
   await fs.writeFile(
-    path.join(outDir, "ontology", "objects", "index.ts"),
+    path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./${apiName}${importExt}";`
+        `export * from "./objects/${apiName}${importExt}";`
+      ).join("\n")
+    }
+    `),
+  );
+}
+
+/** @internal */
+async function generateOntologyInterfaces(
+  fs: MinimalFs,
+  outDir: string,
+  interfaceNames: string[],
+  ontology: __UNSABLE_WireOntologyDefinitionV2,
+  importExt: string,
+) {
+  const interfacesDir = path.join(outDir, "ontology", "interfaces");
+  await fs.mkdir(interfacesDir, {
+    recursive: true,
+  });
+  for (const name of interfaceNames) {
+    const obj = ontology.__UNSTABLE_interfaceTypes![name];
+
+    await fs.writeFile(
+      path.join(interfacesDir, `${name}.ts`),
+      await formatTs(`
+    
+      import type { InterfaceDefinition } from "@osdk/api";
+
+      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
+    `),
+    );
+  }
+
+  await fs.writeFile(
+    interfacesDir + ".ts",
+    await formatTs(`
+    ${
+      Object.keys(ontology.__UNSTABLE_interfaceTypes ?? {}).map(apiName =>
+        `export * from "./interfaces/${apiName}${importExt}";`
       ).join("\n")
     }
     `),

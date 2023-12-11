@@ -1,7 +1,8 @@
 import type { OntologyDefinition } from '@osdk/api';
 import { OntologyMetadata } from './OntologyMetadata.js';
 import * as Actions from './ontology/actions/index.js';
-import * as Objects from './ontology/objects/index.js';
+import * as Interfaces from './ontology/interfaces.js';
+import * as Objects from './ontology/objects.js';
 
 const _Ontology = {
   metadata: OntologyMetadata,
@@ -17,6 +18,9 @@ const _Ontology = {
   },
   queries: {
     // TODO
+  },
+  interfaces: {
+    SimpleInterface: Interfaces.SimpleInterface,
   },
 } satisfies OntologyDefinition<'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'>;
 

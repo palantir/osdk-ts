@@ -15,7 +15,19 @@
  */
 
 import type * as gateway from "@osdk/gateway";
+import type { ObjectTypeV2 } from "@osdk/gateway/types";
 
 export interface WireOntologyDefinition
   extends gateway.components.OntologyFullMetadata
+{
+}
+
+export interface __UNSABLE_InterfaceType
+  extends Omit<ObjectTypeV2, "primaryKey">
 {}
+
+export interface __UNSABLE_WireOntologyDefinitionV2
+  extends WireOntologyDefinition
+{
+  __UNSTABLE_interfaceTypes?: Record<string, __UNSABLE_InterfaceType>;
+}
