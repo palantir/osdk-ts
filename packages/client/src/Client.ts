@@ -37,4 +37,9 @@ export interface Client<O extends OntologyDefinition<any>> {
   objects: ObjectSetCreator<O>;
 
   actions: Actions<O>;
+
+  __UNSTABLE_preexistingObjectSet<const K extends ObjectTypeKeysFrom<O>>(
+    type: K,
+    rid: string,
+  ): ObjectSet<O, K>;
 }
