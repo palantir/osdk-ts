@@ -16,13 +16,13 @@
 
 import type { ClientContext } from "@osdk/client";
 import { aggregateOrThrow } from "@osdk/client/objects";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGroupedThin(
-  clientCtx: ClientContext<OntologyType>,
+  clientCtx: ClientContext<Ontology>,
 ) {
   const result = await aggregateOrThrow(clientCtx, "Employee", {
     select: {

@@ -15,12 +15,12 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchEmployeeLead(
-  client: Client<OntologyType>,
+  client: Client<Ontology>,
   adUsername: string,
 ) {
   const result = await client.objects.Employee.where({

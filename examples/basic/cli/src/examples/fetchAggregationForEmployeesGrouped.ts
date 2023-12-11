@@ -15,13 +15,13 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "../OntologyType.js";
 
 export async function fetchAggregationForEmployeesGrouped(
-  client: Client<OntologyType>,
+  client: Client<Ontology>,
 ) {
   const result = await client.objectSet("Employee").aggregateOrThrow({
     select: {
