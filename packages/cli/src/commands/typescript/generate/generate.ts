@@ -72,7 +72,7 @@ export const command: CommandModule<
             return true;
           } else {
             throw new Error(
-              "Error: Must specify either ontologyPath or stack and sdk",
+              "Error: Must specify either ontologyPath or stack and clientId",
             );
           }
         },
