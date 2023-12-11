@@ -16,12 +16,15 @@
 
 // eslint-disable-next-line import/no-named-as-default
 import consola from "consola";
+import { getRandomValues, subtle } from "crypto";
 import { createServer } from "http";
 import open from "open";
 import { join } from "path/posix";
 import { exit } from "process";
 import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
+import type { TokenResponse } from "./token.js";
+import { isTokenErrorResponse } from "./token.js";
 
 export default async function invokeLoginFlow(args: LoginArgs) {
   consola.start(`Authenticating using application id: ${args.applicationId}`);
@@ -50,7 +53,6 @@ export default async function invokeLoginFlow(args: LoginArgs) {
 
   server.listen(port);
   const clientId = args.applicationId;
-
   const state = generateRandomString();
   const codeVerifier = generateRandomString();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
@@ -82,20 +84,38 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     codeVerifier,
   );
 
+  if (isTokenErrorResponse(token)) {
+    consola.error(
+      "Unable to authenticate",
+      token.error,
+      token.error_description,
+    );
+    exit(1);
+  }
+
   consola.success(`Successfully authenticated!`);
   return token;
 }
 
-function generateRandomString() {
-  const array = crypto.getRandomValues(new Uint32Array(28));
-  return Array.from(array, dec => {
-    return dec.toString(16).padStart(2, "0");
-  }).join("");
-}
+function generateRandomString(length = 128) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  let output: string[] = [];
+  let array = new Uint8Array(1);
+  const maxIndex = 256 - (256 % characters.length);
 
+  while (output.length < length) {
+    getRandomValues(array);
+    if (array[0] < maxIndex) {
+      output.push(characters[array[0] % characters.length]);
+    }
+  }
+
+  return output.join("");
+}
 async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
-  const digest = await crypto.subtle.digest("SHA-256", data);
+  const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
     .replace(/\//g, "_")
@@ -136,7 +156,7 @@ async function getTokenWithCodeVerifier(
   code: string,
   baseUrl: string,
   codeVerifier: string,
-) {
+): Promise<TokenResponse> {
   const body = new URLSearchParams();
   body.append("client_id", clientId);
   body.append("grant_type", "authorization_code");
@@ -155,13 +175,7 @@ async function getTokenWithCodeVerifier(
       method: "POST",
     });
 
-    const responseText: {
-      access_token: string;
-      token_type: string;
-      refresh_token: string;
-      expires_in: number;
-    } = await response.json();
-
+    const responseText: TokenResponse = await response.json();
     return responseText;
   } catch (e) {
     throw new Error(
