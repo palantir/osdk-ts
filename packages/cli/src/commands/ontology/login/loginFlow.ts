@@ -43,30 +43,23 @@ export default async function invokeLoginFlow(args: LoginArgs) {
   const codeVerifier = generateRandomString();
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-  const queryParams = new URLSearchParams();
-  queryParams.append("client_id", clientId);
-  queryParams.append("response_type", "code");
-  queryParams.append("state", state);
-  queryParams.append("redirect_uri", redirectUrl);
-  queryParams.append("code_challenge", codeChallenge.codeChallenge);
-  queryParams.append(
-    "code_challenge_method",
-    codeChallenge.codeChallengeMethod,
+  const authorizeUrl = generateAuthorizeUrl(
+    args.baseUrl,
+    clientId,
+    state,
+    redirectUrl,
+    codeChallenge,
   );
 
-  queryParams.append(
-    "scope",
-    ["offline_access", "api:read-data"].join(" "),
-  );
-
-  await open(
-    join(args.baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
-      + queryParams.toString(),
-  );
+  try {
+    await open(authorizeUrl);
+  } catch {
+    consola.warn(
+      `Unable to open browser, please open this url in your browser to to authenticate: ${authorizeUrl}`,
+    );
+  }
 
   const code = await authCode;
-  consola.log(code);
-
   server.close();
 
   const token = await getTokenWithCodeVerifier(
@@ -76,6 +69,8 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     args.baseUrl,
     codeVerifier,
   );
+
+  consola.success(`Successfully authenticated!`);
 }
 
 function generateRandomString() {
@@ -100,7 +95,30 @@ async function generateCodeChallenge(codeVerifier: string) {
   };
 }
 
-export async function getTokenWithCodeVerifier(
+function generateAuthorizeUrl(
+  baseUrl: string,
+  clientId: string,
+  state: string,
+  redirectUrl: string,
+  codeChallenge: { codeChallenge: string; codeChallengeMethod: string },
+) {
+  const queryParams = new URLSearchParams();
+  queryParams.append("client_id", clientId);
+  queryParams.append("response_type", "code");
+  queryParams.append("state", state);
+  queryParams.append("redirect_uri", redirectUrl);
+  queryParams.append("code_challenge", codeChallenge.codeChallenge);
+  queryParams.append(
+    "code_challenge_method",
+    codeChallenge.codeChallengeMethod,
+  );
+  queryParams.append("scope", ["offline_access", "api:read-data"].join(" "));
+
+  return join(baseUrl, "multipass", "api", "oauth2", "authorize") + `?`
+    + queryParams.toString();
+}
+
+async function getTokenWithCodeVerifier(
   clientId: string,
   redirectUrl: string,
   code: string,
@@ -116,7 +134,6 @@ export async function getTokenWithCodeVerifier(
 
   const tokenUrl = join(baseUrl, "multipass", "api", "oauth2", "token")
     + `?state=${codeVerifier}`;
-  consola.log("Hitting", tokenUrl);
   try {
     const response = await fetch(tokenUrl, {
       body: body.toString(),

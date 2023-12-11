@@ -299,9 +299,6 @@ importers:
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
-      '@osdk/legacy-client':
-        specifier: workspace:*
-        version: link:../legacy-client
       '@osdk/shared.net':
         specifier: workspace:*
         version: link:../shared.net

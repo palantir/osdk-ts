@@ -29,7 +29,6 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/generator": "workspace:*",
-    "@osdk/legacy-client": "workspace:*",
     "@osdk/shared.net": "workspace:*",
     "archiver": "^6.0.1",
     "conjure-lite": "0.3.1",
