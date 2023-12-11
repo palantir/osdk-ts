@@ -23,6 +23,14 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
   objectTypeWithLink: ObjectTypeWithLink,
   v2: boolean,
 ): ObjectTypeDefinition<any, any> {
+  if (
+    objectTypeWithLink.objectType
+      .properties[objectTypeWithLink.objectType.primaryKey] === undefined
+  ) {
+    throw new Error(
+      `Primary key ${objectTypeWithLink.objectType.primaryKey} not found in ${objectTypeWithLink.objectType.apiName}`,
+    );
+  }
   return {
     apiName: objectTypeWithLink.objectType.apiName,
     description: objectTypeWithLink.objectType.description,
