@@ -15,12 +15,12 @@
  */
 
 import type { InterfaceDefinition } from "@osdk/api";
-import type { __UNSABLE_InterfaceType } from "../WireOntologyDefinition";
+import type { __UNSTABLE_InterfaceType } from "../WireOntologyDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-  interfaceType: __UNSABLE_InterfaceType,
+  interfaceType: __UNSTABLE_InterfaceType,
   v2: boolean = false,
 ) {
   return `
@@ -37,7 +37,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 }
 
 function wireInterfaceTypeV2ToSdkObjectDefinition(
-  interfaceType: __UNSABLE_InterfaceType,
+  interfaceType: __UNSTABLE_InterfaceType,
   v2: boolean,
 ): InterfaceDefinition<any, any> {
   return {

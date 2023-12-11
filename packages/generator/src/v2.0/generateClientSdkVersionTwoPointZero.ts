@@ -21,11 +21,11 @@ import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTAB
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
-import type { __UNSABLE_WireOntologyDefinitionV2 } from "../WireOntologyDefinition";
+import type { __UNSTABLE_WireOntologyDefinitionV2 } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
 
 export async function generateClientSdkVersionTwoPointZero(
-  ontology: __UNSABLE_WireOntologyDefinitionV2,
+  ontology: __UNSTABLE_WireOntologyDefinitionV2,
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
@@ -159,7 +159,7 @@ async function generateOntologyInterfaces(
   fs: MinimalFs,
   outDir: string,
   interfaceNames: string[],
-  ontology: __UNSABLE_WireOntologyDefinitionV2,
+  ontology: __UNSTABLE_WireOntologyDefinitionV2,
   importExt: string,
 ) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");

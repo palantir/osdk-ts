@@ -22,12 +22,12 @@ export interface WireOntologyDefinition
 {
 }
 
-export interface __UNSABLE_InterfaceType
+export interface __UNSTABLE_InterfaceType
   extends Omit<ObjectTypeV2, "primaryKey">
 {}
 
-export interface __UNSABLE_WireOntologyDefinitionV2
+export interface __UNSTABLE_WireOntologyDefinitionV2
   extends WireOntologyDefinition
 {
-  __UNSTABLE_interfaceTypes?: Record<string, __UNSABLE_InterfaceType>;
+  __UNSTABLE_interfaceTypes?: Record<string, __UNSTABLE_InterfaceType>;
 }

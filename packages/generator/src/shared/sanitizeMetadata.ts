@@ -15,7 +15,7 @@
  */
 
 import type {
-  __UNSABLE_WireOntologyDefinitionV2,
+  __UNSTABLE_WireOntologyDefinitionV2,
   WireOntologyDefinition,
 } from "../WireOntologyDefinition";
 
@@ -23,8 +23,8 @@ import type {
  * @internal
  */
 export function sanitizeMetadata(
-  ontology: __UNSABLE_WireOntologyDefinitionV2,
-): __UNSABLE_WireOntologyDefinitionV2;
+  ontology: __UNSTABLE_WireOntologyDefinitionV2,
+): __UNSTABLE_WireOntologyDefinitionV2;
 /**
  * @internal
  */
@@ -35,7 +35,7 @@ export function sanitizeMetadata(
  * @internal
  */
 export function sanitizeMetadata<
-  T extends WireOntologyDefinition | __UNSABLE_WireOntologyDefinitionV2,
+  T extends WireOntologyDefinition | __UNSTABLE_WireOntologyDefinitionV2,
 >(
   ontology: T,
 ): T {
