@@ -16,6 +16,7 @@
 
 // eslint-disable-next-line import/no-named-as-default
 import consola from "consola";
+import { getRandomValues, subtle } from "crypto";
 import { createServer } from "http";
 import open from "open";
 import { join } from "path/posix";
@@ -87,7 +88,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
 }
 
 function generateRandomString() {
-  const array = crypto.getRandomValues(new Uint32Array(28));
+  const array = getRandomValues(new Uint32Array(28));
   return Array.from(array, dec => {
     return dec.toString(16).padStart(2, "0");
   }).join("");
@@ -95,7 +96,7 @@ function generateRandomString() {
 
 async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
-  const digest = await crypto.subtle.digest("SHA-256", data);
+  const digest = await subtle.digest("SHA-256", data);
   const codeChallengeMethod = "S256";
   const codeChallenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
     .replace(/\//g, "_")
