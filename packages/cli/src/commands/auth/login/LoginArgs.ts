@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { CommonOntologyArgs } from "../CommonOntologyArgs.js";
+import type { CommonAuthArgs } from "../CommonAuthArgs.js";
 
-export interface LoginArgs extends CommonOntologyArgs {
+export interface LoginArgs extends CommonAuthArgs {
   applicationId: string;
 }

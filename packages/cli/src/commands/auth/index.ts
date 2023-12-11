@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonOntologyArgs } from "../CommonOntologyArgs.js";
-import type { LoginArgs } from "./LoginArgs.js";
+import type * as yargs from "yargs";
+import type { CliCommonArgs } from "../../CliCommonArgs.js";
+import type { CommonAuthArgs } from "./CommonAuthArgs.js";
+import login from "./login/index.js";
 
-export const command: CommandModule<
-  CommonOntologyArgs,
-  LoginArgs
-> = {
-  command: "login",
-  describe: "Authenticate with your ontology",
+const site: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
+  command: "auth",
+  describe: "Manage your session",
   builder: (argv) => {
     return argv
-      .option("applicationId", {
-        type: "string",
-        demandOption: true,
-      });
+      .options({
+        baseUrl: {
+          type: "string",
+          demandOption: true,
+        },
+      })
+      .command(login)
+      .demandCommand();
   },
   handler: async (args) => {
-    const command = await import("./loginFlow.js");
-    await command.default(args);
   },
 };
 
-export default command;
+export default site;

@@ -18,7 +18,7 @@ import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import type { CliCommonArgs } from "./CliCommonArgs.js";
-import ontology from "./commands/ontology/index.js";
+import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
@@ -47,7 +47,7 @@ export async function cli(args: string[] = process.argv) {
         return argv
           .command(site)
           .command(typescript)
-          .command(ontology)
+          .command(auth)
           .demandCommand();
       },
       handler: (_args) => {},

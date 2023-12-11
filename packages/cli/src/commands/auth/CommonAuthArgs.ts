@@ -14,27 +14,8 @@
  * limitations under the License.
  */
 
-import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import type { CommonOntologyArgs } from "./CommonOntologyArgs.js";
-import login from "./login/index.js";
 
-const site: yargs.CommandModule<CliCommonArgs, CommonOntologyArgs> = {
-  command: "ontology",
-  describe: "Manage code",
-  builder: (argv) => {
-    return argv
-      .options({
-        baseUrl: {
-          type: "string",
-          demandOption: true,
-        },
-      })
-      .command(login)
-      .demandCommand();
-  },
-  handler: async (args) => {
-  },
-};
-
-export default site;
+export interface CommonAuthArgs extends CliCommonArgs {
+  baseUrl: string;
+}

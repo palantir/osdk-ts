@@ -23,6 +23,7 @@ import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
 
 export default async function invokeLoginFlow(args: LoginArgs) {
+  consola.start(`Authenticating using application id: ${args.applicationId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;
   let resolve: (value: string) => void;
@@ -71,6 +72,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
   );
 
   consola.success(`Successfully authenticated!`);
+  return token;
 }
 
 function generateRandomString() {

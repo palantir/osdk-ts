@@ -14,8 +14,27 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "../../CliCommonArgs.js";
+import type { CommandModule } from "yargs";
+import type { CommonAuthArgs } from "../CommonAuthArgs.js";
+import type { LoginArgs } from "./LoginArgs.js";
 
-export interface CommonOntologyArgs extends CliCommonArgs {
-  baseUrl: string;
-}
+export const command: CommandModule<
+  CommonAuthArgs,
+  LoginArgs
+> = {
+  command: "login",
+  describe: "Authenticate with an application ID",
+  builder: (argv) => {
+    return argv
+      .option("applicationId", {
+        type: "string",
+        demandOption: true,
+      });
+  },
+  handler: async (args) => {
+    const command = await import("./loginFlow.js");
+    await command.default(args);
+  },
+};
+
+export default command;
