@@ -23,6 +23,8 @@ import { join } from "path/posix";
 import { exit } from "process";
 import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
+import type { TokenErrorResponse, TokenSuccessResponse } from "./token.js";
+import { isTokenErrorResponse } from "./token.js";
 
 export default async function invokeLoginFlow(args: LoginArgs) {
   consola.start(`Authenticating using application id: ${args.applicationId}`);
@@ -83,17 +85,28 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     codeVerifier,
   );
 
+  if (isTokenErrorResponse(token)) {
+    consola.error(
+      "Unable to authenticate",
+      token.error,
+      token.error_description,
+    );
+    exit(1);
+  }
+
   consola.success(`Successfully authenticated!`);
+  consola.log(token);
   return token;
 }
 
-function generateRandomString() {
-  const array = getRandomValues(new Uint32Array(28));
+function generateRandomString(length = 128) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
+  const array = getRandomValues(new Uint8Array(length));
   return Array.from(array, dec => {
-    return dec.toString(16).padStart(2, "0");
+    return characters[dec % characters.length];
   }).join("");
 }
-
 async function generateCodeChallenge(codeVerifier: string) {
   const data = new TextEncoder().encode(codeVerifier);
   const digest = await subtle.digest("SHA-256", data);
@@ -137,7 +150,7 @@ async function getTokenWithCodeVerifier(
   code: string,
   baseUrl: string,
   codeVerifier: string,
-) {
+): Promise<TokenSuccessResponse | TokenErrorResponse> {
   const body = new URLSearchParams();
   body.append("client_id", clientId);
   body.append("grant_type", "authorization_code");
@@ -156,13 +169,8 @@ async function getTokenWithCodeVerifier(
       method: "POST",
     });
 
-    const responseText: {
-      access_token: string;
-      token_type: string;
-      refresh_token: string;
-      expires_in: number;
-    } = await response.json();
-
+    const responseText: TokenSuccessResponse | TokenErrorResponse =
+      await response.json();
     return responseText;
   } catch (e) {
     throw new Error(
