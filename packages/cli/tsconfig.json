@@ -17,6 +17,9 @@
       "path": "../generator"
     },
     {
+      "path": "../legacy-client"
+    },
+    {
       "path": "../shared.net"
     }
   ]

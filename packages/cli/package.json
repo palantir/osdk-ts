@@ -29,11 +29,13 @@
   "dependencies": {
     "@osdk/api": "workspace:*",
     "@osdk/generator": "workspace:*",
+    "@osdk/legacy-client": "workspace:*",
     "@osdk/shared.net": "workspace:*",
     "archiver": "^6.0.1",
     "conjure-lite": "0.3.1",
     "consola": "^3.2.3",
     "find-up": "^6.3.0",
+    "open": "^9.1.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
