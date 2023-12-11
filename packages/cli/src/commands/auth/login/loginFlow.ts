@@ -19,6 +19,7 @@ import consola from "consola";
 import { createServer } from "http";
 import open from "open";
 import { join } from "path/posix";
+import { exit } from "process";
 import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
 
@@ -35,6 +36,16 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     const query = parse(req.url!, true).query;
     res.end("Authenticated");
     resolve(query["code"] as string);
+  });
+
+  server.on("error", (e) => {
+    if ((e as any).code === "EADDRINUSE") {
+      consola.error(
+        `Port ${port} is already in use, unable to perform authentication flow.`,
+      );
+      server.close();
+      exit(1);
+    }
   });
 
   server.listen(port);
@@ -78,8 +89,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
 function generateRandomString() {
   const array = crypto.getRandomValues(new Uint32Array(28));
   return Array.from(array, dec => {
-    const decimalString = "0" + dec.toString(16);
-    return decimalString.substring(decimalString.length - 2);
+    return dec.toString(16).padStart(2, "0");
   }).join("");
 }
 
