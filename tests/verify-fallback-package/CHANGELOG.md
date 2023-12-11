@@ -1,5 +1,12 @@
 # @osdk/tests.verify-fallback-pacakge
 
+## 0.0.3
+
+### Patch Changes
+
+- Updated dependencies [6d81f7f]
+  - @osdk/client@0.1.0
+
 ## 0.0.2
 
 ### Patch Changes
