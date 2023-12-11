@@ -14,11 +14,31 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type {
+  __UNSTABLE_WireOntologyDefinitionV2,
+  WireOntologyDefinition,
+} from "../WireOntologyDefinition";
 
+/**
+ * @internal
+ */
+export function sanitizeMetadata(
+  ontology: __UNSTABLE_WireOntologyDefinitionV2,
+): __UNSTABLE_WireOntologyDefinitionV2;
+/**
+ * @internal
+ */
 export function sanitizeMetadata(
   ontology: WireOntologyDefinition,
-): WireOntologyDefinition {
+): WireOntologyDefinition;
+/**
+ * @internal
+ */
+export function sanitizeMetadata<
+  T extends WireOntologyDefinition | __UNSTABLE_WireOntologyDefinitionV2,
+>(
+  ontology: T,
+): T {
   return {
     ...ontology,
     actionTypes: Object.fromEntries(

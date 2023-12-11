@@ -25,7 +25,6 @@ import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
 import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
 import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin.js";
-import type { OntologyType } from "./OntologyType.js";
 import { typeChecks } from "./typeChecks.js";
 
 invariant(process.env.FOUNDRY_STACK != undefined);
@@ -43,13 +42,13 @@ invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
  * do and thus is the suggested starting point.
  */
 export const client = createClient(
-  Ontology as OntologyType,
+  Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
 export const clientCtx = createClientContext(
-  Ontology as OntologyType,
+  Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
@@ -67,11 +66,11 @@ async function runTests() {
     await fetchEmployeeLead(client, "bob");
 
     const interfaceImplementationComplete = false;
-    // if (interfaceImplementationComplete) {
-    //   const interfaceResults = await client.objects.Emailable
-    //     .fetchPageOrThrow();
-    //   interfaceResults.data[0].email;
-    // }
+    if (interfaceImplementationComplete) {
+      const interfaceResults = await client.objects.SimpleInterface
+        .fetchPageOrThrow();
+      interfaceResults.data[0].body;
+    }
 
     await typeChecks(client);
   } catch (e) {

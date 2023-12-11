@@ -1,7 +1,7 @@
 import type { OntologyDefinition } from '@osdk/api';
 import { OntologyMetadata } from './OntologyMetadata';
 import * as Actions from './ontology/actions/index';
-import * as Objects from './ontology/objects/index';
+import * as Objects from './ontology/objects';
 
 const _Ontology = {
   metadata: OntologyMetadata,
@@ -15,6 +15,7 @@ const _Ontology = {
   queries: {
     // TODO
   },
+  interfaces: {},
 } satisfies OntologyDefinition<'Todo'>;
 
 type _Ontology = typeof _Ontology;

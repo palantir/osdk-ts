@@ -15,10 +15,11 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import { expectType } from "ts-expect";
-import type { Employee, OntologyType } from "../OntologyType.js";
+import type { Employee } from "../OntologyType.js";
 
-export async function fetchEmployeePage(client: Client<OntologyType>) {
+export async function fetchEmployeePage(client: Client<Ontology>) {
   const result = await client.objectSet("Employee").fetchPageOrThrow();
 
   expectType<string | undefined>(""); // FIXME: this isn't strict enough of a check for below

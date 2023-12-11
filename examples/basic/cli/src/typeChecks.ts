@@ -15,9 +15,9 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import type { OntologyType } from "./OntologyType.js";
 
 /**
  * As a consumer of OSDK, you will not need to use this file ever. It is simply here
@@ -25,7 +25,7 @@ import type { OntologyType } from "./OntologyType.js";
  * across changes.
  * @param client
  */
-export function typeChecks(client: Client<OntologyType>) {
+export function typeChecks(client: Client<Ontology>) {
   // client.objectSet("Employee") is the same as client.objects.Employee
   {
     const objectSet = client.objectSet("Employee");

@@ -598,5 +598,38 @@
       "rid": "query.rid2",
       "version": "0.1.2"
     }
+  },
+  "__UNSTABLE_interfaceTypes": {
+    "SimpleInterface": {
+      "apiName": "SimpleInterface",
+      "displayName": "AwesomeTodoDisplayname",
+      "description": "Its a todo item.",
+      "properties": {
+        "body": {
+          "dataType": {
+            "type": "string"
+          },
+          "description": "The text of the todo",
+          "displayName": "Body"
+        },
+        "text": {
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Text"
+        },
+        "priority": {
+          "dataType": {
+            "type": "integer"
+          }
+        },
+        "complete": {
+          "dataType": {
+            "type": "boolean"
+          }
+        }
+      },
+      "status": "ACTIVE"
+    }
   }
 }

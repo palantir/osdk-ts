@@ -15,14 +15,14 @@
  */
 
 import type { Client } from "@osdk/client";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
-import type { OntologyType } from "../OntologyType.js";
 
 /**
  * Demonstrates looking up an employee and for fun adds an `AND` and `ne`
  */
 export async function fetchEmployeePageByAdUsernameAndLimit(
-  client: Client<OntologyType>,
+  client: Client<Ontology>,
   adUsername: string,
 ) {
   const result = await client.objects.Employee.where({

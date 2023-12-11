@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "../../WireOntologyDefinition";
+import type { __UNSTABLE_WireOntologyDefinitionV2 } from "../../WireOntologyDefinition";
 
 export const TodoWireOntology = {
   ontology: {
@@ -124,4 +124,5 @@ export const TodoWireOntology = {
       version: "0",
     },
   },
-} satisfies WireOntologyDefinition;
+  __UNSTABLE_interfaceTypes: {},
+} satisfies __UNSTABLE_WireOntologyDefinitionV2;

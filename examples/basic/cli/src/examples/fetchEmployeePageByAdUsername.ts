@@ -15,13 +15,13 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { OntologyType } from "../OntologyType.js";
+import type { Ontology } from "@osdk/examples.basic.sdk";
 
 /**
  * Demonstrates looking up an employee and for fun adds an `AND` and `ne`
  */
 export async function fetchEmployeePageByAdUsername(
-  client: Client<OntologyType>,
+  client: Client<Ontology>,
   adUsername: string,
 ) {
   const result = await client.objects.Employee.where({
