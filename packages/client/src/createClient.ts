@@ -16,6 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { createClientContext } from "@osdk/shared.net";
+import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSet.js";
@@ -43,6 +44,9 @@ export function createClient<O extends OntologyDefinition<any>>(
     {
       objectSet: { get: () => objectSetFactory },
       objects: { get: () => createObjectSetCreator(client) },
+      actions: {
+        get: () => createActionInvoker(clientCtx),
+      },
     } satisfies Record<keyof Client<any>, PropertyDescriptor>,
   );
 

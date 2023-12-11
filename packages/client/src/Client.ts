@@ -19,6 +19,7 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
+import type { Actions } from "./actions/Actions.js";
 import type { ObjectSet, ObjectSetOptions } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
@@ -34,4 +35,6 @@ export interface Client<O extends OntologyDefinition<any>> {
   ) => ObjectSet<O, K>;
 
   objects: ObjectSetCreator<O>;
+
+  actions: Actions<O>;
 }

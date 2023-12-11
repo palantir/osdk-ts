@@ -16,8 +16,10 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
+import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
 
@@ -27,6 +29,12 @@ export async function generateClientSdkVersionTwoPointZero(
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
 ) {
+  const sanitizedOntology = sanitizeMetadata(ontology);
+
+  const objectNames = Object.keys(sanitizedOntology.objectTypes);
+  const actionNames = Object.keys(sanitizedOntology.actionTypes);
+  const queryNames = Object.keys(sanitizedOntology.queryTypes);
+
   const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
 
@@ -39,49 +47,54 @@ export async function generateClientSdkVersionTwoPointZero(
     ),
   );
 
-  const objectNames: (keyof WireOntologyDefinition["objectTypes"])[] = Object
-    .keys(
-      ontology.objectTypes,
-    );
+  await generateOntologyMetadataFile(sanitizedOntology, fs, outDir);
 
-  await generateOntologyMetadataFile(ontology, fs, outDir);
-
-  fs.writeFile(
+  await fs.writeFile(
     path.join(outDir, "Ontology.ts"),
     await formatTs(
       `
       import type { OntologyDefinition } from "@osdk/api";
-      ${
-        objectNames.map((name) =>
-          `import {${name}} from "./objects/${name}${importExt}";`
-        )
-          .join("\n")
-      }
+      import * as Actions from "./ontology/actions/index${importExt}";
+      import * as Objects from "./ontology/objects/index${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
-      export const Ontology = {
+      const _Ontology = {
         metadata: OntologyMetadata,
         objects: {
           ${
-        objectNames.map((name) => `${name}: ${name},`)
-          .join("\n")
+        objectNames.map((objectName) => {
+          return `${objectName}: Objects.${objectName}`;
+        }).join(",\n")
+      }
+          
+        },
+        actions: {
+          ${
+        actionNames.map((actionName) => {
+          return `${actionName}: Actions.${actionName}`;
+        }).join(",\n")
       }
         },
-        actions: {},
-        queries: {},
+        queries: {
+          // TODO
+        },
       } satisfies OntologyDefinition<${
         objectNames.map(n => `"${n}"`).join("|")
       }>;
+
+      type _Ontology = typeof _Ontology;
+      export interface Ontology extends _Ontology {}
+      export const Ontology = _Ontology as Ontology;
     `,
     ),
   );
 
-  await fs.mkdir(path.join(outDir, "objects"), { recursive: true });
+  await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const name of objectNames) {
     const obj = ontology.objectTypes[name];
 
     await fs.writeFile(
-      path.join(outDir, `objects`, `${name}.ts`),
+      path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
     
       import type { ObjectTypeDefinition } from "@osdk/api";
@@ -99,8 +112,17 @@ export async function generateClientSdkVersionTwoPointZero(
     );
   }
 
+  const actionsDir = path.join(outDir, "ontology", "actions");
+  await fs.mkdir(actionsDir, { recursive: true });
+  await generatePerActionDataFiles(
+    sanitizedOntology,
+    fs,
+    actionsDir,
+    importExt,
+  );
+
   await fs.writeFile(
-    path.join(outDir, "objects", "index.ts"),
+    path.join(outDir, "ontology", "objects", "index.ts"),
     await formatTs(`
     ${
       Object.keys(ontology.objectTypes).map(apiName =>

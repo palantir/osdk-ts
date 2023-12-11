@@ -37,10 +37,10 @@ describe("generator", () => {
     expect(files).toMatchObject({
       [`${BASE_PATH}/index.ts`]: expect.anything(),
       [`${BASE_PATH}/Ontology.ts`]: expect.anything(),
-      [`${BASE_PATH}/objects/Todo.ts`]: expect.anything(),
+      [`${BASE_PATH}/ontology/objects/Todo.ts`]: expect.anything(),
     });
 
-    helper.dumpFilesToConsole();
+    // helper.dumpFilesToConsole();
 
     const diagnostics = compileThis(helper.getFiles(), BASE_PATH);
     for (const q of diagnostics) {

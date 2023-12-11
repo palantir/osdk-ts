@@ -14,7 +14,8 @@
     },
 
     "dev:transpile": {
-      "cache": false
+      "cache": false,
+      "dependsOn": ["codegen"]
     },
 
     "//#dev:typecheck": {
