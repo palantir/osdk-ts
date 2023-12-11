@@ -1,5 +1,11 @@
 # @osdk/client
 
+## 0.1.0
+
+### Minor Changes
+
+- 6d81f7f: Add priliminary action support to v2
+
 ## 0.0.11
 
 ### Patch Changes
