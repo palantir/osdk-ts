@@ -54,8 +54,17 @@ export function createClient<O extends OntologyDefinition<any>>(
           rid: string,
         ) => {
           return createObjectSet(objectType as K & string, clientCtx, {}, {
-            type: "reference",
-            reference: rid,
+            type: "intersect",
+            objectSets: [
+              {
+                type: "base",
+                objectType: objectType as K & string,
+              },
+              {
+                type: "reference",
+                reference: rid,
+              },
+            ],
           });
         },
       },
