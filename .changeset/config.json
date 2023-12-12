@@ -7,7 +7,16 @@
   "access": "restricted",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@osdk/examples.basic.sdk", "@osdk/examples.basic.cli"],
+  "ignore": [
+    "@osdk/examples.basic.cli",
+    "@osdk/examples.basic.sdk",
+    "@osdk/examples.one.dot.one",
+    "@osdk/examples.todoapp",
+    "@osdk/tests.verify-fallback-package",
+    "eslint-config-sane",
+    "mytsup",
+    "tsconfig"
+  ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
     "useCalculatedVersion": true
