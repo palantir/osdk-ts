@@ -1,5 +1,16 @@
 # @osdk/cli
 
+## 0.0.16
+
+### Patch Changes
+
+- b07ff14: CLI can now request ontology data directly from the backend
+- Updated dependencies [b07ff14]
+  - @osdk/shared.net@1.0.1
+  - @osdk/generator@1.0.1
+  - @osdk/gateway@1.0.1
+  - @osdk/api@1.0.1
+
 ## 0.0.15
 
 ### Patch Changes
