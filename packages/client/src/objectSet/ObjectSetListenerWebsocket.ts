@@ -36,7 +36,11 @@ import type {
   StreamMessage,
   StreamMessage_objectSetChanged,
 } from "../generated/object-set-watcher/StreamMessage.js";
-import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
+import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
+import {
+  loadAllOntologies,
+  loadOntologyEntities,
+} from "../generated/ontology-metadata/api/OntologyMetadataService.js";
 import type { Wire } from "../internal/net/index.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
@@ -431,7 +435,7 @@ async function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 >(
-  client: ClientContext<any>,
+  client: ClientContext<O>,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
 ): Promise<Array<OsdkObjectFrom<K, O>>> {
@@ -439,6 +443,7 @@ async function convertFoundryToOsdkObjects<
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
         ctx,
+        client.ontology.metadata.ontologyRid,
         object.type,
       );
       const convertedObject: OntologyObjectV2 = Object.fromEntries([
@@ -485,7 +490,7 @@ const objectTypeMapping = new WeakMap<
 const objectApiNameToRid = new Map<string, string>();
 
 async function getOntologyPropertyMappingForApiName(
-  client: ClientContext<any>,
+  client: ClientContext<OntologyDefinition<any>>,
   ctx: ConjureContext,
   objectApiName: string,
 ) {
@@ -501,11 +506,30 @@ async function getOntologyPropertyMappingForApiName(
     objectApiName,
   );
 
-  return getOntologyPropertyMappingForRid(ctx, wireObjectType.rid);
+  return getOntologyPropertyMappingForRid(
+    ctx,
+    client.ontology.metadata.ontologyRid,
+    wireObjectType.rid,
+  );
+}
+
+let cachedAllOntologies: LoadAllOntologiesResponse | undefined;
+async function getOntologyVersionForRid(
+  ctx: ConjureContext,
+  ontologyRid: string,
+) {
+  cachedAllOntologies ??= await loadAllOntologies(ctx, {});
+  invariant(
+    cachedAllOntologies.ontologies[ontologyRid],
+    "ontology should be loaded",
+  );
+
+  return cachedAllOntologies.ontologies[ontologyRid].currentOntologyVersion;
 }
 
 async function getOntologyPropertyMappingForRid(
   ctx: ConjureContext,
+  ontologyRid: string,
   objectRid: string,
 ) {
   if (!objectTypeMapping.has(ctx)) {
@@ -515,10 +539,12 @@ async function getOntologyPropertyMappingForRid(
   if (
     !objectTypeMapping.get(ctx)!.has(objectRid)
   ) {
+    const ontologyVersion = await getOntologyVersionForRid(ctx, ontologyRid);
+
     const body = {
       objectTypeVersions: {
         // TODO: Undefined drops this in the body
-        [objectRid]: "0000000a-0692-bbe3-af23-ddbb6c020392",
+        [objectRid]: ontologyVersion,
       },
       linkTypeVersions: {},
       loadRedacted: false,

@@ -22,7 +22,7 @@ export default async (options) => {
     silent: true,
     sourcemap: true,
     splitting: true,
-    minify: !options.watch,
+    minify: false, // !options.watch,
     onSuccess: () => {
       console.log("👍");
     },
