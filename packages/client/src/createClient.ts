@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { createClientContext } from "@osdk/shared.net";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
@@ -46,6 +46,18 @@ export function createClient<O extends OntologyDefinition<any>>(
       objects: { get: () => createObjectSetCreator(client) },
       actions: {
         get: () => createActionInvoker(clientCtx),
+      },
+      __UNSTABLE_preexistingObjectSet: {
+        get: () =>
+        <const K extends ObjectTypeKeysFrom<O>>(
+          objectType: K,
+          rid: string,
+        ) => {
+          return createObjectSet(objectType as K & string, clientCtx, {}, {
+            type: "reference",
+            reference: rid,
+          });
+        },
       },
     } satisfies Record<keyof Client<any>, PropertyDescriptor>,
   );
