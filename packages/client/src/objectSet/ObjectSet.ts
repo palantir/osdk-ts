@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinitionFrom,
   InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
   ObjectTypeDefinitionFrom,
@@ -80,7 +81,10 @@ export interface BaseObjectSet<
   // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
   where: (
-    clause: WhereClause<ObjectTypeDefinitionFrom<O, K>>,
+    clause: WhereClause<
+      K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
+        : ObjectTypeDefinitionFrom<O, K>
+    >,
   ) => ObjectSet<O, K>;
 
   pivotTo: <T extends LinkTypesFrom<O, K>>(
@@ -93,13 +97,16 @@ export interface BaseObjectSet<
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
+  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
 > {
-  $where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
+  $where?: WhereClause<
+    K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
+      : ObjectTypeDefinitionFrom<O, K>
+  >;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
-  K extends ObjectTypeKeysFrom<O>,
+  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
 >(
   type: K & string,
   opts?: ObjectSetOptions<O, K>,

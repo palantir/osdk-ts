@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectTypeDefinition,
   ObjectTypePropertyDefinition,
 } from "@osdk/api";
@@ -50,19 +51,27 @@ type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
   : NumberFilter; // FIXME we need to represent all types
 
-export interface AndWhereClause<T extends ObjectTypeDefinition<any, any>> {
+export interface AndWhereClause<
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
+> {
   $and: WhereClause<T>[];
 }
 
-export interface OrWhereClause<T extends ObjectTypeDefinition<any, any>> {
+export interface OrWhereClause<
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
+> {
   $or: WhereClause<T>[];
 }
 
-export interface NotWhereClause<T extends ObjectTypeDefinition<any, any>> {
+export interface NotWhereClause<
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
+> {
   $not: WhereClause<T>;
 }
 
-export type WhereClause<T extends ObjectTypeDefinition<any, any>> =
+export type WhereClause<
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
+> =
   | OrWhereClause<T>
   | AndWhereClause<T>
   | NotWhereClause<T>
