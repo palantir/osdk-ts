@@ -52,6 +52,12 @@ export const command: CommandModule<
             conflicts: "ontologyPath",
             implies: "stack",
           },
+          ontologyWritePath: {
+            description: "path to write the ontology wire json",
+            type: "string",
+            demandOption: false,
+            conflicts: ["ontologyPath"],
+          },
           beta: {
             type: "boolean",
             description: "Should generate beta sdk",
@@ -65,7 +71,10 @@ export const command: CommandModule<
       ).group(
         ["ontologyPath", "outDir"],
         "Generate from a local file",
-      ).group(["stack", "clientId", "outDir"], "OR Generate from a stack")
+      ).group(
+        ["stack", "clientId", "outDir", "ontologyWritePath"],
+        "OR Generate from a stack",
+      )
       .check(
         (argv) => {
           if (argv.ontologyPath || argv.stack) {

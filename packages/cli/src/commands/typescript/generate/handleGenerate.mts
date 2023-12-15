@@ -49,7 +49,9 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
-  const { stack, clientId } = args as { stack: string; clientId: string };
+  const { stack, clientId, ontologyWritePath } = args as
+    & TypescriptGenerateArgs
+    & { stack: string; clientId: string };
 
   const token = await invokeLoginFlow({
     applicationId: clientId,
@@ -81,6 +83,10 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       createOpenApiRequest(stack, fetch),
       ontologies.data[0].apiName,
     );
+
+    if (ontologyWritePath) {
+      fs.writeFileSync(ontologyWritePath, JSON.stringify(ontology, null, 2));
+    }
 
     await generateClientSdk(ontology, args);
   } catch (e) {

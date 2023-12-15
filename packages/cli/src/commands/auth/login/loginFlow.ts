@@ -26,6 +26,8 @@ import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
 
+const BROWSER_PROMPT_TIME_MS = 60 * 1000;
+
 export default async function invokeLoginFlow(args: LoginArgs) {
   consola.start(`Authenticating using application id: ${args.applicationId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
@@ -73,8 +75,17 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     );
   }
 
+  // nag the user if we didn't get an auth token for a relatively long time
+  const browserPrompt = setTimeout(() => {
+    consola.warn(
+      `Still waiting for the authentication to complete. Please open a browser to ${authorizeUrl}`,
+    );
+  }, BROWSER_PROMPT_TIME_MS);
+
   const code = await authCode;
   server.close();
+
+  clearTimeout(browserPrompt);
 
   const token = await getTokenWithCodeVerifier(
     clientId,
@@ -179,7 +190,10 @@ async function getTokenWithCodeVerifier(
     return responseText;
   } catch (e) {
     throw new Error(
-      `Failed to get token: ${e ? e.toString() : "Unknown error"}`,
+      `Failed to get token: ${
+        (e as { cause?: any })?.cause?.toString() ?? e?.toString()
+          ?? "Unknown error"
+      }`,
     );
   }
 }
