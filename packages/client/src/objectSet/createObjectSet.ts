@@ -15,10 +15,8 @@
  */
 
 import type {
-  InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
+  ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
@@ -39,7 +37,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   objectType: K & string,
   clientCtx: ClientContext<O>,
@@ -72,11 +70,12 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async <
-      L extends K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-        : ObjectTypePropertyKeysFrom<O, K>,
-    >(
-      args?: FetchPageOrThrowArgs<O, K, L>,
+    fetchPageOrThrow: async (
+      args?: FetchPageOrThrowArgs<
+        O,
+        K,
+        ObjectOrInterfacePropertyKeysFrom<O, K>
+      >,
     ) => {
       return fetchPageOrThrow(
         clientCtx,

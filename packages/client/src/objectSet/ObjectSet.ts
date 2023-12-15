@@ -15,12 +15,10 @@
  */
 
 import type {
-  InterfaceDefinitionFrom,
   InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
+  ObjectOrInterfaceDefinitionFrom,
+  ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
@@ -33,18 +31,15 @@ import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > = BaseObjectSet<O, K>;
 
 export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > {
   fetchPageOrThrow: <
-    L extends (
-      K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-        : ObjectTypePropertyKeysFrom<O, K>
-    ),
+    L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
   >(
     args?: FetchPageOrThrowArgs<O, K, L>,
   ) => Promise<
@@ -82,8 +77,7 @@ export interface BaseObjectSet<
 
   where: (
     clause: WhereClause<
-      K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
-        : ObjectTypeDefinitionFrom<O, K>
+      ObjectOrInterfaceDefinitionFrom<O, K>
     >,
   ) => ObjectSet<O, K>;
 
@@ -97,16 +91,13 @@ export interface BaseObjectSet<
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > {
-  $where?: WhereClause<
-    K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
-      : ObjectTypeDefinitionFrom<O, K>
-  >;
+  $where?: WhereClause<ObjectOrInterfaceDefinitionFrom<O, K>>;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
   opts?: ObjectSetOptions<O, K>,

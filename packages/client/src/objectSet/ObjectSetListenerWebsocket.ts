@@ -15,7 +15,7 @@
  */
 
 import type {
-  InterfaceKeysFrom,
+  ObjectOrInterfaceKeysFrom,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -118,7 +118,7 @@ export class ObjectSetListenerWebsocket<
     };
   }
 
-  subscribe<K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>>(
+  subscribe<K extends ObjectOrInterfaceKeysFrom<O>>(
     objectSet: Wire.ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): () => void {
