@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
@@ -26,7 +26,7 @@ import type {
 import type { Wire } from "../net/index.js";
 
 export function modernToLegacyWhereClause<
-  T extends ObjectTypeDefinition<any, any>,
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
 >(
   whereClause: WhereClause<T>,
 ): Wire.SearchJsonQueryV2 {

@@ -23,7 +23,7 @@ export type { PageResult } from "./PageResult.js";
 // FIXME: Should this be Objects or Object?
 export * as Objects from "./object/index.js";
 export type { OsdkObject } from "./OsdkObject.js";
-export type { OsdkObjectFrom } from "./OsdkObjectFrom.js";
+export type { OsdkInterfaceFrom, OsdkObjectFrom } from "./OsdkObjectFrom.js";
 
 export { createClientContext } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
