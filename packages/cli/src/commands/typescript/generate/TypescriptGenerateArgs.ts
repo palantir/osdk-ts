@@ -17,6 +17,7 @@
 export interface TypescriptGenerateArgs {
   outDir: string;
   ontologyPath?: string;
+  ontologyWritePath?: string;
   stack?: string;
   clientId?: string;
   beta?: boolean;
