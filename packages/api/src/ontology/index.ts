@@ -33,7 +33,9 @@ export type {
 } from "./InterfaceDefinition";
 export type {
   ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
 } from "./ObjectOrInterface";
 export type {
   ObjectTypeDefinition,

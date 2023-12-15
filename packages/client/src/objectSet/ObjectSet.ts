@@ -15,12 +15,10 @@
  */
 
 import type {
-  InterfaceDefinitionFrom,
   InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
+  ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
-  ObjectTypeDefinitionFrom,
-  ObjectTypePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
@@ -41,10 +39,7 @@ export interface BaseObjectSet<
   K extends ObjectOrInterfaceKeysFrom<O>,
 > {
   fetchPageOrThrow: <
-    L extends (
-      K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-        : ObjectTypePropertyKeysFrom<O, K>
-    ),
+    L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
   >(
     args?: FetchPageOrThrowArgs<O, K, L>,
   ) => Promise<
@@ -82,8 +77,7 @@ export interface BaseObjectSet<
 
   where: (
     clause: WhereClause<
-      K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
-        : ObjectTypeDefinitionFrom<O, K>
+      ObjectOrInterfaceDefinitionFrom<O, K>
     >,
   ) => ObjectSet<O, K>;
 
@@ -99,10 +93,7 @@ export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
 > {
-  $where?: WhereClause<
-    K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
-      : ObjectTypeDefinitionFrom<O, K>
-  >;
+  $where?: WhereClause<ObjectOrInterfaceDefinitionFrom<O, K>>;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <

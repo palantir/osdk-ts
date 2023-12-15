@@ -15,10 +15,8 @@
  */
 
 import type {
-  InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
   ObjectOrInterfaceKeysFrom,
-  ObjectTypePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
@@ -72,11 +70,12 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async <
-      L extends K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-        : ObjectTypePropertyKeysFrom<O, K>,
-    >(
-      args?: FetchPageOrThrowArgs<O, K, L>,
+    fetchPageOrThrow: async (
+      args?: FetchPageOrThrowArgs<
+        O,
+        K,
+        ObjectOrInterfacePropertyKeysFrom<O, K>
+      >,
     ) => {
       return fetchPageOrThrow(
         clientCtx,

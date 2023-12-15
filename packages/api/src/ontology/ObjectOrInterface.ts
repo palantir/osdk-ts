@@ -16,10 +16,17 @@
 
 import type {
   InterfaceDefinition,
+  InterfaceDefinitionFrom,
   InterfaceKeysFrom,
+  InterfacePropertyKeysFrom,
+} from "./InterfaceDefinition";
+import type {
   ObjectTypeDefinition,
+  ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,
-} from "..";
+  ObjectTypePropertyKeysFrom,
+} from "./ObjectTypeDefinition";
+
 import type { OntologyDefinition } from "./OntologyDefinition";
 
 export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
@@ -29,3 +36,15 @@ export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
 export type ObjectOrInterfaceDefinition<K extends string, L extends string> =
   | ObjectTypeDefinition<K, L>
   | InterfaceDefinition<K, L>;
+
+export type ObjectOrInterfacePropertyKeysFrom<
+  O extends OntologyDefinition<any, any>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
+> = K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
+  : ObjectTypePropertyKeysFrom<O, K>;
+
+export type ObjectOrInterfaceDefinitionFrom<
+  O extends OntologyDefinition<any, any>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
+> = K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
+  : ObjectTypeDefinitionFrom<O, K>;

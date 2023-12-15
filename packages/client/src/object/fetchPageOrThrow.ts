@@ -15,10 +15,8 @@
  */
 
 import type {
-  InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
   ObjectOrInterfaceKeysFrom,
-  ObjectTypePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
@@ -34,8 +32,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
-  L extends K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-    : ObjectTypePropertyKeysFrom<O, K>,
+  L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
 > {
   select?: readonly L[];
   nextPageToken?: string;
@@ -47,8 +44,7 @@ export async function fetchPageOrThrow<
   const A extends FetchPageOrThrowArgs<
     O,
     T,
-    T extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, T>
-      : ObjectTypePropertyKeysFrom<O, T>
+    ObjectOrInterfacePropertyKeysFrom<O, T>
   >,
 >(
   client: ClientContext<O>,
@@ -65,8 +61,7 @@ export async function fetchPageOrThrow<
         T,
         O,
         A["select"] extends readonly string[] ? A["select"][number]
-          : T extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, T>
-          : ObjectTypePropertyKeysFrom<O, T>
+          : ObjectOrInterfacePropertyKeysFrom<O, T>
       >
     >
   >

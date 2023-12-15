@@ -32,7 +32,9 @@ export type {
 } from "./ontology/InterfaceDefinition";
 export type {
   ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom,
 } from "./ontology/ObjectOrInterface";
 export type {
   ObjectTypeDefinition,
