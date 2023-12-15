@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceKeysFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { Client } from "./Client.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 
@@ -26,7 +22,7 @@ import type { ObjectSet } from "./objectSet/ObjectSet.js";
  * A type that creates an object set for each object in the ontology.
  */
 export type ObjectSetCreator<D extends OntologyDefinition<any>> = {
-  [T in ObjectTypeKeysFrom<D> | InterfaceKeysFrom<D>]: ObjectSet<D, T>;
+  [T in ObjectOrInterfaceKeysFrom<D>]: ObjectSet<D, T>;
 };
 
 /**

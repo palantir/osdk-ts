@@ -17,7 +17,7 @@
 import type {
   InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
-  ObjectTypeKeysFrom,
+  ObjectOrInterfaceKeysFrom,
   ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -33,7 +33,7 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
   L extends K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
     : ObjectTypePropertyKeysFrom<O, K>,
 > {
@@ -43,7 +43,7 @@ export interface FetchPageOrThrowArgs<
 
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  T extends ObjectOrInterfaceKeysFrom<O>,
   const A extends FetchPageOrThrowArgs<
     O,
     T,

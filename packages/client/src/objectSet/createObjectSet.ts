@@ -17,7 +17,7 @@
 import type {
   InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
-  ObjectTypeKeysFrom,
+  ObjectOrInterfaceKeysFrom,
   ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -39,7 +39,7 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   objectType: K & string,
   clientCtx: ClientContext<O>,

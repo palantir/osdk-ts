@@ -18,8 +18,8 @@ import type {
   InterfaceDefinitionFrom,
   InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
+  ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -33,12 +33,12 @@ import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
   O extends OntologyDefinition<string>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > = BaseObjectSet<O, K>;
 
 export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > {
   fetchPageOrThrow: <
     L extends (
@@ -97,7 +97,7 @@ export interface BaseObjectSet<
 
 export interface ObjectSetOptions<
   O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 > {
   $where?: WhereClause<
     K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
@@ -106,7 +106,7 @@ export interface ObjectSetOptions<
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
-  K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
   opts?: ObjectSetOptions<O, K>,

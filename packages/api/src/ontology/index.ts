@@ -32,6 +32,10 @@ export type {
   InterfacePropertyKeysFrom,
 } from "./InterfaceDefinition";
 export type {
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfaceKeysFrom,
+} from "./ObjectOrInterface";
+export type {
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom as ObjectTypeKeysFrom,

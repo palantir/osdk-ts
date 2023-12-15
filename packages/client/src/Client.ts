@@ -15,7 +15,7 @@
  */
 
 import type {
-  InterfaceKeysFrom,
+  ObjectOrInterfaceKeysFrom,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -29,7 +29,7 @@ export type ConcreteObjectType<
 > = O["objects"][K];
 
 export interface Client<O extends OntologyDefinition<any>> {
-  objectSet: <const K extends ObjectTypeKeysFrom<O> | InterfaceKeysFrom<O>>(
+  objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
     opts?: ObjectSetOptions<O, K>,
   ) => ObjectSet<O, K>;
