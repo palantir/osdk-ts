@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The status of a Transaction.
+ */
 export type TransactionStatus = "ABORTED" | "COMMITTED" | "OPEN";

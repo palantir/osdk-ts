@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * The parameter value must match a predefined regular expression.
+ */
 export interface StringRegexMatch {
   /** The regular expression configured in the **Ontology Manager**. */
   regex: string;

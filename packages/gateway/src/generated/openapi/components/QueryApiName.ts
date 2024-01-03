@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The name of the Query in the API.
+ */
 export type QueryApiName = string;

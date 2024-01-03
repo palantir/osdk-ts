@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * A time and value pair.
+ */
 export interface TimeSeriesPoint {
   /** An ISO 8601 timestamp */
   time: string;

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * Duration groupBy value is invalid.
+ */
 export interface InvalidDurationGroupByValue {
   errorCode: "INVALID_ARGUMENT";
   errorName: "InvalidDurationGroupByValue";

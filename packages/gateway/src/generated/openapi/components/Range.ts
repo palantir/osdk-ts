@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * The parameter value must be within the defined range.
+ */
 export interface Range {
   /** Less than */
   lt?: any;

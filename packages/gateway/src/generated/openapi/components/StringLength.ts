@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/**
+ * The parameter value must have a length within the defined range.
+ * *This range is always inclusive.*
+ */
 export interface StringLength {
   /** Less than */
   lt?: any;

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** The provided value for a user id must be a UUID. */
 export interface InvalidUserId {
   errorCode: "INVALID_ARGUMENT";
   errorName: "InvalidUserId";
