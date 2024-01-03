@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 export interface GenerateOptions {
-    generateVisitors: boolean;
+  generateVisitors: boolean;
 }

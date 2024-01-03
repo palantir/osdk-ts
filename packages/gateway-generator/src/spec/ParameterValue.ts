@@ -18,7 +18,7 @@ import type { Documentation, Safety } from "./Common";
 import type { DataType } from "./DataTypes";
 
 export interface ParameterValue {
-    type: DataType;
-    safety: Safety;
-    documentation: Documentation;
+  type: DataType;
+  safety: Safety;
+  documentation: Documentation;
 }

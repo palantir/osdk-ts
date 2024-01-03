@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-
 export type Safety = "SAFE" | "UNSAFE";
 
 export interface Documentation {
-    description?: string;
-    plainTextDescription?: string;
-    example?: Example;
+  description?: string;
+  plainTextDescription?: string;
+  example?: Example;
 }
 
 export interface Example {
-    type: "example";
-    example: Record<string, any> | any;
+  type: "example";
+  example: Record<string, any> | any;
 }

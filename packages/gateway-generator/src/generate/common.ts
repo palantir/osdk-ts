@@ -14,41 +14,47 @@
  * limitations under the License.
  */
 
-
 import type { Documentation } from "../spec";
 
-export type TypeUnionVisitor<T extends { type: string }, R> = {
+export type TypeUnionVisitor<T extends { type: string }, R> =
+  & {
     [K in T["type"] as K]: (type: Extract<T, { type: K }>) => R;
-} & {
+  }
+  & {
     unknown: (type: { type: string }) => R;
-};
+  };
 
-export function visitTypeUnion<T extends { type: string }, R>(value: T, visitor: TypeUnionVisitor<T, R>): R {
-    if (value.type in visitor) {
-        return (visitor as any)[value.type](value);
-    }
-    return visitor.unknown(value);
+export function visitTypeUnion<T extends { type: string }, R>(
+  value: T,
+  visitor: TypeUnionVisitor<T, R>,
+): R {
+  if (value.type in visitor) {
+    return (visitor as any)[value.type](value);
+  }
+  return visitor.unknown(value);
 }
 
 export function generateDocumentation(documentation: Documentation) {
-    if (Object.keys(documentation).length === 0) {
-        return "";
-    }
-    let documentationCode = "/**\n";
-    if (documentation.description) {
-        documentationCode += `* ${documentation.description}\n`;
-    }
-    if (documentation.example) {
-        documentationCode += `* @Example: ${JSON.stringify(documentation.example.example)}\n`;
-    }
-    documentationCode += "*/\n";
-    return documentationCode;
+  if (Object.keys(documentation).length === 0) {
+    return "";
+  }
+  let documentationCode = "/**\n";
+  if (documentation.description) {
+    documentationCode += `* ${documentation.description}\n`;
+  }
+  if (documentation.example) {
+    documentationCode += `* @Example: ${
+      JSON.stringify(documentation.example.example)
+    }\n`;
+  }
+  documentationCode += "*/\n";
+  return documentationCode;
 }
 
 export function shouldSanitizePameterName(parameterName: string): boolean {
-    return parameterName.includes("-");
+  return parameterName.includes("-");
 }
 
 export function sanitizeParameterName(parameterName: string): string {
-    return parameterName.replace(/-/g, "_");
+  return parameterName.replace(/-/g, "_");
 }

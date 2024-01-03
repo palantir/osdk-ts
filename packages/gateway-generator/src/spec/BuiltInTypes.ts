@@ -14,59 +14,58 @@
  * limitations under the License.
  */
 
-
 export interface StringType {
-    type: "string";
-    string: {};
+  type: "string";
+  string: {};
 }
 
 export interface RidType {
-    type: "rid";
-    rid: {};
+  type: "rid";
+  rid: {};
 }
 
 export interface DateTimeType {
-    type: "datetime";
-    datetime: {};
+  type: "datetime";
+  datetime: {};
 }
 
 export interface IntegerType {
-    type: "integer";
-    integer: {};
+  type: "integer";
+  integer: {};
 }
 
 export interface DoubleType {
-    type: "double";
-    double: {};
+  type: "double";
+  double: {};
 }
 
 export interface UUIDType {
-    type: "uuid";
-    uuid: {};
+  type: "uuid";
+  uuid: {};
 }
 
 export interface AnyType {
-    type: "any";
-    any: {};
+  type: "any";
+  any: {};
 }
 
 export interface BooleanType {
-    type: "boolean";
-    boolean: {};
+  type: "boolean";
+  boolean: {};
 }
 
 export interface LongType {
-    type: "long";
-    long: {};
+  type: "long";
+  long: {};
 }
 
 export type PrimitiveType =
-    | StringType
-    | RidType
-    | DateTimeType
-    | IntegerType
-    | BooleanType
-    | DoubleType
-    | UUIDType
-    | LongType
-    | AnyType;
+  | StringType
+  | RidType
+  | DateTimeType
+  | IntegerType
+  | BooleanType
+  | DoubleType
+  | UUIDType
+  | LongType
+  | AnyType;

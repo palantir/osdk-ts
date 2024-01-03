@@ -17,22 +17,22 @@
 import type { Project } from "ts-morph";
 
 export function generateRequestType(outputDir: string, project: Project) {
-    const directory = project.createDirectory(`${outputDir}/request`);
-    const sourceFile = directory.createSourceFile(`OpenApiRequest.ts`);
+  const directory = project.createDirectory(`${outputDir}/request`);
+  const sourceFile = directory.createSourceFile(`OpenApiRequest.ts`);
 
-    sourceFile.addTypeAlias({
-        name: "OpenApiRequest",
-        isExported: true,
-        typeParameters: [
-            {
-                name: "TExpectedResponse",
-            },
-            {
-                name: "TResponse",
-                default: "TExpectedResponse",
-            },
-        ],
-        type: `(
+  sourceFile.addTypeAlias({
+    name: "OpenApiRequest",
+    isExported: true,
+    typeParameters: [
+      {
+        name: "TExpectedResponse",
+      },
+      {
+        name: "TResponse",
+        default: "TExpectedResponse",
+      },
+    ],
+    type: `(
             method: string,
             endpointPath: string,
             data?: any,
@@ -41,5 +41,5 @@ export function generateRequestType(outputDir: string, project: Project) {
             requestMediaType?: string,
             responseMediaType?: string
         ) => Promise<TResponse>`,
-    });
+  });
 }

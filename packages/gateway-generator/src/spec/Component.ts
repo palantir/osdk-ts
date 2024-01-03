@@ -18,10 +18,10 @@ import type { Documentation, Safety } from "./Common";
 import type { DataType } from "./DataTypes";
 
 export interface Component {
-    name: string;
-    type: DataType;
-    safety: Safety;
-    documentation: Documentation;
-    namespace?: string;
-    nullable?: boolean;
+  name: string;
+  type: DataType;
+  safety: Safety;
+  documentation: Documentation;
+  namespace?: string;
+  nullable?: boolean;
 }

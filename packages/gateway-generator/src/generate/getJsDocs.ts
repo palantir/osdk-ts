@@ -14,39 +14,41 @@
  * limitations under the License.
  */
 
-import type { JSDocStructure} from "ts-morph";
+import type { JSDocStructure } from "ts-morph";
 import { StructureKind } from "ts-morph";
 import type { Documentation } from "../spec/Common";
 
 export function getJsDocs(documentation: Documentation): JSDocStructure[] {
-    if (!hasDocs(documentation)) {
-        return [];
-    }
+  if (!hasDocs(documentation)) {
+    return [];
+  }
 
-    const jsDocStructure: JSDocStructure = {
-        kind: StructureKind.JSDoc,
-        description: getDocs(documentation),
-    };
+  const jsDocStructure: JSDocStructure = {
+    kind: StructureKind.JSDoc,
+    description: getDocs(documentation),
+  };
 
-    return [jsDocStructure];
+  return [jsDocStructure];
 }
 
 export function hasDocs(documentation: Documentation): boolean {
-    const { description, plainTextDescription, example } = documentation;
+  const { description, plainTextDescription, example } = documentation;
 
-    return !!(description || plainTextDescription || example);
+  return !!(description || plainTextDescription || example);
 }
 
 export function getDocs(documentation: Documentation): string {
-    const { description, plainTextDescription, example } = documentation;
+  const { description, plainTextDescription, example } = documentation;
 
-    const formattedExample = example
-        ? `\n@example\n\`\`\`json\n${JSON.stringify(example.example, null, 2)}\n\`\`\``
-        : "";
+  const formattedExample = example
+    ? `\n@example\n\`\`\`json\n${
+      JSON.stringify(example.example, null, 2)
+    }\n\`\`\``
+    : "";
 
-    const formattedDescription = description || plainTextDescription || "";
+  const formattedDescription = description || plainTextDescription || "";
 
-    const jsDocDescription = `${formattedDescription}${formattedExample}`;
+  const jsDocDescription = `${formattedDescription}${formattedExample}`;
 
-    return jsDocDescription;
+  return jsDocDescription;
 }

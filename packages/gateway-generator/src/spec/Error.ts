@@ -18,9 +18,9 @@ import type { Documentation } from "./Common";
 import type { ParameterValue } from "./ParameterValue";
 
 export interface Error {
-    name: string;
-    errorType: string;
-    parameters: Record<string, ParameterValue>;
-    documentation: Documentation;
-    namespace?: string;
+  name: string;
+  errorType: string;
+  parameters: Record<string, ParameterValue>;
+  documentation: Documentation;
+  namespace?: string;
 }

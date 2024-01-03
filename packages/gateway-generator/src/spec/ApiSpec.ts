@@ -19,7 +19,7 @@ import type { Error } from "./Error";
 import type { Namespace } from "./Namespace";
 
 export interface ApiSpec {
-    components: Component[];
-    errors: Error[];
-    namespaces: Namespace[];
+  components: Component[];
+  errors: Error[];
+  namespaces: Namespace[];
 }

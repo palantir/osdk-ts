@@ -18,103 +18,103 @@ import type { PrimitiveType } from "./BuiltInTypes";
 import type { Documentation, Safety } from "./Common";
 
 export interface ObjectSpec {
-    properties: {
-        [key: string]: PropertySpec;
-    };
+  properties: {
+    [key: string]: PropertySpec;
+  };
 }
 
 export interface PropertySpec {
-    type: DataType;
-    safety: Safety;
-    documentation: Documentation;
+  type: DataType;
+  safety: Safety;
+  documentation: Documentation;
 }
 
 export interface ObjectType {
-    type: "object";
-    object: ObjectSpec;
+  type: "object";
+  object: ObjectSpec;
 }
 
 export interface BuiltInType {
-    type: "builtin";
-    builtin: PrimitiveType;
+  type: "builtin";
+  builtin: PrimitiveType;
 }
 
 export interface UnionType {
-    type: "union";
-    union: {
-        discriminator: string;
-        subTypes: {
-            [key: string]: string;
-        };
+  type: "union";
+  union: {
+    discriminator: string;
+    subTypes: {
+      [key: string]: string;
     };
+  };
 }
 
 export interface EnumType {
-    type: "enum";
-    enum: {
-        values: string[];
-    };
+  type: "enum";
+  enum: {
+    values: string[];
+  };
 }
 
 export interface BinaryType {
-    type: "binary";
-    binary: {
-        mediaType: string;
-    };
+  type: "binary";
+  binary: {
+    mediaType: string;
+  };
 }
 
 export interface AsyncOperationType {
-    type: "asyncOperation";
-    asyncOperation: {
-        operationType: string;
-        resultType: string;
-        stageType: string;
-    };
+  type: "asyncOperation";
+  asyncOperation: {
+    operationType: string;
+    resultType: string;
+    stageType: string;
+  };
 }
 
 export interface OptionalType {
-    type: "optional";
-    optional: {
-        subType: DataType;
-    };
+  type: "optional";
+  optional: {
+    subType: DataType;
+  };
 }
 
 export interface ListType {
-    type: "list";
-    list: {
-        subType: DataType;
-        minItems?: number;
-        maxItems?: number;
-    };
+  type: "list";
+  list: {
+    subType: DataType;
+    minItems?: number;
+    maxItems?: number;
+  };
 }
 
 export interface ReferenceType {
-    type: "reference";
-    reference: string;
+  type: "reference";
+  reference: string;
 }
 
 export interface MapType {
-    type: "map";
-    map: {
-        keyType: DataType;
-        valueType: DataType;
-    };
+  type: "map";
+  map: {
+    keyType: DataType;
+    valueType: DataType;
+  };
 }
 
 export interface ExternalType {
-    type: "external";
-    external: string;
+  type: "external";
+  external: string;
 }
 
 export type DataType =
-    | ObjectType
-    | BuiltInType
-    | ReferenceType
-    | ListType
-    | OptionalType
-    | UnionType
-    | EnumType
-    | MapType
-    | BinaryType
-    | ExternalType
-    | AsyncOperationType;
+  | ObjectType
+  | BuiltInType
+  | ReferenceType
+  | ListType
+  | OptionalType
+  | UnionType
+  | EnumType
+  | MapType
+  | BinaryType
+  | ExternalType
+  | AsyncOperationType;

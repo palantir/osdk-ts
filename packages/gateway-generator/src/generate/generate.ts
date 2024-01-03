@@ -25,55 +25,70 @@ import { generateNamespaces } from "./namespace";
 
 const dashRegex = /-(\w)/g;
 
-export async function generate(apiSpec: ApiSpec, outputDirectory: string, options: GenerateOptions) {
-    const project = new Project({
-        compilerOptions: {
-            declaration: true,
-        },
-    });
+export async function generate(
+  apiSpec: ApiSpec,
+  outputDirectory: string,
+  options: GenerateOptions,
+) {
+  const project = new Project({
+    compilerOptions: {
+      declaration: true,
+    },
+  });
 
-    generateComponents(apiSpec.components, outputDirectory, project, options);
-    generateErrors(apiSpec.errors, outputDirectory, project);
-    generateNamespaces(apiSpec.namespaces, outputDirectory, project);
-    generateRequestType(outputDirectory, project);
-    generateIndexFiles(project, outputDirectory);
-    project.addSourceFilesAtPaths(`${outputDirectory}/**/**`);
-    project.getSourceFiles().forEach(file => {
-        file.formatText();
-    });
+  generateComponents(apiSpec.components, outputDirectory, project, options);
+  generateErrors(apiSpec.errors, outputDirectory, project);
+  generateNamespaces(apiSpec.namespaces, outputDirectory, project);
+  generateRequestType(outputDirectory, project);
+  generateIndexFiles(project, outputDirectory);
+  project.addSourceFilesAtPaths(`${outputDirectory}/**/**`);
+  project.getSourceFiles().forEach(file => {
+    file.formatText();
+  });
 
-    await project.save();
+  await project.save();
 }
 
 function generateIndexFiles(project: Project, outDir: string) {
-    const moduleTypes: Map<string, string[]> = new Map();
-    project.getSourceFiles().forEach(file => {
-        const packageName = file.getDirectory().getBaseName();
-        const allTypes = (moduleTypes.get(packageName) || []).concat(file.getBaseNameWithoutExtension());
-        moduleTypes.set(packageName, allTypes);
+  const moduleTypes: Map<string, string[]> = new Map();
+  project.getSourceFiles().forEach(file => {
+    const packageName = file.getDirectory().getBaseName();
+    const allTypes = (moduleTypes.get(packageName) || []).concat(
+      file.getBaseNameWithoutExtension(),
+    );
+    moduleTypes.set(packageName, allTypes);
+  });
+
+  const rootIndex = project.createSourceFile(path.join(outDir, "index.ts"));
+  const moduleArray = Array.from(moduleTypes.entries());
+  const indexPromises = moduleArray.map(([packageName, types]) => {
+    const moduleIndex = project.createSourceFile(
+      path.join(outDir, packageName, "index.ts"),
+    );
+    moduleIndex.addExportDeclarations(
+      types.map(type => ({ moduleSpecifier: `./${type}` })),
+    );
+    return moduleIndex.save();
+  });
+
+  if (moduleArray.length === 1) {
+    rootIndex.addExportDeclaration({
+      moduleSpecifier: `./${moduleArray[0]![0]}`,
     });
-
-    const rootIndex = project.createSourceFile(path.join(outDir, "index.ts"));
-    const moduleArray = Array.from(moduleTypes.entries());
-    const indexPromises = moduleArray.map(([packageName, types]) => {
-        const moduleIndex = project.createSourceFile(path.join(outDir, packageName, "index.ts"));
-        moduleIndex.addExportDeclarations(types.map(type => ({ moduleSpecifier: `./${type}` })));
-        return moduleIndex.save();
+  } else {
+    moduleArray.forEach(([packageName, _types]) => {
+      const camelCaseModule = packageName.replace(
+        dashRegex,
+        x => x[1]!.toUpperCase(),
+      );
+      rootIndex.addImportDeclaration({
+        moduleSpecifier: `./${packageName}`,
+        namespaceImport: camelCaseModule,
+      });
+      rootIndex.addExportDeclaration({ namedExports: [camelCaseModule] });
     });
+  }
+  indexPromises.push(rootIndex.save());
 
-    if (moduleArray.length === 1) {
-        rootIndex.addExportDeclaration({ moduleSpecifier: `./${moduleArray[0]![0]}` });
-    } else {
-        moduleArray.forEach(([packageName, _types]) => {
-            const camelCaseModule = packageName.replace(dashRegex, x => x[1]!.toUpperCase());
-            rootIndex.addImportDeclaration({
-                moduleSpecifier: `./${packageName}`,
-                namespaceImport: camelCaseModule,
-            });
-            rootIndex.addExportDeclaration({ namedExports: [camelCaseModule] });
-        });
-    }
-    indexPromises.push(rootIndex.save());
-
-    return Promise.all(indexPromises);
+  return Promise.all(indexPromises);
 }

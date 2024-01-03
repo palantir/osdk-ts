@@ -21,73 +21,80 @@ import { generateDocumentation } from "./common";
 import { getDocs, getJsDocs } from "./getJsDocs";
 import { generateType } from "./types";
 
-export function generateErrors(errors: Error[], outputDir: string, project: Project) {
-    const directory = project.createDirectory(`${outputDir}/errors`);
-    errors.forEach(error => generateError(error, directory));
+export function generateErrors(
+  errors: Error[],
+  outputDir: string,
+  project: Project,
+) {
+  const directory = project.createDirectory(`${outputDir}/errors`);
+  errors.forEach(error => generateError(error, directory));
 }
 
 export function generateError(error: Error, directory: Directory) {
-    const sourceFile = directory.createSourceFile(`${error.name}.ts`);
+  const sourceFile = directory.createSourceFile(`${error.name}.ts`);
 
-    const referenceSet = new Set<string>();
-    const parameterCode = generateParameterMap(error.parameters, referenceSet);
+  const referenceSet = new Set<string>();
+  const parameterCode = generateParameterMap(error.parameters, referenceSet);
 
-    sourceFile.addInterface({
-        isExported: true,
-        docs: getJsDocs(error.documentation),
-        name: error.name,
-        properties: [
-            {
-                name: "errorCode",
-                type: `"${error.errorType}"`,
-            },
-            {
-                name: "errorName",
-                type: `"${error.name}"`,
-            },
-            {
-                name: "errorInstanceId",
-                type: "string",
-            },
-            {
-                name: "parameters",
-                type: parameterCode,
-            },
-        ],
-    });
+  sourceFile.addInterface({
+    isExported: true,
+    docs: getJsDocs(error.documentation),
+    name: error.name,
+    properties: [
+      {
+        name: "errorCode",
+        type: `"${error.errorType}"`,
+      },
+      {
+        name: "errorName",
+        type: `"${error.name}"`,
+      },
+      {
+        name: "errorInstanceId",
+        type: "string",
+      },
+      {
+        name: "parameters",
+        type: parameterCode,
+      },
+    ],
+  });
 
-    sourceFile.addImportDeclarations(
-        Array.from(referenceSet).map(reference => {
-            return {
-                moduleSpecifier: `../components/${reference}`,
-                namedImports: [reference],
-            };
-        }),
-    );
+  sourceFile.addImportDeclarations(
+    Array.from(referenceSet).map(reference => {
+      return {
+        moduleSpecifier: `../components/${reference}`,
+        namedImports: [reference],
+      };
+    }),
+  );
 }
 
-function generateParameterMap(parameters: Record<string, ParameterValue>, referenceSet: Set<string>): string {
-    const writer = new CodeBlockWriter();
+function generateParameterMap(
+  parameters: Record<string, ParameterValue>,
+  referenceSet: Set<string>,
+): string {
+  const writer = new CodeBlockWriter();
 
-    writer.block(() => {
-        Object.entries(parameters).forEach(([name, parameter], index) => {
-            const { type, documentation } = parameter;
-            const typeCode = generateType(type, referenceSet);
-            const documentationCode = generateDocumentation(documentation);
+  writer.block(() => {
+    Object.entries(parameters).forEach(([name, parameter], index) => {
+      const { type, documentation } = parameter;
+      const typeCode = generateType(type, referenceSet);
+      const documentationCode = generateDocumentation(documentation);
 
-            if (documentationCode !== "") {
-                writer.write(`//`);
-                writer.write(getDocs(documentation));
-                writer.newLine();
-            }
+      if (documentationCode !== "") {
+        writer.write(`//`);
+        writer.write(getDocs(documentation));
+        writer.newLine();
+      }
 
-            writer.write(`${name}: ${typeCode};`);
+      writer.write(`${name}: ${typeCode};`);
 
-            if (index < Object.entries(parameters).length - 1) {
-                writer.newLine();
-            }
-        });
+      if (index < Object.entries(parameters).length - 1) {
+        writer.newLine();
+      }
     });
+  });
 
-    return writer.toString();
+  return writer.toString();
 }
