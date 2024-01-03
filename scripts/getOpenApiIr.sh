@@ -6,8 +6,8 @@ set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 mkdir -p "${SCRIPT_DIR}/../tmp"
 
-BUILD_DIR="${SCRIPT_DIR}/build/tmp"
-DOWNLOAD_DIR="${BUILD_DIR}/downloaded-packages"
+BUILD_DIR="${SCRIPT_DIR}/../tmp"
+DOWNLOAD_DIR="${BUILD_DIR}/api-gateway-bundle"
 EXTRACT_DIR="${BUILD_DIR}/api-gateway-ir"
 
 MAVEN_CONJURE_GROUP_ID="com.palantir.foundry.api"

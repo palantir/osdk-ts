@@ -13,7 +13,7 @@ WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 "$SCRIPT_DIR/getOpenApiIr.sh"
 
 GATEWAY_GENERATOR="$SCRIPT_DIR/../packages/gateway-generator/bin/gateway-generator.cjs"
-OPENAPI_IR_JSON="${SCRIPT_DIR}/build/tmp/api-gateway-ir/openapi-ir.json"
+OPENAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/openapi-ir.json"
 
 PACKAGE_PATH="${SCRIPT_DIR}/../packages/gateway"
 OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated/openapi")
