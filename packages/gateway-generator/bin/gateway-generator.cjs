@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
@@ -14,6 +16,6 @@
  * limitations under the License.
  */
 
-export * from "./cli";
-export * from "./generate";
-export * from "./spec";
+// eslint-disable-next-line header/header
+const cli = require("../build/js/index.cjs");
+cli.cli();

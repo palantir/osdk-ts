@@ -23,7 +23,6 @@ export interface GenerateOpenApiArgs {
   /*
    * Positional arguments
    */
-
   inputFile: string;
   outputDir: string;
   generateVisitors: boolean;

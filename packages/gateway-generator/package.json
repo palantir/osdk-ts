@@ -39,7 +39,7 @@
   },
   "keywords": [],
   "bin": {
-    "gateway-generator": "./bin/gateway-generator.mjs"
+    "gateway-generator": "./bin/gateway-generator.cjs"
   },
   "files": [
     "build/types",

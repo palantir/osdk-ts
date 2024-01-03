@@ -5,6 +5,9 @@
     "outDir": "build/types",
     "composite": true
   },
-  "include": ["./src/**/*", ".eslintrc.cjs"],
+  "include": [
+    "./src/**/*",
+    ".eslintrc.cjs"
+  ],
   "references": []
 }
