@@ -26,8 +26,7 @@
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
-    "fetch-retry": "^5.0.6",
-    "tiny-invariant": "^1.3.1",
+    "ts-morph": "^19.0.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
