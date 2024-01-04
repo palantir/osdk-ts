@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** The given action request has multiple edits on the same object. */
 export interface ActionContainsDuplicateEdits {
   errorCode: "CONFLICT";
   errorName: "ActionContainsDuplicateEdits";

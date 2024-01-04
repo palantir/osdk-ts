@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** The page size to use for the endpoint. */
 export type PageSize = number;

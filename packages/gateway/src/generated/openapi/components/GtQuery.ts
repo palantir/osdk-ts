@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/** Returns objects where the specified field is greater than a value. */
 export interface GtQuery {
   field: string;
   /** Greater than value */

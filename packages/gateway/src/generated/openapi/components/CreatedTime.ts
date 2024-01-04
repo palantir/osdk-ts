@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The time at which the resource was created.
+ */
 export type CreatedTime = string;

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The format of an archive file.
+ */
 export type ArchiveFileFormat = "ZIP";

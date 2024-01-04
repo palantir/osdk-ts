@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * The specified query range filter is invalid.
+ */
 export interface InvalidRangeQuery {
   errorCode: "INVALID_ARGUMENT";
   errorName: "InvalidRangeQuery";

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * The parameter expects an array of values and the size of the array must fall within the defined range.
+ */
 export interface ArraySize {
   /** Less than */
   lt?: any;

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The unique resource identifier of a Function, useful for interacting with other Foundry APIs.
+ */
 export type FunctionRid = string;

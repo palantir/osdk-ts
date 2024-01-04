@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+/**
+ * The unique resource identifier of an object, useful for interacting with other Foundry APIs.
+ */
 export type ObjectRid = string;

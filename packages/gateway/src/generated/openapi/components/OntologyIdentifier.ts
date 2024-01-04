@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+/** Either an ontology rid or an ontology api name. */
 export type OntologyIdentifier = string;
