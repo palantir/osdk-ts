@@ -94,8 +94,7 @@ describe("Namespace", () => {
                             example: {
                               rid:
                                 "ri.foundry.main.dataset.c26f11c8-cdb3-4f44-9f5d-9816ea1c82da",
-                              path:
-                                "/Empyrean Airlines/My Important Project/My Dataset",
+                              path: "/My Important Project/My Dataset",
                             },
                           },
                         },
