@@ -26,6 +26,7 @@ import {
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import * as fs from "node:fs";
+import type {} from "@osdk/generator../../../../../generator/src/MinimalFs.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
@@ -98,31 +99,27 @@ async function generateClientSdk(
   ontology: WireOntologyDefinition,
   args: TypescriptGenerateArgs,
 ) {
+  const minimalFs = {
+    writeFile: (path: string, contents: string) => {
+      return fs.promises.writeFile(path, contents, "utf-8");
+    },
+    mkdir: async (path: string, options?: { recursive: boolean }) => {
+      await fs.promises.mkdir(path, options);
+    },
+    readdir: async (path: string) => fs.promises.readdir(path),
+  };
+
   if (args.beta) {
     await generateClientSdkVersionTwoPointZero(
       ontology,
-      {
-        writeFile: (path, contents) => {
-          return fs.promises.writeFile(path, contents, "utf-8");
-        },
-        mkdir: async (path, options) => {
-          await fs.promises.mkdir(path, options);
-        },
-      },
+      minimalFs,
       args.outDir,
       args.packageType,
     );
   } else {
     await generateClientSdkVersionOneDotOne(
       ontology,
-      {
-        writeFile: (path, contents) => {
-          return fs.promises.writeFile(path, contents, "utf-8");
-        },
-        mkdir: async (path, options) => {
-          await fs.promises.mkdir(path, options);
-        },
-      },
+      minimalFs,
       args.outDir,
       args.packageType,
     );

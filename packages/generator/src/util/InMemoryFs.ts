@@ -30,5 +30,8 @@ export function createInMemoryFs(): InMemoryFs {
     },
     getFiles: () => files,
     getFile: (path) => files[path],
+    readdir: async (path) => {
+      throw new Error("not implemented");
+    },
   };
 }
