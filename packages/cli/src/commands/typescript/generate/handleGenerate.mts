@@ -26,7 +26,6 @@ import {
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import * as fs from "node:fs";
-import type {} from "@osdk/generator../../../../../generator/src/MinimalFs.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
