@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 1.0.2
+
+### Patch Changes
+
+- c51fc4a9: Block OSDK generation into directories that don't exist or are empty
+- 0b51485b: OSDK generation now works correctly on ontologies that have 0 objects/actions/queries
+
 ## 1.0.1
 
 ### Patch Changes
