@@ -35,7 +35,7 @@ export const Ontology: {
     completeTodo,
   },
   queries: {},
-} satisfies OntologyDefinition<'Todo', 'createTodo' | 'completeTodo'>;
+} satisfies OntologyDefinition<'Todo', 'createTodo' | 'completeTodo', never>;
 
 export interface Ontology extends ClientOntology<typeof Ontology> {
   objects: Objects;

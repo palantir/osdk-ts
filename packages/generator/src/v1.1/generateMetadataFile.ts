@@ -123,16 +123,19 @@ export async function generateMetadataFile(
     queries: {
         ${commaSeparatedIdentifiers(queryNames, queryAltNames)}
     }
-  } satisfies OntologyDefinition<${objectNames.map(n => `"${n}"`).join("|")}, ${
-      Object.values(ontology.actionTypes).map(actionType =>
-        `"${actionType.apiName}"`
-      ).join(
-        "|",
+  } satisfies OntologyDefinition<
+      ${stringUnionFrom(objectNames)},
+      ${
+      stringUnionFrom(
+        Object.values(ontology.actionTypes).map(actionType =>
+          actionType.apiName
+        ),
       )
-    }, ${
-      Object.values(ontology.queryTypes).map(queryType =>
-        `"${queryType.apiName}"`
-      ).join("|")
+    },
+      ${
+      stringUnionFrom(
+        Object.values(ontology.queryTypes).map(queryType => queryType.apiName),
+      )
     }>;
     
 export interface Ontology extends ClientOntology<typeof Ontology> {
@@ -141,4 +144,11 @@ export interface Ontology extends ClientOntology<typeof Ontology> {
     queries: Queries;
 }`),
   );
+}
+
+function stringUnionFrom(values: readonly string[]) {
+  if (values.length === 0) {
+    return "never";
+  }
+  return values.map(n => `"${n}"`).join("|");
 }
