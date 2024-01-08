@@ -94,9 +94,7 @@ export async function generateClientSdkVersionTwoPointZero(
       }
               
         }
-      } satisfies OntologyDefinition<${
-        objectNames.map(n => `"${n}"`).join("|")
-      }>;
+      } satisfies OntologyDefinition<${stringUnionFrom(objectNames)}>;
 
       type _Ontology = typeof _Ontology;
       export interface Ontology extends _Ontology {}
@@ -155,6 +153,14 @@ export async function generateClientSdkVersionTwoPointZero(
     }
     `),
   );
+}
+
+function stringUnionFrom(values: ReadonlyArray<string>) {
+  if (values.length === 0) {
+    return "never";
+  } else {
+    return values.map(v => `"${v}"`).join("|");
+  }
 }
 
 /** @internal */
