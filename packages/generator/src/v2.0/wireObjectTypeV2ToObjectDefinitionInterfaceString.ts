@@ -24,7 +24,8 @@ export function wireObjectTypeV2ToObjectDefinitionInterfaceString(
       apiName: "${input.apiName}";
       properties: {
         ${
-    Object.entries(input.properties).map(([key, value]) => `
+    Object.entries(input.properties).sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([key, value]) => `
       /**
        * ${value.description ?? ""}
        **/

@@ -35,7 +35,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
       await fs.writeFile(
         path.join(outDir, `${object.objectType.apiName}.ts`),
         await formatTs(`
-        import { ObjectTypeDefinition } from "@osdk/api";
+        import type { ObjectTypeDefinition } from "@osdk/api";
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,

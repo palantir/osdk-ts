@@ -46,7 +46,9 @@ ${
     )
   };
 ${
-    Object.entries(objectTypeWithLinks.objectType.properties).flatMap((
+    Object.entries(objectTypeWithLinks.objectType.properties).sort((a, b) =>
+      a[0].localeCompare(b[0])
+    ).flatMap((
       [propertyName, propertyDefinition],
     ) => {
       const propertyType = wirePropertyTypeV2ToTypeScriptType(
