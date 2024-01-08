@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.0.17
+
+### Patch Changes
+
+- c51fc4a9: Block OSDK generation into directories that don't exist or are empty
+- 0b51485b: OSDK generation now works correctly on ontologies that have 0 objects/actions/queries
+- Updated dependencies [c51fc4a9]
+- Updated dependencies [0b51485b]
+  - @osdk/generator@1.0.2
+
 ## 0.0.16
 
 ### Patch Changes
