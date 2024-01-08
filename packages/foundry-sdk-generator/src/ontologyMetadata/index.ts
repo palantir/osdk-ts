@@ -14,20 +14,4 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
-
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+export * from "./ontologyMetadataResolver";

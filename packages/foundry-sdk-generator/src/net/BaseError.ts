@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
+export interface BaseAPIError {
+  errorCode: string;
+  errorName: string;
+  errorInstanceId: string;
+  parameters: Record<string, any>;
+}
 
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+// These are the shape of the errors that come back from the API.
+export function isBaseApiError(error: any): error is BaseAPIError {
+  return (
+    error && typeof error === "object" && "errorCode" in error
+    && "errorName" in error && "errorInstanceId" in error
+  );
+}

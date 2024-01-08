@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
+import { defineConfig } from "tsup";
 
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options)
 );

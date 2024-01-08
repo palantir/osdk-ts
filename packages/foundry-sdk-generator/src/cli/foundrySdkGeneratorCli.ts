@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
+// eslint-disable-next-line import/no-named-as-default
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+import { GeneratePackageCommand } from "../generate";
 
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+export async function cli(args: string[] = process.argv) {
+  const base = yargs(hideBin(args))
+    .command(new GeneratePackageCommand())
+    .demandCommand()
+    .recommendCommands()
+    .strict()
+    .showHelpOnFail(true)
+    .help()
+    .version(process.env.npm_package_version!);
+
+  try {
+    return base.parseAsync();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.log(e);
+  }
+}

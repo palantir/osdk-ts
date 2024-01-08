@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { assertOkOrThrow } from "../../utils/helpers";
-import type { FoundryApiError, Page, Result } from "./generated/@myapp/dev-opi";
+import type { FoundryApiError, Page, Result } from "@osdk/legacy-client";
+import { expect } from "vitest";
 
 export type Pageable<T> = {
   page: (
@@ -40,7 +40,10 @@ export async function fetchPage<T, E extends FoundryApiError>(
     pageSize,
     pageToken,
   });
-  const page = assertOkOrThrow(result);
+  if (result.type === "error") {
+    throw new Error(result.error.message);
+  }
+  const page = result.value;
   return page;
 }
 

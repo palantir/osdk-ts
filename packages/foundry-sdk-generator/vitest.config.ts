@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
-
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+import { defineConfig } from "vitest/config";
+export default defineConfig({
+  test: {
+    globalSetup: ["./src/__e2e_tests__/testSetup.ts"],
+    alias: {
+      "consola": "./src/__e2e_tests__/consola.ts",
+    },
+  },
+});

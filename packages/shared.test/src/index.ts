@@ -15,4 +15,4 @@
  */
 
 export { apiServer } from "./setupServers";
-export * from "./stubs";
+export * as stubData from "./stubs";

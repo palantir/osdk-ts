@@ -11,13 +11,19 @@
   ],
   "references": [
     {
-      "path": "../cli"
+      "path": "../api"
     },
     {
       "path": "../gateway"
     },
     {
+      "path": "../generator"
+    },
+    {
       "path": "../legacy-client"
+    },
+    {
+      "path": "../shared.test"
     }
   ]
 }

@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
-
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+const consola = {
+  ...console,
+  // eslint-disable-next-line no-console
+  start: (message: string) => console.log(message),
+  // eslint-disable-next-line no-console
+  success: (message: string) => console.log(message),
+};
+export { consola };

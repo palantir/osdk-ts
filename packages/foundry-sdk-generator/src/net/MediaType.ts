@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import type { SetupServer } from "msw/node";
-import { setupServer } from "msw/node";
-import {
-  actionHandlers,
-  loadObjectsEndpoints,
-  multipassServerHandlers,
-  objectSetHandlers,
-  ontologyMetadataEndpoint,
-} from "./handlers";
-
-export const apiServer: SetupServer = setupServer(
-  ...loadObjectsEndpoints,
-  ...multipassServerHandlers,
-  ...objectSetHandlers,
-  ...actionHandlers,
-  ...ontologyMetadataEndpoint,
-);
+export enum MediaType {
+  APPLICATION_JSON = "application/json",
+  APPLICATION_OCTET_STREAM = "application/octet-stream",
+  APPLICATION_X_WWW_FORM_URLENCODED = "application/x-www-form-urlencoded",
+  MULTIPART_FORM_DATA = "multipart/form-data",
+  TEXT_PLAIN = "text/plain",
+}
