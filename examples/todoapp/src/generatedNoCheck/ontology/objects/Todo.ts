@@ -1,4 +1,4 @@
-import { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 import type { OntologyObject } from '@osdk/legacy-client';
 
 /**
@@ -8,11 +8,11 @@ export interface Todo extends OntologyObject {
   readonly __apiName: 'Todo';
   readonly __primaryKey: string;
   readonly id: string | undefined;
+  readonly isComplete: boolean | undefined;
   /**
    * The text of the todo
    */
   readonly title: string | undefined;
-  readonly isComplete: boolean | undefined;
 }
 
 export const Todo = {
