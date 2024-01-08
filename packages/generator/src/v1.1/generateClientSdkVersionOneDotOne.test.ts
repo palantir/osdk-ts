@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { mkdir, rmdir, writeFile } from "fs/promises";
-import { describe, expect, test } from "vitest";
+import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
+import { describe, expect, test, vi } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
@@ -57,6 +57,39 @@ describe("generator", () => {
     expect(errors).toHaveLength(0);
   });
 
+  test("throws an error when target destination is not empty", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
+
+    expect(async () => {
+      await expect(generateClientSdkVersionOneDotOne(
+        TodoWireOntology,
+        helper.minimalFiles,
+        BASE_PATH,
+      )).rejects.toThrow();
+    });
+  });
+
+  test("does not throw an error when target destination does not exist", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+
+    // fs.promises.readdir throws an error with code ENOENT when you call readdir with a path that doesn't exist
+    helper.minimalFiles.readdir = vi.fn(async (_path: string) => {
+      throw { code: "ENOENT" };
+    });
+
+    await generateClientSdkVersionOneDotOne(
+      TodoWireOntology,
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    expect(helper.minimalFiles.writeFile).toBeCalled();
+  });
+
   test.skip("runs generator locally", async () => {
     try {
       await rmdir(`${__dirname}/generated`, { recursive: true });
@@ -72,6 +105,7 @@ describe("generator", () => {
         mkdir: async (path, options) => {
           await mkdir(path, options);
         },
+        readdir: async (path) => await readdir(path),
       },
       `${__dirname}/generated/`,
     );

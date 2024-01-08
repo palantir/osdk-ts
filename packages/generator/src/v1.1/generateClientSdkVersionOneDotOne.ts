@@ -17,6 +17,7 @@
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
+import { verifyOutdir } from "../util/verifyOutdir";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateActions } from "./generateActions";
 import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports";
@@ -41,6 +42,8 @@ export async function generateClientSdkVersionOneDotOne(
   const objectsDir = path.join(outDir, "ontology", "objects");
   const actionsDir = path.join(outDir, "ontology", "actions");
   const queriesDir = path.join(outDir, "ontology", "queries");
+
+  await verifyOutdir(outDir, fs);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir, importExt);
