@@ -31,7 +31,7 @@ export async function generateClientSdkVersionTwoPointZero(
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
 ) {
-  verifyOutdir(outDir, fs);
+  await verifyOutdir(outDir, fs);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
 

@@ -28,7 +28,7 @@ export async function verifyOutdir(outDir: string, fs: MinimalFs) {
     const contents = await fs.readdir(outDir);
     if (contents.length !== 0) {
       throw new Error(
-        "outDir is not empty, please delete its contents and try again",
+        `outDir ${outDir} is not empty, please delete its contents and try again`,
       );
     }
   } catch (e) {
