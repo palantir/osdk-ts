@@ -15,18 +15,18 @@
  */
 
 import { apiServer } from "@osdk/shared.test";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  ActionValidationResult,
+  ConfidentialClientAuth,
+  FoundryClient,
+} from "../generatedNoCheck/@test-app/osdk";
 import type {
   ActionError,
   ActionResponse,
   FoundryApiError,
   Result,
-} from "@test-app/osdk";
-import {
-  ActionValidationResult,
-  ConfidentialClientAuth,
-  FoundryClient,
-} from "@test-app/osdk";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+} from "../generatedNoCheck/@test-app/osdk";
 
 describe("test", () => {
   let client: FoundryClient<ConfidentialClientAuth>;
