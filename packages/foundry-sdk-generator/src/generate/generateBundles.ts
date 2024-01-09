@@ -34,8 +34,9 @@ async function createRollupBuild(
       resolve({
         browser: true,
         modulePaths: [
-          path.join(__dirname, "..", "node_modules"),
           path.join(__dirname, "..", "..", "..", "node_modules"),
+          path.join(__dirname, "..", "..", "node_modules"),
+          path.join(__dirname, "..", "node_modules"),
         ],
       }),
       commonjs({}),

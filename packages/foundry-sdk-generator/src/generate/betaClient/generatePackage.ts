@@ -68,13 +68,20 @@ export async function generatePackage(
   );
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
+
+  const nodeModulesPath = join(__dirname, "..", "..", "..", "node_modules");
+
   let bundleDts: string = "";
   try {
     bundleDts = await bundleDependencies(
       [
-        join(__dirname, "..", "node_modules", "@osdk", "legacy-client"),
-        join(__dirname, "..", "node_modules", "@osdk", "api"),
-        join(__dirname, "..", "node_modules", "@osdk", "gateway"),
+        join(
+          nodeModulesPath,
+          "@osdk",
+          "legacy-client",
+        ),
+        join(nodeModulesPath, "@osdk", "api"),
+        join(nodeModulesPath, "@osdk", "gateway"),
       ],
       options.packageName,
       compilerOutput.files,
