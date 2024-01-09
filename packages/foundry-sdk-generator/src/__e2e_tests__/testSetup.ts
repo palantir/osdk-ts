@@ -19,7 +19,7 @@ import { rmdir } from "fs/promises";
 import { join } from "path";
 import { GeneratePackageCommand } from "../generate";
 
-const dir = `${__dirname}/../../node_modules`;
+const dir = `${__dirname}/../generatedNoCheck/`;
 export async function setup() {
   apiServer.listen();
 
@@ -67,7 +67,7 @@ export async function setup() {
   const util = require("node:util");
   const exec = util.promisify(require("node:child_process").exec);
 
-  await exec("pnpm install", { cwd: join(dir, "@test-app/osdk") });
+  //  await exec("pnpm install", { cwd: join(dir, "@test-app/osdk") });
 }
 
 export async function teardown() {
