@@ -17,7 +17,7 @@
 import { apiServer } from "@osdk/shared.test";
 import { GeneratePackageCommand } from "../generate";
 
-const dir = `${__dirname}/generated`;
+const dir = `${__dirname}/../../node_modules/`;
 export async function setup() {
   apiServer.listen();
 
