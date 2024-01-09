@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [52ff84a8]
+- Updated dependencies [693478bd]
+  - @osdk/generator@1.0.3
+
 ## 0.0.17
 
 ### Patch Changes

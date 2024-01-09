@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 1.0.3
+
+### Patch Changes
+
+- 52ff84a8: Fix 2.0 OSDK generation for ontologies with no objects in them"
+- 693478bd: Alphabetize property names when generating object definitions
+
 ## 1.0.2
 
 ### Patch Changes
