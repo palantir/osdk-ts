@@ -63,6 +63,26 @@ function getTsconfigOptions(baseTsconfigPath) {
   };
 }
 
+function getTsconfigOptionsE2E(baseTsconfigPath) {
+  return {
+    file: "tsconfig.json",
+    template: {
+      extends: baseTsconfigPath,
+
+      compilerOptions: {
+        rootDir: "src",
+        outDir: "build/types",
+        composite: true,
+      },
+      include: ["./src/**/*", ".eslintrc.cjs"],
+      exclude: [
+        "./src/__e2e_tests__/**/**.test.ts",
+        "./src/generatedNoCheck/**/*",
+      ],
+    },
+  };
+}
+
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  */
@@ -70,7 +90,11 @@ function standardPackageRules(shared) {
   return [
     standardTsconfig({
       ...shared,
-      excludePackages: [...shared.excludePackages, "@osdk/examples.basic.**"],
+      excludePackages: [
+        ...shared.excludePackages,
+        "@osdk/examples.basic.**",
+        "@osdk/foundry-sdk-generator",
+      ],
       options: getTsconfigOptions("../../monorepo/tsconfig/tsconfig.base.json"),
     }),
     standardTsconfig({
@@ -80,7 +104,13 @@ function standardPackageRules(shared) {
         "../../../monorepo/tsconfig/tsconfig.base.json",
       ),
     }),
-    // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
+    standardTsconfig({
+      ...shared,
+      includePackages: ["@osdk/foundry-sdk-generator"],
+      options: getTsconfigOptionsE2E(
+        "../../monorepo/tsconfig/tsconfig.base.json",
+      ),
+    }), // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
     // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
     requireDependency({
       ...shared,

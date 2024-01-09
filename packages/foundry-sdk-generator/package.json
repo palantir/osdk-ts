@@ -1,0 +1,65 @@
+{
+  "name": "@osdk/foundry-sdk-generator",
+  "version": "0.0.0",
+  "description": "",
+  "access": "public",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
+    },
+    "./*": {
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev:transpile": "tsup --watch",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --config ./vitest.config.ts",
+    "test:watch": "vitest",
+    "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "tsc-absolute --build"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:*",
+    "@osdk/gateway": "workspace:*",
+    "@osdk/generator": "workspace:*",
+    "@osdk/legacy-client": "workspace:*",
+    "@rollup/plugin-commonjs": "^25.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.1",
+    "consola": "^3.2.3",
+    "rollup": "^3.28.1",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "ts-morph": "^19.0.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@osdk/shared.test": "workspace:*",
+    "@types/yargs": "^17.0.29",
+    "typescript": "^5.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [],
+  "bin": {
+    "foundry-sdk-generator": "./bin/foundry-sdk-generator"
+  },
+  "files": [
+    "build/types",
+    "build/js",
+    "CHANGELOG.md",
+    "package.json",
+    "*.d.ts"
+  ],
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts"
+}
