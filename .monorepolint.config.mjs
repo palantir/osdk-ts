@@ -105,7 +105,7 @@ function standardPackageRules(shared) {
       ...shared,
       includePackages: ["@osdk/foundry-sdk-generator"],
       options: getTsconfigOptionsE2E(
-        "../../../monorepo/tsconfig/tsconfig.base.json",
+        "../../monorepo/tsconfig/tsconfig.base.json",
       ),
     }), // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
     // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
