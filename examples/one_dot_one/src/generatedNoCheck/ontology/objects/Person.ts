@@ -1,4 +1,4 @@
-import { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 import type { MultiLink, OntologyObject } from '@osdk/legacy-client';
 import type { Todo } from './Todo';
 

@@ -20,6 +20,7 @@ import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
+import { verifyOutdir } from "../util/verifyOutdir";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
 import type { __UNSTABLE_WireOntologyDefinitionV2 } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
@@ -30,6 +31,8 @@ export async function generateClientSdkVersionTwoPointZero(
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
 ) {
+  await verifyOutdir(outDir, fs);
+
   const sanitizedOntology = sanitizeMetadata(ontology);
 
   const objectNames = Object.keys(sanitizedOntology.objectTypes);
@@ -91,9 +94,7 @@ export async function generateClientSdkVersionTwoPointZero(
       }
               
         }
-      } satisfies OntologyDefinition<${
-        objectNames.map(n => `"${n}"`).join("|")
-      }>;
+      } satisfies OntologyDefinition<${stringUnionFrom(objectNames)}>;
 
       type _Ontology = typeof _Ontology;
       export interface Ontology extends _Ontology {}
@@ -152,6 +153,14 @@ export async function generateClientSdkVersionTwoPointZero(
     }
     `),
   );
+}
+
+function stringUnionFrom(values: ReadonlyArray<string>) {
+  if (values.length === 0) {
+    return "never";
+  } else {
+    return values.map(v => `"${v}"`).join("|");
+  }
 }
 
 /** @internal */

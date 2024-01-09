@@ -36,12 +36,12 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       export interface Todo extends OntologyObject {
         readonly __apiName: 'Todo';
         readonly __primaryKey: number;
-        readonly id: number | undefined;
         /**
          * The text of the todo
          */
         readonly body: string | undefined;
         readonly complete: boolean | undefined;
+        readonly id: number | undefined;
         readonly Assignee: SingleLink<Person>;
       }
       "

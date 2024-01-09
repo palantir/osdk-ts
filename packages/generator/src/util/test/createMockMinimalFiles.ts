@@ -15,7 +15,7 @@
  */
 
 import { vi } from "vitest";
-import type { WriteFileFn } from "../../MinimalFs";
+import type { ReaddirFn, WriteFileFn } from "../../MinimalFs";
 
 export function createMockMinimalFiles() {
   const writeFile = vi.fn<Parameters<WriteFileFn>, ReturnType<WriteFileFn>>(
@@ -23,10 +23,16 @@ export function createMockMinimalFiles() {
   );
   const getFiles = () => Object.fromEntries(writeFile.mock.calls);
 
+  const readdir = vi.fn<
+    Parameters<ReaddirFn>,
+    ReturnType<ReaddirFn>
+  >(() => Promise.resolve([]));
+
   return {
     minimalFiles: {
       writeFile: writeFile as WriteFileFn,
       mkdir: () => Promise.resolve(),
+      readdir: readdir as ReaddirFn,
     },
     getFiles,
     dumpFilesToConsole: () => {

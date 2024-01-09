@@ -30,22 +30,31 @@ import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 export default async function handleGenerate(args: TypescriptGenerateArgs) {
+  let success = false;
   if (args.ontologyPath) {
-    await generateFromLocalFile(args);
+    success = await generateFromLocalFile(args);
   } else if (args.stack && args.clientId) {
-    await generateFromStack(args);
+    success = await generateFromStack(args);
   } else {
     throw new Error("Must have specified ontologyPath or stack and clientId");
   }
 
-  consola.info("OSDK Generated!");
+  if (success) {
+    consola.info("OSDK Generated!");
+  }
 }
 
 async function generateFromLocalFile(args: TypescriptGenerateArgs) {
+  if (!fs.existsSync(args.ontologyPath!)) {
+    consola.error(`Ontology file does not exist: ${args.ontologyPath}`);
+    return false;
+  }
+
   const ontology = JSON.parse(
     await fs.promises.readFile(args.ontologyPath!, "utf-8"),
   );
-  await generateClientSdk(ontology, args);
+
+  return await generateClientSdk(ontology, args);
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
@@ -77,6 +86,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       consola.error(
         `Could not look up ontology with these credentials. Found ${ontologies.data.length} ontologies.`,
       );
+      return false;
     }
 
     const ontology = await getOntologyFullMetadata(
@@ -88,9 +98,10 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       fs.writeFileSync(ontologyWritePath, JSON.stringify(ontology, null, 2));
     }
 
-    await generateClientSdk(ontology, args);
+    return await generateClientSdk(ontology, args);
   } catch (e) {
-    consola.error("Failed to download the ontology", e);
+    consola.error("Failed to generate the ontology", e);
+    return false;
   }
 }
 
@@ -98,33 +109,35 @@ async function generateClientSdk(
   ontology: WireOntologyDefinition,
   args: TypescriptGenerateArgs,
 ) {
-  if (args.beta) {
-    await generateClientSdkVersionTwoPointZero(
-      ontology,
-      {
-        writeFile: (path, contents) => {
-          return fs.promises.writeFile(path, contents, "utf-8");
-        },
-        mkdir: async (path, options) => {
-          await fs.promises.mkdir(path, options);
-        },
-      },
-      args.outDir,
-      args.packageType,
-    );
-  } else {
-    await generateClientSdkVersionOneDotOne(
-      ontology,
-      {
-        writeFile: (path, contents) => {
-          return fs.promises.writeFile(path, contents, "utf-8");
-        },
-        mkdir: async (path, options) => {
-          await fs.promises.mkdir(path, options);
-        },
-      },
-      args.outDir,
-      args.packageType,
-    );
+  const minimalFs = {
+    writeFile: (path: string, contents: string) => {
+      return fs.promises.writeFile(path, contents, "utf-8");
+    },
+    mkdir: async (path: string, options?: { recursive: boolean }) => {
+      await fs.promises.mkdir(path, options);
+    },
+    readdir: async (path: string) => fs.promises.readdir(path),
+  };
+
+  try {
+    if (args.beta) {
+      await generateClientSdkVersionTwoPointZero(
+        ontology,
+        minimalFs,
+        args.outDir,
+        args.packageType,
+      );
+    } else {
+      await generateClientSdkVersionOneDotOne(
+        ontology,
+        minimalFs,
+        args.outDir,
+        args.packageType,
+      );
+    }
+  } catch (e) {
+    consola.error("OSDK generation failed", (e as Error).message);
+    return false;
   }
+  return true;
 }

@@ -1,4 +1,4 @@
-import { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition } from '@osdk/api';
 import type {
   Attachment,
   GeoPoint,
@@ -15,36 +15,36 @@ import type {
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly __apiName: 'ObjectTypeWithAllPropertyTypes';
   readonly __primaryKey: number;
-  readonly id: number | undefined;
-  readonly string: string | undefined;
-  readonly boolean: boolean | undefined;
-  readonly date: LocalDate | undefined;
-  readonly dateTime: Timestamp | undefined;
-  readonly decimal: number | undefined;
-  readonly integer: number | undefined;
-  readonly long: number | undefined;
-  readonly short: number | undefined;
-  readonly float: number | undefined;
-  readonly double: number | undefined;
-  readonly byte: number | undefined;
   readonly attachment: Attachment | undefined;
-  readonly geoPoint: GeoPoint | undefined;
-  readonly geoShape: GeoShape | undefined;
-  readonly stringArray: string[] | undefined;
-  readonly booleanArray: boolean[] | undefined;
-  readonly dateArray: LocalDate[] | undefined;
-  readonly dateTimeArray: Timestamp[] | undefined;
-  readonly decimalArray: number[] | undefined;
-  readonly integerArray: number[] | undefined;
-  readonly longArray: number[] | undefined;
-  readonly shortArray: number[] | undefined;
-  readonly floatArray: number[] | undefined;
-  readonly doubleArray: number[] | undefined;
-  readonly byteArray: number[] | undefined;
   readonly attachmentArray: Attachment[] | undefined;
+  readonly boolean: boolean | undefined;
+  readonly booleanArray: boolean[] | undefined;
+  readonly byte: number | undefined;
+  readonly byteArray: number[] | undefined;
+  readonly date: LocalDate | undefined;
+  readonly dateArray: LocalDate[] | undefined;
+  readonly dateTime: Timestamp | undefined;
+  readonly dateTimeArray: Timestamp[] | undefined;
+  readonly decimal: number | undefined;
+  readonly decimalArray: number[] | undefined;
+  readonly double: number | undefined;
+  readonly doubleArray: number[] | undefined;
+  readonly float: number | undefined;
+  readonly floatArray: number[] | undefined;
+  readonly geoPoint: GeoPoint | undefined;
   readonly geoPointArray: GeoPoint[] | undefined;
+  readonly geoShape: GeoShape | undefined;
   readonly geoShapeArray: GeoShape[] | undefined;
+  readonly id: number | undefined;
+  readonly integer: number | undefined;
+  readonly integerArray: number[] | undefined;
+  readonly long: number | undefined;
+  readonly longArray: number[] | undefined;
   readonly numericTimeseries: TimeSeries<number> | undefined;
+  readonly short: number | undefined;
+  readonly shortArray: number[] | undefined;
+  readonly string: string | undefined;
+  readonly stringArray: string[] | undefined;
   readonly stringTimeseries: TimeSeries<string> | undefined;
 }
 
