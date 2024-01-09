@@ -19,11 +19,16 @@ import { rmdir } from "fs/promises";
 import { join } from "path";
 import { GeneratePackageCommand } from "../generate";
 
-const dir = `${__dirname}/../../node_modules/`;
+const dir = `${__dirname}/../../node_modules`;
 export async function setup() {
   apiServer.listen();
 
-  await rmdir(join(dir, "@test-app"), { recursive: true });
+  try {
+    await rmdir(join(dir, "@test-app"), { recursive: true });
+  } catch (e) {
+    // Only needed for regenerations
+  }
+
   const generatePackageCommand = new GeneratePackageCommand();
   await generatePackageCommand.handler({
     packageName: "@test-app/osdk",
@@ -59,6 +64,10 @@ export async function setup() {
     _: [],
     $0: "",
   });
+  const util = require("node:util");
+  const exec = util.promisify(require("node:child_process").exec);
+
+  await exec("pnpm install", { cwd: join(dir, "@test-app/osdk") });
 }
 
 export async function teardown() {
