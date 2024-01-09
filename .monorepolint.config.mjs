@@ -75,7 +75,10 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
         composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: ["**.test.ts", "./src/generatedNoCheck/**/*"],
+      exclude: [
+        "./src/__e2e_tests__/**/**.test.ts",
+        "./src/generatedNoCheck/**/*",
+      ],
     },
   };
 }
