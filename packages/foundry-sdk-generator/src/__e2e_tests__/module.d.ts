@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-declare module "@test-app/osdk" {
+export declare module "../generatedNoCheck/@test-app/osdk" {
   let osdk: any;
   export = osdk;
 }
