@@ -16,7 +16,7 @@
 
 import type { WireOntologyDefinition } from "@osdk/generator";
 import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
-import { mkdir, readFile, writeFile } from "fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
 import { generateBundles } from "../generateBundles";
 import { bundleDependencies } from "./bundleDependencies";
@@ -57,6 +57,7 @@ export async function generatePackage(
       mkdir: async (path, _options?: { recursive: boolean }) => {
         await mkdir(normalize(path), { recursive: true });
       },
+      readdir: path => readdir(path),
     },
     packagePath,
   );
