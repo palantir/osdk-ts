@@ -13,7 +13,7 @@
     "@osdk/examples.one.dot.one",
     "@osdk/examples.todoapp",
     "@osdk/tests.verify-fallback-package",
-    "@osdk/internal.test",
+    "@osdk/shared.test",
     "eslint-config-sane",
     "mytsup",
     "tsconfig"
