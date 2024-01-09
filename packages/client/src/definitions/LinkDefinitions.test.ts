@@ -1,0 +1,119 @@
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  ObjectOrInterfacePropertyKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
+import { describe, expectTypeOf, it } from "vitest";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import type { NOOP } from "../util/NOOP.js";
+import type { OsdkObjectLinksObject } from "./LinkDefinitions.js";
+
+const MockOntology = {
+  metadata: {
+    ontologyRid: "ontologyRid",
+    ontologyApiName: "ontologyApiName",
+    userAgent: "userAgent",
+  },
+  objects: {
+    Task: {
+      apiName: "Task",
+      primaryKeyType: "integer",
+      properties: {
+        id: { type: "integer" },
+        name: { type: "string" },
+      },
+      links: {
+        "Todos": {
+          targetType: "Todo",
+          multiplicity: true,
+        },
+        "RP": {
+          targetType: "Person",
+          multiplicity: false,
+        },
+      },
+    },
+    Todo: {
+      apiName: "Todo",
+      primaryKeyType: "integer",
+      properties: {
+        id: { type: "integer" },
+        text: { type: "string" },
+      },
+      links: {},
+    },
+    Person: {
+      apiName: "Person",
+      primaryKeyType: "integer",
+      properties: {
+        id: { type: "integer" },
+        name: { type: "string" },
+      },
+      links: {},
+    },
+  },
+  actions: {},
+  queries: {},
+} satisfies OntologyDefinition<"Task" | "Todo" | "Person">;
+
+describe("LinkDefinitions", () => {
+  describe("OsdkObjectLinkObject", () => {
+    it("is correctly absent on types with no links", () => {
+      expectTypeOf<OsdkObjectLinksObject<"Todo", typeof MockOntology>>()
+        .toEqualTypeOf<never>();
+    });
+
+    it("populates on types with links", () => {
+      expectTypeOf<OsdkObjectLinksObject<"Task", typeof MockOntology>>()
+        .toEqualTypeOf<
+          {
+            Todos: {
+              get: (
+                primaryKey: number,
+              ) => OsdkObjectFrom<"Todo", typeof MockOntology>;
+              fetchPageOrThrow: <
+                A extends FetchPageOrThrowArgs<
+                  typeof MockOntology,
+                  "Todo",
+                  ObjectOrInterfacePropertyKeysFrom<typeof MockOntology, "Todo">
+                >,
+              >(options?: A | undefined) => Promise<
+                PageResult<
+                  NOOP<
+                    OsdkObjectFrom<
+                      "Todo",
+                      typeof MockOntology,
+                      A["select"] extends readonly string[]
+                        ? A["select"][number]
+                        : ObjectOrInterfacePropertyKeysFrom<
+                          typeof MockOntology,
+                          "Todo"
+                        >
+                    >
+                  >
+                >
+              >;
+            };
+            RP: { get: () => OsdkObjectFrom<"Person", typeof MockOntology> };
+          }
+        >();
+    });
+  });
+});

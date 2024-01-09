@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectOrInterfacePropertyKeysFrom,
   ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
   OntologyDefinition,
@@ -23,8 +24,14 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import { type FetchPageOrThrowArgs } from "./fetchPageOrThrow.js";
+import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
+import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
+import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
+
+const OriginClient = Symbol();
 
 function createPrototype<
   T extends keyof O["objects"] & string,
@@ -35,6 +42,57 @@ function createPrototype<
 ) {
   const objDef = ontology.objects[type];
   const proto = {};
+
+  Object.defineProperty(proto, "$links", {
+    get: function() {
+      const client = this[OriginClient] as ClientContext<O>;
+      const primaryKey = this["__primaryKey"];
+
+      return new Proxy({}, {
+        get(_target, p: string, _receiver) {
+          const linkDef = ontology.objects[type].links[p];
+          if (linkDef == null) {
+            return;
+          }
+
+          if (!linkDef.multiplicity) {
+            return {
+              get: () => getLinkedObjectOrThrow(client, type, primaryKey, p),
+            };
+          } else {
+            return {
+              get: (targetPrimaryKey: any) =>
+                getLinkedObjectByPkOrThrow(
+                  client,
+                  type,
+                  primaryKey,
+                  p,
+                  targetPrimaryKey,
+                ),
+              fetchPageOrThrow: (
+                options?: FetchPageOrThrowArgs<
+                  O,
+                  typeof linkDef.targetType,
+                  ObjectOrInterfacePropertyKeysFrom<
+                    O,
+                    typeof linkDef.targetType
+                  >
+                >,
+              ) =>
+                pageLinkedObjectsOrThrow(client, type, primaryKey, p, {
+                  nextPageToken: options?.nextPageToken,
+                  pageSize: options?.pageSize,
+                  select: options?.select,
+                }),
+            };
+          }
+        },
+      });
+    },
+    enumerable: false,
+    configurable: false,
+    writable: false,
+  });
 
   // Earlier versions of "2.0" included this by hand (even though it seems the wire gives it to us anyway).
   // Its deprecated but I'm it for now (lets delete after Dec 31, 2023) so our beta users can transition.
@@ -63,6 +121,13 @@ export function convertWireToOsdkObjects<
   const proto = getPrototype(client.ontology, apiName);
   for (const obj of objs) {
     Object.setPrototypeOf(obj, proto);
+
+    Object.defineProperty(obj, OriginClient, {
+      value: client,
+      enumerable: false,
+      configurable: false,
+      writable: false,
+    });
 
     // Saving this code in case we want to come back to temporal. For now its not worth the
     // risk and we can stick to string until we know what we want.

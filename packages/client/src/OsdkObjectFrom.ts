@@ -25,6 +25,7 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
+import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 
 export type OsdkObjectPrimaryKeyType<
   TObjectName,
@@ -46,6 +47,9 @@ export type OsdkObjectFrom<
     [P in T_PropertyKeys]: OsdkObjectPropertyType<
       ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
     >;
+  }
+  & {
+    $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
   }
   & {
     __apiName: T_ObjectTypeKey;

@@ -28,7 +28,7 @@ export type ObjectTypeKeysFrom<O extends OntologyDefinition<string>> =
 export type ObjectTypePropertyKeysFrom<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
-> = keyof ObjectTypeDefinitionFrom<O, K>["properties"];
+> = keyof ObjectTypeDefinitionFrom<O, K>["properties"] & string;
 
 export type ObjectTypePropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,

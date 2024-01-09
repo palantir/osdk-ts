@@ -36,6 +36,7 @@ export interface FetchPageOrThrowArgs<
 > {
   select?: readonly L[];
   nextPageToken?: string;
+  pageSize?: number;
 }
 
 export async function fetchPageOrThrow<
@@ -69,11 +70,15 @@ export async function fetchPageOrThrow<
   const body: LoadObjectSetRequestV2 = {
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-    select: (args?.select ?? []) as unknown as string[], // FIXME?
+    select: ((args?.select as string[] | undefined) ?? []), // FIXME?
   };
 
   if (args?.nextPageToken) {
     body.pageToken = args.nextPageToken;
+  }
+
+  if (args?.pageSize != null) {
+    body.pageSize = args.pageSize;
   }
 
   const r = await loadObjectSetV2(

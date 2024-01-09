@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, OsdkObjectFrom, PageResult } from "@osdk/client";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -25,7 +25,7 @@ import { expectType } from "ts-expect";
  * across changes.
  * @param client
  */
-export function typeChecks(client: Client<Ontology>) {
+export async function typeChecks(client: Client<Ontology>) {
   // client.objectSet("Employee") is the same as client.objects.Employee
   {
     const objectSet = client.objectSet("Employee");
@@ -46,6 +46,30 @@ export function typeChecks(client: Client<Ontology>) {
   {
     const objectSet = client.objectSet("Employee").pivotTo("peeps");
     expectType<TypeOf<typeof objectSet, typeof client["objects"]["Employee"]>>(
+      true,
+    );
+  }
+
+  // object $link examples
+  {
+    const page = await client.objectSet("Employee").where({
+      adUsername: "adUsername",
+    }).fetchPageOrThrow();
+    const employee = page.data[0];
+
+    // lead is an employee
+    const lead = await employee.$link.lead.get();
+    expectType<TypeOf<typeof lead, OsdkObjectFrom<"Employee", Ontology>>>(true);
+
+    // peeps is a page of employees
+    const peeps = await employee.$link.peeps.fetchPageOrThrow();
+    expectType<
+      TypeOf<typeof peeps, PageResult<OsdkObjectFrom<"Employee", Ontology>>>
+    >(true);
+
+    // peepById is just a singular employee again
+    const peepById = await employee.$link.peeps.get("peepPK");
+    expectType<TypeOf<typeof peepById, OsdkObjectFrom<"Employee", Ontology>>>(
       true,
     );
   }
