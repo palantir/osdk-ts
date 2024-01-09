@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { apiServer } from "@osdk/shared.test";
 import type {
   ActionError,
   ActionResponse,
   FoundryApiError,
   Result,
-} from "@myapp/dev-opi";
+} from "@test-app/osdk";
 import {
   ActionValidationResult,
   ConfidentialClientAuth,
   FoundryClient,
-} from "@myapp/dev-opi";
-import { apiServer } from "@osdk/shared.test";
+} from "@test-app/osdk";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 describe("test", () => {

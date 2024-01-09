@@ -15,15 +15,18 @@
  */
 
 import { apiServer } from "@osdk/shared.test";
+import { rmdir } from "fs/promises";
+import { join } from "path";
 import { GeneratePackageCommand } from "../generate";
 
 const dir = `${__dirname}/../../node_modules/`;
 export async function setup() {
   apiServer.listen();
 
+  await rmdir(join(dir, "@test-app"), { recursive: true });
   const generatePackageCommand = new GeneratePackageCommand();
   await generatePackageCommand.handler({
-    packageName: "@myapp/dev-opi",
+    packageName: "@test-app/osdk",
     packageVersion: "0.0.1",
     outputDir: dir,
     authToken: "myAccessToken",
@@ -61,6 +64,5 @@ export async function setup() {
 export async function teardown() {
   // eslint-disable-next-line no-console
   console.log("Test teardown: stopping API server");
-  // await rmdir(dir, { recursive: true });
   apiServer.close();
 }
