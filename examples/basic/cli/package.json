@@ -45,7 +45,7 @@
     "package.json",
     "*.d.ts"
   ],
-  "main": "./build/js/index.js",
+  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"

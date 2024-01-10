@@ -175,8 +175,7 @@ function standardPackageRules(shared, options) {
             "*.d.ts",
           ],
 
-          // main: `./build/js/index.${options.legacy ? "" : "c"}js`,
-          main: `./build/js/index.js`,
+          main: `./build/js/index.${options.legacy ? "" : "c"}js`,
           module: "./build/js/index.mjs",
           types: "./build/types/index.d.ts",
         },
