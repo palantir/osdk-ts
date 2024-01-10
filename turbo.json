@@ -92,6 +92,7 @@
     "//#check-mrl": {
       "inputs": [
         "package.json",
+        ".monorepolint.config.mjs",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
         "examples/*/*/package.json",

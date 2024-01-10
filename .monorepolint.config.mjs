@@ -20,6 +20,13 @@ const nonStandardPackages = [
   "@osdk/tests.*",
 ];
 
+const legacyPackages = [
+  "@osdk/api",
+  "@osdk/gateway",
+  "@osdk/legacy-client",
+  "@osdk/shared.net",
+];
+
 const cache = new Map();
 
 /**
@@ -146,6 +153,7 @@ function standardPackageRules(shared) {
     }),
     packageEntry({
       ...shared,
+      excludePackages: [...shared.excludePackages, ...legacyPackages],
       options: {
         entries: {
           exports: {
@@ -179,8 +187,78 @@ function standardPackageRules(shared) {
         },
       },
     }),
+    packageEntry({
+      ...shared,
+      includePackages: legacyPackages,
+      options: {
+        entries: {
+          exports: {
+            ".": {
+              types: "./build/types/index.d.ts",
+              import: "./build/js/index.mjs",
+              require: "./build/js/index.js",
+            },
+            "./*": {
+              types: "./build/types/public/*.d.ts",
+              import: "./build/js/public/*.mjs",
+              require: "./build/js/public/*.js",
+            },
+          },
+          publishConfig: {
+            "access": "public",
+          },
+          files: [
+            "build/types",
+            "build/js",
+            "CHANGELOG.md",
+            "package.json",
+
+            // fallback entries for "submodule imports" in legacy projects
+            "*.d.ts",
+          ],
+
+          main: "./build/js/index.js",
+          module: "./build/js/index.mjs",
+          types: "./build/types/index.d.ts",
+        },
+      },
+    }),
     fileContents({
       ...shared,
+      includePackages: legacyPackages,
+      options: {
+        file: "tsup.config.js",
+        generator: formatedGeneratorHelper(
+          `
+          /*
+           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+           *
+           * Licensed under the Apache License, Version 2.0 (the "License");
+           * you may not use this file except in compliance with the License.
+           * You may obtain a copy of the License at
+           *
+           *     http://www.apache.org/licenses/LICENSE-2.0
+           *
+           * Unless required by applicable law or agreed to in writing, software
+           * distributed under the License is distributed on an "AS IS" BASIS,
+           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+           * See the License for the specific language governing permissions and
+           * limitations under the License.
+           */
+
+          import { defineConfig } from "tsup";
+
+          export default defineConfig(async (options) =>
+            (await import("mytsup/legacy")).default(options)
+          );     
+          `,
+          "js",
+        ),
+      },
+    }),
+    fileContents({
+      ...shared,
+      excludePackages: [...shared.excludePackages, ...legacyPackages],
       options: {
         file: "tsup.config.js",
         generator: formatedGeneratorHelper(
