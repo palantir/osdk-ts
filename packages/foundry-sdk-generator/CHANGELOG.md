@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 0.200.0
+
+### Minor Changes
+
+- 61f48963: test bump
+
 ## 0.0.1
 
 ### Patch Changes
