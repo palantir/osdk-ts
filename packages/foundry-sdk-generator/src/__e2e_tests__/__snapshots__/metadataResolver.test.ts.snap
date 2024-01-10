@@ -1,0 +1,238 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Load Ontologies Metadata > Loads object and action types using only specified link types 1`] = `
+{
+  "actionTypes": {
+    "promote-employee": {
+      "apiName": "promote-employee",
+      "description": "Update an employee's title and compensation",
+      "operations": [
+        {
+          "objectTypeApiName": "Employee",
+          "type": "modifyObject",
+        },
+      ],
+      "parameters": {
+        "employeeId": {
+          "dataType": {
+            "type": "integer",
+          },
+          "required": true,
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double",
+          },
+          "required": true,
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+      "status": "ACTIVE",
+    },
+  },
+  "objectTypes": {
+    "Employee": {
+      "linkTypes": [
+        {
+          "apiName": "peeps",
+          "cardinality": "MANY",
+          "displayName": "Peeps",
+          "objectTypeApiName": "Employee",
+          "status": "EXPERIMENTAL",
+        },
+        {
+          "apiName": "officeLink",
+          "cardinality": "ONE",
+          "displayName": "Office",
+          "objectTypeApiName": "Office",
+          "status": "EXPERIMENTAL",
+        },
+      ],
+      "objectType": {
+        "apiName": "Employee",
+        "description": "A full-time or part-time 
+
+ employee of our firm",
+        "primaryKey": "employeeId",
+        "properties": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "employeeStatus": {
+            "dataType": {
+              "itemType": {
+                "type": "string",
+              },
+              "type": "timeseries",
+            },
+            "description": "TimeSeries of the status of the employee",
+          },
+          "fullName": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "office": {
+            "dataType": {
+              "type": "string",
+            },
+            "description": "The unique \\"ID\\" of the employee's \\\\\\"primary\\\\\\" assigned office.
+ This is some more text.",
+          },
+          "startDate": {
+            "dataType": {
+              "type": "date",
+            },
+            "description": "The date the employee was hired (most recently, if they were re-hired)",
+          },
+        },
+        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+        "status": "ACTIVE",
+      },
+    },
+    "Office": {
+      "linkTypes": [],
+      "objectType": {
+        "apiName": "Office",
+        "description": "A office in our Company",
+        "primaryKey": "officeId",
+        "properties": {
+          "entrance": {
+            "dataType": {
+              "type": "geopoint",
+            },
+          },
+          "name": {
+            "dataType": {
+              "type": "string",
+            },
+            "description": "The Name of the Office",
+          },
+          "occupiedArea": {
+            "dataType": {
+              "type": "geoshape",
+            },
+            "description": "The occupied area of the Office",
+          },
+          "officeId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+        "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+        "status": "ACTIVE",
+      },
+    },
+  },
+  "ontology": {
+    "apiName": "default-ontology",
+    "description": "The default ontology",
+    "displayName": "Ontology",
+    "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+  },
+  "queryTypes": {},
+}
+`;
+
+exports[`Load Ontologies Metadata > Loads object and action types without link types 1`] = `
+{
+  "actionTypes": {
+    "promote-employee": {
+      "apiName": "promote-employee",
+      "description": "Update an employee's title and compensation",
+      "operations": [
+        {
+          "objectTypeApiName": "Employee",
+          "type": "modifyObject",
+        },
+      ],
+      "parameters": {
+        "employeeId": {
+          "dataType": {
+            "type": "integer",
+          },
+          "required": true,
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double",
+          },
+          "required": true,
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+      "status": "ACTIVE",
+    },
+  },
+  "objectTypes": {
+    "Employee": {
+      "linkTypes": [],
+      "objectType": {
+        "apiName": "Employee",
+        "description": "A full-time or part-time 
+
+ employee of our firm",
+        "primaryKey": "employeeId",
+        "properties": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer",
+            },
+          },
+          "employeeStatus": {
+            "dataType": {
+              "itemType": {
+                "type": "string",
+              },
+              "type": "timeseries",
+            },
+            "description": "TimeSeries of the status of the employee",
+          },
+          "fullName": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "office": {
+            "dataType": {
+              "type": "string",
+            },
+            "description": "The unique \\"ID\\" of the employee's \\\\\\"primary\\\\\\" assigned office.
+ This is some more text.",
+          },
+          "startDate": {
+            "dataType": {
+              "type": "date",
+            },
+            "description": "The date the employee was hired (most recently, if they were re-hired)",
+          },
+        },
+        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+        "status": "ACTIVE",
+      },
+    },
+  },
+  "ontology": {
+    "apiName": "default-ontology",
+    "description": "The default ontology",
+    "displayName": "Ontology",
+    "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+  },
+  "queryTypes": {},
+}
+`;
