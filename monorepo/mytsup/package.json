@@ -7,9 +7,6 @@
     ".": {
       "import": "./tsup.mjs"
     },
-    "./legacy": {
-      "import": "./tsup.legacy.mjs"
-    },
     "./tsconfig/base": "./tsconfig.base.json"
   },
   "scripts": {},

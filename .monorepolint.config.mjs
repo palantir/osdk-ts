@@ -207,9 +207,9 @@ function standardPackageRules(shared, options) {
           import { defineConfig } from "tsup";
 
           export default defineConfig(async (options) =>
-            (await import("mytsup${
-            options.legacy ? "/legacy" : ""
-          }")).default(options)
+            (await import("mytsup")).default(options, ${
+            options.legacy ? "{cjsExtension: '.js'}" : ""
+          })
           );     
           `,
           "js",
