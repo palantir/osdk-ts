@@ -15,7 +15,6 @@
  */
 
 import type { FoundryApiError, Page, Result } from "@osdk/legacy-client";
-import { expect } from "vitest";
 
 export type Pageable<T> = {
   page: (
@@ -67,10 +66,14 @@ export async function fetchAllPages<T>(
     allResults.push(...page.data);
     pageToken = page.nextPageToken;
 
-    if (page.nextPageToken) {
-      expect(page.data.length).toEqual(pageSize);
-    } else {
-      expect(page.data.length).toBeLessThanOrEqual(pageSize);
+    if (page.nextPageToken && page.data.length !== pageSize) {
+      throw new Error(
+        `Expected page size of ${pageSize} but got ${page.data.length}`,
+      );
+    } else if (!page.nextPageToken && page.data.length > pageSize) {
+      throw new Error(
+        `Expected page size of ${pageSize} but got ${page.data.length}`,
+      );
     }
   } while (pageToken);
 
