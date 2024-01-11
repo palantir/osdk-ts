@@ -35,6 +35,7 @@
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
+    "find-up": "^7.0.0",
     "rollup": "^3.28.1",
     "rollup-plugin-polyfill-node": "^0.12.0",
     "ts-morph": "^19.0.0",

@@ -23,6 +23,7 @@ import {
   ModuleKind,
   ScriptTarget,
 } from "typescript";
+import { libFiles } from "./libFiles";
 
 export interface CompilerOutput {
   files: { [filename: string]: string };
@@ -45,7 +46,10 @@ export function compileInMemory(files: { [fileName: string]: string }) {
   };
 
   const originalReadFile = compilerHost.readFile;
-  const libfileMap = Object.fromEntries([]);
+
+  const libfileMap = Object.fromEntries(
+    libFiles.map(file => [file.fileName, file.text]),
+  );
   compilerHost.readFile = fileName => {
     const baseName = basename(fileName);
     if (libfileMap[baseName]) {
