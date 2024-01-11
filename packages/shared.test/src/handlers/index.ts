@@ -21,3 +21,4 @@ export * from "./loadObjectsEndpoints";
 export * from "./multipassServer";
 export * from "./objectSetEndpoints";
 export * from "./ontologyMetadataEndpoints";
+export * from "./unsupportedMetadataHandler";
