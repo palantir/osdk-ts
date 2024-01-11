@@ -1,5 +1,13 @@
 # @osdk/generator
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [25dd12ae]
+  - @osdk/gateway@1.0.2
+  - @osdk/api@1.0.2
+
 ## 1.0.3
 
 ### Patch Changes

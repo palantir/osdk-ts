@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [25dd12ae]
+  - @osdk/shared.net@1.0.2
+  - @osdk/gateway@1.0.2
+  - @osdk/api@1.0.2
+
 ## 0.2.0
 
 ### Minor Changes

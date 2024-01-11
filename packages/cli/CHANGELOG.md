@@ -1,5 +1,15 @@
 # @osdk/cli
 
+## 0.0.19
+
+### Patch Changes
+
+- Updated dependencies [25dd12ae]
+  - @osdk/shared.net@1.0.2
+  - @osdk/gateway@1.0.2
+  - @osdk/api@1.0.2
+  - @osdk/generator@1.0.4
+
 ## 0.0.18
 
 ### Patch Changes
