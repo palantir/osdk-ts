@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 0.200.2
+
+### Patch Changes
+
+- fa50ae80: Fixing package generation
+
 ## 0.200.1
 
 ### Patch Changes
