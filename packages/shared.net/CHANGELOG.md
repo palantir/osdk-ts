@@ -1,5 +1,13 @@
 # @osdk/shared.net
 
+## 1.0.2
+
+### Patch Changes
+
+- 25dd12ae: Restore files for legacy to .js instead of .cjs
+- Updated dependencies [25dd12ae]
+  - @osdk/gateway@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes
