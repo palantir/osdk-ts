@@ -17,7 +17,6 @@
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import path from "node:path";
 import type { ModuleFormat, RollupBuild } from "rollup";
 import { rollup } from "rollup";
 import nodePolyfill from "rollup-plugin-polyfill-node";
@@ -28,16 +27,18 @@ async function createRollupBuild(
 ) {
   const inputPath = `${absolutePackagePath}/${packageName}/index.js`;
 
+  const { findUp } = await import("find-up");
+  const nodeModulesPath = await findUp("node_modules", {
+    cwd: __dirname,
+    type: "directory",
+  });
+
   return rollup({
     input: inputPath,
     plugins: [
       resolve({
         browser: true,
-        modulePaths: [
-          path.join(__dirname, "..", "..", "..", "node_modules"),
-          path.join(__dirname, "..", "..", "node_modules"),
-          path.join(__dirname, "..", "node_modules"),
-        ],
+        modulePaths: [nodeModulesPath!],
       }),
       commonjs({}),
       nodePolyfill(),
