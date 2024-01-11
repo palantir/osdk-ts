@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "0.200.1",
+  "version": "0.200.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
