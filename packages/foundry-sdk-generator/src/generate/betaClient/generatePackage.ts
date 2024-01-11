@@ -69,25 +69,35 @@ export async function generatePackage(
 
   await mkdir(join(packagePath, "dist", "bundle"), { recursive: true });
 
-  const nodeModulesPath = join(__dirname, "..", "..", "..", "node_modules");
+  const { findUp } = await import("find-up");
+  const nodeModulesPath = await findUp("node_modules", {
+    cwd: __dirname,
+    type: "directory",
+  });
 
   let bundleDts: string = "";
-  try {
-    bundleDts = await bundleDependencies(
-      [
-        join(
-          nodeModulesPath,
-          "@osdk",
-          "legacy-client",
-        ),
-        join(nodeModulesPath, "@osdk", "api"),
-        join(nodeModulesPath, "@osdk", "gateway"),
-      ],
-      options.packageName,
-      compilerOutput.files,
+  if (nodeModulesPath) {
+    try {
+      bundleDts = await bundleDependencies(
+        [
+          join(
+            nodeModulesPath,
+            "@osdk",
+            "legacy-client",
+          ),
+          join(nodeModulesPath, "@osdk", "api"),
+          join(nodeModulesPath, "@osdk", "gateway"),
+        ],
+        options.packageName,
+        compilerOutput.files,
+      );
+    } catch (e) {
+      consola.error("Failed bundling DTS", e);
+    }
+  } else {
+    consola.error(
+      "Could not find node_modules directory, skipping DTS bundling",
     );
-  } catch (e) {
-    consola.error("Failed bundling DTS", e);
   }
 
   await Promise.all([
@@ -122,7 +132,9 @@ async function getDependencyVersion(dependency: string): Promise<string> {
   if (dependencies[dependency] !== undefined) {
     return dependencies[dependency]!;
   }
-  const packageJson = await readFile(join(process.cwd(), "package.json"), {
+  const { findUp } = await import("find-up");
+  const result = await findUp("package.json", { cwd: __dirname });
+  const packageJson = await readFile(result!, {
     encoding: "utf-8",
   });
   if (!packageJson) {
