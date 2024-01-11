@@ -18,6 +18,15 @@ const nonStandardPackages = [
   "tsconfig",
   "@osdk/examples.todoapp",
   "@osdk/tests.*",
+  "@osdk/foundry-sdk-generator",
+  "@osdk/examples.*",
+];
+
+const legacyPackages = [
+  "@osdk/api",
+  "@osdk/gateway",
+  "@osdk/legacy-client",
+  "@osdk/shared.net",
 ];
 
 const cache = new Map();
@@ -47,7 +56,12 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
   return result.stdout;
 };
 
-function getTsconfigOptions(baseTsconfigPath) {
+/**
+ * @param {string} baseTsconfigPath
+ * @param {{customTsconfigExcludes?: string[]}} opts
+ * @returns
+ */
+function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
     file: "tsconfig.json",
     template: {
@@ -59,6 +73,9 @@ function getTsconfigOptions(baseTsconfigPath) {
         composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
+      ...(opts.customTsconfigExcludes
+        ? { exclude: opts.customTsconfigExcludes ?? [] }
+        : {}),
     },
   };
 }
@@ -85,50 +102,35 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
 
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
+ * @param {{
+ *  legacy: boolean,
+ *  packageDepth: number,
+ *  type: "library" | "example",
+ *  customTsconfigExcludes?: string[],
+ *  tsVersion?: "^5.2.2"|"^4.9.0",
+ * }} options
  */
-function standardPackageRules(shared) {
+function standardPackageRules(shared, options) {
   return [
     standardTsconfig({
       ...shared,
-      excludePackages: [
-        ...shared.excludePackages,
-        "@osdk/examples.basic.**",
-        "@osdk/foundry-sdk-generator",
-      ],
-      options: getTsconfigOptions("../../monorepo/tsconfig/tsconfig.base.json"),
-    }),
-    standardTsconfig({
-      ...shared,
-      includePackages: ["@osdk/examples.basic.**"],
       options: getTsconfigOptions(
-        "../../../monorepo/tsconfig/tsconfig.base.json",
+        `${
+          "../".repeat(options.packageDepth)
+        }monorepo/tsconfig/tsconfig.base.json`,
+        { customTsconfigExcludes: options.customTsconfigExcludes },
       ),
     }),
-    standardTsconfig({
-      ...shared,
-      includePackages: ["@osdk/foundry-sdk-generator"],
-      options: getTsconfigOptionsE2E(
-        "../../monorepo/tsconfig/tsconfig.base.json",
-      ),
-    }), // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
-    // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
-    requireDependency({
-      ...shared,
-      excludePackages: [
-        ...shared.excludePackages,
-        "@osdk/examples.one.dot.one",
-        "@osdk/examples.basic.cli",
-      ],
-      options: {
-        devDependencies: { typescript: "^5.2.2" },
-      },
-    }),
-    requireDependency({
-      includePackages: ["@osdk/examples.one.dot.one"],
-      options: {
-        devDependencies: { typescript: "^4.9.0" },
-      },
-    }),
+    ...(options.tsVersion
+      ? [
+        requireDependency({
+          ...shared,
+          options: {
+            devDependencies: { typescript: options.tsVersion },
+          },
+        }),
+      ]
+      : []),
     packageScript({
       ...shared,
       options: {
@@ -152,12 +154,12 @@ function standardPackageRules(shared) {
             ".": {
               types: "./build/types/index.d.ts",
               import: "./build/js/index.mjs",
-              require: "./build/js/index.cjs",
+              require: `./build/js/index.${options.legacy ? "" : "c"}js`,
             },
             "./*": {
               types: "./build/types/public/*.d.ts",
               import: "./build/js/public/*.mjs",
-              require: "./build/js/public/*.cjs",
+              require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
             },
           },
           publishConfig: {
@@ -173,7 +175,7 @@ function standardPackageRules(shared) {
             "*.d.ts",
           ],
 
-          main: "./build/js/index.js",
+          main: `./build/js/index.${options.legacy ? "" : "c"}js`,
           module: "./build/js/index.mjs",
           types: "./build/types/index.d.ts",
         },
@@ -204,7 +206,9 @@ function standardPackageRules(shared) {
           import { defineConfig } from "tsup";
 
           export default defineConfig(async (options) =>
-            (await import("mytsup")).default(options)
+            (await import("mytsup")).default(options, ${
+            options.legacy ? "{cjsExtension: '.js'}" : ""
+          })
           );     
           `,
           "js",
@@ -213,7 +217,6 @@ function standardPackageRules(shared) {
     }),
     fileContents({
       ...shared,
-      excludePackages: [...shared.excludePackages, "@osdk/examples.*"],
       options: {
         file: ".eslintrc.cjs",
         generator: formatedGeneratorHelper(
@@ -235,40 +238,7 @@ function standardPackageRules(shared) {
            */
 
           module.exports = {
-              extends: ["sane/library"],
-              root: true,
-            };
-            `,
-          "js",
-        ),
-      },
-    }),
-    fileContents({
-      ...shared,
-      includePackages: ["@osdk/examples.*"],
-      excludePackages: [...shared.excludePackages],
-      options: {
-        file: ".eslintrc.cjs",
-        generator: formatedGeneratorHelper(
-          `
-          /*
-           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
-           *
-           * Licensed under the Apache License, Version 2.0 (the "License");
-           * you may not use this file except in compliance with the License.
-           * You may obtain a copy of the License at
-           *
-           *     http://www.apache.org/licenses/LICENSE-2.0
-           *
-           * Unless required by applicable law or agreed to in writing, software
-           * distributed under the License is distributed on an "AS IS" BASIS,
-           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-           * See the License for the specific language governing permissions and
-           * limitations under the License.
-           */
-
-          module.exports = {
-              extends: ["sane/example"],
+              extends: ["sane/${options.type}"],
               root: true,
             };
             `,
@@ -284,7 +254,57 @@ function standardPackageRules(shared) {
  */
 export default {
   rules: [
-    ...standardPackageRules({ excludePackages: nonStandardPackages }),
+    ...standardPackageRules({
+      excludePackages: [...nonStandardPackages, ...legacyPackages],
+    }, {
+      legacy: false,
+      packageDepth: 2,
+      type: "library",
+      tsVersion: "^5.2.2",
+    }),
+
+    ...standardPackageRules({
+      includePackages: ["@osdk/foundry-sdk-generator"],
+    }, {
+      legacy: false,
+      packageDepth: 2,
+      type: "library",
+      tsVersion: "^5.2.2",
+      customTsconfigExcludes: [
+        "./src/__e2e_tests__/**/**.test.ts",
+        "./src/generatedNoCheck/**/*",
+      ],
+    }),
+
+    ...standardPackageRules({
+      excludePackages: [...nonStandardPackages],
+      includePackages: legacyPackages,
+    }, {
+      legacy: true,
+      packageDepth: 2,
+      type: "library",
+      tsVersion: "^5.2.2",
+    }),
+
+    ...standardPackageRules({
+      includePackages: ["@osdk/examples.basic.**"],
+      excludePackages: ["@osdk/examples.one.dot.one"],
+    }, {
+      legacy: false,
+      packageDepth: 3,
+      type: "example",
+    }),
+
+    // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
+    // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
+    ...standardPackageRules({
+      includePackages: ["@osdk/examples.one.dot.one"],
+    }, {
+      legacy: false,
+      packageDepth: 2,
+      type: "example",
+      tsVersion: "^4.9.0",
+    }),
 
     packageEntry({
       options: {

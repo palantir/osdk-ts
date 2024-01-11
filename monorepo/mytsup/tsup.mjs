@@ -1,8 +1,9 @@
 /**
  * @param {import('tsup').Options} options
+ * @param {{cjsExtension?: ".cjs" | ".js"}} ourOptions
  * @returns {import('tsup').Options}
  */
-export default async (options) => {
+export default async (options, ourOptions) => {
   const babel = (await import("esbuild-plugin-babel")).default;
 
   return {
@@ -14,7 +15,7 @@ export default async (options) => {
     format: ["cjs", "esm"],
     outExtension: ({ format }) => {
       return {
-        js: format === "cjs" ? ".cjs" : ".mjs",
+        js: format === "cjs" ? (ourOptions?.cjsExtension ?? ".cjs") : ".mjs",
       };
     },
     outDir: "build/js",
