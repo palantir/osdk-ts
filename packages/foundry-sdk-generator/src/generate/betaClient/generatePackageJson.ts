@@ -32,6 +32,10 @@ export async function generatePackageJson(options: {
       ".": {
         types: "./index.d.ts",
         default: "./index.js",
+        script: {
+          types: "./dist/bundle/index.d.ts",
+          default: "./dist/bundle/index.esm.js",
+        },
       },
       "./ontology/objects": {
         types: "./ontology/objects/index.d.ts",
