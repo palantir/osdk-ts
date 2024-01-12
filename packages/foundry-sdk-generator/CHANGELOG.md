@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 0.200.3
+
+### Patch Changes
+
+- 67eea35e: Fixing bundling for package generation
+
 ## 0.200.2
 
 ### Patch Changes
