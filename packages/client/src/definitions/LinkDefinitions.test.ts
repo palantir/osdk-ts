@@ -16,10 +16,12 @@
 
 import type { ObjectOrInterfacePropertyKeysFrom } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArg,
+} from "../object/fetchPageOrThrow.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NOOP } from "../util/NOOP.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
 import type { OsdkObjectLinksObject } from "./LinkDefinitions.js";
 
@@ -35,9 +37,27 @@ describe("LinkDefinitions", () => {
         .toEqualTypeOf<
           {
             Todos: {
-              get: (
+              get: <
+                A extends SelectArg<
+                  typeof MockOntology,
+                  "Todo",
+                  ObjectOrInterfacePropertyKeysFrom<
+                    typeof MockOntology,
+                    "Todo"
+                  >
+                >,
+              >(
                 primaryKey: number,
-              ) => OsdkObjectFrom<"Todo", typeof MockOntology>;
+                options?: A,
+              ) => OsdkObjectFrom<
+                "Todo",
+                typeof MockOntology,
+                A["select"] extends readonly string[] ? A["select"][number]
+                  : ObjectOrInterfacePropertyKeysFrom<
+                    typeof MockOntology,
+                    "Todo"
+                  >
+              >;
               fetchPageOrThrow: <
                 A extends FetchPageOrThrowArgs<
                   typeof MockOntology,
@@ -46,22 +66,40 @@ describe("LinkDefinitions", () => {
                 >,
               >(options?: A | undefined) => Promise<
                 PageResult<
-                  NOOP<
-                    OsdkObjectFrom<
-                      "Todo",
-                      typeof MockOntology,
-                      A["select"] extends readonly string[]
-                        ? A["select"][number]
-                        : ObjectOrInterfacePropertyKeysFrom<
-                          typeof MockOntology,
-                          "Todo"
-                        >
-                    >
+                  OsdkObjectFrom<
+                    "Todo",
+                    typeof MockOntology,
+                    A["select"] extends readonly string[] ? A["select"][number]
+                      : ObjectOrInterfacePropertyKeysFrom<
+                        typeof MockOntology,
+                        "Todo"
+                      >
                   >
                 >
               >;
             };
-            RP: { get: () => OsdkObjectFrom<"Person", typeof MockOntology> };
+            RP: {
+              get: <
+                A extends SelectArg<
+                  typeof MockOntology,
+                  "Person",
+                  ObjectOrInterfacePropertyKeysFrom<
+                    typeof MockOntology,
+                    "Person"
+                  >
+                >,
+              >(
+                options?: A,
+              ) => OsdkObjectFrom<
+                "Person",
+                typeof MockOntology,
+                A["select"] extends readonly string[] ? A["select"][number]
+                  : ObjectOrInterfacePropertyKeysFrom<
+                    typeof MockOntology,
+                    "Person"
+                  >
+              >;
+            };
           }
         >();
     });

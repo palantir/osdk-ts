@@ -29,12 +29,19 @@ import type { PageResult } from "../PageResult.js";
 import type { NOOP } from "../util/NOOP.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
-export interface FetchPageOrThrowArgs<
+export interface SelectArg<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
   L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
 > {
   select?: readonly L[];
+}
+
+export interface FetchPageOrThrowArgs<
+  O extends OntologyDefinition<any>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
+  L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
+> extends SelectArg<O, K, L> {
   nextPageToken?: string;
   pageSize?: number;
 }

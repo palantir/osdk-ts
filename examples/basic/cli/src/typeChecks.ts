@@ -61,15 +61,33 @@ export async function typeChecks(client: Client<Ontology>) {
     const lead = await employee.$link.lead.get();
     expectType<TypeOf<typeof lead, OsdkObjectFrom<"Employee", Ontology>>>(true);
 
-    // peeps is a page of employees
-    const peeps = await employee.$link.peeps.fetchPageOrThrow();
+    // lead is an employee but we downselect to just their adUsername
+    const leadName = await employee.$link.lead.get({ select: ["adUsername"] });
+    expectType<TypeOf<typeof leadName.adUsername, string>>(true);
+
+    // peeps is a page of employees, but only get the adUsername and employeeNumber
+    const peeps = await employee.$link.peeps.fetchPageOrThrow({
+      select: ["adUsername", "employeeNumber"],
+    });
     expectType<
-      TypeOf<typeof peeps, PageResult<OsdkObjectFrom<"Employee", Ontology>>>
+      TypeOf<
+        typeof peeps,
+        PageResult<
+          OsdkObjectFrom<"Employee", Ontology, "adUsername" | "employeeNumber">
+        >
+      >
     >(true);
 
-    // peepById is just a singular employee again
-    const peepById = await employee.$link.peeps.get("peepPK");
-    expectType<TypeOf<typeof peepById, OsdkObjectFrom<"Employee", Ontology>>>(
+    // peepById is just a singular employee again, and only grab the adUsername
+    const peepById = await employee.$link.peeps.get("peepPK", {
+      select: ["adUsername"],
+    });
+    expectType<
+      TypeOf<
+        typeof peepById,
+        OsdkObjectFrom<"Employee", Ontology, "adUsername">
+      >
+    >(
       true,
     );
   }

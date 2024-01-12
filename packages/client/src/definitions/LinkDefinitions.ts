@@ -21,13 +21,15 @@ import type {
   ObjectTypeLinkKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArg,
+} from "../object/fetchPageOrThrow.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NOOP } from "../util/NOOP.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
@@ -41,44 +43,59 @@ export type OsdkObjectLinksEntry<
   K extends ObjectTypeKeysFrom<O>,
   O extends OntologyDefinition<any>,
   L extends ObjectTypeLinkKeysFrom<O, K>,
+  T = ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
 > = ObjectTypeLinkDefinitionFrom<O, K, L> extends { multiplicity: false } ? {
     /** Load the linked object */
-    get: () => OsdkObjectFrom<
-      ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
-      O
+    get: <A extends SelectArg<O, T, ObjectOrInterfacePropertyKeysFrom<O, T>>>(
+      options?: A,
+    ) => OsdkObjectFrom<
+      T,
+      O,
+      A["select"] extends readonly string[] ? A["select"][number]
+        : ObjectOrInterfacePropertyKeysFrom<
+          O,
+          T
+        >
     >;
   }
   : {
     /** Loads the linked object for a given primary key */
-    get: (
+    get: <A extends SelectArg<O, T, ObjectOrInterfacePropertyKeysFrom<O, T>>>(
       primaryKey: OsdkObjectPrimaryKeyType<
-        ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
+        T,
         O
       >,
-    ) => OsdkObjectFrom<ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"], O>;
+      options?: A,
+    ) => OsdkObjectFrom<
+      T,
+      O,
+      A["select"] extends readonly string[] ? A["select"][number]
+        : ObjectOrInterfacePropertyKeysFrom<
+          O,
+          T
+        >
+    >;
 
     /** pages through the linked objects */
     fetchPageOrThrow: <
       A extends FetchPageOrThrowArgs<
         O,
-        ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
+        T,
         ObjectOrInterfacePropertyKeysFrom<
           O,
-          ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"]
+          T
         >
       >,
     >(options?: A) => Promise<
       PageResult<
-        NOOP<
-          OsdkObjectFrom<
-            ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
-            O,
-            A["select"] extends readonly string[] ? A["select"][number]
-              : ObjectOrInterfacePropertyKeysFrom<
-                O,
-                ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"]
-              >
-          >
+        OsdkObjectFrom<
+          T,
+          O,
+          A["select"] extends readonly string[] ? A["select"][number]
+            : ObjectOrInterfacePropertyKeysFrom<
+              O,
+              T
+            >
         >
       >
     >;
