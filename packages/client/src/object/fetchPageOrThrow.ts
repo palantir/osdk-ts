@@ -90,7 +90,7 @@ export async function fetchPageOrThrow<
     body,
   );
 
-  convertWireToOsdkObjects(client, objectType, r.data);
+  convertWireToOsdkObjects(client, r.data);
 
   // any is okay here because we have properly converted the wire objects via prototypes
   // which don't type out correctly.

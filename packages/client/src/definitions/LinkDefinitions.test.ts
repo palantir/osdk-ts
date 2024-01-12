@@ -14,64 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfacePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfacePropertyKeysFrom } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NOOP } from "../util/NOOP.js";
+import type { MockOntology } from "../util/test/mockOntology.js";
 import type { OsdkObjectLinksObject } from "./LinkDefinitions.js";
-
-const MockOntology = {
-  metadata: {
-    ontologyRid: "ontologyRid",
-    ontologyApiName: "ontologyApiName",
-    userAgent: "userAgent",
-  },
-  objects: {
-    Task: {
-      apiName: "Task",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        name: { type: "string" },
-      },
-      links: {
-        "Todos": {
-          targetType: "Todo",
-          multiplicity: true,
-        },
-        "RP": {
-          targetType: "Person",
-          multiplicity: false,
-        },
-      },
-    },
-    Todo: {
-      apiName: "Todo",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        text: { type: "string" },
-      },
-      links: {},
-    },
-    Person: {
-      apiName: "Person",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        name: { type: "string" },
-      },
-      links: {},
-    },
-  },
-  actions: {},
-  queries: {},
-} satisfies OntologyDefinition<"Task" | "Todo" | "Person">;
 
 describe("LinkDefinitions", () => {
   describe("OsdkObjectLinkObject", () => {

@@ -48,12 +48,13 @@ export async function pageLinkedObjectsOrThrow<
     },
   );
 
+  convertWireToOsdkObjects(
+    client,
+    page.data,
+  );
+
   return {
     nextPageToken: page.nextPageToken,
-    data: convertWireToOsdkObjects(
-      client,
-      client.ontology.objects[sourceApiName].links[linkTypeApiName].targetType,
-      page.data,
-    ),
+    data: page.data as OsdkObjectFrom<T, O>[],
   };
 }

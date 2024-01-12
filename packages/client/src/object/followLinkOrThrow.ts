@@ -50,8 +50,6 @@ export async function followLinkOrThrow<
 
   convertWireToOsdkObjects(
     clientCtx,
-    clientCtx.ontology.objects[sourceObject.__apiName].links[link.toString()]
-      .targetType as string,
     r.data,
   );
 

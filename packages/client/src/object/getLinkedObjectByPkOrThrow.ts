@@ -18,6 +18,7 @@ import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export async function getLinkedObjectByPkOrThrow<
@@ -42,9 +43,7 @@ export async function getLinkedObjectByPkOrThrow<
     },
   );
 
-  return convertWireToOsdkObjects(
-    client,
-    client.ontology.objects[sourceApiName].links[linkTypeApiName].targetType,
-    [object],
-  )[0];
+  const objects = [object];
+  convertWireToOsdkObjects(client, objects);
+  return objects[0] as OsdkObjectFrom<T, O>;
 }
