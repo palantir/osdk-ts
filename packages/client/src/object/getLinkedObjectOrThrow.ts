@@ -27,13 +27,13 @@ export async function getLinkedObjectOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
   L extends ObjectTypeLinkKeysFrom<O, T> & string,
-  A extends SelectArg<O, T>,
+  S extends SelectArg<O, T>["select"],
 >(
   client: ClientContext<O>,
   sourceApiName: T,
   primaryKey: any,
   linkTypeApiName: L,
-  select?: A["select"],
+  select?: S,
 ) {
   const result = await pageLinkedObjectsOrThrow(
     client,

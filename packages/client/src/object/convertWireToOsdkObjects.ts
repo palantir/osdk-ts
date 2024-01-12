@@ -69,13 +69,19 @@ function createPrototype<
             };
           } else {
             return {
-              get: (targetPrimaryKey: any) =>
+              get: <
+                A extends SelectArg<
+                  O,
+                  typeof linkDef.targetType
+                >,
+              >(targetPrimaryKey: any, options?: A) =>
                 getLinkedObjectByPkOrThrow(
                   client,
                   type,
                   primaryKey,
                   p,
                   targetPrimaryKey,
+                  options?.select,
                 ),
               fetchPageOrThrow: (
                 options?: FetchPageOrThrowArgs<

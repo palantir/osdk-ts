@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfacePropertyKeysFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
@@ -24,12 +30,17 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export async function getLinkedObjectByPkOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
+  L extends ObjectTypeLinkKeysFrom<O, T> & string,
+  S = ReadonlyArray<
+    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  >,
 >(
   client: ClientContext<O>,
   sourceApiName: T,
   primaryKey: any,
-  linkTypeApiName: string,
+  linkTypeApiName: L,
   linkedObjectPrimaryKey: any,
+  select?: S,
 ) {
   const object = await getLinkedObjectV2(
     createOpenApiRequest(client.stack, client.fetch),
@@ -39,7 +50,7 @@ export async function getLinkedObjectByPkOrThrow<
     linkTypeApiName,
     linkedObjectPrimaryKey,
     {
-      select: [],
+      select: (select as string[] | undefined) ?? [],
     },
   );
 
