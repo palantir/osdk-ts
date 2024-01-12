@@ -65,6 +65,9 @@ export async function typeChecks(client: Client<Ontology>) {
     const leadName = await employee.$link.lead.get({ select: ["adUsername"] });
     expectType<TypeOf<typeof leadName.adUsername, string>>(true);
 
+    // jobProfile is not available on the select-ed Person
+    expectType<TypeOf<{ jobProfile: any[] }, typeof leadName>>(false);
+
     // peeps is a page of employees, but only get the adUsername and employeeNumber
     const peeps = await employee.$link.peeps.fetchPageOrThrow({
       select: ["adUsername", "employeeNumber"],
@@ -78,6 +81,9 @@ export async function typeChecks(client: Client<Ontology>) {
       >
     >(true);
 
+    // jobProfile is not available on the select-ed peeps
+    expectType<TypeOf<{ jobProfile: any }[], typeof peeps>>(false);
+
     // peepById is just a singular employee again, and only grab the adUsername
     const peepById = await employee.$link.peeps.get("peepPK", {
       select: ["adUsername"],
@@ -90,5 +96,8 @@ export async function typeChecks(client: Client<Ontology>) {
     >(
       true,
     );
+
+    // employeeNumber is not part of the selected peep
+    expectType<TypeOf<{ employeeNumber: any }, typeof peepById>>(false);
   }
 }

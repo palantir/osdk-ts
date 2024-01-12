@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfacePropertyKeysFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
@@ -24,6 +30,10 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export async function pageLinkedObjectsOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypeLinkKeysFrom<O, T>,
+  S = ReadonlyArray<
+    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  >,
 >(
   client: ClientContext<O>,
   sourceApiName: T & string,
@@ -32,9 +42,18 @@ export async function pageLinkedObjectsOrThrow<
   options?: {
     nextPageToken?: string;
     pageSize?: number;
-    select?: ReadonlyArray<string>;
+    select?: S;
   },
-): Promise<PageResult<OsdkObjectFrom<T, O>>> {
+): Promise<
+  PageResult<
+    OsdkObjectFrom<
+      T,
+      O,
+      S extends readonly string[] ? S[number]
+        : ObjectOrInterfacePropertyKeysFrom<O, T>
+    >
+  >
+> {
   const page = await listLinkedObjectsV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,

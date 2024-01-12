@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { Wire } from "../internal/net/index.js";
@@ -73,8 +69,7 @@ export function createObjectSet<
     fetchPageOrThrow: async (
       args?: FetchPageOrThrowArgs<
         O,
-        K,
-        ObjectOrInterfacePropertyKeysFrom<O, K>
+        K
       >,
     ) => {
       return fetchPageOrThrow(

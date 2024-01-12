@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfacePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
-import { type FetchPageOrThrowArgs } from "./fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
 import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
 import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
@@ -54,7 +51,21 @@ function createPrototype<
 
           if (!linkDef.multiplicity) {
             return {
-              get: () => getLinkedObjectOrThrow(client, type, primaryKey, p),
+              get: <
+                A extends SelectArg<
+                  O,
+                  typeof linkDef.targetType
+                >,
+              >(
+                options?: A,
+              ) =>
+                getLinkedObjectOrThrow(
+                  client,
+                  type,
+                  primaryKey,
+                  p,
+                  options?.select,
+                ),
             };
           } else {
             return {
@@ -69,11 +80,7 @@ function createPrototype<
               fetchPageOrThrow: (
                 options?: FetchPageOrThrowArgs<
                   O,
-                  typeof linkDef.targetType,
-                  ObjectOrInterfacePropertyKeysFrom<
-                    O,
-                    typeof linkDef.targetType
-                  >
+                  typeof linkDef.targetType
                 >,
               ) =>
                 pageLinkedObjectsOrThrow(client, type, primaryKey, p, {

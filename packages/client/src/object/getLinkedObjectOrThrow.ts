@@ -14,25 +14,33 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
+import type { SelectArg } from "./fetchPageOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 export async function getLinkedObjectOrThrow<
   O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O>,
+  T extends ObjectTypeKeysFrom<O> & string,
+  L extends ObjectTypeLinkKeysFrom<O, T> & string,
+  A extends SelectArg<O, T>,
 >(
   client: ClientContext<O>,
-  sourceApiName: string,
+  sourceApiName: T,
   primaryKey: any,
-  linkTypeApiName: T & string,
+  linkTypeApiName: L,
+  select?: A["select"],
 ) {
   const result = await pageLinkedObjectsOrThrow(
     client,
     sourceApiName,
     primaryKey,
     linkTypeApiName,
-    { pageSize: 1 },
+    { pageSize: 1, select },
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {

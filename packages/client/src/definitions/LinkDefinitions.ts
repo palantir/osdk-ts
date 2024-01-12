@@ -46,7 +46,7 @@ export type OsdkObjectLinksEntry<
   T = ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
 > = ObjectTypeLinkDefinitionFrom<O, K, L> extends { multiplicity: false } ? {
     /** Load the linked object */
-    get: <A extends SelectArg<O, T, ObjectOrInterfacePropertyKeysFrom<O, T>>>(
+    get: <A extends SelectArg<O, T>>(
       options?: A,
     ) => OsdkObjectFrom<
       T,
@@ -60,7 +60,7 @@ export type OsdkObjectLinksEntry<
   }
   : {
     /** Loads the linked object for a given primary key */
-    get: <A extends SelectArg<O, T, ObjectOrInterfacePropertyKeysFrom<O, T>>>(
+    get: <A extends SelectArg<O, T>>(
       primaryKey: OsdkObjectPrimaryKeyType<
         T,
         O
@@ -80,11 +80,7 @@ export type OsdkObjectLinksEntry<
     fetchPageOrThrow: <
       A extends FetchPageOrThrowArgs<
         O,
-        T,
-        ObjectOrInterfacePropertyKeysFrom<
-          O,
-          T
-        >
+        T
       >,
     >(options?: A) => Promise<
       PageResult<

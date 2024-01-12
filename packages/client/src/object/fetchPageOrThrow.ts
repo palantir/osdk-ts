@@ -26,13 +26,12 @@ import type { ClientContext } from "@osdk/shared.net";
 import type { Wire } from "../internal/net/index.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { NOOP } from "../util/NOOP.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
-  L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
+  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
 > {
   select?: readonly L[];
 }
@@ -40,7 +39,7 @@ export interface SelectArg<
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
-  L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
+  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
 > extends SelectArg<O, K, L> {
   nextPageToken?: string;
   pageSize?: number;
@@ -51,8 +50,7 @@ export async function fetchPageOrThrow<
   T extends ObjectOrInterfaceKeysFrom<O>,
   const A extends FetchPageOrThrowArgs<
     O,
-    T,
-    ObjectOrInterfacePropertyKeysFrom<O, T>
+    T
   >,
 >(
   client: ClientContext<O>,
@@ -64,13 +62,11 @@ export async function fetchPageOrThrow<
   },
 ): Promise<
   PageResult<
-    NOOP<
-      OsdkObjectFrom<
-        T,
-        O,
-        A["select"] extends readonly string[] ? A["select"][number]
-          : ObjectOrInterfacePropertyKeysFrom<O, T>
-      >
+    OsdkObjectFrom<
+      T,
+      O,
+      A["select"] extends readonly string[] ? A["select"][number]
+        : ObjectOrInterfacePropertyKeysFrom<O, T>
     >
   >
 > {
