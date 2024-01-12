@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 0.200.4
+
+### Patch Changes
+
+- 35803ca0: Fix backcompat break where the script exports were removed
+
 ## 0.200.3
 
 ### Patch Changes
