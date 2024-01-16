@@ -44,7 +44,7 @@ function createPrototype<
 
       return new Proxy({}, {
         get(_target, p: string, _receiver) {
-          const linkDef = ontology.objects[type].links[p];
+          const linkDef = objDef.links[p];
           if (linkDef == null) {
             return;
           }
@@ -101,7 +101,6 @@ function createPrototype<
     },
     enumerable: false,
     configurable: false,
-    writable: false,
   });
 
   // Earlier versions of "2.0" included this by hand (even though it seems the wire gives it to us anyway).
