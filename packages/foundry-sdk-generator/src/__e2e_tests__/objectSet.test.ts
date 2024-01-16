@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { apiServer, fetchAllPages, fetchPage } from "@osdk/shared.test";
+import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   ConfidentialClientAuth,
@@ -31,6 +31,7 @@ import type {
   Employee,
   Office,
 } from "../generatedNoCheck/@test-app/osdk/ontology/objects";
+import { fetchAllPages, fetchPage } from "./paginationHelpers";
 import { assertOkOrThrow } from "./resultUtils";
 
 describe("Object Sets", () => {

@@ -16,6 +16,12 @@
 
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
+import {
+  getMockTodoObject,
+  MOCK_ORIGIN,
+  mockFetchResponse,
+  MockOntology,
+} from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import {
   assert,
@@ -35,14 +41,10 @@ import {
   type Result,
   ReturnEditsMode,
 } from "../..";
-import { MockOntology } from "../../util/test";
 import {
   expectFetchToBeCalledWithBody,
   expectFetchToBeCalledWithGet,
-  mockFetchResponse,
-} from "../../util/test/fetchUtils";
-import { MOCK_ORIGIN } from "../../util/test/mocks/mockMetadata";
-import { getMockTodoObject } from "../../util/test/mocks/mockObjects";
+} from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";

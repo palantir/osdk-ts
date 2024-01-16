@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
+import { MOCK_BASE_URL } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { expect } from "vitest";
-import { MOCK_BASE_URL } from "./mocks/mockMetadata";
-
-export function mockFetchResponse(
-  fetch: MockedFunction<typeof globalThis.fetch>,
-  response: any,
-) {
-  fetch.mockResolvedValueOnce({
-    json: () => Promise.resolve(response),
-    blob: () => Promise.resolve(response),
-    status: 200,
-    ok: true,
-  } as any);
-}
 
 export function expectFetchToBeCalledWithBody(
   fetch: MockedFunction<typeof globalThis.fetch>,

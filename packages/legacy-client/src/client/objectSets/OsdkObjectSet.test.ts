@@ -22,6 +22,12 @@ import type {
 import { createClientContext, isOk } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
+  getMockTaskObject,
+  getMockTodoObject,
+  mockFetchResponse,
+  MockOntology,
+} from "@osdk/shared.test";
+import {
   beforeEach,
   describe,
   expect,
@@ -30,12 +36,6 @@ import {
   vi,
 } from "vitest";
 import { USER_AGENT } from "../../USER_AGENT";
-import { MockOntology } from "../../util/test";
-import { mockFetchResponse } from "../../util/test/fetchUtils";
-import {
-  getMockTaskObject,
-  getMockTodoObject,
-} from "../../util/test/mocks/mockObjects";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";

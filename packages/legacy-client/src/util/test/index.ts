@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./mockOntology";
 export * from "./TaskObject";
 export * from "./TodoObject";

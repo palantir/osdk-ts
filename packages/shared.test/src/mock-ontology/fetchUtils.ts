@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { MockOntology } from "@osdk/shared.test";
-import { describe, expect, it } from "vitest";
-import { mapPropertiesToAggregatableProperties } from ".";
+import type { MockedFunction } from "vitest";
 
-describe(mapPropertiesToAggregatableProperties, () => {
-  it("maps properties correctly", () => {
-    const aggregatableProperties = mapPropertiesToAggregatableProperties(
-      MockOntology,
-      "Todo",
-    );
-    expect(aggregatableProperties.class.propertyApiName).toEqual("class");
-    expect(aggregatableProperties.class_.propertyApiName).toEqual("class");
-  });
-});
+export function mockFetchResponse(
+  fetch: MockedFunction<typeof globalThis.fetch>,
+  response: any,
+) {
+  fetch.mockResolvedValueOnce({
+    json: () => Promise.resolve(response),
+    blob: () => Promise.resolve(response),
+    status: 200,
+    ok: true,
+  } as any);
+}

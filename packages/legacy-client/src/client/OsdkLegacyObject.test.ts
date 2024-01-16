@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import type { MockOntology } from "@osdk/shared.test";
 import { describe, expectTypeOf, it } from "vitest";
-import type { MockOntology, Todo } from "../util/test";
+import type { Todo } from "../util/test";
 import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 
 describe("OsdkLegacyObject", () => {

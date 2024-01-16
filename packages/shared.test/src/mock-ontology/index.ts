@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-import { MockOntology } from "@osdk/shared.test";
-import { describe, expect, it } from "vitest";
-import { mapPropertiesToAggregatableProperties } from ".";
-
-describe(mapPropertiesToAggregatableProperties, () => {
-  it("maps properties correctly", () => {
-    const aggregatableProperties = mapPropertiesToAggregatableProperties(
-      MockOntology,
-      "Todo",
-    );
-    expect(aggregatableProperties.class.propertyApiName).toEqual("class");
-    expect(aggregatableProperties.class_.propertyApiName).toEqual("class");
-  });
-});
+export * from "./fetchUtils";
+export * from "./mockMetadata";
+export * from "./mockObjects";
+export * from "./mockOntology";
