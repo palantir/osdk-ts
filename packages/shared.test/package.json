@@ -26,6 +26,7 @@
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
+    "@osdk/api": "workspace:*",
     "@osdk/cli": "workspace:*",
     "@osdk/gateway": "workspace:*",
     "fetch-retry": "^5.0.6",

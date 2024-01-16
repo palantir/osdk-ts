@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import { MockOntology } from "../../util/test";
 import { mapPropertiesToOrderBy } from ".";
 
 describe(mapPropertiesToOrderBy, () => {

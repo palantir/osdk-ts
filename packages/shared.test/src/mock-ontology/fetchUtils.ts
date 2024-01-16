@@ -16,7 +16,7 @@
 
 import type { MockedFunction } from "vitest";
 import { expect } from "vitest";
-import { MOCK_BASE_URL } from "./mocks/mockMetadata";
+import { MOCK_BASE_URL } from "./mockMetadata";
 
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,

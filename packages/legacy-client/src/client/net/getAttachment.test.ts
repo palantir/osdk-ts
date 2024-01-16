@@ -16,14 +16,14 @@
 
 import type { ClientContext } from "@osdk/shared.net";
 import { createClientContext } from "@osdk/shared.net";
-import type { MockedFunction } from "vitest";
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { MockOntology } from "../../util/test";
 import {
   expectFetchToBeCalledWithGet,
+  MOCK_ORIGIN,
   mockFetchResponse,
-} from "../../util/test/fetchUtils";
-import { MOCK_ORIGIN } from "../../util/test/mocks/mockMetadata";
+  MockOntology,
+} from "@osdk/shared.test";
+import type { MockedFunction } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { getAttachment } from "./getAttachment";
 

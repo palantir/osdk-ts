@@ -16,11 +16,11 @@
 
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
+import { MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../..";
 import { USER_AGENT } from "../../USER_AGENT";
-import { MockOntology } from "../../util/test";
 import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
 
 describe("convertWireToOsdkObject", () => {

@@ -20,15 +20,15 @@ import type {
 } from "@osdk/gateway/types";
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
+import {
+  expectFetchToBeCalledWithBody,
+  MOCK_ORIGIN,
+  mockFetchResponse,
+  MockOntology,
+} from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { USER_AGENT } from "../../USER_AGENT";
-import { MockOntology } from "../../util/test";
-import {
-  expectFetchToBeCalledWithBody,
-  mockFetchResponse,
-} from "../../util/test/fetchUtils";
-import { MOCK_ORIGIN } from "../../util/test/mocks/mockMetadata";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
 
