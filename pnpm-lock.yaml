@@ -370,6 +370,12 @@ importers:
         specifier: ^8.14.2
         version: 8.14.2
     devDependencies:
+      '@osdk/generator':
+        specifier: workspace:*
+        version: link:../generator
+      '@osdk/shared.test':
+        specifier: workspace:*
+        version: link:../shared.test
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
