@@ -18,7 +18,6 @@ import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { createClientContext, isOk } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
-  expectFetchToBeCalledWithBody,
   MOCK_ORIGIN,
   mockFetchResponse,
   MockOntology,
@@ -35,6 +34,7 @@ import {
 } from "vitest";
 import type { ObjectSet, Range } from "../client";
 import type { Todo } from "../util/test";
+import { expectFetchToBeCalledWithBody } from "../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../util/test/resultUtils";
 import type {
   ThreeDimensionalAggregation,

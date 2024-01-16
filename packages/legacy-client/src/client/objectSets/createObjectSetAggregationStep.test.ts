@@ -21,7 +21,6 @@ import type {
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
-  expectFetchToBeCalledWithBody,
   MOCK_ORIGIN,
   mockFetchResponse,
   MockOntology,
@@ -29,6 +28,7 @@ import {
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { USER_AGENT } from "../../USER_AGENT";
+import { expectFetchToBeCalledWithBody } from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
 

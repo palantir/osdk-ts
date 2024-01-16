@@ -17,8 +17,6 @@
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
-  expectFetchToBeCalledWithBody,
-  expectFetchToBeCalledWithGet,
   getMockTodoObject,
   MOCK_ORIGIN,
   mockFetchResponse,
@@ -43,6 +41,10 @@ import {
   type Result,
   ReturnEditsMode,
 } from "../..";
+import {
+  expectFetchToBeCalledWithBody,
+  expectFetchToBeCalledWithGet,
+} from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";

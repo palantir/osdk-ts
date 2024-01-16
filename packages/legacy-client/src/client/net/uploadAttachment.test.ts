@@ -17,13 +17,13 @@
 import type { ClientContext } from "@osdk/shared.net";
 import { createClientContext } from "@osdk/shared.net";
 import {
-  expectFetchToBeCalledWithBlob,
   MOCK_ORIGIN,
   mockFetchResponse,
   MockOntology,
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { expectFetchToBeCalledWithBlob } from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { uploadAttachment } from "./uploadAttachment";
 

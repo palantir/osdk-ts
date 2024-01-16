@@ -15,8 +15,6 @@
  */
 
 import type { MockedFunction } from "vitest";
-import { expect } from "vitest";
-import { MOCK_BASE_URL } from "./mockMetadata";
 
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
@@ -28,49 +26,4 @@ export function mockFetchResponse(
     status: 200,
     ok: true,
   } as any);
-}
-
-export function expectFetchToBeCalledWithBody(
-  fetch: MockedFunction<typeof globalThis.fetch>,
-  endpoint: string,
-  body: object,
-) {
-  expect(fetch).toBeCalledWith(
-    `${MOCK_BASE_URL}${endpoint}`,
-    {
-      body: JSON.stringify(body),
-      headers: expect.anything(),
-      method: "POST",
-    },
-  );
-}
-
-export function expectFetchToBeCalledWithBlob(
-  fetch: MockedFunction<typeof globalThis.fetch>,
-  endpoint: string,
-  body: Blob,
-  baseUrl?: string,
-) {
-  expect(fetch).toBeCalledWith(
-    `${baseUrl ?? MOCK_BASE_URL}${endpoint}`,
-    {
-      body,
-      headers: expect.anything(),
-      method: "POST",
-    },
-  );
-}
-
-export function expectFetchToBeCalledWithGet(
-  fetch: MockedFunction<typeof globalThis.fetch>,
-  endpoint: string,
-  baseUrl?: string,
-) {
-  expect(fetch).toBeCalledWith(
-    `${baseUrl ?? MOCK_BASE_URL}${endpoint}`,
-    {
-      headers: expect.anything(),
-      method: "GET",
-    },
-  );
 }
