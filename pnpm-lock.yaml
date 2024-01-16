@@ -556,9 +556,6 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
-      '@osdk/legacy-client':
-        specifier: workspace:*
-        version: link:../legacy-client
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6

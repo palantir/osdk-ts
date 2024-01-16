@@ -28,7 +28,6 @@
   "dependencies": {
     "@osdk/cli": "workspace:*",
     "@osdk/gateway": "workspace:*",
-    "@osdk/legacy-client": "workspace:*",
     "fetch-retry": "^5.0.6",
     "json-stable-stringify": "^1.1.0",
     "msw": "^1.2.4"
