@@ -37,7 +37,7 @@ function createPrototype<
   const objDef = ontology.objects[type];
   const proto = {};
 
-  Object.defineProperty(proto, "$links", {
+  Object.defineProperty(proto, "$link", {
     get: function() {
       const client = this[OriginClient] as ClientContext<O>;
       const primaryKey = this["__primaryKey"];
