@@ -27,7 +27,7 @@ import type {
 export function createQueryProxy<O extends OntologyDefinition<any>>(
   client: ClientContext<O>,
 ): Queries<O> {
-  return new Proxy({}, {
+  const proxy = new Proxy({}, {
     get(_target, q: QueryNamesFrom<O> & string, _receiver) {
       const queryDefinition = client.ontology.queries[q];
       if (queryDefinition) {
@@ -52,5 +52,19 @@ export function createQueryProxy<O extends OntologyDefinition<any>>(
 
       return undefined;
     },
+    ownKeys(_target) {
+      return Object.keys(client.ontology.queries);
+    },
+    getOwnPropertyDescriptor(_target, p) {
+      if (typeof p === "string") {
+        return {
+          enumerable: client.ontology.queries[p] != null,
+          configurable: true,
+          value: proxy[p],
+        };
+      }
+    },
   }) as Queries<O>;
+
+  return proxy;
 }

@@ -23,7 +23,7 @@ import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
 export function createActionProxy<
   O extends OntologyDefinition<any>,
 >(client: ClientContext<O>): Actions<O> {
-  return new Proxy(
+  const proxy = new Proxy(
     {},
     {
       get: (_target, p: keyof O["actions"], _receiver) => {
@@ -51,6 +51,19 @@ export function createActionProxy<
 
         return undefined;
       },
+      ownKeys(_target) {
+        return Object.keys(client.ontology.actions);
+      },
+      getOwnPropertyDescriptor(_target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: client.ontology.actions[p] != null,
+            configurable: true,
+            value: proxy[p],
+          };
+        }
+      },
     },
   ) as Actions<O>;
+  return proxy;
 }
