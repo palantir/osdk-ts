@@ -97,6 +97,16 @@ export const objectWithAllPropertyTypes1 = {
   attachment2: {
     rid: "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
   },
+  attachmentArray: [
+    {
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    },
+    {
+      rid:
+        "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a80",
+    },
+  ],
   long: 1,
   short: 1,
   float: 1.1,

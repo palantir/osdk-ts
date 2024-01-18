@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-import type { ListObjectsResponseV2 } from "@osdk/gateway/types";
+export interface Attachment {
+  rid: string;
+}
 
-import {
-  employee1,
-  employee2,
-  employee3,
-  objectWithAllPropertyTypes1,
-  objectWithAllPropertyTypesEmptyEntries,
-} from "./objects";
+export class Attachment implements Attachment {
+  constructor(public rid: string) {}
+}
 
-export const loadRequestHandlersV2: {
-  [objectTypeApiName: string]: ListObjectsResponseV2["data"];
-} = {
-  Employee: [employee1, employee2, employee3],
-  objectTypeWithAllPropertyTypes: [
-    objectWithAllPropertyTypes1,
-    objectWithAllPropertyTypesEmptyEntries,
-  ],
-};
+export function isAttachment(o: any): o is Attachment {
+  return o instanceof Attachment;
+}
