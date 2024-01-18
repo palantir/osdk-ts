@@ -23,6 +23,7 @@ export async function generatePackageJson(options: {
   packagePath: string;
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
 }) {
+  // Note that any "default" conditions _must_ be last in their block otherwise it will crash at runtime
   const packageJson = {
     name: options.packageName,
     version: options.packageVersion,
@@ -31,11 +32,11 @@ export async function generatePackageJson(options: {
     exports: {
       ".": {
         types: "./index.d.ts",
-        default: "./index.js",
         script: {
           types: "./dist/bundle/index.d.ts",
           default: "./dist/bundle/index.esm.js",
         },
+        default: "./index.js",
       },
       "./ontology/objects": {
         types: "./ontology/objects/index.d.ts",
