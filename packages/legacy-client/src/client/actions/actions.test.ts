@@ -259,4 +259,15 @@ describe("Actions", () => {
 
     assert(actionResponse.type === "ok");
   });
+
+  it("has an enumerable list of actions", () => {
+    const actionProxy = createActionProxy(client);
+    expect(Object.getOwnPropertyNames(actionProxy)).toMatchInlineSnapshot(`
+      [
+        "createTask",
+        "createTodo",
+        "updateTask",
+      ]
+    `);
+  });
 });

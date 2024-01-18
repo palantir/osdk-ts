@@ -51,7 +51,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
 export function createObjectSetCreator<
   O extends OntologyDefinition<any>,
 >(client: ClientContext<O>): Objects<O> {
-  return new Proxy(
+  const proxy = new Proxy(
     {},
     {
       get: (_target, p, _receiver) => {
@@ -61,6 +61,20 @@ export function createObjectSetCreator<
 
         return undefined;
       },
+      ownKeys(_target) {
+        return Object.keys(client.ontology.objects);
+      },
+      getOwnPropertyDescriptor(_target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: client.ontology.objects[p] != null,
+            configurable: true,
+            value: proxy[p],
+          };
+        }
+      },
     },
   ) as Objects<O>;
+
+  return proxy;
 }

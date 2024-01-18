@@ -334,4 +334,16 @@ describe("Queries", () => {
       }]>();
     });
   });
+
+  it("has an enumerable list of queries", () => {
+    const queryProxy = createQueryProxy(client);
+    expect(Object.getOwnPropertyNames(queryProxy)).toMatchInlineSnapshot(`
+      [
+        "queryTakesNoParameters",
+        "queryReturnsAggregation",
+        "queryTakesAllParameterTypes",
+        "queryTakesNestedObjects",
+      ]
+    `);
+  });
 });
