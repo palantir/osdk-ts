@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 1.0.3
+
+### Patch Changes
+
+- ef7f8d8e: Ensure that ontology objects actions and queries have enumerable keys
+
 ## 1.0.2
 
 ### Patch Changes
