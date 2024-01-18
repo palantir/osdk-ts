@@ -83,22 +83,13 @@ export interface BaseObjectSet<
 
   pivotTo: <T extends LinkTypesFrom<O, K>>(
     type: T & string,
-    opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
   ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
 
   subscribe: (listener: ObjectSetListener<O, K>) => () => void;
-}
-
-export interface ObjectSetOptions<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> {
-  $where?: WhereClause<ObjectOrInterfaceDefinitionFrom<O, K>>;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
   K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
-  opts?: ObjectSetOptions<O, K>,
 ) => ObjectSet<O, K>; // FIXME
