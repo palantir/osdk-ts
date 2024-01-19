@@ -23,8 +23,10 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import { Attachment } from "./Attachment.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
+const getConverter = createCachedOntologyTransform(createConverter);
 
 function createPrototype<
   T extends keyof O["objects"] & string,
@@ -48,6 +50,42 @@ function createPrototype<
   return proto;
 }
 
+// preprocess the ontology definition to more quickly apply object conversions when needed
+function createConverter<
+  T extends keyof O["objects"] & string,
+  O extends OntologyDefinition<any>,
+>(
+  ontology: O,
+  type: T,
+) {
+  const steps: Array<(o: Record<string, any>) => void> = [];
+
+  for (
+    const [key, value] of Object.entries(ontology.objects[type].properties)
+  ) {
+    // attachments need a wrapper to provide functionality and to identify them at serialization time
+    if (value.type === "attachment") {
+      steps.push((o) => {
+        if (o[key] != null) {
+          if (Array.isArray(o[key])) {
+            o[key] = o[key].map((a: any) => new Attachment(a.rid));
+          } else {
+            o[key] = new Attachment(o[key].rid);
+          }
+        }
+      });
+    }
+  }
+
+  return steps.length > 0
+    ? (o: Record<string, any>) => {
+      for (const step of steps) {
+        step(o);
+      }
+    }
+    : false as const;
+}
+
 export function convertWireToOsdkObjects<
   T_ClientApiName extends ObjectTypeKeysFrom<T_OntologyDefinition> & string,
   T_OntologyDefinition extends OntologyDefinition<any>,
@@ -61,37 +99,17 @@ export function convertWireToOsdkObjects<
   ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
 >[] {
   const proto = getPrototype(client.ontology, apiName);
-  for (const obj of objs) {
-    Object.setPrototypeOf(obj, proto);
+  const converter = getConverter(client.ontology, apiName);
 
-    // Saving this code in case we want to come back to temporal. For now its not worth the
-    // risk and we can stick to string until we know what we want.
-    // ====================================================================================================
-    // FIXME
-    // Im not going for performance for now, just something usable by beta users
-    // Also not married to the $raw
-    // obj["$raw"] = {};
-
-    // for (
-    //   const [key, def] of Object.entries(
-    //     client.ontology.objects[apiName].properties,
-    //   )
-    // ) {
-    //   if (!(key in obj)) continue;
-    //   obj["$raw"][key] = obj[key];
-
-    //   if (def.type === "timestamp") {
-    //     const value = obj[key] as string | undefined;
-    //     if (value !== undefined) {
-    //       obj[key] = Temporal.Instant.from(value);
-    //     }
-    //   } else if (def.type === "datetime") {
-    //     const value = obj[key] as string | undefined;
-    //     if (value !== undefined) {
-    //       obj[key] = Temporal.PlainDateTime.from(value);
-    //     }
-    //   }
-    // }
+  if (converter) {
+    for (const obj of objs) {
+      Object.setPrototypeOf(obj, proto);
+      converter(obj);
+    }
+  } else {
+    for (const obj of objs) {
+      Object.setPrototypeOf(obj, proto);
+    }
   }
 
   return objs as unknown as OsdkObjectFrom<
