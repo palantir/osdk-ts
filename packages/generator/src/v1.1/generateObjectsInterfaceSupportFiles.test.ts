@@ -33,8 +33,8 @@ describe(generateObjectsInterfaceSupportFiles, () => {
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
     expect(helper.getFiles()[`${BASE_PATH}/Todo.ts`]).toMatchInlineSnapshot(`
-      "import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from \\"@osdk/legacy-client\\";
-      import { Todo as OG_Todo } from \\"../Todo\\";
+      "import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
+      import { Todo as OG_Todo } from "../Todo";
 
       /** @deprecated Use Todo from ontology/objects instead */
       export type Todo = OG_Todo;
