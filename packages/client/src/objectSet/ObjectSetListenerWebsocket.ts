@@ -439,7 +439,7 @@ async function convertFoundryToOsdkObjects<
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
 ): Promise<Array<OsdkObjectFrom<K, O>>> {
-  const osdkObjects: OsdkObjectFrom<K, O>[] = await Promise.all(
+  const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
         ctx,
@@ -460,18 +460,13 @@ async function convertFoundryToOsdkObjects<
           propertyMapping?.apiName,
         ],
       ]);
-
-      return convertWireToOsdkObjects<K & string, O>(
-        client,
-        propertyMapping?.apiName! as K & string,
-        [
-          convertedObject,
-        ],
-      ) as unknown as OsdkObjectFrom<K, O>;
+      return convertedObject;
     }),
   );
 
-  return osdkObjects;
+  convertWireToOsdkObjects(client, osdkObjects);
+
+  return osdkObjects as OsdkObjectFrom<K & String, O>[];
 }
 
 export type ObjectPropertyMapping = {

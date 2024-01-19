@@ -22,6 +22,8 @@
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build"

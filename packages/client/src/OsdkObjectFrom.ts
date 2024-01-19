@@ -25,6 +25,7 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
+import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 
 export type OsdkObjectPrimaryKeyType<
   TObjectName,
@@ -55,6 +56,8 @@ export type OsdkObjectFrom<
      * as always optional to avoid breaking changes.
      */
     __rid?: string;
+
+    $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
   }; // TODO
 
 export type OsdkInterfaceFrom<

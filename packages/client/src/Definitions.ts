@@ -15,9 +15,7 @@
  */
 
 import type {
-  ObjectTypeLinkDefinition,
   ObjectTypePropertyDefinition,
-  OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import type { Attachment } from "./object/Attachment.js";
@@ -41,16 +39,3 @@ export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition> =
 
 export type OsdkObjectRawPropertyType<T extends ObjectTypePropertyDefinition> =
   MaybeNullable<T, MaybeArray<T, Raw<WirePropertyTypes[T["type"]]>>>;
-
-export type OsdkObjectLink<
-  K extends string,
-  O extends OntologyDefinition<K>,
-  T extends ObjectTypeLinkDefinition<any>,
-> = MaybeArray<T, OsdkObjectLink_Inner<K, O, T>>;
-
-type OsdkObjectLink_Inner<
-  K extends string,
-  O extends OntologyDefinition<K>,
-  T extends ObjectTypeLinkDefinition<any>,
-> = T["targetType"] extends keyof O["objects"] ? O["objects"][T["targetType"]]
-  : never;

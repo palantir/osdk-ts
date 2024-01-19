@@ -28,7 +28,7 @@ export type InterfaceKeysFrom<O extends OntologyDefinition<string>> =
 export type InterfacePropertyKeysFrom<
   O extends OntologyDefinition<any>,
   K extends InterfaceKeysFrom<O>,
-> = keyof InterfaceDefinitionFrom<O, K>["properties"];
+> = keyof InterfaceDefinitionFrom<O, K>["properties"] & string;
 
 export type InterfacePropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,

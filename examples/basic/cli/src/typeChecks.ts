@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, OsdkObjectFrom, PageResult } from "@osdk/client";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -25,7 +25,7 @@ import { expectType } from "ts-expect";
  * across changes.
  * @param client
  */
-export function typeChecks(client: Client<Ontology>) {
+export async function typeChecks(client: Client<Ontology>) {
   // client.objectSet("Employee") is the same as client.objects.Employee
   {
     const objectSet = client.objectSet("Employee");
@@ -48,5 +48,56 @@ export function typeChecks(client: Client<Ontology>) {
     expectType<TypeOf<typeof objectSet, typeof client["objects"]["Employee"]>>(
       true,
     );
+  }
+
+  // object $link examples
+  {
+    const page = await client.objectSet("Employee").where({
+      adUsername: "adUsername",
+    }).fetchPageOrThrow();
+    const employee = page.data[0];
+
+    // lead is an employee
+    const lead = await employee.$link.lead.get();
+    expectType<TypeOf<typeof lead, OsdkObjectFrom<"Employee", Ontology>>>(true);
+
+    // lead is an employee but we downselect to just their adUsername
+    const leadName = await employee.$link.lead.get({ select: ["adUsername"] });
+    expectType<TypeOf<typeof leadName.adUsername, string>>(true);
+
+    // jobProfile is not available on the select-ed Person
+    expectType<TypeOf<{ jobProfile: any[] }, typeof leadName>>(false);
+
+    // peeps is a page of employees, but only get the adUsername and employeeNumber
+    const peeps = await employee.$link.peeps.fetchPageOrThrow({
+      select: ["adUsername", "employeeNumber"],
+    });
+    expectType<
+      TypeOf<
+        typeof peeps,
+        PageResult<
+          OsdkObjectFrom<"Employee", Ontology, "adUsername" | "employeeNumber">
+        >
+      >
+    >(true);
+
+    // jobProfile is not available on the select-ed peeps
+    expectType<TypeOf<{ jobProfile: any }[], typeof peeps>>(false);
+
+    // peepById is just a singular employee again, and only grab the adUsername
+    const peepById = await employee.$link.peeps.get("peepPK", {
+      select: ["adUsername"],
+    });
+    expectType<
+      TypeOf<
+        typeof peepById,
+        OsdkObjectFrom<"Employee", Ontology, "adUsername">
+      >
+    >(
+      true,
+    );
+
+    // employeeNumber is not part of the selected peep
+    expectType<TypeOf<{ employeeNumber: any }, typeof peepById>>(false);
   }
 }

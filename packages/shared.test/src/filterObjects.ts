@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { OntologyObject, OntologyObjectV2 } from "@osdk/gateway/types";
 import type { PagedBodyResponse } from "./handlers/endpointUtils";
 
-export function filterObjectProperties(
-  object: OntologyObjectV2,
+export function filterObjectProperties<
+  T extends OntologyObjectV2 | OntologyObject,
+>(
+  object: T,
   url: URL,
-): OntologyObjectV2 {
+): T {
   const properties = new Set(url.searchParams.getAll("select"));
 
   if (properties.size === 0) {
@@ -39,13 +41,15 @@ export function filterObjectProperties(
     return acc;
   }, {} as { [key: string]: any });
 
-  return result;
+  return result as T;
 }
 
-export function filterObjectsProperties(
-  objects: PagedBodyResponse<OntologyObjectV2>,
+export function filterObjectsProperties<
+  T extends OntologyObjectV2 | OntologyObject,
+>(
+  objects: PagedBodyResponse<T>,
   url: URL | string[],
-): PagedBodyResponse<OntologyObjectV2> {
+): PagedBodyResponse<T> {
   let properties: Set<string>;
   if (Array.isArray(url)) {
     properties = new Set(url);
@@ -57,7 +61,7 @@ export function filterObjectsProperties(
     return objects;
   }
 
-  const result: OntologyObjectV2[] = objects.data.map(object =>
+  const result = objects.data.map(object =>
     Object.entries(object).reduce((acc, [key, value]) => {
       if (properties.has(key)) {
         acc[key] = value;
@@ -73,6 +77,6 @@ export function filterObjectsProperties(
 
   return {
     nextPageToken: objects.nextPageToken,
-    data: result,
+    data: result as T[],
   };
 }

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import { Attachment } from "./Attachment.js";
+import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
+import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
+import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
+import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 const getConverter = createCachedOntologyTransform(createConverter);
+
+const OriginClient = Symbol();
 
 function createPrototype<
   T extends keyof O["objects"] & string,
@@ -37,6 +38,72 @@ function createPrototype<
 ) {
   const objDef = ontology.objects[type];
   const proto = {};
+
+  Object.defineProperty(proto, "$link", {
+    get: function() {
+      const client = this[OriginClient] as ClientContext<O>;
+      const primaryKey = this["__primaryKey"];
+
+      return new Proxy({}, {
+        get(_target, p: string, _receiver) {
+          const linkDef = objDef.links[p];
+          if (linkDef == null) {
+            return;
+          }
+
+          if (!linkDef.multiplicity) {
+            return {
+              get: <
+                A extends SelectArg<
+                  O,
+                  typeof linkDef.targetType
+                >,
+              >(
+                options?: A,
+              ) =>
+                getLinkedObjectOrThrow(
+                  client,
+                  type,
+                  primaryKey,
+                  p,
+                  options?.select,
+                ),
+            };
+          } else {
+            return {
+              get: <
+                A extends SelectArg<
+                  O,
+                  typeof linkDef.targetType
+                >,
+              >(targetPrimaryKey: any, options?: A) =>
+                getLinkedObjectByPkOrThrow(
+                  client,
+                  type,
+                  primaryKey,
+                  p,
+                  targetPrimaryKey,
+                  options?.select,
+                ),
+              fetchPageOrThrow: (
+                options?: FetchPageOrThrowArgs<
+                  O,
+                  typeof linkDef.targetType
+                >,
+              ) =>
+                pageLinkedObjectsOrThrow(client, type, primaryKey, p, {
+                  nextPageToken: options?.nextPageToken,
+                  pageSize: options?.pageSize,
+                  select: options?.select,
+                }),
+            };
+          }
+        },
+      });
+    },
+    enumerable: false,
+    configurable: false,
+  });
 
   // Earlier versions of "2.0" included this by hand (even though it seems the wire gives it to us anyway).
   // Its deprecated but I'm it for now (lets delete after Dec 31, 2023) so our beta users can transition.
@@ -86,35 +153,37 @@ function createConverter<
     : false as const;
 }
 
+/**
+ * @param objs the objects to be converted, the contents of this array will be mutated
+ */
 export function convertWireToOsdkObjects<
-  T_ClientApiName extends ObjectTypeKeysFrom<T_OntologyDefinition> & string,
   T_OntologyDefinition extends OntologyDefinition<any>,
 >(
   client: ClientContext<T_OntologyDefinition>,
-  apiName: T_ClientApiName,
   objs: OntologyObjectV2[],
-): OsdkObjectFrom<
-  T_ClientApiName,
-  T_OntologyDefinition,
-  ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
->[] {
-  const proto = getPrototype(client.ontology, apiName);
-  const converter = getConverter(client.ontology, apiName);
+) {
+  for (const obj of objs) {
+    const proto = getPrototype(client.ontology, obj.__apiName);
+    const converter = getConverter(client.ontology, obj.__apiName);
 
-  if (converter) {
-    for (const obj of objs) {
-      Object.setPrototypeOf(obj, proto);
-      converter(obj);
-    }
-  } else {
-    for (const obj of objs) {
-      Object.setPrototypeOf(obj, proto);
+    Object.setPrototypeOf(obj, proto);
+
+    Object.defineProperty(obj, OriginClient, {
+      value: client,
+      enumerable: false,
+      configurable: false,
+      writable: false,
+    });
+
+    if (converter) {
+      for (const obj of objs) {
+        Object.setPrototypeOf(obj, proto);
+        converter(obj);
+      }
+    } else {
+      for (const obj of objs) {
+        Object.setPrototypeOf(obj, proto);
+      }
     }
   }
-
-  return objs as unknown as OsdkObjectFrom<
-    T_ClientApiName,
-    T_OntologyDefinition,
-    ObjectTypePropertyKeysFrom<T_OntologyDefinition, T_ClientApiName>
-  >[];
 }

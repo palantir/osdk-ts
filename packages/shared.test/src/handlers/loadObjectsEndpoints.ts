@@ -539,8 +539,101 @@ export const loadObjectsEndpoints: RestHandler<
             }),
           );
         }
+        return res(
+          ctx.json(
+            filterObjectsProperties(
+              linkResponseMap[objectType][linkType][primaryKey],
+              req.url,
+            ),
+          ),
+        );
+      },
+    ),
+  ),
 
-        return res(ctx.json(linkResponseMap[objectType][linkType][primaryKey]));
+  /**
+   * Get specific Linked Object
+   */
+  rest.get(
+    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/links/:linkType/:targetPrimaryKey",
+    authHandlerMiddleware(
+      async (
+        req,
+        res: ResponseComposition<ListLinkedObjectsResponse | BaseAPIError>,
+        ctx,
+      ) => {
+        if (req.params.ontologyApiName !== defaultOntology.apiName) {
+          return res(
+            ctx.status(404),
+            ctx.json(
+              OntologyNotFoundError(JSON.stringify(req.params.ontologyApiName)),
+            ),
+          );
+        }
+
+        const primaryKey = req.params.primaryKey;
+        const linkType = req.params.linkType;
+        const objectType = req.params.objectType;
+        const targetPrimaryKey = req.params.targetPrimaryKey;
+
+        if (
+          typeof primaryKey !== "string" || typeof linkType !== "string"
+          || typeof objectType !== "string"
+          || typeof targetPrimaryKey !== "string"
+        ) {
+          return res(
+            ctx.status(400),
+            ctx.json(InvalidRequest("Invalid path parameters sent")),
+          );
+        }
+
+        if (!linkResponseMap[objectType]) {
+          return res(
+            ctx.status(400),
+            ctx.json(ObjectTypeDoesNotExistError(objectType)),
+          );
+        }
+
+        if (!linkResponseMap[objectType][linkType]) {
+          return res(
+            ctx.status(400),
+            ctx.json(LinkTypeNotFound(objectType, linkType)),
+          );
+        }
+
+        if (!linkResponseMap[objectType][linkType][primaryKey]) {
+          return res(
+            ctx.json({
+              data: [],
+            }),
+          );
+        }
+
+        const object = linkResponseMap[objectType][linkType][primaryKey].data
+          .find((o: any) => o.__primaryKey.toString() === targetPrimaryKey);
+
+        if (!object) {
+          return res(
+            ctx.status(404),
+            ctx.json(
+              ObjectNotFoundError(
+                linkResponseMap[objectType][linkType][primaryKey].data[0]
+                  ?.__apiName
+                  ?? `${objectType} -> ${linkType}`,
+                targetPrimaryKey,
+              ),
+            ),
+          );
+        }
+
+        return res(
+          ctx.json(
+            filterObjectProperties(
+              object,
+              req.url,
+            ),
+          ),
+        );
       },
     ),
   ),

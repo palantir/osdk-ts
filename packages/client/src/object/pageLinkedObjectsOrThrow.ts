@@ -1,0 +1,79 @@
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import type {
+  ObjectOrInterfacePropertyKeysFrom,
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkTargetTypeFrom,
+  OntologyDefinition,
+} from "@osdk/api";
+import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
+import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { PageResult } from "../PageResult.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+
+export async function pageLinkedObjectsOrThrow<
+  O extends OntologyDefinition<any>,
+  T extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypeLinkKeysFrom<O, T>,
+  S = ReadonlyArray<
+    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  >,
+>(
+  client: ClientContext<O>,
+  sourceApiName: T & string,
+  primaryKey: any,
+  linkTypeApiName: string,
+  options?: {
+    nextPageToken?: string;
+    pageSize?: number;
+    select?: S;
+  },
+): Promise<
+  PageResult<
+    OsdkObjectFrom<
+      T,
+      O,
+      S extends readonly string[] ? S[number]
+        : ObjectOrInterfacePropertyKeysFrom<O, T>
+    >
+  >
+> {
+  const page = await listLinkedObjectsV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    sourceApiName,
+    primaryKey,
+    linkTypeApiName,
+    {
+      pageSize: options?.pageSize,
+      pageToken: options?.nextPageToken,
+      select: (options?.select as string[] | undefined) ?? [],
+    },
+  );
+
+  convertWireToOsdkObjects(
+    client,
+    page.data,
+  );
+
+  return {
+    nextPageToken: page.nextPageToken,
+    data: page.data as OsdkObjectFrom<T, O>[],
+  };
+}
