@@ -49,9 +49,6 @@ export type OsdkObjectFrom<
     >;
   }
   & {
-    $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
-  }
-  & {
     __apiName: T_ObjectTypeKey;
     __primaryKey: OsdkObjectPrimaryKeyType<T_ObjectTypeKey, T_Ontology>;
     /**
@@ -59,6 +56,8 @@ export type OsdkObjectFrom<
      * as always optional to avoid breaking changes.
      */
     __rid?: string;
+
+    $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
   }; // TODO
 
 export type OsdkInterfaceFrom<
