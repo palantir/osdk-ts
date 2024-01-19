@@ -27,11 +27,7 @@ import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
-import type {
-  BaseObjectSet,
-  ObjectSet,
-  ObjectSetOptions,
-} from "./ObjectSet.js";
+import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
@@ -41,7 +37,6 @@ export function createObjectSet<
 >(
   objectType: K & string,
   clientCtx: ClientContext<O>,
-  opts: ObjectSetOptions<O, K> | undefined,
   objectSet: Wire.ObjectSet = {
     type: "base",
     objectType,
@@ -89,7 +84,7 @@ export function createObjectSet<
     //   throw "";
     // },
     where: (clause) => {
-      return createObjectSet(objectType, clientCtx, opts, {
+      return createObjectSet(objectType, clientCtx, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause),
@@ -101,9 +96,8 @@ export function createObjectSet<
 
     pivotTo: function<T extends LinkTypesFrom<O, K>>(
       type: T & string,
-      opts?: ObjectSetOptions<O, O["objects"][K]["links"][T]["targetType"]>,
     ): ObjectSet<O, O["objects"][K]["links"][T]["targetType"]> {
-      return createSearchAround(type)().where(opts?.$where ?? {});
+      return createSearchAround(type)();
     },
 
     subscribe(listener) {
@@ -117,7 +111,6 @@ export function createObjectSet<
       return createObjectSet(
         objectType,
         clientCtx,
-        {},
         {
           type: "searchAround",
           objectSet,
