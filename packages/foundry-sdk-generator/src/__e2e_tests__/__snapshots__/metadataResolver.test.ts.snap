@@ -84,7 +84,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
             "dataType": {
               "type": "string",
             },
-            "description": "The unique \\"ID\\" of the employee's \\\\\\"primary\\\\\\" assigned office.
+            "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
           },
           "startDate": {
@@ -212,7 +212,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
             "dataType": {
               "type": "string",
             },
-            "description": "The unique \\"ID\\" of the employee's \\\\\\"primary\\\\\\" assigned office.
+            "description": "The unique "ID" of the employee's \\"primary\\" assigned office.
  This is some more text.",
           },
           "startDate": {

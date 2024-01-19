@@ -45,7 +45,7 @@ describe(generateActions, () => {
         export interface Actions {
           /**
            * An action which takes different types of parameters
-           * @param {Todo | Todo[\\"__primaryKey\\"]} params.object
+           * @param {Todo | Todo["__primaryKey"]} params.object
            */
           markTodoCompleted<O extends ActionExecutionOptions>(
             params: {

@@ -115,7 +115,7 @@ describe("Load Ontologies Metadata", () => {
     expect(ontologyDefinitions.error).toMatchInlineSnapshot(`
       [
         "Unable to load query returnsObject because it takes an unloaded object type as a parameter: Employee in parameter output. Make sure to specify it as an argument with --ontologyObjects Employee.}",
-        "Unable to load action unsupportedAction because it takes an unsupported parameter: {\\"type\\":\\"unsupportedType\\"} specify only the actions you want to load with the --actions argument.",
+        "Unable to load action unsupportedAction because it takes an unsupported parameter: {"type":"unsupportedType"} specify only the actions you want to load with the --actions argument.",
         "Unable to load action unsupportedAction because it takes an unloaded object type as a parameter: unsupported make sure to specify it as an argument with --ontologyObjects unsupported)",
       ]
     `);

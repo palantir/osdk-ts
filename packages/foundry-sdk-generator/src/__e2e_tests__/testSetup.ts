@@ -64,10 +64,6 @@ export async function setup() {
     _: [],
     $0: "",
   });
-  const util = require("node:util");
-  const exec = util.promisify(require("node:child_process").exec);
-
-  //  await exec("pnpm install", { cwd: join(dir, "@test-app/osdk") });
 }
 
 export async function teardown() {

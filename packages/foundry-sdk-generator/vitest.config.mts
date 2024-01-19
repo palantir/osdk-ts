@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vitest/config";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 export default defineConfig({
   test: {
-    globalSetup: ["./src/__e2e_tests__/testSetup.ts"],
+    globalSetup: [join(__dirname, "./src/__e2e_tests__/testSetup.ts")],
     alias: {
-      "consola": "./src/__e2e_tests__/consola.ts",
+      "consola": join(__dirname, "./src/__e2e_tests__/consola.ts"),
     },
   },
 });

@@ -70,30 +70,30 @@ describe("minify project", () => {
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
-            "/** /internal/moduleA/index.ts **/
-            declare module \\"internal/moduleA\\" {
-            	export * from \\"internal/moduleB\\"
-            }
-            /** /internal/moduleB/index.ts **/
-            declare module \\"internal/moduleB\\" {
-            	export const A : {};
-            	            export * from \\"internal/moduleB/folder\\";
-            }
-            /** /internal/moduleB/folder/fileA.ts **/
-            declare module \\"internal/moduleB/folder/fileA\\" {
-            	export type B = string;
-            }
-            /** /internal/moduleB/folder/fileC.ts **/
-            declare module \\"internal/moduleB/folder/fileC\\" {
-            	import { A } from \\"internal/moduleB/folder/fileA\\";
-            	                            export type C = A;
-            }
-            /** /internal/moduleB/folder/index.ts **/
-            declare module \\"internal/moduleB/folder\\" {
-            	export * from \\"internal/moduleB/folder/fileA\\";
-            	            export * from \\"internal/moduleB/folder/fileC\\";
-            }"
-        `);
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export * from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      	            export * from "internal/moduleB/folder";
+      }
+      /** /internal/moduleB/folder/fileA.ts **/
+      declare module "internal/moduleB/folder/fileA" {
+      	export type B = string;
+      }
+      /** /internal/moduleB/folder/fileC.ts **/
+      declare module "internal/moduleB/folder/fileC" {
+      	import { A } from "internal/moduleB/folder/fileA";
+      	                            export type C = A;
+      }
+      /** /internal/moduleB/folder/index.ts **/
+      declare module "internal/moduleB/folder" {
+      	export * from "internal/moduleB/folder/fileA";
+      	            export * from "internal/moduleB/folder/fileC";
+      }"
+    `);
   });
 
   it("minifies a project with nested unused types", () => {
@@ -144,25 +144,25 @@ describe("minify project", () => {
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
-            "/** /internal/moduleA/index.ts **/
-            declare module \\"internal/moduleA\\" {
-            	export * from \\"internal/moduleB\\"
-            }
-            /** /internal/moduleB/index.ts **/
-            declare module \\"internal/moduleB\\" {
-            	export const A : {};
-            	            export * from \\"internal/moduleB/folder\\";
-            }
-            /** /internal/moduleB/folder/fileC.ts **/
-            declare module \\"internal/moduleB/folder/fileC\\" {
-            	import { A } from \\"internal/moduleB/folder/fileA\\";
-            	                            export type C = A;
-            }
-            /** /internal/moduleB/folder/index.ts **/
-            declare module \\"internal/moduleB/folder\\" {
-            	export * from \\"internal/moduleB/folder/fileC\\";
-            }"
-        `);
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export * from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      	            export * from "internal/moduleB/folder";
+      }
+      /** /internal/moduleB/folder/fileC.ts **/
+      declare module "internal/moduleB/folder/fileC" {
+      	import { A } from "internal/moduleB/folder/fileA";
+      	                            export type C = A;
+      }
+      /** /internal/moduleB/folder/index.ts **/
+      declare module "internal/moduleB/folder" {
+      	export * from "internal/moduleB/folder/fileC";
+      }"
+    `);
   });
 
   it("minifies a project with nested types", () => {
@@ -211,31 +211,31 @@ export type C = D;`,
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
-            "/** /internal/moduleA/index.ts **/
-            declare module \\"internal/moduleA\\" {
-            	export * from \\"internal/moduleB\\"
-            }
-            /** /internal/moduleB/index.ts **/
-            declare module \\"internal/moduleB\\" {
-            	export const A : {};
-            	export * from \\"internal/moduleB/folder\\";
-            }
-            /** /internal/moduleB/folder/fileB.ts **/
-            declare module \\"internal/moduleB/folder/fileB\\" {
-            	export type B = string; 
-            }
-            /** /internal/moduleB/folder/fileC.ts **/
-            declare module \\"internal/moduleB/folder/fileC\\" {
-            	import { B } from \\"internal/moduleB/folder/fileB\\";
-            	type D = B;
-            	export type C = D;
-            }
-            /** /internal/moduleB/folder/index.ts **/
-            declare module \\"internal/moduleB/folder\\" {
-            	export * from \\"internal/moduleB/folder/fileC\\";
-            	export * from \\"internal/moduleB/folder/fileB\\";
-            }"
-        `);
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export * from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      	export * from "internal/moduleB/folder";
+      }
+      /** /internal/moduleB/folder/fileB.ts **/
+      declare module "internal/moduleB/folder/fileB" {
+      	export type B = string; 
+      }
+      /** /internal/moduleB/folder/fileC.ts **/
+      declare module "internal/moduleB/folder/fileC" {
+      	import { B } from "internal/moduleB/folder/fileB";
+      	type D = B;
+      	export type C = D;
+      }
+      /** /internal/moduleB/folder/index.ts **/
+      declare module "internal/moduleB/folder" {
+      	export * from "internal/moduleB/folder/fileC";
+      	export * from "internal/moduleB/folder/fileB";
+      }"
+    `);
   });
 
   it("minified a project with namespace imports", () => {
@@ -286,23 +286,23 @@ export type C = D;`,
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
-            "/** /internal/moduleA/index.ts **/
-            declare module \\"internal/moduleA\\" {
-            	export * from \\"internal/moduleB\\"
-            }
-            /** /internal/moduleB/index.ts **/
-            declare module \\"internal/moduleB\\" {
-            	export const A : {};
-            	import * as B from \\"internal/moduleB/folder\\";
-            	export type C = B.C;
-            }
-            /** /internal/moduleB/folder/index.ts **/
-            declare module \\"internal/moduleB/folder\\" {
-            	export type E = string;
-            	export * from \\"internal/moduleB/folder/fileC\\";
-            	export * from \\"internal/moduleB/folder/fileB\\";
-            }"
-        `);
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export * from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      	import * as B from "internal/moduleB/folder";
+      	export type C = B.C;
+      }
+      /** /internal/moduleB/folder/index.ts **/
+      declare module "internal/moduleB/folder" {
+      	export type E = string;
+      	export * from "internal/moduleB/folder/fileC";
+      	export * from "internal/moduleB/folder/fileB";
+      }"
+    `);
   });
 
   it("minifies a project namespace export", () => {
@@ -348,25 +348,25 @@ export type C = D;`,
     projectMinifier.minifyProject();
 
     expect(outputModule(project)).toMatchInlineSnapshot(`
-            "/** /internal/moduleA/index.ts **/
-            declare module \\"internal/moduleA\\" {
-            	export * from \\"internal/moduleB\\"
-            }
-            /** /internal/moduleB/index.ts **/
-            declare module \\"internal/moduleB\\" {
-            	export const A : {};
-            	import { B } from \\"internal/moduleB/folder\\";
-            	export type C = B.C;
-            }
-            /** /internal/moduleB/folder/fileC.ts **/
-            declare module \\"internal/moduleB/folder/fileC\\" {
-            	type D = string;
-            	export type C = D;
-            }
-            /** /internal/moduleB/folder/index.ts **/
-            declare module \\"internal/moduleB/folder\\" {
-            	export * as B from \\"internal/moduleB/folder/fileC\\";
-            }"
-        `);
+      "/** /internal/moduleA/index.ts **/
+      declare module "internal/moduleA" {
+      	export * from "internal/moduleB"
+      }
+      /** /internal/moduleB/index.ts **/
+      declare module "internal/moduleB" {
+      	export const A : {};
+      	import { B } from "internal/moduleB/folder";
+      	export type C = B.C;
+      }
+      /** /internal/moduleB/folder/fileC.ts **/
+      declare module "internal/moduleB/folder/fileC" {
+      	type D = string;
+      	export type C = D;
+      }
+      /** /internal/moduleB/folder/index.ts **/
+      declare module "internal/moduleB/folder" {
+      	export * as B from "internal/moduleB/folder/fileC";
+      }"
+    `);
   });
 });

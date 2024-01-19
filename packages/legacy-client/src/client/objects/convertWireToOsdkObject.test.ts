@@ -148,10 +148,10 @@ describe("convertWireToOsdkObject", () => {
 
     expect(object.toString()).toMatchInlineSnapshot(`
       "{
-        \\"catch_\\": 1,
-        \\"__primaryKey\\": 1,
-        \\"__apiName\\": \\"ObjectTypeWithReservedNames\\",
-        \\"__rid\\": \\"rid.1\\"
+        "catch_": 1,
+        "__primaryKey": 1,
+        "__apiName": "ObjectTypeWithReservedNames",
+        "__rid": "rid.1"
       }"
     `);
   });
