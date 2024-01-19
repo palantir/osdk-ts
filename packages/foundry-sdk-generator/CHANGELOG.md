@@ -1,5 +1,13 @@
 # @osdk/foundry-sdk-generator
 
+## 0.200.5
+
+### Patch Changes
+
+- 7ef64883: Fix generated package.json to have default export at the end to prevent runtime errors
+- Updated dependencies [ef7f8d8e]
+  - @osdk/legacy-client@1.0.3
+
 ## 0.200.4
 
 ### Patch Changes

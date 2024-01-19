@@ -36,8 +36,8 @@ export function createClient<O extends OntologyDefinition<any>>(
     fetchFn,
   );
 
-  const objectSetFactory: ObjectSetFactory<O> = (type, opts) =>
-    createObjectSet(type, clientCtx, opts);
+  const objectSetFactory: ObjectSetFactory<O> = (type) =>
+    createObjectSet(type, clientCtx);
 
   const client: Client<O> = Object.defineProperties(
     {} as Client<O>,
@@ -53,7 +53,7 @@ export function createClient<O extends OntologyDefinition<any>>(
           objectType: K,
           rid: string,
         ) => {
-          return createObjectSet(objectType as K & string, clientCtx, {}, {
+          return createObjectSet(objectType as K & string, clientCtx, {
             type: "intersect",
             objectSets: [
               {

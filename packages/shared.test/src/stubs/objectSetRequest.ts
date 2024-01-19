@@ -19,7 +19,14 @@ import type {
   LoadObjectSetResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import { employee1, employee2, employee3, nycOffice } from "./objects";
+import {
+  employee1,
+  employee2,
+  employee3,
+  nycOffice,
+  objectWithAllPropertyTypes1,
+  objectWithAllPropertyTypesEmptyEntries,
+} from "./objects";
 import { employeeObjectType, officeObjectType } from "./objectTypes";
 
 const baseObjectSet: LoadObjectSetRequestV2 = {
@@ -315,6 +322,30 @@ const searchAroundFilteredObjectSet: LoadObjectSetRequestV2 = {
   select: [],
 };
 
+const objectWithAllPropertyTypes: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: {
+      type: "base",
+      objectType: "objectTypeWithAllPropertyTypes",
+    },
+    where: { type: "eq", field: "id", value: 1 },
+  },
+  "select": [],
+};
+
+const emptyObjectWithAllPropertyTypes: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: {
+      type: "base",
+      objectType: "objectTypeWithAllPropertyTypes",
+    },
+    where: { type: "eq", field: "id", value: 2 },
+  },
+  "select": [],
+};
+
 export const loadObjectSetRequestHandlers: {
   [key: string]: LoadObjectSetResponseV2["data"];
 } = {
@@ -336,4 +367,8 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(searchAroundObjectSet)]: [nycOffice],
   [stableStringify(searchAroundFilteredObjectSet)]: [nycOffice],
   [stableStringify(baseObjectSetSelect)]: [employee1, employee2, employee3],
+  [stableStringify(objectWithAllPropertyTypes)]: [objectWithAllPropertyTypes1],
+  [stableStringify(emptyObjectWithAllPropertyTypes)]: [
+    objectWithAllPropertyTypesEmptyEntries,
+  ],
 };
