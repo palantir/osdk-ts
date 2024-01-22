@@ -36,6 +36,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
       "status": "ACTIVE",
     },
   },
+  "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
       "linkTypes": [
@@ -140,6 +141,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
     "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
   },
   "queryTypes": {},
+  "sharedPropertyTypes": {},
 }
 `;
 
@@ -179,6 +181,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
       "status": "ACTIVE",
     },
   },
+  "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
       "linkTypes": [],
@@ -234,5 +237,6 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
     "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
   },
   "queryTypes": {},
+  "sharedPropertyTypes": {},
 }
 `;
