@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
-export { deleteSiteDeployment } from "./ArtifactsSitesAdminService/deleteSiteDeployment.js";
-export { deploySite } from "./ArtifactsSitesAdminService/deploySite.js";
-export { getDeployedVersion } from "./ArtifactsSitesAdminService/getDeployedVersion.js";
+import type { TranslatableDatasource } from "./TranslatableDatasource.js";
+import type { UntranslatableSecurity } from "./UntranslatableSecurity.js";
+export interface TranslationEligibility_translatableDatasource {
+  type: "translatableDatasource";
+  translatableDatasource: TranslatableDatasource;
+}
+
+export interface TranslationEligibility_untranslatableSecurity {
+  type: "untranslatableSecurity";
+  untranslatableSecurity: UntranslatableSecurity;
+}
+export type TranslationEligibility =
+  | TranslationEligibility_translatableDatasource
+  | TranslationEligibility_untranslatableSecurity;

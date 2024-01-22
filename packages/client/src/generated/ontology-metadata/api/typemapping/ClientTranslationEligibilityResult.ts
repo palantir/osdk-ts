@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import type { GothamDatasourceDelegateId } from "./GothamDatasourceDelegateId.js";
+import type { IntegrationClientType } from "./IntegrationClientType.js";
+import type { TranslationEligibility } from "./TranslationEligibility.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * Per client eligibility result.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface ClientTranslationEligibilityResult {
+  clientType: IntegrationClientType;
+  translationEligibility: Record<
+    GothamDatasourceDelegateId,
+    TranslationEligibility
+  >;
 }

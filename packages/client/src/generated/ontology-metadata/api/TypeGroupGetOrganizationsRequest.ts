@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { DomainName } from "./DomainName.js";
-import type { SiteVersion } from "./SiteVersion.js";
-export interface DeploymentInfo {
-  siteDomain: DomainName;
-  siteVersion: SiteVersion;
+import type { TypeGroupRid } from "./TypeGroupRid.js";
+
+/**
+ * Request to get the associated OrganizationRid(s) for given TypeGroupRid(s).
+ */
+export interface TypeGroupGetOrganizationsRequest {
+  typeGroupRids: Array<TypeGroupRid>;
 }

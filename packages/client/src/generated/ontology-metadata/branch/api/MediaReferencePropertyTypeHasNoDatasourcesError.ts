@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
+import type { PropertyTypeRid } from "../../api/PropertyTypeRid.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * An error representing when a media reference property is not referenced by any media datasources.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface MediaReferencePropertyTypeHasNoDatasourcesError {
+  objectType: ObjectTypeRid;
+  propertyType: PropertyTypeRid;
 }

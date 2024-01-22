@@ -91,6 +91,8 @@ export class OntologyMetadataResolver {
       objectTypes: filteredObjectTypes,
       actionTypes: filteredActionTypes,
       queryTypes: filteredQueryTypes,
+      interfaceTypes: {},
+      sharedPropertyTypes: {},
     };
   }
 

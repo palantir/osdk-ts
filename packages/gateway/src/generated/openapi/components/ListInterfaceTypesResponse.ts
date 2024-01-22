@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export { getRegisteredDomains } from "./SitesDomainRegistryService/getRegisteredDomains.js";
+import type { InterfaceType } from "./InterfaceType";
+import type { PageToken } from "./PageToken";
+
+export interface ListInterfaceTypesResponse {
+  nextPageToken?: PageToken;
+  data: Array<InterfaceType>;
+}

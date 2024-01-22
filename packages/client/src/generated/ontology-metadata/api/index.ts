@@ -21,6 +21,7 @@ export * as OntologyMetadataGothamTypeMappingService from "./OntologyMetadataGot
 export * as OntologyMetadataSearchService from "./OntologyMetadataSearchService.js";
 export * as OntologyMetadataSemanticSearchService from "./OntologyMetadataSemanticSearchService.js";
 export * as OntologyMetadataService from "./OntologyMetadataService.js";
+export * as TypeGroupOrgsService from "./TypeGroupOrgsService.js";
 
 export type { ActionApplierRevertConfig } from "./ActionApplierRevertConfig.js";
 export type { ActionApplyClientPreferences } from "./ActionApplyClientPreferences.js";
@@ -650,12 +651,15 @@ export type { Type } from "./Type.js";
 export type { TypeClass } from "./TypeClass.js";
 export type { TypeGroup } from "./TypeGroup.js";
 export type { TypeGroupDisplayMetadata } from "./TypeGroupDisplayMetadata.js";
+export type { TypeGroupGetOrganizationsRequest } from "./TypeGroupGetOrganizationsRequest.js";
+export type { TypeGroupGetOrganizationsResponse } from "./TypeGroupGetOrganizationsResponse.js";
 export type { TypeGroupIconColors } from "./TypeGroupIconColors.js";
 export type { TypeGroupIdInRequest } from "./TypeGroupIdInRequest.js";
 export type { TypeGroupLoadRequest } from "./TypeGroupLoadRequest.js";
 export type { TypeGroupLoadResponse } from "./TypeGroupLoadResponse.js";
 export type { TypeGroupRid } from "./TypeGroupRid.js";
 export type { TypeGroupRidOrIdInRequest } from "./TypeGroupRidOrIdInRequest.js";
+export type { TypeGroupSetOrganizationsRequest } from "./TypeGroupSetOrganizationsRequest.js";
 export type { UniqueIdentifier } from "./UniqueIdentifier.js";
 export type { UnresolvedOntologySparkInputProperties } from "./UnresolvedOntologySparkInputProperties.js";
 export type { UrlTarget } from "./UrlTarget.js";

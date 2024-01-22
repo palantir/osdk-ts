@@ -19,6 +19,7 @@ export { createOntologyServiceBranch } from "./OntologyBranchService/createOntol
 export { findConflicts } from "./OntologyBranchService/findConflicts.js";
 export { loadOntologyBranch } from "./OntologyBranchService/loadOntologyBranch.js";
 export { loadOntologyBranchByVersion } from "./OntologyBranchService/loadOntologyBranchByVersion.js";
+export { loadOntologyBranchMarkings } from "./OntologyBranchService/loadOntologyBranchMarkings.js";
 export { mergeOntologyServiceBranch } from "./OntologyBranchService/mergeOntologyServiceBranch.js";
 export { setOntologyBranchOrganizationMarkings } from "./OntologyBranchService/setOntologyBranchOrganizationMarkings.js";
 export { validateOntologyBranch } from "./OntologyBranchService/validateOntologyBranch.js";

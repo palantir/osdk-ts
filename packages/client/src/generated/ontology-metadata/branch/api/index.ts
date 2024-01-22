@@ -42,8 +42,12 @@ export type { LinkTypeReferencesInvalidForeignKeyError } from "./LinkTypeReferen
 export type { LinkTypeReferencesInvalidPrimaryKeyError } from "./LinkTypeReferencesInvalidPrimaryKeyError.js";
 export type { LoadOntologyBranchByVersionRequest } from "./LoadOntologyBranchByVersionRequest.js";
 export type { LoadOntologyBranchByVersionResponse } from "./LoadOntologyBranchByVersionResponse.js";
+export type { LoadOntologyBranchMarkingsRequest } from "./LoadOntologyBranchMarkingsRequest.js";
+export type { LoadOntologyBranchMarkingsResponse } from "./LoadOntologyBranchMarkingsResponse.js";
 export type { LoadOntologyBranchRequest } from "./LoadOntologyBranchRequest.js";
 export type { LoadOntologyBranchResponse } from "./LoadOntologyBranchResponse.js";
+export type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
+export type { MediaReferencePropertyTypeHasNoDatasourcesError } from "./MediaReferencePropertyTypeHasNoDatasourcesError.js";
 export type { MergeableStatus } from "./MergeableStatus.js";
 export type { MergeOntologyServiceBranchRequest } from "./MergeOntologyServiceBranchRequest.js";
 export type { MergeOntologyServiceBranchResponse } from "./MergeOntologyServiceBranchResponse.js";

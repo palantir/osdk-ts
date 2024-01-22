@@ -22,11 +22,11 @@ import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSd
 import { formatTs } from "../util/test/formatTs";
 import { verifyOutdir } from "../util/verifyOutdir";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
-import type { __UNSTABLE_WireOntologyDefinitionV2 } from "../WireOntologyDefinition";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
 
 export async function generateClientSdkVersionTwoPointZero(
-  ontology: __UNSTABLE_WireOntologyDefinitionV2,
+  ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
@@ -39,7 +39,7 @@ export async function generateClientSdkVersionTwoPointZero(
   const actionNames = Object.keys(sanitizedOntology.actionTypes);
   const queryNames = Object.keys(sanitizedOntology.queryTypes);
   const interfaceNames = Object.keys(
-    sanitizedOntology.__UNSTABLE_interfaceTypes ?? {},
+    sanitizedOntology.interfaceTypes ?? {},
   );
 
   const importExt = packageType === "module" ? ".js" : "";
@@ -168,7 +168,7 @@ async function generateOntologyInterfaces(
   fs: MinimalFs,
   outDir: string,
   interfaceNames: string[],
-  ontology: __UNSTABLE_WireOntologyDefinitionV2,
+  ontology: WireOntologyDefinition,
   importExt: string,
 ) {
   const interfacesDir = path.join(outDir, "ontology", "interfaces");
@@ -176,7 +176,7 @@ async function generateOntologyInterfaces(
     recursive: true,
   });
   for (const name of interfaceNames) {
-    const obj = ontology.__UNSTABLE_interfaceTypes![name];
+    const obj = ontology.interfaceTypes![name];
 
     await fs.writeFile(
       path.join(interfacesDir, `${name}.ts`),
@@ -193,7 +193,7 @@ async function generateOntologyInterfaces(
     interfacesDir + ".ts",
     await formatTs(`
     ${
-      Object.keys(ontology.__UNSTABLE_interfaceTypes ?? {}).map(apiName =>
+      Object.keys(ontology.interfaceTypes ?? {}).map(apiName =>
         `export * from "./interfaces/${apiName}${importExt}";`
       ).join("\n")
     }

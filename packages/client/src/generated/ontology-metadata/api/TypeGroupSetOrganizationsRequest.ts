@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import type { OrganizationRid } from "./OrganizationRid.js";
+import type { TypeGroupRid } from "./TypeGroupRid.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * Request to associate given set of OrganizationRids with the specified TypeGroupRid(s).
+ * Users should have permissions to modify the specified TypeGroupRid(s) and also have
+ * relevant permissions to apply the specified organizations' markings.
+ * An empty set of organizations is not permissible.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface TypeGroupSetOrganizationsRequest {
+  organizationRidByTypeGroupRid: Record<TypeGroupRid, Array<OrganizationRid>>;
 }

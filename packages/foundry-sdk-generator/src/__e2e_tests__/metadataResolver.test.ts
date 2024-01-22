@@ -50,6 +50,7 @@ describe("Load Ontologies Metadata", () => {
     expect(ontologyDefinitions.value).toMatchInlineSnapshot(`
       {
         "actionTypes": {},
+        "interfaceTypes": {},
         "objectTypes": {},
         "ontology": {
           "apiName": "default-ontology",
@@ -58,6 +59,7 @@ describe("Load Ontologies Metadata", () => {
           "rid": "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
         },
         "queryTypes": {},
+        "sharedPropertyTypes": {},
       }
     `);
   });

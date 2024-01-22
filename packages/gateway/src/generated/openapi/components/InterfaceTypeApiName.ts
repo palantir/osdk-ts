@@ -15,12 +15,7 @@
  */
 
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * The name of the interface type in the API in UpperCamelCase format. To find the API name for your interface
+ * type, use the `List interface types` endpoint or check the **Ontology Manager**.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
-}
+export type InterfaceTypeApiName = string;

@@ -36,4 +36,6 @@ export const fullOntology: OntologyFullMetadata = {
   queryTypes: Object.fromEntries(
     queryTypes.map(queryType => [queryType.apiName, queryType]),
   ),
+  interfaceTypes: {},
+  sharedPropertyTypes: {},
 };

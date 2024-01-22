@@ -15,21 +15,23 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SetOntologyBranchOrganizationMarkingsRequest } from "../SetOntologyBranchOrganizationMarkingsRequest.js";
-import type { SetOntologyBranchOrganizationMarkingsResponse } from "../SetOntologyBranchOrganizationMarkingsResponse.js";
+import type { OntologyBranchRid } from "../../../api/OntologyBranchRid.js";
+import type { LoadOntologyBranchMarkingsRequest } from "../LoadOntologyBranchMarkingsRequest.js";
+import type { LoadOntologyBranchMarkingsResponse } from "../LoadOntologyBranchMarkingsResponse.js";
 
 /**
- * Manually set the org markings for an ontology branch. This will throw if the stack does not
- * have the `organizationMarkingsRequiredOnOntologyProposals` set to true.
+ * Load the markings for an ontology branch. Markings for orgs the user does not belong to will be
+ * filtered out.
  */
-export async function setOntologyBranchOrganizationMarkings(
+export async function loadOntologyBranchMarkings(
   ctx: ConjureContext,
-  request: SetOntologyBranchOrganizationMarkingsRequest,
-): Promise<SetOntologyBranchOrganizationMarkingsResponse> {
+  ontologyBranchRid: OntologyBranchRid,
+  request: LoadOntologyBranchMarkingsRequest,
+): Promise<LoadOntologyBranchMarkingsResponse> {
   return conjureFetch(
     ctx,
-    `/ontology/branch/setBranchOrganizationMarkings`,
-    "PUT",
+    `/ontology/branch/load/${ontologyBranchRid}/markings`,
+    "POST",
     request,
   );
 }

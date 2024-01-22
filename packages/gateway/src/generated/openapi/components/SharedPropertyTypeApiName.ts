@@ -15,12 +15,7 @@
  */
 
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * The name of the shared property type in the API in lowerCamelCase format. To find the API name for your
+ * shared property type, use the `List shared property types` endpoint or check the **Ontology Manager**.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
-}
+export type SharedPropertyTypeApiName = string;

@@ -15,12 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
+import type { TypeGroupGetOrganizationsRequest } from "../TypeGroupGetOrganizationsRequest.js";
+import type { TypeGroupGetOrganizationsResponse } from "../TypeGroupGetOrganizationsResponse.js";
 
 /**
- * Get all registered domains regardless of whether they're in use or not.
+ * Endpoint to batch load organization rids per TypeGroup. The response will only contain entries for
+ * TypeGroupRid(s) paired with Organizations that are visible to the user. At most 500 TypeGroupRids can be
+ * requested in the same request.
  */
-export async function getRegisteredDomains(
+export async function getOrganizationsForTypeGroups(
   ctx: ConjureContext,
-): Promise<Array<string>> {
-  return conjureFetch(ctx, `/sites/configRegisteredDomains/list`, "GET");
+  request: TypeGroupGetOrganizationsRequest,
+): Promise<TypeGroupGetOrganizationsResponse> {
+  return conjureFetch(ctx, `/type-groups/orgs/get`, "PUT", request);
 }

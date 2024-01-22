@@ -20,7 +20,7 @@ import type { GetLinksResponse } from "../GetLinksResponse.js";
 
 /**
  * Returns a page of all `FoundryLink`s for a given relation based on a list of object identifiers.
- * The API supports fetching links for maximum 1000 ObjectIdentifiers in a single request.
+ * The API supports fetching links for maximum 5_000 ObjectIdentifiers in a single request.
  *
  * Results are always limited to the maximum of 100_000 links, without applying any particular order. Specifically,
  * this means that if total links count is above 100_000 then the whole result set should be considered partial,
