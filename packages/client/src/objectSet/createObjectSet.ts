@@ -15,9 +15,9 @@
  */
 
 import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { Wire } from "../internal/net/index.js";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
@@ -33,7 +33,7 @@ export function createObjectSet<
 >(
   objectType: K & string,
   clientCtx: ClientContext<O>,
-  objectSet: Wire.ObjectSet = {
+  objectSet: WireObjectSet = {
     type: "base",
     objectType,
   },

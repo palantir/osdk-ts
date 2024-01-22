@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import type { AggregateObjectsResponseV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
 import type {
   AggregationClause,
   AggregationResultsWithoutGroups,
 } from "../../query/index.js";
 import type { ArrayElement } from "../../util/ArrayElement.js";
-import type { Wire } from "../net/index.js";
 
 export function legacyToModernSingleAggregationResult<
   AC extends AggregationClause<any, any>,
 >(
-  entry: ArrayElement<Wire.AggregateObjectsResponseV2["data"]>,
+  entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
 ): AggregationResultsWithoutGroups<any, any, AC> {
   return entry.metrics.reduce(
     (accumulator, curValue) => {

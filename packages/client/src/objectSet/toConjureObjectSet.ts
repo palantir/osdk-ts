@@ -15,18 +15,18 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/gateway/types";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
 } from "../generated/object-set-service/api/index.js";
-import type { Wire } from "../internal/net/index.js";
 import type { ObjectPropertyMapping } from "./ObjectSetListenerWebsocket.js";
 
 export function toConjureObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 >(
-  objectSet: Wire.ObjectSet,
+  objectSet: ObjectSet,
   objectPropertyMapping: ObjectPropertyMapping,
 ): OssObjectSet {
   switch (objectSet.type) {
@@ -99,7 +99,7 @@ export function toConjureObjectSet<
   }
 }
 
-export async function getObjectSetBaseType(objectSet: Wire.ObjectSet) {
+export async function getObjectSetBaseType(objectSet: ObjectSet) {
   switch (objectSet.type) {
     case "base":
       return objectSet.objectType;
@@ -126,7 +126,7 @@ export async function getObjectSetBaseType(objectSet: Wire.ObjectSet) {
 }
 
 function mapWhereClauseToObjectSetFilter(
-  objectSetFilter: Wire.SearchJsonQueryV2,
+  objectSetFilter: SearchJsonQueryV2,
   propertyMapping: ObjectPropertyMapping,
 ): ObjectSetFilter {
   switch (objectSetFilter.type) {
@@ -245,6 +245,7 @@ function mapWhereClauseToObjectSetFilter(
     case "withinPolygon":
     case "intersectsPolygon":
     case "doesNotIntersectPolygon":
+    case "containsAllTermsInOrderPrefixLastTerm":
       throw new Error("not implemented");
   }
 }
