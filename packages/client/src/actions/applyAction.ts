@@ -16,8 +16,10 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
+import type { DataValue } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
+import { toDataValue } from "../util/toDataValue.js";
 import type { Actions } from "./Actions.js";
 
 export interface ApplyActionOptions {
@@ -40,7 +42,7 @@ export async function applyAction<
     client.ontology.metadata.ontologyApiName,
     actionApiName as string,
     {
-      parameters: parameters as any,
+      parameters: remapActionParams(parameters),
       options: {
         mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
         returnEdits: options?.returnEdits ? "ALL" : "NONE",
@@ -63,4 +65,21 @@ export async function applyAction<
       edits: edits?.edits,
     },
   };
+}
+
+function remapActionParams<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+>(params: Parameters<Actions<O>[A]>[0] | undefined): Record<string, DataValue> {
+  if (params == null) {
+    return {};
+  }
+
+  const parameterMap: { [parameterName: string]: any } = {};
+  const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
+    acc[key] = toDataValue(value);
+    return acc;
+  }, parameterMap);
+
+  return remappedParams;
 }
