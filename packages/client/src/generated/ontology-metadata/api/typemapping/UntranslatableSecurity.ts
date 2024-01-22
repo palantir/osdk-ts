@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
+import type { UntranslatableSecurityFailureType } from "./UntranslatableSecurityFailureType.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * The requested Delegate cannot be integrated into Gotham.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface UntranslatableSecurity {
+  causes: Array<UntranslatableSecurityFailureType>;
 }

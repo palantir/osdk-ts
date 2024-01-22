@@ -15,12 +15,8 @@
  */
 
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * This type exists because Conjure does not support using an alias of an external type as a key to a map
+ * (see LoadGothamTypeInstallationStatusesResponse). The values of this type should always be lowercased in
+ * responses, but clients should convert to an internal case-insensitive type where possible.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
-}
+export type CaseSensitiveGothamObjectTypeUri = string;

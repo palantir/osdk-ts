@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-/**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
- */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
+import type { SharedPropertyTypeRid } from "../components/SharedPropertyTypeRid";
+
+/** The requested shared property type is not found, or the client token does not have access to it. */
+export interface SharedPropertyTypeNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "SharedPropertyTypeNotFound";
+  errorInstanceId: string;
+  parameters: {
+    apiName: SharedPropertyTypeApiName;
+    rid: SharedPropertyTypeRid;
+  };
 }

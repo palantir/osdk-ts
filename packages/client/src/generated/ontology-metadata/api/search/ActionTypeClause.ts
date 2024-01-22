@@ -35,6 +35,11 @@ export interface ActionTypeClause_affectedObjectTypeRid {
   affectedObjectTypeRid: ObjectTypeRid;
 }
 
+export interface ActionTypeClause_inputObjectTypeRid {
+  type: "inputObjectTypeRid";
+  inputObjectTypeRid: ObjectTypeRid;
+}
+
 export interface ActionTypeClause_actionTypeApiName {
   type: "actionTypeApiName";
   actionTypeApiName: FullTextStringPredicate;
@@ -86,6 +91,7 @@ export type ActionTypeClause =
   | ActionTypeClause_and
   | ActionTypeClause_or
   | ActionTypeClause_affectedObjectTypeRid
+  | ActionTypeClause_inputObjectTypeRid
   | ActionTypeClause_actionTypeApiName
   | ActionTypeClause_actionTypeRid
   | ActionTypeClause_actionTypeDisplayName

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { GothamObjectTypeUri } from "./GothamObjectTypeUri.js";
-import type { GothamPropertyTypeUri } from "./GothamPropertyTypeUri.js";
+import type { CaseSensitiveGothamObjectTypeUri } from "./CaseSensitiveGothamObjectTypeUri.js";
+import type { CaseSensitiveGothamPropertyTypeUri } from "./CaseSensitiveGothamPropertyTypeUri.js";
 import type { GothamTypeInstallStatusWithVersion } from "./GothamTypeInstallStatusWithVersion.js";
 
 /**
@@ -23,11 +23,11 @@ import type { GothamTypeInstallStatusWithVersion } from "./GothamTypeInstallStat
  */
 export interface LoadGothamTypeInstallationStatusesResponse {
   objectTypeStatuses: Record<
-    GothamObjectTypeUri,
+    CaseSensitiveGothamObjectTypeUri,
     GothamTypeInstallStatusWithVersion
   >;
   propertyTypeStatuses: Record<
-    GothamPropertyTypeUri,
+    CaseSensitiveGothamPropertyTypeUri,
     GothamTypeInstallStatusWithVersion
   >;
 }

@@ -15,12 +15,6 @@
  */
 
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * The unique resource identifier of an shared property type, useful for interacting with other Foundry APIs.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
-}
+export type SharedPropertyTypeRid = string;

@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-export async function deleteSiteDeployment(
-  ctx: ConjureContext,
-  repositoryRid: string,
-): Promise<void> {
-  return conjureFetch(ctx, `/sites/admin/${repositoryRid}`, "DELETE");
+import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName";
+import type { InterfaceTypeRid } from "../components/InterfaceTypeRid";
+
+/** The requested interface type is not found, or the client token does not have access to it. */
+export interface InterfaceTypeNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "InterfaceTypeNotFound";
+  errorInstanceId: string;
+  parameters: {
+    apiName: InterfaceTypeApiName;
+    rid: InterfaceTypeRid;
+  };
 }

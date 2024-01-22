@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { OrganizationRid } from "./OrganizationRid.js";
+import type { TypeGroupRid } from "./TypeGroupRid.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * Response for TypeGroupGetOrganizationsRequest. Please note that this will contain
+ * OrganizationRid(s) only for TypeGroupRid(s) that are visible to the user.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface TypeGroupGetOrganizationsResponse {
+  organizationRidByTypeGroupRid: Record<TypeGroupRid, Array<OrganizationRid>>;
 }

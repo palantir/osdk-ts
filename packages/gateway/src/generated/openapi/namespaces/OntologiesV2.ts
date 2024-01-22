@@ -34,10 +34,13 @@ import type { DeploymentApiName } from "../components/DeploymentApiName";
 import type { DeploymentMetadata } from "../components/DeploymentMetadata";
 import type { ExecuteQueryRequest } from "../components/ExecuteQueryRequest";
 import type { ExecuteQueryResponse } from "../components/ExecuteQueryResponse";
+import type { InterfaceType } from "../components/InterfaceType";
+import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName";
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
 import type { LinkTypeSideV2 } from "../components/LinkTypeSideV2";
 import type { ListActionTypesResponseV2 } from "../components/ListActionTypesResponseV2";
 import type { ListDeploymentsResponse } from "../components/ListDeploymentsResponse";
+import type { ListInterfaceTypesResponse } from "../components/ListInterfaceTypesResponse";
 import type { ListLinkedObjectsResponseV2 } from "../components/ListLinkedObjectsResponseV2";
 import type { ListObjectsResponseV2 } from "../components/ListObjectsResponseV2";
 import type { ListObjectTypesV2Response } from "../components/ListObjectTypesV2Response";
@@ -57,11 +60,13 @@ import type { OntologyV2 } from "../components/OntologyV2";
 import type { OrderBy } from "../components/OrderBy";
 import type { PageSize } from "../components/PageSize";
 import type { PageToken } from "../components/PageToken";
+import type { PreviewMode } from "../components/PreviewMode";
 import type { PropertyApiName } from "../components/PropertyApiName";
 import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString";
 import type { QueryApiName } from "../components/QueryApiName";
 import type { QueryTypeV2 } from "../components/QueryTypeV2";
 import type { SdkPackageName } from "../components/SdkPackageName";
+import type { SearchObjectsForInterfaceRequest } from "../components/SearchObjectsForInterfaceRequest";
 import type { SearchObjectsRequestV2 } from "../components/SearchObjectsRequestV2";
 import type { SearchObjectsResponseV2 } from "../components/SearchObjectsResponseV2";
 import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName";
@@ -108,7 +113,7 @@ export function getOntologyV2<TResponse>(
 }
 
 /**
- * Get the full Ontology metadata. This includes the objects, links, actions, and queries.
+ * Get the full Ontology metadata. This includes the objects, links, actions, queries, and interfaces.
  */
 export function getOntologyFullMetadata<TResponse>(
   _request: OpenApiRequest<OntologyFullMetadata, TResponse>,
@@ -443,6 +448,140 @@ export function deprecatedAggregateObjectsV2<TResponse>(
     `/v2/ontologies/${ontology}/objects/${objectType}/_aggregate`,
     request,
     __undefined,
+    __undefined,
+  );
+}
+
+/**
+ * :::callout{theme=warning title=Warning}
+ *   This endpoint is in preview and may be modified or removed at any time.
+ *   To use this endpoint, add `preview=true` to the request query parameters.
+ * :::
+ *
+ * Lists the interface types for the given Ontology.
+ *
+ * Each page may be smaller than the requested page size. However, it is guaranteed that if there are more
+ * results available, at least one result will be present in the response.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function listInterfaceTypes<TResponse>(
+  _request: OpenApiRequest<ListInterfaceTypesResponse, TResponse>,
+  ontology: OntologyIdentifier,
+  queryParameters?: {
+    pageSize?: PageSize;
+    pageToken?: PageToken;
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "GET",
+    `/v2/ontologies/${ontology}/interfaceTypes`,
+    __undefined,
+    queryParameters,
+    __undefined,
+  );
+}
+
+/**
+ * :::callout{theme=warning title=Warning}
+ *   This endpoint is in preview and may be modified or removed at any time.
+ *   To use this endpoint, add `preview=true` to the request query parameters.
+ * :::
+ *
+ * Gets a specific object type with the given API name.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function getInterfaceType<TResponse>(
+  _request: OpenApiRequest<InterfaceType, TResponse>,
+  ontology: OntologyIdentifier,
+  interfaceType: InterfaceTypeApiName,
+  queryParameters?: {
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "GET",
+    `/v2/ontologies/${ontology}/interfaceTypes/${interfaceType}`,
+    __undefined,
+    queryParameters,
+    __undefined,
+  );
+}
+
+/**
+ * :::callout{theme=warning title=Warning}
+ *   This endpoint is in preview and may be modified or removed at any time.
+ *   To use this endpoint, add `preview=true` to the request query parameters.
+ * :::
+ *
+ * Search for objects in the specified ontology and interface type. The following search queries are supported:
+ *
+ * | Query type                              | Description                                                                                                       | Supported Types                 |
+ * |-----------------------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------|
+ * | lt                                      | The provided property is less than the provided value.                                                            | number, string, date, timestamp |
+ * | gt                                      | The provided property is greater than the provided value.                                                         | number, string, date, timestamp |
+ * | lte                                     | The provided property is less than or equal to the provided value.                                                | number, string, date, timestamp |
+ * | gte                                     | The provided property is greater than or equal to the provided value.                                             | number, string, date, timestamp |
+ * | eq                                      | The provided property is exactly equal to the provided value.                                                     | number, string, date, timestamp |
+ * | isNull                                  | The provided property is (or is not) null.                                                                        | all                             |
+ * | contains                                | The provided property contains the provided value.                                                                | array                           |
+ * | not                                     | The sub-query does not match.                                                                                     | N/A (applied on a query)        |
+ * | and                                     | All the sub-queries match.                                                                                        | N/A (applied on queries)        |
+ * | or                                      | At least one of the sub-queries match.                                                                            | N/A (applied on queries)        |
+ * | startsWith                              | The provided property starts with the provided value.                                                             | string                          |
+ * | containsAllTermsInOrderPrefixLastTerm   | The provided property contains all the terms provided in order. The last term can be a partial prefix match.      | string                          |
+ * | containsAllTermsInOrder                 | The provided property contains the provided value as a substring.                                                 | string                          |
+ * | containsAnyTerm                         | The provided property contains at least one of the terms separated by whitespace.                                 | string                          |
+ * | containsAllTerms                        | The provided property contains all the terms separated by whitespace.                                             | string                          |
+ *
+ * Attempting to use an unsupported query will result in a validation error. Third-party applications using this
+ * endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function searchObjectsForInterface<TResponse>(
+  _request: OpenApiRequest<SearchObjectsResponseV2, TResponse>,
+  ontology: OntologyIdentifier,
+  interfaceType: InterfaceTypeApiName,
+  request: SearchObjectsForInterfaceRequest,
+  queryParameters?: {
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "POST",
+    `/v2/ontologies/${ontology}/interfaces/${interfaceType}/search`,
+    request,
+    queryParameters,
+    __undefined,
+  );
+}
+
+/**
+ * :::callout{theme=warning title=Warning}
+ *   This endpoint is in preview and may be modified or removed at any time.
+ *   To use this endpoint, add `preview=true` to the request query parameters.
+ * :::
+ *
+ * Perform functions on object fields in the specified ontology and of the specified interface type. Any specified
+ * properties must be shared property types defined on the interface.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function aggregateObjectsForInterface<TResponse>(
+  _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
+  ontology: OntologyIdentifier,
+  interfaceType: InterfaceTypeApiName,
+  request: AggregateObjectsRequestV2,
+  queryParameters?: {
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "POST",
+    `/v2/ontologies/${ontology}/interfaces/${interfaceType}/aggregate`,
+    request,
+    queryParameters,
     __undefined,
   );
 }

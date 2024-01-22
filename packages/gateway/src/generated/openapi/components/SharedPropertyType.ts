@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
- */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+import type { DisplayName } from "./DisplayName";
+import type { ObjectPropertyType } from "./ObjectPropertyType";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { SharedPropertyTypeRid } from "./SharedPropertyTypeRid";
+
+/** A property type that can be shared across object types. */
+export interface SharedPropertyType {
+  rid: SharedPropertyTypeRid;
+  apiName: SharedPropertyTypeApiName;
+  displayName: DisplayName;
+  /** A short text that describes the SharedPropertyType. */
+  description?: string;
+  dataType: ObjectPropertyType;
 }

@@ -14,11 +14,5 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { DeploySiteRequest } from "../DeploySiteRequest.js";
-export async function deploySite(
-  ctx: ConjureContext,
-  deploySiteRequest: DeploySiteRequest,
-): Promise<void> {
-  return conjureFetch(ctx, `/sites/admin/deploy`, "POST", deploySiteRequest);
+export interface LoadOntologyBranchMarkingsRequest {
 }

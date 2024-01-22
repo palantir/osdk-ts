@@ -15,21 +15,17 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SetOntologyBranchOrganizationMarkingsRequest } from "../SetOntologyBranchOrganizationMarkingsRequest.js";
-import type { SetOntologyBranchOrganizationMarkingsResponse } from "../SetOntologyBranchOrganizationMarkingsResponse.js";
+import type { TypeGroupSetOrganizationsRequest } from "../TypeGroupSetOrganizationsRequest.js";
 
 /**
- * Manually set the org markings for an ontology branch. This will throw if the stack does not
- * have the `organizationMarkingsRequiredOnOntologyProposals` set to true.
+ * Endpoint to batch set organization markings on TypeGroups. The requesting user
+ * should have permissions to modify the specified TypeGroupRid(s) and have
+ * relevant permissions to apply the specified organizations' markings. At most 50 TypeGroups can be set in the
+ * same request.
  */
-export async function setOntologyBranchOrganizationMarkings(
+export async function setOrganizationsForTypeGroups(
   ctx: ConjureContext,
-  request: SetOntologyBranchOrganizationMarkingsRequest,
-): Promise<SetOntologyBranchOrganizationMarkingsResponse> {
-  return conjureFetch(
-    ctx,
-    `/ontology/branch/setBranchOrganizationMarkings`,
-    "PUT",
-    request,
-  );
+  request: TypeGroupSetOrganizationsRequest,
+): Promise<void> {
+  return conjureFetch(ctx, `/type-groups/orgs`, "PUT", request);
 }

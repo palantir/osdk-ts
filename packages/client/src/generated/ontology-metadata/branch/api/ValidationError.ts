@@ -16,6 +16,7 @@
 
 import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
 import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
+import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
 import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
 import type { SchemaMigrationError } from "./SchemaMigrationError.js";
 export interface ValidationError_foreignKeyConstraint {
@@ -37,8 +38,15 @@ export interface ValidationError_schemaMigration {
   type: "schemaMigration";
   schemaMigration: SchemaMigrationError;
 }
+
+export interface ValidationError_mediaReferencePropertyTypeConstraint {
+  type: "mediaReferencePropertyTypeConstraint";
+  mediaReferencePropertyTypeConstraint:
+    MediaReferencePropertyTypeConstraintError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
   | ValidationError_numberOfDatasourcesConstraint
-  | ValidationError_schemaMigration;
+  | ValidationError_schemaMigration
+  | ValidationError_mediaReferencePropertyTypeConstraint;

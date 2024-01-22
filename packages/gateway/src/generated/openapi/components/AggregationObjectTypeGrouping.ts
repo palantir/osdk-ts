@@ -15,12 +15,8 @@
  */
 
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * Divides objects into groups based on their object type. This grouping is only useful when aggregating across
+ * multiple object types, such as when aggregating over an interface type.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface AggregationObjectTypeGrouping {
 }

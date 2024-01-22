@@ -14,15 +14,10 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { DeploymentInfo } from "../DeploymentInfo.js";
-export async function getDeployedVersion(
-  ctx: ConjureContext,
-  repositoryRid: string,
-): Promise<DeploymentInfo | undefined> {
-  return conjureFetch(
-    ctx,
-    `/sites/admin/${repositoryRid}/deployedVersion`,
-    "GET",
-  );
-}
+export type UntranslatableSecurityFailureType =
+  | "INVALID_MARKINGS_SUMMARY"
+  | "FAILED_DATASOURCE_MARKING_LOAD"
+  | "INACCESSIBLE_DELEGATE"
+  | "UNSUPPORTED_GPS_POLICY"
+  | "UNSUPPORTED_DATASOURCE_IDENTIFIER_TYPE"
+  | "UNHANDLED_TRANSLATION_FAILURE";

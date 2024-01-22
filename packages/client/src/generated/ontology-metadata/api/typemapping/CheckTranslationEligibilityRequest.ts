@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
+import type { DatasourceIdentifier } from "../DatasourceIdentifier.js";
+import type { GothamDatasourceDelegateId } from "./GothamDatasourceDelegateId.js";
+
 /**
- * Current configuration of some OMS features. Note that these configurations are stack-wide, which means they do not have granularity on org/enrollment/group level.
+ * Check if the following Datasource rids can be translated through the specified workflows.
  */
-export interface GetFeatureConfigurationsResponse {
-  allowSharedPropertyTypeUsage: boolean;
-  allowGothamTypeMappingUsage: boolean;
-  allowTypeRegistryUsage: boolean;
-  allowNonRoleEntitiesInProposals: boolean;
-  ontologyProposalsInDefaultOntologyWillBeOrgMarked: boolean;
+export interface CheckTranslationEligibilityRequest {
+  delegates: Record<GothamDatasourceDelegateId, DatasourceIdentifier>;
 }

@@ -15,20 +15,20 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { SetOntologyBranchOrganizationMarkingsRequest } from "../SetOntologyBranchOrganizationMarkingsRequest.js";
-import type { SetOntologyBranchOrganizationMarkingsResponse } from "../SetOntologyBranchOrganizationMarkingsResponse.js";
+import type { CheckTranslationEligibilityRequest } from "../typemapping/CheckTranslationEligibilityRequest.js";
+import type { CheckTranslationEligibilityResponse } from "../typemapping/CheckTranslationEligibilityResponse.js";
 
 /**
- * Manually set the org markings for an ontology branch. This will throw if the stack does not
- * have the `organizationMarkingsRequiredOnOntologyProposals` set to true.
+ * Evaluate if the requested Datasource Delegates can be translated into the Simple Policy Structure
+ * through the specified services.
  */
-export async function setOntologyBranchOrganizationMarkings(
+export async function checkTranslationEligibility(
   ctx: ConjureContext,
-  request: SetOntologyBranchOrganizationMarkingsRequest,
-): Promise<SetOntologyBranchOrganizationMarkingsResponse> {
+  request: CheckTranslationEligibilityRequest,
+): Promise<CheckTranslationEligibilityResponse> {
   return conjureFetch(
     ctx,
-    `/ontology/branch/setBranchOrganizationMarkings`,
+    `/ontology/typemapping/checkTranslationEligibility`,
     "PUT",
     request,
   );

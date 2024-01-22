@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-export * as ArtifactsSitesAdminService from "./ArtifactsSitesAdminService.js";
 export * as ArtifactsSitesAdminV2Service from "./ArtifactsSitesAdminV2Service.js";
-export * as SitesDomainRegistryService from "./SitesDomainRegistryService.js";
 
 export type { ContentSecurityPolicyAdditions } from "./ContentSecurityPolicyAdditions.js";
 export type { ContentSecurityPolicyDirectiveName } from "./ContentSecurityPolicyDirectiveName.js";
 export type { ContentSecurityPolicyDirectiveValue } from "./ContentSecurityPolicyDirectiveValue.js";
 export type { ContentSecurityPolicyHeaderValue } from "./ContentSecurityPolicyHeaderValue.js";
 export type { ControlPanelManagedDomainInfo } from "./ControlPanelManagedDomainInfo.js";
-export type { DeploymentInfo } from "./DeploymentInfo.js";
-export type { DeploySiteRequest } from "./DeploySiteRequest.js";
 export type { DomainName } from "./DomainName.js";
 export type { PreviewContentSecurityPolicyRequest } from "./PreviewContentSecurityPolicyRequest.js";
 export type { SiteDomainInfo } from "./SiteDomainInfo.js";
