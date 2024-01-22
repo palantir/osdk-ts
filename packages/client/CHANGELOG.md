@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 0.3.0
+
+### Minor Changes
+
+- af6a26c0: Add support for object->object links through the object.$link namespace
+
+### Patch Changes
+
+- 07107577: Add where clause support for contains filter
+
 ## 0.2.1
 
 ### Patch Changes
