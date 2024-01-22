@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
-import type { DataValue } from "@osdk/gateway/types";
+import type { DataValue, SyncApplyActionResponseV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import { toDataValue } from "../util/toDataValue.js";
@@ -36,7 +36,7 @@ export async function applyAction<
   actionApiName: A,
   parameters?: Parameters<Actions<O>[A]>[0],
   options?: Op,
-): Promise<unknown> {
+): Promise<SyncApplyActionResponseV2> {
   const response = await applyActionV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
@@ -50,21 +50,7 @@ export async function applyAction<
     },
   );
 
-  const bulkEdits = response.edits?.type == "largeScaleEdits"
-    ? response.edits.editedObjectTypes
-    : undefined;
-  const edits = response.edits?.type == "edits" ? response.edits : undefined;
-  const q = edits?.edits[0];
-
-  return {
-    __unstable: {
-      bulkEdits,
-      addedLinksCount: edits?.addedLinksCount,
-      addedObjectCount: edits?.addedObjectCount,
-      modifiedObjectsCount: edits?.modifiedObjectsCount,
-      edits: edits?.edits,
-    },
-  };
+  return response;
 }
 
 function remapActionParams<
