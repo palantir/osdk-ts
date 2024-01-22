@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
@@ -23,13 +24,12 @@ import type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "../../query/index.js";
-import type { Wire } from "../net/index.js";
 
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,
 >(
   whereClause: WhereClause<T>,
-): Wire.SearchJsonQueryV2 {
+): SearchJsonQueryV2 {
   if ("$and" in whereClause) {
     return {
       type: "and",
@@ -94,7 +94,7 @@ export function modernToLegacyWhereClause<
 
   return {
     type: "and",
-    value: Object.entries(whereClause).map<Wire.SearchJsonQueryV2>(
+    value: Object.entries(whereClause).map<SearchJsonQueryV2>(
       ([field, filter]) => {
         invariant(
           filter != null,

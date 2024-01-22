@@ -20,7 +20,7 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import { getObjectTypeV2 } from "@osdk/gateway/requests";
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/gateway/types";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
@@ -41,7 +41,6 @@ import {
   loadAllOntologies,
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
-import type { Wire } from "../internal/net/index.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
@@ -82,7 +81,7 @@ export class ObjectSetListenerWebsocket<
     {
       listener: ObjectSetListener<O, any>;
       subscriptionId?: string;
-      objectSet: Wire.ObjectSet;
+      objectSet: ObjectSet;
       expiry: NodeJS.Timeout;
     }
   >();
@@ -119,7 +118,7 @@ export class ObjectSetListenerWebsocket<
   }
 
   subscribe<K extends ObjectOrInterfaceKeysFrom<O>>(
-    objectSet: Wire.ObjectSet,
+    objectSet: ObjectSet,
     listener: ObjectSetListener<O, K>,
   ): () => void {
     const requestId = crypto.randomUUID();
@@ -133,7 +132,7 @@ export class ObjectSetListenerWebsocket<
     };
   }
 
-  async #subscribe(requestId: string, objectSet: Wire.ObjectSet) {
+  async #subscribe(requestId: string, objectSet: ObjectSet) {
     try {
       const [temporaryObjectSet] = await Promise.all([
         // create a time-bounded object set representation for watching
@@ -364,7 +363,7 @@ export class ObjectSetListenerWebsocket<
   }
 
   async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
-    objectSet: Wire.ObjectSet,
+    objectSet: ObjectSet,
   ) {
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
     const mapping = await getOntologyPropertyMappingForApiName(
