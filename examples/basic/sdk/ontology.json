@@ -599,7 +599,7 @@
       "version": "0.1.2"
     }
   },
-  "__UNSTABLE_interfaceTypes": {
+  "interfaceTypes": {
     "SimpleInterface": {
       "apiName": "SimpleInterface",
       "displayName": "AwesomeTodoDisplayname",

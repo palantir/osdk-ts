@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  __UNSTABLE_WireOntologyDefinitionV2,
-  WireOntologyDefinition,
-} from "../WireOntologyDefinition";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
 /**
  * @internal
  */
 export function sanitizeMetadata(
-  ontology: __UNSTABLE_WireOntologyDefinitionV2,
-): __UNSTABLE_WireOntologyDefinitionV2;
+  ontology: WireOntologyDefinition,
+): WireOntologyDefinition;
 /**
  * @internal
  */
@@ -35,7 +32,7 @@ export function sanitizeMetadata(
  * @internal
  */
 export function sanitizeMetadata<
-  T extends WireOntologyDefinition | __UNSTABLE_WireOntologyDefinitionV2,
+  T extends WireOntologyDefinition | WireOntologyDefinition,
 >(
   ontology: T,
 ): T {
