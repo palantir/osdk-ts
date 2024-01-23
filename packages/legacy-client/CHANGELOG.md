@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 1.0.4
+
+### Patch Changes
+
+- a6e61428: Go back to typescript private instead of #private for localDate and timestamp dateTime member
+
 ## 1.0.3
 
 ### Patch Changes
