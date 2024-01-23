@@ -15,9 +15,9 @@
  */
 
 import type { DataValue } from "@osdk/gateway/types";
-import { isOntologyObjectV2 } from "../internal/net/types.js";
 import { isAttachment } from "../object/Attachment.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
