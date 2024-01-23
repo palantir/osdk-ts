@@ -21,6 +21,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import { toDataValue } from "../util/toDataValue.js";
 import type { Actions } from "./Actions.js";
+import { ActionValidationError } from "./ActionValidationError.js";
 
 export interface ApplyActionOptions {
   returnEdits?: boolean;
@@ -49,6 +50,10 @@ export async function applyAction<
       },
     },
   );
+
+  if (response.validation?.result === "INVALID") {
+    throw new ActionValidationError(response.validation);
+  }
 
   return response;
 }

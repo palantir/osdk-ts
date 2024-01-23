@@ -20,6 +20,7 @@ import type {
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
+import type { ActionResults } from "@osdk/gateway/types";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
@@ -98,8 +99,8 @@ type OsdkActionParameters<
   >;
 
 export type Actions<O extends OntologyDefinition<any>> = {
-  [K in ActionKeysFrom<O>]: (
+  [K in ActionKeysFrom<O>]: <OP extends ApplyActionOptions>(
     args: NOOP<OsdkActionParameters<O, K>>,
-    options?: ApplyActionOptions,
-  ) => Promise<unknown>;
+    options?: OP,
+  ) => Promise<OP["returnEdits"] extends true ? ActionResults : undefined>;
 };

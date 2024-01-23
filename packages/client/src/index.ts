@@ -29,3 +29,5 @@ export { createClientContext } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
 export type { ClientContext } from "@osdk/shared.net";
+
+export { ActionValidationError } from "./actions/ActionValidationError.js";

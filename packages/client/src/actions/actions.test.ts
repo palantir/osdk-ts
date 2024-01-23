@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
+import type { ActionResults } from "@osdk/gateway/types";
 import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import { ActionValidationError } from "./ActionValidationError.js";
 import { createActionInvoker } from "./createActionInvoker.js";
 
 describe("actions", () => {
@@ -50,5 +59,67 @@ describe("actions", () => {
         ]
       `);
     });
+  });
+
+  it("conditionally returns the edits", async () => {
+    const result = await client.actions.createOffice({
+      officeId: "NYC",
+      address: "123 Main Street",
+      capacity: 100,
+    }, { returnEdits: true });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<ActionResults>();
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "edits": {
+          "addedLinksCount": 0,
+          "addedObjectCount": 2,
+          "edits": [
+            {
+              "objectType": "Office",
+              "primaryKey": "NYC",
+              "type": "addObject",
+            },
+          ],
+          "modifiedObjectsCount": 0,
+          "type": "edits",
+        },
+        "validation": {
+          "parameters": {},
+          "result": "VALID",
+          "submissionCriteria": [],
+        },
+      }
+    `);
+
+    const undefinedResult = await client.actions.createOffice({
+      officeId: "NYC",
+      address: "123 Main Street",
+      capacity: 100,
+    });
+
+    expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
+  });
+
+  it("throws on validation errors", async () => {
+    try {
+      const result = await client.actions.moveOffice({
+        officeId: "SEA",
+        newAddress: "456 Pike Place",
+        newCapacity: 40,
+      }, {
+        validateOnly: true,
+      });
+      expect.fail("Should not reach here");
+    } catch (e) {
+      expect(e).toBeInstanceOf(ActionValidationError);
+      expect((e as ActionValidationError).validation).toMatchInlineSnapshot(`
+        {
+          "parameters": {},
+          "result": "INVALID",
+          "submissionCriteria": [],
+        }
+      `);
+    }
   });
 });

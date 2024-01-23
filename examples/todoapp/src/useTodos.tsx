@@ -3,6 +3,7 @@ import useSWR from "swr";
 import { foundryClient, foundryClient2 } from "./foundryClient";
 import { isOk, ReturnEditsMode, type Result } from "./generatedNoCheck";
 import type { Todo } from "./generatedNoCheck/ontology/objects";
+import { ActionValidationError } from "@osdk/client";
 
 function orThrow<T, E>(result: Result<T, E>) {
   if (isOk(result)) {
@@ -126,17 +127,46 @@ export function useTodos() {
   );
 
   const createTodo = useCallback(
-    async (title: string) => {
+    async (title: string, setError?: (error: string | undefined) => void) => {
       await mutate(
         async () => {
           // Unwrap to get throw behavior on error.
           // Don't return because we want to invalidate cache
-          orThrow(
-            await foundryClient.ontology.actions.createTodo({
-              Todo: title,
-              is_complete: false,
-            })
-          );
+          try {
+            const response = await foundryClient2.actions.createTodo(
+              {
+                Todo: title,
+                is_complete: false,
+              },
+              {
+                returnEdits: true,
+              }
+            );
+            console.log(JSON.stringify(response));
+          } catch (e) {
+            if (e instanceof ActionValidationError) {
+              if (e.validation.parameters.Todo?.result === "INVALID") {
+                const { evaluatedConstraints, required } =
+                  e.validation.parameters.Todo;
+
+                if ((required && title == null) || title.length < 1) {
+                  setError?.("Todo is required");
+                } else {
+                  for (const constraint of evaluatedConstraints) {
+                    if (constraint.type === "stringLength") {
+                      if (constraint.gte != null && constraint.lte != null) {
+                        setError?.(
+                          `Todo must be between ${constraint.gte}-${constraint.lte} characters`
+                        );
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            throw e;
+          }
 
           return undefined; // invalidate cache
         },
