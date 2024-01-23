@@ -61,73 +61,70 @@ export class Timestamp {
     return new Timestamp(DateTime.fromJSDate(date, { zone: "utc" }));
   }
 
-  #dateTime: DateTime;
-
-  private constructor(dateTime: DateTime) {
-    this.#dateTime = dateTime;
+  private constructor(private dateTime: DateTime) {
   }
 
   /**
    * Gets year in the current timezone offset.
    */
   getYear(): number {
-    return this.#dateTime.year;
+    return this.dateTime.year;
   }
 
   /**
    * Gets month (1-12) in the current timezone offset.
    */
   getMonth(): number {
-    return this.#dateTime.month;
+    return this.dateTime.month;
   }
 
   /**
    * Gets day of month (1-31) in the current timezone offset.
    */
   getDayOfMonth(): number {
-    return this.#dateTime.day;
+    return this.dateTime.day;
   }
 
   /**
    * Gets hours (0-23) in the current timezone offset.
    */
   getHours(): number {
-    return this.#dateTime.hour;
+    return this.dateTime.hour;
   }
 
   /**
    * Gets minutes (0-59) in the current timezone offset.
    */
   getMinutes(): number {
-    return this.#dateTime.minute;
+    return this.dateTime.minute;
   }
 
   /**
    * Gets seconds (0-59) in the current timezone offset.
    */
   getSeconds(): number {
-    return this.#dateTime.second;
+    return this.dateTime.second;
   }
 
   /**
    * Gets milliseconds (0-999) in the current timezone offset.
    */
   getMilliseconds(): number {
-    return this.#dateTime.millisecond;
+    return this.dateTime.millisecond;
   }
 
   /**
    * A time-zone offset from Greenwich/UTC in minutes.
    */
   getTimezoneOffset(): number {
-    return this.#dateTime.offset;
+    return this.dateTime.offset;
   }
 
   /**
    * Gets milliseconds from epoch.
    */
   getTime(): number {
-    return this.#dateTime.valueOf();
+    return this.dateTime.valueOf();
   }
 
   /**
@@ -148,7 +145,7 @@ export class Timestamp {
    * Returns a javascript Date for the same instant in time.
    */
   toJsDate(): Date {
-    return this.#dateTime.toJSDate();
+    return this.dateTime.toJSDate();
   }
 
   /**
@@ -163,14 +160,14 @@ export class Timestamp {
    * The timezone-offset is maintained.
    */
   toISOString(): string {
-    return this.#dateTime.toISO()!;
+    return this.dateTime.toISO()!;
   }
 
   /**
    * Returns new Timestamp with milliseconds subtracted from it.
    */
   minusMilliseconds(millisecondsToSubtract: number): Timestamp {
-    return new Timestamp(this.#dateTime.minus(millisecondsToSubtract));
+    return new Timestamp(this.dateTime.minus(millisecondsToSubtract));
   }
 
   /**
@@ -178,7 +175,7 @@ export class Timestamp {
    */
   minusSeconds(secondsToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ seconds: secondsToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -186,7 +183,7 @@ export class Timestamp {
    */
   minusMinutes(minutesToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ minutes: minutesToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -194,7 +191,7 @@ export class Timestamp {
    */
   minusHours(hoursToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ hours: hoursToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -202,7 +199,7 @@ export class Timestamp {
    */
   minusDays(daysToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ days: daysToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -210,7 +207,7 @@ export class Timestamp {
    */
   minusWeeks(weeksToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ weeks: weeksToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -220,7 +217,7 @@ export class Timestamp {
    */
   minusMonths(monthsToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ months: monthsToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -228,7 +225,7 @@ export class Timestamp {
    */
   minusYears(yearsToSubtract: number): Timestamp {
     const duration = Duration.fromObject({ years: yearsToSubtract });
-    return new Timestamp(this.#dateTime.minus(duration));
+    return new Timestamp(this.dateTime.minus(duration));
   }
 
   /**
@@ -236,7 +233,7 @@ export class Timestamp {
    */
   plusMilliseconds(millisecondsToAdd: number): Timestamp {
     const duration = Duration.fromObject({ milliseconds: millisecondsToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -244,7 +241,7 @@ export class Timestamp {
    */
   plusSeconds(secondsToAdd: number): Timestamp {
     const duration = Duration.fromObject({ seconds: secondsToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -252,7 +249,7 @@ export class Timestamp {
    */
   plusMinutes(minutesToAdd: number): Timestamp {
     const duration = Duration.fromObject({ minutes: minutesToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -260,7 +257,7 @@ export class Timestamp {
    */
   plusHours(hoursToAdd: number): Timestamp {
     const duration = Duration.fromObject({ hours: hoursToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -268,7 +265,7 @@ export class Timestamp {
    */
   plusDays(daysToAdd: number): Timestamp {
     const duration = Duration.fromObject({ days: daysToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -276,7 +273,7 @@ export class Timestamp {
    */
   plusWeeks(weeksToAdd: number): Timestamp {
     const duration = Duration.fromObject({ weeks: weeksToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -286,7 +283,7 @@ export class Timestamp {
    */
   plusMonths(monthsToAdd: number): Timestamp {
     const duration = Duration.fromObject({ months: monthsToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 
   /**
@@ -294,6 +291,6 @@ export class Timestamp {
    */
   plusYears(yearsToAdd: number): Timestamp {
     const duration = Duration.fromObject({ years: yearsToAdd });
-    return new Timestamp(this.#dateTime.plus(duration));
+    return new Timestamp(this.dateTime.plus(duration));
   }
 }

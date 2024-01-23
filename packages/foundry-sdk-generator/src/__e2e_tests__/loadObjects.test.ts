@@ -138,6 +138,7 @@ describe("LoadObjects", () => {
     expect(firstPoint).toMatchInlineSnapshot(`
       {
         "time": _Timestamp {
+          "dateTime": "2012-02-12T00:00:00.000Z",
           "type": "Timestamp",
         },
         "value": 10,
@@ -148,6 +149,7 @@ describe("LoadObjects", () => {
     expect(lastPoint).toMatchInlineSnapshot(`
       {
         "time": _Timestamp {
+          "dateTime": "2014-04-14T00:00:00.000Z",
           "type": "Timestamp",
         },
         "value": 30,
@@ -221,6 +223,7 @@ describe("LoadObjects", () => {
           "fullName": "Jane Doe",
           "office": "SEA",
           "startDate": _LocalDate {
+            "dateTime": "2012-02-12T00:00:00.000Z",
             "type": "LocalDate",
           },
         },

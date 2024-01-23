@@ -97,6 +97,7 @@ describe("SearchObjects", () => {
           "fullName": "John Doe",
           "office": "NYC",
           "startDate": _LocalDate {
+            "dateTime": "2019-01-01T00:00:00.000Z",
             "type": "LocalDate",
           },
         },
@@ -127,6 +128,7 @@ describe("SearchObjects", () => {
           "fullName": "Jane Doe",
           "office": "SEA",
           "startDate": _LocalDate {
+            "dateTime": "2012-02-12T00:00:00.000Z",
             "type": "LocalDate",
           },
         },
@@ -157,6 +159,7 @@ describe("SearchObjects", () => {
           "fullName": "Jack Smith",
           "office": "LON",
           "startDate": _LocalDate {
+            "dateTime": "2015-05-15T00:00:00.000Z",
             "type": "LocalDate",
           },
         },
@@ -201,6 +204,7 @@ describe("SearchObjects", () => {
             "fullName": "John Doe",
             "office": "NYC",
             "startDate": _LocalDate {
+              "dateTime": "2019-01-01T00:00:00.000Z",
               "type": "LocalDate",
             },
           },
@@ -244,6 +248,7 @@ describe("SearchObjects", () => {
             "fullName": "John Doe",
             "office": "NYC",
             "startDate": _LocalDate {
+              "dateTime": "2019-01-01T00:00:00.000Z",
               "type": "LocalDate",
             },
           },
@@ -326,6 +331,7 @@ describe("SearchObjects", () => {
               "fullName": "Jane Doe",
               "office": "SEA",
               "startDate": _LocalDate {
+                "dateTime": "2012-02-12T00:00:00.000Z",
                 "type": "LocalDate",
               },
             },

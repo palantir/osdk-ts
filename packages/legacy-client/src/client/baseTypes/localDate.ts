@@ -59,7 +59,7 @@ export class LocalDate {
   }
 
   // Internally represent the date as start of day (UTC).
-  #dateTime: DateTime;
+  private dateTime: DateTime;
 
   /**
    * Represents a date as year-month-day.
@@ -70,42 +70,42 @@ export class LocalDate {
    * @param day day of month, from 1 to 31
    */
   private constructor(year: number, month: number, day: number) {
-    this.#dateTime = DateTime.utc(year, month, day);
+    this.dateTime = DateTime.utc(year, month, day);
   }
 
   /**
    * Gets the year (YYYY) field.
    */
   getYear(): number {
-    return this.#dateTime.year;
+    return this.dateTime.year;
   }
 
   /**
    * Gets the month field (1-12).
    */
   getMonth(): number {
-    return this.#dateTime.month;
+    return this.dateTime.month;
   }
 
   /**
    * Gets the day field (1-31).
    */
   getDayOfMonth(): number {
-    return this.#dateTime.day;
+    return this.dateTime.day;
   }
 
   /**
    * Convert to ISO 8601 string (YYYY-MM-dd).
    */
   toISOString(): string {
-    return this.#dateTime.toISODate()!;
+    return this.dateTime.toISODate()!;
   }
 
   /**
    * Gets the ISO day of the week, where Monday = 1 and Sunday = 7.
    */
   getISOWeekday(): number {
-    return this.#dateTime.weekday;
+    return this.dateTime.weekday;
   }
 
   /**
@@ -126,7 +126,7 @@ export class LocalDate {
     // parse offset into the equivalent UTC offset zone
     const zone = FixedOffsetZone.parseSpecifier("UTC" + utcOffset);
     // manipulate the date time - override the zone keeping the local time constant (midnight)
-    const dateTimeWithOverriddenZone = this.#dateTime.setZone(zone, {
+    const dateTimeWithOverriddenZone = this.dateTime.setZone(zone, {
       keepLocalTime: true,
     });
     return Timestamp.fromISOString(dateTimeWithOverriddenZone.toISO()!);
@@ -151,7 +151,7 @@ export class LocalDate {
    */
   minusDays(daysToSubtract: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.minus(Duration.fromObject({ days: daysToSubtract })),
+      this.dateTime.minus(Duration.fromObject({ days: daysToSubtract })),
     );
   }
 
@@ -160,7 +160,7 @@ export class LocalDate {
    */
   minusWeeks(weeksToSubtract: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.minus(Duration.fromObject({ weeks: weeksToSubtract })),
+      this.dateTime.minus(Duration.fromObject({ weeks: weeksToSubtract })),
     );
   }
 
@@ -171,7 +171,7 @@ export class LocalDate {
    */
   minusMonths(monthsToSubtract: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.minus(Duration.fromObject({ months: monthsToSubtract })),
+      this.dateTime.minus(Duration.fromObject({ months: monthsToSubtract })),
     );
   }
 
@@ -180,7 +180,7 @@ export class LocalDate {
    */
   minusYears(yearsToSubtract: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.minus(Duration.fromObject({ years: yearsToSubtract })),
+      this.dateTime.minus(Duration.fromObject({ years: yearsToSubtract })),
     );
   }
 
@@ -189,7 +189,7 @@ export class LocalDate {
    */
   plusDays(daysToAdd: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.plus(Duration.fromObject({ days: daysToAdd })),
+      this.dateTime.plus(Duration.fromObject({ days: daysToAdd })),
     );
   }
 
@@ -198,7 +198,7 @@ export class LocalDate {
    */
   plusWeeks(weeksToAdd: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.plus(Duration.fromObject({ weeks: weeksToAdd })),
+      this.dateTime.plus(Duration.fromObject({ weeks: weeksToAdd })),
     );
   }
 
@@ -209,7 +209,7 @@ export class LocalDate {
    */
   plusMonths(monthsToAdd: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.plus(Duration.fromObject({ months: monthsToAdd })),
+      this.dateTime.plus(Duration.fromObject({ months: monthsToAdd })),
     );
   }
 
@@ -218,7 +218,7 @@ export class LocalDate {
    */
   plusYears(yearsToAdd: number): LocalDate {
     return LocalDate.fromDateTime(
-      this.#dateTime.plus(Duration.fromObject({ years: yearsToAdd })),
+      this.dateTime.plus(Duration.fromObject({ years: yearsToAdd })),
     );
   }
 }
