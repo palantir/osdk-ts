@@ -1,0 +1,43 @@
+{
+  "name": "create-osdk-app",
+  "version": "0.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "bin": {
+    "create-osdk-app": "bin/createOsdkApp.js"
+  },
+  "files": [
+    "bin",
+    "template-*",
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest",
+    "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
+  },
+  "dependencies": {
+    "consola": "^3.2.3",
+    "handlebars": "^4.7.8",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/eslint": "^8.44.7",
+    "@types/node": "^20.5.2",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@types/tmp": "^0.2.6",
+    "@types/yargs": "^17.0.32",
+    "dir-compare": "^4.2.0",
+    "eslint": "^8.53.0",
+    "react": "^18.2.0",
+    "tmp": "^0.2.1",
+    "tsup": "^8.0.1",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.4"
+  },
+  "type": "module"
+}
