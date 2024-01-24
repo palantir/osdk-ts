@@ -1,8 +1,8 @@
 "use client";
-import css from "./page.module.css";
-import getMethods from "@/lib/getMethods";
 import client from "@/lib/client";
+import getMethods from "@/lib/getMethods";
 import useAuthenticated from "@/lib/useAuthenticated";
+import css from "./page.module.css";
 
 function Home() {
   const authenticated = useAuthenticated();

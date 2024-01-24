@@ -60,7 +60,7 @@ for (const template of TEMPLATES) {
       "--client-id",
       "123",
       "--osdk-package",
-      "@braeburn/sdk",
+      "@fake/sdk",
       "--osdk-registry-url",
       "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
     ]);
@@ -68,6 +68,7 @@ for (const template of TEMPLATES) {
     const result = compareSync(
       path.join(process.cwd(), project),
       path.join(snapshotsDir, project),
+      { compareContent: true },
     );
     expect.soft(result.same).toBe(true);
     expect.soft(result.differences).toEqual(0);

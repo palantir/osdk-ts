@@ -8,7 +8,7 @@ const queryApiNames = getMethods(client.ontology.queries);
 </script>
 
 <template>
-  <h1>@braeburn/sdk</h1>
+  <h1>@fake/sdk</h1>
   <p>
     Welcome to your Ontology SDK! Try using any of the following methods now.
   </p>

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@braeburn/sdk": "latest",
+    "@fake/sdk": "latest",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"
   },

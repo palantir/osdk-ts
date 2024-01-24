@@ -1,4 +1,4 @@
-import { FoundryClient, PublicClientAuth } from "@braeburn/sdk";
+import { FoundryClient, PublicClientAuth } from "@fake/sdk";
 
 /**
  * Initialize the client to interact with the Ontology SDK

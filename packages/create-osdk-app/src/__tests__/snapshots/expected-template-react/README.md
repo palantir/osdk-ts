@@ -1,6 +1,6 @@
 # expected-template-react
 
-This project demonstrates using the OSDK package `@braeburn/sdk` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
+This project demonstrates using the OSDK package `@fake/sdk` with React on top of Vite. Check out the [Vite](https://vitejs.dev/guide/) docs for further configuration.
 
 ## Developing
 
