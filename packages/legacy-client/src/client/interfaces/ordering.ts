@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
-import type { LocalDate, OntologyObject, Timestamp } from "../baseTypes";
-import type { OrderByClause, OrderByOption } from "../objectSets/filters";
-import type { OmitMetadataProperties } from "./utils/OmitProperties";
+import type {
+  LocalDate,
+  OntologyObject,
+  Timestamp,
+} from "../baseTypes/index.js";
+import type {
+  OrderByClause,
+  OrderByOption,
+} from "../objectSets/filters/index.js";
+import type { OmitMetadataProperties } from "./utils/OmitProperties.js";
 
 type IsOrderableProperty<T> = T extends
   number | LocalDate | Timestamp | string | boolean | undefined ? true : false;

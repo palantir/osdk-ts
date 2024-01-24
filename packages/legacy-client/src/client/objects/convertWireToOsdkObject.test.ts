@@ -19,9 +19,9 @@ import type { ClientContext } from "@osdk/shared.net";
 import { MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../..";
-import { USER_AGENT } from "../../USER_AGENT";
-import { convertWireToOsdkObject } from "./convertWireToOsdkObject";
+import { GeoPoint, GeoShape, LocalDate, Timestamp } from "../../index.js";
+import { USER_AGENT } from "../../USER_AGENT.js";
+import { convertWireToOsdkObject } from "./convertWireToOsdkObject.js";
 
 describe("convertWireToOsdkObject", () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;

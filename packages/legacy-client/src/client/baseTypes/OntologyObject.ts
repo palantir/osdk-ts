@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterValue } from "./ParameterValue";
+import type { ParameterValue } from "./ParameterValue.js";
 
 export interface OntologyObject<
   T extends string = string,

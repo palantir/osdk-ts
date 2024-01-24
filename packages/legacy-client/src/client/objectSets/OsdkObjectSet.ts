@@ -21,24 +21,24 @@ import type {
   FilteredPropertiesTerminalOperationsWithGet,
   FilterObjectSetDefinition,
   ObjectSetDefinition,
-} from "../baseTypes";
+} from "../baseTypes/index.js";
 import type {
   BaseObjectSet,
   BaseObjectSetOperations,
   ObjectSet,
   ObjectSetOperations,
-} from "../interfaces";
-import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
-import { getObject } from "../net/getObject";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
-import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
-import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
-import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep";
-import { createObjectSetSearchAround } from "./createObjectSetSearchAround";
-import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
-import { createPropertyDescriptions } from "./createPropertyDescriptions";
-import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter";
+} from "../interfaces/index.js";
+import type { SelectableProperties } from "../interfaces/utils/OmitProperties.js";
+import { getObject } from "../net/getObject.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform.js";
+import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep.js";
+import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep.js";
+import { createObjectSetBaseOrderByStepMethod } from "./createObjectSetOrderByStep.js";
+import { createObjectSetSearchAround } from "./createObjectSetSearchAround.js";
+import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep.js";
+import { createPropertyDescriptions } from "./createPropertyDescriptions.js";
+import { mapPropertiesToSearchFilter } from "./mapPropertiesToSearchFilter.js";
 
 const getSearchProperties = createCachedOntologyTransform(
   mapPropertiesToSearchFilter,

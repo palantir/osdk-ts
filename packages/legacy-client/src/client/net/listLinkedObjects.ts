@@ -16,16 +16,16 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject } from "../baseTypes";
+import type { OntologyObject } from "../baseTypes/index.js";
 import {
   handleListLinkedObjectsError,
   ListLinkedObjectsErrorHandler,
-} from "../errors";
-import type { ListLinkedObjectsError } from "../errors";
-import type { Page } from "../Page";
-import type { Result } from "../Result";
-import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
-import { wrapResult } from "./util/wrapResult";
+} from "../errors/index.js";
+import type { ListLinkedObjectsError } from "../errors/index.js";
+import type { Page } from "../Page.js";
+import type { Result } from "../Result.js";
+import { getLinkedObjectsPage } from "./getLinkedObjectsPage.js";
+import { wrapResult } from "./util/wrapResult.js";
 
 export function listLinkedObjects<T extends OntologyObject>(
   client: ClientContext<OntologyDefinition<any>>,

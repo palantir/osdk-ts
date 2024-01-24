@@ -19,7 +19,7 @@ import type {
   ObjectTypePropertyDefinition,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ObjectSetFilterArg } from "../interfaces/filters";
+import type { ObjectSetFilterArg } from "../interfaces/filters.js";
 import {
   ArrayFilter,
   AttachmentFilter,
@@ -30,9 +30,9 @@ import {
   NumericFilter,
   StringFilter,
   TimestampFilter,
-} from "../objectSets/filters";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { isReservedKeyword } from "../utils/reservedKeywords";
+} from "../objectSets/filters/index.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import { isReservedKeyword } from "../utils/reservedKeywords.js";
 
 export function mapPropertiesToSearchFilter<
   O extends OntologyDefinition<any>,

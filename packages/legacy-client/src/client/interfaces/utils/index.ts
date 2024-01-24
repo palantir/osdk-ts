@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./IsLink";
-export * from "./OmitProperties";
-export * from "./Properties";
+export * from "./IsLink.js";
+export * from "./OmitProperties.js";
+export * from "./Properties.js";

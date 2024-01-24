@@ -16,14 +16,14 @@
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes";
-import type { ObjectSetOrderByStep } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
-import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
-import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep";
-import type { OrderByClause } from "./filters";
-import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy";
+import type { ObjectSetDefinition } from "../baseTypes/index.js";
+import type { ObjectSetOrderByStep } from "../interfaces/index.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform.js";
+import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep.js";
+import { createObjectSetTerminalLoadStep } from "./createObjectSetTerminalLoadStep.js";
+import type { OrderByClause } from "./filters/index.js";
+import { mapPropertiesToOrderBy } from "./mapPropertiesToOrderBy.js";
 
 const getOrderByProperties = createCachedOntologyTransform(
   mapPropertiesToOrderBy,

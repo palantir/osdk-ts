@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LocalDate, Timestamp } from "../../baseTypes";
-import type { WhereClause } from "./Filters";
+import type { LocalDate, Timestamp } from "../../baseTypes/index.js";
+import type { WhereClause } from "./Filters.js";
 
 interface BaseTimePropertyFilter<T extends Timestamp | LocalDate> {
   /** The provided property is exactly equal to the provided value. */

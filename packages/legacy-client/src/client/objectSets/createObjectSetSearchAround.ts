@@ -19,11 +19,11 @@ import type { ClientContext } from "@osdk/shared.net";
 import type {
   ObjectSetDefinition,
   SearchAroundObjectSetDefinition,
-} from "../baseTypes";
-import type { ObjectSet } from "../interfaces/objectSet";
-import type { SearchAround } from "../interfaces/searchAround";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { createOsdkObjectSet } from "./OsdkObjectSet";
+} from "../baseTypes/index.js";
+import type { ObjectSet } from "../interfaces/objectSet.js";
+import type { SearchAround } from "../interfaces/searchAround.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import { createOsdkObjectSet } from "./OsdkObjectSet.js";
 
 export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,

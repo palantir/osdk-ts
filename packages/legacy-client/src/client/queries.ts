@@ -36,14 +36,14 @@ import type {
   ThreeDimensionalAggregation,
   Timestamp,
   TwoDimensionalAggregation,
-} from "./baseTypes";
-import type { QueryError } from "./errors";
-import type { ObjectSet } from "./interfaces";
-import type { Range } from "./objectSets/aggregations";
-import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
-import type { Result } from "./Result";
-import type { IsEmptyRecord } from "./utils";
-import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys";
+} from "./baseTypes/index.js";
+import type { QueryError } from "./errors/index.js";
+import type { ObjectSet } from "./interfaces/index.js";
+import type { Range } from "./objectSets/aggregations/index.js";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject.js";
+import type { Result } from "./Result.js";
+import type { IsEmptyRecord } from "./utils/index.js";
+import type { NonNullableKeys, NullableKeys } from "./utils/NullableKeys.js";
 
 export type Queries<O extends OntologyDefinition<any>> = {
   [Q in keyof O["queries"]]: IsEmptyRecord<QueryParameters<O, Q>> extends true

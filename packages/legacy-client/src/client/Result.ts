@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError } from "./errors";
+import type { FoundryApiError } from "./errors/index.js";
 
 export interface Ok<V> {
   type: "ok";

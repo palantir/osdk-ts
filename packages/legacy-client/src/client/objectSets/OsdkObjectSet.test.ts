@@ -35,10 +35,10 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
-import { USER_AGENT } from "../../USER_AGENT";
-import type { ObjectSetDefinition } from "../baseTypes";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
-import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
+import { USER_AGENT } from "../../USER_AGENT.js";
+import type { ObjectSetDefinition } from "../baseTypes/index.js";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
+import { createBaseOsdkObjectSet } from "./OsdkObjectSet.js";
 
 describe("OsdkObjectSet", () => {
   const origin = "https://mock.com";

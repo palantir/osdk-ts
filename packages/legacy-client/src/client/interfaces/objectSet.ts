@@ -18,20 +18,20 @@ import type {
   FilteredPropertiesTerminalOperations,
   ObjectSetDefinition,
   OntologyObject,
-} from "../baseTypes";
-import type { ListObjectsError } from "../errors";
-import type { AggregatableObjectSetStep } from "../objectSets/aggregations";
-import type { Page } from "../Page";
-import type { Result } from "../Result";
+} from "../baseTypes/index.js";
+import type { ListObjectsError } from "../errors/index.js";
+import type { AggregatableObjectSetStep } from "../objectSets/aggregations/index.js";
+import type { Page } from "../Page.js";
+import type { Result } from "../Result.js";
 import type {
   ObjectSetAggregateArg,
   ObjectSetGroupByArg,
   ObjectSetMultipleAggregateArg,
-} from "./aggregations";
-import type { ObjectTypeFilterFunction } from "./filters";
-import type { OrderByFunction } from "./ordering";
-import type { SearchAround } from "./searchAround";
-import type { SelectableProperties } from "./utils/OmitProperties";
+} from "./aggregations.js";
+import type { ObjectTypeFilterFunction } from "./filters.js";
+import type { OrderByFunction } from "./ordering.js";
+import type { SearchAround } from "./searchAround.js";
+import type { SelectableProperties } from "./utils/OmitProperties.js";
 
 export type ObjectSet<O extends OntologyObject> =
   & {

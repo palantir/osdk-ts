@@ -32,19 +32,19 @@ import {
   it,
   vi,
 } from "vitest";
-import type { ObjectSet, Range } from "../client";
-import type { Todo } from "../util/test";
-import { expectFetchToBeCalledWithBody } from "../util/test/expectUtils";
-import { unwrapResultOrThrow } from "../util/test/resultUtils";
+import type { ObjectSet, Range } from "../client/index.js";
+import { expectFetchToBeCalledWithBody } from "../util/test/expectUtils.js";
+import type { Todo } from "../util/test/index.js";
+import { unwrapResultOrThrow } from "../util/test/resultUtils.js";
 import type {
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "./baseTypes";
-import { LocalDate, Timestamp } from "./baseTypes";
-import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
-import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
-import type { Queries, QueryReturnType } from "./queries";
-import { createQueryProxy } from "./queryProxy";
+} from "./baseTypes/index.js";
+import { LocalDate, Timestamp } from "./baseTypes/index.js";
+import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet.js";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject.js";
+import type { Queries, QueryReturnType } from "./queries.js";
+import { createQueryProxy } from "./queryProxy.js";
 
 describe("Queries", () => {
   let client: ClientContext<MockOntology>;

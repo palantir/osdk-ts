@@ -16,10 +16,13 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import { getFirstPoint } from "../../../client/net/getFirstPoint";
-import { getLastPoint } from "../../../client/net/getLastPoint";
-import type { TimeSeries } from "./TimeSeries";
-import { createTimeSeriesQuery, type TimeSeriesQuery } from "./TimeSeriesQuery";
+import { getFirstPoint } from "../../../client/net/getFirstPoint.js";
+import { getLastPoint } from "../../../client/net/getLastPoint.js";
+import type { TimeSeries } from "./TimeSeries.js";
+import {
+  createTimeSeriesQuery,
+  type TimeSeriesQuery,
+} from "./TimeSeriesQuery.js";
 
 export function isTimeSeries<T extends number | string>(
   obj: any,

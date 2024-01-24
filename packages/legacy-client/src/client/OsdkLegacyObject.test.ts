@@ -16,8 +16,8 @@
 
 import type { MockOntology } from "@osdk/shared.test";
 import { describe, expectTypeOf, it } from "vitest";
-import type { Todo } from "../util/test";
-import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
+import type { Todo } from "../util/test/index.js";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject.js";
 
 describe("OsdkLegacyObject", () => {
   it("compiles", async () => {

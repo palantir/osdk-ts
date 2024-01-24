@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { MultiLink, OntologyObject } from "../../client/baseTypes";
-import type { Todo } from "./TodoObject";
+import type {
+  MultiLink,
+  OntologyObject,
+} from "../../client/baseTypes/index.js";
+import type { Todo } from "./TodoObject.js";
 
 export interface Task extends OntologyObject {
   readonly __apiName: "Task";

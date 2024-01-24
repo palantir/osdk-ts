@@ -15,11 +15,11 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSetAggregateArg } from "../interfaces/aggregations";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { isReservedKeyword } from "../utils/reservedKeywords";
-import type { AggregatableProperty } from "./aggregations";
-import { DefaultAggregatableProperty } from "./aggregations";
+import type { ObjectSetAggregateArg } from "../interfaces/aggregations.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import { isReservedKeyword } from "../utils/reservedKeywords.js";
+import type { AggregatableProperty } from "./aggregations/index.js";
+import { DefaultAggregatableProperty } from "./aggregations/index.js";
 
 export function mapPropertiesToAggregatableProperties<
   O extends OntologyDefinition<any>,
