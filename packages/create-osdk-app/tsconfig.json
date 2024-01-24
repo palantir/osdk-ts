@@ -10,7 +10,7 @@
     ".eslintrc.cjs"
   ],
   "exclude": [
-    "**/__tests__/snapshots"
+    "**/__tests__/**/snapshots"
   ],
   "references": []
 }

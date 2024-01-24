@@ -16,7 +16,6 @@
     }
   },
   "scripts": {
-    "build": "cp -r template-* build",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
@@ -50,9 +49,9 @@
   "files": [
     "build/types",
     "build/js",
-    "build/template-*",
     "CHANGELOG.md",
     "package.json",
+    "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.cjs",

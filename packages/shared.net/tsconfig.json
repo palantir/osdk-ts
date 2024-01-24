@@ -9,6 +9,9 @@
     "./src/**/*",
     ".eslintrc.cjs"
   ],
+  "exclude": [
+    "**/__tests__/**/snapshots"
+  ],
   "references": [
     {
       "path": "../gateway"

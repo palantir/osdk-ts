@@ -122,7 +122,7 @@ export async function cli(args: string[] = process.argv) {
 
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
-    "../..",
+    "../../templates/",
     template.id,
   );
 
