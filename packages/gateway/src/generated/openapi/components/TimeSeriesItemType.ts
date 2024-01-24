@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DoubleType } from "./DoubleType";
-import type { StringType } from "./StringType";
+import type { DoubleType } from "./DoubleType.js";
+import type { StringType } from "./StringType.js";
 
 export interface TimeSeriesItemType_Double extends DoubleType {
   type: "double";

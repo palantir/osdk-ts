@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectRid } from "./ObjectRid";
+import type { ObjectRid } from "./ObjectRid.js";
 
 export interface ObjectSetStaticType {
   objects: Array<ObjectRid>;

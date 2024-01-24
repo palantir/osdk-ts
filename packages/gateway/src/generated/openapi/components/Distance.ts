@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DistanceUnit } from "./DistanceUnit";
+import type { DistanceUnit } from "./DistanceUnit.js";
 
 /** A measurement of distance. */
 export interface Distance {

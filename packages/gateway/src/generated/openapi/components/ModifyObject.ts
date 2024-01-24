@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
-import type { PropertyValue } from "./PropertyValue";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
+import type { PropertyValue } from "./PropertyValue.js";
 
 export interface ModifyObject {
   primaryKey: PropertyValue;

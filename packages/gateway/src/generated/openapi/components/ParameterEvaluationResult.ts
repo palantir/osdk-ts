@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ParameterEvaluatedConstraint } from "./ParameterEvaluatedConstraint";
-import type { ValidationResult } from "./ValidationResult";
+import type { ParameterEvaluatedConstraint } from "./ParameterEvaluatedConstraint.js";
+import type { ValidationResult } from "./ValidationResult.js";
 
 /** Represents the validity of a parameter against the configured constraints. */
 export interface ParameterEvaluationResult {

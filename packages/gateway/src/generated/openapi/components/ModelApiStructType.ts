@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ModelApiStructField } from "./ModelApiStructField";
+import type { ModelApiStructField } from "./ModelApiStructField.js";
 
 export interface ModelApiStructType {
   fields: Array<ModelApiStructField>;

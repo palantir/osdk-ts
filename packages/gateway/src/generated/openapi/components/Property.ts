@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
-import type { ValueType } from "./ValueType";
+import type { DisplayName } from "./DisplayName.js";
+import type { ValueType } from "./ValueType.js";
 
 /** Details about some property of an object. */
 export interface Property {

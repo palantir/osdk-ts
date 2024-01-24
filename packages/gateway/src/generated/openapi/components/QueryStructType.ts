@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryStructField } from "./QueryStructField";
+import type { QueryStructField } from "./QueryStructField.js";
 
 export interface QueryStructType {
   fields: Array<QueryStructField>;

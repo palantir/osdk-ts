@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "./ActionTypeApiName";
-import type { ActionTypeRid } from "./ActionTypeRid";
-import type { DisplayName } from "./DisplayName";
-import type { LogicRule } from "./LogicRule";
-import type { Parameter } from "./Parameter";
-import type { ParameterId } from "./ParameterId";
-import type { ReleaseStatus } from "./ReleaseStatus";
+import type { ActionTypeApiName } from "./ActionTypeApiName.js";
+import type { ActionTypeRid } from "./ActionTypeRid.js";
+import type { DisplayName } from "./DisplayName.js";
+import type { LogicRule } from "./LogicRule.js";
+import type { Parameter } from "./Parameter.js";
+import type { ParameterId } from "./ParameterId.js";
+import type { ReleaseStatus } from "./ReleaseStatus.js";
 
 /** Represents an action type in the Ontology. */
 export interface ActionType {

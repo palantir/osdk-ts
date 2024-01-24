@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ParameterId } from "../components/ParameterId";
-import type { ValueType } from "../components/ValueType";
+import type { ParameterId } from "../components/ParameterId.js";
+import type { ValueType } from "../components/ValueType.js";
 
 /**
  * The type of the requested parameter is not currently supported by this API. If you need support for this,

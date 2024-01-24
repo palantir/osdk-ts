@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { AttachmentType } from "./AttachmentType";
-import type { BooleanType } from "./BooleanType";
-import type { ByteType } from "./ByteType";
-import type { DateType } from "./DateType";
-import type { DecimalType } from "./DecimalType";
-import type { DoubleType } from "./DoubleType";
-import type { FloatType } from "./FloatType";
-import type { GeoPointType } from "./GeoPointType";
-import type { GeoShapeType } from "./GeoShapeType";
-import type { IntegerType } from "./IntegerType";
-import type { LongType } from "./LongType";
-import type { OntologyObjectArrayType } from "./OntologyObjectArrayType";
-import type { ShortType } from "./ShortType";
-import type { StringType } from "./StringType";
-import type { TimeseriesType } from "./TimeseriesType";
-import type { TimestampType } from "./TimestampType";
+import type { AttachmentType } from "./AttachmentType.js";
+import type { BooleanType } from "./BooleanType.js";
+import type { ByteType } from "./ByteType.js";
+import type { DateType } from "./DateType.js";
+import type { DecimalType } from "./DecimalType.js";
+import type { DoubleType } from "./DoubleType.js";
+import type { FloatType } from "./FloatType.js";
+import type { GeoPointType } from "./GeoPointType.js";
+import type { GeoShapeType } from "./GeoShapeType.js";
+import type { IntegerType } from "./IntegerType.js";
+import type { LongType } from "./LongType.js";
+import type { OntologyObjectArrayType } from "./OntologyObjectArrayType.js";
+import type { ShortType } from "./ShortType.js";
+import type { StringType } from "./StringType.js";
+import type { TimeseriesType } from "./TimeseriesType.js";
+import type { TimestampType } from "./TimestampType.js";
 
 export interface ObjectPropertyType_Array extends OntologyObjectArrayType {
   type: "array";

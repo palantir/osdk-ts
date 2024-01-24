@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "./LinkTypeApiName";
-import type { ObjectSet } from "./ObjectSet";
+import type { LinkTypeApiName } from "./LinkTypeApiName.js";
+import type { ObjectSet } from "./ObjectSet.js";
 
 export interface ObjectSetSearchAroundType {
   objectSet: ObjectSet;

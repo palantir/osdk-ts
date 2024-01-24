@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import * as components from "./components";
-import * as errors from "./errors";
-import * as namespaces from "./namespaces";
-import * as request from "./request";
+import * as components from "./components/index.js";
+import * as errors from "./errors/index.js";
+import * as namespaces from "./namespaces/index.js";
+import * as request from "./request/index.js";
 
 export { components };
 export { errors };

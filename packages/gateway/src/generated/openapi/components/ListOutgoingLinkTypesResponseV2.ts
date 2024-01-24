@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
-import type { PageToken } from "./PageToken";
+import type { LinkTypeSideV2 } from "./LinkTypeSideV2.js";
+import type { PageToken } from "./PageToken.js";
 
 export interface ListOutgoingLinkTypesResponseV2 {
   nextPageToken?: PageToken;

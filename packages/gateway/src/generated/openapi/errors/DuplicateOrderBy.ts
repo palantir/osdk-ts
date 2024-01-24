@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
 
 /** The requested sort order includes duplicate properties. */
 export interface DuplicateOrderBy {

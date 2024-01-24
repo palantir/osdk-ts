@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DeploymentListing } from "./DeploymentListing";
+import type { DeploymentListing } from "./DeploymentListing.js";
 
 export interface ListDeploymentsResponse {
   deployments: Array<DeploymentListing>;

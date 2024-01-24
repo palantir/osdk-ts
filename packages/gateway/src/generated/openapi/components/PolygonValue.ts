@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Polygon } from "./Polygon";
+import type { Polygon } from "./Polygon.js";
 
 export interface PolygonValue_Polygon extends Polygon {
   type: "Polygon";

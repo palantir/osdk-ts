@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesPoint } from "./TimeSeriesPoint";
+import type { TimeSeriesPoint } from "./TimeSeriesPoint.js";
 
 export interface StreamTimeSeriesPointsResponse {
   data: Array<TimeSeriesPoint>;

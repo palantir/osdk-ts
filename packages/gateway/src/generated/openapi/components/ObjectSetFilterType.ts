@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "./ObjectSet";
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
+import type { ObjectSet } from "./ObjectSet.js";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2.js";
 
 export interface ObjectSetFilterType {
   objectSet: ObjectSet;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
-import type { FilePath } from "../components/FilePath";
-import type { TransactionRid } from "../components/TransactionRid";
+import type { DatasetRid } from "../components/DatasetRid.js";
+import type { FilePath } from "../components/FilePath.js";
+import type { TransactionRid } from "../components/TransactionRid.js";
 
 /** The given file path already exists in the dataset and transaction. */
 export interface FileAlreadyExists {

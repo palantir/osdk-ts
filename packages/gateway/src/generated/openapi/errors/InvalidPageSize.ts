@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PageSize } from "../components/PageSize";
+import type { PageSize } from "../components/PageSize.js";
 
 /** The provided page size was zero or negative. Page sizes must be greater than zero. */
 export interface InvalidPageSize {

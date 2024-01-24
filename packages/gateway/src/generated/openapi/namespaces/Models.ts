@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ChatCompletionRequest } from "../components/ChatCompletionRequest";
-import type { ChatCompletionResponse } from "../components/ChatCompletionResponse";
-import type { LanguageModelApiName } from "../components/LanguageModelApiName";
-import type { LanguageModelSource } from "../components/LanguageModelSource";
-import type { ListLanguageModelsResponse } from "../components/ListLanguageModelsResponse";
-import type { OpenApiRequest } from "../request";
+import type { ChatCompletionRequest } from "../components/ChatCompletionRequest.js";
+import type { ChatCompletionResponse } from "../components/ChatCompletionResponse.js";
+import type { LanguageModelApiName } from "../components/LanguageModelApiName.js";
+import type { LanguageModelSource } from "../components/LanguageModelSource.js";
+import type { ListLanguageModelsResponse } from "../components/ListLanguageModelsResponse.js";
+import type { OpenApiRequest } from "../request/index.js";
 
 /**
  * Creates a chat completion for a prompt.

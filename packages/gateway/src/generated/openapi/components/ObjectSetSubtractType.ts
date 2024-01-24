@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "./ObjectSet";
+import type { ObjectSet } from "./ObjectSet.js";
 
 export interface ObjectSetSubtractType {
   objectSets: Array<ObjectSet>;

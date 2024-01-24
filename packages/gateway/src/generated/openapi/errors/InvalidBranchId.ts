@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId";
+import type { BranchId } from "../components/BranchId.js";
 
 /** The requested branch name cannot be used. Branch names cannot be empty and must not look like RIDs or UUIDs. */
 export interface InvalidBranchId {

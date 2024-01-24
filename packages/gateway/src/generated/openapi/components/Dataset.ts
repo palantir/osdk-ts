@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DatasetName } from "./DatasetName";
-import type { DatasetRid } from "./DatasetRid";
-import type { FolderRid } from "./FolderRid";
+import type { DatasetName } from "./DatasetName.js";
+import type { DatasetRid } from "./DatasetRid.js";
+import type { FolderRid } from "./FolderRid.js";
 
 export interface Dataset {
   rid: DatasetRid;

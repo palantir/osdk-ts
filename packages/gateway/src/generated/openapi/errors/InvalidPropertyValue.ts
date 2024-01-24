@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName";
-import type { PropertyValue } from "../components/PropertyValue";
-import type { ValueType } from "../components/ValueType";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { PropertyValue } from "../components/PropertyValue.js";
+import type { ValueType } from "../components/ValueType.js";
 
 /**
  * The value of the given property is invalid. See the documentation of `PropertyValue` for details on

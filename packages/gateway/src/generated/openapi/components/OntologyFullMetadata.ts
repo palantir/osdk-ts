@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "./ActionTypeApiName";
-import type { ActionTypeV2 } from "./ActionTypeV2";
-import type { InterfaceType } from "./InterfaceType";
-import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
-import type { ObjectTypeWithLink } from "./ObjectTypeWithLink";
-import type { OntologyV2 } from "./OntologyV2";
-import type { QueryApiName } from "./QueryApiName";
-import type { QueryTypeV2 } from "./QueryTypeV2";
-import type { SharedPropertyType } from "./SharedPropertyType";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { ActionTypeApiName } from "./ActionTypeApiName.js";
+import type { ActionTypeV2 } from "./ActionTypeV2.js";
+import type { InterfaceType } from "./InterfaceType.js";
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
+import type { ObjectTypeWithLink } from "./ObjectTypeWithLink.js";
+import type { OntologyV2 } from "./OntologyV2.js";
+import type { QueryApiName } from "./QueryApiName.js";
+import type { QueryTypeV2 } from "./QueryTypeV2.js";
+import type { SharedPropertyType } from "./SharedPropertyType.js";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
 
 export interface OntologyFullMetadata {
   ontology: OntologyV2;

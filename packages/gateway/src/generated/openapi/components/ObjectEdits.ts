@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectEdit } from "./ObjectEdit";
+import type { ObjectEdit } from "./ObjectEdit.js";
 
 export interface ObjectEdits {
   edits: Array<ObjectEdit>;

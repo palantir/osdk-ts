@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { ObjectTypeRid } from "../components/ObjectTypeRid";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { ObjectTypeRid } from "../components/ObjectTypeRid.js";
 
 /** The requested object type is not found, or the client token does not have access to it. */
 export interface ObjectTypeNotFound {
