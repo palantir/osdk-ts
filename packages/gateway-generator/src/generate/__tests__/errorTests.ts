@@ -16,7 +16,7 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { generateError } from "../error";
+import { generateError } from "../error.js";
 
 describe("Errors", () => {
   it("should generate an error interface", () => {

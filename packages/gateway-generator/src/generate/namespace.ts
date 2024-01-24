@@ -36,15 +36,15 @@ import type {
   Response,
   ResponseType,
   StaticOperation,
-} from "../spec";
-import { InputType } from "../spec";
+} from "../spec/index.js";
+import { InputType } from "../spec/index.js";
 import {
   sanitizeParameterName,
   shouldSanitizePameterName,
   visitTypeUnion,
-} from "./common";
-import { getJsDocs } from "./getJsDocs";
-import { generateType, isOptional } from "./types";
+} from "./common.js";
+import { getJsDocs } from "./getJsDocs.js";
+import { generateType, isOptional } from "./types.js";
 
 export function generateNamespaces(
   namespaces: Namespace[],

@@ -16,8 +16,8 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import type { Namespace } from "../../spec";
-import { generateNamespace } from "../namespace";
+import type { Namespace } from "../../spec/index.js";
+import { generateNamespace } from "../namespace.js";
 
 describe("Namespace", () => {
   it("Generates a resource static method on a namespace correctly", () => {

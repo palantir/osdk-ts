@@ -16,7 +16,7 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { GenerateCommand } from "./generateCommand";
+import { GenerateCommand } from "./generateCommand.js";
 
 export async function cli(args: string[] = process.argv) {
   const base = yargs(hideBin(args))

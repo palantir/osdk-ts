@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Documentation, Example } from "./Common";
-import type { ParameterValue } from "./ParameterValue";
+import type { Documentation, Example } from "./Common.js";
+import type { ParameterValue } from "./ParameterValue.js";
 
 export interface Namespace {
   name: string;
