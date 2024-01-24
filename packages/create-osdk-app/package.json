@@ -1,20 +1,29 @@
 {
   "name": "create-osdk-app",
-  "version": "0.0.0",
   "private": true,
-  "main": "dist/index.js",
-  "bin": {
-    "create-osdk-app": "bin/createOsdkApp.js"
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
+    },
+    "./*": {
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
+    }
   },
-  "files": [
-    "bin",
-    "template-*",
-    "dist"
-  ],
   "scripts": {
     "build": "tsup",
-    "lint": "eslint . --max-warnings 0",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev:transpile": "tsup --watch",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest",
+    "transpile": "tsup",
+    "typecheck": "tsc-absolute --build",
     "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
   },
   "dependencies": {
@@ -39,5 +48,21 @@
     "typescript": "^5.2.2",
     "vitest": "^1.0.4"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "create-osdk-app": "bin/createOsdkApp.js"
+  },
+  "files": [
+    "build/types",
+    "build/js",
+    "CHANGELOG.md",
+    "package.json",
+    "*.d.ts"
+  ],
+  "main": "./build/js/index.cjs",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
   "type": "module"
 }
