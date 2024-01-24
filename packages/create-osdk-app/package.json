@@ -16,13 +16,13 @@
     }
   },
   "scripts": {
-    "build": "tsup",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest",
+    "test:watch": "vitest",
     "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build",
     "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
   },
@@ -32,21 +32,12 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
-    "@types/eslint": "^8.44.7",
-    "@types/node": "^20.5.2",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
-    "@types/yargs": "^17.0.32",
+    "@types/yargs": "^17.0.29",
     "dir-compare": "^4.2.0",
-    "eslint": "^8.53.0",
-    "react": "^18.2.0",
     "tmp": "^0.2.1",
-    "tsup": "^8.0.1",
-    "typescript": "^5.2.2",
-    "vitest": "^1.0.4"
+    "typescript": "^5.2.2"
   },
   "publishConfig": {
     "access": "public"
