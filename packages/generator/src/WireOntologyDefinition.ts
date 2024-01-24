@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type * as gateway from "@osdk/gateway";
+import type { OntologyFullMetadata } from "@osdk/gateway/types";
 
-export interface WireOntologyDefinition
-  extends gateway.components.OntologyFullMetadata
-{
+export interface WireOntologyDefinition extends OntologyFullMetadata {
 }

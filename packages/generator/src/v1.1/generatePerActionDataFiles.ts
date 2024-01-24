@@ -16,10 +16,10 @@
 
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
-import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { MinimalFs } from "../MinimalFs.js";
+import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition.js";
+import { formatTs } from "../util/test/formatTs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,

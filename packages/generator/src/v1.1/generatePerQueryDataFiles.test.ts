@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
-import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
+import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
+import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
 
 describe("generatePerQueryDataFiles", () => {
   it("generates per action metadata", async () => {

@@ -15,8 +15,8 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { formatTs } from "../util/test/formatTs";
+import type { MinimalFs } from "../MinimalFs.js";
+import { formatTs } from "../util/test/formatTs.js";
 
 export async function generateOntologyIndexFile(fs: MinimalFs, outDir: string) {
   await fs.mkdir(outDir, { recursive: true });

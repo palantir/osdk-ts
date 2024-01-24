@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./generateMetadata";
-export * from "./wireObjectTypeV2ToSdkObjectDefinition";
-export * from "./wirePropertyV2ToSdkPropertyDefinition";
+export * from "./generateMetadata.js";
+export * from "./wireObjectTypeV2ToSdkObjectDefinition.js";
+export * from "./wirePropertyV2ToSdkPropertyDefinition.js";
