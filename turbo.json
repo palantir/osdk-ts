@@ -75,7 +75,7 @@
     },
 
     "transpile": {
-      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
+      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
       "outputs": ["dist/**", "lib/**"]
     },
