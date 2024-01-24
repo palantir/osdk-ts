@@ -16,10 +16,10 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 import type { Auth } from "@osdk/legacy-client";
-import { API_BASE_URL } from "./Constants";
-import { FetchFactory } from "./fetch";
-import { MediaType } from "./MediaType";
-import { ResponseType } from "./ResponseType";
+import { API_BASE_URL } from "./Constants.js";
+import { FetchFactory } from "./fetch/index.js";
+import { MediaType } from "./MediaType.js";
+import { ResponseType } from "./ResponseType.js";
 
 export function getApiRequestFunction<TResponse>(
   auth: Auth,

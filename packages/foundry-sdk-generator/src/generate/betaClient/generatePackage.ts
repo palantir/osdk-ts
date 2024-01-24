@@ -18,10 +18,10 @@ import type { WireOntologyDefinition } from "@osdk/generator";
 import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
-import { generateBundles } from "../generateBundles";
-import { bundleDependencies } from "./bundleDependencies";
-import { compileInMemory } from "./compileInMemory";
-import { generatePackageJson } from "./generatePackageJson";
+import { generateBundles } from "../generateBundles.js";
+import { bundleDependencies } from "./bundleDependencies.js";
+import { compileInMemory } from "./compileInMemory.js";
+import { generatePackageJson } from "./generatePackageJson.js";
 
 declare const __OSDK_LEGACY_CLIENT_VERSION__: string | undefined;
 const dependencies: { [key: string]: string | undefined } = {
