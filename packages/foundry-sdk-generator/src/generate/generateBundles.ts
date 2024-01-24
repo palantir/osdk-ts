@@ -36,12 +36,15 @@ async function createRollupBuild(
   return rollup({
     input: inputPath,
     plugins: [
-      resolve({
+      // NOTE commonjs, resolve, and nodePolyfill all have incorrect types and *are* callable.
+      // Typescript wants us to use their `.default` right now, so we cast them to `any` below in the meantime
+
+      (resolve as any)({
         browser: true,
         modulePaths: [nodeModulesPath!],
       }),
-      commonjs({}),
-      nodePolyfill(),
+      (commonjs as any)({}),
+      (nodePolyfill as any)(),
     ],
     onwarn: (warning, warn) => {
       // Ignore circular dependency warnings

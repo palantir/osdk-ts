@@ -16,6 +16,5 @@
  */
 
 
-const cli = require("../build/js/index.cjs");
-cli.cli();
-
+import { cli } from "../build/esm/index.mjs";
+cli();
