@@ -1,7 +1,7 @@
 "use client";
+import client from "@/lib/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import client from "@/lib/client";
 
 function Login() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);

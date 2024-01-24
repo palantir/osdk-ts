@@ -1,7 +1,7 @@
-import React from "react";
 import devConsoleLogo from "/dev-console.svg";
 import palantirLogo from "/palantir.svg";
 import reactLogo from "/react.svg";
+import React from "react";
 import css from "./Layout.module.css";
 
 interface LayoutProps {

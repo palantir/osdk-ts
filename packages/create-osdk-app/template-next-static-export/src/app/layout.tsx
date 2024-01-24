@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Inter } from "next/font/google";
+import Image from "next/image";
 import css from "./layout.module.css";
 import "./globals.css";
 

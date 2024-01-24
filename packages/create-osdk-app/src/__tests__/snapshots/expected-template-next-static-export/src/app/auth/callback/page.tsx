@@ -1,7 +1,7 @@
 "use client";
+import client from "@/lib/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import client from "@/lib/client";
 
 /**
  * Component to render at `/auth/callback`

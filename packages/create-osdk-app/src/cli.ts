@@ -1,15 +1,30 @@
+/*
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-import Handlebars from "handlebars";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-
 import { consola } from "./consola.js";
 import { green, italic } from "./highlight.js";
-import { Template, TEMPLATES } from "./templates.js";
+import type { Template } from "./templates.js";
+import { TEMPLATES } from "./templates.js";
 
 interface CliArgs {
   project?: string;
@@ -69,7 +84,7 @@ export async function cli(args: string[] = process.argv) {
           .option("osdk-registry-url", {
             type: "string",
             describe: "URL for NPM registry to install OSDK package",
-          })
+          }),
     );
 
   const parsed: CliArgs = base.parseSync();
@@ -84,7 +99,7 @@ export async function cli(args: string[] = process.argv) {
 
   consola.log("");
   consola.start(
-    `Creating project ${green(project)} using template ${green(template.id)}`
+    `Creating project ${green(project)} using template ${green(template.id)}`,
   );
 
   const cwd = process.cwd();
@@ -108,13 +123,13 @@ export async function cli(args: string[] = process.argv) {
   const templateDir = path.resolve(
     fileURLToPath(import.meta.url),
     "../..",
-    template.id
+    template.id,
   );
 
   fs.cpSync(templateDir, root, { recursive: true });
 
-  const templateHbs = function (dir: string) {
-    fs.readdirSync(dir).forEach(function (file) {
+  const templateHbs = function(dir: string) {
+    fs.readdirSync(dir).forEach(function(file) {
       file = dir + "/" + file;
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {
@@ -126,7 +141,7 @@ export async function cli(args: string[] = process.argv) {
       }
       const hbsContext = { project, osdkPackage };
       const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
-        hbsContext
+        hbsContext,
       );
       fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
       fs.rmSync(file);
@@ -134,41 +149,39 @@ export async function cli(args: string[] = process.argv) {
   };
   templateHbs(root);
 
-  const npmRc =
-    `//${osdkRegistryUrl.replace(
+  const npmRc = `//${
+    osdkRegistryUrl.replace(
       /^https:\/\//,
-      ""
-    )}:_authToken=\${FOUNDRY_SDK_AUTH_TOKEN}\n` +
-    `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
+      "",
+    )
+  }:_authToken=\${FOUNDRY_SDK_AUTH_TOKEN}\n`
+    + `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
 
-  const envDevelopment =
-    `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n` +
-    `${template.envPrefix}FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback\n` +
-    `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
+  const envDevelopment = `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
+    + `${template.envPrefix}FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback\n`
+    + `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
 
-  const envProduction =
-    `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n` +
-    `${template.envPrefix}FOUNDRY_REDIRECT_URL=${
+  const envProduction = `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
+    + `${template.envPrefix}FOUNDRY_REDIRECT_URL=${
       applicationUrl != null
         ? applicationUrl
         : "<Fill in the domain at which you deploy your application>"
-    }/auth/callback\n` +
-    `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
+    }/auth/callback\n`
+    + `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
 
   consola.success("Success");
 
   const cdRelative = path.relative(cwd, root);
   consola.box({
-    message:
-      `Done! Run the following commands to get started:\n` +
-      `\n` +
-      `  \`cd ${cdRelative}\`\n` +
-      `  \`export FOUNDRY_SDK_AUTH_TOKEN=<token>\`\n` +
-      `  \`npm install\`\n` +
-      `  \`npm run dev\``,
+    message: `Done! Run the following commands to get started:\n`
+      + `\n`
+      + `  \`cd ${cdRelative}\`\n`
+      + `  \`export FOUNDRY_SDK_AUTH_TOKEN=<token>\`\n`
+      + `  \`npm install\`\n`
+      + `  \`npm run dev\``,
     style: {
       padding: 2,
       borderColor: "green",
@@ -182,7 +195,7 @@ async function promptProject(parsed: CliArgs): Promise<string> {
   while (project == null || !/^[a-zA-Z0-9-_]+$/.test(project)) {
     if (project != null) {
       consola.fail(
-        "Project name can only contain alphanumeric characters, hyphens and underscores"
+        "Project name can only contain alphanumeric characters, hyphens and underscores",
       );
     }
     project = await consola.prompt("Project name:", {
@@ -197,7 +210,7 @@ async function promptProject(parsed: CliArgs): Promise<string> {
 
 async function promptOverwrite(
   parsed: CliArgs,
-  project: string
+  project: string,
 ): Promise<boolean> {
   if (!fs.existsSync(path.join(process.cwd(), project))) {
     return true;
@@ -208,9 +221,11 @@ async function promptOverwrite(
   }
 
   const result = (await consola.prompt(
-    `The directory ${green(
-      project
-    )} already exists do you want to overwrite or ignore it?`,
+    `The directory ${
+      green(
+        project,
+      )
+    } already exists do you want to overwrite or ignore it?`,
     {
       type: "select",
       options: [
@@ -218,7 +233,7 @@ async function promptOverwrite(
         { label: "Ignore files and continue", value: "ignore" },
         { label: "Cancel", value: "cancel" },
       ],
-    }
+    },
     // Types for "select" are wrong the value is returned rather than the option object
     // https://github.com/unjs/consola/pull/238
   )) as unknown as "overwrite" | "ignore" | "cancel";
@@ -239,9 +254,11 @@ async function promptTemplate(parsed: CliArgs): Promise<Template> {
   if (template == null) {
     const templateId = (await consola.prompt(
       parsed.template != null
-        ? `The provided template ${green(
-            parsed.template
-          )} is invalid please select a framework:`
+        ? `The provided template ${
+          green(
+            parsed.template,
+          )
+        } is invalid please select a framework:`
         : "Select a framework:",
       {
         type: "select",
@@ -251,7 +268,7 @@ async function promptTemplate(parsed: CliArgs): Promise<Template> {
         })),
         // Types for "select" are wrong the value is returned rather than the option object
         // https://github.com/unjs/consola/pull/238
-      }
+      },
     )) as unknown as string;
 
     template = TEMPLATES.find((t) => t.id === templateId);
@@ -270,17 +287,19 @@ async function promptFoundryUrl(parsed: CliArgs): Promise<string> {
       consola.fail("Please enter a valid Foundry URL");
     }
     foundryUrl = await consola.prompt(
-      `Enter the URL for your Foundry stack:\n${italic(
-        "(Example https://example.palantirfoundry.com/)"
-      )}`,
-      { type: "text" }
+      `Enter the URL for your Foundry stack:\n${
+        italic(
+          "(Example https://example.palantirfoundry.com/)",
+        )
+      }`,
+      { type: "text" },
     );
   }
   return foundryUrl.replace(/\/$/, "");
 }
 
 async function promptApplicationUrl(
-  parsed: CliArgs
+  parsed: CliArgs,
 ): Promise<string | undefined> {
   if (parsed.skipApplicationUrl) {
     return undefined;
@@ -296,7 +315,7 @@ async function promptApplicationUrl(
           { label: "Yes, prefill it for me", value: "yes" },
           { label: "No, I will fill it in myself later", value: "no" },
         ],
-      }
+      },
       // Types for "select" are wrong the value is returned rather than the option object
       // https://github.com/unjs/consola/pull/238
     )) as unknown as "yes" | "no";
@@ -311,10 +330,12 @@ async function promptApplicationUrl(
       consola.fail("Please enter a valid application URL");
     }
     applicationUrl = await consola.prompt(
-      `Enter the URL your production application will be hosted on:\n${italic(
-        "(Example https://myapp.example.palantirfoundry.com/)"
-      )}`,
-      { type: "text" }
+      `Enter the URL your production application will be hosted on:\n${
+        italic(
+          "(Example https://myapp.example.palantirfoundry.com/)",
+        )
+      }`,
+      { type: "text" },
     );
   }
   return applicationUrl.replace(/\/$/, "");
@@ -327,10 +348,12 @@ async function promptClientId(parsed: CliArgs): Promise<string> {
       consola.fail("Please enter a valid OAuth client ID");
     }
     clientId = await consola.prompt(
-      `Enter the OAuth client ID for your application from Developer Console:\n${italic(
-        "(Example 2650385ab6c5e0df3b44aff776b00a42)"
-      )}`,
-      { type: "text" }
+      `Enter the OAuth client ID for your application from Developer Console:\n${
+        italic(
+          "(Example 2650385ab6c5e0df3b44aff776b00a42)",
+        )
+      }`,
+      { type: "text" },
     );
   }
   return clientId;
@@ -343,10 +366,12 @@ async function promptOsdkPackage(parsed: CliArgs): Promise<string> {
       consola.fail("Please enter a valid OSDK package name");
     }
     osdkPackage = await consola.prompt(
-      `Enter the OSDK package name for your application from Developer Console:\n${italic(
-        "(Example @my-app/sdk)"
-      )}`,
-      { type: "text" }
+      `Enter the OSDK package name for your application from Developer Console:\n${
+        italic(
+          "(Example @my-app/sdk)",
+        )
+      }`,
+      { type: "text" },
     );
   }
   return osdkPackage;
@@ -355,21 +380,24 @@ async function promptOsdkPackage(parsed: CliArgs): Promise<string> {
 async function promptOsdkRegistryUrl(parsed: CliArgs): Promise<string> {
   let osdkRegistryUrl = parsed.osdkRegistryUrl;
   while (
-    osdkRegistryUrl == null ||
-    !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/.test(
-      osdkRegistryUrl
-    )
+    osdkRegistryUrl == null
+    || !/^https:\/\/[^/]+\/artifacts\/api\/repositories\/ri\.artifacts\.[^/]+\/contents\/release\/npm\/?$/
+      .test(
+        osdkRegistryUrl,
+      )
   ) {
     if (osdkRegistryUrl != null) {
       consola.fail(
-        "Please enter a valid NPM registry URL to install your OSDK package"
+        "Please enter a valid NPM registry URL to install your OSDK package",
       );
     }
     osdkRegistryUrl = await consola.prompt(
-      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${italic(
-        "(Example https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)"
-      )}`,
-      { type: "text" }
+      `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${
+        italic(
+          "(Example https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
+        )
+      }`,
+      { type: "text" },
     );
   }
   return osdkRegistryUrl.replace(/\/$/, "");

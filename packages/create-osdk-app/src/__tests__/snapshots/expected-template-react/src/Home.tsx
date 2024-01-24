@@ -1,7 +1,7 @@
 import client from "./client";
 import getMethods from "./getMethods";
-import Layout from "./Layout";
 import css from "./Home.module.css";
+import Layout from "./Layout";
 
 function Home() {
   const objectApiNames = getMethods(client.ontology.objects);

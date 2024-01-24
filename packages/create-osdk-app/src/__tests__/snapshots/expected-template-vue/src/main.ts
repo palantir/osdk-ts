@@ -1,10 +1,10 @@
 import { createApp } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import AuthCallback from "./AuthCallback.vue";
+import client from "./client";
 import Home from "./Home.vue";
 import Layout from "./Layout.vue";
 import Login from "./Login.vue";
-import client from "./client";
 import "./style.css";
 
 const routes = [
@@ -20,8 +20,8 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   if (
-    to.meta.requiresAuth &&
-    (client.auth.token == null || client.auth.token.isExpired)
+    to.meta.requiresAuth
+    && (client.auth.token == null || client.auth.token.isExpired)
   ) {
     try {
       await client.auth.refresh();

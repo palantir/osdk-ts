@@ -17,4 +17,8 @@
 module.exports = {
   extends: ["sane/library"],
   root: true,
+  ignorePatterns: [
+    "template-*",
+    "**/__tests__/snapshots",
+  ],
 };
