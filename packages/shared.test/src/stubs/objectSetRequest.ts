@@ -26,8 +26,8 @@ import {
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
-} from "./objects";
-import { employeeObjectType, officeObjectType } from "./objectTypes";
+} from "./objects.js";
+import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 const baseObjectSet: LoadObjectSetRequestV2 = {
   objectSet: { type: "base", objectType: employeeObjectType.apiName },

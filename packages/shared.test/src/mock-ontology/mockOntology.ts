@@ -15,8 +15,8 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
-import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes.js";
+import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames.js";
 
 export const MockOntology = {
   metadata: {
