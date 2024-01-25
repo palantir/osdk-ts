@@ -132,8 +132,12 @@ async function getDependencyVersion(dependency: string): Promise<string> {
   if (dependencies[dependency] !== undefined) {
     return dependencies[dependency]!;
   }
+
+  // we need to carefully use find-up here. our __dirname is under build/cjs which has a stub
+  // package.json which marks this as a commonjs module. We need to start our find-up in build instead
+  // which will spider to the correct package.json.
   const { findUp } = await import("find-up");
-  const result = await findUp("package.json", { cwd: __dirname });
+  const result = await findUp("package.json", { cwd: join(__dirname, "..") });
   const packageJson = await readFile(result!, {
     encoding: "utf-8",
   });

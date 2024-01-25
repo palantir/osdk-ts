@@ -18,6 +18,8 @@ import * as fs from "node:fs";
 
 export async function readCliVersionFromPackageJson() {
   const { findUp } = await import("find-up");
+  // it is safe to use find-up for package.json because the entry point to the cli is osdk.mjs
+  // so this file will be in build/esm and will not see the package.json in build/cjs/package.json
   const result = await findUp("package.json", { cwd: import.meta.url });
   if (!result) {
     return "(unknown version. No package.json found)";
