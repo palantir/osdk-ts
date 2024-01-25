@@ -91,6 +91,9 @@
     "test:package-types": {
       "dependsOn": ["transpile"]
     },
+    "test:bin": {
+      "dependsOn": ["transpile"]
+    },
 
     "//#check-mrl": {
       "inputs": [
@@ -107,7 +110,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test", "test:package-types"]
+      "dependsOn": ["//#check-mrl", "lint", "build", "test", "test:package-types", "test:bin"]
     }
   },
 

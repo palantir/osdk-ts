@@ -265,6 +265,7 @@ export default {
       includePackages: ["@osdk/foundry-sdk-generator"],
     }, {
       legacy: false,
+      commonjs: true,
       packageDepth: 2,
       type: "library",
       tsVersion: "^5.2.2",

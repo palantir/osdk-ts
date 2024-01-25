@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
@@ -15,5 +14,5 @@
  * limitations under the License.
  */
 
-const cli = require("../build/cjs/index.cjs");
-cli.cli();
+// This file only exists as a fallback for packages that dont do modern module resolution
+export * from "./build/esm/public/objects";

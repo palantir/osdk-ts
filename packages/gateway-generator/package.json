@@ -31,6 +31,7 @@
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test:bin": "./bin/gateway-generator.cjs --help",
     "test:package-types": "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",

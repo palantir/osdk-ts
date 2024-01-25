@@ -7,21 +7,21 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./build/esm/index.d.ts",
+        "types": "./build/esm/index.d.mts",
         "default": "./build/esm/index.mjs"
       },
       "require": {
-        "types": "./build/cjs/index.d.cts",
+        "types": "./build/cjs/index.d.ts",
         "default": "./build/cjs/index.cjs"
       }
     },
     "./*": {
       "import": {
-        "types": "./build/esm/public/*.d.ts",
+        "types": "./build/esm/public/*.d.mts",
         "default": "./build/esm/public/*.mjs"
       },
       "require": {
-        "types": "./build/cjs/public/*.d.cts",
+        "types": "./build/cjs/public/*.d.ts",
         "default": "./build/cjs/public/*.cjs"
       }
     }
@@ -32,6 +32,7 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
+    "test:bin": "./bin/foundry-sdk-generator --help",
     "test:package-types": "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
     "test:watch": "vitest",
     "transpile": "tsup",
@@ -73,6 +74,6 @@
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.mjs",
-  "types": "./build/cjs/index.d.cts",
-  "type": "module"
+  "types": "./build/cjs/index.d.ts",
+  "type": "commonjs"
 }
