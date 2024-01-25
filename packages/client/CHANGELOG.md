@@ -1,5 +1,11 @@
 # @osdk/client
 
+## 0.3.1
+
+### Patch Changes
+
+- 206c2275: Bump conjure-lite dependency to pick up an explicit license
+
 ## 0.3.0
 
 ### Minor Changes

@@ -70,7 +70,7 @@
     },
 
     "@osdk/examples.todoapp#build": {
-      "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwindo.config.js"],
+      "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwind.config.js"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
