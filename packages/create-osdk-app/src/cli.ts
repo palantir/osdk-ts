@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { findUpSync } from "find-up";
 import Handlebars from "handlebars";
 import fs from "node:fs";
 import path from "node:path";
@@ -120,11 +121,14 @@ export async function cli(args: string[] = process.argv) {
 
   consola.info(`Copying files into project directory`);
 
-  const templateDir = path.resolve(
-    fileURLToPath(import.meta.url),
-    "../../templates/",
-    template.id,
-  );
+  const templatesDir = findUpSync("templates", {
+    cwd: path.dirname(fileURLToPath(import.meta.url)),
+    type: "directory",
+  });
+  if (templatesDir == null) {
+    throw new Error(`Could not find templates directory`);
+  }
+  const templateDir = path.resolve(templatesDir, template.id);
 
   fs.cpSync(templateDir, root, { recursive: true });
 

@@ -391,6 +391,9 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
+      find-up:
+        specifier: ^6.3.0
+        version: 6.3.0
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
