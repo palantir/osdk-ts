@@ -25,7 +25,7 @@ import { TEMPLATES } from "../templates.js";
 
 const snapshotsDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
-  "snapshots",
+  "__snapshots__",
 );
 beforeEach(() => {
   let tmpDir: DirResult | undefined;
