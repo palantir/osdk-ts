@@ -85,5 +85,5 @@ export async function generateClientSdkVersionOneDotOne(
     importExt,
   );
   await generateIndexFile(fs, outDir, importExt);
-  await generateBackCompatDeprecatedExports(fs, outDir);
+  await generateBackCompatDeprecatedExports(fs, outDir, importExt);
 }

@@ -39,6 +39,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,
+            importExt,
           )
         }
 
