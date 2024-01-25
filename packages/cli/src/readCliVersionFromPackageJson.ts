@@ -15,10 +15,13 @@
  */
 
 import * as fs from "node:fs";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 export async function readCliVersionFromPackageJson() {
   const { findUp } = await import("find-up");
-  const result = await findUp("package.json", { cwd: import.meta.url });
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const result = await findUp("package.json", { cwd: __dirname });
   if (!result) {
     return "(unknown version. No package.json found)";
   }
