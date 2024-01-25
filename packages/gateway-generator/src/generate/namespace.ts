@@ -106,7 +106,7 @@ export function generateNamespace(namespace: Namespace, directory: Directory) {
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `../components/${reference}`,
+        moduleSpecifier: `../components/${reference}.js`,
         isTypeOnly: true,
         namedImports: [reference],
       };
@@ -114,7 +114,7 @@ export function generateNamespace(namespace: Namespace, directory: Directory) {
   );
 
   sourceFile.addImportDeclaration({
-    moduleSpecifier: "../request",
+    moduleSpecifier: "../request/index.js",
     namedImports: ["OpenApiRequest"],
   });
 }

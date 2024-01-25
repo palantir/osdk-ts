@@ -63,7 +63,7 @@ export function generateError(error: Error, directory: Directory) {
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `../components/${reference}`,
+        moduleSpecifier: `../components/${reference}.js`,
         namedImports: [reference],
       };
     }),

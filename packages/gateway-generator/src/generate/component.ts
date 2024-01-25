@@ -82,7 +82,7 @@ export function generateComponent(
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `./${reference}`,
+        moduleSpecifier: `./${reference}.js`,
         namedImports: [reference],
       };
     }),

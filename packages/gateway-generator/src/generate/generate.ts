@@ -66,14 +66,14 @@ function generateIndexFiles(project: Project, outDir: string) {
       path.join(outDir, packageName, "index.ts"),
     );
     moduleIndex.addExportDeclarations(
-      types.map(type => ({ moduleSpecifier: `./${type}` })),
+      types.map(type => ({ moduleSpecifier: `./${type}.js` })),
     );
     return moduleIndex.save();
   });
 
   if (moduleArray.length === 1) {
     rootIndex.addExportDeclaration({
-      moduleSpecifier: `./${moduleArray[0]![0]}`,
+      moduleSpecifier: `./${moduleArray[0]![0]}/index.js`,
     });
   } else {
     moduleArray.forEach(([packageName, _types]) => {
@@ -82,7 +82,7 @@ function generateIndexFiles(project: Project, outDir: string) {
         x => x[1]!.toUpperCase(),
       );
       rootIndex.addImportDeclaration({
-        moduleSpecifier: `./${packageName}`,
+        moduleSpecifier: `./${packageName}/index.js`,
         namespaceImport: camelCaseModule,
       });
       rootIndex.addExportDeclaration({ namedExports: [camelCaseModule] });
