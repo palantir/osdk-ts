@@ -1,5 +1,12 @@
 # @osdk/shared.test
 
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [206c2275]
+  - @osdk/cli@0.0.20
+
 ## 1.0.3
 
 ### Patch Changes
