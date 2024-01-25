@@ -131,6 +131,14 @@ export class OntologyMetadataResolver {
       ontology.apiName,
     );
 
+    if ((ontologyFullMetadata as any).errorName != null) {
+      return Result.err([
+        `Unable to load the specified Ontology metadata.\n${
+          JSON.stringify(ontologyFullMetadata, null, 2)
+        }`,
+      ]);
+    }
+
     const linkTypes = new Map<string, Set<string>>();
     const objectTypes = new Set(
       entities.objectTypesApiNamesToLoad?.map(object => object.toLowerCase()),
