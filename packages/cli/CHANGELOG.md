@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.0.20
+
+### Patch Changes
+
+- 206c2275: Bump conjure-lite dependency to pick up an explicit license
+
 ## 0.0.19
 
 ### Patch Changes
