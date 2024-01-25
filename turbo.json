@@ -88,6 +88,9 @@
       "env": ["FORCE_COLOR"],
       "cache": false
     },
+    "test:package-types": {
+      "dependsOn": ["transpile"]
+    },
 
     "//#check-mrl": {
       "inputs": [
@@ -104,7 +107,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
+      "dependsOn": ["//#check-mrl", "lint", "build", "test", "test:package-types"]
     }
   },
 

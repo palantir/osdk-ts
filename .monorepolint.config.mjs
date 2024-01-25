@@ -124,6 +124,8 @@ function standardPackageRules(shared, options) {
           prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
           typecheck: "tsc-absolute --build",
+          "test:package-types":
+            "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
         },
       },
     }),
