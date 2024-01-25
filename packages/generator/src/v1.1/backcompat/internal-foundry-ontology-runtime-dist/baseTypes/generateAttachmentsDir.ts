@@ -22,14 +22,15 @@ import { reexportTypes } from "../../util/reexportTypes";
 export async function generateAttachmentsDir(
   attachmentsDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(attachmentsDir, { recursive: true });
 
   await fs.writeFile(
     path.join(attachmentsDir, "index.ts"),
     await formatTs(
-      `export * from "./Attachment";
-       export * from "./Attachments";
+      `export * from "./Attachment${importExt}";
+       export * from "./Attachments${importExt}";
     `,
     ),
   );

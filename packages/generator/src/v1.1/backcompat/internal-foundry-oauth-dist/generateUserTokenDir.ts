@@ -22,13 +22,14 @@ import { reexportConsts } from "../util/reexportConsts";
 export async function generateUserTokenDir(
   fs: MinimalFs,
   oauthDistDir: string,
+  importExt = "",
 ) {
   const userTokenDistDir = path.join(oauthDistDir, "UserToken");
   await fs.mkdir(userTokenDistDir, { recursive: true });
   await fs.writeFile(
     path.join(userTokenDistDir, "index.ts"),
     await formatTs(`
-    export * from "./UserTokenAuth";
+    export * from "./UserTokenAuth${importExt}";
   `),
   );
 

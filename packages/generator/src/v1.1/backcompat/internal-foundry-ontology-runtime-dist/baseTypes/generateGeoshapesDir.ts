@@ -23,22 +23,23 @@ import { reexportTypes } from "../../util/reexportTypes";
 export async function generateGeoshapesDir(
   runtimeDistDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(runtimeDistDir, { recursive: true });
 
   await fs.writeFile(
     path.join(runtimeDistDir, "index.ts"),
     await formatTs(
-      `export * from "./Distance";
-       export * from "./GeoJson";
-       export * from "./GeometryCollection";
-       export * from "./GeoPoint";
-       export * from "./GeoShape";
-       export * from "./LineString";
-       export * from "./MultiGeoPoint";
-       export * from "./MultiLineString";
-       export * from "./MultiPolygon";
-       export * from "./Polygon";`,
+      `export * from "./Distance${importExt}";
+       export * from "./GeoJson${importExt}";
+       export * from "./GeometryCollection${importExt}";
+       export * from "./GeoPoint${importExt}";
+       export * from "./GeoShape${importExt}";
+       export * from "./LineString${importExt}";
+       export * from "./MultiGeoPoint${importExt}";
+       export * from "./MultiLineString${importExt}";
+       export * from "./MultiPolygon${importExt}";
+       export * from "./Polygon${importExt}";`,
     ),
   );
 

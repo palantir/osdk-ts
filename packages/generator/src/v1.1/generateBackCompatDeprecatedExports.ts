@@ -21,7 +21,8 @@ import { generateOntologyRuntimeDistDir } from "./backcompat/generateOntologyRun
 export async function generateBackCompatDeprecatedExports(
   fs: MinimalFs,
   outDir: string,
+  importExt = "",
 ) {
-  await generateOntologyRuntimeDistDir(outDir, fs);
-  await generateOAuthClientDistDir(outDir, fs);
+  await generateOntologyRuntimeDistDir(outDir, fs, importExt);
+  await generateOAuthClientDistDir(outDir, fs, importExt);
 }

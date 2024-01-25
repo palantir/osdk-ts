@@ -26,30 +26,31 @@ import { generateMetrics } from "./aggregations/generateMetrics";
 export async function generateAggregationsDir(
   fs: MinimalFs,
   runtimeDistDir: string,
+  importExt = "",
 ) {
   const aggregationsDir = path.join(runtimeDistDir, "aggregations");
   await fs.mkdir(aggregationsDir, { recursive: true });
 
-  await generateGroupBy(fs, aggregationsDir);
+  await generateGroupBy(fs, aggregationsDir, importExt);
   await generateAggregationsAggregations(fs, aggregationsDir);
-  await generateMetrics(fs, aggregationsDir);
+  await generateMetrics(fs, aggregationsDir, importExt);
 
   await fs.writeFile(
     path.join(aggregationsDir, "index.ts"),
     await formatTs(`
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./AggregatableObjectSet";
+      // export * from "./AggregatableObjectSet${importExt}";
     }
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./aggregationConverters";
+      // export * from "./aggregationConverters${importExt}";
     }
     
-    export * from "./Aggregations";
-    export * from "./ComputeStep";
-    export * from "./CountOperation";
-    export * from "./groupBy";
-    export * from "./internalAggregationRequest";
-    export * from "./metrics";
+    export * from "./Aggregations${importExt}";
+    export * from "./ComputeStep${importExt}";
+    export * from "./CountOperation${importExt}";
+    export * from "./groupBy/index${importExt}";
+    export * from "./internalAggregationRequest${importExt}";
+    export * from "./metrics/index${importExt}";
   `),
   );
 
@@ -57,10 +58,10 @@ export async function generateAggregationsDir(
     path.join(aggregationsDir, "ComputeStep.ts"),
     await formatTs(
       `
-      import { ObjectSetDefinition } from "../baseTypes";
-      import { FoundryClientOptions } from "../client";
-      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider";
-      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations";
+      import { ObjectSetDefinition } from "../baseTypes/index${importExt}";
+      import { FoundryClientOptions } from "../client/${importExt}";
+      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider/index${importExt}";
+      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations${importExt}";
       `
         + reexportConsts(["ComputeStep"])
         + reexportTypes(

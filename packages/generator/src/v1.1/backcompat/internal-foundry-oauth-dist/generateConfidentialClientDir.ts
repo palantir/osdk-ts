@@ -22,6 +22,7 @@ import { reexportConsts } from "../util/reexportConsts";
 export async function generateConfidentialClientDir(
   fs: MinimalFs,
   oauthDistDir: string,
+  importExt = "",
 ) {
   const confidentialClientDistDir = path.join(
     oauthDistDir,
@@ -32,7 +33,7 @@ export async function generateConfidentialClientDir(
   await fs.writeFile(
     path.join(confidentialClientDistDir, "index.ts"),
     await formatTs(`
-    export * from "./ConfidentialClientAuth";
+    export * from "./ConfidentialClientAuth${importExt}";
   `),
   );
 
