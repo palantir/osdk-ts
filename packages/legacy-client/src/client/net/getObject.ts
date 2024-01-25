@@ -18,13 +18,16 @@ import type { OntologyDefinition } from "@osdk/api";
 import { getObjectV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject } from "../baseTypes";
-import { GetObjectErrorHandler, handleGetObjectError } from "../errors";
-import type { GetObjectError } from "../errors";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
-import type { Result } from "../Result";
-import { wrapResult } from "./util/wrapResult";
-import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
+import type { OntologyObject } from "../baseTypes/index.js";
+import {
+  GetObjectErrorHandler,
+  handleGetObjectError,
+} from "../errors/index.js";
+import type { GetObjectError } from "../errors/index.js";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
+import type { Result } from "../Result.js";
+import { wrapResult } from "./util/wrapResult.js";
+import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2.js";
 
 export async function getObject<T extends OntologyObject>(
   client: ClientContext<OntologyDefinition<T["__apiName"]>>,

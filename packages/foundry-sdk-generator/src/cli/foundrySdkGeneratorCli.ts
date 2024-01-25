@@ -17,7 +17,7 @@
 // eslint-disable-next-line import/no-named-as-default
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { GeneratePackageCommand } from "../generate";
+import { GeneratePackageCommand } from "../generate/index.js";
 
 export async function cli(args: string[] = process.argv) {
   const base = yargs(hideBin(args))

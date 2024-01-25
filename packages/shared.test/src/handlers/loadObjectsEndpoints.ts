@@ -37,7 +37,7 @@ import type {
   RestHandler,
 } from "msw";
 import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError";
+import type { BaseAPIError } from "../BaseError.js";
 import {
   AttachmentNotFoundError,
   AttachmentSizeExceededLimitError,
@@ -48,41 +48,41 @@ import {
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
   QueryNotFoundError,
-} from "../errors";
+} from "../errors.js";
 import {
   filterObjectProperties,
   filterObjectsProperties,
-} from "../filterObjects";
+} from "../filterObjects.js";
 import {
   attachmentContentRequest,
   attachmentMetadataRequest,
   attachmentUploadRequest,
   attachmentUploadRequestBody,
-} from "../stubs/attachments";
-import { linkResponseMap } from "../stubs/links";
-import { linkTypesResponseMap } from "../stubs/linkTypes";
-import { loadRequestHandlersV2 } from "../stubs/loadRequests";
-import { objectLoadResponseMap } from "../stubs/objects";
+} from "../stubs/attachments.js";
+import { linkResponseMap } from "../stubs/links.js";
+import { linkTypesResponseMap } from "../stubs/linkTypes.js";
+import { loadRequestHandlersV2 } from "../stubs/loadRequests.js";
+import { objectLoadResponseMap } from "../stubs/objects.js";
 import {
   employeeObjectType,
   equipmentObjectType,
   objectTypeWithAllPropertyTypes,
   objectTypeWithTimestampPrimaryKey,
   officeObjectType,
-} from "../stubs/objectTypes";
-import { ObjectTypesV2 } from "../stubs/objectTypeV2";
-import { defaultOntology } from "../stubs/ontologies";
-import { queryRequestHandlers } from "../stubs/queries";
-import { queryTypes } from "../stubs/queryTypes";
+} from "../stubs/objectTypes.js";
+import { ObjectTypesV2 } from "../stubs/objectTypeV2.js";
+import { defaultOntology } from "../stubs/ontologies.js";
+import { queryRequestHandlers } from "../stubs/queries.js";
+import { queryTypes } from "../stubs/queryTypes.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
-} from "../stubs/timeseriesRequests";
-import { authHandlerMiddleware } from "./commonHandlers";
+} from "../stubs/timeseriesRequests.js";
+import { authHandlerMiddleware } from "./commonHandlers.js";
 import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
-} from "./endpointUtils";
+} from "./endpointUtils.js";
 
 export const loadObjectsEndpoints: RestHandler<
   MockedRequest<DefaultBodyType>

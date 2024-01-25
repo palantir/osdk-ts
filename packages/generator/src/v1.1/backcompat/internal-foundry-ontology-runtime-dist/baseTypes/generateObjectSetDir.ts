@@ -15,21 +15,22 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs";
-import { formatTs } from "../../../../util/test/formatTs";
-import { reexportTypes } from "../../util/reexportTypes";
+import type { MinimalFs } from "../../../../MinimalFs.js";
+import { formatTs } from "../../../../util/test/formatTs.js";
+import { reexportTypes } from "../../util/reexportTypes.js";
 
 export async function generateObjectSetDir(
   objectSetDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(objectSetDir, { recursive: true });
 
   await fs.writeFile(
     path.join(objectSetDir, "index.ts"),
     await formatTs(`
-    export * from "./ObjectSetDefinition";
-    export * from "./OntologyObjectSet";
+    export * from "./ObjectSetDefinition${importExt}";
+    export * from "./OntologyObjectSet${importExt}";
     `),
   );
 

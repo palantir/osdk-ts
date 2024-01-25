@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { CenterPointTypes } from "./CenterPointTypes";
-import type { Distance } from "./Distance";
+import type { CenterPointTypes } from "./CenterPointTypes.js";
+import type { Distance } from "./Distance.js";
 
 /**
  * The coordinate point to use as the center of the distance query.

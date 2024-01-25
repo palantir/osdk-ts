@@ -21,7 +21,7 @@ import type {
   LocalDate,
   OntologyObject,
   Timestamp,
-} from "../baseTypes";
+} from "../baseTypes/index.js";
 import type {
   ArrayFilter,
   AttachmentFilter,
@@ -33,9 +33,9 @@ import type {
   StringFilter,
   TimestampFilter,
   WhereClause,
-} from "../objectSets/filters";
-import type { OrderByFunction } from "./ordering";
-import type { OmitMetadataProperties } from "./utils/OmitProperties";
+} from "../objectSets/filters/index.js";
+import type { OrderByFunction } from "./ordering.js";
+import type { OmitMetadataProperties } from "./utils/OmitProperties.js";
 
 export declare type ObjectTypeFilterFunction<T extends OntologyObject> = (
   objectType: ObjectSetFilterArg<T>,

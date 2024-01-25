@@ -24,32 +24,35 @@ import { executeQueryV2 } from "@osdk/gateway/requests";
 import type { QueryThreeDimensionalAggregation } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import { createOsdkObjectSet } from "..";
-import { LocalDate, Timestamp } from "../baseTypes";
+import { LocalDate, Timestamp } from "../baseTypes/index.js";
 import type {
   ObjectSetDefinition,
   ParameterValue,
   PrimitiveParameterValue,
   QueryBucketKey,
-} from "../baseTypes";
-import { ExecuteQueryErrorHandler, handleExecuteQueryError } from "../errors";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
+} from "../baseTypes/index.js";
+import {
+  ExecuteQueryErrorHandler,
+  handleExecuteQueryError,
+} from "../errors/index.js";
+import { createOsdkObjectSet } from "../index.js";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
 import type {
   BucketValue,
   QueryTwoDimensionalAggregation,
   Range,
   Rangeable,
-} from "../objectSets/aggregations";
+} from "../objectSets/aggregations/index.js";
 import type {
   QueryNamesFrom,
   QueryParameters,
   WrappedQueryReturnType,
-} from "../queries";
-import { isOk } from "../Result";
-import { getObject } from "./getObject";
-import { getParameterValueMapping } from "./util/getParameterValueMapping";
-import { wrapResult } from "./util/wrapResult";
-import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
+} from "../queries.js";
+import { isOk } from "../Result.js";
+import { getObject } from "./getObject.js";
+import { getParameterValueMapping } from "./util/getParameterValueMapping.js";
+import { wrapResult } from "./util/wrapResult.js";
+import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2.js";
 
 export function executeQuery<
   O extends OntologyDefinition<any>,

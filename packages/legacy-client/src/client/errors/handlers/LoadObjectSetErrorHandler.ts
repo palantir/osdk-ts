@@ -34,9 +34,9 @@ import type {
   PropertyFiltersNotSupported,
   PropertyTypesSearchNotSupported,
   QueryDepthExceededLimit,
-} from "../ApiErrors";
-import type { PalantirApiError } from "../Errors";
-import { DefaultErrorHandler } from "./DefaultErrorHandler";
+} from "../ApiErrors.js";
+import type { PalantirApiError } from "../Errors.js";
+import { DefaultErrorHandler } from "./DefaultErrorHandler.js";
 
 export class LoadObjectSetErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDataType } from "./OntologyDataType";
+import type { OntologyDataType } from "./OntologyDataType.js";
 
 export interface OntologySetType {
   itemType: OntologyDataType;

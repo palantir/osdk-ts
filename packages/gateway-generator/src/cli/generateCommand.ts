@@ -16,8 +16,8 @@
 
 import { readFile } from "fs/promises";
 import type { Arguments, Argv, CommandModule } from "yargs";
-import { generate } from "../generate/generate";
-import type { ApiSpec } from "../spec";
+import { generate } from "../generate/generate.js";
+import type { ApiSpec } from "../spec/index.js";
 
 export interface GenerateOpenApiArgs {
   /*

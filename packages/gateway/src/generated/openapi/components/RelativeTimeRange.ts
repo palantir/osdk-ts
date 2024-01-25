@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { RelativeTime } from "./RelativeTime";
+import type { RelativeTime } from "./RelativeTime.js";
 
 /**
  * A relative time range for a time series query.

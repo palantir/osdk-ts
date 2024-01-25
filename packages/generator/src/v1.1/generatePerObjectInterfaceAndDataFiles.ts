@@ -15,11 +15,11 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
-import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
+import type { MinimalFs } from "../MinimalFs.js";
+import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
+import { formatTs } from "../util/test/formatTs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString.js";
 
 export async function generatePerObjectInterfaceAndDataFiles(
   ontology: WireOntologyDefinition,
@@ -39,6 +39,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
         ${
           wireObjectTypeV2ToObjectInterfaceStringV1(
             object,
+            importExt,
           )
         }
 

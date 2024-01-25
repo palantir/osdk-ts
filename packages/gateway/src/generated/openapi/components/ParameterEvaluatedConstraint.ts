@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { ArraySize } from "./ArraySize";
-import type { GroupMember } from "./GroupMember";
-import type { ObjectPropertyValue } from "./ObjectPropertyValue";
-import type { ObjectQueryResult } from "./ObjectQueryResult";
-import type { OneOf } from "./OneOf";
-import type { Range } from "./Range";
-import type { StringLength } from "./StringLength";
-import type { StringRegexMatch } from "./StringRegexMatch";
-import type { Unevaluable } from "./Unevaluable";
+import type { ArraySize } from "./ArraySize.js";
+import type { GroupMember } from "./GroupMember.js";
+import type { ObjectPropertyValue } from "./ObjectPropertyValue.js";
+import type { ObjectQueryResult } from "./ObjectQueryResult.js";
+import type { OneOf } from "./OneOf.js";
+import type { Range } from "./Range.js";
+import type { StringLength } from "./StringLength.js";
+import type { StringRegexMatch } from "./StringRegexMatch.js";
+import type { Unevaluable } from "./Unevaluable.js";
 
 export interface ParameterEvaluatedConstraint_ArraySize extends ArraySize {
   type: "arraySize";

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import * as path from "path";
+import * as path from "node:path";
 import { Project } from "ts-morph";
-import type { ApiSpec } from "../spec";
-import { generateRequestType } from "./client";
-import { generateComponents } from "./component";
-import { generateErrors } from "./error";
-import type { GenerateOptions } from "./GenerateOptions";
-import { generateNamespaces } from "./namespace";
+import type { ApiSpec } from "../spec/index.js";
+import { generateRequestType } from "./client.js";
+import { generateComponents } from "./component.js";
+import { generateErrors } from "./error.js";
+import type { GenerateOptions } from "./GenerateOptions.js";
+import { generateNamespaces } from "./namespace.js";
 
 const dashRegex = /-(\w)/g;
 
@@ -66,14 +66,14 @@ function generateIndexFiles(project: Project, outDir: string) {
       path.join(outDir, packageName, "index.ts"),
     );
     moduleIndex.addExportDeclarations(
-      types.map(type => ({ moduleSpecifier: `./${type}` })),
+      types.map(type => ({ moduleSpecifier: `./${type}.js` })),
     );
     return moduleIndex.save();
   });
 
   if (moduleArray.length === 1) {
     rootIndex.addExportDeclaration({
-      moduleSpecifier: `./${moduleArray[0]![0]}`,
+      moduleSpecifier: `./${moduleArray[0]![0]}/index.js`,
     });
   } else {
     moduleArray.forEach(([packageName, _types]) => {
@@ -82,7 +82,7 @@ function generateIndexFiles(project: Project, outDir: string) {
         x => x[1]!.toUpperCase(),
       );
       rootIndex.addImportDeclaration({
-        moduleSpecifier: `./${packageName}`,
+        moduleSpecifier: `./${packageName}/index.js`,
         namespaceImport: camelCaseModule,
       });
       rootIndex.addExportDeclaration({ namedExports: [camelCaseModule] });

@@ -15,13 +15,14 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs";
-import { formatTs } from "../../../util/test/formatTs";
-import { reexportConsts } from "../util/reexportConsts";
+import type { MinimalFs } from "../../../MinimalFs.js";
+import { formatTs } from "../../../util/test/formatTs.js";
+import { reexportConsts } from "../util/reexportConsts.js";
 
 export async function generatePublicClientDir(
   fs: MinimalFs,
   oauthDistDir: string,
+  importExt = "",
 ) {
   const publicClientDistDir = path.join(oauthDistDir, "PublicClient");
   await fs.mkdir(publicClientDistDir, { recursive: true });
@@ -29,7 +30,7 @@ export async function generatePublicClientDir(
   await fs.writeFile(
     path.join(publicClientDistDir, "index.ts"),
     await formatTs(`
-    export * from "./PublicClientAuth";
+    export * from "./PublicClientAuth${importExt}";
   `),
   );
 

@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./TaskObject";
-export * from "./TodoObject";
+export * from "./TaskObject.js";
+export * from "./TodoObject.js";

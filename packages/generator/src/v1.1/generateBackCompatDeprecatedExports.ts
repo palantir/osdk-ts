@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { MinimalFs } from "../MinimalFs";
-import { generateOAuthClientDistDir } from "./backcompat/generateOAuthDistDir";
-import { generateOntologyRuntimeDistDir } from "./backcompat/generateOntologyRuntimeDistDir";
+import type { MinimalFs } from "../MinimalFs.js";
+import { generateOAuthClientDistDir } from "./backcompat/generateOAuthDistDir.js";
+import { generateOntologyRuntimeDistDir } from "./backcompat/generateOntologyRuntimeDistDir.js";
 
 export async function generateBackCompatDeprecatedExports(
   fs: MinimalFs,
   outDir: string,
+  importExt = "",
 ) {
-  await generateOntologyRuntimeDistDir(outDir, fs);
-  await generateOAuthClientDistDir(outDir, fs);
+  await generateOntologyRuntimeDistDir(outDir, fs, importExt);
+  await generateOAuthClientDistDir(outDir, fs, importExt);
 }

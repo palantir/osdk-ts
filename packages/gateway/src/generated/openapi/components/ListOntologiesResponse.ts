@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Ontology } from "./Ontology";
+import type { Ontology } from "./Ontology.js";
 
 export interface ListOntologiesResponse {
   /** The list of Ontologies the user has access to. */

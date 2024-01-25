@@ -17,11 +17,11 @@
 import type { OntologyDefinition } from "@osdk/api";
 import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
-import { getObject } from "../../client/net/getObject";
-import type { GetObjectError } from "../errors";
-import type { Result } from "../Result";
-import type { OntologyObject } from "./OntologyObject";
-import type { ParameterValue } from "./ParameterValue";
+import { getObject } from "../../client/net/getObject.js";
+import type { GetObjectError } from "../errors/index.js";
+import type { Result } from "../Result.js";
+import type { OntologyObject } from "./OntologyObject.js";
+import type { ParameterValue } from "./ParameterValue.js";
 
 export type ActionExecutionOptions = {
   mode: ActionExecutionMode.VALIDATE_ONLY;

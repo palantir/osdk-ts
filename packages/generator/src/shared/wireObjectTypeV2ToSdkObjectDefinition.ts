@@ -16,8 +16,8 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeWithLink } from "@osdk/gateway/types";
-import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
-import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
+import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function wireObjectTypeV2ToSdkObjectDefinition(
   objectTypeWithLink: ObjectTypeWithLink,

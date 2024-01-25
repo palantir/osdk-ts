@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyId } from "../components/PropertyId";
-import type { ValueType } from "../components/ValueType";
+import type { PropertyId } from "../components/PropertyId.js";
+import type { ValueType } from "../components/ValueType.js";
 
 /**
  * A property that was required to have an API name, such as a primary key, is missing one. You can set an API

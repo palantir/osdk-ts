@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "./Filters";
+import type { WhereClause } from "./Filters.js";
 
 export interface StringFilter {
   /** The provided property is exactly equal to the provided value. */

@@ -15,7 +15,7 @@
  */
 
 import type { OntologyObject, OntologyObjectV2 } from "@osdk/gateway/types";
-import type { PagedBodyResponse } from "./handlers/endpointUtils";
+import type { PagedBodyResponse } from "./handlers/endpointUtils.js";
 
 export function filterObjectProperties<
   T extends OntologyObjectV2 | OntologyObject,

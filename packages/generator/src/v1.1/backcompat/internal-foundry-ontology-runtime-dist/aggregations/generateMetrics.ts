@@ -15,12 +15,16 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs";
-import { formatTs } from "../../../../util/test/formatTs";
-import { reexportConsts } from "../../util/reexportConsts";
-import { reexportTypes } from "../../util/reexportTypes";
+import type { MinimalFs } from "../../../../MinimalFs.js";
+import { formatTs } from "../../../../util/test/formatTs.js";
+import { reexportConsts } from "../../util/reexportConsts.js";
+import { reexportTypes } from "../../util/reexportTypes.js";
 
-export async function generateMetrics(fs: MinimalFs, aggregationsDir: string) {
+export async function generateMetrics(
+  fs: MinimalFs,
+  aggregationsDir: string,
+  importExt = "",
+) {
   const metricsDir = path.join(aggregationsDir, "metrics");
 
   await fs.mkdir(metricsDir, { recursive: true });
@@ -44,8 +48,8 @@ export async function generateMetrics(fs: MinimalFs, aggregationsDir: string) {
     path.join(metricsDir, "MultipleAggregatableProperty.ts"),
     await formatTs(
       `
-        import { Double, MetricValue, MultipleAggregationsOperations } from "../Aggregations";
-        import { MetricValueType } from "./metrics";
+        import { Double, MetricValue, MultipleAggregationsOperations } from "../Aggregations${importExt}";
+        import { MetricValueType } from "./metrics/index${importExt}";
       `
         + reexportConsts(["MultipleAggregatableProperty"])
         + reexportTypes(
@@ -67,7 +71,7 @@ export async function generateMetrics(fs: MinimalFs, aggregationsDir: string) {
       path.join(metricsDir, `${typeName}.ts`),
       await formatTs(
         `
-          import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
+          import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty${importExt}";
         `
           + reexportConsts([typeName]),
       ),
@@ -78,13 +82,13 @@ export async function generateMetrics(fs: MinimalFs, aggregationsDir: string) {
     path.join(metricsDir, "index.ts"),
     await formatTs(
       `
-      export * from "./ApproximateDistinctCountAggregatableProperty";
-      export * from "./DefaultAggregatableProperty";
-      export * from "./LocalDatePropertyMetric";
-      export * from "./metrics";
-      export * from "./MultipleAggregatableProperty";
-      export * from "./NumericPropertyMetric";
-      export * from "./TimestampPropertyMetric";
+      export * from "./ApproximateDistinctCountAggregatableProperty${importExt}";
+      export * from "./DefaultAggregatableProperty${importExt}";
+      export * from "./LocalDatePropertyMetric${importExt}";
+      export * from "./metrics${importExt}";
+      export * from "./MultipleAggregatableProperty${importExt}";
+      export * from "./NumericPropertyMetric${importExt}";
+      export * from "./TimestampPropertyMetric${importExt}";
       `,
     ),
   );

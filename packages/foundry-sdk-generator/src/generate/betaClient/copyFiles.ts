@@ -19,7 +19,7 @@ import * as path from "node:path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import type { Project } from "ts-morph";
 import { Node } from "ts-morph";
-import { withoutTrailingIndex } from "./getModuleSourceFile";
+import { withoutTrailingIndex } from "./getModuleSourceFile.js";
 const KNOWN_EXTERNAL = new Set(["geojson"]);
 
 export async function copyFiles(

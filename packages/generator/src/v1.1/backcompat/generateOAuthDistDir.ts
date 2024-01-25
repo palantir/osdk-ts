@@ -15,16 +15,17 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../MinimalFs";
-import { formatTs } from "../../util/test/formatTs";
-import { generateConfidentialClientDir } from "./internal-foundry-oauth-dist/generateConfidentialClientDir";
-import { generatePublicClientDir } from "./internal-foundry-oauth-dist/generatePublicClientDir";
-import { generateUserTokenDir } from "./internal-foundry-oauth-dist/generateUserTokenDir";
-import { reexportConsts } from "./util/reexportConsts";
-import { reexportTypes } from "./util/reexportTypes";
+import type { MinimalFs } from "../../MinimalFs.js";
+import { formatTs } from "../../util/test/formatTs.js";
+import { generateConfidentialClientDir } from "./internal-foundry-oauth-dist/generateConfidentialClientDir.js";
+import { generatePublicClientDir } from "./internal-foundry-oauth-dist/generatePublicClientDir.js";
+import { generateUserTokenDir } from "./internal-foundry-oauth-dist/generateUserTokenDir.js";
+import { reexportConsts } from "./util/reexportConsts.js";
+import { reexportTypes } from "./util/reexportTypes.js";
 export async function generateOAuthClientDistDir(
   outDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   const oauthDistDir = path.join(
     outDir,
@@ -38,12 +39,12 @@ export async function generateOAuthClientDistDir(
   await fs.writeFile(
     path.join(oauthDistDir, "index.ts"),
     await formatTs(`
-    export * from "./Auth";
-    export * from "./ConfidentialClient";
-    export * from "./OAuthClient";
-    export * from "./PublicClient";
-    export * from "./Token";
-    export * from "./UserToken";
+    export * from "./Auth${importExt}";
+    export * from "./ConfidentialClient/index${importExt}";
+    export * from "./OAuthClient${importExt}";
+    export * from "./PublicClient/index${importExt}";
+    export * from "./Token${importExt}";
+    export * from "./UserToken/index${importExt}";
 `),
   );
 
@@ -88,7 +89,7 @@ export async function generateOAuthClientDistDir(
     ),
   );
 
-  await generateConfidentialClientDir(fs, oauthDistDir);
-  await generatePublicClientDir(fs, oauthDistDir);
-  await generateUserTokenDir(fs, oauthDistDir);
+  await generateConfidentialClientDir(fs, oauthDistDir, importExt);
+  await generatePublicClientDir(fs, oauthDistDir, importExt);
+  await generateUserTokenDir(fs, oauthDistDir, importExt);
 }

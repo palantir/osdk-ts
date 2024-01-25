@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ApplyActionRequestOptions } from "../components/ApplyActionRequestOptions";
+import type { ApplyActionRequestOptions } from "../components/ApplyActionRequestOptions.js";
 
 /** The given options are individually valid but cannot be used in the given combination. */
 export interface InvalidApplyActionOptionCombination {

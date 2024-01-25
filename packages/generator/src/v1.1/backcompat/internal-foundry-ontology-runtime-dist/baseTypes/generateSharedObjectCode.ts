@@ -15,27 +15,28 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs";
-import { formatTs } from "../../../../util/test/formatTs";
-import { reexportTypes } from "../../util/reexportTypes";
+import type { MinimalFs } from "../../../../MinimalFs.js";
+import { formatTs } from "../../../../util/test/formatTs.js";
+import { reexportTypes } from "../../util/reexportTypes.js";
 
 export async function generateSharedObjectCodeDir(
   sharedObjectCodeDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(sharedObjectCodeDir, { recursive: true });
 
   await fs.writeFile(
     path.join(sharedObjectCodeDir, "index.ts"),
     await formatTs(`
-    export * from "./FilteredPropertiesTerminalOperations";
+    export * from "./FilteredPropertiesTerminalOperations${importExt}";
     `),
   );
 
   await fs.writeFile(
     path.join(sharedObjectCodeDir, "FilteredPropertiesTerminalOperations.ts"),
     await formatTs(
-      `import { OntologyObject } from "../OntologyObject`
+      `import { OntologyObject } from "../OntologyObject${importExt}`
         + reexportTypes([
           "FilteredPropertiesTerminalOperations",
           "FilteredPropertiesTerminalOperationsWithGet",

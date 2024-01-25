@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../Auth";
-import type { Token } from "../Token";
+import type { Auth } from "../Auth.js";
+import type { Token } from "../Token.js";
 
 export class UserTokenAuth implements Auth {
   constructor(

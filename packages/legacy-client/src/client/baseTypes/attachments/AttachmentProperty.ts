@@ -16,9 +16,9 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import { getAttachment } from "../../../client/net/getAttachment";
-import { getAttachmentMetadata } from "../../../client/net/getAttachmentMetadata";
-import type { Attachment } from "./Attachment";
+import { getAttachment } from "../../../client/net/getAttachment.js";
+import { getAttachmentMetadata } from "../../../client/net/getAttachmentMetadata.js";
+import type { Attachment } from "./Attachment.js";
 
 export function isAttachment(obj: any): obj is Attachment {
   return obj?.type === "Attachment";

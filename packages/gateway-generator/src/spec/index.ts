@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export * from "./ApiSpec";
-export * from "./BuiltInTypes";
-export * from "./Common";
-export * from "./Component";
-export * from "./DataTypes";
-export * from "./Error";
-export * from "./Namespace";
-export * from "./ParameterValue";
+export * from "./ApiSpec.js";
+export * from "./BuiltInTypes.js";
+export * from "./Common.js";
+export * from "./Component.js";
+export * from "./DataTypes.js";
+export * from "./Error.js";
+export * from "./Namespace.js";
+export * from "./ParameterValue.js";

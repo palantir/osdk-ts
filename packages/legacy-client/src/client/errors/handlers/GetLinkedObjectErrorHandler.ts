@@ -23,9 +23,9 @@ import type {
   OntologySyncing,
   PropertiesNotFound,
   PropertiesNotSortable,
-} from "../ApiErrors";
-import type { PalantirApiError } from "../Errors";
-import { DefaultErrorHandler } from "./DefaultErrorHandler";
+} from "../ApiErrors.js";
+import type { PalantirApiError } from "../Errors.js";
+import { DefaultErrorHandler } from "./DefaultErrorHandler.js";
 
 export class GetLinkedObjectErrorHandler extends DefaultErrorHandler {
   handleObjectTypeNotFound(

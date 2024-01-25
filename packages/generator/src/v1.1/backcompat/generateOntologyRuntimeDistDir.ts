@@ -15,18 +15,19 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../MinimalFs";
-import { formatTs } from "../../util/test/formatTs";
-import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir";
-import { generateBaseTypesDir } from "./internal-foundry-ontology-runtime-dist/generateBaseTypesDir";
-import { generateClientDir } from "./internal-foundry-ontology-runtime-dist/generateClientDir";
-import { generateFiltersDir } from "./internal-foundry-ontology-runtime-dist/generateFiltersDir";
-import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir";
-import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir";
+import type { MinimalFs } from "../../MinimalFs.js";
+import { formatTs } from "../../util/test/formatTs.js";
+import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir.js";
+import { generateBaseTypesDir } from "./internal-foundry-ontology-runtime-dist/generateBaseTypesDir.js";
+import { generateClientDir } from "./internal-foundry-ontology-runtime-dist/generateClientDir.js";
+import { generateFiltersDir } from "./internal-foundry-ontology-runtime-dist/generateFiltersDir.js";
+import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir.js";
+import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir.js";
 
 export async function generateOntologyRuntimeDistDir(
   outDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   const runtimeDistDir = path.join(
     outDir,
@@ -37,12 +38,12 @@ export async function generateOntologyRuntimeDistDir(
   );
   await fs.mkdir(runtimeDistDir, { recursive: true });
 
-  await generateOntologyProviderDir(fs, runtimeDistDir);
-  await generateAggregationsDir(fs, runtimeDistDir);
-  await generatePagingDir(runtimeDistDir, fs);
-  await generateBaseTypesDir(runtimeDistDir, fs);
-  await generateClientDir(runtimeDistDir, fs);
-  await generateFiltersDir(runtimeDistDir, fs);
+  await generateOntologyProviderDir(fs, runtimeDistDir, importExt);
+  await generateAggregationsDir(fs, runtimeDistDir, importExt);
+  await generatePagingDir(runtimeDistDir, fs, importExt);
+  await generateBaseTypesDir(runtimeDistDir, fs, importExt);
+  await generateClientDir(runtimeDistDir, fs, importExt);
+  await generateFiltersDir(runtimeDistDir, fs, importExt);
 
   // Nothing exists for this in the new codebase so we skip
   // but I already wrote the code so leaving this for now in case we need it
@@ -52,24 +53,24 @@ export async function generateOntologyRuntimeDistDir(
     path.join(runtimeDistDir, "index.ts"),
     // TRASHFIXME
     await formatTs(`
-      export * from "./aggregations";
-      export * from "./baseTypes";
+      export * from "./aggregations/index${importExt}";
+      export * from "./baseTypes/index${importExt}";
       ${""
       // Skipping this one, it doesnt have an equiv now
-      // export * from "./common";
+      // export * from "./common/index${importExt}";
     }
-      // export * from "./filters";
+      // export * from "./filters/index${importExt}";
       ${""
       // Skipping this one, it doesnt have an equiv now
-      // export * from "./iterator";
+      // export * from "./iterator/index${importExt}";
     }
       ${""
       // Skipping this one, its not used
-      // export * from "./models";
+      // export * from "./models/index${importExt}";
     }
     
-      export * from "./ontologyProvider";
-      export * from "./paging";
+      export * from "./ontologyProvider/index${importExt}";
+      export * from "./paging/index${importExt}";
 `),
   );
 }

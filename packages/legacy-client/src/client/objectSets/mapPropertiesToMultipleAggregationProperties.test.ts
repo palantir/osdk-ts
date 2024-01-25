@@ -16,10 +16,8 @@
 
 import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import {
-  mapPropertiesToMultipleAggregationProperties,
-  MetricValueType,
-} from ".";
+import { MetricValueType } from "../../index.js";
+import { mapPropertiesToMultipleAggregationProperties } from "./index.js";
 
 describe(mapPropertiesToMultipleAggregationProperties, () => {
   it("maps properties correctly", () => {

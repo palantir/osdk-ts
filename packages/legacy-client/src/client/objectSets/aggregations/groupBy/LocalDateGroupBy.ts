@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LocalDate } from "../../../baseTypes";
+import type { LocalDate } from "../../../baseTypes/index.js";
 import {
   type Bucketing,
   type BucketKey,
@@ -25,8 +25,8 @@ import {
   type Rangeable,
   type RangeBucketing,
   TimeUnit,
-} from "../Aggregations";
-import { GroupKeyType } from "./GroupKeyType";
+} from "../Aggregations.js";
+import { GroupKeyType } from "./GroupKeyType.js";
 export interface LocalDateGroupBy<T extends BucketKey> {
   /** Divides objects into groups according to specified ranges. */
   ranges: (ranges: Array<Range<LocalDate>>) => Bucketing<T, Range<Rangeable>>;

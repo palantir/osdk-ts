@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionParameterType } from "./ActionParameterType";
+import type { ActionParameterType } from "./ActionParameterType.js";
 
 export interface ActionParameterArrayType {
   subType: ActionParameterType;

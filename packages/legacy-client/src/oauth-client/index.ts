@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./Auth";
-export * from "./ConfidentialClient";
-export * from "./OAuthClient";
-export * from "./OAuthToken";
-export * from "./PublicClient";
-export * from "./Token";
-export * from "./UserToken";
+export * from "./Auth.js";
+export * from "./ConfidentialClient/index.js";
+export * from "./OAuthClient.js";
+export * from "./OAuthToken.js";
+export * from "./PublicClient/index.js";
+export * from "./Token.js";
+export * from "./UserToken/index.js";

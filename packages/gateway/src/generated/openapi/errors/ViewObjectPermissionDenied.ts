@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
 
 /**
  * The user does not have permission to view objects of this `ObjectType`.

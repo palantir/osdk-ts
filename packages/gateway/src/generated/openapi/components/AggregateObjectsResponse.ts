@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregateObjectsResponseItem } from "./AggregateObjectsResponseItem";
-import type { PageToken } from "./PageToken";
+import type { AggregateObjectsResponseItem } from "./AggregateObjectsResponseItem.js";
+import type { PageToken } from "./PageToken.js";
 
 export interface AggregateObjectsResponse {
   excludedItems?: number;

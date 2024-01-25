@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FieldName } from "./FieldName";
-import type { ModelApiType } from "./ModelApiType";
+import type { FieldName } from "./FieldName.js";
+import type { ModelApiType } from "./ModelApiType.js";
 
 /**
  * An object definition representing an input or an output type for the deployment API.

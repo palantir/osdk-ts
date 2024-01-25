@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Polygon } from "../../baseTypes";
-import type { WhereClause } from "./Filters";
-import type { BoundingBox } from "./GeoPointFilter";
+import type { Polygon } from "../../baseTypes/index.js";
+import type { WhereClause } from "./Filters.js";
+import type { BoundingBox } from "./GeoPointFilter.js";
 
 export interface GeoShapeFilter {
   /** The provided property is within the specified bounding box. */

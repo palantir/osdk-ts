@@ -15,12 +15,11 @@
  */
 
 import { consola } from "consola";
-
 import {
   ArtifactsSitesAdminV2Service,
   createConjureContext,
   thirdPartyApplicationService,
-} from "#net";
+} from "../../../net/index.mjs";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export default async function handleSiteDeploy(

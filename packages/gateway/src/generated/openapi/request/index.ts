@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./OpenApiRequest";
+export * from "./OpenApiRequest.js";

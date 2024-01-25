@@ -23,9 +23,9 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { expectFetchToBeCalledWithBlob } from "../../util/test/expectUtils";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils";
-import { uploadAttachment } from "./uploadAttachment";
+import { expectFetchToBeCalledWithBlob } from "../../util/test/expectUtils.js";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
+import { uploadAttachment } from "./uploadAttachment.js";
 
 describe(uploadAttachment, () => {
   let client: ClientContext<typeof MockOntology>;

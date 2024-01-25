@@ -17,29 +17,29 @@
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes";
+import type { ObjectSetDefinition } from "../baseTypes/index.js";
 import type {
   ObjectSetAggregateArg,
   ObjectSetGroupByArg,
   ObjectSetMultipleAggregateArg,
-} from "../interfaces/aggregations";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+} from "../interfaces/aggregations.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
 import type {
   AggregatableObjectSetStep,
   BucketValue,
   InternalBucketing,
-} from "./aggregations";
+} from "./aggregations/index.js";
 import {
   assertBucketingInternal,
   ComputeStep,
   isCountOperation,
-  isMultipleAggregationOperation,
-  MetricValueType,
-} from "./aggregations";
-import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
-import { mapPropertiesToAggregatableProperties } from "./mapPropertiesToAggregatableProperties";
-import { mapPropertiesToGroupByProperties } from "./mapPropertiesToGroupByProperties";
-import { mapPropertiesToMultipleAggregationProperties } from "./mapPropertiesToMultipleAggregationProperties";
+} from "./aggregations/index.js";
+import { MetricValueType } from "./aggregations/metrics/metrics.js";
+import { isMultipleAggregationOperation } from "./aggregations/metrics/MultipleAggregatableProperty.js";
+import { createCachedOntologyTransform } from "./createCachedOntologyTransform.js";
+import { mapPropertiesToAggregatableProperties } from "./mapPropertiesToAggregatableProperties.js";
+import { mapPropertiesToGroupByProperties } from "./mapPropertiesToGroupByProperties.js";
+import { mapPropertiesToMultipleAggregationProperties } from "./mapPropertiesToMultipleAggregationProperties.js";
 
 const getAggregatableProperties = createCachedOntologyTransform(
   mapPropertiesToAggregatableProperties,

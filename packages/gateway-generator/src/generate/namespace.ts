@@ -36,15 +36,15 @@ import type {
   Response,
   ResponseType,
   StaticOperation,
-} from "../spec";
-import { InputType } from "../spec";
+} from "../spec/index.js";
+import { InputType } from "../spec/index.js";
 import {
   sanitizeParameterName,
   shouldSanitizePameterName,
   visitTypeUnion,
-} from "./common";
-import { getJsDocs } from "./getJsDocs";
-import { generateType, isOptional } from "./types";
+} from "./common.js";
+import { getJsDocs } from "./getJsDocs.js";
+import { generateType, isOptional } from "./types.js";
 
 export function generateNamespaces(
   namespaces: Namespace[],
@@ -106,7 +106,7 @@ export function generateNamespace(namespace: Namespace, directory: Directory) {
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `../components/${reference}`,
+        moduleSpecifier: `../components/${reference}.js`,
         isTypeOnly: true,
         namedImports: [reference],
       };
@@ -114,7 +114,7 @@ export function generateNamespace(namespace: Namespace, directory: Directory) {
   );
 
   sourceFile.addImportDeclaration({
-    moduleSpecifier: "../request",
+    moduleSpecifier: "../request/index.js",
     namedImports: ["OpenApiRequest"],
   });
 }

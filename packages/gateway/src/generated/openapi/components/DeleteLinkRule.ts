@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "./LinkTypeApiName";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+import type { LinkTypeApiName } from "./LinkTypeApiName.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
 
 export interface DeleteLinkRule {
   linkTypeApiNameAtoB: LinkTypeApiName;

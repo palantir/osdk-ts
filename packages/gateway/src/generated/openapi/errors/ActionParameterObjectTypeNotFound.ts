@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterId } from "../components/ParameterId";
+import type { ParameterId } from "../components/ParameterId.js";
 
 /**
  * The parameter references an object type that could not be found, or the client token does not have access to it.

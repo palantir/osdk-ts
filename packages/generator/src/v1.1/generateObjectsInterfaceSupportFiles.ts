@@ -15,8 +15,8 @@
  */
 
 import { join } from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { MinimalFs } from "../MinimalFs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 export async function generateObjectsInterfaceSupportFiles(
   ontology: WireOntologyDefinition,

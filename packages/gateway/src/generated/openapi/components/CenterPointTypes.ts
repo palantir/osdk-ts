@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { GeoPoint } from "./GeoPoint";
+import type { GeoPoint } from "./GeoPoint.js";
 
 export interface CenterPointTypes_Point extends GeoPoint {
   type: "Point";

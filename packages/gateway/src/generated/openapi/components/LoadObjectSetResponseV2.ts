@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "./OntologyObjectV2";
-import type { PageToken } from "./PageToken";
+import type { OntologyObjectV2 } from "./OntologyObjectV2.js";
+import type { PageToken } from "./PageToken.js";
 
 /** Represents the API response when loading an `ObjectSet`. */
 export interface LoadObjectSetResponseV2 {

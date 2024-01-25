@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Aggregation } from "./Aggregation";
-import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
+import type { Aggregation } from "./Aggregation.js";
+import type { AggregationGroupByV2 } from "./AggregationGroupByV2.js";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2.js";
 
 export interface AggregateObjectsRequestV2 {
   aggregation: Array<Aggregation>;

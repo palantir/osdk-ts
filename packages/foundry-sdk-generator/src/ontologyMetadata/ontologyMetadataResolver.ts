@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-import type { components } from "@osdk/gateway";
 import { namespaces } from "@osdk/gateway";
+import type {
+  ActionParameterType,
+  ActionTypeV2,
+  Ontology,
+  OntologyFullMetadata,
+  QueryDataType,
+  QueryTypeV2,
+} from "@osdk/gateway/types";
 import type { WireOntologyDefinition } from "@osdk/generator";
 import { UserTokenAuth } from "@osdk/legacy-client";
-import { getApiRequestFunction } from "../net/FetchClient";
-import { Result } from "./Result";
+import { getApiRequestFunction } from "../net/FetchClient.js";
+import { Result } from "./Result.js";
 
 export class OntologyMetadataResolver {
   #authToken: string;
@@ -37,14 +44,14 @@ export class OntologyMetadataResolver {
   }
 
   private filterMetadata(
-    ontologyFullMetadata: components.OntologyFullMetadata,
+    ontologyFullMetadata: OntologyFullMetadata,
     expectedEntities: {
       linkTypes: Map<string, Set<string>>;
       objectTypes: Set<string>;
       queryTypes: Set<string>;
       actionTypes: Set<string>;
     },
-  ): components.OntologyFullMetadata {
+  ): OntologyFullMetadata {
     const filteredObjectTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.objectTypes).filter((
         [objectTypeApiName],
@@ -105,7 +112,7 @@ export class OntologyMetadataResolver {
       linkTypesApiNamesToLoad?: string[];
     },
   ): Promise<Result<WireOntologyDefinition, string[]>> {
-    let ontology: components.Ontology;
+    let ontology: Ontology;
     try {
       ontology = await namespaces.getOntology(
         this.getRequestFunction(),
@@ -177,7 +184,7 @@ export class OntologyMetadataResolver {
   }
 
   private validateLoadedOntologyMetadata(
-    filteredFullMetadata: components.OntologyFullMetadata,
+    filteredFullMetadata: OntologyFullMetadata,
     expectedEntities: {
       linkTypes: Map<string, Set<string>>;
       objectTypes: Set<string>;
@@ -319,7 +326,7 @@ export class OntologyMetadataResolver {
   }
 
   private validateQueryParametersAndOutput(
-    query: components.QueryTypeV2,
+    query: QueryTypeV2,
     loadedObjectApiNames: Set<string>,
   ): Result<{}, string[]> {
     const parameterValidation: Array<Result<{}, string[]>> = Object.entries(
@@ -349,7 +356,7 @@ export class OntologyMetadataResolver {
   }
 
   private validateActionParameters(
-    actionType: components.ActionTypeV2,
+    actionType: ActionTypeV2,
     loadedObjectApiNames: Set<string>,
   ): Result<{}, string[]> {
     const camelizedApiName = this.camelize(actionType.apiName);
@@ -371,7 +378,7 @@ export class OntologyMetadataResolver {
   private visitSupportedQueryTypes(
     queryApiName: string,
     propertyName: string,
-    baseType: components.QueryDataType,
+    baseType: QueryDataType,
     loadedObjectApiNames: Set<string>,
   ): Result<{}, string[]> {
     switch (baseType.type) {
@@ -451,7 +458,7 @@ export class OntologyMetadataResolver {
 
   private isSupportedActionTypeParameter(
     actionApiName: string,
-    actonTypeParameter: components.ActionParameterType,
+    actonTypeParameter: ActionParameterType,
     loadedObjectApiNames: Set<string>,
   ): Result<{}, string[]> {
     switch (actonTypeParameter.type) {

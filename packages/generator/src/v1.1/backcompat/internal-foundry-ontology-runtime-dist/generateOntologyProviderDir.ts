@@ -15,15 +15,16 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs";
-import { formatTs } from "../../../util/test/formatTs";
-import { generateErrors } from "./ontologyProvider/generateErrors";
-import { generateOntologyMetadata } from "./ontologyProvider/generateOntologyMetadata";
-import { generateResult } from "./ontologyProvider/generateResult";
+import type { MinimalFs } from "../../../MinimalFs.js";
+import { formatTs } from "../../../util/test/formatTs.js";
+import { generateErrors } from "./ontologyProvider/generateErrors.js";
+import { generateOntologyMetadata } from "./ontologyProvider/generateOntologyMetadata.js";
+import { generateResult } from "./ontologyProvider/generateResult.js";
 
 export async function generateOntologyProviderDir(
   fs: MinimalFs,
   runtimeDistDir: string,
+  importExt = "",
 ) {
   const ontologyProviderDir = path.join(runtimeDistDir, "ontologyProvider");
   await fs.mkdir(ontologyProviderDir, { recursive: true });
@@ -38,15 +39,15 @@ export async function generateOntologyProviderDir(
     ${"" // Skipping this one, its hard to imagine it being used
       // export * from "./ErrorHandlers";
     }
-      export * from "./Errors";
-      export * from "./OntologyMetadata";
+      export * from "./Errors${importExt}";
+      export * from "./OntologyMetadata${importExt}";
       ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./OntologyObjectFactory";
+      // export * from "./OntologyObjectFactory${importExt}";
     }
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./OntologyProvider";
+      // export * from "./OntologyProvider${importExt}";
     }
-      // export * from "./Result";
+      // export * from "./Result${importExt}";
   `),
   );
 }

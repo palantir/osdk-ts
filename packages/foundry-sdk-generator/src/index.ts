@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli/foundrySdkGeneratorCli";
+export { cli } from "./cli/foundrySdkGeneratorCli.js";

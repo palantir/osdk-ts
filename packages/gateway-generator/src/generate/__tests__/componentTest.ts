@@ -16,7 +16,7 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { generateComponent } from "../component";
+import { generateComponent } from "../component.js";
 
 describe("Components", () => {
   it("generates a component", () => {

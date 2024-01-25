@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError, PalantirApiError } from "../../errors";
-import type { Page } from "../../Page";
-import { wrapIterator } from "./wrapIterator";
-import { wrapResult } from "./wrapResult";
+import type { FoundryApiError, PalantirApiError } from "../../errors/index.js";
+import type { Page } from "../../Page.js";
+import { wrapIterator } from "./wrapIterator.js";
+import { wrapResult } from "./wrapResult.js";
 
 export async function createPageIterator<T, E extends FoundryApiError>(
   apiCall: () => Promise<Page<T>>,

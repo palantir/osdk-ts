@@ -16,13 +16,13 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import { executeQuery } from "./net/executeQuery";
+import { executeQuery } from "./net/executeQuery.js";
 import type {
   Queries,
   QueryNamesFrom,
   QueryParameters,
   WrappedQueryReturnType,
-} from "./queries";
+} from "./queries.js";
 
 export function createQueryProxy<O extends OntologyDefinition<any>>(
   client: ClientContext<O>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregateObjectsResponseItemV2 } from "./AggregateObjectsResponseItemV2";
+import type { AggregateObjectsResponseItemV2 } from "./AggregateObjectsResponseItemV2.js";
 
 export interface AggregateObjectsResponseV2 {
   excludedItems?: number;

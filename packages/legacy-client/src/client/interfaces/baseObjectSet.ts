@@ -17,12 +17,12 @@
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   OntologyObject,
-} from "../baseTypes";
-import type { GetObjectError } from "../errors";
-import type { Result } from "../Result";
-import type { ObjectSet } from "./objectSet";
-import type { SelectableProperties } from "./utils/OmitProperties";
-import type { Properties } from "./utils/Properties";
+} from "../baseTypes/index.js";
+import type { GetObjectError } from "../errors/index.js";
+import type { Result } from "../Result.js";
+import type { ObjectSet } from "./objectSet.js";
+import type { SelectableProperties } from "./utils/OmitProperties.js";
+import type { Properties } from "./utils/Properties.js";
 
 export type BaseObjectSet<O extends OntologyObject> =
   & BaseObjectSetOperations<O>

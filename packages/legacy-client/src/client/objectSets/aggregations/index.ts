@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./Aggregations";
-export * from "./ComputeStep";
-export * from "./CountOperation";
-export * from "./groupBy";
-export * from "./internalAggregationRequest";
-export * from "./metrics";
+export * from "./Aggregations.js";
+export * from "./ComputeStep.js";
+export * from "./CountOperation.js";
+export * from "./groupBy/index.js";
+export * from "./internalAggregationRequest.js";
+export * from "./metrics/index.js";

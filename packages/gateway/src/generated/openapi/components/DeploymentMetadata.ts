@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DeploymentApi } from "./DeploymentApi";
-import type { DeploymentApiName } from "./DeploymentApiName";
-import type { DeploymentDescription } from "./DeploymentDescription";
+import type { DeploymentApi } from "./DeploymentApi.js";
+import type { DeploymentApiName } from "./DeploymentApiName.js";
+import type { DeploymentDescription } from "./DeploymentDescription.js";
 
 /**
  * Metadata related to a model deployment.

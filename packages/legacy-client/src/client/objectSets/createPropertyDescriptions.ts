@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { Properties } from "../interfaces/utils/Properties";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type { Properties } from "../interfaces/utils/Properties.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
 
 export function createPropertyDescriptions<
   O extends OntologyDefinition<any>,

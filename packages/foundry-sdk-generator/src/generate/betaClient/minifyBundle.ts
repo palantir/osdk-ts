@@ -25,7 +25,7 @@ import type {
   Symbol as TsSymbol,
 } from "ts-morph";
 import { Node, SyntaxKind } from "ts-morph";
-import { getModuleSourceFile } from "./getModuleSourceFile";
+import { getModuleSourceFile } from "./getModuleSourceFile.js";
 
 type TraversalStep = { sourceFile: SourceFile; imports: Set<string> };
 export class ProjectMinifier {

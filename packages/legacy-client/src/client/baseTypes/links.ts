@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
-import type { Page } from "../Page";
-import type { Result } from "../Result";
-import type { OntologyObject } from "./OntologyObject";
+import type {
+  GetLinkedObjectError,
+  ListLinkedObjectsError,
+} from "../errors/index.js";
+import type { Page } from "../Page.js";
+import type { Result } from "../Result.js";
+import type { OntologyObject } from "./OntologyObject.js";
 
 export interface SingleLink<T extends OntologyObject = OntologyObject> {
   /**

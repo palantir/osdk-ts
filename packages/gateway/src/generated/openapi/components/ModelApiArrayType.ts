@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ModelApiType } from "./ModelApiType";
+import type { ModelApiType } from "./ModelApiType.js";
 
 export interface ModelApiArrayType {
   subType: ModelApiType;

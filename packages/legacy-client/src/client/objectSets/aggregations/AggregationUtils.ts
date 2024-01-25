@@ -24,17 +24,17 @@ import type {
   AggregationRangeV2,
 } from "@osdk/gateway/types";
 
-import { LocalDate, Timestamp } from "../../baseTypes";
-import {
-  type AggregationClause,
-  type BucketKey,
-  type BucketValue,
-  type InternalBucketing,
-  type InternalBucketingVisitor,
-  type Range,
-  type Rangeable,
-  visitInternalBucketing,
-} from ".";
+import { LocalDate, Timestamp } from "../../baseTypes/index.js";
+import type {
+  AggregationClause,
+  BucketKey,
+  BucketValue,
+  InternalBucketing,
+  InternalBucketingVisitor,
+  Range,
+  Rangeable,
+} from "./Aggregations.js";
+import { visitInternalBucketing } from "./Aggregations.js";
 
 export function buildBucketObject<T>(startValue?: T, endValue?: T): {
   startValue?: T;

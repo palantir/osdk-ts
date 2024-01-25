@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DeploymentTransformApi } from "./DeploymentTransformApi";
+import type { DeploymentTransformApi } from "./DeploymentTransformApi.js";
 
 export interface DeploymentApi {
   transform?: DeploymentTransformApi;

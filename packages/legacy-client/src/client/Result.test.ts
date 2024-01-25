@@ -15,8 +15,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import type { ActionError } from "./errors";
-import { visitError } from "./Result";
+import type { ActionError } from "./errors/index.js";
+import { visitError } from "./Result.js";
 
 describe("Result", () => {
   describe("visitError", () => {

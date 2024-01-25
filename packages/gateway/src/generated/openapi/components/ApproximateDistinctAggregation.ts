@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
 
 /** Computes an approximate number of distinct values for the provided field. */
 export interface ApproximateDistinctAggregation {

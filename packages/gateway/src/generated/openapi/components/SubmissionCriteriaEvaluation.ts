@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ValidationResult } from "./ValidationResult";
+import type { ValidationResult } from "./ValidationResult.js";
 
 /**
  * Contains the status of the **submission criteria**.

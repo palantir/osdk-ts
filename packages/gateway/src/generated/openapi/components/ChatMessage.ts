@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ChatMessageRole } from "./ChatMessageRole";
+import type { ChatMessageRole } from "./ChatMessageRole.js";
 
 export interface ChatMessage {
   role: ChatMessageRole;

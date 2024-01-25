@@ -15,11 +15,11 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers";
-import { commaSeparatedTypeIdentifiers } from "../util/commaSeparatedTypeIdentifiers";
-import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { MinimalFs } from "../MinimalFs.js";
+import { commaSeparatedIdentifiers } from "../util/commaSeparatedIdentifiers.js";
+import { commaSeparatedTypeIdentifiers } from "../util/commaSeparatedTypeIdentifiers.js";
+import { formatTs } from "../util/test/formatTs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 export async function generateMetadataFile(
   ontology: WireOntologyDefinition,

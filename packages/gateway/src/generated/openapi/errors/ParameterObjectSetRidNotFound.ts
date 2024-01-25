@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSetRid } from "../components/ObjectSetRid";
+import type { ObjectSetRid } from "../components/ObjectSetRid.js";
 
 /**
  * The parameter object set RID is not found, or the client token does not have access to it.
