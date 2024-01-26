@@ -15,20 +15,13 @@
  */
 
 import type { ClientContext } from "@osdk/shared.net";
-import type {
-  MultiLink,
-  OntologyObject,
-  ParameterValue,
-} from "../baseTypes/index.js";
-import type {
-  GetLinkedObjectError,
-  ListLinkedObjectsError,
-} from "../errors/index.js";
-import { getLinkedObject } from "../net/getLinkedObject.js";
-import { listLinkedObjects } from "../net/listLinkedObjects.js";
-import { pageLinkedObjects } from "../net/pageLinkedObjects.js";
-import type { Page } from "../Page.js";
-import type { Result } from "../Result.js";
+import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
+import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
+import { getLinkedObject } from "../net/getLinkedObject";
+import { listLinkedObjects } from "../net/listLinkedObjects";
+import { pageLinkedObjects } from "../net/pageLinkedObjects";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
 
 export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
   client: ClientContext<any>,

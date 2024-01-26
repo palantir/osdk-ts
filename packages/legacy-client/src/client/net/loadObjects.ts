@@ -16,13 +16,13 @@
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes/index.js";
-import type { LoadObjectSetError } from "../errors/index.js";
-import type { OrderByClause } from "../objectSets/filters/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import type { Page } from "../Page.js";
-import type { Result } from "../Result.js";
-import { loadObjectsPage } from "./loadObjectsPage.js";
+import type { ObjectSetDefinition } from "../baseTypes";
+import type { LoadObjectSetError } from "../errors";
+import type { OrderByClause } from "../objectSets/filters";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
+import { loadObjectsPage } from "./loadObjectsPage";
 
 export async function loadAllObjects<
   O extends OntologyDefinition<any>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "./OntologyObject.js";
+import type { OntologyObject } from "./OntologyObject";
 
 export interface BaseType {
   type: string;

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type { ActionParameterArrayType } from "./ActionParameterArrayType.js";
-import type { AttachmentType } from "./AttachmentType.js";
-import type { BooleanType } from "./BooleanType.js";
-import type { DateType } from "./DateType.js";
-import type { DoubleType } from "./DoubleType.js";
-import type { IntegerType } from "./IntegerType.js";
-import type { LongType } from "./LongType.js";
-import type { OntologyObjectSetType } from "./OntologyObjectSetType.js";
-import type { OntologyObjectType } from "./OntologyObjectType.js";
-import type { StringType } from "./StringType.js";
-import type { TimestampType } from "./TimestampType.js";
+import type { ActionParameterArrayType } from "./ActionParameterArrayType";
+import type { AttachmentType } from "./AttachmentType";
+import type { BooleanType } from "./BooleanType";
+import type { DateType } from "./DateType";
+import type { DoubleType } from "./DoubleType";
+import type { IntegerType } from "./IntegerType";
+import type { LongType } from "./LongType";
+import type { OntologyObjectSetType } from "./OntologyObjectSetType";
+import type { OntologyObjectType } from "./OntologyObjectType";
+import type { StringType } from "./StringType";
+import type { TimestampType } from "./TimestampType";
 
 export interface ActionParameterType_Array extends ActionParameterArrayType {
   type: "array";

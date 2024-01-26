@@ -34,8 +34,8 @@ import type {
   SingleLink,
   TimeSeries,
   Timestamp,
-} from "./baseTypes/index.js";
-import type { reservedKeywordsList } from "./utils/reservedKeywords.js";
+} from "./baseTypes";
+import type { reservedKeywordsList } from "./utils/reservedKeywords";
 
 export interface ValidLegacyPropertyTypes {
   string: string;

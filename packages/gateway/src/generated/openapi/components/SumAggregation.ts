@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { AggregationMetricName } from "./AggregationMetricName";
 
 /** Computes the sum of values for the provided field. */
 export interface SumAggregation {

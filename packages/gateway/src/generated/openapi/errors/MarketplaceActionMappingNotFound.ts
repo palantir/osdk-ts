@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName.js";
-import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid.js";
-import type { SdkPackageName } from "../components/SdkPackageName.js";
+import type { ActionTypeApiName } from "../components/ActionTypeApiName";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
 /** The given action could not be mapped to a Marketplace installation. */
 export interface MarketplaceActionMappingNotFound {

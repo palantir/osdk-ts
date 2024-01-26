@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid.js";
-import type { TransactionRid } from "../components/TransactionRid.js";
+import type { DatasetRid } from "../components/DatasetRid";
+import type { TransactionRid } from "../components/TransactionRid";
 
 /** The provided token does not have permission to commit the given treansaction on the given dataset. */
 export interface CommitTransactionPermissionDenied {

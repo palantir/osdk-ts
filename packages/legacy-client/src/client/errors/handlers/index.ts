@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-export * from "./AggregateObjectsErrorHandler.js";
-export * from "./AttachmentsErrorHandler.js";
-export * from "./DefaultErrorHandler.js";
-export * from "./ErrorHandlers.js";
-export * from "./ExecuteActionErrorHandler.js";
-export * from "./ExecuteQueryErrorHandler.js";
-export * from "./GetLinkedObjectErrorHandler.js";
-export * from "./GetObjectErrorHandler.js";
-export * from "./ListLinkedObjectsErrorHandler.js";
-export * from "./ListObjectsErrorHandler.js";
-export * from "./LoadObjectSetErrorHandler.js";
-export * from "./SearchObjectsErrorHandler.js";
-export * from "./TimeSeriesErrorHandler.js";
+export * from "./AggregateObjectsErrorHandler";
+export * from "./AttachmentsErrorHandler";
+export * from "./DefaultErrorHandler";
+export * from "./ErrorHandlers";
+export * from "./ExecuteActionErrorHandler";
+export * from "./ExecuteQueryErrorHandler";
+export * from "./GetLinkedObjectErrorHandler";
+export * from "./GetObjectErrorHandler";
+export * from "./ListLinkedObjectsErrorHandler";
+export * from "./ListObjectsErrorHandler";
+export * from "./LoadObjectSetErrorHandler";
+export * from "./SearchObjectsErrorHandler";
+export * from "./TimeSeriesErrorHandler";

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { File } from "./File.js";
-import type { PageToken } from "./PageToken.js";
+import type { File } from "./File";
+import type { PageToken } from "./PageToken";
 
 /** A page of Files and an optional page token that can be used to retrieve the next page. */
 export interface ListFilesResponse {

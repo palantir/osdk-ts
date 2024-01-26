@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 
 /**
  * The requested object type has been changed in the **Ontology Manager** and changes are currently being applied. Wait a

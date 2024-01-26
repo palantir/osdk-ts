@@ -19,9 +19,9 @@ import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import type { ListLinkedObjectsResponseV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject } from "../../baseTypes/index.js";
-import { convertWireToOsdkObject } from "../../objects/convertWireToOsdkObject.js";
-import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2.js";
+import type { OntologyObject } from "../../baseTypes";
+import { convertWireToOsdkObject } from "../../objects/convertWireToOsdkObject";
+import type { WireOntologyObjectV2 } from "../WireOntologyObjectV2";
 
 export async function* iterateLinkedObjects<T extends OntologyObject>(
   client: ClientContext<OntologyDefinition<any>>,

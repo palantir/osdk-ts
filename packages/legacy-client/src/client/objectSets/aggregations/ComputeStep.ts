@@ -16,10 +16,10 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import { aggregate } from "../../../client/net/aggregate.js";
-import type { ObjectSetDefinition } from "../../baseTypes/index.js";
-import type { AggregateObjectsError } from "../../errors/index.js";
-import type { Result } from "../../Result.js";
+import { aggregate } from "../../../client/net/aggregate";
+import type { ObjectSetDefinition } from "../../baseTypes";
+import type { AggregateObjectsError } from "../../errors";
+import type { Result } from "../../Result";
 import type {
   AggregationClause,
   AggregationResult,
@@ -28,7 +28,7 @@ import type {
   InternalBucketing,
   Metrics,
   MetricValue,
-} from "./Aggregations.js";
+} from "./Aggregations";
 
 export class ComputeStep<
   TBucketGroup extends BucketGroup,

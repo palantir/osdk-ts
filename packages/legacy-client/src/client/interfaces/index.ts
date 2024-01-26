@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./aggregations.js";
-export * from "./baseObjectSet.js";
-export * from "./filters.js";
-export * from "./objectSet.js";
-export * from "./ordering.js";
-export * from "./searchAround.js";
-export * from "./utils/index.js";
+export * from "./aggregations";
+export * from "./baseObjectSet";
+export * from "./filters";
+export * from "./objectSet";
+export * from "./ordering";
+export * from "./searchAround";
+export * from "./utils";

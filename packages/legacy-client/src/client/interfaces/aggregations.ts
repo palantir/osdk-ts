@@ -30,27 +30,23 @@
  * limitations under the License.
  */
 
-import type {
-  LocalDate,
-  OntologyObject,
-  Timestamp,
-} from "../baseTypes/index.js";
-import type { BooleanGroupBy } from "../objectSets/aggregations/groupBy/BooleanGroupBy.js";
-import type { LocalDateGroupBy } from "../objectSets/aggregations/groupBy/LocalDateGroupBy.js";
-import type { NumericGroupBy } from "../objectSets/aggregations/groupBy/NumericGroupBy.js";
-import type { StringGroupBy } from "../objectSets/aggregations/groupBy/StringGroupBy.js";
-import type { TimestampGroupBy } from "../objectSets/aggregations/groupBy/TimestampGroupBy.js";
+import type { LocalDate, OntologyObject, Timestamp } from "../baseTypes";
 import type {
   AggregatableProperty,
+  ApproximateDistinctCountAggregatableProperty,
+  BooleanGroupBy,
   Bucketing,
   BucketKey,
   BucketValue,
   CountOperation,
   Double,
-} from "../objectSets/aggregations/index.js";
-import type { ApproximateDistinctCountAggregatableProperty } from "../objectSets/aggregations/metrics/ApproximateDistinctCountAggregatableProperty.js";
-import type { MultipleAggregatableProperty } from "../objectSets/aggregations/metrics/MultipleAggregatableProperty.js";
-import type { OmitMetadataProperties } from "./utils/OmitProperties.js";
+  LocalDateGroupBy,
+  MultipleAggregatableProperty,
+  NumericGroupBy,
+  StringGroupBy,
+  TimestampGroupBy,
+} from "../objectSets/aggregations";
+import type { OmitMetadataProperties } from "./utils/OmitProperties";
 
 export declare type ObjectTypesGroupByFunction<
   T extends OntologyObject,

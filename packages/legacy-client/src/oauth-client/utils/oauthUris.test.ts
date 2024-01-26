@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { getAuthorizeUri, getRevokeUri, getTokenUri } from "./oauthUris.js";
+import { getAuthorizeUri, getRevokeUri, getTokenUri } from "./oauthUris";
 
 describe("OAuthUris", () => {
   it("creates uris for token, authorize and revoke requests", () => {

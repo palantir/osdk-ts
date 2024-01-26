@@ -26,16 +26,16 @@ import type {
   RestHandler,
 } from "msw";
 import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
+import type { BaseAPIError } from "../BaseError";
 import {
   ApplyActionFailedError,
   InvalidRequest,
   OntologyNotFoundError,
-} from "../errors.js";
-import { actionResponseMap } from "../stubs/actions.js";
-import { actionTypes } from "../stubs/actionsTypes.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
+} from "../errors";
+import { actionResponseMap } from "../stubs/actions";
+import { actionTypes } from "../stubs/actionsTypes";
+import { defaultOntology } from "../stubs/ontologies";
+import { authHandlerMiddleware } from "./commonHandlers";
 
 export const actionHandlers: RestHandler<
   MockedRequest<DefaultBodyType>

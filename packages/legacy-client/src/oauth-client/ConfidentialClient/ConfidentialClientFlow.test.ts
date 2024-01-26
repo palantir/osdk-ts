@@ -16,11 +16,11 @@
 
 import type { Mock } from "vitest";
 import { assert, describe, expect, it, vi } from "vitest";
-import { OAuthToken } from "../OAuthToken.js";
+import { OAuthToken } from "../OAuthToken";
 import {
   getTokenWithClientSecret,
   revokeTokenWithClientSecret,
-} from "./ConfidentialClientFlow.js";
+} from "./ConfidentialClientFlow";
 
 // Mock data
 const clientId = "testClientId";

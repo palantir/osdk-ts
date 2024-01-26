@@ -15,10 +15,10 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs.js";
-import { formatTs } from "../../../../util/test/formatTs.js";
-import { reexportConsts } from "../../util/reexportConsts.js";
-import { reexportTypes } from "../../util/reexportTypes.js";
+import type { MinimalFs } from "../../../../MinimalFs";
+import { formatTs } from "../../../../util/test/formatTs";
+import { reexportConsts } from "../../util/reexportConsts";
+import { reexportTypes } from "../../util/reexportTypes";
 
 export async function generateAggregationsAggregations(
   fs: MinimalFs,

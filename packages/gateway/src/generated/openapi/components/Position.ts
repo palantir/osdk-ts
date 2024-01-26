@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Coordinate } from "./Coordinate.js";
+import type { Coordinate } from "./Coordinate";
 
 /**
  * GeoJSon fundamental geometry construct.

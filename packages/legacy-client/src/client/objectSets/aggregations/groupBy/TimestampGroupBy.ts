@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Timestamp } from "../../../baseTypes/index.js";
+import type { Timestamp } from "../../../baseTypes";
 import {
   type Bucketing,
   type BucketKey,
@@ -25,8 +25,8 @@ import {
   type Rangeable,
   type RangeBucketing,
   TimeUnit,
-} from "../Aggregations.js";
-import { GroupKeyType } from "./GroupKeyType.js";
+} from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
 
 export interface TimestampGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups according to specified ranges. */

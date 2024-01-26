@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSideV2 } from "./LinkTypeSideV2.js";
-import type { ObjectTypeV2 } from "./ObjectTypeV2.js";
+import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
+import type { ObjectTypeV2 } from "./ObjectTypeV2";
 
 export interface ObjectTypeWithLink {
   objectType: ObjectTypeV2;

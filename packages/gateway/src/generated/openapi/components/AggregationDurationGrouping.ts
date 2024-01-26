@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Duration } from "./Duration.js";
+import type { Duration } from "./Duration";
 
 /**
  * Divides objects into groups according to an interval. Note that this grouping applies only on date types.

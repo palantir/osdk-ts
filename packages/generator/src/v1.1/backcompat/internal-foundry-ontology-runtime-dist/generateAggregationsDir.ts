@@ -15,42 +15,41 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs.js";
-import { formatTs } from "../../../util/test/formatTs.js";
-import { reexportConsts } from "../util/reexportConsts.js";
-import { reexportTypes } from "../util/reexportTypes.js";
-import { generateAggregationsAggregations } from "./aggregations/generateAggregationsAggregations.js";
-import { generateGroupBy } from "./aggregations/generateGroupBy.js";
-import { generateMetrics } from "./aggregations/generateMetrics.js";
+import type { MinimalFs } from "../../../MinimalFs";
+import { formatTs } from "../../../util/test/formatTs";
+import { reexportConsts } from "../util/reexportConsts";
+import { reexportTypes } from "../util/reexportTypes";
+import { generateAggregationsAggregations } from "./aggregations/generateAggregationsAggregations";
+import { generateGroupBy } from "./aggregations/generateGroupBy";
+import { generateMetrics } from "./aggregations/generateMetrics";
 
 export async function generateAggregationsDir(
   fs: MinimalFs,
   runtimeDistDir: string,
-  importExt = "",
 ) {
   const aggregationsDir = path.join(runtimeDistDir, "aggregations");
   await fs.mkdir(aggregationsDir, { recursive: true });
 
-  await generateGroupBy(fs, aggregationsDir, importExt);
+  await generateGroupBy(fs, aggregationsDir);
   await generateAggregationsAggregations(fs, aggregationsDir);
-  await generateMetrics(fs, aggregationsDir, importExt);
+  await generateMetrics(fs, aggregationsDir);
 
   await fs.writeFile(
     path.join(aggregationsDir, "index.ts"),
     await formatTs(`
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./AggregatableObjectSet${importExt}";
+      // export * from "./AggregatableObjectSet";
     }
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./aggregationConverters${importExt}";
+      // export * from "./aggregationConverters";
     }
     
-    export * from "./Aggregations${importExt}";
-    export * from "./ComputeStep${importExt}";
-    export * from "./CountOperation${importExt}";
-    export * from "./groupBy/index${importExt}";
-    export * from "./internalAggregationRequest${importExt}";
-    export * from "./metrics/index${importExt}";
+    export * from "./Aggregations";
+    export * from "./ComputeStep";
+    export * from "./CountOperation";
+    export * from "./groupBy";
+    export * from "./internalAggregationRequest";
+    export * from "./metrics";
   `),
   );
 
@@ -58,10 +57,10 @@ export async function generateAggregationsDir(
     path.join(aggregationsDir, "ComputeStep.ts"),
     await formatTs(
       `
-      import { ObjectSetDefinition } from "../baseTypes/index${importExt}";
-      import { FoundryClientOptions } from "../client/${importExt}";
-      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider/index${importExt}";
-      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations${importExt}";
+      import { ObjectSetDefinition } from "../baseTypes";
+      import { FoundryClientOptions } from "../client";
+      import { AggregateObjectsError, OntologyMetadata, Result } from "../ontologyProvider";
+      import { AggregationClause, AggregationResult, BucketGroup, BucketValue, InternalBucketing, Metrics, MetricValue } from "./Aggregations";
       `
         + reexportConsts(["ComputeStep"])
         + reexportTypes(

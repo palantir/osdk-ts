@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "../components/LinkTypeApiName.js";
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
-import type { PrimaryKeyValue } from "../components/PrimaryKeyValue.js";
-import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { LinkTypeApiName } from "../components/LinkTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { PrimaryKeyValue } from "../components/PrimaryKeyValue";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /** The linked object with the given primary key is not found, or the user does not have access to it. */
 export interface LinkedObjectNotFound {

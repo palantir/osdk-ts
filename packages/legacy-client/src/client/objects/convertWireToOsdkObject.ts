@@ -25,17 +25,17 @@ import {
   type OntologyObject,
   TimeSeriesProperty,
   Timestamp,
-} from "../baseTypes/index.js";
-import type { WireOntologyObjectV2 } from "../net/WireOntologyObjectV2.js";
-import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform.js";
+} from "../baseTypes";
+import type { WireOntologyObjectV2 } from "../net/WireOntologyObjectV2";
+import { createCachedOntologyTransform } from "../objectSets/createCachedOntologyTransform";
 import type {
   OsdkLegacyLinksFrom,
   OsdkLegacyObjectFrom,
   OsdkLegacyPropertiesFrom,
-} from "../OsdkLegacyObject.js";
-import { isReservedKeyword } from "../utils/reservedKeywords.js";
-import { createMultiLinkStep } from "./createMultiLinkStep.js";
-import { createSingleLinkStep } from "./createSingleLinkStep.js";
+} from "../OsdkLegacyObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
+import { createMultiLinkStep } from "./createMultiLinkStep";
+import { createSingleLinkStep } from "./createSingleLinkStep";
 
 const OriginClient = Symbol();
 

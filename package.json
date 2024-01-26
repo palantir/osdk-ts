@@ -17,7 +17,6 @@
     "typecheckAll": "tsc --build packages/* examples/basic/*"
   },
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.13.6",
     "@babel/core": "^7.23.0",
     "@babel/preset-typescript": "^7.22.15",
     "@changesets/cli": "^2.26.2",
@@ -38,7 +37,7 @@
     "mytsup": "workspace:*",
     "tsc-absolute": "^1.0.1",
     "tsconfig": "workspace:*",
-    "tsup": "^8.0.1",
+    "tsup": "^7.2.0",
     "turbo": "^1.10.13",
     "typescript": "^5.2.2",
     "vitest": "^1.2.1"

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ChatMessage } from "./ChatMessage.js";
-import type { ParameterKey } from "./ParameterKey.js";
-import type { ParameterValue } from "./ParameterValue.js";
+import type { ChatMessage } from "./ChatMessage";
+import type { ParameterKey } from "./ParameterKey";
+import type { ParameterValue } from "./ParameterValue";
 
 export interface ChatCompletionRequest {
   messages: Array<ChatMessage>;

@@ -18,14 +18,14 @@ import type {
   DistanceUnit,
   GeoJsonPoint,
   GeoJsonPolygon,
-} from "../../baseTypes/index.js";
-import type { ArrayFilter } from "./ArrayFilter.js";
-import type { AttachmentFilter } from "./AttachmentFilter.js";
-import type { BooleanFilter } from "./BooleanFilter.js";
-import type { LocalDateFilter, TimestampFilter } from "./DateTimeFilters.js";
-import type { GeoPointFilter } from "./GeoPointFilter.js";
-import type { NumericFilter } from "./NumericFilter.js";
-import type { StringFilter } from "./StringFilter.js";
+} from "../../baseTypes";
+import type { ArrayFilter } from "./ArrayFilter";
+import type { AttachmentFilter } from "./AttachmentFilter";
+import type { BooleanFilter } from "./BooleanFilter";
+import type { LocalDateFilter, TimestampFilter } from "./DateTimeFilters";
+import type { GeoPointFilter } from "./GeoPointFilter";
+import type { NumericFilter } from "./NumericFilter";
+import type { StringFilter } from "./StringFilter";
 
 export type BoundingBoxFilter = {
   topLeft: GeoJsonPoint;

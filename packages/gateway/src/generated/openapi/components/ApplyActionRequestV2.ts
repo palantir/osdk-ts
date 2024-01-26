@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ApplyActionRequestOptions } from "./ApplyActionRequestOptions.js";
-import type { DataValue } from "./DataValue.js";
-import type { ParameterId } from "./ParameterId.js";
+import type { ApplyActionRequestOptions } from "./ApplyActionRequestOptions";
+import type { DataValue } from "./DataValue";
+import type { ParameterId } from "./ParameterId";
 
 export interface ApplyActionRequestV2 {
   options?: ApplyActionRequestOptions;

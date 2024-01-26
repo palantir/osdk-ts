@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "./OntologyDefinition.js";
-import type { WirePropertyTypes } from "./WirePropertyTypes.js";
+import type { OntologyDefinition } from "./OntologyDefinition";
+import type { WirePropertyTypes } from "./WirePropertyTypes";
 
 export type ObjectTypeDefinitionFrom<
   O extends OntologyDefinition<any>,

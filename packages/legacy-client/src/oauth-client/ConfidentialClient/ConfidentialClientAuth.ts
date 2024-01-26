@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../Auth.js";
-import type { SignInResponse, SignOutResponse } from "../OAuthClient.js";
-import type { OAuthToken } from "../OAuthToken.js";
-import type { Token } from "../Token.js";
-import {
-  getTokenWithClientSecret,
-  revokeTokenWithClientSecret,
-} from "./index.js";
+import type { Auth } from "../Auth";
+import type { SignInResponse, SignOutResponse } from "../OAuthClient";
+import type { OAuthToken } from "../OAuthToken";
+import type { Token } from "../Token";
+import { getTokenWithClientSecret, revokeTokenWithClientSecret } from ".";
 
 export class ConfidentialClientAuth implements Auth {
   public token: OAuthToken | undefined;

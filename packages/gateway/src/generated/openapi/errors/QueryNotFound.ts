@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryApiName } from "../components/QueryApiName.js";
+import type { QueryApiName } from "../components/QueryApiName";
 
 /** The query is not found, or the user does not have access to it. */
 export interface QueryNotFound {

@@ -1,5 +1,5 @@
 import { ArrayFilter as OG_ArrayFilter } from '@osdk/legacy-client';
-import { Attachment, GeoPoint, GeoShape, LocalDate, Timestamp } from '../baseTypes/index';
+import { Attachment, GeoPoint, GeoShape, LocalDate, Timestamp } from '../baseTypes';
 
 /** @deprecated submodule imports arent public api **/
 export const ArrayFilter = OG_ArrayFilter;

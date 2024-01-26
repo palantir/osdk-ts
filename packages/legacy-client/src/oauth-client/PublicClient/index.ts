@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./PublicClientAuth.js";
-export * from "./PublicClientFlowProvider.js";
+export * from "./PublicClientAuth";
+export * from "./PublicClientFlowProvider";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { NestedQueryAggregation } from "./NestedQueryAggregation.js";
+import type { NestedQueryAggregation } from "./NestedQueryAggregation";
 
 export interface QueryThreeDimensionalAggregation {
   groups: Array<NestedQueryAggregation>;

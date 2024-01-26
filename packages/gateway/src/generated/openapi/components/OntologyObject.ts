@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectRid } from "./ObjectRid.js";
-import type { PropertyApiName } from "./PropertyApiName.js";
-import type { PropertyValue } from "./PropertyValue.js";
+import type { ObjectRid } from "./ObjectRid";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyValue } from "./PropertyValue";
 
 /** Represents an object in the Ontology. */
 export interface OntologyObject {

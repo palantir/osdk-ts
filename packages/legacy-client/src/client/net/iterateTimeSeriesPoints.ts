@@ -19,16 +19,13 @@ import { streamPoints } from "@osdk/gateway/requests";
 import type { StreamTimeSeriesPointsRequest } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { TimeSeriesPoint } from "../baseTypes/index.js";
-import { Timestamp } from "../baseTypes/index.js";
-import {
-  handleTimeSeriesError,
-  TimeSeriesErrorHandler,
-} from "../errors/index.js";
-import type { TimeSeriesError } from "../errors/index.js";
-import type { Result } from "../Result.js";
-import { iterateReadableStream } from "./util/parseStreamedResponse.js";
-import { wrapIterator } from "./util/wrapIterator.js";
+import type { TimeSeriesPoint } from "../baseTypes";
+import { Timestamp } from "../baseTypes";
+import { handleTimeSeriesError, TimeSeriesErrorHandler } from "../errors";
+import type { TimeSeriesError } from "../errors";
+import type { Result } from "../Result";
+import { iterateReadableStream } from "./util/parseStreamedResponse";
+import { wrapIterator } from "./util/wrapIterator";
 
 export async function* iterateTimeSeriesPoints<T extends string | number>(
   client: ClientContext<OntologyDefinition<any>>,

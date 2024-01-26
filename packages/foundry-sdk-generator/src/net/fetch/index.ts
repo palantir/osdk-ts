@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./authenticatedFetch.js";
-export * from "./fetchFactory.js";
-export * from "./retryingFetch.js";
+export * from "./authenticatedFetch";
+export * from "./fetchFactory";
+export * from "./retryingFetch";

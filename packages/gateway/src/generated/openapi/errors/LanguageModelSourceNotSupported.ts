@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LanguageModelSource } from "../components/LanguageModelSource.js";
+import type { LanguageModelSource } from "../components/LanguageModelSource";
 
 export interface LanguageModelSourceNotSupported {
   errorCode: "INVALID_ARGUMENT";

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Documentation, Safety } from "./Common.js";
-import type { DataType } from "./DataTypes.js";
+import type { Documentation, Safety } from "./Common";
+import type { DataType } from "./DataTypes";
 
 export interface Component {
   name: string;

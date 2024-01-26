@@ -17,10 +17,10 @@
 import type { OntologyDefinition } from "@osdk/api";
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Auth } from "../oauth-client/index.js";
-import { USER_AGENT } from "../USER_AGENT.js";
-import type { FoundryClientOptions } from "./foundryClientOptions.js";
-import { Ontology } from "./ontology.js";
+import type { Auth } from "../oauth-client";
+import { USER_AGENT } from "../USER_AGENT";
+import type { FoundryClientOptions } from "./foundryClientOptions";
+import { Ontology } from "./ontology";
 
 export class BaseFoundryClient<
   O extends OntologyDefinition<any>,

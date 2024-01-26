@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import { generateQueries } from "./generateQueries.js";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
+import { TodoWireOntology } from "../util/test/TodoWireOntology";
+import { generateQueries } from "./generateQueries";
 
 describe(generateQueries, () => {
   it("generates queries interface", async () => {

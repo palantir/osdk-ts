@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DefaultErrorHandler } from "./DefaultErrorHandler.js";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
 export class TimeSeriesErrorHandler extends DefaultErrorHandler {
 }

@@ -75,7 +75,7 @@
     },
 
     "transpile": {
-      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "typecheck", "codegen"],
+      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
       "outputs": ["dist/**", "lib/**"]
     },
@@ -87,12 +87,6 @@
     "test:watch": {
       "env": ["FORCE_COLOR"],
       "cache": false
-    },
-    "test:package-types": {
-      "dependsOn": ["transpile"]
-    },
-    "test:bin": {
-      "dependsOn": ["transpile"]
     },
 
     "//#check-mrl": {
@@ -110,7 +104,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test", "test:package-types", "test:bin"]
+      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
     }
   },
 

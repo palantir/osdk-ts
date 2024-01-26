@@ -16,7 +16,7 @@
 
 import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import { mapPropertiesToAggregatableProperties } from "./index.js";
+import { mapPropertiesToAggregatableProperties } from ".";
 
 describe(mapPropertiesToAggregatableProperties, () => {
   it("maps properties correctly", () => {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FunctionRid } from "../components/FunctionRid.js";
-import type { FunctionVersion } from "../components/FunctionVersion.js";
+import type { FunctionRid } from "../components/FunctionRid";
+import type { FunctionVersion } from "../components/FunctionVersion";
 
 /**
  * Memory limits were exceeded for the `Query` execution.

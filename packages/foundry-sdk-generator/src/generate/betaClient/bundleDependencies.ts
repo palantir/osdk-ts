@@ -16,9 +16,9 @@
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Project } from "ts-morph";
-import { copyFiles } from "./copyFiles.js";
-import { withoutTrailingIndex } from "./getModuleSourceFile.js";
-import { ProjectMinifier } from "./minifyBundle.js";
+import { copyFiles } from "./copyFiles";
+import { withoutTrailingIndex } from "./getModuleSourceFile";
+import { ProjectMinifier } from "./minifyBundle";
 
 export async function bundleDependencies(
   dirs: string[],

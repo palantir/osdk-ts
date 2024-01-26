@@ -16,7 +16,7 @@
 
 import type { JSDocStructure } from "ts-morph";
 import { StructureKind } from "ts-morph";
-import type { Documentation } from "../spec/Common.js";
+import type { Documentation } from "../spec/Common";
 
 export function getJsDocs(documentation: Documentation): JSDocStructure[] {
   if (!hasDocs(documentation)) {

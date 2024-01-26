@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName.js";
-import type { ValueType } from "../components/ValueType.js";
+import type { PropertyApiName } from "../components/PropertyApiName";
+import type { ValueType } from "../components/ValueType";
 
 /**
  * The given property type is not of the expected type.

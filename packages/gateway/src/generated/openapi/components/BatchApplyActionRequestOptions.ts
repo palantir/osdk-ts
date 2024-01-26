@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ReturnEditsMode } from "./ReturnEditsMode.js";
+import type { ReturnEditsMode } from "./ReturnEditsMode";
 
 export interface BatchApplyActionRequestOptions {
   returnEdits?: ReturnEditsMode;

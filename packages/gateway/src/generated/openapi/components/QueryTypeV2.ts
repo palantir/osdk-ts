@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName.js";
-import type { FunctionRid } from "./FunctionRid.js";
-import type { FunctionVersion } from "./FunctionVersion.js";
-import type { ParameterId } from "./ParameterId.js";
-import type { QueryApiName } from "./QueryApiName.js";
-import type { QueryDataType } from "./QueryDataType.js";
-import type { QueryParameterV2 } from "./QueryParameterV2.js";
+import type { DisplayName } from "./DisplayName";
+import type { FunctionRid } from "./FunctionRid";
+import type { FunctionVersion } from "./FunctionVersion";
+import type { ParameterId } from "./ParameterId";
+import type { QueryApiName } from "./QueryApiName";
+import type { QueryDataType } from "./QueryDataType";
+import type { QueryParameterV2 } from "./QueryParameterV2";
 
 /** Represents a query type in the Ontology. */
 export interface QueryTypeV2 {

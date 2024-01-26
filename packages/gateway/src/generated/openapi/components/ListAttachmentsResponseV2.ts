@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AttachmentV2 } from "./AttachmentV2.js";
-import type { PageToken } from "./PageToken.js";
+import type { AttachmentV2 } from "./AttachmentV2";
+import type { PageToken } from "./PageToken";
 
 export interface ListAttachmentsResponseV2 {
   data: Array<AttachmentV2>;

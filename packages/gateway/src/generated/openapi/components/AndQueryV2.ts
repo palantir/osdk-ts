@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2.js";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 
 /** Returns objects where every query is satisfied. */
 export interface AndQueryV2 {

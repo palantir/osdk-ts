@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionRid } from "../components/ActionRid.js";
+import type { ActionRid } from "../components/ActionRid";
 
 /** The action is not found, or the user does not have access to it. */
 export interface ActionNotFound {

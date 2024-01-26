@@ -15,9 +15,9 @@
  */
 
 import type { Ontology, OntologyFullMetadata } from "@osdk/gateway/types";
-import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
-import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
-import { queryTypes } from "./queryTypes.js";
+import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes";
+import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes";
+import { queryTypes } from "./queryTypes";
 
 export const defaultOntology: Ontology = {
   apiName: "default-ontology",

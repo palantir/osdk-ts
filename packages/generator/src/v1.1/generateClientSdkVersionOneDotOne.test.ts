@@ -16,10 +16,10 @@
 
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import { describe, expect, test, vi } from "vitest";
-import { compileThis } from "../util/test/compileThis.js";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import { generateClientSdkVersionOneDotOne } from "./generateClientSdkVersionOneDotOne.js";
+import { compileThis } from "../util/test/compileThis";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
+import { TodoWireOntology } from "../util/test/TodoWireOntology";
+import { generateClientSdkVersionOneDotOne } from "./generateClientSdkVersionOneDotOne";
 
 describe("generator", () => {
   test("should be able to generate a project", async () => {

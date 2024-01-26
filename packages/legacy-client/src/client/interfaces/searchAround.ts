@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  MultiLink,
-  OntologyObject,
-  SingleLink,
-} from "../baseTypes/index.js";
-import type { ObjectSet } from "./index.js";
-import type { IsLink } from "./utils/IsLink.js";
+import type { MultiLink, OntologyObject, SingleLink } from "../baseTypes";
+import type { ObjectSet } from ".";
+import type { IsLink } from "./utils/IsLink";
 
 type InferLinkType<T> = T extends SingleLink<infer V> ? V
   : T extends MultiLink<infer V> ? V

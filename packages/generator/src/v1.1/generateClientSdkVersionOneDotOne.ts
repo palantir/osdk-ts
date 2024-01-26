@@ -15,22 +15,22 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../MinimalFs.js";
-import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
-import { verifyOutdir } from "../util/verifyOutdir.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
-import { generateActions } from "./generateActions.js";
-import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports.js";
-import { generateFoundryClientFile } from "./generateFoundryClientFile.js";
-import { generateIndexFile } from "./generateIndexFile.js";
-import { generateMetadataFile } from "./generateMetadataFile.js";
-import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile.js";
-import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles.js";
-import { generateOntologyIndexFile } from "./generateOntologyIndexFile.js";
-import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
-import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles.js";
-import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
-import { generateQueries } from "./generateQueries.js";
+import type { MinimalFs } from "../MinimalFs";
+import { sanitizeMetadata } from "../shared/sanitizeMetadata";
+import { verifyOutdir } from "../util/verifyOutdir";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { generateActions } from "./generateActions";
+import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports";
+import { generateFoundryClientFile } from "./generateFoundryClientFile";
+import { generateIndexFile } from "./generateIndexFile";
+import { generateMetadataFile } from "./generateMetadataFile";
+import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
+import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles";
+import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
+import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
+import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
+import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
+import { generateQueries } from "./generateQueries";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
@@ -85,5 +85,5 @@ export async function generateClientSdkVersionOneDotOne(
     importExt,
   );
   await generateIndexFile(fs, outDir, importExt);
-  await generateBackCompatDeprecatedExports(fs, outDir, importExt);
+  await generateBackCompatDeprecatedExports(fs, outDir);
 }

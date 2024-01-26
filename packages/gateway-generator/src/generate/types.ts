@@ -37,8 +37,8 @@ import type {
   StringType,
   UnionType,
   UUIDType,
-} from "../spec/index.js";
-import { visitTypeUnion } from "./common.js";
+} from "../spec";
+import { visitTypeUnion } from "./common";
 
 export function isOptional(type: DataType): boolean {
   if (type.type === "optional") {

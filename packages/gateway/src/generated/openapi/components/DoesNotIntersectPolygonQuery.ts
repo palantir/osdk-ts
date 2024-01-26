@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PolygonValue } from "./PolygonValue.js";
+import type { PolygonValue } from "./PolygonValue";
 
 /**
  * Returns objects where the specified field does not intersect the polygon provided.

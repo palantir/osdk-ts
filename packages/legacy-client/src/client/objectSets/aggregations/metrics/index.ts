@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./ApproximateDistinctCountAggregatableProperty.js";
-export * from "./DefaultAggregatableProperty.js";
-export * from "./LocalDatePropertyMetric.js";
-export * from "./metrics.js";
-export * from "./MultipleAggregatableProperty.js";
-export * from "./NumericPropertyMetric.js";
-export * from "./TimestampPropertyMetric.js";
+export * from "./ApproximateDistinctCountAggregatableProperty";
+export * from "./DefaultAggregatableProperty";
+export * from "./LocalDatePropertyMetric";
+export * from "./metrics";
+export * from "./MultipleAggregatableProperty";
+export * from "./NumericPropertyMetric";
+export * from "./TimestampPropertyMetric";

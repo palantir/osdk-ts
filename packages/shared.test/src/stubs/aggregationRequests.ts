@@ -19,7 +19,7 @@ import type {
   AggregateObjectsResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import { employeeObjectType } from "./objectTypes.js";
+import { employeeObjectType } from "./objectTypes";
 
 export const aggReq1: AggregateObjectSetRequestV2 = {
   aggregation: [

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { Feature } from "./Feature.js";
-import type { FeatureCollection } from "./FeatureCollection.js";
-import type { GeometryCollection } from "./GeometryCollection.js";
-import type { GeoPoint } from "./GeoPoint.js";
-import type { LineString } from "./LineString.js";
-import type { MultiLineString } from "./MultiLineString.js";
-import type { MultiPoint } from "./MultiPoint.js";
-import type { MultiPolygon } from "./MultiPolygon.js";
-import type { Polygon } from "./Polygon.js";
+import type { Feature } from "./Feature";
+import type { FeatureCollection } from "./FeatureCollection";
+import type { GeometryCollection } from "./GeometryCollection";
+import type { GeoPoint } from "./GeoPoint";
+import type { LineString } from "./LineString";
+import type { MultiLineString } from "./MultiLineString";
+import type { MultiPoint } from "./MultiPoint";
+import type { MultiPolygon } from "./MultiPolygon";
+import type { Polygon } from "./Polygon";
 
 export interface GeoJsonObject_Feature extends Feature {
   type: "Feature";

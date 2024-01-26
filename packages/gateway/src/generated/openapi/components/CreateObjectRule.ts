@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 
 export interface CreateObjectRule {
   objectTypeApiName: ObjectTypeApiName;

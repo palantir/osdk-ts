@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-export * from "./actions.js";
-export * from "./actionsTypes.js";
-export * from "./aggregationRequests.js";
-export * from "./attachments.js";
-export * from "./links.js";
-export * from "./linkTypes.js";
-export * from "./loadRequests.js";
-export * from "./objects.js";
-export * from "./objectSetRequest.js";
-export * from "./objectTypesWithLinkTypes.js";
-export * from "./objectTypeV2.js";
-export * from "./ontologies.js";
-export * from "./queries.js";
-export * from "./queryTypes.js";
-export * from "./timeseriesRequests.js";
+export * from "./actions";
+export * from "./actionsTypes";
+export * from "./aggregationRequests";
+export * from "./attachments";
+export * from "./links";
+export * from "./linkTypes";
+export * from "./loadRequests";
+export * from "./objects";
+export * from "./objectSetRequest";
+export * from "./objectTypesWithLinkTypes";
+export * from "./objectTypeV2";
+export * from "./ontologies";
+export * from "./queries";
+export * from "./queryTypes";
+export * from "./timeseriesRequests";

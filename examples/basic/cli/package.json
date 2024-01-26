@@ -5,24 +5,14 @@
   "license": "Apache-2.0",
   "exports": {
     ".": {
-      "import": {
-        "types": "./build/esm/index.d.mts",
-        "default": "./build/esm/index.mjs"
-      },
-      "require": {
-        "types": "./build/cjs/index.d.ts",
-        "default": "./build/cjs/index.cjs"
-      }
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
     },
     "./*": {
-      "import": {
-        "types": "./build/esm/public/*.d.mts",
-        "default": "./build/esm/public/*.mjs"
-      },
-      "require": {
-        "types": "./build/cjs/public/*.d.ts",
-        "default": "./build/cjs/public/*.cjs"
-      }
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -30,7 +20,6 @@
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test:package-types": "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build"
@@ -50,14 +39,14 @@
     "access": "public"
   },
   "files": [
-    "build/cjs",
-    "build/esm",
+    "build/types",
+    "build/js",
     "CHANGELOG.md",
     "package.json",
     "*.d.ts"
   ],
-  "main": "./build/cjs/index.cjs",
-  "module": "./build/esm/index.mjs",
-  "types": "./build/cjs/index.d.ts",
-  "type": "commonjs"
+  "main": "./build/js/index.cjs",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }

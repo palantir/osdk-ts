@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Position } from "./Position.js";
+import type { Position } from "./Position";
 
 /**
  * GeoJSon fundamental geometry construct, array of two or more positions.

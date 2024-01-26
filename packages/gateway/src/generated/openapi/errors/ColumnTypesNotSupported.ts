@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid.js";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** The dataset contains column types that are not supported. */
 export interface ColumnTypesNotSupported {

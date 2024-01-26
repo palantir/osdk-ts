@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { BoundingBoxValue } from "./BoundingBoxValue.js";
+import type { BoundingBoxValue } from "./BoundingBoxValue";
 
 /**
  * Returns objects where the specified field does not intersect the bounding box provided.

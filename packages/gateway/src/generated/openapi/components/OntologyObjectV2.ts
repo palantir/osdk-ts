@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName.js";
-import type { PropertyValue } from "./PropertyValue.js";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyValue } from "./PropertyValue";
 
 /** Represents an object in the Ontology. */
 export type OntologyObjectV2 = Record<PropertyApiName, PropertyValue>;

@@ -16,10 +16,10 @@
 
 import type { Directory, Project } from "ts-morph";
 import { CodeBlockWriter } from "ts-morph";
-import type { Error, ParameterValue } from "../spec/index.js";
-import { generateDocumentation } from "./common.js";
-import { getDocs, getJsDocs } from "./getJsDocs.js";
-import { generateType } from "./types.js";
+import type { Error, ParameterValue } from "../spec";
+import { generateDocumentation } from "./common";
+import { getDocs, getJsDocs } from "./getJsDocs";
+import { generateType } from "./types";
 
 export function generateErrors(
   errors: Error[],
@@ -63,7 +63,7 @@ export function generateError(error: Error, directory: Directory) {
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `../components/${reference}.js`,
+        moduleSpecifier: `../components/${reference}`,
         namedImports: [reference],
       };
     }),

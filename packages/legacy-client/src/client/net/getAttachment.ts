@@ -18,13 +18,10 @@ import type { OntologyDefinition } from "@osdk/api";
 import { getAttachmentContent } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { AttachmentsError } from "../errors/index.js";
-import {
-  AttachmentsErrorHandler,
-  handleAttachmentsError,
-} from "../errors/index.js";
-import type { Result } from "../Result.js";
-import { wrapResult } from "./util/wrapResult.js";
+import type { AttachmentsError } from "../errors";
+import { AttachmentsErrorHandler, handleAttachmentsError } from "../errors";
+import type { Result } from "../Result";
+import { wrapResult } from "./util/wrapResult";
 
 export async function getAttachment(
   client: ClientContext<OntologyDefinition<any>>,

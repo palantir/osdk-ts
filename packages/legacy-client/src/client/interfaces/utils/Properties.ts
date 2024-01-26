@@ -17,7 +17,7 @@
 import type {
   OmitLinksProperties,
   OmitMetadataProperties,
-} from "./OmitProperties.js";
+} from "./OmitProperties";
 
 export type Properties<O> = {
   [K in keyof OmitLinksProperties<OmitMetadataProperties<O>>]: {

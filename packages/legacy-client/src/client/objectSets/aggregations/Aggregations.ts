@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  BaseBucket,
-  LocalDate,
-  Timestamp,
-} from "../../baseTypes/index.js";
-import type { AggregationComputeStep } from "./ComputeStep.js";
-import type { CountOperation } from "./CountOperation.js";
-import type { GroupKeyType } from "./groupBy/GroupKeyType.js";
-import type {
-  MetricValueType,
-  MultipleAggregatableProperty,
-} from "./metrics/index.js";
+import type { BaseBucket, LocalDate, Timestamp } from "../../baseTypes";
+import type { AggregationComputeStep } from "./ComputeStep";
+import type { CountOperation } from "./CountOperation";
+import type { GroupKeyType } from "./groupBy/GroupKeyType";
+import type { MetricValueType, MultipleAggregatableProperty } from "./metrics";
 
 export type Double = number;
 export type Rangeable = Double | Timestamp | LocalDate;

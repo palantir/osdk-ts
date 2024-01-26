@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./cli/index.js";
-export * from "./generate/index.js";
-export * from "./spec/index.js";
+export * from "./cli";
+export * from "./generate";
+export * from "./spec";

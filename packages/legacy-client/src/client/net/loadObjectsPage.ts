@@ -19,19 +19,16 @@ import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes/index.js";
-import {
-  handleLoadObjectSetError,
-  LoadObjectSetErrorHandler,
-} from "../errors/index.js";
-import type { LoadObjectSetError } from "../errors/index.js";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
-import type { OrderByClause } from "../objectSets/filters/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import type { Page } from "../Page.js";
-import type { Result } from "../Result.js";
-import { wrapResult } from "./util/wrapResult.js";
-import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2.js";
+import type { ObjectSetDefinition } from "../baseTypes";
+import { handleLoadObjectSetError, LoadObjectSetErrorHandler } from "../errors";
+import type { LoadObjectSetError } from "../errors";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
+import type { OrderByClause } from "../objectSets/filters";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
+import { wrapResult } from "./util/wrapResult";
+import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export async function loadObjectsPage<
   O extends OntologyDefinition<any>,

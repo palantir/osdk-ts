@@ -22,7 +22,7 @@ import {
   multipassServerHandlers,
   objectSetHandlers,
   ontologyMetadataEndpoint,
-} from "./handlers/index.js";
+} from "./handlers";
 
 export const apiServer: SetupServer = setupServer(
   ...loadObjectsEndpoints,

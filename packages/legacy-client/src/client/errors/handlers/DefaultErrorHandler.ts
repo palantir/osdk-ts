@@ -18,8 +18,8 @@ import type {
   PermissionDenied,
   Unauthorized,
   UnknownError,
-} from "../ApiErrors.js";
-import type { PalantirApiError } from "../Errors.js";
+} from "../ApiErrors";
+import type { PalantirApiError } from "../Errors";
 
 export abstract class DefaultErrorHandler {
   handlePermissionDenied(error: PalantirApiError): PermissionDenied {

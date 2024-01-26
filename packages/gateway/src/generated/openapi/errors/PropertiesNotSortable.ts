@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /**
  * Results could not be ordered by the requested properties. Please mark the properties as *Searchable* and

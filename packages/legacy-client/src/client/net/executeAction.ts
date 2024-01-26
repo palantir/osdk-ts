@@ -23,19 +23,16 @@ import type {
   ActionArgs,
   ActionReturnType,
   WrappedActionReturnType,
-} from "../actions/actions.js";
+} from "../actions/actions";
 import {
   ActionExecutionMode,
   ActionResponse,
   ReturnEditsMode,
-} from "../baseTypes/index.js";
-import type { ActionExecutionOptions } from "../baseTypes/index.js";
-import {
-  ExecuteActionErrorHandler,
-  handleExecuteActionError,
-} from "../errors/index.js";
-import { getParameterValueMapping } from "./util/getParameterValueMapping.js";
-import { wrapResult } from "./util/wrapResult.js";
+} from "../baseTypes";
+import type { ActionExecutionOptions } from "../baseTypes";
+import { ExecuteActionErrorHandler, handleExecuteActionError } from "../errors";
+import { getParameterValueMapping } from "./util/getParameterValueMapping";
+import { wrapResult } from "./util/wrapResult";
 
 export async function executeAction<
   O extends OntologyDefinition<any>,

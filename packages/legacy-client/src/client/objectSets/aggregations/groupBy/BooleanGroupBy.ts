@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Bucketing, ExactValueBucketing } from "../Aggregations.js";
-import { GroupKeyType } from "./GroupKeyType.js";
+import type { Bucketing, ExactValueBucketing } from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
 
 export interface BooleanGroupBy<T extends string> {
   /** Divides objects into groups according to an exact value.

@@ -16,14 +16,11 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject, ParameterValue } from "../baseTypes/index.js";
-import type {
-  GetLinkedObjectError,
-  LinkedObjectNotFound,
-} from "../errors/index.js";
-import { isErr, type Result } from "../Result.js";
-import { listLinkedObjects } from "./listLinkedObjects.js";
-import { createErrorResponse } from "./util/ResponseCreators.js";
+import type { OntologyObject, ParameterValue } from "../baseTypes";
+import type { GetLinkedObjectError, LinkedObjectNotFound } from "../errors";
+import { isErr, type Result } from "../Result";
+import { listLinkedObjects } from "./listLinkedObjects";
+import { createErrorResponse } from "./util/ResponseCreators";
 
 /**
  * Wrapper around listLinkedObjects that validates that only a single object was found

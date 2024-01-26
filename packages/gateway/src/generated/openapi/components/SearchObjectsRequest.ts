@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { PageSize } from "./PageSize.js";
-import type { PageToken } from "./PageToken.js";
-import type { PropertyApiName } from "./PropertyApiName.js";
-import type { SearchJsonQuery } from "./SearchJsonQuery.js";
-import type { SearchOrderBy } from "./SearchOrderBy.js";
+import type { PageSize } from "./PageSize";
+import type { PageToken } from "./PageToken";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { SearchJsonQuery } from "./SearchJsonQuery";
+import type { SearchOrderBy } from "./SearchOrderBy";
 
 export interface SearchObjectsRequest {
   query: SearchJsonQuery;

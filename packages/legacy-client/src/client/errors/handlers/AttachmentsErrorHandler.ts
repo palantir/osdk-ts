@@ -19,9 +19,9 @@ import type {
   AttachmentSizeExceededLimit,
   InvalidContentLength,
   InvalidContentType,
-} from "../ApiErrors.js";
-import type { PalantirApiError } from "../Errors.js";
-import { DefaultErrorHandler } from "./DefaultErrorHandler.js";
+} from "../ApiErrors";
+import type { PalantirApiError } from "../Errors";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
 export class AttachmentsErrorHandler extends DefaultErrorHandler {
   handleAttachmentSizeExceededLimit(

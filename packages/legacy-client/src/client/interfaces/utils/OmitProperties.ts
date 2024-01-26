@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IsLink } from "./IsLink.js";
+import type { IsLink } from "./IsLink";
 
 export declare type OmitMetadataProperties<T> = {
   [K in keyof Omit<T, "__apiName" | "__rid" | "__primaryKey">]: T[K];

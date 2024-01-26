@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./Distance.js";
-export * from "./DistanceUnit.js";
-export * from "./GeoJson.js";
-export * from "./GeometryCollection.js";
-export * from "./GeoPoint.js";
-export * from "./GeoShape.js";
-export * from "./LineString.js";
-export * from "./MultiGeoPoint.js";
-export * from "./MultiLineString.js";
-export * from "./MultiPolygon.js";
-export * from "./Polygon.js";
+export * from "./Distance";
+export * from "./DistanceUnit";
+export * from "./GeoJson";
+export * from "./GeometryCollection";
+export * from "./GeoPoint";
+export * from "./GeoShape";
+export * from "./LineString";
+export * from "./MultiGeoPoint";
+export * from "./MultiLineString";
+export * from "./MultiPolygon";
+export * from "./Polygon";

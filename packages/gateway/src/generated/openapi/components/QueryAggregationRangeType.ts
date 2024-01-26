@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryAggregationRangeSubType } from "./QueryAggregationRangeSubType.js";
+import type { QueryAggregationRangeSubType } from "./QueryAggregationRangeSubType";
 
 export interface QueryAggregationRangeType {
   subType: QueryAggregationRangeSubType;

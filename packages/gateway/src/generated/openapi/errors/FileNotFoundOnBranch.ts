@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId.js";
-import type { DatasetRid } from "../components/DatasetRid.js";
-import type { FilePath } from "../components/FilePath.js";
+import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
+import type { FilePath } from "../components/FilePath";
 
 /** The requested file could not be found on the given branch, or the client token does not have access to it. */
 export interface FileNotFoundOnBranch {

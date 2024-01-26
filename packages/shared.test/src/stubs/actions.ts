@@ -19,7 +19,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import { employeeObjectType, officeObjectType } from "./objectTypes.js";
+import { employeeObjectType, officeObjectType } from "./objectTypes";
 
 const actionRequestCreateOffice: ApplyActionRequestV2 = {
   parameters: {

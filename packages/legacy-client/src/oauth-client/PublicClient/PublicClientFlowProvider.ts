@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OAuthToken } from "../OAuthToken.js";
+import { OAuthToken } from "../OAuthToken";
 import {
   fetchFormEncoded,
   generateCodeChallenge,
@@ -22,7 +22,7 @@ import {
   getAuthorizeUri,
   getRevokeUri,
   getTokenUri,
-} from "../utils/index.js";
+} from "../utils";
 
 interface AuthorizeRequest {
   url: string;

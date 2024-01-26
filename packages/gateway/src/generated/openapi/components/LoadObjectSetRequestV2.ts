@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "./ObjectSet.js";
-import type { PageSize } from "./PageSize.js";
-import type { PageToken } from "./PageToken.js";
-import type { SearchOrderBy } from "./SearchOrderBy.js";
-import type { SelectedPropertyApiName } from "./SelectedPropertyApiName.js";
+import type { ObjectSet } from "./ObjectSet";
+import type { PageSize } from "./PageSize";
+import type { PageToken } from "./PageToken";
+import type { SearchOrderBy } from "./SearchOrderBy";
+import type { SelectedPropertyApiName } from "./SelectedPropertyApiName";
 
 /** Represents the API POST body when loading an `ObjectSet`. */
 export interface LoadObjectSetRequestV2 {

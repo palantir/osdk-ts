@@ -16,18 +16,18 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject } from "../baseTypes/index.js";
-import type { PalantirApiError } from "../errors/Errors.js";
+import type { OntologyObject } from "../baseTypes";
 import {
   handleListLinkedObjectsError,
   ListLinkedObjectsErrorHandler,
-} from "../errors/index.js";
-import type { ListLinkedObjectsError } from "../errors/index.js";
-import type { Page } from "../Page.js";
-import type { Result } from "../Result.js";
-import { getLinkedObjectsPage } from "./getLinkedObjectsPage.js";
-import { createPageIterator } from "./util/createPageIterator.js";
-import { iterateLinkedObjects } from "./util/iterateLinkedObjects.js";
+} from "../errors";
+import type { ListLinkedObjectsError } from "../errors";
+import type { PalantirApiError } from "../errors/Errors";
+import type { Page } from "../Page";
+import type { Result } from "../Result";
+import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
+import { createPageIterator } from "./util/createPageIterator";
+import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
   client: ClientContext<OntologyDefinition<any>>,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults.js";
-import type { ValidateActionResponseV2 } from "./ValidateActionResponseV2.js";
+import type { ActionResults } from "./ActionResults";
+import type { ValidateActionResponseV2 } from "./ValidateActionResponseV2";
 
 export interface SyncApplyActionResponseV2 {
   validation?: ValidateActionResponseV2;

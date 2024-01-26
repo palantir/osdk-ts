@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid.js";
-import type { QueryApiName } from "../components/QueryApiName.js";
-import type { SdkPackageName } from "../components/SdkPackageName.js";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { QueryApiName } from "../components/QueryApiName";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
 /** The given query could not be mapped to a Marketplace installation. */
 export interface MarketplaceQueryMappingNotFound {

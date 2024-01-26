@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import { colorize } from "consola/utils";
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
   createConjureContext,
   thirdPartyApplicationService,
-} from "../../../net/index.mjs";
+} from "#net";
+import { consola } from "consola";
+import { colorize } from "consola/utils";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
 export default async function siteVersionsCommand(

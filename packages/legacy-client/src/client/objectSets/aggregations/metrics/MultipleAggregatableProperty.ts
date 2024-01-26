@@ -18,8 +18,8 @@ import type {
   Double,
   MetricValue,
   MultipleAggregationsOperations,
-} from "../Aggregations.js";
-import type { MetricValueType } from "./metrics.js";
+} from "../Aggregations";
+import type { MetricValueType } from "./metrics";
 
 export interface MultipleAggregatableProperty<
   TResult extends MetricValue = Double,

@@ -18,7 +18,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import { createClientContext } from "@osdk/shared.net";
 import { MOCK_ORIGIN, MockOntology } from "@osdk/shared.test";
 import { beforeEach, describe, expect, it } from "vitest";
-import { createObjectSetCreator } from "./ontology.js";
+import { createObjectSetCreator } from "./ontology";
 
 describe(createObjectSetCreator, () => {
   let client: ClientContext<MockOntology>;

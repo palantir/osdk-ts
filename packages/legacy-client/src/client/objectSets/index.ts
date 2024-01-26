@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-export * from "./aggregations/index.js";
-export * from "./createCachedOntologyTransform.js";
-export * from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep.js";
-export * from "./createObjectSetAggregationStep.js";
-export * from "./createObjectSetOrderByStep.js";
-export * from "./createObjectSetSearchAround.js";
-export * from "./createObjectSetTerminalLoadStep.js";
-export * from "./createPropertyDescriptions.js";
-export * from "./filters/index.js";
-export * from "./mapPropertiesToAggregatableProperties.js";
-export * from "./mapPropertiesToGroupByProperties.js";
-export * from "./mapPropertiesToMultipleAggregationProperties.js";
-export * from "./mapPropertiesToOrderBy.js";
-export * from "./mapPropertiesToSearchFilter.js";
-export * from "./OsdkObjectSet.js";
+export * from "./aggregations";
+export * from "./createCachedOntologyTransform";
+export * from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
+export * from "./createObjectSetAggregationStep";
+export * from "./createObjectSetOrderByStep";
+export * from "./createObjectSetSearchAround";
+export * from "./createObjectSetTerminalLoadStep";
+export * from "./createPropertyDescriptions";
+export * from "./filters";
+export * from "./mapPropertiesToAggregatableProperties";
+export * from "./mapPropertiesToGroupByProperties";
+export * from "./mapPropertiesToMultipleAggregationProperties";
+export * from "./mapPropertiesToOrderBy";
+export * from "./mapPropertiesToSearchFilter";
+export * from "./OsdkObjectSet";

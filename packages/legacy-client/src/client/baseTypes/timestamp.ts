@@ -15,7 +15,7 @@
  */
 
 import { DateTime, Duration } from "luxon";
-import { LocalDate } from "./localDate.js";
+import { LocalDate } from "./localDate";
 /**
  * Type representing an instant in time.
  * Offset is always UTC+00:00

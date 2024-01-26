@@ -16,7 +16,7 @@
 
 import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import { mapPropertiesToSearchFilter } from "./index.js";
+import { mapPropertiesToSearchFilter } from ".";
 
 describe(mapPropertiesToSearchFilter, () => {
   it("maps properties correctly", () => {

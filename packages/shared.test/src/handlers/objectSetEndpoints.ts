@@ -28,14 +28,14 @@ import type {
   RestRequest,
 } from "msw";
 import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
-import { InvalidRequest } from "../errors.js";
-import { filterObjectsProperties } from "../filterObjects.js";
-import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
-import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
-import { pageThroughResponse } from "./endpointUtils.js";
+import type { BaseAPIError } from "../BaseError";
+import { InvalidRequest } from "../errors";
+import { filterObjectsProperties } from "../filterObjects";
+import { aggregationRequestHandlers } from "../stubs/aggregationRequests";
+import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest";
+import { defaultOntology } from "../stubs/ontologies";
+import { authHandlerMiddleware } from "./commonHandlers";
+import { pageThroughResponse } from "./endpointUtils";
 
 export const objectSetHandlers: RestHandler<
   MockedRequest<DefaultBodyType>

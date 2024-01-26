@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { GeoJsonMultiPoint } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
-import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint.js";
+import type { GeoJsonMultiPoint } from "./GeoJson";
+import type { Geometry } from "./Geometry";
+import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint";
 
 export interface MultiGeoPoint extends Geometry {
   getGeoPoints(): GeoPoint[];

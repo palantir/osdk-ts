@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "./DataValue.js";
-import type { FieldName } from "./FieldName.js";
+import type { DataValue } from "./DataValue";
+import type { FieldName } from "./FieldName";
 
 export interface TransformDataRequest {
   inputs: Record<FieldName, DataValue>;

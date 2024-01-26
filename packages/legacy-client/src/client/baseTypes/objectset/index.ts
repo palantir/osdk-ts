@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./FilteredPropertiesTerminalOperations.js";
-export * from "./ObjectSetDefinition.js";
-export * from "./OntologyObjectSet.js";
+export * from "./FilteredPropertiesTerminalOperations";
+export * from "./ObjectSetDefinition";
+export * from "./OntologyObjectSet";

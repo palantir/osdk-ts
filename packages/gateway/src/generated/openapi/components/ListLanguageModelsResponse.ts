@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { LanguageModel } from "./LanguageModel.js";
+import type { LanguageModel } from "./LanguageModel";
 
 export interface ListLanguageModelsResponse {
   /** The list of language models. */

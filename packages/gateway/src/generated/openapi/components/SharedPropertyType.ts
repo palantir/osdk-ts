@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName.js";
-import type { ObjectPropertyType } from "./ObjectPropertyType.js";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
-import type { SharedPropertyTypeRid } from "./SharedPropertyTypeRid.js";
+import type { DisplayName } from "./DisplayName";
+import type { ObjectPropertyType } from "./ObjectPropertyType";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { SharedPropertyTypeRid } from "./SharedPropertyTypeRid";
 
 /** A property type that can be shared across object types. */
 export interface SharedPropertyType {

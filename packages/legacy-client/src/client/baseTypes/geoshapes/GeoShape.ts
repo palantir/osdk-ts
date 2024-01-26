@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { GeoJson } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
-import { GeometryCollection } from "./GeometryCollection.js";
-import { GeoPoint } from "./GeoPoint.js";
-import { LineString } from "./LineString.js";
-import { MultiGeoPoint } from "./MultiGeoPoint.js";
-import { MultiLineString } from "./MultiLineString.js";
-import { MultiPolygon } from "./MultiPolygon.js";
-import { Polygon } from "./Polygon.js";
+import type { GeoJson } from "./GeoJson";
+import type { Geometry } from "./Geometry";
+import { GeometryCollection } from "./GeometryCollection";
+import { GeoPoint } from "./GeoPoint";
+import { LineString } from "./LineString";
+import { MultiGeoPoint } from "./MultiGeoPoint";
+import { MultiLineString } from "./MultiLineString";
+import { MultiPolygon } from "./MultiPolygon";
+import { Polygon } from "./Polygon";
 
 export type GeoShape = Geometry | GeometryCollection;
 

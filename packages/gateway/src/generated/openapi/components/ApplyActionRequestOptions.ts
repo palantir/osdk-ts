@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ApplyActionMode } from "./ApplyActionMode.js";
-import type { ReturnEditsMode } from "./ReturnEditsMode.js";
+import type { ApplyActionMode } from "./ApplyActionMode";
+import type { ReturnEditsMode } from "./ReturnEditsMode";
 
 export interface ApplyActionRequestOptions {
   mode?: ApplyActionMode;

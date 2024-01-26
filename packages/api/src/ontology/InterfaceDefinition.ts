@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypePropertyDefinition } from "./ObjectTypeDefinition.js";
-import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { ObjectTypePropertyDefinition } from "./ObjectTypeDefinition";
+import type { OntologyDefinition } from "./OntologyDefinition";
 
 export type InterfaceDefinitionFrom<
   O extends OntologyDefinition<any>,

@@ -21,7 +21,7 @@ export type {
   ObjectActionDataType,
   ObjectSetActionDataType,
   ValidActionParameterTypes,
-} from "./ontology/ActionDefinition.js";
+} from "./ontology/ActionDefinition";
 export type {
   InterfaceDefinition,
   InterfaceDefinitionFrom,
@@ -29,13 +29,13 @@ export type {
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
-} from "./ontology/InterfaceDefinition.js";
+} from "./ontology/InterfaceDefinition";
 export type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom,
-} from "./ontology/ObjectOrInterface.js";
+} from "./ontology/ObjectOrInterface";
 export type {
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
@@ -48,8 +48,8 @@ export type {
   ObjectTypePropertyDefinitionFrom,
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
-} from "./ontology/ObjectTypeDefinition.js";
-export type { OntologyDefinition } from "./ontology/OntologyDefinition.js";
+} from "./ontology/ObjectTypeDefinition";
+export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
@@ -68,5 +68,5 @@ export type {
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
   WireQueryDataTypes,
-} from "./ontology/QueryDefinition.js";
-export type { WirePropertyTypes } from "./ontology/WirePropertyTypes.js";
+} from "./ontology/QueryDefinition";
+export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";

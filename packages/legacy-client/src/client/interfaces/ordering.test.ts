@@ -15,9 +15,9 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { Todo } from "../../util/test/TodoObject.js";
-import type { OrderByOption } from "../objectSets/filters/index.js";
-import type { ObjectSetOrderByArg } from "./ordering.js";
+import type { Todo } from "../../util/test/TodoObject";
+import type { OrderByOption } from "../objectSets/filters";
+import type { ObjectSetOrderByArg } from "./ordering";
 
 describe("Ordering", () => {
   it("correct types", () => {

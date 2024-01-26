@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "./DataValue.js";
-import type { ParameterId } from "./ParameterId.js";
+import type { DataValue } from "./DataValue";
+import type { ParameterId } from "./ParameterId";
 
 export interface AsyncApplyActionRequestV2 {
   parameters: Record<ParameterId, DataValue>;

@@ -16,10 +16,10 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import { uploadAttachment } from "../../../client/net/uploadAttachment.js";
-import type { Result } from "../../../client/Result.js";
-import type { AttachmentsError } from "../../errors/index.js";
-import type { Attachment } from "./Attachment.js";
+import { uploadAttachment } from "../../../client/net/uploadAttachment";
+import type { Result } from "../../../client/Result";
+import type { AttachmentsError } from "../../errors";
+import type { Attachment } from "./Attachment";
 
 export interface Attachments {
   upload(

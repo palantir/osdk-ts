@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectType } from "./ObjectType.js";
-import type { PageToken } from "./PageToken.js";
+import type { ObjectType } from "./ObjectType";
+import type { PageToken } from "./PageToken";
 
 export interface ListObjectTypesResponse {
   nextPageToken?: PageToken;

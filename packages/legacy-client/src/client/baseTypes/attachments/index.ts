@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./Attachment.js";
-export * from "./AttachmentProperty.js";
-export * from "./Attachments.js";
+export * from "./Attachment";
+export * from "./AttachmentProperty";
+export * from "./Attachments";

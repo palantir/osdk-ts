@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionParameterType } from "./ActionParameterType.js";
+import type { ActionParameterType } from "./ActionParameterType";
 
 /** Details about a parameter of an action. */
 export interface ActionParameterV2 {

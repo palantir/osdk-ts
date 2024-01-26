@@ -22,10 +22,10 @@ import type {
   RestHandler,
 } from "msw";
 import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError.js";
-import { OntologyNotFoundError } from "../errors.js";
-import { fullOntology } from "../stubs/ontologies.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
+import type { BaseAPIError } from "../BaseError";
+import { OntologyNotFoundError } from "../errors";
+import { fullOntology } from "../stubs/ontologies";
+import { authHandlerMiddleware } from "./commonHandlers";
 
 export const ontologyMetadataEndpoint: RestHandler<
   MockedRequest<DefaultBodyType>

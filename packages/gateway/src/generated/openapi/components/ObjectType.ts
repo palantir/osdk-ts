@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName.js";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
-import type { ObjectTypeRid } from "./ObjectTypeRid.js";
-import type { ObjectTypeVisibility } from "./ObjectTypeVisibility.js";
-import type { Property } from "./Property.js";
-import type { PropertyApiName } from "./PropertyApiName.js";
-import type { ReleaseStatus } from "./ReleaseStatus.js";
+import type { DisplayName } from "./DisplayName";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+import type { ObjectTypeRid } from "./ObjectTypeRid";
+import type { ObjectTypeVisibility } from "./ObjectTypeVisibility";
+import type { Property } from "./Property";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { ReleaseStatus } from "./ReleaseStatus";
 
 /** Represents an object type in the Ontology. */
 export interface ObjectType {

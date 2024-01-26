@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FilterValue } from "../components/FilterValue.js";
-import type { PropertyApiName } from "../components/PropertyApiName.js";
-import type { PropertyFilter } from "../components/PropertyFilter.js";
-import type { ValueType } from "../components/ValueType.js";
+import type { FilterValue } from "../components/FilterValue";
+import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyFilter } from "../components/PropertyFilter";
+import type { ValueType } from "../components/ValueType";
 
 /**
  * The value of the given property filter is invalid. For instance, 2 is an invalid value for

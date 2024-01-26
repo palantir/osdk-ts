@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { Page } from "../../../index.js";
-import type { GetObjectError, LoadObjectSetError } from "../../errors/index.js";
-import type { Result } from "../../Result.js";
-import type { OntologyObject } from "../OntologyObject.js";
+import type { Page } from "../../..";
+import type { GetObjectError, LoadObjectSetError } from "../../errors";
+import type { Result } from "../../Result";
+import type { OntologyObject } from "../OntologyObject";
 
 export type FilteredPropertiesTerminalOperations<
   T extends OntologyObject,

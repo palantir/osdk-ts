@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox.js";
-import type { FeaturePropertyKey } from "./FeaturePropertyKey.js";
-import type { Geometry } from "./Geometry.js";
+import type { BBox } from "./BBox";
+import type { FeaturePropertyKey } from "./FeaturePropertyKey";
+import type { Geometry } from "./Geometry";
 
 /** GeoJSon 'Feature' object */
 export interface Feature {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DeploymentApiName } from "../components/DeploymentApiName.js";
-import type { OntologyApiName } from "../components/OntologyApiName.js";
+import type { DeploymentApiName } from "../components/DeploymentApiName";
+import type { OntologyApiName } from "../components/OntologyApiName";
 
 /** The requested model deployment is not found, or the client token does not have access to it. */
 export interface DeploymentNotFound {
