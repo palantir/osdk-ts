@@ -1,5 +1,20 @@
 # @osdk/foundry-sdk-generator
 
+## 0.201.0
+
+### Minor Changes
+
+- a0d5e431: Update build to ship packages compliant with @arethetypeswrong/cli
+
+### Patch Changes
+
+- 8c5b85c1: Better error handling around server errors when getting ontology metadata
+- Updated dependencies [a0d5e431]
+  - @osdk/legacy-client@1.1.0
+  - @osdk/generator@1.1.0
+  - @osdk/gateway@1.1.0
+  - @osdk/api@1.1.0
+
 ## 0.200.6
 
 ### Patch Changes
