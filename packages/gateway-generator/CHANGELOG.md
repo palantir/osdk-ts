@@ -1,5 +1,11 @@
 # @osdk/gateway-generator
 
+## 0.1.1
+
+### Patch Changes
+
+- e1a94f22: Revert change to how we generate the built package types
+
 ## 0.1.0
 
 ### Minor Changes
