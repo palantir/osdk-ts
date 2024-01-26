@@ -18,16 +18,16 @@ import type { OntologyDefinition } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OntologyObject } from "../baseTypes/index.js";
-import type { GetLinkedObjectError } from "../errors/index.js";
+import type { OntologyObject } from "../baseTypes";
+import type { GetLinkedObjectError } from "../errors";
 import {
   GetLinkedObjectErrorHandler,
   handleGetLinkedObjectError,
-} from "../errors/index.js";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
-import type { Result } from "../Result.js";
-import { wrapResult } from "./util/wrapResult.js";
-import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2.js";
+} from "../errors";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
+import type { Result } from "../Result";
+import { wrapResult } from "./util/wrapResult";
+import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export function getLinkedObject<T extends OntologyObject>(
   client: ClientContext<OntologyDefinition<T["__apiName"]>>,

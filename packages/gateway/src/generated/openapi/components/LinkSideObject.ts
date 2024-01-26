@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
-import type { PropertyValue } from "./PropertyValue.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+import type { PropertyValue } from "./PropertyValue";
 
 export interface LinkSideObject {
   primaryKey: PropertyValue;

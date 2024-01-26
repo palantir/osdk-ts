@@ -18,11 +18,10 @@ import type {
   ObjectPropertyType,
   ObjectTypeWithLink,
 } from "@osdk/gateway/types";
-import { isReservedKeyword } from "../util/reservedKeywords.js";
+import { isReservedKeyword } from "../util/reservedKeywords";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   objectTypeWithLinks: ObjectTypeWithLink,
-  importExt = "",
 ) {
   const uniqueLinkTargets = new Set<string>(
     objectTypeWithLinks.linkTypes.map(a => a.objectTypeApiName).filter(a =>
@@ -32,7 +31,7 @@ export function wireObjectTypeV2ToObjectInterfaceStringV1(
   return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink } from "@osdk/legacy-client";
 ${
     Array.from(uniqueLinkTargets).map(linkTarget =>
-      `import type { ${linkTarget} } from "./${linkTarget}${importExt}";`
+      `import type { ${linkTarget} } from "./${linkTarget}";`
     ).join("\n")
   }
 

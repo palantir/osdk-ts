@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Err, Ok } from "../../Result.js";
+import type { Err, Ok } from "../../Result";
 
 export function createOkResponse<V>(value: V): Ok<V> {
   return { type: "ok", value };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "./ObjectSet.js";
+import type { ObjectSet } from "./ObjectSet";
 
 export interface ObjectSetIntersectionType {
   objectSets: Array<ObjectSet>;

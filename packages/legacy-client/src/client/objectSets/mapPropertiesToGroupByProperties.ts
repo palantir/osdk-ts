@@ -15,16 +15,16 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSetGroupByArg } from "../interfaces/aggregations.js";
+import type { ObjectSetGroupByArg } from "../interfaces/aggregations";
 import {
   BooleanGroupBy,
   LocalDateGroupBy,
   NumericGroupBy,
   StringGroupBy,
   TimestampGroupBy,
-} from "../objectSets/aggregations/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import { isReservedKeyword } from "../utils/reservedKeywords.js";
+} from "../objectSets/aggregations";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToGroupByProperties<
   O extends OntologyDefinition<any>,

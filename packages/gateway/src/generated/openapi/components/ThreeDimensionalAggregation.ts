@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { QueryAggregationKeyType } from "./QueryAggregationKeyType.js";
-import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation.js";
+import type { QueryAggregationKeyType } from "./QueryAggregationKeyType";
+import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation";
 
 export interface ThreeDimensionalAggregation {
   keyType: QueryAggregationKeyType;

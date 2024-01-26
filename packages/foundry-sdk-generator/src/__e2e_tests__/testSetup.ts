@@ -17,7 +17,7 @@
 import { apiServer } from "@osdk/shared.test";
 import { rmdir } from "fs/promises";
 import { join } from "path";
-import { GeneratePackageCommand } from "../generate/index.js";
+import { GeneratePackageCommand } from "../generate";
 
 const dir = `${__dirname}/../generatedNoCheck/`;
 export async function setup() {

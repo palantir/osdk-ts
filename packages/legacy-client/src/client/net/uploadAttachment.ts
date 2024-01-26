@@ -17,13 +17,13 @@
 import { uploadAttachment as gatewayUploadAttachment } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Attachment } from "../baseTypes/index.js";
-import { AttachmentProperty } from "../baseTypes/index.js";
-import { handleAttachmentsError } from "../errors/handlers/ErrorHandlers.js";
-import type { AttachmentsError } from "../errors/index.js";
-import { AttachmentsErrorHandler } from "../errors/index.js";
-import type { Result } from "../Result.js";
-import { wrapResult } from "./util/wrapResult.js";
+import type { Attachment } from "../baseTypes";
+import { AttachmentProperty } from "../baseTypes";
+import type { AttachmentsError } from "../errors";
+import { AttachmentsErrorHandler } from "../errors";
+import { handleAttachmentsError } from "../errors/handlers/ErrorHandlers";
+import type { Result } from "../Result";
+import { wrapResult } from "./util/wrapResult";
 
 export function uploadAttachment(
   client: ClientContext<any>,

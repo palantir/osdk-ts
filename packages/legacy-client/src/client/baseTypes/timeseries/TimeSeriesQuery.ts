@@ -20,15 +20,15 @@ import type {
   TimeRange,
 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Timestamp } from "../timestamp.js";
-import type { TimeSeriesDuration } from "./TimeSeriesDuration.js";
-import { DurationUnit, WhenUnit } from "./TimeSeriesDuration.js";
+import type { Timestamp } from "../timestamp";
+import type { TimeSeriesDuration } from "./TimeSeriesDuration";
+import { DurationUnit, WhenUnit } from "./TimeSeriesDuration";
 import type {
   TimeSeriesTerminalOperations,
-} from "./TimeSeriesTerminalOperations.js";
+} from "./TimeSeriesTerminalOperations";
 import {
   createTimeSeriesTerminalOperations,
-} from "./TimeSeriesTerminalOperations.js";
+} from "./TimeSeriesTerminalOperations";
 
 export interface TimeSeriesQuery<T extends string | number>
   extends TimeSeriesTerminalOperations<T>

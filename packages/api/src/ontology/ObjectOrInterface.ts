@@ -19,15 +19,15 @@ import type {
   InterfaceDefinitionFrom,
   InterfaceKeysFrom,
   InterfacePropertyKeysFrom,
-} from "./InterfaceDefinition.js";
+} from "./InterfaceDefinition";
 import type {
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
-} from "./ObjectTypeDefinition.js";
+} from "./ObjectTypeDefinition";
 
-import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { OntologyDefinition } from "./OntologyDefinition";
 
 export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
   | ObjectTypeKeysFrom<O>

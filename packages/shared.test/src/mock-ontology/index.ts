@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from "./fetchUtils.js";
-export * from "./mockMetadata.js";
-export * from "./mockObjects.js";
-export * from "./mockOntology.js";
+export * from "./fetchUtils";
+export * from "./mockMetadata";
+export * from "./mockObjects";
+export * from "./mockOntology";

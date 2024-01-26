@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName.js";
-import type { InterfaceTypeRid } from "../components/InterfaceTypeRid.js";
+import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName";
+import type { InterfaceTypeRid } from "../components/InterfaceTypeRid";
 
 /** The requested interface type is not found, or the client token does not have access to it. */
 export interface InterfaceTypeNotFound {

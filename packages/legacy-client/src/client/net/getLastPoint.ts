@@ -18,13 +18,13 @@ import { type OntologyDefinition } from "@osdk/api";
 import { getLastPoint as gatewayGetLastPoint } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { TimeSeriesPoint } from "../baseTypes/index.js";
-import { Timestamp } from "../baseTypes/index.js";
-import { handleTimeSeriesError } from "../errors/handlers/ErrorHandlers.js";
-import type { TimeSeriesError } from "../errors/index.js";
-import { TimeSeriesErrorHandler } from "../errors/index.js";
-import type { Result } from "../Result.js";
-import { wrapResult } from "./util/wrapResult.js";
+import type { TimeSeriesPoint } from "../baseTypes";
+import { Timestamp } from "../baseTypes";
+import type { TimeSeriesError } from "../errors";
+import { TimeSeriesErrorHandler } from "../errors";
+import { handleTimeSeriesError } from "../errors/handlers/ErrorHandlers";
+import type { Result } from "../Result";
+import { wrapResult } from "./util/wrapResult";
 
 export async function getLastPoint<T extends string | number>(
   client: ClientContext<OntologyDefinition<any>>,

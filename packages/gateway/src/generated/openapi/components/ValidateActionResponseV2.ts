@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ParameterEvaluationResult } from "./ParameterEvaluationResult.js";
-import type { ParameterId } from "./ParameterId.js";
-import type { SubmissionCriteriaEvaluation } from "./SubmissionCriteriaEvaluation.js";
-import type { ValidationResult } from "./ValidationResult.js";
+import type { ParameterEvaluationResult } from "./ParameterEvaluationResult";
+import type { ParameterId } from "./ParameterId";
+import type { SubmissionCriteriaEvaluation } from "./SubmissionCriteriaEvaluation";
+import type { ValidationResult } from "./ValidationResult";
 
 export interface ValidateActionResponseV2 {
   result: ValidationResult;

@@ -15,16 +15,16 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSetMultipleAggregateArg } from "../interfaces/aggregations.js";
+import type { ObjectSetMultipleAggregateArg } from "../interfaces/aggregations";
 import {
   ApproximateDistinctCountAggregatableProperty,
   CountOperation,
   LocalDatePropertyMetric,
   NumericPropertyMetric,
-} from "../objectSets/aggregations/index.js";
-import type { MultipleAggregatableProperty } from "../objectSets/aggregations/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import { isReservedKeyword } from "../utils/reservedKeywords.js";
+} from "../objectSets/aggregations";
+import type { MultipleAggregatableProperty } from "../objectSets/aggregations";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToMultipleAggregationProperties<
   O extends OntologyDefinition<any>,

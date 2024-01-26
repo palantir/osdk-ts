@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PalantirApiError } from "../Errors.js";
+import type { PalantirApiError } from "../Errors";
 
 import type {
   ActionError,
@@ -28,18 +28,18 @@ import type {
   QueryError,
   SearchObjectsError,
   TimeSeriesError,
-} from "../ApiErrors.js";
-import type { AggregateObjectsErrorHandler } from "./AggregateObjectsErrorHandler.js";
-import type { AttachmentsErrorHandler } from "./AttachmentsErrorHandler.js";
-import type { ExecuteActionErrorHandler } from "./ExecuteActionErrorHandler.js";
-import type { ExecuteQueryErrorHandler } from "./ExecuteQueryErrorHandler.js";
-import type { GetLinkedObjectErrorHandler } from "./GetLinkedObjectErrorHandler.js";
-import type { GetObjectErrorHandler } from "./GetObjectErrorHandler.js";
-import type { ListLinkedObjectsErrorHandler } from "./ListLinkedObjectsErrorHandler.js";
-import type { ListObjectsErrorHandler } from "./ListObjectsErrorHandler.js";
-import type { LoadObjectSetErrorHandler } from "./LoadObjectSetErrorHandler.js";
-import type { SearchObjectsErrorHandler } from "./SearchObjectsErrorHandler.js";
-import type { TimeSeriesErrorHandler } from "./TimeSeriesErrorHandler.js";
+} from "../ApiErrors";
+import type { AggregateObjectsErrorHandler } from "./AggregateObjectsErrorHandler";
+import type { AttachmentsErrorHandler } from "./AttachmentsErrorHandler";
+import type { ExecuteActionErrorHandler } from "./ExecuteActionErrorHandler";
+import type { ExecuteQueryErrorHandler } from "./ExecuteQueryErrorHandler";
+import type { GetLinkedObjectErrorHandler } from "./GetLinkedObjectErrorHandler";
+import type { GetObjectErrorHandler } from "./GetObjectErrorHandler";
+import type { ListLinkedObjectsErrorHandler } from "./ListLinkedObjectsErrorHandler";
+import type { ListObjectsErrorHandler } from "./ListObjectsErrorHandler";
+import type { LoadObjectSetErrorHandler } from "./LoadObjectSetErrorHandler";
+import type { SearchObjectsErrorHandler } from "./SearchObjectsErrorHandler";
+import type { TimeSeriesErrorHandler } from "./TimeSeriesErrorHandler";
 
 export function handleGetObjectError(
   handler: GetObjectErrorHandler,

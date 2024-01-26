@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimeUnit } from "./TimeUnit.js";
+import type { TimeUnit } from "./TimeUnit";
 
 /**
  * Divides objects into groups according to an interval. Note that this grouping applies only on date and timestamp types.

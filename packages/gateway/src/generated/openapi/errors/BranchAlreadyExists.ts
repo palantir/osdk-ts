@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId.js";
-import type { DatasetRid } from "../components/DatasetRid.js";
+import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** The branch cannot be created because a branch with that name already exists. */
 export interface BranchAlreadyExists {

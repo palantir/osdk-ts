@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ModelApiDataType } from "./ModelApiDataType.js";
+import type { ModelApiDataType } from "./ModelApiDataType";
 
 export interface DeploymentTransformApi {
   inputs: Array<ModelApiDataType>;

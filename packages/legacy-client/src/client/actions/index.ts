@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./actions.js";
+export * from "./actions";

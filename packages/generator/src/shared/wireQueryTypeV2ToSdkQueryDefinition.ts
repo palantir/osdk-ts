@@ -16,7 +16,7 @@
 
 import type { QueryDefinition, QueryParameterDefinition } from "@osdk/api";
 import type { QueryParameterV2, QueryTypeV2 } from "@osdk/gateway/types";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
+import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition";
 
 export function wireQueryTypeV2ToSdkQueryDefinition(
   input: QueryTypeV2,

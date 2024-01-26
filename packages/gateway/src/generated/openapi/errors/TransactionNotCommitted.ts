@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid.js";
-import type { TransactionRid } from "../components/TransactionRid.js";
-import type { TransactionStatus } from "../components/TransactionStatus.js";
+import type { DatasetRid } from "../components/DatasetRid";
+import type { TransactionRid } from "../components/TransactionRid";
+import type { TransactionStatus } from "../components/TransactionStatus";
 
 /** The given transaction has not been committed. */
 export interface TransactionNotCommitted {

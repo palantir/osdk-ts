@@ -14,29 +14,24 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "../../client/index.js";
+import type { ObjectSet } from "../../client";
 import type {
   BucketValue,
   QueryThreeDimensionalAggregation,
   QueryTwoDimensionalAggregation,
-} from "../objectSets/aggregations/Aggregations.js";
-import type { Attachment } from "./attachments/index.js";
-import type {
-  GeoJson,
-  GeoJsonPoint,
-  GeoPoint,
-  GeoShape,
-} from "./geoshapes/index.js";
-import type { LocalDate } from "./localDate.js";
-import type { ObjectSetDefinition } from "./objectset/index.js";
-import type { OntologyObject } from "./OntologyObject.js";
+} from "../objectSets/aggregations";
+import type { Attachment } from "./attachments";
+import type { GeoJson, GeoJsonPoint, GeoPoint, GeoShape } from "./geoshapes";
+import type { LocalDate } from "./localDate";
+import type { ObjectSetDefinition } from "./objectset";
+import type { OntologyObject } from "./OntologyObject";
 import type {
   QueryBucketKey,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "./Queries.js";
-import type { TimeSeries } from "./timeseries/index.js";
-import type { Timestamp } from "./timestamp.js";
+} from "./Queries";
+import type { TimeSeries } from "./timeseries";
+import type { Timestamp } from "./timestamp";
 
 export type ParameterValue =
   | undefined

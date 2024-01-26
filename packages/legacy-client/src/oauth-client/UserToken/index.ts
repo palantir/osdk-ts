@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./UserTokenAuth.js";
+export * from "./UserTokenAuth";

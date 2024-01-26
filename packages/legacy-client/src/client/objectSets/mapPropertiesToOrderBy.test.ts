@@ -16,7 +16,7 @@
 
 import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import { mapPropertiesToOrderBy } from "./index.js";
+import { mapPropertiesToOrderBy } from ".";
 
 describe(mapPropertiesToOrderBy, () => {
   it("maps properties correctly", () => {

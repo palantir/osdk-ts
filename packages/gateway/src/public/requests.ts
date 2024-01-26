@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "../generated/openapi/namespaces/index.js";
+export * from "../generated/openapi/namespaces/index";

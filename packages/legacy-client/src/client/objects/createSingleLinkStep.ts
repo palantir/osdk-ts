@@ -16,14 +16,10 @@
 
 import type { ClientContext } from "@osdk/shared.net";
 
-import type {
-  OntologyObject,
-  ParameterValue,
-  SingleLink,
-} from "../baseTypes/index.js";
-import type { GetLinkedObjectError } from "../errors/index.js";
-import { getOnlyLinkedObject } from "../net/getOnlyLinkedObject.js";
-import type { Result } from "../Result.js";
+import type { OntologyObject, ParameterValue, SingleLink } from "../baseTypes";
+import type { GetLinkedObjectError } from "../errors";
+import { getOnlyLinkedObject } from "../net/getOnlyLinkedObject";
+import type { Result } from "../Result";
 
 export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
   client: ClientContext<any>,

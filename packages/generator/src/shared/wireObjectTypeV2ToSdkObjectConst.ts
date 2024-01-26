@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeWithLink } from "@osdk/gateway/types";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition.js";
+import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
 
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConst(

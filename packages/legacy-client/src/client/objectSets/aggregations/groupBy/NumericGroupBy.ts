@@ -22,8 +22,8 @@ import type {
   FixedWidthBucketing,
   Range,
   RangeBucketing,
-} from "../Aggregations.js";
-import { GroupKeyType } from "./GroupKeyType.js";
+} from "../Aggregations";
+import { GroupKeyType } from "./GroupKeyType";
 
 export interface NumericGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups with the specified width. */

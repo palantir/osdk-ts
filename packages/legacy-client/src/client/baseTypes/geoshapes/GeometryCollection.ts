@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { GeoJsonGeometryCollection } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
-import { GeoShape } from "./GeoShape.js";
+import type { GeoJsonGeometryCollection } from "./GeoJson";
+import type { Geometry } from "./Geometry";
+import { GeoShape } from "./GeoShape";
 
 export class GeometryCollection {
   public type = "GeometryCollection" as const;

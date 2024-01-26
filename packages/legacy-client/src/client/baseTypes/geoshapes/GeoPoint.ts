@@ -15,8 +15,8 @@
  */
 
 import * as Geohash from "ngeohash";
-import type { GeoJsonPoint } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
+import type { GeoJsonPoint } from "./GeoJson";
+import type { Geometry } from "./Geometry";
 
 export type GeoHash = string;
 export interface Coordinates {

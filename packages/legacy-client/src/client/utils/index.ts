@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export type { IsEmptyRecord } from "./IsEmptyRecord.js";
-export type { NonNullableKeys, NullableKeys } from "./NullableKeys.js";
-export type { reservedKeywordsList } from "./reservedKeywords.js";
-export type { ValuesOfMap } from "./ValuesOfMap.js";
+export type { IsEmptyRecord } from "./IsEmptyRecord";
+export type { NonNullableKeys, NullableKeys } from "./NullableKeys";
+export type { reservedKeywordsList } from "./reservedKeywords";
+export type { ValuesOfMap } from "./ValuesOfMap";

@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles.js";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
+import { TodoWireOntology } from "../util/test/TodoWireOntology";
+import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles";
 
 describe(generateObjectsInterfaceSupportFiles, () => {
   it("generates ObjectSet supporting named types", async () => {

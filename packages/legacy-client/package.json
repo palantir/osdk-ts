@@ -6,24 +6,14 @@
   "license": "Apache-2.0",
   "exports": {
     ".": {
-      "import": {
-        "types": "./build/esm/index.d.ts",
-        "default": "./build/esm/index.mjs"
-      },
-      "require": {
-        "types": "./build/cjs/index.d.cts",
-        "default": "./build/cjs/index.js"
-      }
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.js"
     },
     "./*": {
-      "import": {
-        "types": "./build/esm/public/*.d.ts",
-        "default": "./build/esm/public/*.mjs"
-      },
-      "require": {
-        "types": "./build/cjs/public/*.d.cts",
-        "default": "./build/cjs/public/*.js"
-      }
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.js"
     }
   },
   "scripts": {
@@ -32,7 +22,6 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run",
-    "test:package-types": "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -59,14 +48,13 @@
   },
   "keywords": [],
   "files": [
-    "build/cjs",
-    "build/esm",
+    "build/types",
+    "build/js",
     "CHANGELOG.md",
     "package.json",
     "*.d.ts"
   ],
-  "main": "./build/cjs/index.js",
-  "module": "./build/esm/index.mjs",
-  "types": "./build/cjs/index.d.cts",
-  "type": "module"
+  "main": "./build/js/index.js",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts"
 }

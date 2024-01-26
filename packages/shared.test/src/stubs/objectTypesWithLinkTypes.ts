@@ -20,14 +20,14 @@ import {
   occupants,
   officeLinkType,
   peepsLinkType,
-} from "./linkTypes.js";
+} from "./linkTypes";
 import {
   employeeObjectType,
   equipmentObjectType,
   objectTypeWithAllPropertyTypes,
   objectTypeWithTimestampPrimaryKey,
   officeObjectType,
-} from "./objectTypeV2.js";
+} from "./objectTypeV2";
 
 export const employeeObjectWithLinkTypes: ObjectTypeWithLink = {
   objectType: employeeObjectType,

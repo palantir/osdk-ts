@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
-import type { PrimaryKeyValue } from "../components/PrimaryKeyValue.js";
-import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { PrimaryKeyValue } from "../components/PrimaryKeyValue";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /**
  * The parameter object reference or parameter default value is not found, or the client token does not have access to it.

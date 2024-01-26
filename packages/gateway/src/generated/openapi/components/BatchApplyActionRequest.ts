@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ApplyActionRequest } from "./ApplyActionRequest.js";
+import type { ApplyActionRequest } from "./ApplyActionRequest";
 
 export interface BatchApplyActionRequest {
   requests: Array<ApplyActionRequest>;

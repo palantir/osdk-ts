@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName.js";
-import type { ParameterId } from "../components/ParameterId.js";
+import type { ActionTypeApiName } from "../components/ActionTypeApiName";
+import type { ParameterId } from "../components/ParameterId";
 
 /**
  * The provided parameter ID was not found for the action. Please look at the `configuredParameterIds` field

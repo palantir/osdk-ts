@@ -15,7 +15,7 @@
  */
 
 import { vi } from "vitest";
-import type { ReaddirFn, WriteFileFn } from "../../MinimalFs.js";
+import type { ReaddirFn, WriteFileFn } from "../../MinimalFs";
 
 export function createMockMinimalFiles() {
   const writeFile = vi.fn<Parameters<WriteFileFn>, ReturnType<WriteFileFn>>(

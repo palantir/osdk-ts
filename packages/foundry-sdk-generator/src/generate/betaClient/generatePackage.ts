@@ -18,10 +18,10 @@ import type { WireOntologyDefinition } from "@osdk/generator";
 import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
-import { generateBundles } from "../generateBundles.js";
-import { bundleDependencies } from "./bundleDependencies.js";
-import { compileInMemory } from "./compileInMemory.js";
-import { generatePackageJson } from "./generatePackageJson.js";
+import { generateBundles } from "../generateBundles";
+import { bundleDependencies } from "./bundleDependencies";
+import { compileInMemory } from "./compileInMemory";
+import { generatePackageJson } from "./generatePackageJson";
 
 declare const __OSDK_LEGACY_CLIENT_VERSION__: string | undefined;
 const dependencies: { [key: string]: string | undefined } = {
@@ -132,12 +132,8 @@ async function getDependencyVersion(dependency: string): Promise<string> {
   if (dependencies[dependency] !== undefined) {
     return dependencies[dependency]!;
   }
-
-  // we need to carefully use find-up here. our __dirname is under build/cjs which has a stub
-  // package.json which marks this as a commonjs module. We need to start our find-up in build instead
-  // which will spider to the correct package.json.
   const { findUp } = await import("find-up");
-  const result = await findUp("package.json", { cwd: join(__dirname, "..") });
+  const result = await findUp("package.json", { cwd: __dirname });
   const packageJson = await readFile(result!, {
     encoding: "utf-8",
   });

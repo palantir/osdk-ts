@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterId } from "../components/ParameterId.js";
+import type { ParameterId } from "../components/ParameterId";
 
 /**
  * The provided parameters were not found. Please look at the `knownParameters` field

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ObjectSetDefinition } from "../../baseTypes/index.js";
+import type { ObjectSetDefinition } from "../../baseTypes";
 import type {
   AggregationClause,
   BucketKey,
   BucketValue,
   InternalBucketing,
-} from "../aggregations/index.js";
+} from "../aggregations";
 
 export interface InternalAggregationRequest {
   objectSet: ObjectSetDefinition;

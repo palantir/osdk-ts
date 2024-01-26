@@ -15,10 +15,10 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSetOrderByArg } from "../interfaces/ordering.js";
-import { OrderByOption } from "../objectSets/filters/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import { isReservedKeyword } from "../utils/reservedKeywords.js";
+import type { ObjectSetOrderByArg } from "../interfaces/ordering";
+import { OrderByOption } from "../objectSets/filters";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import { isReservedKeyword } from "../utils/reservedKeywords";
 
 export function mapPropertiesToOrderBy<
   O extends OntologyDefinition<any>,

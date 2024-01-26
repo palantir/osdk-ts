@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { GeoJsonMultiPolygon } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
-import { mapCoordinatesToGeoPoint } from "./index.js";
-import { Polygon } from "./Polygon.js";
+import { mapCoordinatesToGeoPoint } from ".";
+import type { GeoJsonMultiPolygon } from "./GeoJson";
+import type { Geometry } from "./Geometry";
+import { Polygon } from "./Polygon";
 
 export interface MultiPolygon extends Geometry {
   getPolygons(): Polygon[];

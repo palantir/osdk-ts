@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BatchApplyActionRequestItem } from "./BatchApplyActionRequestItem.js";
-import type { BatchApplyActionRequestOptions } from "./BatchApplyActionRequestOptions.js";
+import type { BatchApplyActionRequestItem } from "./BatchApplyActionRequestItem";
+import type { BatchApplyActionRequestOptions } from "./BatchApplyActionRequestOptions";
 
 export interface BatchApplyActionRequestV2 {
   options?: BatchApplyActionRequestOptions;

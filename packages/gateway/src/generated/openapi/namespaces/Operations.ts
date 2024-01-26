@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AsyncOperation } from "../components/AsyncOperation.js";
-import type { OpenApiRequest } from "../request/index.js";
+import type { AsyncOperation } from "../components/AsyncOperation";
+import type { OpenApiRequest } from "../request";
 
 /**
  * Get an asynchronous operation by its ID.

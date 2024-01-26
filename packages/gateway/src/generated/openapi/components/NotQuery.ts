@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SearchJsonQuery } from "./SearchJsonQuery.js";
+import type { SearchJsonQuery } from "./SearchJsonQuery";
 
 /** Returns objects where the query is not satisfied. */
 export interface NotQuery {

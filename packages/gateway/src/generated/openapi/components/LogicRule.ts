@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { CreateLinkRule } from "./CreateLinkRule.js";
-import type { CreateObjectRule } from "./CreateObjectRule.js";
-import type { DeleteLinkRule } from "./DeleteLinkRule.js";
-import type { DeleteObjectRule } from "./DeleteObjectRule.js";
-import type { ModifyObjectRule } from "./ModifyObjectRule.js";
+import type { CreateLinkRule } from "./CreateLinkRule";
+import type { CreateObjectRule } from "./CreateObjectRule";
+import type { DeleteLinkRule } from "./DeleteLinkRule";
+import type { DeleteObjectRule } from "./DeleteObjectRule";
+import type { ModifyObjectRule } from "./ModifyObjectRule";
 
 export interface LogicRule_CreateObject extends CreateObjectRule {
   type: "createObject";

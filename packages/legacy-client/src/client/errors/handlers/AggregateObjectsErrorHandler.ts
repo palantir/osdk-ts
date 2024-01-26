@@ -37,9 +37,9 @@ import type {
   PropertyFiltersNotSupported,
   PropertyTypesSearchNotSupported,
   QueryDepthExceededLimit,
-} from "../ApiErrors.js";
-import type { PalantirApiError } from "../Errors.js";
-import { DefaultErrorHandler } from "./DefaultErrorHandler.js";
+} from "../ApiErrors";
+import type { PalantirApiError } from "../Errors";
+import { DefaultErrorHandler } from "./DefaultErrorHandler";
 
 export class AggregateObjectsErrorHandler extends DefaultErrorHandler {
   handlePropertiesNotSearchable(

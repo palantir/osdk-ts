@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectEdits } from "./ObjectEdits.js";
-import type { ObjectTypeEdits } from "./ObjectTypeEdits.js";
+import type { ObjectEdits } from "./ObjectEdits";
+import type { ObjectTypeEdits } from "./ObjectTypeEdits";
 
 export interface ActionResults_Edits extends ObjectEdits {
   type: "edits";

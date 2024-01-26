@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName.js";
-import type { SharedPropertyTypeRid } from "../components/SharedPropertyTypeRid.js";
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
+import type { SharedPropertyTypeRid } from "../components/SharedPropertyTypeRid";
 
 /** The requested shared property type is not found, or the client token does not have access to it. */
 export interface SharedPropertyTypeNotFound {

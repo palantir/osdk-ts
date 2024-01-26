@@ -15,22 +15,18 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs.js";
-import { formatTs } from "../../../util/test/formatTs.js";
-import { reexportTypes } from "../util/reexportTypes.js";
+import type { MinimalFs } from "../../../MinimalFs";
+import { formatTs } from "../../../util/test/formatTs";
+import { reexportTypes } from "../util/reexportTypes";
 
-export async function generatePagingDir(
-  runtimeDistDir: string,
-  fs: MinimalFs,
-  importExt = "",
-) {
+export async function generatePagingDir(runtimeDistDir: string, fs: MinimalFs) {
   const pagingDir = path.join(runtimeDistDir, "paging");
   await fs.mkdir(pagingDir, { recursive: true });
 
   await fs.writeFile(
     path.join(pagingDir, "index.ts"),
     await formatTs(
-      `export * from "./Page${importExt}";`,
+      `export * from "./Page";`,
     ),
   );
 

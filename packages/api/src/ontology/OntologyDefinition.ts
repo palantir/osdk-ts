@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "./ActionDefinition.js";
-import type { InterfaceDefinition } from "./InterfaceDefinition.js";
-import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
-import type { OntologyMetadata } from "./OntologyMetadata.js";
-import type { QueryDefinition } from "./QueryDefinition.js";
+import type { ActionDefinition } from "./ActionDefinition";
+import type { InterfaceDefinition } from "./InterfaceDefinition";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition";
+import type { OntologyMetadata } from "./OntologyMetadata";
+import type { QueryDefinition } from "./QueryDefinition";
 
 export interface OntologyDefinition<
   K extends string,

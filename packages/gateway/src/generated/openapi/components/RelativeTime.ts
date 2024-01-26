@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { RelativeTimeRelation } from "./RelativeTimeRelation.js";
-import type { RelativeTimeSeriesTimeUnit } from "./RelativeTimeSeriesTimeUnit.js";
+import type { RelativeTimeRelation } from "./RelativeTimeRelation";
+import type { RelativeTimeSeriesTimeUnit } from "./RelativeTimeSeriesTimeUnit";
 
 /**
  * A relative time, such as "3 days before" or "2 hours after" the current moment.

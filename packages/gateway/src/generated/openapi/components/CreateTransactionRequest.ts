@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TransactionType } from "./TransactionType.js";
+import type { TransactionType } from "./TransactionType";
 
 export interface CreateTransactionRequest {
   transactionType?: TransactionType;

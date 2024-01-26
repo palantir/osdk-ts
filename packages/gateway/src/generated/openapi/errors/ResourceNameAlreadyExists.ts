@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FolderRid } from "../components/FolderRid.js";
+import type { FolderRid } from "../components/FolderRid";
 
 /** The provided resource name is already in use by another resource in the same folder. */
 export interface ResourceNameAlreadyExists {

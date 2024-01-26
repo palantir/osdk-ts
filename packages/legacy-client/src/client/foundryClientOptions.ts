@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../oauth-client/index.js";
+import type { Auth } from "../oauth-client";
 
 export interface FoundryClientOptions<TAuth extends Auth = Auth> {
   url: string;

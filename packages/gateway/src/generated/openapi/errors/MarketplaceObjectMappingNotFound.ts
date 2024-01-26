@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid.js";
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
-import type { SdkPackageName } from "../components/SdkPackageName.js";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { SdkPackageName } from "../components/SdkPackageName";
 
 /** The given object could not be mapped to a Marketplace installation. */
 export interface MarketplaceObjectMappingNotFound {

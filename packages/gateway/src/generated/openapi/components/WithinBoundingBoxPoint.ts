@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { GeoPoint } from "./GeoPoint.js";
+import type { GeoPoint } from "./GeoPoint";
 
 export interface WithinBoundingBoxPoint_Point extends GeoPoint {
   type: "Point";

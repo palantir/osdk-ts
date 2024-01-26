@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { AddLink } from "./AddLink.js";
-import type { AddObject } from "./AddObject.js";
-import type { ModifyObject } from "./ModifyObject.js";
+import type { AddLink } from "./AddLink";
+import type { AddObject } from "./AddObject";
+import type { ModifyObject } from "./ModifyObject";
 
 export interface ObjectEdit_AddObject extends AddObject {
   type: "addObject";

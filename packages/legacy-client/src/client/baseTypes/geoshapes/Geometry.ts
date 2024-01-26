@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { GeoJsonGeometry } from "./GeoJson.js";
+import type { GeoJsonGeometry } from "./GeoJson";
 
 export interface Geometry {
   type: string;

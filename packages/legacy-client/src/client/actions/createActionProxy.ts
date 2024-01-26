@@ -16,13 +16,9 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ActionExecutionOptions } from "../../index.js";
-import { executeAction } from "../net/executeAction.js";
-import type {
-  ActionArgs,
-  Actions,
-  WrappedActionReturnType,
-} from "./actions.js";
+import type { ActionExecutionOptions } from "../..";
+import { executeAction } from "../net/executeAction";
+import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
 
 export function createActionProxy<
   O extends OntologyDefinition<any>,

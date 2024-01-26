@@ -15,20 +15,19 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs.js";
-import { formatTs } from "../../../util/test/formatTs.js";
-import { reexportConsts } from "../util/reexportConsts.js";
-import { reexportTypes } from "../util/reexportTypes.js";
-import { generateAttachmentsDir } from "./baseTypes/generateAttachmentsDir.js";
-import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir.js";
-import { generateObjectSetDir } from "./baseTypes/generateObjectSetDir.js";
-import { generateSharedObjectCodeDir } from "./baseTypes/generateSharedObjectCode.js";
-import { generateTimeSeriesDir } from "./baseTypes/generateTimeSeriesDir.js";
+import type { MinimalFs } from "../../../MinimalFs";
+import { formatTs } from "../../../util/test/formatTs";
+import { reexportConsts } from "../util/reexportConsts";
+import { reexportTypes } from "../util/reexportTypes";
+import { generateAttachmentsDir } from "./baseTypes/generateAttachmentsDir";
+import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir";
+import { generateObjectSetDir } from "./baseTypes/generateObjectSetDir";
+import { generateSharedObjectCodeDir } from "./baseTypes/generateSharedObjectCode";
+import { generateTimeSeriesDir } from "./baseTypes/generateTimeSeriesDir";
 
 export async function generateBaseTypesDir(
   runtimeDistDir: string,
   fs: MinimalFs,
-  importExt = "",
 ) {
   const baseTypesDir = path.join(runtimeDistDir, "baseTypes");
   await fs.mkdir(baseTypesDir, { recursive: true });
@@ -36,35 +35,35 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "index.ts"),
     await formatTs(
-      `export * from "./ActionType${importExt}";
-      export * from "./attachments/index${importExt}";
-      export * from "./geoshapes/index${importExt}";
-      export * from "./links${importExt}";
-      export * from "./localDate${importExt}";
-      export * from "./objectset/index${importExt}";
-      export * from "./ObjectType${importExt}";
-      export * from "./OntologyObject${importExt}";
-      export * from "./Queries${importExt}";
-      export * from "./timeseries/index${importExt}";
-      export * from "./timestamp${importExt}";`,
+      `export * from "./ActionType";
+      export * from "./attachments";
+      export * from "./geoshapes";
+      export * from "./links";
+      export * from "./localDate";
+      export * from "./objectset";
+      export * from "./ObjectType";
+      export * from "./OntologyObject";
+      export * from "./Queries";
+      export * from "./timeseries";
+      export * from "./timestamp";`,
     ),
   );
 
   const geoshapesDir = path.join(baseTypesDir, "geoshapes");
-  await generateGeoshapesDir(geoshapesDir, fs, importExt);
+  await generateGeoshapesDir(geoshapesDir, fs);
   const timeseriesDir = path.join(baseTypesDir, "timeseries");
-  await generateTimeSeriesDir(timeseriesDir, fs, importExt);
+  await generateTimeSeriesDir(timeseriesDir, fs);
   const attachmentsDir = path.join(baseTypesDir, "attachments");
-  await generateAttachmentsDir(attachmentsDir, fs, importExt);
+  await generateAttachmentsDir(attachmentsDir, fs);
   const objectSetDir = path.join(baseTypesDir, "objectset");
-  await generateObjectSetDir(objectSetDir, fs, importExt);
+  await generateObjectSetDir(objectSetDir, fs);
   const sharedObjectCodeDir = path.join(baseTypesDir, "sharedObjectCode");
-  await generateSharedObjectCodeDir(sharedObjectCodeDir, fs, importExt);
+  await generateSharedObjectCodeDir(sharedObjectCodeDir, fs);
 
   await fs.writeFile(
     path.join(baseTypesDir, "ActionType.ts"),
     await formatTs(
-      `import { OntologyObject } from "./OntologyObject${importExt}";
+      `import { OntologyObject } from "./OntologyObject";
       `
         + reexportConsts([
           "ActionExecutionMode",
@@ -113,7 +112,7 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "links.ts"),
     await formatTs(
-      `import { OntologyObject } from "./OntologyObject${importExt}`
+      `import { OntologyObject } from "./OntologyObject`
         + reexportTypes(
           ["SingleLink", "MultiLink"],
           "<T extends OntologyObject = OntologyObject>",
@@ -147,7 +146,7 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "Queries.ts"),
     await formatTs(
-      `import { BucketValue, Range, Rangeable } from "../aggregations/index${importExt}";
+      `import { BucketValue, Range, Rangeable } from "../aggregations";
       `
         + reexportTypes([
           "QueryResponse",
@@ -181,7 +180,7 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "ObjectType.ts"),
     await formatTs(
-      `import { OntologyObject } from "./OntologyObject${importExt}";`
+      `import { OntologyObject } from "./OntologyObject";`
         + reexportTypes([
           "BaseType",
           "StringType",

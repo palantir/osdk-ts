@@ -15,21 +15,20 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs.js";
-import { formatTs } from "../../../util/test/formatTs.js";
-import { reexportConsts } from "../util/reexportConsts.js";
+import type { MinimalFs } from "../../../MinimalFs";
+import { formatTs } from "../../../util/test/formatTs";
+import { reexportConsts } from "../util/reexportConsts";
 
 export async function generateUserTokenDir(
   fs: MinimalFs,
   oauthDistDir: string,
-  importExt = "",
 ) {
   const userTokenDistDir = path.join(oauthDistDir, "UserToken");
   await fs.mkdir(userTokenDistDir, { recursive: true });
   await fs.writeFile(
     path.join(userTokenDistDir, "index.ts"),
     await formatTs(`
-    export * from "./UserTokenAuth${importExt}";
+    export * from "./UserTokenAuth";
   `),
   );
 

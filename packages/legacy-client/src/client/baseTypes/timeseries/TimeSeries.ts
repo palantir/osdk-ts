@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesError } from "../../errors/index.js";
-import type { Result } from "../../Result.js";
-import type { TimeSeriesPoint } from "./TimeSeriesPoint.js";
-import type { TimeSeriesQuery } from "./TimeSeriesQuery.js";
+import type { TimeSeriesError } from "../../errors";
+import type { Result } from "../../Result";
+import type { TimeSeriesPoint } from "./TimeSeriesPoint";
+import type { TimeSeriesQuery } from "./TimeSeriesQuery";
 
 export interface TimeSeries<T extends number | string> {
   type: "TimeSeries";

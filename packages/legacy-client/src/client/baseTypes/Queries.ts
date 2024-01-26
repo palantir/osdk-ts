@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  BucketValue,
-  Range,
-  Rangeable,
-} from "../objectSets/aggregations/index.js";
+import type { BucketValue, Range, Rangeable } from "../objectSets/aggregations";
 
 export type QueryResponse<T> = {
   value: T;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregationRangeV2 } from "./AggregationRangeV2.js";
+import type { AggregationRangeV2 } from "./AggregationRangeV2";
 
 /** Divides objects into groups according to specified ranges. */
 export interface AggregationRangesGroupingV2 {

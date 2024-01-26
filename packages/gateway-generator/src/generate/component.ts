@@ -16,10 +16,10 @@
 
 import type { Directory, Project, SourceFile } from "ts-morph";
 import { VariableDeclarationKind } from "ts-morph";
-import type { Component } from "../spec/index.js";
-import type { GenerateOptions } from "./GenerateOptions.js";
-import { getJsDocs } from "./getJsDocs.js";
-import { generateType, isOptional } from "./types.js";
+import type { Component } from "../spec";
+import type { GenerateOptions } from "./GenerateOptions";
+import { getJsDocs } from "./getJsDocs";
+import { generateType, isOptional } from "./types";
 
 export function generateComponents(
   components: Component[],
@@ -82,7 +82,7 @@ export function generateComponent(
   sourceFile.addImportDeclarations(
     Array.from(referenceSet).map(reference => {
       return {
-        moduleSpecifier: `./${reference}.js`,
+        moduleSpecifier: `./${reference}`,
         namedImports: [reference],
       };
     }),

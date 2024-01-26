@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { Branch } from "../components/Branch.js";
-import type { BranchId } from "../components/BranchId.js";
-import type { CreateBranchRequest } from "../components/CreateBranchRequest.js";
-import type { CreateDatasetRequest } from "../components/CreateDatasetRequest.js";
-import type { CreateTransactionRequest } from "../components/CreateTransactionRequest.js";
-import type { Dataset } from "../components/Dataset.js";
-import type { DatasetRid } from "../components/DatasetRid.js";
-import type { File } from "../components/File.js";
-import type { FilePath } from "../components/FilePath.js";
-import type { ListBranchesResponse } from "../components/ListBranchesResponse.js";
-import type { ListFilesResponse } from "../components/ListFilesResponse.js";
-import type { PageSize } from "../components/PageSize.js";
-import type { PageToken } from "../components/PageToken.js";
-import type { PreviewMode } from "../components/PreviewMode.js";
-import type { TableExportFormat } from "../components/TableExportFormat.js";
-import type { Transaction } from "../components/Transaction.js";
-import type { TransactionRid } from "../components/TransactionRid.js";
-import type { TransactionType } from "../components/TransactionType.js";
-import type { OpenApiRequest } from "../request/index.js";
+import type { Branch } from "../components/Branch";
+import type { BranchId } from "../components/BranchId";
+import type { CreateBranchRequest } from "../components/CreateBranchRequest";
+import type { CreateDatasetRequest } from "../components/CreateDatasetRequest";
+import type { CreateTransactionRequest } from "../components/CreateTransactionRequest";
+import type { Dataset } from "../components/Dataset";
+import type { DatasetRid } from "../components/DatasetRid";
+import type { File } from "../components/File";
+import type { FilePath } from "../components/FilePath";
+import type { ListBranchesResponse } from "../components/ListBranchesResponse";
+import type { ListFilesResponse } from "../components/ListFilesResponse";
+import type { PageSize } from "../components/PageSize";
+import type { PageToken } from "../components/PageToken";
+import type { PreviewMode } from "../components/PreviewMode";
+import type { TableExportFormat } from "../components/TableExportFormat";
+import type { Transaction } from "../components/Transaction";
+import type { TransactionRid } from "../components/TransactionRid";
+import type { TransactionType } from "../components/TransactionType";
+import type { OpenApiRequest } from "../request";
 
 /**
  * Creates a new Dataset. A default branch - `master` for most enrollments - will be created on the Dataset.

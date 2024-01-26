@@ -16,12 +16,12 @@
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes/index.js";
-import type { ObjectSetTerminalLoadStep } from "../interfaces/index.js";
-import { loadAllObjects } from "../net/loadObjects.js";
-import { loadObjectsPage } from "../net/loadObjectsPage.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import type { OrderByClause } from "./filters/index.js";
+import type { ObjectSetDefinition } from "../baseTypes";
+import type { ObjectSetTerminalLoadStep } from "../interfaces";
+import { loadAllObjects } from "../net/loadObjects";
+import { loadObjectsPage } from "../net/loadObjectsPage";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type { OrderByClause } from "./filters";
 
 export function createObjectSetTerminalLoadStep<
   O extends OntologyDefinition<any>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ChatCompletionChoice } from "./ChatCompletionChoice.js";
+import type { ChatCompletionChoice } from "./ChatCompletionChoice";
 
 /** Contains `n` different completion choices as specified in the request parameter. */
 export interface ChatCompletionResponse {

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { GeoJsonLineString } from "./GeoJson.js";
-import type { Geometry } from "./Geometry.js";
-import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint.js";
+import type { GeoJsonLineString } from "./GeoJson";
+import type { Geometry } from "./Geometry";
+import { type GeoPoint, mapCoordinatesToGeoPoint } from "./GeoPoint";
 
 export interface LineString extends Geometry {
   getGeoPoints(): GeoPoint[];

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { TransactionRid } from "./TransactionRid.js";
-import type { TransactionStatus } from "./TransactionStatus.js";
-import type { TransactionType } from "./TransactionType.js";
+import type { TransactionRid } from "./TransactionRid";
+import type { TransactionStatus } from "./TransactionStatus";
+import type { TransactionType } from "./TransactionType";
 
 /**
  * An operation that modifies the files within a dataset.

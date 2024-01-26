@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentRid } from "./AttachmentRid.js";
+import type { AttachmentRid } from "./AttachmentRid";
 
 /** The representation of an attachment as a data type. */
 export interface AttachmentProperty {

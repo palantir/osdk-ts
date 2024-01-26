@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FilePath } from "./FilePath.js";
-import type { TransactionRid } from "./TransactionRid.js";
+import type { FilePath } from "./FilePath";
+import type { TransactionRid } from "./TransactionRid";
 
 export interface File {
   path: FilePath;

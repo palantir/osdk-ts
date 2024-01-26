@@ -23,7 +23,7 @@ import {
   ModuleKind,
   ScriptTarget,
 } from "typescript";
-import { libFiles } from "./libFiles.js";
+import { libFiles } from "./libFiles";
 
 export interface CompilerOutput {
   files: { [filename: string]: string };

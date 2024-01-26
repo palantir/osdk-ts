@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox.js";
-import type { LineStringCoordinates } from "./LineStringCoordinates.js";
+import type { BBox } from "./BBox";
+import type { LineStringCoordinates } from "./LineStringCoordinates";
 
 export interface MultiLineString {
   coordinates: Array<LineStringCoordinates>;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Fuzzy } from "./Fuzzy.js";
+import type { Fuzzy } from "./Fuzzy";
 
 /**
  * Returns objects where the specified field contains all of the whitespace separated words in any

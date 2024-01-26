@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Branch } from "./Branch.js";
-import type { PageToken } from "./PageToken.js";
+import type { Branch } from "./Branch";
+import type { PageToken } from "./PageToken";
 
 export interface ListBranchesResponse {
   nextPageToken?: PageToken;

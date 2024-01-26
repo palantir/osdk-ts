@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export * from "./Datasets.js";
-export * from "./Models.js";
-export * from "./Ontologies.js";
-export * from "./OntologiesV2.js";
-export * from "./Operations.js";
+export * from "./Datasets";
+export * from "./Models";
+export * from "./Ontologies";
+export * from "./OntologiesV2";
+export * from "./Operations";

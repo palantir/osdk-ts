@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { formatTs } from "../util/test/formatTs.js";
-import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString.js";
+import { formatTs } from "../util/test/formatTs";
+import { TodoWireOntology } from "../util/test/TodoWireOntology";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
 
 describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("generates object interface", async () => {

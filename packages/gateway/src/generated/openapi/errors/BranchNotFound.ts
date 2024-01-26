@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId.js";
-import type { DatasetRid } from "../components/DatasetRid.js";
+import type { BranchId } from "../components/BranchId";
+import type { DatasetRid } from "../components/DatasetRid";
 
 /** The requested branch could not be found, or the client token does not have access to it. */
 export interface BranchNotFound {

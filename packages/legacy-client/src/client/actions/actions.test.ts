@@ -40,16 +40,16 @@ import {
   type Edits,
   type Result,
   ReturnEditsMode,
-} from "../../index.js";
+} from "../..";
 import {
   expectFetchToBeCalledWithBody,
   expectFetchToBeCalledWithGet,
-} from "../../util/test/expectUtils.js";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
-import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import { type Actions } from "./actions.js";
-import { createActionProxy } from "./createActionProxy.js";
+} from "../../util/test/expectUtils";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils";
+import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import { type Actions } from "./actions";
+import { createActionProxy } from "./createActionProxy";
 
 describe("Actions", () => {
   let client: ClientContext<typeof MockOntology>;

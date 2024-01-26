@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  Distance,
-  type GeoPoint,
-  type Polygon,
-} from "../../baseTypes/index.js";
-import type { WhereClause } from "./Filters.js";
+import { Distance, type GeoPoint, type Polygon } from "../../baseTypes";
+import type { WhereClause } from "./Filters";
 
 export type BoundingBox = {
   topLeft: GeoPoint;

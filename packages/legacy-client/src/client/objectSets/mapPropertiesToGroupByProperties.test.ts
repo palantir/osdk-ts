@@ -16,8 +16,8 @@
 
 import { MockOntology } from "@osdk/shared.test";
 import { describe, expect, it } from "vitest";
-import { GroupKeyType } from "./aggregations/groupBy/GroupKeyType.js";
-import { mapPropertiesToGroupByProperties } from "./index.js";
+import { mapPropertiesToGroupByProperties } from ".";
+import { GroupKeyType } from "./aggregations/groupBy/GroupKeyType";
 
 describe(mapPropertiesToGroupByProperties, () => {
   it("maps properties correctly", () => {

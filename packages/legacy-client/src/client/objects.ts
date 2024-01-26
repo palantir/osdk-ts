@@ -15,8 +15,8 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { BaseObjectSet } from "./interfaces/index.js";
-import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject.js";
+import type { BaseObjectSet } from "./interfaces";
+import type { OsdkLegacyObjectFrom } from "./OsdkLegacyObject";
 
 export type Objects<
   O extends OntologyDefinition<any>,

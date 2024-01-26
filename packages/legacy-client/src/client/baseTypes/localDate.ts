@@ -15,7 +15,7 @@
  */
 
 import { DateTime, Duration, FixedOffsetZone } from "luxon";
-import { Timestamp } from "./timestamp.js";
+import { Timestamp } from "./timestamp";
 
 /**
  * Type representing a calendar date.

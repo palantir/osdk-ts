@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { MetricValueType } from "./metrics.js";
-import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty.js";
+import { MetricValueType } from "./metrics";
+import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty";
 
 export const TimestampPropertyMetric = (
   propertyApiName: string,

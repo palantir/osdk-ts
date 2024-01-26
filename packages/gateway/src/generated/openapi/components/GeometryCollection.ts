@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox.js";
-import type { Geometry } from "./Geometry.js";
+import type { BBox } from "./BBox";
+import type { Geometry } from "./Geometry";
 
 /**
  * GeoJSon geometry collection

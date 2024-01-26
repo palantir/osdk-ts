@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName.js";
+import type { ActionTypeApiName } from "../components/ActionTypeApiName";
 
 /**
  * The validation failed for the given action parameters. Please use the `validateAction` endpoint for more

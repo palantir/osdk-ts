@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { Aggregation } from "./Aggregation.js";
-import type { AggregationGroupByV2 } from "./AggregationGroupByV2.js";
-import type { ObjectSet } from "./ObjectSet.js";
+import type { Aggregation } from "./Aggregation";
+import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
+import type { ObjectSet } from "./ObjectSet";
 
 export interface AggregateObjectSetRequestV2 {
   aggregation: Array<Aggregation>;

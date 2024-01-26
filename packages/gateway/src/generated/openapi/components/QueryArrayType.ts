@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "./QueryDataType.js";
+import type { QueryDataType } from "./QueryDataType";
 
 export interface QueryArrayType {
   subType: QueryDataType;

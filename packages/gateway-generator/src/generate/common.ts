@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Documentation } from "../spec/index.js";
+import type { Documentation } from "../spec";
 
 export type TypeUnionVisitor<T extends { type: string }, R> =
   & {

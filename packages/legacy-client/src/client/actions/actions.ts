@@ -24,12 +24,12 @@ import type {
   LocalDate,
   Result,
   Timestamp,
-} from "../../index.js";
-import type { ObjectSet } from "../interfaces/index.js";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
-import type { IsEmptyRecord } from "../utils/IsEmptyRecord.js";
-import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys.js";
-import type { ValuesOfMap } from "../utils/ValuesOfMap.js";
+} from "../..";
+import type { ObjectSet } from "../interfaces";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
+import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
+import type { ValuesOfMap } from "../utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
   boolean: boolean;

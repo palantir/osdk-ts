@@ -19,7 +19,7 @@ import type {
   AggregateObjectsResponseItemV2,
   AggregationMetricResultV2,
 } from "@osdk/gateway/types";
-import { LocalDate, Timestamp } from "../../baseTypes/index.js";
+import { LocalDate, Timestamp } from "../../baseTypes";
 import type {
   AggregationGroup,
   AggregationResult,
@@ -28,12 +28,12 @@ import type {
   InternalBucketing,
   Metrics,
   MetricValue,
-} from "./Aggregations.js";
-import { visitInternalBucketing } from "./Aggregations.js";
-import { buildBucketObject } from "./AggregationUtils.js";
-import { GroupKeyType } from "./groupBy/GroupKeyType.js";
-import type { InternalAggregationRequest } from "./internalAggregationRequest.js";
-import { MetricValueType } from "./metrics/metrics.js";
+} from "./Aggregations";
+import { visitInternalBucketing } from "./Aggregations";
+import { buildBucketObject } from "./AggregationUtils";
+import { GroupKeyType } from "./groupBy/GroupKeyType";
+import type { InternalAggregationRequest } from "./internalAggregationRequest";
+import { MetricValueType } from "./metrics/metrics";
 
 export type BaseGroupValue = number | string | boolean;
 export type Bucketing<T> = { startValue?: T; endValue: T } | {

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import type { AnyType } from "./AnyType.js";
-import type { BooleanType } from "./BooleanType.js";
-import type { DateType } from "./DateType.js";
-import type { FloatType } from "./FloatType.js";
-import type { IntegerType } from "./IntegerType.js";
-import type { ModelApiArrayType } from "./ModelApiArrayType.js";
-import type { ModelApiMapType } from "./ModelApiMapType.js";
-import type { ModelApiStructType } from "./ModelApiStructType.js";
-import type { ModelApiUnionType } from "./ModelApiUnionType.js";
-import type { NullType } from "./NullType.js";
-import type { StringType } from "./StringType.js";
-import type { TimestampType } from "./TimestampType.js";
+import type { AnyType } from "./AnyType";
+import type { BooleanType } from "./BooleanType";
+import type { DateType } from "./DateType";
+import type { FloatType } from "./FloatType";
+import type { IntegerType } from "./IntegerType";
+import type { ModelApiArrayType } from "./ModelApiArrayType";
+import type { ModelApiMapType } from "./ModelApiMapType";
+import type { ModelApiStructType } from "./ModelApiStructType";
+import type { ModelApiUnionType } from "./ModelApiUnionType";
+import type { NullType } from "./NullType";
+import type { StringType } from "./StringType";
+import type { TimestampType } from "./TimestampType";
 
 export interface ModelApiType_Any extends AnyType {
   type: "any";

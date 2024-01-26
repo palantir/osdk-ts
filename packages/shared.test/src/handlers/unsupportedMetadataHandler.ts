@@ -16,9 +16,9 @@
 
 import type { DefaultBodyType, MockedRequest, RestHandler } from "msw";
 import { rest } from "msw";
-import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes.js";
-import { defaultOntology } from "../stubs/ontologies.js";
-import { authHandlerMiddleware } from "./commonHandlers.js";
+import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes";
+import { defaultOntology } from "../stubs/ontologies";
+import { authHandlerMiddleware } from "./commonHandlers";
 
 export const unsupportedMetadataHandler: RestHandler<
   MockedRequest<DefaultBodyType>

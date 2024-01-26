@@ -15,16 +15,12 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs.js";
-import { formatTs } from "../../../../util/test/formatTs.js";
-import { reexportConsts } from "../../util/reexportConsts.js";
-import { reexportTypes } from "../../util/reexportTypes.js";
+import type { MinimalFs } from "../../../../MinimalFs";
+import { formatTs } from "../../../../util/test/formatTs";
+import { reexportConsts } from "../../util/reexportConsts";
+import { reexportTypes } from "../../util/reexportTypes";
 
-export async function generateGroupBy(
-  fs: MinimalFs,
-  aggregationsDir: string,
-  importExt = "",
-) {
+export async function generateGroupBy(fs: MinimalFs, aggregationsDir: string) {
   await fs.mkdir(path.join(aggregationsDir, "groupBy"), { recursive: true });
 
   const groupBys = [
@@ -40,14 +36,14 @@ export async function generateGroupBy(
   for (const key of reexportFiles) {
     await fs.writeFile(
       path.join(aggregationsDir, "groupBy", `${key}.ts`),
-      await formatTs(`export {${key}} from "./index${importExt}";`),
+      await formatTs(`export {${key}} from "./index";`),
     );
   }
 
   await fs.writeFile(
     path.join(aggregationsDir, "groupBy", "index.ts"),
     await formatTs(
-      `import { Bucketing, BucketKey, Duration, Range, Rangeable } from "../Aggregations${importExt}";`
+      `import { Bucketing, BucketKey, Duration, Range, Rangeable } from "../Aggregations";`
         + reexportConsts(groupBys)
         + reexportTypes(
           groupBys,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Token, TokenValue } from "./Token.js";
+import type { Token, TokenValue } from "./Token";
 export class OAuthToken implements Token {
   accessToken: TokenValue;
   tokenType: string;

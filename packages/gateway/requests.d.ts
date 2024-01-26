@@ -15,4 +15,4 @@
  */
 
 // This file only exists as a fallback for packages that dont do modern module resolution
-export * from "./build/esm/public/requests";
+export * from "./build/types/public/requests";

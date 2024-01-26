@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid.js";
-import type { TransactionRid } from "../components/TransactionRid.js";
-import type { TransactionType } from "../components/TransactionType.js";
+import type { DatasetRid } from "../components/DatasetRid";
+import type { TransactionRid } from "../components/TransactionRid";
+import type { TransactionType } from "../components/TransactionType";
 
 /** The given transaction type is not valid. Valid transaction types are `SNAPSHOT`, `UPDATE`, `APPEND`, and `DELETE`. */
 export interface InvalidTransactionType {

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-export * from "./actions/index.js";
-export * from "./baseTypes/index.js";
-export * from "./errors/index.js";
-export * from "./foundryClient.js";
-export * from "./foundryClientOptions.js";
-export * from "./interfaces/index.js";
-export * from "./objects.js";
-export * from "./objectSets/index.js";
-export * from "./ontology.js";
-export * from "./OntologyMetadata.js";
-export * from "./OsdkLegacyObject.js";
-export * from "./Page.js";
-export * from "./queries.js";
-export * from "./Result.js";
-export * from "./utils/index.js";
+export * from "./actions";
+export * from "./baseTypes";
+export * from "./errors";
+export * from "./foundryClient";
+export * from "./foundryClientOptions";
+export * from "./interfaces";
+export * from "./objects";
+export * from "./objectSets";
+export * from "./ontology";
+export * from "./OntologyMetadata";
+export * from "./OsdkLegacyObject";
+export * from "./Page";
+export * from "./queries";
+export * from "./Result";
+export * from "./utils";

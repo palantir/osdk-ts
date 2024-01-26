@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "../../WireOntologyDefinition.js";
+import type { WireOntologyDefinition } from "../../WireOntologyDefinition";
 
 export const TodoWireOntology = {
   ontology: {

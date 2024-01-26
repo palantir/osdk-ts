@@ -15,22 +15,21 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs.js";
-import { formatTs } from "../../../../util/test/formatTs.js";
-import { reexportTypes } from "../../util/reexportTypes.js";
+import type { MinimalFs } from "../../../../MinimalFs";
+import { formatTs } from "../../../../util/test/formatTs";
+import { reexportTypes } from "../../util/reexportTypes";
 
 export async function generateAttachmentsDir(
   attachmentsDir: string,
   fs: MinimalFs,
-  importExt = "",
 ) {
   await fs.mkdir(attachmentsDir, { recursive: true });
 
   await fs.writeFile(
     path.join(attachmentsDir, "index.ts"),
     await formatTs(
-      `export * from "./Attachment${importExt}";
-       export * from "./Attachments${importExt}";
+      `export * from "./Attachment";
+       export * from "./Attachments";
     `,
     ),
   );

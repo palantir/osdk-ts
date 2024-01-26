@@ -80,6 +80,26 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
   };
 }
 
+function getTsconfigOptionsE2E(baseTsconfigPath) {
+  return {
+    file: "tsconfig.json",
+    template: {
+      extends: baseTsconfigPath,
+
+      compilerOptions: {
+        rootDir: "src",
+        outDir: "build/types",
+        composite: true,
+      },
+      include: ["./src/**/*", ".eslintrc.cjs"],
+      exclude: [
+        "./src/__e2e_tests__/**/**.test.ts",
+        "./src/generatedNoCheck/**/*",
+      ],
+    },
+  };
+}
+
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @param {{
@@ -88,7 +108,6 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: "^5.2.2"|"^4.9.0",
- *  commonjs?: boolean
  * }} options
  */
 function standardPackageRules(shared, options) {
@@ -124,8 +143,6 @@ function standardPackageRules(shared, options) {
           prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
           typecheck: "tsc-absolute --build",
-          "test:package-types":
-            "if [ -d src/public ]; then ls src/public | sed -e 's/\\(.*\\).ts/--include-entrypoints=\\1/' | xargs pnpm attw --pack .; else pnpm attw --pack .; fi",
         },
       },
     }),
@@ -135,36 +152,22 @@ function standardPackageRules(shared, options) {
         entries: {
           exports: {
             ".": {
-              import: {
-                types: `./build/esm/index.d.${options.commonjs ? "m" : ""}ts`,
-                default: "./build/esm/index.mjs",
-              },
-              require: {
-                types: `./build/cjs/index.d.${options.commonjs ? "" : "c"}ts`,
-                default: `./build/cjs/index.${options.legacy ? "" : "c"}js`,
-              },
+              types: "./build/types/index.d.ts",
+              import: "./build/js/index.mjs",
+              require: `./build/js/index.${options.legacy ? "" : "c"}js`,
             },
             "./*": {
-              import: {
-                types: `./build/esm/public/*.d.${
-                  options.commonjs ? "m" : ""
-                }ts`,
-                default: "./build/esm/public/*.mjs",
-              },
-              require: {
-                types: `./build/cjs/public/*.d.${
-                  options.commonjs ? "" : "c"
-                }ts`,
-                default: `./build/cjs/public/*.${options.legacy ? "" : "c"}js`,
-              },
+              types: "./build/types/public/*.d.ts",
+              import: "./build/js/public/*.mjs",
+              require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
             },
           },
           publishConfig: {
             "access": "public",
           },
           files: [
-            "build/cjs",
-            "build/esm",
+            "build/types",
+            "build/js",
             "CHANGELOG.md",
             "package.json",
 
@@ -172,10 +175,9 @@ function standardPackageRules(shared, options) {
             "*.d.ts",
           ],
 
-          main: `./build/cjs/index.${options.legacy ? "" : "c"}js`,
-          module: "./build/esm/index.mjs",
-          types: `./build/cjs/index.d.${options.commonjs ? "" : "c"}ts`,
-          type: options.commonjs ? "commonjs" : "module",
+          main: `./build/js/index.${options.legacy ? "" : "c"}js`,
+          module: "./build/js/index.mjs",
+          types: "./build/types/index.d.ts",
         },
       },
     }),
@@ -265,7 +267,6 @@ export default {
       includePackages: ["@osdk/foundry-sdk-generator"],
     }, {
       legacy: false,
-      commonjs: true,
       packageDepth: 2,
       type: "library",
       tsVersion: "^5.2.2",
@@ -292,7 +293,6 @@ export default {
       legacy: false,
       packageDepth: 3,
       type: "example",
-      commonjs: true,
     }),
 
     // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
@@ -304,7 +304,6 @@ export default {
       packageDepth: 2,
       type: "example",
       tsVersion: "^4.9.0",
-      commonjs: true,
     }),
 
     packageEntry({

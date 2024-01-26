@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName.js";
-import type { PropertyFilter } from "../components/PropertyFilter.js";
+import type { PropertyApiName } from "../components/PropertyApiName";
+import type { PropertyFilter } from "../components/PropertyFilter";
 
 /** The provided filters cannot be used together. */
 export interface InvalidPropertyFiltersCombination {

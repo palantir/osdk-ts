@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
-import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { PropertyApiName } from "../components/PropertyApiName";
 
 /** The requested properties are not found on the object type. */
 export interface PropertiesNotFound {

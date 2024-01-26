@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export * from "./actionEndpoints.js";
-export * from "./commonHandlers.js";
-export * from "./endpointUtils.js";
-export * from "./loadObjectsEndpoints.js";
-export * from "./multipassServer.js";
-export * from "./objectSetEndpoints.js";
-export * from "./ontologyMetadataEndpoints.js";
-export * from "./unsupportedMetadataHandler.js";
+export * from "./actionEndpoints";
+export * from "./commonHandlers";
+export * from "./endpointUtils";
+export * from "./loadObjectsEndpoints";
+export * from "./multipassServer";
+export * from "./objectSetEndpoints";
+export * from "./ontologyMetadataEndpoints";
+export * from "./unsupportedMetadataHandler";

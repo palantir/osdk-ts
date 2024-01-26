@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OrderByClause } from "./Filters.js";
+import type { OrderByClause } from "./Filters";
 
 export interface OrderByOption {
   /** Order results in ascending order */

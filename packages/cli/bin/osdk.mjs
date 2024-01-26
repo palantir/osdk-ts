@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 // @ts-check
 
-import { cli } from "../build/esm/index.mjs";
+import { cli } from "../build/js/index.mjs";
 cli();

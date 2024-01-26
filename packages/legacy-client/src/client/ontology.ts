@@ -16,13 +16,13 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Actions } from "./actions/actions.js";
-import { createActionProxy } from "./actions/createActionProxy.js";
-import { Attachments } from "./baseTypes/index.js";
-import type { Objects } from "./objects.js";
-import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet.js";
-import { type Queries } from "./queries.js";
-import { createQueryProxy } from "./queryProxy.js";
+import type { Actions } from "./actions/actions";
+import { createActionProxy } from "./actions/createActionProxy";
+import { Attachments } from "./baseTypes";
+import type { Objects } from "./objects";
+import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
+import { type Queries } from "./queries";
+import { createQueryProxy } from "./queryProxy";
 
 export class Ontology<O extends OntologyDefinition<any>> {
   #client: ClientContext<O>;

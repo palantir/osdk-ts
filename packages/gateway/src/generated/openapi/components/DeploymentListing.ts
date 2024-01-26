@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DeploymentApiName } from "./DeploymentApiName.js";
-import type { DeploymentDescription } from "./DeploymentDescription.js";
+import type { DeploymentApiName } from "./DeploymentApiName";
+import type { DeploymentDescription } from "./DeploymentDescription";
 
 /**
  * Name and description associated with a model deployment.

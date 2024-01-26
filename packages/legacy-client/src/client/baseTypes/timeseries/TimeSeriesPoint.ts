@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Timestamp } from "../timestamp.js";
+import type { Timestamp } from "../timestamp";
 
 export type TimeSeriesPoint<T extends string | number> = {
   time: Timestamp;

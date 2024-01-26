@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "../components/DataValue.js";
-import type { ParameterId } from "../components/ParameterId.js";
-import type { QueryDataType } from "../components/QueryDataType.js";
+import type { DataValue } from "../components/DataValue";
+import type { ParameterId } from "../components/ParameterId";
+import type { QueryDataType } from "../components/QueryDataType";
 
 /**
  * The value of the given parameter is invalid. See the documentation of `DataValue` for details on

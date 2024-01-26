@@ -17,5 +17,5 @@
  */
 
 // eslint-disable-next-line header/header
-const cli = require("../build/cjs/index.cjs");
+const cli = require("../build/js/index.cjs");
 cli.cli();

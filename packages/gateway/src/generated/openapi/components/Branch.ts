@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "./BranchId.js";
-import type { TransactionRid } from "./TransactionRid.js";
+import type { BranchId } from "./BranchId";
+import type { TransactionRid } from "./TransactionRid";
 
 /**
  * A Branch of a Dataset.

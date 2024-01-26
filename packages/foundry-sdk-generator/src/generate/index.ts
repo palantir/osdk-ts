@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./GeneratePackageCommand.js";
+export * from "./GeneratePackageCommand";

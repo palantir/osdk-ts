@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Token } from "./Token.js";
+import type { Token } from "./Token";
 /**
  * An interface representing an authentication provider.
  *

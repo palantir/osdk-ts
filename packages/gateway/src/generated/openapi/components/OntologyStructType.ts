@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyStructField } from "./OntologyStructField.js";
+import type { OntologyStructField } from "./OntologyStructField";
 
 export interface OntologyStructType {
   fields: Array<OntologyStructField>;

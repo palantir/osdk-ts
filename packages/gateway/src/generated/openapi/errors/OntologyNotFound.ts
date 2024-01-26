@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyApiName } from "../components/OntologyApiName.js";
-import type { OntologyRid } from "../components/OntologyRid.js";
+import type { OntologyApiName } from "../components/OntologyApiName";
+import type { OntologyRid } from "../components/OntologyRid";
 
 /** The requested Ontology is not found, or the client token does not have access to it. */
 export interface OntologyNotFound {

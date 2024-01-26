@@ -24,10 +24,10 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { expectFetchToBeCalledWithGet } from "../../util/test/expectUtils.js";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
-import { Timestamp } from "../baseTypes/index.js";
-import { getFirstPoint } from "./getFirstPoint.js";
+import { expectFetchToBeCalledWithGet } from "../../util/test/expectUtils";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils";
+import { Timestamp } from "../baseTypes";
+import { getFirstPoint } from "./getFirstPoint";
 
 describe(getFirstPoint, () => {
   const fetch: MockedFunction<typeof globalThis.fetch> = vi.fn();

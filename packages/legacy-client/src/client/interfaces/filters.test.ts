@@ -15,9 +15,9 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { Todo } from "../../util/test/TodoObject.js";
-import type { BooleanFilter, StringFilter } from "../objectSets/index.js";
-import type { ObjectSetFilterArg } from "./filters.js";
+import type { Todo } from "../../util/test/TodoObject";
+import type { BooleanFilter, StringFilter } from "../objectSets";
+import type { ObjectSetFilterArg } from "./filters";
 
 describe("Filters", () => {
   it("correct types", () => {

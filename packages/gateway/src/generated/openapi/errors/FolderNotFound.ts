@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FolderRid } from "../components/FolderRid.js";
+import type { FolderRid } from "../components/FolderRid";
 
 /** The requested folder could not be found, or the client token does not have access to it. */
 export interface FolderNotFound {

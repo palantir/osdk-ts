@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { employee1, employee2, employee3 } from "./objects.js";
+import { employee1, employee2, employee3 } from "./objects";
 
 export const employeePeepLinks = {
   [employee2.__primaryKey.toString()]: {

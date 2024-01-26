@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox.js";
-import type { LinearRing } from "./LinearRing.js";
+import type { BBox } from "./BBox";
+import type { LinearRing } from "./LinearRing";
 
 export interface Polygon {
   coordinates: Array<LinearRing>;
