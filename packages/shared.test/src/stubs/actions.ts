@@ -103,6 +103,18 @@ const actionRequestMoveOfficeValidateOnly: ApplyActionRequestV2 = {
   },
 };
 
+const actionRequestMoveOfficeInvalid: ApplyActionRequestV2 = {
+  parameters: {
+    officeId: "SEA",
+    newAddress: "456 Pike Place",
+    newCapacity: 40,
+  },
+  options: {
+    mode: "VALIDATE_AND_EXECUTE",
+    returnEdits: "ALL",
+  },
+};
+
 const actionRequestMoveOfficeValidateOnlyWithoutEdits: ApplyActionRequestV2 = {
   parameters: {
     officeId: "SEA",
@@ -131,6 +143,11 @@ const actionRequestWithObjectSet: ApplyActionRequestV2 = {
     employees: { type: "base", objectType: employeeObjectType.apiName },
   },
   options: {},
+};
+
+export const actionRequestWithAttachment: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: { attachment: "attachment.rid" },
 };
 
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
@@ -244,6 +261,7 @@ export const actionResponseMap: {
       actionResponseInvalid,
     [stableStringify(actionRequestMoveOfficeValidateOnlyWithoutEdits)]:
       actionResponseInvalid,
+    [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
     [stableStringify(actionRequestMoveOffice2)]: undefined,
     [stableStringify(actionRequestMoveOffice3)]: undefined,
   },
@@ -253,5 +271,8 @@ export const actionResponseMap: {
   },
   actionTakesObjectSet: {
     [stableStringify(actionRequestWithObjectSet)]: actionResponse,
+  },
+  actionTakesAttachment: {
+    [stableStringify(actionRequestWithAttachment)]: actionResponse,
   },
 };

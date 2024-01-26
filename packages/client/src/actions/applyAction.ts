@@ -16,17 +16,29 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
-import type { DataValue, SyncApplyActionResponseV2 } from "@osdk/gateway/types";
+import type {
+  ActionResults,
+  DataValue,
+  ValidateActionResponseV2,
+} from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import { toDataValue } from "../util/toDataValue.js";
 import type { Actions } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
-export interface ApplyActionOptions {
-  returnEdits?: boolean;
-  validateOnly?: boolean;
-}
+// cannot specify both validateOnly and returnEdits as true
+export type ApplyActionOptions =
+  | { returnEdits?: true; validateOnly?: false }
+  | {
+    validateOnly?: true;
+    returnEdits?: false;
+  };
+
+export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
+  Op extends { validateOnly: true } ? ValidateActionResponseV2
+    : Op extends { returnEdits: true } ? ActionResults
+    : undefined;
 
 export async function applyAction<
   O extends OntologyDefinition<any>,
@@ -36,8 +48,8 @@ export async function applyAction<
   client: ClientContext<O>,
   actionApiName: A,
   parameters?: Parameters<Actions<O>[A]>[0],
-  options?: Op,
-): Promise<SyncApplyActionResponseV2> {
+  options: Op = {} as Op,
+): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
@@ -51,11 +63,17 @@ export async function applyAction<
     },
   );
 
+  if (options?.validateOnly) {
+    return response.validation as ActionReturnTypeForOptions<Op>;
+  }
+
   if (response.validation?.result === "INVALID") {
     throw new ActionValidationError(response.validation);
   }
 
-  return response;
+  return (options?.returnEdits
+    ? response.edits
+    : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
 function remapActionParams<

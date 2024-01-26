@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "@osdk/gateway/types";
+import type {
+  ActionResults,
+  ValidateActionResponseV2,
+} from "@osdk/gateway/types";
 import { apiServer } from "@osdk/shared.test";
 import {
   afterAll,
@@ -27,6 +30,7 @@ import {
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import { Attachment } from "../object/Attachment.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { createActionInvoker } from "./createActionInvoker.js";
 
@@ -56,6 +60,7 @@ describe("actions", () => {
           "createOfficeAndEmployee",
           "moveOffice",
           "actionTakesObjectSet",
+          "actionTakesAttachment",
         ]
       `);
     });
@@ -71,24 +76,17 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<ActionResults>();
     expect(result).toMatchInlineSnapshot(`
       {
-        "edits": {
-          "addedLinksCount": 0,
-          "addedObjectCount": 2,
-          "edits": [
-            {
-              "objectType": "Office",
-              "primaryKey": "NYC",
-              "type": "addObject",
-            },
-          ],
-          "modifiedObjectsCount": 0,
-          "type": "edits",
-        },
-        "validation": {
-          "parameters": {},
-          "result": "VALID",
-          "submissionCriteria": [],
-        },
+        "addedLinksCount": 0,
+        "addedObjectCount": 2,
+        "edits": [
+          {
+            "objectType": "Office",
+            "primaryKey": "NYC",
+            "type": "addObject",
+          },
+        ],
+        "modifiedObjectsCount": 0,
+        "type": "edits",
       }
     `);
 
@@ -99,6 +97,26 @@ describe("actions", () => {
     });
 
     expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
+    expect(undefinedResult).toBeUndefined();
+  });
+
+  it("returns validation directly on validateOnly mode", async () => {
+    const result = await client.actions.moveOffice({
+      officeId: "SEA",
+      newAddress: "456 Pike Place",
+      newCapacity: 40,
+    }, {
+      validateOnly: true,
+    });
+    expectTypeOf<typeof result>().toEqualTypeOf<ValidateActionResponseV2>();
+
+    expect(result).toMatchInlineSnapshot(`
+        {
+          "parameters": {},
+          "result": "INVALID",
+          "submissionCriteria": [],
+        }
+      `);
   });
 
   it("throws on validation errors", async () => {
@@ -108,7 +126,7 @@ describe("actions", () => {
         newAddress: "456 Pike Place",
         newCapacity: 40,
       }, {
-        validateOnly: true,
+        returnEdits: true,
       });
       expect.fail("Should not reach here");
     } catch (e) {
@@ -121,5 +139,16 @@ describe("actions", () => {
         }
       `);
     }
+  });
+
+  it("Accepts attachments", async () => {
+    expectTypeOf<Parameters<typeof client.actions.actionTakesAttachment>[0]>()
+      .toEqualTypeOf<{ attachment: Attachment }>();
+
+    const attachment = new Attachment("attachment.rid");
+    const result = await client.actions.actionTakesAttachment({ attachment });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
   });
 });

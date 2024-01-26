@@ -20,7 +20,8 @@ import type {
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
-import type { ActionResults } from "@osdk/gateway/types";
+import type { ObjectSet } from "../index.js";
+import type { Attachment } from "../object/Attachment.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
@@ -28,7 +29,10 @@ import type {
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
-import type { ApplyActionOptions } from "./applyAction.js";
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+} from "./applyAction.js";
 
 type ActionKeysFrom<O extends OntologyDefinition<any>> = keyof O["actions"];
 
@@ -54,6 +58,11 @@ type ActionParameterTypeFrom<
   P extends ActionParameterKeysFrom<O, K>,
 > = ActionParameterDefinitionFrom<O, K, P>["type"];
 
+// we have to override the @osdk/api WirePropertyTypes to specify how we handle the Attachment types
+interface OverrideWirePropertyTypes extends WirePropertyTypes {
+  attachment: Attachment;
+}
+
 type OsdkActionParameterBaseType<
   O extends OntologyDefinition<any>,
   K extends ActionKeysFrom<O>,
@@ -62,11 +71,9 @@ type OsdkActionParameterBaseType<
   ObjectActionDataType<infer TObjectName>
   ? OsdkObjectFrom<TObjectName, O> | OsdkObjectPrimaryKeyType<TObjectName, O>
   : ActionParameterTypeFrom<O, K, P> extends
-    ObjectSetActionDataType<infer TObjectName> ? {
-      __I_am_sorry: "this type is not supported yet"; // FIXME
-    }
-  : ActionParameterTypeFrom<O, K, P> extends keyof WirePropertyTypes
-    ? WirePropertyTypes[ActionParameterTypeFrom<O, K, P>]
+    ObjectSetActionDataType<infer TObjectName> ? ObjectSet<O, TObjectName>
+  : ActionParameterTypeFrom<O, K, P> extends keyof OverrideWirePropertyTypes
+    ? OverrideWirePropertyTypes[ActionParameterTypeFrom<O, K, P>]
   : never;
 
 type OsdkActionParameterMaybeArrayType<
@@ -102,5 +109,5 @@ export type Actions<O extends OntologyDefinition<any>> = {
   [K in ActionKeysFrom<O>]: <OP extends ApplyActionOptions>(
     args: NOOP<OsdkActionParameters<O, K>>,
     options?: OP,
-  ) => Promise<OP["returnEdits"] extends true ? ActionResults : undefined>;
+  ) => Promise<ActionReturnTypeForOptions<OP>>;
 };
