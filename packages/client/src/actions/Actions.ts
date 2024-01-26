@@ -20,6 +20,10 @@ import type {
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
+import type {
+  ActionResults,
+  ValidateActionResponseV2,
+} from "@osdk/gateway/types";
 import type { ObjectSet } from "../index.js";
 import type { Attachment } from "../object/Attachment.js";
 import type {
@@ -111,3 +115,6 @@ export type Actions<O extends OntologyDefinition<any>> = {
     options?: OP,
   ) => Promise<ActionReturnTypeForOptions<OP>>;
 };
+
+export type ActionEditResponse = ActionResults;
+export type ActionValidationResponse = ValidateActionResponseV2;

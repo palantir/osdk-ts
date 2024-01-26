@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import type {
-  ActionResults,
-  ValidateActionResponseV2,
-} from "@osdk/gateway/types";
 import { apiServer } from "@osdk/shared.test";
 import {
   afterAll,
@@ -31,6 +27,10 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { Attachment } from "../object/Attachment.js";
+import type {
+  ActionEditResponse,
+  ActionValidationResponse,
+} from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 import { createActionInvoker } from "./createActionInvoker.js";
 
@@ -73,7 +73,7 @@ describe("actions", () => {
       capacity: 100,
     }, { returnEdits: true });
 
-    expectTypeOf<typeof result>().toEqualTypeOf<ActionResults>();
+    expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
     expect(result).toMatchInlineSnapshot(`
       {
         "addedLinksCount": 0,
@@ -108,7 +108,7 @@ describe("actions", () => {
     }, {
       validateOnly: true,
     });
-    expectTypeOf<typeof result>().toEqualTypeOf<ValidateActionResponseV2>();
+    expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
     expect(result).toMatchInlineSnapshot(`
         {

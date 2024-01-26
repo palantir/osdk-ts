@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { ValidateActionResponseV2 } from "@osdk/gateway/types";
+import type { ActionValidationResponse } from "./Actions.js";
 
 export class ActionValidationError extends Error {
-  constructor(public validation: ValidateActionResponseV2) {
+  constructor(public validation: ActionValidationResponse) {
     super("Validation Error");
   }
 }

@@ -30,4 +30,8 @@ export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
 export type { ClientContext } from "@osdk/shared.net";
 
+export type {
+  ActionEditResponse,
+  ActionValidationResponse,
+} from "./actions/Actions.js";
 export { ActionValidationError } from "./actions/ActionValidationError.js";

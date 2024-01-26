@@ -16,15 +16,15 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
-import type {
-  ActionResults,
-  DataValue,
-  ValidateActionResponseV2,
-} from "@osdk/gateway/types";
+import type { DataValue } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import { toDataValue } from "../util/toDataValue.js";
-import type { Actions } from "./Actions.js";
+import type {
+  ActionEditResponse,
+  Actions,
+  ActionValidationResponse,
+} from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 // cannot specify both validateOnly and returnEdits as true
@@ -36,8 +36,8 @@ export type ApplyActionOptions =
   };
 
 export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { validateOnly: true } ? ValidateActionResponseV2
-    : Op extends { returnEdits: true } ? ActionResults
+  Op extends { validateOnly: true } ? ActionValidationResponse
+    : Op extends { returnEdits: true } ? ActionEditResponse
     : undefined;
 
 export async function applyAction<
