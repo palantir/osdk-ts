@@ -133,16 +133,10 @@ export function useTodos() {
           // Unwrap to get throw behavior on error.
           // Don't return because we want to invalidate cache
           try {
-            const response = await foundryClient2.actions.createTodo(
-              {
-                Todo: title,
-                is_complete: false,
-              },
-              {
-                returnEdits: true,
-              }
-            );
-            console.log(JSON.stringify(response));
+            await foundryClient2.actions.createTodo({
+              Todo: title,
+              is_complete: false,
+            });
           } catch (e) {
             if (e instanceof ActionValidationError) {
               if (e.validation.parameters.Todo?.result === "INVALID") {
