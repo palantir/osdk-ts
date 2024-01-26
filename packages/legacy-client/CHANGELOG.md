@@ -1,5 +1,15 @@
 # @osdk/legacy-client
 
+## 1.1.1
+
+### Patch Changes
+
+- e1a94f22: Revert change to how we generate the built package types
+- Updated dependencies [e1a94f22]
+  - @osdk/shared.net@1.1.1
+  - @osdk/gateway@1.1.1
+  - @osdk/api@1.1.1
+
 ## 1.1.0
 
 ### Minor Changes
