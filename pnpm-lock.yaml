@@ -428,6 +428,9 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:*
         version: link:../shared.test
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.17.15
       '@types/yargs':
         specifier: ^17.0.29
         version: 17.0.29

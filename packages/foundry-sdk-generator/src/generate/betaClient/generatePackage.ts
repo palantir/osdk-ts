@@ -18,6 +18,7 @@ import type { WireOntologyDefinition } from "@osdk/generator";
 import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
+import { USER_AGENT } from "../../utils/UserAgent";
 import { generateBundles } from "../generateBundles";
 import { bundleDependencies } from "./bundleDependencies";
 import { compileInMemory } from "./compileInMemory";
@@ -50,6 +51,7 @@ export async function generatePackage(
   const inMemoryFileSystem: { [fileName: string]: string } = {};
   await generateClientSdkVersionOneDotOne(
     ontology,
+    USER_AGENT,
     {
       writeFile: async (path, contents) => {
         inMemoryFileSystem[normalize(path)] = contents;
