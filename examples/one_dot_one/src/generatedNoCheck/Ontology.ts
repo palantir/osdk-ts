@@ -15,7 +15,7 @@ export const Ontology: {
   metadata: {
     ontologyRid: 'ridHere';
     ontologyApiName: 'OntologyApiName';
-    userAgent: 'foundry-typescript-osdk/0.0.1';
+    userAgent: '@osdk/cli/0.1.1';
   };
   objects: {
     Todo: typeof Todo;
@@ -34,7 +34,7 @@ export const Ontology: {
   metadata: {
     ontologyRid: 'ridHere' as const,
     ontologyApiName: 'OntologyApiName' as const,
-    userAgent: 'foundry-typescript-osdk/0.0.1' as const,
+    userAgent: '@osdk/cli/0.1.1' as const,
   },
   objects: {
     Todo,

@@ -45,6 +45,7 @@ delete ontologyWithoutUnsupportedAction.actionTypes["unsupported-action"];
 
 await generateClientSdkVersionTwoPointZero(
   ontologyWithoutUnsupportedAction,
+  "@osdk/cli/0.0.0",
   {
     writeFile: (path, contents) => {
       return writeFile(path, contents, "utf-8");

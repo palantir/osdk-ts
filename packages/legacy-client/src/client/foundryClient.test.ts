@@ -40,9 +40,8 @@ describe(BaseFoundryClient, () => {
       "Fetch-User-Agent",
     );
     const parts = userAgent?.split(" ") ?? [];
-    expect(parts).toHaveLength(3);
-    expect(parts[0]).toEqual(MockOntology.metadata.userAgent);
-    expect(parts[1]).toEqual(USER_AGENT); // the legacy-client USER_AGENT has an undefined version during vitest runs
-    expect(parts[2]).toMatch(/^@osdk\/shared.net\/\d+\.\d+\.\d+$/); // this comes from the built version of packages/shared.net, so it will have a defined version that changes over time
+    expect(parts).toHaveLength(2);
+    expect(parts[0]).toEqual(USER_AGENT); // the legacy-client USER_AGENT has an undefined version during vitest runs
+    expect(parts[1]).toEqual(MockOntology.metadata.userAgent);
   });
 });
