@@ -26,6 +26,7 @@ describe(generateMetadataFile, () => {
 
     await generateMetadataFile(
       TodoWireOntology,
+      "@osdk/foundry-sdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -49,7 +50,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'ridHere';
           ontologyApiName: 'OntologyApiName';
-          userAgent: 'foundry-typescript-osdk/0.0.1';
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0';
         };
         objects: {
           Todo: typeof Todo;
@@ -65,7 +66,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'ridHere' as const,
           ontologyApiName: 'OntologyApiName' as const,
-          userAgent: 'foundry-typescript-osdk/0.0.1' as const,
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0' as const,
         },
         objects: {
           Todo,
@@ -151,6 +152,7 @@ describe(generateMetadataFile, () => {
         interfaceTypes: {},
         sharedPropertyTypes: {},
       },
+      "@osdk/foundry-sdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -175,7 +177,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid';
           ontologyApiName: 'apiName';
-          userAgent: 'foundry-typescript-osdk/0.0.1';
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0';
         };
         objects: {
           foo: typeof foo;
@@ -192,7 +194,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid' as const,
           ontologyApiName: 'apiName' as const,
-          userAgent: 'foundry-typescript-osdk/0.0.1' as const,
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0' as const,
         },
         objects: {
           foo,
@@ -234,6 +236,7 @@ describe(generateMetadataFile, () => {
         interfaceTypes: {},
         sharedPropertyTypes: {},
       },
+      "@osdk/foundry-sdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -253,7 +256,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid';
           ontologyApiName: 'apiName';
-          userAgent: 'foundry-typescript-osdk/0.0.1';
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0';
         };
         objects: {};
         actions: {};
@@ -262,7 +265,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid' as const,
           ontologyApiName: 'apiName' as const,
-          userAgent: 'foundry-typescript-osdk/0.0.1' as const,
+          userAgent: '@osdk/foundry-sdk-generator/0.0.0' as const,
         },
         objects: {},
         actions: {},

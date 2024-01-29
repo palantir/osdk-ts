@@ -27,6 +27,7 @@ import { generateOntologyMetadataFile } from "./generateMetadata";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,
+  userAgent: string,
   fs: MinimalFs,
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
@@ -54,7 +55,7 @@ export async function generateClientSdkVersionTwoPointZero(
     ),
   );
 
-  await generateOntologyMetadataFile(sanitizedOntology, fs, outDir);
+  await generateOntologyMetadataFile(sanitizedOntology, userAgent, fs, outDir);
 
   await fs.writeFile(
     path.join(outDir, "Ontology.ts"),

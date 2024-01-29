@@ -28,6 +28,7 @@ describe("generator", () => {
 
     await generateClientSdkVersionOneDotOne(
       TodoWireOntology,
+      "@osdk/foundry-sdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -66,6 +67,7 @@ describe("generator", () => {
     expect(async () => {
       await expect(generateClientSdkVersionOneDotOne(
         TodoWireOntology,
+        "@osdk/foundry-sdk-generator/0.0.0",
         helper.minimalFiles,
         BASE_PATH,
       )).rejects.toThrow();
@@ -83,6 +85,7 @@ describe("generator", () => {
 
     await generateClientSdkVersionOneDotOne(
       TodoWireOntology,
+      "@osdk/foundry-sdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -98,6 +101,7 @@ describe("generator", () => {
     await mkdir(`${__dirname}/generated`, { recursive: true });
     await generateClientSdkVersionOneDotOne(
       TodoWireOntology,
+      "@osdk/foundry-sdk-generator/0.0.0",
       {
         writeFile: async (path, contents) => {
           await writeFile(path, contents, { flag: "w" });
