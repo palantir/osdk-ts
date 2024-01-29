@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const USER_AGENT = "@osdk/legacy-client/0.0.0 ()";
+export const USER_AGENT = `@osdk/legacy-client/${process.env.PACKAGE_VERSION}`;

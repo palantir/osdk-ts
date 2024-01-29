@@ -23,6 +23,7 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { USER_AGENT } from "../../USER_AGENT";
 import { expectFetchToBeCalledWithBlob } from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { uploadAttachment } from "./uploadAttachment";
@@ -36,7 +37,7 @@ describe(uploadAttachment, () => {
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
-      undefined,
+      USER_AGENT,
       fetch,
     );
   });

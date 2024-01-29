@@ -33,6 +33,7 @@ import {
   vi,
 } from "vitest";
 import type { ObjectSet, Range } from "../client";
+import { USER_AGENT } from "../USER_AGENT";
 import type { Todo } from "../util/test";
 import { expectFetchToBeCalledWithBody } from "../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../util/test/resultUtils";
@@ -58,7 +59,7 @@ describe("Queries", () => {
         MockOntology,
         MOCK_ORIGIN,
         () => "Token",
-        undefined,
+        USER_AGENT,
         fetch,
       );
       queries = createQueryProxy<MockOntology>(client);

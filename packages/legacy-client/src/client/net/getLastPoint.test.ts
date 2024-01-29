@@ -24,6 +24,7 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { USER_AGENT } from "../../USER_AGENT";
 import { expectFetchToBeCalledWithGet } from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { Timestamp } from "../baseTypes";
@@ -35,7 +36,7 @@ describe(getLastPoint, () => {
     MockOntology,
     MOCK_ORIGIN,
     () => "Token",
-    undefined,
+    USER_AGENT,
     fetch,
   );
   beforeEach(() => {
