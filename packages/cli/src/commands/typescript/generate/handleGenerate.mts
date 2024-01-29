@@ -70,7 +70,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   const { fetch } = createClientContext(
     {
       metadata: {
-        userAgent: "@osdk/cli/0.0.0 ()",
+        userAgent: `@osdk/cli/${process.env.PACKAGE_VERSION}`,
       },
     },
     args.stack!,
