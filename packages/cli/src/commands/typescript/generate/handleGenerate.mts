@@ -29,6 +29,8 @@ import * as fs from "node:fs";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
+const USER_AGENT = `@osdk/cli/${process.env.PACKAGE_VERSION}`;
+
 export default async function handleGenerate(args: TypescriptGenerateArgs) {
   let success = false;
   if (args.ontologyPath) {
@@ -70,11 +72,12 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   const { fetch } = createClientContext(
     {
       metadata: {
-        userAgent: `@osdk/cli/${process.env.PACKAGE_VERSION}`,
+        userAgent: USER_AGENT,
       },
     },
     args.stack!,
     () => token.access_token,
+    USER_AGENT,
   );
 
   try {
@@ -123,6 +126,7 @@ async function generateClientSdk(
     if (args.beta) {
       await generateClientSdkVersionTwoPointZero(
         ontology,
+        USER_AGENT,
         minimalFs,
         args.outDir,
         args.packageType,
@@ -130,6 +134,7 @@ async function generateClientSdk(
     } else {
       await generateClientSdkVersionOneDotOne(
         ontology,
+        USER_AGENT,
         minimalFs,
         args.outDir,
         args.packageType,
