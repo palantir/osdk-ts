@@ -15,4 +15,4 @@
  */
 
 export const USER_AGENT =
-  `@osdk/foundery-sdk-generator/${process.env.PACKAGE_VERSION}`;
+  `@osdk/foundry-sdk-generator/${process.env.PACKAGE_VERSION}`;
