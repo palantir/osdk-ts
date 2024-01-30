@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { apiServer, MOCK_ORIGIN } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { MOCK_ORIGIN } from "@osdk/shared.test";
+import { beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 import { MockOntology } from "./util/test/mockOntology.js";
@@ -24,16 +24,11 @@ describe("Enumerable Objects", () => {
   let client: Client<typeof MockOntology>;
 
   beforeAll(async () => {
-    apiServer.listen();
     client = createClient(
       MockOntology,
       MOCK_ORIGIN,
       () => "myAccessToken",
     );
-  });
-
-  afterAll(() => {
-    apiServer.close();
   });
 
   it("has an enumerable list of object types", () => {
