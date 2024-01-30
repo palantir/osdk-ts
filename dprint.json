@@ -12,6 +12,7 @@
     "**/.turbo",
     "**/src/generatedNoCheck/",
     "**/src/generatedNoCheck2/",
+    "**/package.json",
     "pnpm-lock.yaml",
     ".vscode/settings.json"
   ],
