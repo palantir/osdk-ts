@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ClientContext } from "@osdk/shared.net";
 import type { Client } from "./Client.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 
@@ -30,14 +31,33 @@ export type ObjectSetCreator<D extends OntologyDefinition<any>> = {
  * @param client The client to use to create the object sets.
  * @returns A proxy for the object set creator.
  */
-export function createObjectSetCreator<T extends Client<any>>(client: T) {
+export function createObjectSetCreator<
+  T extends Client<any>,
+  D extends OntologyDefinition<any>,
+>(
+  client: T,
+  clientContext: ClientContext<D>,
+) {
   return new Proxy(
     {},
     {
       get: (target, p, receiver) => {
         if (typeof p === "string") return client.objectSet(p);
-
         return undefined;
+      },
+
+      ownKeys(target) {
+        return Object.keys(clientContext.ontology.objects);
+      },
+
+      getOwnPropertyDescriptor(target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: clientContext.ontology.objects[p] != null,
+            configurable: true,
+            value: client.objectSet(p),
+          };
+        }
       },
     },
   );

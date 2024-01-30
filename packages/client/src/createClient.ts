@@ -43,7 +43,7 @@ export function createClient<O extends OntologyDefinition<any>>(
     {} as Client<O>,
     {
       objectSet: { get: () => objectSetFactory },
-      objects: { get: () => createObjectSetCreator(client) },
+      objects: { get: () => createObjectSetCreator(client, clientCtx) },
       actions: {
         get: () => createActionInvoker(clientCtx),
       },
