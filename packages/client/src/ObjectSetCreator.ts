@@ -43,6 +43,7 @@ export function createObjectSetCreator<
     {
       get: (target, p, receiver) => {
         if (typeof p === "string") return client.objectSet(p);
+
         return undefined;
       },
 
