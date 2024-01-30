@@ -1,5 +1,11 @@
 # @osdk/client
 
+## 0.5.0
+
+### Minor Changes
+
+- 05a1d36b: Making list of objects enumerable in 2.0 syntax
+
 ## 0.4.1
 
 ### Patch Changes
