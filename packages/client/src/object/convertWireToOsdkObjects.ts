@@ -176,14 +176,7 @@ export function convertWireToOsdkObjects<
     });
 
     if (converter) {
-      for (const obj of objs) {
-        Object.setPrototypeOf(obj, proto);
-        converter(obj);
-      }
-    } else {
-      for (const obj of objs) {
-        Object.setPrototypeOf(obj, proto);
-      }
+      converter(obj);
     }
   }
 }
