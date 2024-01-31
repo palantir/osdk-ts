@@ -22,14 +22,15 @@ import { reexportTypes } from "../../util/reexportTypes";
 export async function generateObjectSetDir(
   objectSetDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(objectSetDir, { recursive: true });
 
   await fs.writeFile(
     path.join(objectSetDir, "index.ts"),
     await formatTs(`
-    export * from "./ObjectSetDefinition";
-    export * from "./OntologyObjectSet";
+    export * from "./ObjectSetDefinition${importExt}";
+    export * from "./OntologyObjectSet${importExt}";
     `),
   );
 

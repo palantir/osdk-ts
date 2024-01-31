@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Support modules in v1 code generation
+  links:
+    - https://github.com/palantir/osdk-ts/pull/10

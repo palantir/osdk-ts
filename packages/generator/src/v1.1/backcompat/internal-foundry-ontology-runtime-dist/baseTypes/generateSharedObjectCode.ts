@@ -22,20 +22,21 @@ import { reexportTypes } from "../../util/reexportTypes";
 export async function generateSharedObjectCodeDir(
   sharedObjectCodeDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(sharedObjectCodeDir, { recursive: true });
 
   await fs.writeFile(
     path.join(sharedObjectCodeDir, "index.ts"),
     await formatTs(`
-    export * from "./FilteredPropertiesTerminalOperations";
+    export * from "./FilteredPropertiesTerminalOperations${importExt}";
     `),
   );
 
   await fs.writeFile(
     path.join(sharedObjectCodeDir, "FilteredPropertiesTerminalOperations.ts"),
     await formatTs(
-      `import { OntologyObject } from "../OntologyObject`
+      `import { OntologyObject } from "../OntologyObject${importExt}`
         + reexportTypes([
           "FilteredPropertiesTerminalOperations",
           "FilteredPropertiesTerminalOperationsWithGet",

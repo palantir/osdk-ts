@@ -19,14 +19,18 @@ import type { MinimalFs } from "../../../MinimalFs";
 import { formatTs } from "../../../util/test/formatTs";
 import { reexportTypes } from "../util/reexportTypes";
 
-export async function generateClientDir(runtimeDistDir: string, fs: MinimalFs) {
+export async function generateClientDir(
+  runtimeDistDir: string,
+  fs: MinimalFs,
+  importExt = "",
+) {
   const pagingDir = path.join(runtimeDistDir, "client");
   await fs.mkdir(pagingDir, { recursive: true });
 
   await fs.writeFile(
     path.join(pagingDir, "index.ts"),
     await formatTs(
-      `export * from "./clientOptions";`,
+      `export * from "./clientOptions${importExt}";`,
     ),
   );
 

@@ -22,19 +22,20 @@ import { reexportTypes } from "../../util/reexportTypes";
 export async function generateTimeSeriesDir(
   timeseriesDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   await fs.mkdir(timeseriesDir, { recursive: true });
   await fs.writeFile(
     path.join(timeseriesDir, "index.ts"),
     await formatTs(`
-    export * from "./TimeSeries";
-    export * from "./TimeSeriesDuration";
-    export * from "./TimeSeriesPoint";
+    export * from "./TimeSeries${importExt}";
+    export * from "./TimeSeriesDuration${importExt}";
+    export * from "./TimeSeriesPoint${importExt}";
     ${"" // Internal type
-      // export * from "./TimeSeriesProperty";
+      // export * from "./TimeSeriesProperty${importExt}";
     }
-    export * from "./TimeSeriesQuery";
-    export * from "./TimeSeriesTerminalOperations";
+    export * from "./TimeSeriesQuery${importExt}";
+    export * from "./TimeSeriesTerminalOperations${importExt}";
   `),
   );
 

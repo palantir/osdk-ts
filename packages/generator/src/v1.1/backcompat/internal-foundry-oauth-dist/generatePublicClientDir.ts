@@ -22,6 +22,7 @@ import { reexportConsts } from "../util/reexportConsts";
 export async function generatePublicClientDir(
   fs: MinimalFs,
   oauthDistDir: string,
+  importExt = "",
 ) {
   const publicClientDistDir = path.join(oauthDistDir, "PublicClient");
   await fs.mkdir(publicClientDistDir, { recursive: true });
@@ -29,7 +30,7 @@ export async function generatePublicClientDir(
   await fs.writeFile(
     path.join(publicClientDistDir, "index.ts"),
     await formatTs(`
-    export * from "./PublicClientAuth";
+    export * from "./PublicClientAuth${importExt}";
   `),
   );
 
