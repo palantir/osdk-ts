@@ -14,54 +14,86 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
+import type * as yargs from "yargs";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-import type { SiteDeployArgs } from "./SiteDeployArgs.js";
+import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
-export const command: CommandModule<
-  CommonSiteArgs,
-  SiteDeployArgs
-> = {
-  command: "deploy",
-  describe: "Deploy an uploaded version",
-  builder: (argv) => {
-    return argv
-      .options({
-        "siteVersion": {
-          type: "string",
-          conflicts: "clearVersion",
-          // group: "Deploy Version",
-          // implies: { "clearVersion": "false" },
-        },
-        undeploy: {
-          alias: "clearVersion",
-          description: "Causes the site to no longer be deployed",
-          type: "boolean",
-          conflicts: "siteVersion",
-          // group: "Deploy Version",
-          // implies: { "siteVersion": "" },
-        },
-      }).group(
-        ["siteVersion", "clearVersion"],
-        "Version To Deploy (requires one of)",
-      );
-
-    // .check((args) => {
-    //   if (
-    //     (args.siteVersion && args.clearVersion)
-    //     || (!args.siteVersion && args.clearVersion == undefined)
-    //   ) {
-    //     // consola.error("Only one of --siteVersion or --clearVersion may be provided");
-    //     throw new Error(
-    //       "Only one of --siteVersion or --clearVersion may be provided",
-    //     );
-    //   }
-    // });
-  },
-  handler: async (args) => {
-    const command = await import("./handleSiteDeploy.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+function deployHandler(
+  configFile: any,
+): yargs.CommandModule<CommonSiteArgs, SiteDeployArgs> {
+  const command: yargs.CommandModule<
+    CommonSiteArgs,
+    SiteDeployArgs
+  > = {
+    command: "deploy",
+    describe: "Deploy an uploaded version",
+    builder: (argv) => {
+      return argv
+        .options({
+          directory: {
+            type: "string",
+            description: "Directory to deploy",
+            ...configFile.directory
+              ? {
+                default: configFile.directory,
+              }
+              : {
+                demandOption: true,
+              },
+          },
+          uploadOnly: {
+            type: "boolean",
+            description: "Upload the directory but do not deploy it",
+            default: false,
+          },
+          version: {
+            type: "string",
+            description: "Version to deploy",
+            ...configFile.autoVersion == null
+              ? { conflicts: "autoVersion" }
+              : {}, // Only conflict if autoVersion is not provided in the config file
+          },
+          autoVersion: {
+            type: "boolean",
+            description: "Infers the version to deploy automatically",
+            ...(configFile.autoVersion != null)
+              ? { default: configFile.autoVersion }
+              : { conflicts: "version" },
+          },
+        }).group(
+          ["version", "autoVersion"],
+          "Version Arguments. Only one of these options may be specified.",
+        )
+        .group(
+          ["directory", "uploadOnly"],
+          "Common Arguments",
+        )
+        .check((argv) => {
+          if (
+            configFile.autoVersion == null && argv.autoVersion == null
+            && argv.version == null
+          ) {
+            throw new Error(
+              "One of --version or --autoVersion must be specified",
+            );
+          }
+          if (
+            argv.version == null && argv.autoVersion != null
+            && argv.autoVersion === false
+          ) {
+            // This also handles if autoVersion is set to false in the project config file
+            throw new Error(
+              "--autoVersion must not be specified with a value of false if --version is not specified.",
+            );
+          }
+          return true;
+        });
+    },
+    handler: async (args) => {
+      const command = await import("./handleSiteDeploy.mjs");
+      await command.default(args);
+    },
+  };
+  return command;
+}
+export default deployHandler;

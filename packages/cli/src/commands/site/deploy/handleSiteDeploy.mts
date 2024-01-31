@@ -20,25 +20,62 @@ import {
   ArtifactsSitesAdminV2Service,
   createConjureContext,
   thirdPartyApplicationService,
-} from "#net";
-import type { SiteDeployArgs } from "./SiteDeployArgs.js";
+ artifacts } from "#net";
+import type { SiteDeployArgs } from "./siteDeployArgs.js";
+import archiver from "archiver";
+import * as fs from "node:fs";
+import { Readable } from "node:stream";
+import { ExitProcessError } from "../../../ExitProcessError.js";
+import {getAutoVersion} from "../../../utils/versionUtils.js";
 
 export default async function handleSiteDeploy(
-  { siteVersion: version, appRid, baseUrl, clearVersion }: SiteDeployArgs,
+  {  version, application, foundryUrl, autoVersion, uploadOnly, directory }: SiteDeployArgs,
 ) {
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(baseUrl, appRid);
+  // Shouldn't be possible but additional safeguard
+  if (!version && !autoVersion) {
+    throw new ExitProcessError(2, "Either version or autoVersion must be specified");
+  }
 
-  const ctx = createConjureContext(baseUrl, "/artifacts/api");
-  if (version) {
+  const siteVersion = !version ? await getAutoVersion() : version;
+  if (!version) {
+    consola.info(`No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`);
+  }
+
+  const stat = await fs.promises.stat(directory);
+  if (!stat.isDirectory()) {
+    consola.error("Specified path is not a directory");
+    throw new ExitProcessError(2);
+  }
+
+  consola.start("Zippping site files");
+
+  const archive = archiver("zip").directory(directory, false);
+
+  await Promise.all([
+    artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
+      foundryUrl,
+      application,
+      siteVersion,
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+    ),
+    archive.finalize(),
+  ]);
+
+  consola.success("Upload complete");
+
+  if (uploadOnly === false) {
+
+    const repositoryRid = await thirdPartyApplicationService
+      .fetchWebsiteRepositoryRid(foundryUrl, application);
+
+    const ctx = createConjureContext(foundryUrl, "/artifacts/api");
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,
-      { siteVersion: { version } },
+      { siteVersion: { version: siteVersion } },
     );
-  } else if (clearVersion) {
-    await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
-  }
 
-  consola.success("Deploy successful");
+   consola.success(`Deployed ${siteVersion} successfully`);
+  }
+    
 }

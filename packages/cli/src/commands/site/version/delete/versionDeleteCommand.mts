@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import { consola } from "consola";
+import { artifacts } from "../../../../net/index.mjs";
+import type { SiteVersionArgs } from "../siteVersionArgs.js";
 
-export interface SiteDeployArgs extends CommonSiteArgs {
-  siteVersion?: string;
-  clearVersion?: boolean;
+export default async function versionDeleteCommand(  {  version, application, foundryUrl }: SiteVersionArgs) {
+  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
+    foundryUrl,
+    application,
+    version,
+  );
+
+  consola.success(
+    `Deleted version ${version} successful`,
+  );
 }
