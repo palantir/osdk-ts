@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-const TOKEN_ENV_VAR = "FOUNDRY_TOKEN";
+const TOKEN_ENV_VARS: string[] = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"];
 
 /**
  * Loads a JWT Auth Token from an argument, a file, or environment variable.
@@ -29,23 +30,30 @@ const TOKEN_ENV_VAR = "FOUNDRY_TOKEN";
 export function loadToken(token?: string, tokenFile?: string): string {
   if (token) {
     checkIsValidToken(token);
+    consola.debug(`Using token from --token argument`);
     return token;
   }
 
   if (tokenFile) {
     const loadedToken = loadTokenFile(tokenFile);
     checkIsValidToken(loadedToken);
+    consola.debug(`Using token from --tokenFile argument`);
     return loadedToken;
   }
 
-  const environmentToken = process.env[TOKEN_ENV_VAR];
-  if (environmentToken) {
-    checkIsValidToken(environmentToken);
-    return environmentToken;
+  for (const envVar of TOKEN_ENV_VARS) {
+    const environmentToken = process.env[envVar];
+    if (environmentToken) {
+      checkIsValidToken(environmentToken);
+      consola.debug(`Using token from ${envVar} environment variable`);
+      return environmentToken;
+    }
   }
 
   throw new Error(
-    `No token found. Please supply a --token argument, a --token-file argument or set the ${TOKEN_ENV_VAR} environment variable.`,
+    `No token found. Please supply a --token argument, a --token-file argument or set the ${
+      TOKEN_ENV_VARS[0]
+    } environment variable.`,
   );
 }
 
