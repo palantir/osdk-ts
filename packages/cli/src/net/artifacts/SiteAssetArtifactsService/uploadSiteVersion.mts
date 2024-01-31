@@ -26,17 +26,19 @@ export async function uploadZippedSiteAsset(
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
   zipFile: ReadableStream | Blob | BufferSource,
+  token: string,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
     baseUrl,
     thirdPartyAppRid,
+    token,
   );
 
   const url = `${
     getSiteAssetBaseUrl(baseUrl, repositoryRid)
   }/versions/zip/${version}`;
 
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(() => token);
 
   const result = await fetch(
     url,

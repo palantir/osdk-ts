@@ -16,16 +16,19 @@
 
 import { consola } from "consola";
 import { artifacts } from "../../../../net/index.mjs";
+import { loadToken } from "../../../../util/token.js";
 import type { SiteVersionArgs } from "../SiteVersionArgs.js";
 
 export default async function versionDeleteCommand(
-  { version, application, foundryUrl }: SiteVersionArgs,
+  { version, application, foundryUrl, token, tokenFile }: SiteVersionArgs,
 ) {
   consola.start(`Deleting version ${version}`);
+  const loadedToken = await loadToken(token, tokenFile);
   await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
     foundryUrl,
     application,
     version,
+    loadedToken,
   );
   consola.success(
     `Deleted version ${version}`,

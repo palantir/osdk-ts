@@ -20,17 +20,19 @@ import {
   thirdPartyApplicationService,
 } from "#net";
 import { consola } from "consola";
+import { loadToken } from "../../../../util/token.js";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
 export default async function versionGetCommand(
-  { foundryUrl, application }: CommonSiteArgs,
+  { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
 ) {
+  const loadedToken = await loadToken(token, tokenFile);
   consola.start("Getting live version");
 
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
+    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
 
   const deployedVersion = await ArtifactsSitesAdminV2Service.getDeployedVersion(
     ctx,

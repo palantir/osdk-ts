@@ -23,14 +23,16 @@ import type { SiteAssetVersions } from "./SiteAssetVersions.mjs";
 export async function fetchSiteVersions(
   baseUrl: string,
   thirdPartyAppRid: ThirdPartyAppRid,
+  token: string,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
     baseUrl,
     thirdPartyAppRid,
+    token,
   );
 
   const url = `${getSiteAssetBaseUrl(baseUrl, repositoryRid)}/versions`;
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(() => token);
 
   const result = await fetch(url);
   if (result.status === 200) {

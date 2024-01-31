@@ -27,6 +27,7 @@ import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
+import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export default async function siteDeployCommand(
@@ -38,6 +39,8 @@ export default async function siteDeployCommand(
     gitTagPrefix,
     uploadOnly,
     directory,
+    token,
+    tokenFile,
   }: SiteDeployArgs,
 ) {
   if (!version && !autoVersion) {
@@ -46,6 +49,7 @@ export default async function siteDeployCommand(
       "Either version or autoVersion must be specified",
     );
   }
+  const loadedToken = await loadToken(token, tokenFile);
 
   const siteVersion = !version ? await findAutoVersion(gitTagPrefix) : version;
   if (autoVersion) {
@@ -70,6 +74,7 @@ export default async function siteDeployCommand(
       application,
       siteVersion,
       Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+      loadedToken,
     ),
     archive.finalize(),
   ]);
@@ -78,9 +83,9 @@ export default async function siteDeployCommand(
 
   if (!uploadOnly) {
     const repositoryRid = await thirdPartyApplicationService
-      .fetchWebsiteRepositoryRid(foundryUrl, application);
+      .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
 
-    const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+    const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,

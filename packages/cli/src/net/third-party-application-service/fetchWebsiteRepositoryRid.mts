@@ -22,8 +22,9 @@ import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 export async function fetchWebsiteRepositoryRid(
   baseUrl: string,
   thirdPartyAppRid: ThirdPartyAppRid,
+  token: string,
 ): Promise<RepositoryRid> {
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(() => token);
   const url = `
     ${baseUrl}/third-party-application-service/api/application-websites/${thirdPartyAppRid}`;
 

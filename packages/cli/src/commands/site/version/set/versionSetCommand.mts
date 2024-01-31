@@ -21,16 +21,18 @@ import {
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
+import { loadToken } from "../../../../util/token.js";
 import type { SiteVersionArgs } from "../SiteVersionArgs.js";
 
 export default async function versionSetCommand(
-  { version, application, foundryUrl }: SiteVersionArgs,
+  { version, application, foundryUrl, token, tokenFile }: SiteVersionArgs,
 ) {
   consola.start(`Setting live version`);
+  const loadedToken = await loadToken(token, tokenFile);
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
+    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
   if (version) {
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,

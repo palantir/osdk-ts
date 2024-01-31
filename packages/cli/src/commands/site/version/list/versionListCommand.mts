@@ -22,22 +22,25 @@ import {
 } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
+import { loadToken } from "../../../../util/token.js";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
 export default async function versionListCommand(
-  { foundryUrl, application }: CommonSiteArgs,
+  { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
 ) {
+  const loadedToken = await loadToken(token, tokenFile);
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
+    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
 
   const [versions, deployedVersion] = await Promise.all([
     artifacts.SiteAssetArtifactsService.fetchSiteVersions(
       foundryUrl,
       application,
+      loadedToken,
     ),
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
   ]);

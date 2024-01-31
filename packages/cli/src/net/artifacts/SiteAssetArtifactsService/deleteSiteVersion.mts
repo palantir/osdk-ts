@@ -25,17 +25,19 @@ export async function deleteSiteVersion(
   baseUrl: string,
   thirdPartyAppRid: ThirdPartyAppRid,
   version: string,
+  token: string,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
     baseUrl,
     thirdPartyAppRid,
+    token,
   );
 
   const url = `${
     getSiteAssetBaseUrl(baseUrl, repositoryRid)
   }/versions/${version}`;
 
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(() => token);
 
   const result = await fetch(
     url,
