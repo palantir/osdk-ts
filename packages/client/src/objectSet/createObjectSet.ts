@@ -39,6 +39,7 @@ export function createObjectSet<
   },
 ): ObjectSet<O, K> {
   const base: BaseObjectSet<O, K> = {
+    definition: objectSet,
     // aggregate: <
     //   AC extends AggregationClause<O, K>,
     //   GBC extends GroupByClause<O, K> | undefined = undefined,

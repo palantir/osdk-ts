@@ -16,14 +16,29 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
+import type { DataValue } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { Actions } from "./Actions.js";
+import { toDataValue } from "../util/toDataValue.js";
+import type {
+  ActionEditResponse,
+  Actions,
+  ActionValidationResponse,
+} from "./Actions.js";
+import { ActionValidationError } from "./ActionValidationError.js";
 
-export interface ApplyActionOptions {
-  returnEdits?: boolean;
-  validateOnly?: boolean;
-}
+// cannot specify both validateOnly and returnEdits as true
+export type ApplyActionOptions =
+  | { returnEdits?: true; validateOnly?: false }
+  | {
+    validateOnly?: true;
+    returnEdits?: false;
+  };
+
+export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
+  Op extends { validateOnly: true } ? ActionValidationResponse
+    : Op extends { returnEdits: true } ? ActionEditResponse
+    : undefined;
 
 export async function applyAction<
   O extends OntologyDefinition<any>,
@@ -33,14 +48,14 @@ export async function applyAction<
   client: ClientContext<O>,
   actionApiName: A,
   parameters?: Parameters<Actions<O>[A]>[0],
-  options?: Op,
-): Promise<unknown> {
+  options: Op = {} as Op,
+): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
     actionApiName as string,
     {
-      parameters: parameters as any,
+      parameters: remapActionParams(parameters),
       options: {
         mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
         returnEdits: options?.returnEdits ? "ALL" : "NONE",
@@ -48,19 +63,32 @@ export async function applyAction<
     },
   );
 
-  const bulkEdits = response.edits?.type == "largeScaleEdits"
-    ? response.edits.editedObjectTypes
-    : undefined;
-  const edits = response.edits?.type == "edits" ? response.edits : undefined;
-  const q = edits?.edits[0];
+  if (options?.validateOnly) {
+    return response.validation as ActionReturnTypeForOptions<Op>;
+  }
 
-  return {
-    __unstable: {
-      bulkEdits,
-      addedLinksCount: edits?.addedLinksCount,
-      addedObjectCount: edits?.addedObjectCount,
-      modifiedObjectsCount: edits?.modifiedObjectsCount,
-      edits: edits?.edits,
-    },
-  };
+  if (response.validation?.result === "INVALID") {
+    throw new ActionValidationError(response.validation);
+  }
+
+  return (options?.returnEdits
+    ? response.edits
+    : undefined) as ActionReturnTypeForOptions<Op>;
+}
+
+function remapActionParams<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+>(params: Parameters<Actions<O>[A]>[0] | undefined): Record<string, DataValue> {
+  if (params == null) {
+    return {};
+  }
+
+  const parameterMap: { [parameterName: string]: any } = {};
+  const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
+    acc[key] = toDataValue(value);
+    return acc;
+  }, parameterMap);
+
+  return remappedParams;
 }

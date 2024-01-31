@@ -21,6 +21,7 @@ import type {
   ObjectOrInterfacePropertyKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
+import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -38,6 +39,8 @@ export interface BaseObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
 > {
+  definition: WireObjectSet;
+
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
   >(
