@@ -22,12 +22,11 @@ import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
+import type { SiteConfig } from "./utils/configFileUtils.js";
 import { extractSiteConfig, loadConfigFile } from "./utils/configFileUtils.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
-  const configFile = await loadConfigFile();
-  const siteConfig = configFile ? extractSiteConfig(configFile) : {};
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
     .version(false)
@@ -47,6 +46,12 @@ export async function cli(args: string[] = process.argv) {
       command: "unstable",
       aliases: ["experimental"],
       builder: async (argv) => {
+        const configFile = await loadConfigFile();
+        const siteConfig: SiteConfig | any = configFile
+          ? extractSiteConfig(configFile.configJson)
+          : {};
+        // TODO(zka): Figure out how to do consola.debug here of the found config (verbosity settings isn't yet at this point)
+
         return argv
           .command(site(siteConfig))
           .command(typescript)

@@ -15,11 +15,12 @@
  */
 
 import type * as yargs from "yargs";
+import type { SiteConfig } from "../../../utils/configFileUtils.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
 function deployHandler(
-  configFile: any,
+  siteConfig: SiteConfig | any,
 ): yargs.CommandModule<CommonSiteArgs, SiteDeployArgs> {
   const command: yargs.CommandModule<
     CommonSiteArgs,
@@ -33,9 +34,9 @@ function deployHandler(
           directory: {
             type: "string",
             description: "Directory to deploy",
-            ...configFile.directory
+            ...siteConfig.directory
               ? {
-                default: configFile.directory,
+                default: siteConfig.directory,
               }
               : {
                 demandOption: true,
@@ -49,15 +50,15 @@ function deployHandler(
           version: {
             type: "string",
             description: "Version to deploy",
-            ...configFile.autoVersion == null
+            ...siteConfig.autoVersion == null
               ? { conflicts: "autoVersion" }
               : {}, // Only conflict if autoVersion is not provided in the config file
           },
           autoVersion: {
             type: "boolean",
             description: "Infers the version to deploy automatically",
-            ...(configFile.autoVersion != null)
-              ? { default: configFile.autoVersion }
+            ...(siteConfig.autoVersion != null)
+              ? { default: siteConfig.autoVersion }
               : { conflicts: "version" },
           },
         }).group(
@@ -70,7 +71,7 @@ function deployHandler(
         )
         .check((argv) => {
           if (
-            configFile.autoVersion == null && argv.autoVersion == null
+            siteConfig.autoVersion == null && argv.autoVersion == null
             && argv.version == null
           ) {
             throw new Error(

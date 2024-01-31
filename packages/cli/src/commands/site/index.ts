@@ -17,12 +17,13 @@
 import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
+import type { SiteConfig } from "../../utils/configFileUtils.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import version from "./version/index.js";
 
 function siteHandler(
-  configFile: any,
+  siteConfig: SiteConfig | any,
 ): yargs.CommandModule<CliCommonArgs, CommonSiteArgs> {
   const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
     command: "site",
@@ -33,9 +34,9 @@ function siteHandler(
           application: {
             type: "string",
             coerce: (a) => a as ThirdPartyAppRid,
-            ...configFile.application
+            ...siteConfig.application
               ? {
-                default: configFile.application,
+                default: siteConfig.application,
               }
               : {
                 demandOption: true,
@@ -44,9 +45,9 @@ function siteHandler(
           },
           foundryUrl: {
             type: "string",
-            ...configFile.foundryUrl
+            ...siteConfig.foundryUrl
               ? {
-                default: configFile.foundryUrl,
+                default: siteConfig.foundryUrl,
               }
               : {
                 demandOption: true,
@@ -70,7 +71,7 @@ function siteHandler(
           "Common Arguments",
         )
         .command(version)
-        .command(deploy(configFile))
+        .command(deploy(siteConfig))
         .demandCommand();
     },
     handler: async (args) => {
