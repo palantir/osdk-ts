@@ -16,7 +16,7 @@
 
 import { promises as fsPromises } from "node:fs";
 
-interface SiteConfig {
+export interface SiteConfig {
   application: string;
   foundryUrl: string;
   directory: string;
@@ -25,6 +25,11 @@ interface SiteConfig {
 
 interface ConfigJson {
   site: SiteConfig;
+}
+
+interface LoadedConfig {
+  configJson: ConfigJson;
+  configFilePath: string;
 }
 
 const CONFIG_FILE_NAMES: string[] = [
@@ -36,18 +41,19 @@ const CONFIG_FILE_NAMES: string[] = [
  * @returns A promise that resolves to the configuration JSON object, or undefined if not found.
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
-export async function loadConfigFile(): Promise<ConfigJson | undefined> {
+export async function loadConfigFile(): Promise<LoadedConfig | undefined> {
   const Consola = await import("consola");
   const consola = Consola.consola;
   const { findUp } = await import("find-up");
 
   for (const configFileName of CONFIG_FILE_NAMES) {
-    const result = await findUp(configFileName, { cwd: process.cwd() });
-    if (result) {
+    const configFilePath = await findUp(configFileName, { cwd: process.cwd() });
+    if (configFilePath) {
       try {
-        const fileContent = await fsPromises.readFile(result, "utf-8");
+        const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
         const configJson: ConfigJson = JSON.parse(fileContent);
-        return configJson;
+
+        return { configJson, configFilePath };
       } catch (error) {
         consola.error(
           "Error reading or parsing the configuration file:",
