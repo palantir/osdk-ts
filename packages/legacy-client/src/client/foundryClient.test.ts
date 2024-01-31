@@ -43,8 +43,8 @@ describe(BaseFoundryClient, () => {
     const [packageUA, generatorUA] = MockOntology.metadata.userAgent
       .split(" ");
     expect(parts).toHaveLength(3);
-    expect(parts[0]).toEqual(USER_AGENT); // the legacy-client USER_AGENT has an undefined version during vitest runs
-    expect(parts[1]).toEqual(packageUA);
-    expect(parts[2]).toEqual(generatorUA);
+    expect(parts[0]).toEqual(packageUA);
+    expect(parts[1]).toEqual(generatorUA);
+    expect(parts[2]).toEqual(USER_AGENT); // the legacy-client USER_AGENT has an undefined version during vitest runs
   });
 });

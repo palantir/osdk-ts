@@ -38,7 +38,7 @@ export function createClientContext<
     throw new Error("stack cannot be empty");
   }
 
-  const wireUserAgent = `${userAgent} ${ontology.metadata.userAgent}`;
+  const wireUserAgent = `${ontology.metadata.userAgent} ${userAgent}`;
 
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
