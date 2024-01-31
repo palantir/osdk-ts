@@ -22,9 +22,12 @@ import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
+import { extractSiteConfig, loadConfigFile } from "./utils/configFileUtils.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
+  const configFile = await loadConfigFile();
+  const siteConfig = configFile ? extractSiteConfig(configFile) : {};
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
     .version(false)
@@ -45,7 +48,7 @@ export async function cli(args: string[] = process.argv) {
       aliases: ["experimental"],
       builder: async (argv) => {
         return argv
-          .command(site)
+          .command(site(siteConfig))
           .command(typescript)
           .command(auth)
           .demandCommand();
