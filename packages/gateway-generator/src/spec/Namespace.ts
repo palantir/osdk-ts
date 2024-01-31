@@ -126,6 +126,7 @@ export interface Response {
   code: string;
 }
 
+// comment
 export interface StaticOperation {
   name: string;
   verb?:
