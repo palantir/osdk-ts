@@ -20,7 +20,7 @@ import * as path from "node:path";
 const TOKEN_ENV_VAR = "FOUNDRY_TOKEN";
 
 /**
- * Loads a JWT Auth Token from a file, environment variable, or argument.
+ * Loads a JWT Auth Token from an argument, a file, or environment variable.
  * @param token The token as a string.
  * @param tokenFile The path to the token file.
  * @returns The token as a string.
@@ -28,15 +28,22 @@ const TOKEN_ENV_VAR = "FOUNDRY_TOKEN";
  */
 export function loadToken(token?: string, tokenFile?: string): string {
   if (token) {
+    checkIsValidToken(token);
     return token;
   }
+
   if (tokenFile) {
-    return loadTokenFile(tokenFile);
+    const loadedToken = loadTokenFile(tokenFile);
+    checkIsValidToken(loadedToken);
+    return loadedToken;
   }
+
   const environmentToken = process.env[TOKEN_ENV_VAR];
   if (environmentToken) {
+    checkIsValidToken(environmentToken);
     return environmentToken;
   }
+
   throw new Error(
     `No token found. Please supply a --token argument, a --token-file argument or set the ${TOKEN_ENV_VAR} environment variable.`,
   );
@@ -58,11 +65,18 @@ function loadTokenFile(filePath: string): string {
     throw new Error(`Unable to read token file "${filePath}": ${error}`);
   }
 
-  if (!isJWT(token)) {
-    throw new Error(`Token file "${filePath}" does not contain a valid JWT`);
-  }
-
   return token;
+}
+
+/**
+ * Checks if a given string is a valid token.
+ * @param token The string to check.
+ * @throws An error if the string is not a valid token.
+ */
+function checkIsValidToken(token: string) {
+  if (!isJWT(token)) {
+    throw new Error(`Token "${token}" is not a valid JWT`);
+  }
 }
 
 /**
