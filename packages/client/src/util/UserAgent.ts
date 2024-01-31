@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export const USER_AGENT = `@osdk/client/${process.env.PACKAGE_VERSION}`;
+export const USER_AGENT = `osdk-client/${process.env.PACKAGE_VERSION}`;

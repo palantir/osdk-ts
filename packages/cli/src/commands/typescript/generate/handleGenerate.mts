@@ -29,7 +29,7 @@ import * as fs from "node:fs";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
-const USER_AGENT = `@osdk/cli/${process.env.PACKAGE_VERSION}`;
+const USER_AGENT = `osdk-cli/${process.env.PACKAGE_VERSION}`;
 
 export default async function handleGenerate(args: TypescriptGenerateArgs) {
   let success = false;
@@ -126,7 +126,7 @@ async function generateClientSdk(
     if (args.beta) {
       await generateClientSdkVersionTwoPointZero(
         ontology,
-        USER_AGENT,
+        getUserAgent(args.version),
         minimalFs,
         args.outDir,
         args.packageType,
@@ -134,7 +134,7 @@ async function generateClientSdk(
     } else {
       await generateClientSdkVersionOneDotOne(
         ontology,
-        USER_AGENT,
+        getUserAgent(args.version),
         minimalFs,
         args.outDir,
         args.packageType,
@@ -145,4 +145,14 @@ async function generateClientSdk(
     return false;
   }
   return true;
+}
+
+// If the user passed us `dev` as our version, we use that for both our generated package version AND the cli version.
+// This makes it so that releases don't force us to have to regenerate the code when the version strings change.
+function getUserAgent(version: string) {
+  if (version === "dev") {
+    return "typescript-sdk/dev osdk-cli/dev";
+  } else {
+    return `typescript-sdk/${version} ${USER_AGENT}`;
+  }
 }

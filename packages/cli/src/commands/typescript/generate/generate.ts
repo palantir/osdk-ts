@@ -67,12 +67,17 @@ export const command: CommandModule<
             default: "commonjs",
             choices: ["commonjs", "module"],
           },
+          version: {
+            type: "string",
+            description: "Version of the generated code, or 'dev'",
+            demandOption: true,
+          },
         } as const,
       ).group(
-        ["ontologyPath", "outDir"],
+        ["ontologyPath", "outDir", "version"],
         "Generate from a local file",
       ).group(
-        ["stack", "clientId", "outDir", "ontologyWritePath"],
+        ["stack", "clientId", "outDir", "ontologyWritePath", "version"],
         "OR Generate from a stack",
       )
       .check(

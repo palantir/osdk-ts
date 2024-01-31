@@ -15,4 +15,4 @@
  */
 
 export const USER_AGENT =
-  `@osdk/foundry-sdk-generator/${process.env.PACKAGE_VERSION}`;
+  `typescript-sdk-generator/${process.env.PACKAGE_VERSION}`;
