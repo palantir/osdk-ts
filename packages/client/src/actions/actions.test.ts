@@ -26,7 +26,7 @@ import {
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
-import { Attachment } from "../object/Attachment.js";
+import type { Attachment, AttachmentRid } from "../object/Attachment.js";
 import type {
   ActionEditResponse,
   ActionValidationResponse,
@@ -143,9 +143,9 @@ describe("actions", () => {
 
   it("Accepts attachments", async () => {
     expectTypeOf<Parameters<typeof client.actions.actionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment }>();
+      .toEqualTypeOf<{ attachment: Attachment | AttachmentRid }>();
 
-    const attachment = new Attachment("attachment.rid");
+    const attachment = { rid: "attachment.rid" } as Attachment;
     const result = await client.actions.actionTakesAttachment({ attachment });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();

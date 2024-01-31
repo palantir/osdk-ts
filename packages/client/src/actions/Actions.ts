@@ -25,7 +25,7 @@ import type {
   ValidateActionResponseV2,
 } from "@osdk/gateway/types";
 import type { ObjectSet } from "../index.js";
-import type { Attachment } from "../object/Attachment.js";
+import type { Attachment, AttachmentRid } from "../object/Attachment.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
@@ -64,7 +64,7 @@ type ActionParameterTypeFrom<
 
 // we have to override the @osdk/api WirePropertyTypes to specify how we handle the Attachment types
 interface OverrideWirePropertyTypes extends WirePropertyTypes {
-  attachment: Attachment;
+  attachment: Attachment | AttachmentRid;
 }
 
 type OsdkActionParameterBaseType<

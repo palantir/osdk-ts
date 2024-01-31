@@ -18,14 +18,12 @@ import type { OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
-import { Attachment } from "./Attachment.js";
 import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
 import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
 import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
-const getConverter = createCachedOntologyTransform(createConverter);
 
 const OriginClient = Symbol();
 
@@ -117,42 +115,6 @@ function createPrototype<
   return proto;
 }
 
-// preprocess the ontology definition to more quickly apply object conversions when needed
-function createConverter<
-  T extends keyof O["objects"] & string,
-  O extends OntologyDefinition<any>,
->(
-  ontology: O,
-  type: T,
-) {
-  const steps: Array<(o: Record<string, any>) => void> = [];
-
-  for (
-    const [key, value] of Object.entries(ontology.objects[type].properties)
-  ) {
-    // attachments need a wrapper to provide functionality and to identify them at serialization time
-    if (value.type === "attachment") {
-      steps.push((o) => {
-        if (o[key] != null) {
-          if (Array.isArray(o[key])) {
-            o[key] = o[key].map((a: any) => new Attachment(a.rid));
-          } else {
-            o[key] = new Attachment(o[key].rid);
-          }
-        }
-      });
-    }
-  }
-
-  return steps.length > 0
-    ? (o: Record<string, any>) => {
-      for (const step of steps) {
-        step(o);
-      }
-    }
-    : false as const;
-}
-
 /**
  * @param objs the objects to be converted, the contents of this array will be mutated
  */
@@ -164,7 +126,6 @@ export function convertWireToOsdkObjects<
 ) {
   for (const obj of objs) {
     const proto = getPrototype(client.ontology, obj.__apiName);
-    const converter = getConverter(client.ontology, obj.__apiName);
 
     Object.setPrototypeOf(obj, proto);
 
@@ -174,9 +135,5 @@ export function convertWireToOsdkObjects<
       configurable: false,
       writable: false,
     });
-
-    if (converter) {
-      converter(obj);
-    }
   }
 }

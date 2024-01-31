@@ -19,7 +19,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
-import { Attachment } from "./Attachment.js";
 
 describe("convertWireToOsdkObjects", () => {
   let client: Client<typeof MockOntology>;
@@ -42,27 +41,5 @@ describe("convertWireToOsdkObjects", () => {
     expect(employees.data.length).toBeGreaterThanOrEqual(2);
     const [a, b] = employees.data;
     expect(Object.getPrototypeOf(a)).toBe(Object.getPrototypeOf(b));
-  });
-
-  it("converts attachments as expected", async () => {
-    const withValues = await client.objects.objectTypeWithAllPropertyTypes
-      .where({ id: 1 })
-      .fetchPageOrThrow();
-    expect(withValues.data.length).toBeGreaterThanOrEqual(1);
-
-    const { attachment, attachmentArray } = withValues.data[0];
-
-    expect(attachment).toBeInstanceOf(Attachment);
-    expect(Array.isArray(attachmentArray)).toBeTruthy();
-    expect(attachmentArray![0]).toBeInstanceOf(Attachment);
-
-    const withoutValues = await client.objects.objectTypeWithAllPropertyTypes
-      .where({ id: 2 }).fetchPageOrThrow();
-    const {
-      attachment: emptyAttachment,
-      attachmentArray: emptyAttachmentArray,
-    } = withoutValues.data[0];
-    expect(emptyAttachment).toBeUndefined();
-    expect(emptyAttachmentArray).toBeUndefined();
   });
 });

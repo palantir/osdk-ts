@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
+export type AttachmentRid = string & { __attachmentRid: true };
+
 export interface Attachment {
-  rid: string;
-}
-
-export class Attachment implements Attachment {
-  constructor(public rid: string) {}
-}
-
-export function isAttachment(o: any): o is Attachment {
-  return o instanceof Attachment;
+  rid: AttachmentRid;
 }

@@ -15,7 +15,6 @@
  */
 
 import type { DataValue } from "@osdk/gateway/types";
-import { isAttachment } from "../object/Attachment.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -36,8 +35,11 @@ export function toDataValue(value: any): DataValue {
     return Array.from(value, toDataValue);
   }
 
-  // attachments just send the rid directly
-  if (isAttachment(value)) {
+  // if we have an object that only has a rid property, assume its an attachment and send the rid directly
+  // it is possible for the user to pass in an AttachmentRid directly, which will just get passed through at the end
+  if (
+    typeof value === "object" && value.rid && Object.keys(value).length === 1
+  ) {
     return value.rid;
   }
 

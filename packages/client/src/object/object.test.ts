@@ -15,10 +15,18 @@
  */
 
 import { apiServer, stubData } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import type { Attachment } from "./Attachment.js";
 
 describe("OsdkObject", () => {
   describe("link", () => {
@@ -105,6 +113,17 @@ describe("OsdkObject", () => {
       // ensure that select worked
       expect(peep.employeeId).toBeDefined();
       expect((peep as any).employeeStatus).toBeUndefined();
+    });
+
+    it("returns attachments as type-tagged strings", async () => {
+      const { data: [object] } = await client.objects
+        .objectTypeWithAllPropertyTypes
+        .where({ id: 1 })
+        .fetchPageOrThrow();
+
+      expectTypeOf<typeof object.attachment>().toMatchTypeOf<
+        Attachment | undefined
+      >();
     });
   });
 });

@@ -18,7 +18,7 @@ import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment } from "../object/Attachment.js";
+import type { Attachment } from "../object/Attachment.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -51,7 +51,7 @@ describe(toDataValue, () => {
   });
 
   it("recursively converts arrays and sets into array types", () => {
-    const attachment = new Attachment("rid");
+    const attachment = { rid: "rid" } as Attachment;
     const attachmentArray = [attachment];
     const attachmentSet = new Set(attachmentArray);
 
@@ -67,7 +67,7 @@ describe(toDataValue, () => {
   });
 
   it("recursively handles structs", () => {
-    const attachment = new Attachment("rid");
+    const attachment = { rid: "rid" } as Attachment;
     const struct = {
       inner: {
         attachment,
