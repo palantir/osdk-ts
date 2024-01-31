@@ -25,17 +25,20 @@ import { colorize } from "consola/utils";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
 export default async function versionListCommand(
-  { foundryUrl, application,  }: CommonSiteArgs,
+  { foundryUrl, application }: CommonSiteArgs,
 ) {
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(foundryUrl, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", );
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
 
   const [versions, deployedVersion] = await Promise.all([
-    artifacts.SiteAssetArtifactsService.fetchSiteVersions(foundryUrl, application),
+    artifacts.SiteAssetArtifactsService.fetchSiteVersions(
+      foundryUrl,
+      application,
+    ),
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
   ]);
 
@@ -47,7 +50,7 @@ export default async function versionListCommand(
   }
 
   consola.success("Found versions:");
-  //TODO(zka): Add sorting according to SLSVersion
+  // TODO(zka): Add sorting according to SLSVersion
   for (const version of versions) {
     consola.log(
       `    - ${version}${

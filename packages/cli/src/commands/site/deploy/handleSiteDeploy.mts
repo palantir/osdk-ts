@@ -17,28 +17,35 @@
 import { consola } from "consola";
 
 import {
+  artifacts,
   ArtifactsSitesAdminV2Service,
   createConjureContext,
   thirdPartyApplicationService,
- artifacts } from "#net";
-import type { SiteDeployArgs } from "./siteDeployArgs.js";
+} from "#net";
 import archiver from "archiver";
 import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
-import {getAutoVersion} from "../../../utils/versionUtils.js";
+import { getAutoVersion } from "../../../utils/versionUtils.js";
+import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
 export default async function handleSiteDeploy(
-  {  version, application, foundryUrl, autoVersion, uploadOnly, directory }: SiteDeployArgs,
+  { version, application, foundryUrl, autoVersion, uploadOnly, directory }:
+    SiteDeployArgs,
 ) {
   // Shouldn't be possible but additional safeguard
   if (!version && !autoVersion) {
-    throw new ExitProcessError(2, "Either version or autoVersion must be specified");
+    throw new ExitProcessError(
+      2,
+      "Either version or autoVersion must be specified",
+    );
   }
 
   const siteVersion = !version ? await getAutoVersion() : version;
   if (!version) {
-    consola.info(`No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`);
+    consola.info(
+      `No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`,
+    );
   }
 
   const stat = await fs.promises.stat(directory);
@@ -64,7 +71,6 @@ export default async function handleSiteDeploy(
   consola.success("Upload complete");
 
   if (uploadOnly === false) {
-
     const repositoryRid = await thirdPartyApplicationService
       .fetchWebsiteRepositoryRid(foundryUrl, application);
 
@@ -75,7 +81,6 @@ export default async function handleSiteDeploy(
       { siteVersion: { version: siteVersion } },
     );
 
-   consola.success(`Deployed ${siteVersion} successfully`);
+    consola.success(`Deployed ${siteVersion} successfully`);
   }
-    
 }

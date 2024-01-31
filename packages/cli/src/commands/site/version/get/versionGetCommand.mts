@@ -32,8 +32,10 @@ export default async function versionGetCommand(
 
   const ctx = createConjureContext(foundryUrl, "/artifacts/api");
 
-  const  deployedVersion = await 
-    ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid);
+  const deployedVersion = await ArtifactsSitesAdminV2Service.getDeployedVersion(
+    ctx,
+    repositoryRid,
+  );
 
   consola.success(`Current deployed version is ${deployedVersion?.version}`);
 }

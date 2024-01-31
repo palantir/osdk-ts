@@ -18,7 +18,9 @@ import { consola } from "consola";
 import { artifacts } from "../../../../net/index.mjs";
 import type { SiteVersionArgs } from "../siteVersionArgs.js";
 
-export default async function versionDeleteCommand(  {  version, application, foundryUrl }: SiteVersionArgs) {
+export default async function versionDeleteCommand(
+  { version, application, foundryUrl }: SiteVersionArgs,
+) {
   await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
     foundryUrl,
     application,

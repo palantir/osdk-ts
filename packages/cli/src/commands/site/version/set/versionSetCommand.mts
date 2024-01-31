@@ -24,19 +24,19 @@ import {
 import type { SiteVersionArgs } from "../siteVersionArgs.js";
 
 export default async function versionSetCommand(
-  {  version, application, foundryUrl,  }: SiteVersionArgs,
+  { version, application, foundryUrl }: SiteVersionArgs,
 ) {
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(foundryUrl, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", );
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
   if (version) {
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,
       { siteVersion: { version } },
     );
-  } 
-  
+  }
+
   consola.success(`Version ${version} set successfully`);
 }
