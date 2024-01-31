@@ -51,7 +51,7 @@ export const clientCtx = createClientContext(
   Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
-  `@osdk/client/0.0.0`,
+  `typescript-sdk/dev osdk-client/dev`,
 );
 
 async function runTests() {

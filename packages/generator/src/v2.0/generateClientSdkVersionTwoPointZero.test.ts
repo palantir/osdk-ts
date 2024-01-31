@@ -28,7 +28,7 @@ describe("generator", () => {
 
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,
-      "@osdk/cli/0.0.0",
+      "typescript-sdk/0.0.0 osdk-cli/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -64,7 +64,7 @@ describe("generator", () => {
     expect(async () => {
       await expect(generateClientSdkVersionTwoPointZero(
         TodoWireOntology,
-        "@osdk/cli/0.0.0",
+        "typescript-sdk/0.0.0 osdk-cli/0.0.0",
         helper.minimalFiles,
         BASE_PATH,
       )).rejects.toThrow();
@@ -79,7 +79,7 @@ describe("generator", () => {
     await mkdir(`${__dirname}/generated`, { recursive: true });
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,
-      "@osdk/cli/0.0.0",
+      "typescript-sdk/0.0.0 osdk-cli/0.0.0",
       {
         writeFile: async (path, contents) => {
           await writeFile(path, contents, { flag: "w" });
