@@ -23,6 +23,7 @@ import type { Actions } from "./actions/Actions.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
+// comment
 export interface Client<O extends OntologyDefinition<any>> {
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
