@@ -22,14 +22,13 @@ import type {
   Attachment,
   Edits,
   LocalDate,
-  NonNullableKeys,
-  NullableKeys,
   Result,
   Timestamp,
 } from "../..";
 import type { ObjectSet } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
+import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
 import type { ValuesOfMap } from "../utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
