@@ -96,7 +96,7 @@ function validateSiteConfig(siteConfig: SiteConfig): void {
     "foundryUrl",
     "directory",
   ];
-  const missingKeys = requiredKeys.filter((key) => !siteConfig[key]);
+  const missingKeys = requiredKeys.filter((key) => siteConfig[key] == null);
 
   if (missingKeys.length > 0) {
     throw new Error(

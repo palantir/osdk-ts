@@ -46,6 +46,11 @@ export function loadToken(token?: string, tokenFile?: string): string {
     if (environmentToken) {
       checkIsValidToken(environmentToken);
       consola.debug(`Using token from ${envVar} environment variable`);
+      if (envVar === "FOUNDRY_SDK_AUTH_TOKEN") {
+        consola.warn(
+          `Using FOUNDRY_SDK_AUTH_TOKEN environment variable is deprecated. Please use FOUNDRY_TOKEN instead.`,
+        );
+      }
       return environmentToken;
     }
   }
