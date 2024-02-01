@@ -15,6 +15,7 @@
  */
 
 import type { CommandModule } from "yargs";
+import { isValidSemver } from "../../../util/isValidSemver.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 export const command: CommandModule<
@@ -82,13 +83,19 @@ export const command: CommandModule<
       )
       .check(
         (argv) => {
-          if (argv.ontologyPath || argv.stack) {
-            return true;
-          } else {
+          if (!argv.ontologyPath && !argv.stack) {
             throw new Error(
               "Error: Must specify either ontologyPath or stack and clientId",
             );
           }
+
+          if (argv.version !== "dev" && !isValidSemver(argv.version)) {
+            throw new Error(
+              "Error: Version must be 'dev' or a valid semver version",
+            );
+          }
+
+          return true;
         },
       );
   },
