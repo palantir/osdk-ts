@@ -22,13 +22,14 @@ import type {
   Attachment,
   Edits,
   LocalDate,
+  NonNullableKeys,
+  NullableKeys,
   Result,
   Timestamp,
 } from "../..";
 import type { ObjectSet } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
-import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
 import type { ValuesOfMap } from "../utils/ValuesOfMap";
 
 export interface ValidLegacyActionParameterTypes {
@@ -45,21 +46,37 @@ export interface ValidLegacyActionParameterTypes {
 export type ActionArgs<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-> =
-  & {
+> = NonNullableKeys<O["actions"][A]["parameters"]> extends never ? {
     [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
       O,
       A,
       P
     >;
   }
-  & {
-    [P in NonNullableKeys<O["actions"][A]["parameters"]>]: ActionParameterType<
-      O,
-      A,
-      P
-    >;
-  };
+  : NullableKeys<O["actions"][A]["parameters"]> extends never ? {
+      [P in NonNullableKeys<O["actions"][A]["parameters"]>]:
+        ActionParameterType<
+          O,
+          A,
+          P
+        >;
+    }
+  :
+    & {
+      [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
+        O,
+        A,
+        P
+      >;
+    }
+    & {
+      [P in NonNullableKeys<O["actions"][A]["parameters"]>]:
+        ActionParameterType<
+          O,
+          A,
+          P
+        >;
+    };
 
 export type ActionParameterType<
   O extends OntologyDefinition<any>,
