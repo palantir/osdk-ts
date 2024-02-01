@@ -386,7 +386,7 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
 
-  packages/create-osdk-app:
+  packages/create-app:
     dependencies:
       consola:
         specifier: ^3.2.3

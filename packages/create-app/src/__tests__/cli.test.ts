@@ -47,8 +47,8 @@ for (const template of TEMPLATES) {
   test(`CLI creates ${template.id}`, async () => {
     const project = `expected-${template.id}`;
     await cli([
-      "node",
-      "create-osdk-app",
+      "npx",
+      "@osdk/create-app",
       project,
       "--overwrite",
       "--template",
