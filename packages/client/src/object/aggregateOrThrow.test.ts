@@ -21,6 +21,7 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import { USER_AGENT } from "../util/UserAgent.js";
 import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
 const mockOntology = {
@@ -98,7 +99,7 @@ describe("aggregateOrThrow", () => {
       mockOntology as MockOntology,
       "host.com",
       () => "",
-      undefined,
+      USER_AGENT,
       mockFetch,
     );
 

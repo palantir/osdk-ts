@@ -1,3 +1,5 @@
+import { readFile } from "fs/promises";
+
 /**
  * @param {import('tsup').Options} options
  * @param {{cjsExtension?: ".cjs" | ".js"}} ourOptions
@@ -5,6 +7,8 @@
  */
 export default async (options, ourOptions) => {
   const babel = (await import("esbuild-plugin-babel")).default;
+
+  const packageJson = await readFile("package.json").then(f => JSON.parse(f));
 
   return {
     entry: [
@@ -17,6 +21,9 @@ export default async (options, ourOptions) => {
       return {
         js: format === "cjs" ? (ourOptions?.cjsExtension ?? ".cjs") : ".mjs",
       };
+    },
+    env: {
+      PACKAGE_VERSION: packageJson.version,
     },
     outDir: "build/js",
     clean: true,

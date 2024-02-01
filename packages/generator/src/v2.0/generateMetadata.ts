@@ -21,6 +21,7 @@ import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
 export async function generateOntologyMetadataFile(
   ontology: WireOntologyDefinition,
+  userAgent: string,
   fs: MinimalFs,
   outDir: string,
 ) {
@@ -31,7 +32,7 @@ export async function generateOntologyMetadataFile(
       export const OntologyMetadata = {
         ontologyRid: "${ontology.ontology.rid}",
         ontologyApiName: "${ontology.ontology.apiName}",
-        userAgent: "foundry-typescript-osdk/2.0.0",
+        userAgent: "${userAgent}",
       }
       `,
     ),

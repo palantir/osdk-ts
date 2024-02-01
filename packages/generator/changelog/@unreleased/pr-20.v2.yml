@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Send consistent UserAgent strings
+  links:
+  - https://github.com/palantir/osdk-ts/pull/20

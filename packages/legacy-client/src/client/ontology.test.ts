@@ -18,6 +18,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import { createClientContext } from "@osdk/shared.net";
 import { MOCK_ORIGIN, MockOntology } from "@osdk/shared.test";
 import { beforeEach, describe, expect, it } from "vitest";
+import { USER_AGENT } from "../USER_AGENT";
 import { createObjectSetCreator } from "./ontology";
 
 describe(createObjectSetCreator, () => {
@@ -29,7 +30,7 @@ describe(createObjectSetCreator, () => {
         MockOntology,
         MOCK_ORIGIN,
         () => "Token",
-        undefined,
+        USER_AGENT,
         fetch,
       );
     } catch (e) {
