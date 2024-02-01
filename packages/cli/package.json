@@ -52,14 +52,15 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },
   "files": [
     "build/types",
     "build/js",
-    "CHANGELOG.md",
+    "changelog",
+    "CHANGELOG_OLD.md",
     "package.json",
     "*.d.ts"
   ],

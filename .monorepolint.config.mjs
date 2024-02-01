@@ -168,7 +168,8 @@ function standardPackageRules(shared, options) {
           files: [
             "build/types",
             "build/js",
-            "CHANGELOG.md",
+            "changelog",
+            "CHANGELOG_OLD.md",
             "package.json",
 
             // fallback entries for "submodule imports" in legacy projects
