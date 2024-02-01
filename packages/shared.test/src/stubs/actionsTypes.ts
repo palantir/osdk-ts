@@ -241,6 +241,22 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
   status: "ACTIVE",
 };
 
+export const ActionTakesAttachment: ActionTypeV2 = {
+  apiName: "actionTakesAttachment",
+  description: "An action which takes an attachmen t",
+  parameters: {
+    attachment: {
+      dataType: {
+        type: "attachment",
+      },
+      required: true,
+    },
+  },
+  rid: "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f3",
+  operations: [],
+  status: "ACTIVE",
+};
+
 export const ActionTypeWithUnsupportedTypes: ActionTypeV2 = {
   apiName: "unsupported-action",
   description: "An unsupported action type",
@@ -272,4 +288,5 @@ export const actionTypes: ActionTypeV2[] = [
   CreateOfficeAndEmployee,
   MoveOffice,
   ActionTakesObjectSet,
+  ActionTakesAttachment,
 ];

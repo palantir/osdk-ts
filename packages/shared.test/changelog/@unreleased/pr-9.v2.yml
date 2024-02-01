@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Add actions support to v2 client
+  links:
+  - https://github.com/palantir/osdk-ts/pull/9

@@ -15,13 +15,14 @@
  */
 
 import type { ClientContext } from "@osdk/shared.net";
+import type { Actions } from "./Actions.js";
 import { applyAction } from "./applyAction.js";
 
 export function createActionInvoker<T extends ClientContext<any>>(client: T) {
-  return new Proxy(
+  const proxy: Actions<any> = new Proxy(
     {},
     {
-      get: (target, p, receiver) => {
+      get: (_target, p, _receiver) => {
         if (typeof p === "string") {
           return function(...args: any[]) {
             return applyAction(client, p, ...args);
@@ -30,6 +31,19 @@ export function createActionInvoker<T extends ClientContext<any>>(client: T) {
 
         return undefined;
       },
+      ownKeys(_target) {
+        return Object.keys(client.ontology.actions);
+      },
+      getOwnPropertyDescriptor(_target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: client.ontology.actions[p] != null,
+            configurable: true,
+            value: proxy[p],
+          };
+        }
+      },
     },
   );
+  return proxy;
 }
