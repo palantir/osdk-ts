@@ -16,7 +16,13 @@ module.exports = {
       typescript: true,
     },
   },
-  ignorePatterns: ["node_modules/", "build/", "src/generatedNoCheck/"],
+  ignorePatterns: [
+    "node_modules/",
+    "build/",
+    "src/generatedNoCheck/",
+    "templates/",
+    "__snapshots__/",
+  ],
   rules: {
     "@typescript-eslint/consistent-type-imports": "error",
 

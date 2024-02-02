@@ -21,7 +21,7 @@ import type {
 import stableStringify from "json-stable-stringify";
 import { employeeObjectType, officeObjectType } from "./objectTypes";
 
-const actionRequestCreateOffice: ApplyActionRequestV2 = {
+export const actionRequestCreateOffice: ApplyActionRequestV2 = {
   parameters: {
     officeId: "NYC",
     address: "123 Main Street",
@@ -33,7 +33,19 @@ const actionRequestCreateOffice: ApplyActionRequestV2 = {
   },
 };
 
-const actionRequestMoveOffice: ApplyActionRequestV2 = {
+export const actionRequestCreateOfficeNoReturnEdits: ApplyActionRequestV2 = {
+  parameters: {
+    officeId: "NYC",
+    address: "123 Main Street",
+    capacity: 100,
+  },
+  options: {
+    mode: "VALIDATE_AND_EXECUTE",
+    returnEdits: "NONE",
+  },
+};
+
+export const actionRequestMoveOffice: ApplyActionRequestV2 = {
   parameters: {
     officeId: "NYC",
     newAddress: "123 Main Street",
@@ -91,6 +103,30 @@ const actionRequestMoveOfficeValidateOnly: ApplyActionRequestV2 = {
   },
 };
 
+const actionRequestMoveOfficeInvalid: ApplyActionRequestV2 = {
+  parameters: {
+    officeId: "SEA",
+    newAddress: "456 Pike Place",
+    newCapacity: 40,
+  },
+  options: {
+    mode: "VALIDATE_AND_EXECUTE",
+    returnEdits: "ALL",
+  },
+};
+
+const actionRequestMoveOfficeValidateOnlyWithoutEdits: ApplyActionRequestV2 = {
+  parameters: {
+    officeId: "SEA",
+    newAddress: "456 Pike Place",
+    newCapacity: 40,
+  },
+  options: {
+    mode: "VALIDATE_ONLY",
+    returnEdits: "NONE",
+  },
+};
+
 const actionRequestCreateOfficeAndEmployee: ApplyActionRequestV2 = {
   parameters: {
     officeId: "NYC",
@@ -107,6 +143,11 @@ const actionRequestWithObjectSet: ApplyActionRequestV2 = {
     employees: { type: "base", objectType: employeeObjectType.apiName },
   },
   options: {},
+};
+
+export const actionRequestWithAttachment: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: { attachment: "attachment.rid" },
 };
 
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
@@ -209,6 +250,7 @@ export const actionResponseMap: {
   promoteEmployee: {},
   createOffice: {
     [stableStringify(actionRequestCreateOffice)]: actionResponseCreateOffice,
+    [stableStringify(actionRequestCreateOfficeNoReturnEdits)]: actionResponse,
   },
   moveOffice: {
     [stableStringify(actionRequestMoveOffice)]: actionResponse,
@@ -217,6 +259,9 @@ export const actionResponseMap: {
       actionResponseGetResults,
     [stableStringify(actionRequestMoveOfficeValidateOnly)]:
       actionResponseInvalid,
+    [stableStringify(actionRequestMoveOfficeValidateOnlyWithoutEdits)]:
+      actionResponseInvalid,
+    [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
     [stableStringify(actionRequestMoveOffice2)]: undefined,
     [stableStringify(actionRequestMoveOffice3)]: undefined,
   },
@@ -226,5 +271,8 @@ export const actionResponseMap: {
   },
   actionTakesObjectSet: {
     [stableStringify(actionRequestWithObjectSet)]: actionResponse,
+  },
+  actionTakesAttachment: {
+    [stableStringify(actionRequestWithAttachment)]: actionResponse,
   },
 };

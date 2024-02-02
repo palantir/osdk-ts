@@ -24,6 +24,7 @@ import { generateResult } from "./ontologyProvider/generateResult";
 export async function generateOntologyProviderDir(
   fs: MinimalFs,
   runtimeDistDir: string,
+  importExt = "",
 ) {
   const ontologyProviderDir = path.join(runtimeDistDir, "ontologyProvider");
   await fs.mkdir(ontologyProviderDir, { recursive: true });
@@ -38,15 +39,15 @@ export async function generateOntologyProviderDir(
     ${"" // Skipping this one, its hard to imagine it being used
       // export * from "./ErrorHandlers";
     }
-      export * from "./Errors";
-      export * from "./OntologyMetadata";
+      export * from "./Errors${importExt}";
+      export * from "./OntologyMetadata${importExt}";
       ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./OntologyObjectFactory";
+      // export * from "./OntologyObjectFactory${importExt}";
     }
     ${"" // Skipping this one, its hard to imagine it being used
-      // export * from "./OntologyProvider";
+      // export * from "./OntologyProvider${importExt}";
     }
-      // export * from "./Result";
+      // export * from "./Result${importExt}";
   `),
   );
 }

@@ -22,7 +22,7 @@ export const MockOntology = {
   metadata: {
     ontologyRid: "",
     ontologyApiName: "Ontology",
-    userAgent: "",
+    userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
   },
   objects: {
     Task: {

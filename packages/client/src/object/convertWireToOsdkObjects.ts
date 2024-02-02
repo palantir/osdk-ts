@@ -105,15 +105,6 @@ function createPrototype<
     configurable: false,
   });
 
-  // Earlier versions of "2.0" included this by hand (even though it seems the wire gives it to us anyway).
-  // Its deprecated but I'm it for now (lets delete after Dec 31, 2023) so our beta users can transition.
-  Object.defineProperty(proto, "__name", {
-    value: type,
-    enumerable: false,
-    configurable: false,
-    writable: false,
-  });
-
   return proto;
 }
 

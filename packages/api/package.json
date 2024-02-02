@@ -47,6 +47,7 @@
     "build/js",
     "CHANGELOG.md",
     "package.json",
+    "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.js",

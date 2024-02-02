@@ -52,7 +52,7 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [],
+  "keywords": [ ],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },
@@ -61,6 +61,7 @@
     "build/js",
     "CHANGELOG.md",
     "package.json",
+    "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.cjs",

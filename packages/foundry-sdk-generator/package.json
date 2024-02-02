@@ -43,13 +43,14 @@
   },
   "devDependencies": {
     "@osdk/shared.test": "workspace:*",
+    "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
     "typescript": "^5.2.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [],
+  "keywords": [ ],
   "bin": {
     "foundry-sdk-generator": "./bin/foundry-sdk-generator"
   },
@@ -58,6 +59,7 @@
     "build/js",
     "CHANGELOG.md",
     "package.json",
+    "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.cjs",

@@ -41,6 +41,7 @@ import {
   type Result,
   ReturnEditsMode,
 } from "../..";
+import { USER_AGENT } from "../../USER_AGENT";
 import {
   expectFetchToBeCalledWithBody,
   expectFetchToBeCalledWithGet,
@@ -64,7 +65,7 @@ describe("Actions", () => {
       MockOntology,
       MOCK_ORIGIN,
       () => "Token",
-      undefined,
+      USER_AGENT,
       fetch,
     );
     actions = createActionProxy<typeof MockOntology>(client);

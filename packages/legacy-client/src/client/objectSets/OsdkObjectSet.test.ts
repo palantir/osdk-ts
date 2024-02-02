@@ -53,7 +53,7 @@ describe("OsdkObjectSet", () => {
       MockOntology,
       origin,
       () => "Token",
-      undefined,
+      USER_AGENT,
       fetch,
     );
   });

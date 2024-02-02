@@ -3,11 +3,15 @@ import React, { useState } from "react";
 export default function CreateTodoForm({
   createTodo,
 }: {
-  createTodo: (title: string) => Promise<void>;
+  createTodo: (
+    title: string,
+    setError: (error: string | undefined) => void
+  ) => Promise<void>;
 }) {
   const formRef = React.useRef<HTMLFormElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(false);
+  const [error, setError] = useState<string>();
 
   return (
     <div className="flex flex-shrink mb-6">
@@ -19,8 +23,9 @@ export default function CreateTodoForm({
             throw "should never happen";
           }
           setPending(true);
+          setError(undefined);
           try {
-            await createTodo(inputRef.current.value);
+            await createTodo(inputRef.current.value, setError);
             formRef.current.reset();
           } catch (e) {
             console.error(e);
@@ -29,6 +34,7 @@ export default function CreateTodoForm({
           }
         }}
       >
+        <div className="error">{error}</div>
         <input
           type="text"
           name={"title"}

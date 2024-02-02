@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>Developer Console Application</title>
+<rect x="1" y="1" width="14" height="12" fill="white"/>
+<g opacity="0.5">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M1 0H15C15.55 0 16 0.45 16 1V13C16 13.55 15.55 14 15 14H1C0.45 14 0 13.55 0 13V1C0 0.45 0.45 0 1 0ZM15 13V1H1V13H15Z" fill="#10161A"/>
+</g>
+<rect x="1" y="1" width="14" height="3" fill="#72CA9B"/>
+<rect x="1" y="4" width="14" height="1" fill="#32A467"/>
+<rect x="2" y="2" width="1" height="1" fill="white"/>
+<rect x="4" y="2" width="1" height="1" fill="white"/>
+<rect x="6" y="2" width="1" height="1" fill="white"/>
+<rect x="12" y="2" width="2" height="1" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 8H14C14.5523 8 15 8.44772 15 9V14C15 14.5523 14.5523 15 14 15H6C5.44772 15 5 14.5523 5 14V9C5 8.44772 5.44772 8 6 8Z" fill="white"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6 9H14V14H6V9Z" fill="url(#paint0_linear_1221_19327)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M8 10H7V11H8V12H7V13H8V12H9V11H8V10ZM13 12H10V13H13V12Z" fill="white"/>
+<path opacity="0.5" fill-rule="evenodd" clip-rule="evenodd" d="M6 7H14C15.1046 7 16 7.89543 16 9V14C16 15.1046 15.1046 16 14 16H6C4.89543 16 4 15.1046 4 14V9C4 7.89543 4.89543 7 6 7ZM15 9C15 8.44772 14.5523 8 14 8H6C5.44772 8 5 8.44772 5 9V14C5 14.5523 5.44772 15 6 15H14C14.5523 15 15 14.5523 15 14V9Z" fill="#10161A"/>
+<defs>
+<linearGradient id="paint0_linear_1221_19327" x1="17.4913" y1="13.1561" x2="15.3484" y2="6.02991" gradientUnits="userSpaceOnUse">
+<stop stop-color="#394B59"/>
+<stop offset="0.827" stop-color="#394B59"/>
+<stop offset="1" stop-color="#30404D"/>
+</linearGradient>
+</defs>
+</svg>

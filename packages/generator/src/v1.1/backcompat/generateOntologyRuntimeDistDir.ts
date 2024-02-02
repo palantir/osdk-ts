@@ -27,6 +27,7 @@ import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/gene
 export async function generateOntologyRuntimeDistDir(
   outDir: string,
   fs: MinimalFs,
+  importExt = "",
 ) {
   const runtimeDistDir = path.join(
     outDir,
@@ -37,12 +38,12 @@ export async function generateOntologyRuntimeDistDir(
   );
   await fs.mkdir(runtimeDistDir, { recursive: true });
 
-  await generateOntologyProviderDir(fs, runtimeDistDir);
-  await generateAggregationsDir(fs, runtimeDistDir);
-  await generatePagingDir(runtimeDistDir, fs);
-  await generateBaseTypesDir(runtimeDistDir, fs);
-  await generateClientDir(runtimeDistDir, fs);
-  await generateFiltersDir(runtimeDistDir, fs);
+  await generateOntologyProviderDir(fs, runtimeDistDir, importExt);
+  await generateAggregationsDir(fs, runtimeDistDir, importExt);
+  await generatePagingDir(runtimeDistDir, fs, importExt);
+  await generateBaseTypesDir(runtimeDistDir, fs, importExt);
+  await generateClientDir(runtimeDistDir, fs, importExt);
+  await generateFiltersDir(runtimeDistDir, fs, importExt);
 
   // Nothing exists for this in the new codebase so we skip
   // but I already wrote the code so leaving this for now in case we need it
@@ -52,24 +53,24 @@ export async function generateOntologyRuntimeDistDir(
     path.join(runtimeDistDir, "index.ts"),
     // TRASHFIXME
     await formatTs(`
-      export * from "./aggregations";
-      export * from "./baseTypes";
+      export * from "./aggregations/index${importExt}";
+      export * from "./baseTypes/index${importExt}";
       ${""
       // Skipping this one, it doesnt have an equiv now
-      // export * from "./common";
+      // export * from "./common/index${importExt}";
     }
-      // export * from "./filters";
+      // export * from "./filters/index${importExt}";
       ${""
       // Skipping this one, it doesnt have an equiv now
-      // export * from "./iterator";
+      // export * from "./iterator/index${importExt}";
     }
       ${""
       // Skipping this one, its not used
-      // export * from "./models";
+      // export * from "./models/index${importExt}";
     }
     
-      export * from "./ontologyProvider";
-      export * from "./paging";
+      export * from "./ontologyProvider/index${importExt}";
+      export * from "./paging/index${importExt}";
 `),
   );
 }

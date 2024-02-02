@@ -22,4 +22,5 @@ export interface TypescriptGenerateArgs {
   clientId?: string;
   beta?: boolean;
   packageType: "commonjs" | "module";
+  version: string;
 }

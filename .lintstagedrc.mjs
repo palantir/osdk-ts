@@ -15,15 +15,21 @@ export default {
   "monorepo/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
   ],
-  "{packages,examples/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
-    "dprint fmt",
-    "eslint --fix",
-  ],
+  "{packages,examples/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": (files) => {
+    const match = micromatch.not(
+      files,
+      ["**/__snapshots__/**/*", "**/templates/**/*"],
+    );
+    return [
+      `dprint fmt ${match.join(" ")}`,
+      `eslint --fix  ${match.join(" ")}`,
+    ];
+  },
   "(.lintstagedrc.mjs|.monorepolint.config.mjs)": ["dprint fmt"],
   "*": (files) => {
     const mrlFiles = micromatch(files, [
       "package.json",
-      "**/package.json",
+      // "**/package.json",
       "tsconfig.json",
       "**/tsconfig.json",
     ], {});
