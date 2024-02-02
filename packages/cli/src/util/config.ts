@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import Ajv from "ajv";
+import type { JSONSchemaType } from "ajv";
+import ajvModule from "ajv";
 import { existsSync, promises as fsPromises } from "node:fs";
 import path from "node:path";
 
@@ -33,7 +34,7 @@ const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
 ];
 
-const configFileSchema = {
+const configFileSchema: JSONSchemaType<FoundryConfig> = {
   type: "object",
   properties: {
     foundryUrl: { type: "string" },
@@ -42,14 +43,16 @@ const configFileSchema = {
       properties: {
         application: { type: "string" },
         directory: { type: "string" },
-        autoVersion: { type: "boolean" },
+        autoVersion: { type: "boolean", nullable: true },
       },
       required: ["application", "directory"],
     },
   },
   required: ["foundryUrl", "site"],
+  additionalProperties: false,
 };
 
+const Ajv = ajvModule.default; // https://github.com/ajv-validator/ajv/issues/2132
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(configFileSchema);
 
