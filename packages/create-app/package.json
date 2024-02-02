@@ -1,0 +1,62 @@
+{
+  "name": "@osdk/create-app",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": {
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
+    },
+    "./*": {
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "dev:transpile": "tsup --watch",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "tsc-absolute --build",
+    "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
+  },
+  "dependencies": {
+    "consola": "^3.2.3",
+    "find-up": "^6.3.0",
+    "handlebars": "^4.7.8",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^18.0.0",
+    "@types/tmp": "^0.2.6",
+    "@types/yargs": "^17.0.29",
+    "dir-compare": "^4.2.0",
+    "tmp": "^0.2.1",
+    "typescript": "^5.2.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "create-osdk-app": "bin/createOsdkApp.mjs"
+  },
+  "files": [
+    "build/types",
+    "build/js",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "main": "./build/js/index.cjs",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
+  "type": "module"
+}

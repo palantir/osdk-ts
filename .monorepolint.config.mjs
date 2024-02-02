@@ -73,6 +73,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
         composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
+      exclude: ["**/__snapshots__"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),
@@ -170,6 +171,7 @@ function standardPackageRules(shared, options) {
             "build/js",
             "CHANGELOG.md",
             "package.json",
+            "templates",
 
             // fallback entries for "submodule imports" in legacy projects
             "*.d.ts",
