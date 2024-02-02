@@ -46,7 +46,12 @@ describe("loadFoundryConfig", () => {
     vi.mocked(fsPromises.readFile).mockResolvedValue(
       JSON.stringify(correctConfig),
     );
-    await expect(loadFoundryConfig()).resolves.toEqual(correctConfig);
+    await expect(loadFoundryConfig()).resolves.toEqual({
+      configFilePath: "/path/foundry.config.json",
+      foundryConfig: {
+        ...correctConfig,
+      },
+    });
   });
 
   it("should throw an error if the configuration file cannot be read", async () => {

@@ -30,6 +30,11 @@ export interface FoundryConfig {
   site: SiteConfig;
 }
 
+export interface LoadedFoundryConfig {
+  foundryConfig: FoundryConfig;
+  configFilePath: string;
+}
+
 const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
 ];
@@ -61,7 +66,9 @@ const validate = ajv.compile(configFileSchema);
  * @returns A promise that resolves to the configuration JSON object, or undefined if not found.
  * @throws Will throw an error if the configuration file is found but cannot be read or parsed.
  */
-export async function loadFoundryConfig(): Promise<FoundryConfig | undefined> {
+export async function loadFoundryConfig(): Promise<
+  LoadedFoundryConfig | undefined
+> {
   const Consola = await import("consola");
   const consola = Consola.consola;
   const configFilePath = await loadConfigFile();
@@ -83,8 +90,7 @@ export async function loadFoundryConfig(): Promise<FoundryConfig | undefined> {
       throw new Error("Config file schema is invalid.");
     }
 
-    consola.info(`Using configuration from file: ${configFilePath}`);
-    return foundryConfig;
+    return { foundryConfig, configFilePath };
   }
 
   return undefined;
