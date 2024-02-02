@@ -1,6 +1,5 @@
 "use client";
 import client from "@/lib/client";
-import getMethods from "@/lib/getMethods";
 import useAuthenticated from "@/lib/useAuthenticated";
 import css from "./page.module.css";
 
@@ -10,9 +9,9 @@ function Home() {
     return null;
   }
 
-  const objectApiNames = getMethods(client.ontology.objects);
-  const actionApiNames = getMethods(client.ontology.actions);
-  const queryApiNames = getMethods(client.ontology.queries);
+  const objectApiNames = Object.keys(client.ontology.objects);
+  const actionApiNames = Object.keys(client.ontology.actions);
+  const queryApiNames = Object.keys(client.ontology.queries);
 
   return (
     <div>

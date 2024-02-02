@@ -1,0 +1,2 @@
+# Override root lib/ ignore
+!expected-template-next-static-export/src/lib/
