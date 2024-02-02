@@ -48,7 +48,7 @@ export type ActionArgs<
 > =
   & (NonNullableKeys<O["actions"][A]["parameters"]> extends never ? {}
     : {
-      [P in NonNullableKeys<O["actions"][A]["parameters"]>]?:
+      [P in NonNullableKeys<O["actions"][A]["parameters"]>]:
         ActionParameterType<
           O,
           A,

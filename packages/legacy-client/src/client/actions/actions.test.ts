@@ -32,14 +32,13 @@ import {
   it,
   vi,
 } from "vitest";
-import {
-  type ActionError,
-  ActionExecutionMode,
-  type ActionExecutionOptions,
-  type ActionResponseFromOptions,
-  type Edits,
-  type Result,
-  ReturnEditsMode,
+import { ActionExecutionMode, ReturnEditsMode } from "../..";
+import type {
+  ActionError,
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
+  Edits,
+  Result,
 } from "../..";
 import {
   expectFetchToBeCalledWithBody,
@@ -48,7 +47,7 @@ import {
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import { type Actions } from "./actions";
+import type { Actions } from "./actions";
 import { createActionProxy } from "./createActionProxy";
 
 describe("Actions", () => {
@@ -72,7 +71,7 @@ describe("Actions", () => {
 
   describe("type tests", () => {
     it("creates proper parameters", async () => {
-      expectTypeOf<Parameters<typeof actions.createTask>>().toMatchTypeOf<
+      expectTypeOf<Parameters<typeof actions.createTask>>().toEqualTypeOf<
         [
           {
             id?: number;
@@ -80,6 +79,10 @@ describe("Actions", () => {
           ActionExecutionOptions?,
         ]
       >();
+
+      expectTypeOf<typeof actions.createTask>()
+        // @ts-expect-error
+        .toBeCallableWith([{ id: 1 }]);
 
       expectTypeOf<ReturnType<typeof actions.createTask>>().toMatchTypeOf<
         Promise<
