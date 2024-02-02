@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { createClientContext } from "@osdk/shared.net";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { Attachment } from "./Attachment.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
   let client: Client<typeof MockOntology>;
@@ -64,5 +66,24 @@ describe("convertWireToOsdkObjects", () => {
     } = withoutValues.data[0];
     expect(emptyAttachment).toBeUndefined();
     expect(emptyAttachmentArray).toBeUndefined();
+  });
+
+  it("works even with unknown apiNames", () => {
+    const clientCtx = createClientContext(
+      MockOntology,
+      "https://stack.palantir.com",
+      () => "myAccessToken",
+      "userAgent",
+    );
+
+    const object = {
+      __apiName: "unknown",
+      __primaryKey: 0,
+    } as const;
+    const prototypeBefore = Object.getPrototypeOf(object);
+    convertWireToOsdkObjects(clientCtx, [object]);
+    const prototypeAfter = Object.getPrototypeOf(object);
+
+    expect(prototypeBefore).not.toBe(prototypeAfter);
   });
 });

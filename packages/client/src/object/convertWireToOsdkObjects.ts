@@ -39,6 +39,10 @@ function createPrototype<
   const objDef = ontology.objects[type];
   const proto = {};
 
+  if (!objDef) {
+    return proto;
+  }
+
   Object.defineProperty(proto, "$link", {
     get: function() {
       const client = this[OriginClient] as ClientContext<O>;
@@ -116,10 +120,15 @@ function createConverter<
   ontology: O,
   type: T,
 ) {
+  const objDef = ontology.objects[type];
+  if (!objDef) {
+    return false as const;
+  }
+
   const steps: Array<(o: Record<string, any>) => void> = [];
 
   for (
-    const [key, value] of Object.entries(ontology.objects[type].properties)
+    const [key, value] of Object.entries(objDef.properties)
   ) {
     // attachments need a wrapper to provide functionality and to identify them at serialization time
     if (value.type === "attachment") {
