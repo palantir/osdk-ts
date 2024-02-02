@@ -83,20 +83,20 @@ export type QueryArgs<
   O extends OntologyDefinition<any>,
   Q extends QueryNamesFrom<O>,
 > =
-  & {
+  & (NonNullableArgKeys<QueryParameters<O, Q>> extends never ? {} : {
     [P in NonNullableArgKeys<QueryParameters<O, Q>>]: QueryDataType<
       O,
       QueryParameters<O, Q>[P],
       false
     >;
-  }
-  & {
+  })
+  & (NullableArgKeys<QueryParameters<O, Q>> extends never ? {} : {
     [P in NullableArgKeys<QueryParameters<O, Q>>]?: QueryDataType<
       O,
       QueryParameters<O, Q>[P],
       false
     >;
-  };
+  });
 
 export type QueryNamesFrom<O extends OntologyDefinition<any>> =
   keyof O["queries"];

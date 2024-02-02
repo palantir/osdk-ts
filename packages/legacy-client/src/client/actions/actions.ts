@@ -46,20 +46,23 @@ export type ActionArgs<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > =
-  & {
-    [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
-      O,
-      A,
-      P
-    >;
-  }
-  & {
-    [P in NonNullableKeys<O["actions"][A]["parameters"]>]: ActionParameterType<
-      O,
-      A,
-      P
-    >;
-  };
+  & (NonNullableKeys<O["actions"][A]["parameters"]> extends never ? {}
+    : {
+      [P in NonNullableKeys<O["actions"][A]["parameters"]>]:
+        ActionParameterType<
+          O,
+          A,
+          P
+        >;
+    })
+  & (NullableKeys<O["actions"][A]["parameters"]> extends never ? {}
+    : {
+      [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
+        O,
+        A,
+        P
+      >;
+    });
 
 export type ActionParameterType<
   O extends OntologyDefinition<any>,

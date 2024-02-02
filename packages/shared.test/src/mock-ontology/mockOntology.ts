@@ -257,6 +257,30 @@ export const MockOntology = {
         },
       },
     },
+    queryWithOnlyOptionalArgs: {
+      apiName: "queryWithOnlyOptionalArgs",
+      description: "a query that only has optional args",
+      version: "version",
+      output: { type: "boolean" },
+      parameters: {
+        string: {
+          type: "string",
+          nullable: true,
+        },
+      },
+    },
+    queryWithOnlyRequiredArgs: {
+      apiName: "queryWithOnlyRequiredArgs",
+      description: "a query that only has required args",
+      version: "version",
+      output: { type: "boolean" },
+      parameters: {
+        string: {
+          type: "string",
+          nullable: false,
+        },
+      },
+    },
   },
 } satisfies OntologyDefinition<
   | "Task"

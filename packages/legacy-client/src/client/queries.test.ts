@@ -333,6 +333,18 @@ describe("Queries", () => {
           LocalDate
         >;
       }]>();
+
+      expectTypeOf<
+        Parameters<Queries<typeof MockOntology>["queryWithOnlyOptionalArgs"]>
+      >().toEqualTypeOf<[{ string?: string }]>();
+
+      expectTypeOf<
+        Parameters<Queries<typeof MockOntology>["queryWithOnlyRequiredArgs"]>
+      >().toEqualTypeOf<[{ string: string }]>();
+
+      expectTypeOf<typeof queries.queryWithOnlyOptionalArgs>()
+        // @ts-expect-error
+        .toBeCallableWith([{ string: "test" }]);
     });
   });
 
@@ -344,6 +356,8 @@ describe("Queries", () => {
         "queryReturnsAggregation",
         "queryTakesAllParameterTypes",
         "queryTakesNestedObjects",
+        "queryWithOnlyOptionalArgs",
+        "queryWithOnlyRequiredArgs",
       ]
     `);
   });
