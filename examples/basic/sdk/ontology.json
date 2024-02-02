@@ -1,7 +1,7 @@
 {
   "ontology": {
-    "apiName": "OntologyApiName",
-    "rid": "ridHere",
+    "apiName": "default",
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
     "displayName": "",
     "description": ""
   },
@@ -89,6 +89,31 @@
     }
   },
   "objectTypes": {
+    "WeatherStation": {
+      "objectType": {
+        "apiName": "WeatherStation",
+        "primaryKey": "stationId",
+        "displayName": "Weather Station",
+        "description": "Weather Station",
+        "properties": {
+          "stationId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "geohash": {
+            "dataType": {
+              "type": "geopoint"
+            },
+            "description": "geopoint",
+            "displayName": "Geohash"
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTodo"
+      },
+      "linkTypes": []
+    },
     "Todo": {
       "objectType": {
         "apiName": "Todo",
