@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Remove __name shim from v2 objects
+  links:
+  - https://github.com/palantir/osdk-ts/pull/24

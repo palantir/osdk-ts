@@ -15,7 +15,6 @@
  */
 
 import type { CliCommonArgs } from "../CliCommonArgs.js";
-import { readCliVersionFromPackageJson } from "../readCliVersionFromPackageJson.js";
 
 let firstTime = true;
 export async function logVersionMiddleware(args: CliCommonArgs) {
@@ -25,7 +24,7 @@ export async function logVersionMiddleware(args: CliCommonArgs) {
     const consola = Consola.consola;
 
     consola.info(
-      `Palantir OSDK CLI ${await readCliVersionFromPackageJson()}`,
+      `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
     );
 
     consola.level = 3 + args.verbose; // so 1 -v is debug logs and -vv is trace

@@ -45,6 +45,7 @@ delete ontologyWithoutUnsupportedAction.actionTypes["unsupported-action"];
 
 await generateClientSdkVersionTwoPointZero(
   ontologyWithoutUnsupportedAction,
+  "typescript-sdk/dev osdk-cli/dev",
   {
     writeFile: (path, contents) => {
       return writeFile(path, contents, "utf-8");

@@ -21,6 +21,7 @@ import type { Client } from "./Client.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
+import { USER_AGENT } from "./util/UserAgent.js";
 
 export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
@@ -32,7 +33,7 @@ export function createClient<O extends OntologyDefinition<any>>(
     ontology,
     stack,
     tokenProvider,
-    "@osdk/client/0.0.0 ()",
+    USER_AGENT,
     fetchFn,
   );
 

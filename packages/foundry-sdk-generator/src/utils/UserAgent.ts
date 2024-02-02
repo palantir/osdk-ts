@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export const USER_AGENT = `osdk-legacy-client/${process.env.PACKAGE_VERSION}`;
+export const USER_AGENT =
+  `typescript-sdk-generator/${process.env.PACKAGE_VERSION}`;

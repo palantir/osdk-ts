@@ -34,6 +34,7 @@ import { generateQueries } from "./generateQueries";
 
 export async function generateClientSdkVersionOneDotOne(
   ontology: WireOntologyDefinition,
+  userAgent: string,
   fs: MinimalFs,
   outDir: string,
   packageType: "commonjs" | "module" = "commonjs",
@@ -47,7 +48,13 @@ export async function generateClientSdkVersionOneDotOne(
 
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir, importExt);
-  await generateMetadataFile(sanitizedOntology, fs, outDir, importExt);
+  await generateMetadataFile(
+    sanitizedOntology,
+    userAgent,
+    fs,
+    outDir,
+    importExt,
+  );
   await generateOntologyIndexFile(
     fs,
     path.join(outDir, "ontology"),

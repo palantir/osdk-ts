@@ -29,7 +29,7 @@ export default {
   "*": (files) => {
     const mrlFiles = micromatch(files, [
       "package.json",
-      "**/package.json",
+      // "**/package.json",
       "tsconfig.json",
       "**/tsconfig.json",
     ], {});

@@ -18,7 +18,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
