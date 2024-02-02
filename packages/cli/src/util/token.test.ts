@@ -14,80 +14,67 @@
  * limitations under the License.
  */
 
-import * as fs from "node:fs";
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import * as tokenModule from "../loadTokenUtils.js";
-
-vi.mock("consola", () => ({
-  consola: {
-    debug: vi.fn(),
-    warn: vi.fn(),
-  },
-}));
+import { loadToken } from "./token.js";
 
 vi.mock("node:fs", () => ({
   readFileSync: vi.fn(),
 }));
 
-const originalEnv = process.env;
-vi.stubGlobal("process", { ...process, env: { ...originalEnv } });
-
+// {"header": {"alg":"HS256","typ":"JWT"}, "payload": {"sub":"1234567890","name":"TestUser","iat":1516239022}}
 const validToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IlRlc3RVc2VyIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
 describe("loadToken", () => {
   it("should load a valid token from a direct argument", () => {
-    const token = tokenModule.loadToken(validToken);
+    const token = loadToken(validToken);
     expect(token).toBe(validToken);
   });
 
   it("should load a valid token from a file", () => {
-    vi.mocked(fs.readFileSync).mockReturnValue(validToken);
-    const token = tokenModule.loadToken(undefined, "valid-token.txt");
+    vi.mocked(readFileSync).mockReturnValue(validToken);
+    const token = loadToken(undefined, "valid-token.txt");
 
     expect(token).toBe(validToken);
   });
 
   it("should load a valid token from an environment variable", () => {
-    process.env.FOUNDRY_TOKEN = validToken;
+    vi.stubEnv("FOUNDRY_TOKEN", validToken);
 
-    const token = tokenModule.loadToken();
+    const token = loadToken();
 
     expect(token).toBe(validToken);
     delete process.env.FOUNDRY_TOKEN;
   });
 
   it("should throw an error if no token is found", () => {
-    delete process.env.FOUNDRY_TOKEN;
-    delete process.env.FOUNDRY_SDK_AUTH_TOKEN;
-
-    expect(() => tokenModule.loadToken()).toThrow("No token found.");
+    expect(() => loadToken()).toThrow("No token found.");
   });
 
   afterEach(() => {
-    process.env = originalEnv;
     vi.restoreAllMocks();
   });
 });
 
 describe("loadTokenFile", () => {
   it("should throw an error if the token file is not found", () => {
-    expect(() => tokenModule.loadToken(undefined, "doesnt-exist.txt"))
+    expect(() => loadToken(undefined, "doesnt-exist.txt"))
       .toThrow(`Unable to read token file "doesnt-exist.txt"`);
   });
 });
 
-describe("checkIsValidToken", () => {
+describe("validate", () => {
   it("should throw an error if the token is invalid", () => {
-    expect(() => tokenModule.loadToken("token"))
-      .toThrow(`Token "token" is not a valid JWT`);
+    expect(() => loadToken("token"))
+      .toThrow(`Token "token" does not appear to be a JWT`);
   });
 
   it("should throw an error if the token file is invalid", () => {
     const invalidToken = "token";
-    vi.mocked(fs.readFileSync).mockReturnValue(invalidToken);
+    vi.mocked(readFileSync).mockReturnValue(invalidToken);
 
-    expect(() => tokenModule.loadToken(undefined, "invalid-token.txt"))
-      .toThrow(`Token "token" is not a valid JWT`);
+    expect(() => loadToken(undefined, "invalid-token.txt"))
+      .toThrow(`Token "token" does not appear to be a JWT`);
   });
 });

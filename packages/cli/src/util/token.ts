@@ -16,12 +16,12 @@
 
 import { consola } from "consola";
 import * as fs from "node:fs";
-import * as path from "node:path";
+import path from "node:path";
 
-const TOKEN_ENV_VARS: string[] = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"];
+const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
 
 /**
- * Loads a JWT Auth Token from an argument, a file, or environment variable.
+ * Loads a JWT Auth Token from an argument, a file, or environment variable returning the first found.
  * @param token The token as a string.
  * @param tokenFile The path to the token file.
  * @returns The token as a string.
@@ -29,22 +29,22 @@ const TOKEN_ENV_VARS: string[] = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"];
  */
 export function loadToken(token?: string, tokenFile?: string): string {
   if (token) {
-    checkIsValidToken(token);
+    validate(token);
     consola.debug(`Using token from --token argument`);
     return token;
   }
 
   if (tokenFile) {
     const loadedToken = loadTokenFile(tokenFile);
-    checkIsValidToken(loadedToken);
-    consola.debug(`Using token from --tokenFile argument`);
+    validate(loadedToken);
+    consola.debug(`Using token from --tokenFile=${tokenFile} argument`);
     return loadedToken;
   }
 
   for (const envVar of TOKEN_ENV_VARS) {
     const environmentToken = process.env[envVar];
     if (environmentToken) {
-      checkIsValidToken(environmentToken);
+      validate(environmentToken);
       consola.debug(`Using token from ${envVar} environment variable`);
       if (envVar === "FOUNDRY_SDK_AUTH_TOKEN") {
         consola.warn(
@@ -81,22 +81,12 @@ function loadTokenFile(filePath: string): string {
   return token;
 }
 
-/**
- * Checks if a given string is a valid token.
- * @param token The string to check.
- * @throws An error if the string is not a valid token.
- */
-function checkIsValidToken(token: string) {
+function validate(token: string): void {
   if (!isJWT(token)) {
-    throw new Error(`Token "${token}" is not a valid JWT`);
+    throw new Error(`Token "${token}" does not appear to be a JWT`);
   }
 }
 
-/**
- * Checks if a given string is a JWT.
- * @param token The string to check.
- * @returns true if the string is a JWT, false otherwise.
- */
 function isJWT(token: string): boolean {
   // https://stackoverflow.com/a/65755789
   const jwtPattern = /^[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*$/;
