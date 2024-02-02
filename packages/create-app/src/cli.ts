@@ -24,7 +24,7 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { consola } from "./consola.js";
 import { green, italic } from "./highlight.js";
-import type { Template } from "./templates.js";
+import type { Template, TemplateContext } from "./templates.js";
 import { TEMPLATES } from "./templates.js";
 
 interface CliArgs {
@@ -132,6 +132,10 @@ export async function cli(args: string[] = process.argv) {
 
   fs.cpSync(templateDir, root, { recursive: true });
 
+  const templateContext: TemplateContext = {
+    project,
+    osdkPackage,
+  };
   const templateHbs = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
       file = dir + "/" + file;
@@ -143,9 +147,8 @@ export async function cli(args: string[] = process.argv) {
       if (!file.endsWith(".hbs")) {
         return;
       }
-      const hbsContext = { project, osdkPackage };
       const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
-        hbsContext,
+        templateContext,
       );
       fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
       fs.rmSync(file);
