@@ -41,7 +41,7 @@ interface CliArgs {
 
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliArgs> = yargs(hideBin(args))
-    .version(false)
+    .version(process.env.PACKAGE_VERSION ?? "")
     .strict()
     .help()
     .command(
