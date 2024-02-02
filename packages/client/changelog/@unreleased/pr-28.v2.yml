@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Don't throw errors when converting wire objects with unknown api names
+  links:
+  - https://github.com/palantir/osdk-ts/pull/28
