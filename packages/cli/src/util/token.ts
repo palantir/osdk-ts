@@ -32,25 +32,25 @@ export async function loadToken(
   tokenFile?: string,
 ): Promise<string> {
   if (token) {
-    validate(token);
     consola.debug(`Using token from --token argument`);
+    validate(token);
     return token;
   }
 
   if (tokenFile) {
     const loadedToken = await loadTokenFile(tokenFile);
-    validate(loadedToken.token);
     consola.debug(
       `Using token from --tokenFile=${loadedToken.filePath} argument`,
     );
+    validate(loadedToken.token);
     return loadedToken.token;
   }
 
   for (const envVar of TOKEN_ENV_VARS) {
     const environmentToken = process.env[envVar];
     if (environmentToken) {
-      validate(environmentToken);
       consola.debug(`Using token from ${envVar} environment variable`);
+      validate(environmentToken);
       if (envVar === "FOUNDRY_SDK_AUTH_TOKEN") {
         consola.warn(
           `Using FOUNDRY_SDK_AUTH_TOKEN environment variable is deprecated. Please use FOUNDRY_TOKEN instead.`,

@@ -30,6 +30,15 @@ describe("autoVersion", () => {
     expect(version).toBe("1.2.3");
   });
 
+  it("should replace default prefix from git describe output", async () => {
+    const validGitVersion = "v1.2.3";
+    vi.mocked(execSync).mockReturnValue(validGitVersion);
+
+    const version = await autoVersion();
+
+    expect(version).toBe("1.2.3");
+  });
+
   it("should replace the prefix from the found git tag", async () => {
     const validGitVersion = "@package@1.2.3";
     vi.mocked(execSync).mockReturnValue(validGitVersion);

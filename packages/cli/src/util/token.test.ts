@@ -43,12 +43,12 @@ describe("loadToken", () => {
     vi.stubEnv("FOUNDRY_TOKEN", validToken);
 
     const token = await loadToken();
-
     expect(token).toBe(validToken);
-    delete process.env.FOUNDRY_TOKEN;
+
+    vi.unstubAllEnvs();
   });
 
-  it("should throw an error if no token is found", () => {
+  it("should throw an error if no token is found", async () => {
     expect(() => loadToken()).rejects.toThrow("No token found.");
   });
 

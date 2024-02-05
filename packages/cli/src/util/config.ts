@@ -17,17 +17,16 @@
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 
-type AutoVersionType = "git-describe";
-
-interface AutoVersion {
-  type: AutoVersionType;
+interface GitDescribeAutoVersionConfig {
+  type: "git-describe";
   tagPrefix?: string;
 }
+type AutoVersionConfig = GitDescribeAutoVersionConfig;
 
 export interface SiteConfig {
   application: string;
   directory: string;
-  autoVersion?: AutoVersion;
+  autoVersion?: AutoVersionConfig;
 }
 
 export interface FoundryConfig {
@@ -44,7 +43,7 @@ const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
 ];
 
-const configFileSchema: JSONSchemaType<FoundryConfig> = {
+const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
   type: "object",
   properties: {
     foundryUrl: { type: "string" },
@@ -56,10 +55,14 @@ const configFileSchema: JSONSchemaType<FoundryConfig> = {
         autoVersion: {
           type: "object",
           nullable: true,
-          properties: {
-            "type": { enum: ["git-describe"], type: "string" },
-            "tagPrefix": { type: "string", nullable: true },
-          },
+          oneOf: [
+            {
+              properties: {
+                "type": { enum: ["git-describe"], type: "string" },
+                "tagPrefix": { type: "string", nullable: true },
+              },
+            },
+          ],
           required: ["type"],
         },
       },
@@ -81,7 +84,7 @@ export async function loadFoundryConfig(): Promise<
   const ajvModule = await import("ajv");
   const Ajv = ajvModule.default; // https://github.com/ajv-validator/ajv/issues/2132
   const ajv = new Ajv({ allErrors: true });
-  const validate = ajv.compile(configFileSchema);
+  const validate = ajv.compile(CONFIG_FILE_SCHEMA);
 
   const Consola = await import("consola");
   const consola = Consola.consola;
@@ -93,6 +96,7 @@ export async function loadFoundryConfig(): Promise<
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
+      // TODO(zka): Parsing the file should be dependent on the file extension.
       foundryConfig = JSON.parse(fileContent);
     } catch {
       throw Error(`Couldn't read or parse config file ${configFilePath}`);
