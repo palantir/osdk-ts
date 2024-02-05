@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type * as yargs from "yargs";
-import type { SiteConfig } from "../../../utils/configFileUtils.js";
+import type { SiteConfig } from "../../../util/config.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
 function deployHandler(
-  siteConfig: SiteConfig | any,
+  siteConfig?: SiteConfig,
 ): yargs.CommandModule<CommonSiteArgs, SiteDeployArgs> {
+  const directory = siteConfig?.directory;
+  const autoVersion = siteConfig?.autoVersion;
+
   const command: yargs.CommandModule<
     CommonSiteArgs,
     SiteDeployArgs
@@ -34,9 +38,9 @@ function deployHandler(
           directory: {
             type: "string",
             description: "Directory to deploy",
-            ...siteConfig.directory
+            ...directory
               ? {
-                default: siteConfig.directory,
+                default: directory,
               }
               : {
                 demandOption: true,
@@ -50,15 +54,15 @@ function deployHandler(
           version: {
             type: "string",
             description: "Version to deploy",
-            ...siteConfig.autoVersion == null
+            ...autoVersion == null
               ? { conflicts: "autoVersion" }
               : {}, // Only conflict if autoVersion is not provided in the config file
           },
           autoVersion: {
             type: "boolean",
             description: "Infers the version to deploy automatically",
-            ...(siteConfig.autoVersion != null)
-              ? { default: siteConfig.autoVersion }
+            ...(autoVersion != null)
+              ? { default: autoVersion }
               : { conflicts: "version" },
           },
         }).group(
@@ -70,21 +74,37 @@ function deployHandler(
           "Common Arguments",
         )
         .check((argv) => {
+          // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
+          // So this case is for when nothing is provided.
           if (
-            siteConfig.autoVersion == null && argv.autoVersion == null
+            autoVersion == null && argv.autoVersion == null
             && argv.version == null
           ) {
             throw new Error(
               "One of --version or --autoVersion must be specified",
             );
           }
+
+          // If autoVersion is passed with a value of false, then version must be specified.
+          // This also handles the case where autoVersion is specified as false in the config file.
           if (
             argv.version == null && argv.autoVersion != null
             && argv.autoVersion === false
           ) {
-            // This also handles if autoVersion is set to false in the project config file
             throw new Error(
               "--autoVersion must not be specified with a value of false if --version is not specified.",
+            );
+          }
+
+          if (directory != null && argv.directory !== directory) {
+            consola.debug(
+              `Overriding "directory" from config file with ${argv.directory}`,
+            );
+          }
+
+          if (autoVersion != null && argv.autoVersion !== autoVersion) {
+            consola.debug(
+              `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
             );
           }
           return true;

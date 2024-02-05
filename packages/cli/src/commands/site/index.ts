@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
-import type { SiteConfig } from "../../utils/configFileUtils.js";
+import type { FoundryConfig } from "../../util/config.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import version from "./version/index.js";
 
 function siteHandler(
-  siteConfig: SiteConfig | any,
+  config?: FoundryConfig,
 ): yargs.CommandModule<CliCommonArgs, CommonSiteArgs> {
+  const application = config?.site.application;
+  const foundryUrl = config?.foundryUrl;
+  const siteConfig = config?.site;
+
   const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
     command: "site",
     describe: "Manage your site",
@@ -34,9 +39,9 @@ function siteHandler(
           application: {
             type: "string",
             coerce: (a) => a as ThirdPartyAppRid,
-            ...siteConfig.application
+            ...application
               ? {
-                default: siteConfig.application,
+                default: application,
               }
               : {
                 demandOption: true,
@@ -45,9 +50,9 @@ function siteHandler(
           },
           foundryUrl: {
             type: "string",
-            ...siteConfig.foundryUrl
+            ...foundryUrl
               ? {
-                default: siteConfig.foundryUrl,
+                default: foundryUrl,
               }
               : {
                 demandOption: true,
@@ -72,12 +77,24 @@ function siteHandler(
         )
         .command(version)
         .command(deploy(siteConfig))
+        .check((argv) => {
+          if (application != null && argv.application !== application) {
+            consola.debug(
+              `Overriding "application" from config file with ${argv.application}`,
+            );
+          }
+
+          if (foundryUrl != null && argv.foundryUrl !== foundryUrl) {
+            consola.debug(
+              `Overriding "foundryUrl" from config file with ${argv.foundryUrl}`,
+            );
+          }
+          return true;
+        })
         .demandCommand();
     },
-    handler: async (args) => {
-    },
+    handler: async (args) => {},
   };
-
   return site;
 }
 
