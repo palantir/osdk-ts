@@ -23,7 +23,23 @@ import {
   MockOntology,
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { assert, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  assert,
+  beforeEach,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  vi,
+} from "vitest";
+import type {
+  ActionError,
+  ActionExecutionOptions,
+  ActionResponseFromOptions,
+  Edits,
+  OsdkLegacyObjectFrom,
+  Result,
+} from "../..";
 import { ActionExecutionMode, ReturnEditsMode } from "../..";
 
 import { USER_AGENT } from "../../USER_AGENT";
@@ -55,74 +71,74 @@ describe("Actions", () => {
     actions = createActionProxy<typeof MockOntology>(client);
   });
 
-  // describe("type tests", () => {
-  //   it("creates proper parameters", async () => {
-  //     expectTypeOf<Parameters<typeof actions.createTask>>().toEqualTypeOf<
-  //       [
-  //         {
-  //           id?: number;
-  //         },
-  //         ActionExecutionOptions?,
-  //       ]
-  //     >();
+  describe("type tests", () => {
+    it("creates proper parameters", async () => {
+      expectTypeOf<Parameters<typeof actions.createTask>>().toEqualTypeOf<
+        [
+          {
+            id?: number;
+          },
+          ActionExecutionOptions?,
+        ]
+      >();
 
-  //     expectTypeOf<ReturnType<typeof actions.createTask>>().toMatchTypeOf<
-  //       Promise<
-  //         Result<
-  //           ActionResponseFromOptions<
-  //             ActionExecutionOptions,
-  //             Edits<OsdkLegacyObjectFrom<typeof MockOntology, "Task">, void>
-  //           >,
-  //           ActionError
-  //         >
-  //       >
-  //     >();
-  //   });
+      expectTypeOf<ReturnType<typeof actions.createTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            ActionResponseFromOptions<
+              ActionExecutionOptions,
+              Edits<OsdkLegacyObjectFrom<typeof MockOntology, "Task">, void>
+            >,
+            ActionError
+          >
+        >
+      >();
+    });
 
-  //   it("skips empty parameters", () => {
-  //     expectTypeOf<Parameters<typeof actions.createTodo>>().toMatchTypeOf<
-  //       [
-  //         ActionExecutionOptions?,
-  //       ]
-  //     >();
-  //   });
+    it("skips empty parameters", () => {
+      expectTypeOf<Parameters<typeof actions.createTodo>>().toMatchTypeOf<
+        [
+          ActionExecutionOptions?,
+        ]
+      >();
+    });
 
-  //   it("maps Object types correctly", () => {
-  //     expectTypeOf<Parameters<typeof actions.updateTask>>().toMatchTypeOf<
-  //       [
-  //         {
-  //           task?:
-  //             | OsdkLegacyObjectFrom<typeof MockOntology, "Task">
-  //             | OsdkLegacyObjectFrom<
-  //               typeof MockOntology,
-  //               "Task"
-  //             >["__primaryKey"];
-  //         },
-  //         ActionExecutionOptions?,
-  //       ]
-  //     >();
+    it("maps Object types correctly", () => {
+      expectTypeOf<Parameters<typeof actions.updateTask>>().toMatchTypeOf<
+        [
+          {
+            task?:
+              | OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              | OsdkLegacyObjectFrom<
+                typeof MockOntology,
+                "Task"
+              >["__primaryKey"];
+          },
+          ActionExecutionOptions?,
+        ]
+      >();
 
-  //     expectTypeOf<ReturnType<typeof actions.updateTask>>().toMatchTypeOf<
-  //       Promise<
-  //         Result<
-  //           ActionResponseFromOptions<
-  //             ActionExecutionOptions,
-  //             Edits<
-  //               void,
-  //               OsdkLegacyObjectFrom<typeof MockOntology, "Task">
-  //             >
-  //           >,
-  //           ActionError
-  //         >
-  //       >
-  //     >();
-  //   });
-  // });
+      expectTypeOf<ReturnType<typeof actions.updateTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            ActionResponseFromOptions<
+              ActionExecutionOptions,
+              Edits<
+                void,
+                OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              >
+            >,
+            ActionError
+          >
+        >
+      >();
+    });
+  });
 
   describe("proxy", () => {
     it("proxies action calls with parameters", async () => {
       mockFetchResponse(fetch, {});
-      const actionResponse = await actions.createTask({ id: 1 });
+      const actionResponse = await actions.createTask([{ id: 1 }]);
       expectFetchToBeCalledWithBody(
         fetch,
         `Ontology/actions/createTask/apply`,

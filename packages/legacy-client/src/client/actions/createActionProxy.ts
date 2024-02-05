@@ -45,7 +45,7 @@ export function createActionProxy<
             Op extends ActionExecutionOptions | BulkActionExecutionOptions,
             P extends
               | ActionArgs<O, typeof p>
-              | Array<ActionArgs<O, typeof p>>,
+              | ActionArgs<O, typeof p>[],
           >(
             params: P,
             options?: Op,

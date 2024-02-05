@@ -48,20 +48,23 @@ export type ActionArgs<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > =
-  & {
-    [P in NonNullableKeys<O["actions"][A]["parameters"]>]: ActionParameterType<
-      O,
-      A,
-      P
-    >;
-  }
-  & {
-    [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
-      O,
-      A,
-      P
-    >;
-  };
+  & (NonNullableKeys<O["actions"][A]["parameters"]> extends never ? {}
+    : {
+      [P in NonNullableKeys<O["actions"][A]["parameters"]>]:
+        ActionParameterType<
+          O,
+          A,
+          P
+        >;
+    })
+  & (NullableKeys<O["actions"][A]["parameters"]> extends never ? {}
+    : {
+      [P in NullableKeys<O["actions"][A]["parameters"]>]?: ActionParameterType<
+        O,
+        A,
+        P
+      >;
+    });
 
 export type ActionParameterType<
   O extends OntologyDefinition<any>,
@@ -128,8 +131,7 @@ export type WrappedActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-  P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>> | undefined =
-    undefined,
+  P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined = undefined,
 > = Promise<
   Result<
     ActionReturnType<O, A, Op, P>,
@@ -141,8 +143,8 @@ export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-  P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>> | undefined,
-> = P extends ReadonlyArray<ActionArgs<O, A>> ? BulkActionResponseFromOptions<
+  P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined,
+> = P extends ActionArgs<O, A>[] ? BulkActionResponseFromOptions<
     Op,
     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
   >
@@ -160,9 +162,8 @@ export type Actions<
         options?: Op,
       ) => WrappedActionReturnType<O, A, Op>
       : <
-        P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>>,
-        Op extends P extends ReadonlyArray<ActionArgs<O, A>>
-          ? BulkActionExecutionOptions
+        P extends ActionArgs<O, A> | ActionArgs<O, A>[],
+        Op extends P extends ActionArgs<O, A>[] ? BulkActionExecutionOptions
           : ActionExecutionOptions,
       >(
         params: P,
