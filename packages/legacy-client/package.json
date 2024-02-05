@@ -59,6 +59,5 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
-  "type": "module"
+  "types": "./build/types/index.d.ts"
 }
