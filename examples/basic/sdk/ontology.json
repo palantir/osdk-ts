@@ -110,7 +110,7 @@
           }
         },
         "status": "ACTIVE",
-        "rid": "ridForTodo"
+        "rid": "ridForWeatherStation"
       },
       "linkTypes": []
     },

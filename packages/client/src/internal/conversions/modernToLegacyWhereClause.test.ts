@@ -219,7 +219,7 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-    }); // describe("$within", () => {
+    });
 
     it("inverts ne short hand properly", () => {
       expect(modernToLegacyWhereClause<ObjAllProps>({
@@ -235,7 +235,7 @@ describe(modernToLegacyWhereClause, () => {
         }
       `);
     });
-  }); // describe("single checks", () => {
+  });
 
   describe("multiple checks", () => {
     it("properly handles multiple simple where checks", () => {
@@ -318,5 +318,5 @@ describe(modernToLegacyWhereClause, () => {
             }
           `);
     });
-  }); // describe("multiple checks", () => {
-}); // describe(modernToLegacyWhereClause, () => {
+  });
+});

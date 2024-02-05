@@ -62,7 +62,7 @@ export function modernToLegacyWhereClause<
 
   return {
     type: "and",
-    value: Object.entries(whereClause).map<SearchJsonQueryV2>(
+    value: parts.map<SearchJsonQueryV2>(
       handleWherePair,
     ),
   };
@@ -103,22 +103,22 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
     Object.keys(filter).length === 1,
     "WhereClause Filter with multiple properties isn't allowed",
   );
-  const q = Object.keys(filter)[0] as PossibleWhereClauseFilters;
-  invariant(filter[q] != null);
+  const firstKey = Object.keys(filter)[0] as PossibleWhereClauseFilters;
+  invariant(filter[firstKey] != null);
 
-  if (q === "ne") {
+  if (firstKey === "ne") {
     return {
       type: "not",
       value: {
         type: "eq",
         field,
-        value: filter[q],
+        value: filter[firstKey],
       },
     };
   }
 
-  if (q === "$within") {
-    const withinBody = filter[q] as GeoFilter_Within["$within"];
+  if (firstKey === "$within") {
+    const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
 
     if (Array.isArray(withinBody)) {
       return makeWithinBbox(field, withinBody);
@@ -157,8 +157,8 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
   }
 
   return {
-    type: q,
+    type: firstKey,
     field,
-    value: filter[q] as any,
+    value: filter[firstKey] as any,
   };
 }
