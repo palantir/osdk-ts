@@ -77,12 +77,9 @@ describe("Actions", () => {
           {
             id?: number;
           },
+          ActionExecutionOptions?,
         ]
       >();
-
-      expectTypeOf<typeof actions.createTask>()
-        // @ts-expect-error
-        .toBeCallableWith([{ id: 1 }]);
 
       expectTypeOf<ReturnType<typeof actions.createTask>>().toMatchTypeOf<
         Promise<

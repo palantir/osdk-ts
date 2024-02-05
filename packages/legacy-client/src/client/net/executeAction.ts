@@ -42,7 +42,7 @@ export async function executeAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions | BulkActionExecutionOptions,
-  P extends ActionArgs<O, A> | Array<ActionArgs<O, A>> | undefined = undefined,
+  P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined = undefined,
 >(
   client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
@@ -51,7 +51,7 @@ export async function executeAction<
 ): WrappedActionReturnType<O, A, Op, P> {
   return wrapResult(
     async () => {
-      if (Array.isArray(params)) {
+      if (params && Array.isArray(params)) {
         const response = await applyActionBatchV2(
           createOpenApiRequest(client.stack, client.fetch),
           client.ontology.metadata.ontologyApiName,
@@ -112,7 +112,7 @@ function remapActionParams<
 function remapBulkActionParams<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
->(params: ReadonlyArray<ActionArgs<O, A>>) {
+>(params: ActionArgs<O, A>[]) {
   const remappedParams: { parameters: { [parameterName: string]: any } }[] =
     params.map(
       param => {
