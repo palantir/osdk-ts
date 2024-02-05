@@ -44,8 +44,6 @@ describe("loadToken", () => {
 
     const token = await loadToken();
     expect(token).toBe(validToken);
-
-    vi.unstubAllEnvs();
   });
 
   it("should throw an error if no token is found", async () => {
@@ -53,6 +51,7 @@ describe("loadToken", () => {
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
     vi.restoreAllMocks();
   });
 });
