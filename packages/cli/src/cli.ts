@@ -55,8 +55,7 @@ export async function cli(args: string[] = process.argv) {
           .command(typescript)
           .command(auth)
           .demandCommand()
-          .check((args) => {
-            consola.level = 3 + args.verbose;
+          .check((_args) => {
             if (config != null) {
               consola.debug(
                 `Using configuration from file: "${config.configFilePath}"`,

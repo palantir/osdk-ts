@@ -18,7 +18,8 @@ import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
 export interface SiteDeployArgs extends CommonSiteArgs {
   version?: string;
-  autoVersion?: boolean;
   directory: string;
   uploadOnly: boolean;
+  autoVersion?: string;
+  gitTagPrefix?: string;
 }

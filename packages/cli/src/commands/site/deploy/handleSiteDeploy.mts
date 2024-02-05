@@ -30,10 +30,16 @@ import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
 import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
 export default async function handleSiteDeploy(
-  { version, application, foundryUrl, autoVersion, uploadOnly, directory }:
-    SiteDeployArgs,
+  {
+    version,
+    application,
+    foundryUrl,
+    autoVersion,
+    gitTagPrefix,
+    uploadOnly,
+    directory,
+  }: SiteDeployArgs,
 ) {
-  // Shouldn't be possible but additional safeguard
   if (!version && !autoVersion) {
     throw new ExitProcessError(
       2,
@@ -41,7 +47,7 @@ export default async function handleSiteDeploy(
     );
   }
 
-  const siteVersion = !version ? await findAutoVersion() : version;
+  const siteVersion = !version ? await findAutoVersion(gitTagPrefix) : version;
   if (!version) {
     consola.info(
       `No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`,

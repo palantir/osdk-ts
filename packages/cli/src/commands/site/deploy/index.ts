@@ -19,12 +19,12 @@ import type * as yargs from "yargs";
 import type { SiteConfig } from "../../../util/config.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./siteDeployArgs.js";
-
 function deployHandler(
   siteConfig?: SiteConfig,
 ): yargs.CommandModule<CommonSiteArgs, SiteDeployArgs> {
   const directory = siteConfig?.directory;
   const autoVersion = siteConfig?.autoVersion;
+  const gitTagPrefix = autoVersion?.tagPrefix;
 
   const command: yargs.CommandModule<
     CommonSiteArgs,
@@ -56,21 +56,32 @@ function deployHandler(
             description: "Version to deploy",
             ...autoVersion == null
               ? { conflicts: "autoVersion" }
-              : {}, // Only conflict if autoVersion is not provided in the config file
+              : {},
           },
           autoVersion: {
-            type: "boolean",
-            description: "Infers the version to deploy automatically",
+            type: "string",
+            description:
+              "Enables autoversioning. Can be set to 'git-describe' to use git describe to determine the version.",
             ...(autoVersion != null)
-              ? { default: autoVersion }
+              ? { default: autoVersion.type }
               : { conflicts: "version" },
           },
+          gitTagPrefix: {
+            type: "string",
+            description:
+              "Prefix to match git tags against when --autoVersion=git-describe is used. If not provided, a default prefix 'v' is used.",
+            ...gitTagPrefix
+              ? {
+                default: gitTagPrefix,
+              }
+              : {},
+          },
         }).group(
-          ["version", "autoVersion"],
-          "Version Arguments. Only one of these options may be specified.",
+          ["autoVersion", "gitTagPrefix"],
+          "Autoversion Arguments",
         )
         .group(
-          ["directory", "uploadOnly"],
+          ["version", "directory", "uploadOnly"],
           "Common Arguments",
         )
         .check((argv) => {
@@ -85,26 +96,26 @@ function deployHandler(
             );
           }
 
-          // If autoVersion is passed with a value of false, then version must be specified.
-          // This also handles the case where autoVersion is specified as false in the config file.
-          if (
-            argv.version == null && argv.autoVersion != null
-            && argv.autoVersion === false
-          ) {
-            throw new Error(
-              "--autoVersion must not be specified with a value of false if --version is not specified.",
-            );
-          }
-
           if (directory != null && argv.directory !== directory) {
             consola.debug(
               `Overriding "directory" from config file with ${argv.directory}`,
             );
           }
 
-          if (autoVersion != null && argv.autoVersion !== autoVersion) {
+          if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
             consola.debug(
               `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
+            );
+            if (argv.autoVersion != "git-describe") {
+              throw new Error(
+                `Only 'git-describe' is supported for autoVersion`,
+              );
+            }
+          }
+
+          if (gitTagPrefix != null && argv.gitTagPrefix !== gitTagPrefix) {
+            consola.debug(
+              `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
             );
           }
           return true;
