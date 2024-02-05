@@ -16,7 +16,7 @@
 
 // @ts-check
 
-import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
+import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
 import { stubData } from "@osdk/shared.test";
 import { rmSync } from "node:fs";
 import { mkdir, readdir, writeFile } from "node:fs/promises";
@@ -43,7 +43,7 @@ const ontologyWithoutUnsupportedAction = {
 // this step is typically handled by code upstream of the actual generator
 delete ontologyWithoutUnsupportedAction.actionTypes["unsupported-action"];
 
-await generateClientSdkVersionTwoPointZero(
+await generateClientSdkVersionOneDotOne(
   ontologyWithoutUnsupportedAction,
   "typescript-sdk/dev osdk-cli/dev",
   {
