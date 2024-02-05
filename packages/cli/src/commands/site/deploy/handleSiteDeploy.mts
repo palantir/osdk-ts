@@ -26,7 +26,7 @@ import archiver from "archiver";
 import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
-import { getAutoVersion } from "../../../utils/versionUtils.js";
+import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
 import type { SiteDeployArgs } from "./siteDeployArgs.js";
 
 export default async function handleSiteDeploy(
@@ -41,7 +41,7 @@ export default async function handleSiteDeploy(
     );
   }
 
-  const siteVersion = !version ? await getAutoVersion() : version;
+  const siteVersion = !version ? await findAutoVersion() : version;
   if (!version) {
     consola.info(
       `No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`,
