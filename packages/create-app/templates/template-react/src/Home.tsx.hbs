@@ -1,12 +1,11 @@
 import client from "./client";
-import getMethods from "./getMethods";
 import css from "./Home.module.css";
 import Layout from "./Layout";
 
 function Home() {
-  const objectApiNames = getMethods(client.ontology.objects);
-  const actionApiNames = getMethods(client.ontology.actions);
-  const queryApiNames = getMethods(client.ontology.queries);
+  const objectApiNames = Object.keys(client.ontology.objects);
+  const actionApiNames = Object.keys(client.ontology.actions);
+  const queryApiNames = Object.keys(client.ontology.queries);
 
   return (
     <Layout>

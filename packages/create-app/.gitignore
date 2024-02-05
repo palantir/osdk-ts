@@ -1,0 +1,3 @@
+# Override root lib/ ignore
+!templates/template-next-static-export/src/lib/
+!**/__snapshots__/expected-template-next-static-export/src/lib/

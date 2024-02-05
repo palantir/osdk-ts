@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Remove getMethods in templates now that generated methods are enumerable
+  links:
+  - https://github.com/palantir/osdk-ts/pull/27
