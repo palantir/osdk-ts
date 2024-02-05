@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import ajvModule from "ajv";
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 
@@ -82,7 +81,8 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
 export async function loadFoundryConfig(): Promise<
   LoadedFoundryConfig | undefined
 > {
-  const Ajv = ajvModule.default; // https://github.com/ajv-validator/ajv/issues/2132
+  const ajvModule = await import("ajv");
+  const Ajv = ajvModule.default.default; // https://github.com/ajv-validator/ajv/issues/2132
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(CONFIG_FILE_SCHEMA);
 

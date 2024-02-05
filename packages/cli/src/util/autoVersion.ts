@@ -26,7 +26,9 @@ import { isValidSemver } from "./isValidSemver.js";
 export async function autoVersion(tagPrefix: string = "v"): Promise<string> {
   try {
     const gitVersion = execSync(
-      `git describe --tags --first-parent --dirty --match="${tagPrefix}*"`,
+      `git describe --tags --first-parent --dirty --match="${
+        tagPrefix != "v" ? tagPrefix : "" // Support filtering when tagPrefix is passed.
+      }*"`,
       { encoding: "utf8" },
     );
     const version = gitVersion.trim().replace(new RegExp(`^${tagPrefix}`), "");
