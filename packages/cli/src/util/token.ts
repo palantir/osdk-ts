@@ -15,7 +15,7 @@
  */
 
 import { consola } from "consola";
-import * as fs from "node:fs";
+import { promises as fsPromises } from "node:fs";
 import path from "node:path";
 
 const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
@@ -27,7 +27,10 @@ const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
  * @returns The token as a string.
  * @throws An error if no token is found.
  */
-export function loadToken(token?: string, tokenFile?: string): string {
+export async function loadToken(
+  token?: string,
+  tokenFile?: string,
+): Promise<string> {
   if (token) {
     validate(token);
     consola.debug(`Using token from --token argument`);
@@ -35,10 +38,12 @@ export function loadToken(token?: string, tokenFile?: string): string {
   }
 
   if (tokenFile) {
-    const loadedToken = loadTokenFile(tokenFile);
-    validate(loadedToken);
-    consola.debug(`Using token from --tokenFile=${tokenFile} argument`);
-    return loadedToken;
+    const loadedToken = await loadTokenFile(tokenFile);
+    validate(loadedToken.token);
+    consola.debug(
+      `Using token from --tokenFile=${loadedToken.filePath} argument`,
+    );
+    return loadedToken.token;
   }
 
   for (const envVar of TOKEN_ENV_VARS) {
@@ -62,28 +67,33 @@ export function loadToken(token?: string, tokenFile?: string): string {
   );
 }
 
+interface LoadedToken {
+  filePath: string;
+  token: string;
+}
 /**
  * Synchronously reads a JWT Auth Token from a file.
  * @param filePath The path to the token file.
  * @returns The token as a string.
  * @throws An error if the file cannot be read or if the file does not contain a valid JWT.
  */
-function loadTokenFile(filePath: string): string {
+export async function loadTokenFile(filePath: string): Promise<LoadedToken> {
   let token: string;
   let resolvedPath: string;
   try {
     resolvedPath = path.resolve(filePath);
-    token = fs.readFileSync(resolvedPath, "utf8").trim();
+    token = await fsPromises.readFile(resolvedPath, "utf8");
+    token = token.trim();
   } catch (error) {
     throw new Error(`Unable to read token file "${filePath}": ${error}`);
   }
 
-  return token;
+  return { filePath: resolvedPath, token };
 }
 
-function validate(token: string): void {
+export function validate(token: string): void {
   if (!isJWT(token)) {
-    throw new Error(`Token "${token}" does not appear to be a JWT`);
+    throw new Error(`Token does not appear to be a JWT`);
   }
 }
 

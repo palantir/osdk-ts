@@ -15,14 +15,19 @@
  */
 
 import type { JSONSchemaType } from "ajv";
-import ajvModule from "ajv";
-import { existsSync, promises as fsPromises } from "node:fs";
-import path from "node:path";
+import { promises as fsPromises } from "node:fs";
+
+type AutoVersionType = "git-describe";
+
+interface AutoVersion {
+  type: AutoVersionType;
+  tagPrefix?: string;
+}
 
 export interface SiteConfig {
   application: string;
   directory: string;
-  autoVersion?: boolean;
+  autoVersion?: AutoVersion;
 }
 
 export interface FoundryConfig {
@@ -48,7 +53,15 @@ const configFileSchema: JSONSchemaType<FoundryConfig> = {
       properties: {
         application: { type: "string" },
         directory: { type: "string" },
-        autoVersion: { type: "boolean", nullable: true },
+        autoVersion: {
+          type: "object",
+          nullable: true,
+          properties: {
+            "type": { enum: ["git-describe"], type: "string" },
+            "tagPrefix": { type: "string", nullable: true },
+          },
+          required: ["type"],
+        },
       },
       required: ["application", "directory"],
     },
@@ -56,10 +69,6 @@ const configFileSchema: JSONSchemaType<FoundryConfig> = {
   required: ["foundryUrl", "site"],
   additionalProperties: false,
 };
-
-const Ajv = ajvModule.default; // https://github.com/ajv-validator/ajv/issues/2132
-const ajv = new Ajv({ allErrors: true });
-const validate = ajv.compile(configFileSchema);
 
 /**
  * Asynchronously loads a configuration file. Looks for any of the CONFIG_FILE_NAMES in the current directory going up to the root directory.
@@ -69,9 +78,16 @@ const validate = ajv.compile(configFileSchema);
 export async function loadFoundryConfig(): Promise<
   LoadedFoundryConfig | undefined
 > {
+  const ajvModule = await import("ajv");
+  const Ajv = ajvModule.default; // https://github.com/ajv-validator/ajv/issues/2132
+  const ajv = new Ajv({ allErrors: true });
+  const validate = ajv.compile(configFileSchema);
+
   const Consola = await import("consola");
   const consola = Consola.consola;
-  const configFilePath = await loadConfigFile();
+
+  const { findUp } = await import("find-up");
+  const configFilePath = await findUp(CONFIG_FILE_NAMES);
 
   if (configFilePath) {
     let foundryConfig: FoundryConfig;
@@ -94,32 +110,4 @@ export async function loadFoundryConfig(): Promise<
   }
 
   return undefined;
-}
-
-/**
- * Asynchronously searches for a configuration file in the current directory and its parents.
- * @returns A promise that resolves to the path of the configuration file, or undefined if not found.
- */
-async function loadConfigFile(): Promise<string | undefined> {
-  const { findUp } = await import("find-up");
-
-  const matcher = async (directory: string) => {
-    const files = await fsPromises.readdir(directory);
-    const found = files.some(file => CONFIG_FILE_NAMES.includes(file));
-    return found ? directory : undefined;
-  };
-
-  const configDirectory = await findUp(matcher, { type: "directory" });
-  let configFilePath;
-  if (configDirectory) {
-    for (const configFileName of CONFIG_FILE_NAMES) {
-      const possibleConfigFilePath = path.join(configDirectory, configFileName);
-      if (existsSync(possibleConfigFilePath)) {
-        configFilePath = possibleConfigFilePath;
-        break;
-      }
-    }
-  }
-
-  return configFilePath;
 }

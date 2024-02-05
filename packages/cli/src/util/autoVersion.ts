@@ -18,20 +18,18 @@ import { execSync } from "node:child_process";
 import { isValidSemver } from "./isValidSemver.js";
 
 /**
- * Gets the version string using git describe or falls back to package.json version.
+ * Gets the version string using git describe.
  * @param prefix The prefix to use for matching against tags. Defaults to an empty string.
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
-export async function getAutoVersion(prefix: string = ""): Promise<string> {
+export async function autoVersion(prefix: string = ""): Promise<string> {
   try {
-    // TODO: Could potentially handle some default prefixes e.g. "v" or "release-"
     const gitVersion = execSync(
       `git describe --tags --always --first-parent --match="${prefix}*"`,
       { encoding: "utf8" },
     );
-    const version = gitVersion.trim().replace(prefix, "");
-
+    const version = gitVersion.trim().replace(new RegExp(`^${prefix}`), "");
     if (!isValidSemver(version)) {
       throw new Error(`The version string ${version} is not SemVer compliant.`);
     }

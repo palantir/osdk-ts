@@ -15,24 +15,15 @@
  */
 
 import { findUp } from "find-up";
-import { existsSync, promises as fsPromises } from "node:fs";
+import { promises as fsPromises } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import { loadFoundryConfig } from "./config.js";
 
-vi.mock("find-up", () => ({
-  findUp: vi.fn(),
-}));
-
-vi.mock("node:fs", () => ({
-  promises: {
-    readFile: vi.fn(),
-  },
-  existsSync: vi.fn(),
-}));
+vi.mock("find-up");
+vi.mock("node:fs");
 
 describe("loadFoundryConfig", () => {
-  vi.mocked(existsSync).mockResolvedValue(true);
-  vi.mocked(findUp).mockResolvedValue("/path");
+  vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
 
   it("should load and parse the configuration file correctly", async () => {
     const correctConfig = {
@@ -40,6 +31,9 @@ describe("loadFoundryConfig", () => {
       site: {
         application: "test-app",
         directory: "/test/directory",
+        autoVersion: {
+          type: "git-describe",
+        },
       },
     };
 
@@ -52,6 +46,46 @@ describe("loadFoundryConfig", () => {
         ...correctConfig,
       },
     });
+  });
+
+  it("should throw an error if autoVersion type isn't allowed", async () => {
+    const inCorrectConfig = {
+      foundryUrl: "http://localhost",
+      site: {
+        application: "test-app",
+        directory: "/test/directory",
+        autoVersion: {
+          type: "invalid",
+        },
+      },
+    };
+
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify(inCorrectConfig),
+    );
+
+    await expect(loadFoundryConfig()).rejects.toThrow(
+      "Config file schema is invalid.",
+    );
+  });
+
+  it("should throw an error if autoVersion type is missing", async () => {
+    const inCorrectConfig = {
+      foundryUrl: "http://localhost",
+      site: {
+        application: "test-app",
+        directory: "/test/directory",
+        autoVersion: {},
+      },
+    };
+
+    vi.mocked(fsPromises.readFile).mockResolvedValue(
+      JSON.stringify(inCorrectConfig),
+    );
+
+    await expect(loadFoundryConfig()).rejects.toThrow(
+      "Config file schema is invalid.",
+    );
   });
 
   it("should throw an error if the configuration file cannot be read", async () => {
@@ -110,9 +144,7 @@ describe("loadFoundryConfig", () => {
       "Config file schema is invalid.",
     );
   });
-});
 
-describe("loadConfigFile", () => {
   it("should return undefined if the configuration file is not found", async () => {
     vi.mocked(findUp).mockResolvedValue(undefined);
     await expect(loadFoundryConfig()).resolves.toBeUndefined();

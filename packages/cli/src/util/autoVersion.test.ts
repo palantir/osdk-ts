@@ -16,26 +16,42 @@
 
 import { execSync } from "node:child_process";
 import { describe, expect, it, vi } from "vitest";
-import { getAutoVersion } from "./autoVersion.js";
+import { autoVersion } from "./autoVersion.js";
 
-vi.mock("node:child_process", () => ({
-  execSync: vi.fn(),
-}));
+vi.mock("node:child_process");
 
-describe("getAutoVersion", () => {
+describe("autoVersion", () => {
   it("should return a valid SemVer version from git describe", async () => {
     const validGitVersion = "1.2.3";
     vi.mocked(execSync).mockReturnValue(validGitVersion);
 
-    const version = await getAutoVersion();
+    const version = await autoVersion();
 
     expect(version).toBe("1.2.3");
+  });
+
+  it("should replace the prefix from the found git tag", async () => {
+    const validGitVersion = "@package@1.2.3";
+    vi.mocked(execSync).mockReturnValue(validGitVersion);
+
+    const version = await autoVersion("@package@");
+
+    expect(version).toBe("1.2.3");
+  });
+
+  it("should only replace the prefix if found at the start of the tag only", async () => {
+    const validGitVersion = "1.2.3-package";
+    vi.mocked(execSync).mockReturnValue(validGitVersion);
+
+    const version = await autoVersion("-package");
+
+    expect(version).toBe("1.2.3-package");
   });
 
   it("should throw an error if git describe returns a non-SemVer string", async () => {
     const nonSemVerGitVersion = "not-semver";
     vi.mocked(execSync).mockReturnValue(nonSemVerGitVersion);
 
-    await expect(getAutoVersion()).rejects.toThrow();
+    await expect(autoVersion()).rejects.toThrow();
   });
 });
