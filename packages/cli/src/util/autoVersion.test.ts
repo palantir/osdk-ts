@@ -21,45 +21,62 @@ import { autoVersion } from "./autoVersion.js";
 vi.mock("node:child_process");
 
 describe("autoVersion", () => {
+  const execSyncMock = vi.mocked(execSync);
+
   it("should return a valid SemVer version from git describe", async () => {
     const validGitVersion = "1.2.3";
-    vi.mocked(execSync).mockReturnValue(validGitVersion);
+    execSyncMock.mockReturnValue(validGitVersion);
 
     const version = await autoVersion();
-
     expect(version).toBe("1.2.3");
+
+    expect(execSyncMock).toHaveBeenCalledWith(
+      "git describe --tags --first-parent --dirty",
+      { encoding: "utf8" },
+    );
   });
 
-  it("should replace default prefix from git describe output", async () => {
+  it("should replace default prefix v from git describe output", async () => {
     const validGitVersion = "v1.2.3";
-    vi.mocked(execSync).mockReturnValue(validGitVersion);
-
+    execSyncMock.mockReturnValue(validGitVersion);
     const version = await autoVersion();
 
     expect(version).toBe("1.2.3");
+    expect(execSyncMock).toHaveBeenCalledWith(
+      "git describe --tags --first-parent --dirty",
+      { encoding: "utf8" },
+    );
   });
 
   it("should replace the prefix from the found git tag", async () => {
     const validGitVersion = "@package@1.2.3";
-    vi.mocked(execSync).mockReturnValue(validGitVersion);
+    execSyncMock.mockReturnValue(validGitVersion);
 
     const version = await autoVersion("@package@");
 
     expect(version).toBe("1.2.3");
+    expect(execSyncMock).toHaveBeenCalledWith(
+      "git describe --tags --first-parent --dirty --match=\"/^@package@/*\"",
+      { encoding: "utf8" },
+    );
   });
 
   it("should only replace the prefix if found at the start of the tag only", async () => {
     const validGitVersion = "1.2.3-package";
-    vi.mocked(execSync).mockReturnValue(validGitVersion);
+    execSyncMock.mockReturnValue(validGitVersion);
 
     const version = await autoVersion("-package");
 
     expect(version).toBe("1.2.3-package");
+    expect(execSyncMock).toHaveBeenCalledWith(
+      "git describe --tags --first-parent --dirty --match=\"/^-package/*\"",
+      { encoding: "utf8" },
+    );
   });
 
   it("should throw an error if git describe returns a non-SemVer string", async () => {
     const nonSemVerGitVersion = "not-semver";
-    vi.mocked(execSync).mockReturnValue(nonSemVerGitVersion);
+    execSyncMock.mockReturnValue(nonSemVerGitVersion);
 
     await expect(autoVersion()).rejects.toThrow();
   });
