@@ -25,14 +25,15 @@ import { isValidSemver } from "./isValidSemver.js";
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
 export async function autoVersion(tagPrefix: string = ""): Promise<string> {
-  const matchRegExp = new RegExp(tagPrefix == "" ? "^v?" : `^${tagPrefix}`);
-  const matchClause = tagPrefix != "" ? ` --match="${matchRegExp}*"` : "";
+  const matchGlobExp = tagPrefix == "" ? "v?" : `${tagPrefix}`;
+  const matchClause = tagPrefix != "" ? ` --match="${matchGlobExp}*"` : "";
   try {
     const gitVersion = execSync(
       `git describe --tags --first-parent --dirty${matchClause}`,
       { encoding: "utf8" },
     );
-    const version = gitVersion.trim().replace(matchRegExp, "");
+    const replaceRegExp = new RegExp(`^${matchGlobExp}`);
+    const version = gitVersion.trim().replace(replaceRegExp, "");
     if (!isValidSemver(version)) {
       throw new Error(`The version string ${version} is not SemVer compliant.`);
     }
