@@ -15,7 +15,10 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { SyncApplyActionResponseV2 } from "@osdk/gateway/types";
+import type {
+  BatchApplyActionResponseV2,
+  SyncApplyActionResponseV2,
+} from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { getObject } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
@@ -27,6 +30,10 @@ export type ActionExecutionOptions = {
   mode: ActionExecutionMode.VALIDATE_ONLY;
 } | {
   mode?: ActionExecutionMode.VALIDATE_AND_EXECUTE;
+  returnEdits?: ReturnEditsMode;
+};
+
+export type BulkActionExecutionOptions = {
   returnEdits?: ReturnEditsMode;
 };
 
@@ -116,6 +123,12 @@ export interface ActionResponse<
   edits: TEdits extends undefined ? never : TEdits | BulkEdits;
 }
 
+export interface BulkActionResponse<
+  TEdits extends Edits<any, any> | undefined = undefined,
+> {
+  edits: TEdits extends undefined ? never : TEdits | BulkEdits;
+}
+
 export type ActionResponseFromOptions<
   TOptions extends ActionExecutionOptions | undefined = undefined,
   TEdits extends Edits<any, any> | undefined = undefined,
@@ -123,6 +136,14 @@ export type ActionResponseFromOptions<
   returnEdits: ReturnEditsMode.ALL;
 } ? ActionResponse<TEdits>
   : ActionResponse;
+
+export type BulkActionResponseFromOptions<
+  TOptions extends ActionExecutionOptions | undefined = undefined,
+  TEdits extends Edits<any, any> | undefined = undefined,
+> = TOptions extends {
+  returnEdits: ReturnEditsMode.ALL;
+} ? BulkActionResponse<TEdits>
+  : BulkActionResponse;
 
 export const ActionResponse = {
   of: <
@@ -141,8 +162,8 @@ export const ActionResponse = {
       ],
     };
     if (response.edits?.type === "edits") {
-      const added = [];
-      const modified = [];
+      const added: any[] = [];
+      const modified: any[] = [];
       for (const edit of response.edits.edits) {
         if (edit.type === "addObject") {
           added.push({
@@ -177,5 +198,54 @@ export const ActionResponse = {
       };
     }
     return { validation } as ActionResponse;
+  },
+};
+
+export const BulkActionResponse = {
+  of: <
+    TAddedObjects extends OntologyObject<string, NonNullable<ParameterValue>>,
+    TModifiedObjects extends OntologyObject<
+      string,
+      NonNullable<ParameterValue>
+    >,
+  >(
+    client: ClientContext<OntologyDefinition<any>>,
+    response: BatchApplyActionResponseV2,
+  ): BulkActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
+    if (response.edits?.type === "edits") {
+      const added: any[] = [];
+      const modified: any[] = [];
+      for (const edit of response.edits.edits) {
+        if (edit.type === "addObject") {
+          added.push({
+            apiName: edit.objectType,
+            primaryKey: edit.primaryKey,
+            get: () => getObject(client, edit.objectType, edit.primaryKey),
+          });
+        }
+        if (edit.type === "modifyObject") {
+          modified.push({
+            apiName: edit.objectType,
+            primaryKey: edit.primaryKey,
+            get: () => getObject(client, edit.objectType, edit.primaryKey),
+          });
+        }
+      }
+      return {
+        edits: {
+          type: "edits",
+          added,
+          modified,
+        },
+      } as BulkActionResponse<Edits<TAddedObjects, TModifiedObjects>>;
+    }
+    if (response.edits?.type === "largeScaleEdits") {
+      return {
+        edits: {
+          type: "bulkEdits",
+        },
+      };
+    }
+    return {} as BulkActionResponse;
   },
 };

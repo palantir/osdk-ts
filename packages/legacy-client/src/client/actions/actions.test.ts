@@ -73,12 +73,19 @@ describe("Actions", () => {
 
   describe("type tests", () => {
     it("creates proper parameters", async () => {
+      const what: Parameters<typeof actions.createTask> = [
+        [{
+          id: 2,
+        }, {
+          id: 3,
+        }],
+        {},
+      ];
       expectTypeOf<Parameters<typeof actions.createTask>>().toMatchTypeOf<
         [
           {
             id?: number;
           },
-          ActionExecutionOptions?,
         ]
       >();
 

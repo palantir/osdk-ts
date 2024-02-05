@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { applyActionV2 } from "@osdk/gateway/requests";
+import { applyActionBatchV2, applyActionV2 } from "@osdk/gateway/requests";
 import type { ApplyActionRequestOptions } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
@@ -27,9 +27,13 @@ import type {
 import {
   ActionExecutionMode,
   ActionResponse,
+  BulkActionResponse,
   ReturnEditsMode,
 } from "../baseTypes";
-import type { ActionExecutionOptions } from "../baseTypes";
+import type {
+  ActionExecutionOptions,
+  BulkActionExecutionOptions,
+} from "../baseTypes";
 import { ExecuteActionErrorHandler, handleExecuteActionError } from "../errors";
 import { getParameterValueMapping } from "./util/getParameterValueMapping";
 import { wrapResult } from "./util/wrapResult";
@@ -37,30 +41,51 @@ import { wrapResult } from "./util/wrapResult";
 export async function executeAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-  Op extends ActionExecutionOptions,
+  Op extends ActionExecutionOptions | BulkActionExecutionOptions,
+  P extends ActionArgs<O, A> | Array<ActionArgs<O, A>> | undefined = undefined,
 >(
   client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
-  params?: ActionArgs<O, A>,
+  params?: P,
   options?: Op,
-): WrappedActionReturnType<O, A, Op> {
+): WrappedActionReturnType<O, A, Op, P> {
   return wrapResult(
     async () => {
-      const response = await applyActionV2(
-        createOpenApiRequest(client.stack, client.fetch),
-        client.ontology.metadata.ontologyApiName,
-        actionApiName as string,
-        {
-          parameters: params ? remapActionParams(params) : {},
-          options: options ? remapOptions(options) : {},
-        },
-      );
-
-      return ActionResponse.of(client, response) as ActionReturnType<
-        O,
-        A,
-        Op
-      >;
+      if (Array.isArray(params)) {
+        const response = await applyActionBatchV2(
+          createOpenApiRequest(client.stack, client.fetch),
+          client.ontology.metadata.ontologyApiName,
+          actionApiName as string,
+          {
+            requests: params
+              ? remapBulkActionParams(params)
+              : [],
+            options: options ? remapOptions(options) : {},
+          },
+        );
+        return BulkActionResponse.of(client, response) as ActionReturnType<
+          O,
+          A,
+          Op,
+          P
+        >;
+      } else {
+        const response = await applyActionV2(
+          createOpenApiRequest(client.stack, client.fetch),
+          client.ontology.metadata.ontologyApiName,
+          actionApiName as string,
+          {
+            parameters: params ? remapActionParams(params) : {},
+            options: options ? remapOptions(options) : {},
+          },
+        );
+        return ActionResponse.of(client, response) as ActionReturnType<
+          O,
+          A,
+          Op,
+          P
+        >;
+      }
     },
     e =>
       handleExecuteActionError(
@@ -80,6 +105,26 @@ function remapActionParams<
     acc[key] = getParameterValueMapping(value);
     return acc;
   }, parameterMap);
+
+  return remappedParams;
+}
+
+function remapBulkActionParams<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+>(params: ReadonlyArray<ActionArgs<O, A>>) {
+  const remappedParams: { parameters: { [parameterName: string]: any } }[] =
+    params.map(
+      param => {
+        const parameterMap: { [parameterName: string]: any } = {};
+        return {
+          parameters: Object.entries(param).reduce((acc, [key, value]) => {
+            acc[key] = getParameterValueMapping(value);
+            return acc;
+          }, parameterMap),
+        };
+      },
+    );
 
   return remappedParams;
 }

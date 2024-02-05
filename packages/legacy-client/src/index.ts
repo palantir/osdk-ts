@@ -140,6 +140,7 @@ export type {
   Bucketing,
   BucketKey,
   BucketValue,
+  BulkActionExecutionOptions,
   BulkEdits,
   CommonApiError,
   CompositePrimaryKeyNotSupported,

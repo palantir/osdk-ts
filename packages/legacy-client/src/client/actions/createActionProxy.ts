@@ -16,7 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ActionExecutionOptions } from "../..";
+import type { ActionExecutionOptions, BulkActionExecutionOptions } from "../..";
 import { executeAction } from "../net/executeAction";
 import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
 
@@ -41,11 +41,23 @@ export function createActionProxy<
             };
           }
 
-          return async function<Op extends ActionExecutionOptions>(
-            params: ActionArgs<O, typeof p>,
+          return async function<
+            Op extends ActionExecutionOptions | BulkActionExecutionOptions,
+            P extends
+              | ActionArgs<O, typeof p>
+              | Array<ActionArgs<O, typeof p>>,
+          >(
+            params: P,
             options?: Op,
-          ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
-            return executeAction<O, typeof p, Op>(client, p, params, options);
+          ): Promise<
+            WrappedActionReturnType<O, typeof p, Op, P>
+          > {
+            return executeAction<O, typeof p, Op, P>(
+              client,
+              p,
+              params,
+              options,
+            );
           };
         }
 

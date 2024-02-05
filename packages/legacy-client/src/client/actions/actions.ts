@@ -20,11 +20,13 @@ import type {
   ActionExecutionOptions,
   ActionResponseFromOptions,
   Attachment,
+  BulkActionExecutionOptions,
   Edits,
   LocalDate,
   Result,
   Timestamp,
 } from "../..";
+import type { BulkActionResponseFromOptions } from "../baseTypes";
 import type { ObjectSet } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
@@ -126,21 +128,103 @@ export type WrappedActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
+  P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>> | undefined =
+    undefined,
 > = Promise<
   Result<
-    ActionReturnType<O, A, Op>,
+    ActionReturnType<O, A, Op, P>,
     ActionError
   >
 >;
+
+// export type WrappedActionReturnType<
+//   O extends OntologyDefinition<any>,
+//   A extends keyof O["actions"],
+//   Op extends ActionExecutionOptions | BulkActionExecutionOptions,
+// > = Op extends BulkActionExecutionOptions ? Promise<
+//     Result<
+//       BulkActionReturnType<O, A, Op>,
+//       ActionError
+//     >
+//   >
+//   : Promise<
+//     Result<
+//       ActionReturnType<O, A, Op>,
+//       ActionError
+//     >
+//   >;
+
+// export type WrappedBulkActionReturnType<
+//   O extends OntologyDefinition<any>,
+//   A extends keyof O["actions"],
+//   Op extends BulkActionExecutionOptions,
+// > = Promise<
+//   Result<
+//     BulkActionReturnType<O, A, Op>,
+//     ActionError
+//   >
+// >;
 
 export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-> = ActionResponseFromOptions<
-  Op,
-  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
->;
+  P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>> | undefined,
+> = P extends ReadonlyArray<ActionArgs<O, A>> ? BulkActionResponseFromOptions<
+    Op,
+    Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+  >
+  : ActionResponseFromOptions<
+    Op,
+    Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+  >;
+
+// export type BulkActionReturnType<
+//   O extends OntologyDefinition<any>,
+//   A extends keyof O["actions"],
+//   Op extends ActionExecutionOptions,
+// > = BulkActionResponseFromOptions<
+//   Op,
+//   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+// >;
+
+// export type ActionReturnType<
+//   O extends OntologyDefinition<any>,
+//   A extends keyof O["actions"],
+//   Op extends ActionExecutionOptions,
+// > = ActionResponseFromOptions<
+//   Op,
+//   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+// >;
+
+// export type ActionReturnType<
+//   O extends OntologyDefinition<any>,
+//   A extends keyof O["actions"],
+//   Op extends ActionExecutionOptions | BulkActionExecutionOptions,
+//   P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>> | undefined,
+// > = Op extends BulkActionExecutionOptions & ReadonlyArray<ActionArgs<O,A>>? ActionResponseFromOptions<
+//   Op,
+//   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+// >;
+
+// export type Actions<
+//   O extends OntologyDefinition<any>,
+// > = {
+//   [A in keyof O["actions"]]:
+//     IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+//       ? <Op extends ActionExecutionOptions>(
+//         options?: Op,
+//       ) => WrappedActionReturnType<O, A, Op>
+//       :
+//         | (<Op extends ActionExecutionOptions>(
+//           params: ActionArgs<O, A>,
+//           options?: Op,
+//         ) => WrappedActionReturnType<O, A, Op>)
+//         | (<Op extends BulkActionExecutionOptions>(
+//           params: ReadonlyArray<ActionArgs<O, A>>,
+//           options?: Op,
+//         ) => WrappedActionReturnType<O, A, Op>);
+// };
 
 export type Actions<
   O extends OntologyDefinition<any>,
@@ -150,8 +234,13 @@ export type Actions<
       ? <Op extends ActionExecutionOptions>(
         options?: Op,
       ) => WrappedActionReturnType<O, A, Op>
-      : <Op extends ActionExecutionOptions>(
-        params: ActionArgs<O, A>,
+      : <
+        P extends ActionArgs<O, A> | ReadonlyArray<ActionArgs<O, A>>,
+        Op extends P extends ReadonlyArray<ActionArgs<O, A>>
+          ? BulkActionExecutionOptions
+          : ActionExecutionOptions,
+      >(
+        params: P,
         options?: Op,
-      ) => WrappedActionReturnType<O, A, Op>;
+      ) => WrappedActionReturnType<O, A, Op, P>;
 };
