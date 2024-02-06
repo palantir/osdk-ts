@@ -18,7 +18,8 @@ import { consola } from "consola";
 import type * as yargs from "yargs";
 import type { SiteConfig } from "../../../util/config.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-import type { SiteDeployArgs } from "./siteDeployArgs.js";
+import type { SiteDeployArgs } from "./SiteDeployArgs.js";
+
 function deployHandler(
   siteConfig?: SiteConfig,
 ): yargs.CommandModule<CommonSiteArgs, SiteDeployArgs> {
@@ -39,12 +40,8 @@ function deployHandler(
             type: "string",
             description: "Directory to deploy",
             ...directory
-              ? {
-                default: directory,
-              }
-              : {
-                demandOption: true,
-              },
+              ? { default: directory }
+              : { demandOption: true },
           },
           uploadOnly: {
             type: "boolean",
@@ -71,9 +68,7 @@ function deployHandler(
             description:
               "Prefix to match git tags against when --autoVersion=git-describe is used. If not provided, a default prefix 'v' is used.",
             ...gitTagPrefix
-              ? {
-                default: gitTagPrefix,
-              }
+              ? { default: gitTagPrefix }
               : {},
           },
         }).group(
@@ -96,9 +91,13 @@ function deployHandler(
             );
           }
 
-          if (directory != null && argv.directory !== directory) {
-            consola.debug(
-              `Overriding "directory" from config file with ${argv.directory}`,
+          if (
+            (autoVersion?.type != "git-describe"
+              || argv.autoVersion != "git-describe")
+            && argv.gitTagPrefix != null
+          ) {
+            throw new Error(
+              `--gitTagPrefix is only supported when --autoVersion=git-describe`,
             );
           }
 
@@ -113,6 +112,12 @@ function deployHandler(
             }
           }
 
+          if (directory != null && argv.directory !== directory) {
+            consola.debug(
+              `Overriding "directory" from config file with ${argv.directory}`,
+            );
+          }
+
           if (gitTagPrefix != null && argv.gitTagPrefix !== gitTagPrefix) {
             consola.debug(
               `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
@@ -122,7 +127,7 @@ function deployHandler(
         });
     },
     handler: async (args) => {
-      const command = await import("./handleSiteDeploy.mjs");
+      const command = await import("./siteDeployCommand.mjs");
       await command.default(args);
     },
   };

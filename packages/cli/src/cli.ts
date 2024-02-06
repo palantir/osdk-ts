@@ -28,6 +28,7 @@ import type { LoadedFoundryConfig } from "./util/config.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
+  const config: LoadedFoundryConfig | undefined = await loadFoundryConfig();
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
     .version(false)
@@ -47,9 +48,6 @@ export async function cli(args: string[] = process.argv) {
       command: "unstable",
       aliases: ["experimental"],
       builder: async (argv) => {
-        const config: LoadedFoundryConfig | undefined =
-          await loadFoundryConfig();
-
         return argv
           .command(site(config?.foundryConfig))
           .command(typescript)
@@ -70,6 +68,7 @@ export async function cli(args: string[] = process.argv) {
   try {
     return base.parseAsync();
   } catch (e) {
+    // TODO: Figure out when this path is hit
     if (e instanceof ExitProcessError) {
       const Consola = await import("consola");
       Consola.consola.error(e.message);

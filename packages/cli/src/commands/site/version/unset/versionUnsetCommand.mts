@@ -26,9 +26,10 @@ import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 export default async function versionUnsetCommand(
   { application, foundryUrl }: CommonSiteArgs,
 ) {
+  consola.start("Clearing live site version");
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(foundryUrl, application);
   const ctx = createConjureContext(foundryUrl, "/artifacts/api");
   await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
-  consola.success("Cleared the currently set live site version succesfully");
+  consola.success("Cleared live site version");
 }

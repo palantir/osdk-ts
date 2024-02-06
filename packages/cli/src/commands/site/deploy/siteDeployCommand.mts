@@ -27,7 +27,7 @@ import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
-import type { SiteDeployArgs } from "./siteDeployArgs.js";
+import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export default async function handleSiteDeploy(
   {
@@ -48,9 +48,9 @@ export default async function handleSiteDeploy(
   }
 
   const siteVersion = !version ? await findAutoVersion(gitTagPrefix) : version;
-  if (!version) {
+  if (autoVersion) {
     consola.info(
-      `No version was specified, and autoVersion is enabled. Inferred version: ${siteVersion}`,
+      `Auto version inferred next version to be: ${siteVersion}`,
     );
   }
 
@@ -76,7 +76,7 @@ export default async function handleSiteDeploy(
 
   consola.success("Upload complete");
 
-  if (uploadOnly === false) {
+  if (!uploadOnly) {
     const repositoryRid = await thirdPartyApplicationService
       .fetchWebsiteRepositoryRid(foundryUrl, application);
 
@@ -88,5 +88,7 @@ export default async function handleSiteDeploy(
     );
 
     consola.success(`Deployed ${siteVersion} successfully`);
+  } else {
+    consola.debug("Upload only mode enabled, skipping deployment");
   }
 }

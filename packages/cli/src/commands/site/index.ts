@@ -40,23 +40,16 @@ function siteHandler(
             type: "string",
             coerce: (a) => a as ThirdPartyAppRid,
             ...application
-              ? {
-                default: application,
-              }
-              : {
-                demandOption: true,
-              },
+              ? { default: application }
+              : { demandOption: true },
             description: "Application RID",
           },
+          // TODO: Handle trailing slash for foundryUrl here and also in config file
           foundryUrl: {
             type: "string",
             ...foundryUrl
-              ? {
-                default: foundryUrl,
-              }
-              : {
-                demandOption: true,
-              },
+              ? { default: foundryUrl }
+              : { demandOption: true },
             description:
               "Foundry Stack URL with Protocol (e.g. https://example.palantirfoundry.com)",
           },

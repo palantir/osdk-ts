@@ -37,5 +37,9 @@ export default async function versionGetCommand(
     repositoryRid,
   );
 
-  consola.success(`Current deployed version is ${deployedVersion?.version}`);
+  if (!deployedVersion) {
+    consola.info("No live site version set");
+  } else {
+    consola.success(`Current deployed version is ${deployedVersion.version}`);
+  }
 }

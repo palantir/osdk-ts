@@ -21,11 +21,12 @@ import {
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
-import type { SiteVersionArgs } from "../siteVersionArgs.js";
+import type { SiteVersionArgs } from "../SiteVersionArgs.js";
 
 export default async function versionSetCommand(
   { version, application, foundryUrl }: SiteVersionArgs,
 ) {
+  consola.start(`Setting live version`);
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(foundryUrl, application);
 
@@ -38,5 +39,5 @@ export default async function versionSetCommand(
     );
   }
 
-  consola.success(`Version ${version} set successfully`);
+  consola.success(`Set live version to ${version}`);
 }
