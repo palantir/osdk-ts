@@ -16,7 +16,7 @@
 
 import { consola } from "consola";
 import type * as yargs from "yargs";
-import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
+import type { FoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
@@ -24,8 +24,8 @@ import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 async function deployHandler(): Promise<
   yargs.CommandModule<CommonSiteArgs, SiteDeployArgs>
 > {
-  const config: LoadedFoundryConfig | undefined = await configLoader();
-  const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
+  const config: FoundryConfig | undefined = await configLoader();
+  const siteConfig: SiteConfig | undefined = config?.site;
   const directory = siteConfig?.directory;
   const autoVersion = siteConfig?.autoVersion;
   const gitTagPrefix = autoVersion?.tagPrefix;

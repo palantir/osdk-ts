@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-import type { LoadedFoundryConfig } from "./config.js";
+import type { FoundryConfig } from "./config.js";
 import { loadFoundryConfig } from "./config.js";
 
-let config: LoadedFoundryConfig | undefined | null = null;
+let config: FoundryConfig | undefined | null = null;
 
 async function configLoader() {
   if (config === null) {
-    config = await loadFoundryConfig();
-    if (config) {
+    const loadedConfig = await loadFoundryConfig();
+    config = loadedConfig?.foundryConfig;
+    if (loadedConfig) {
       const Consola = await import("consola");
       const consola = Consola.consola;
-      consola.debug(
-        `Using configuration from file: "${config.configFilePath}"`,
+      // TODO: Can we find how to do this as debug instead of info with respect to --verbose
+      consola.info(
+        `Using configuration from file: "${loadedConfig.configFilePath}"`,
       );
     }
   }
