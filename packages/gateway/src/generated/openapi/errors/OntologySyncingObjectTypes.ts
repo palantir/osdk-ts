@@ -17,14 +17,14 @@
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 
 /**
- * The requested object type is not synced into the ontology. Please reach out to your Ontology
- * Administrator to re-index the object type in Ontology Management Application.
+ * One or more requested object types have been changed in the **Ontology Manager** and changes are currently being
+ * applied. Wait a few seconds and try again.
  */
-export interface ObjectTypeNotSynced {
+export interface OntologySyncingObjectTypes {
   errorCode: "CONFLICT";
-  errorName: "ObjectTypeNotSynced";
+  errorName: "OntologySyncingObjectTypes";
   errorInstanceId: string;
   parameters: {
-    objectType: ObjectTypeApiName;
+    objectTypes: Array<ObjectTypeApiName>;
   };
 }

@@ -15,15 +15,18 @@
  */
 
 import { readFile } from "fs/promises";
+import { parse } from "yaml";
 import type { Arguments, Argv, CommandModule } from "yargs";
 import { generate } from "../generate/generate";
 import type { ApiSpec } from "../spec";
+import { updateSls } from "./updateSls";
 
 export interface GenerateOpenApiArgs {
   /*
    * Positional arguments
    */
   inputFile: string;
+  manifestFile: string;
   outputDir: string;
   generateVisitors: boolean;
 }
@@ -39,6 +42,11 @@ export class GenerateCommand implements CommandModule<{}, GenerateOpenApiArgs> {
     return args
       .positional("inputFile", {
         describe: "The location of the API IR",
+        type: "string",
+        demandOption: true,
+      })
+      .positional("manifestFile", {
+        describe: "The location of the API manifest.yml",
         type: "string",
         demandOption: true,
       })
@@ -68,8 +76,15 @@ export class GenerateCommand implements CommandModule<{}, GenerateOpenApiArgs> {
     const irSpecRead = await readFile(`${input}`, { encoding: "utf8" });
     const irSpec: ApiSpec = JSON.parse(irSpecRead);
 
+    const manifestRead = await readFile(`${args.manifestFile}`, {
+      encoding: "utf8",
+    });
+    const manifest = parse(manifestRead);
+
     await generate(irSpec, output, {
       generateVisitors,
     });
+
+    await updateSls(manifest, output);
   };
 }

@@ -16,7 +16,6 @@
 
 import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
 import type { SdkPackageName } from "../components/SdkPackageName";
 
 /** The given link could not be mapped to a Marketplace installation. */
@@ -25,7 +24,6 @@ export interface MarketplaceLinkMappingNotFound {
   errorName: "MarketplaceLinkMappingNotFound";
   errorInstanceId: string;
   parameters: {
-    objectType: ObjectTypeApiName;
     linkType: LinkTypeApiName;
     artifactRepository: ArtifactRepositoryRid;
     packageName: SdkPackageName;

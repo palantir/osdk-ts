@@ -71,13 +71,9 @@ export function getDataset<TResponse>(
 }
 
 /**
- * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
- *   Furthermore, this endpoint currently does not support views (Virtual datasets composed of other datasets).
- * :::
- *
  * Gets the content of a dataset as a table in the specified format.
+ *
+ * This endpoint currently does not support views (Virtual datasets composed of other datasets).
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  */
@@ -91,7 +87,6 @@ export function readTable<TResponse>(
     format: TableExportFormat;
     columns: Array<string>;
     rowLimit?: number;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(

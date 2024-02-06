@@ -25,6 +25,14 @@
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build"
   },
+  "sls": {
+    "dependencies": {
+      "com.palantir.foundry.api:api-gateway": {
+        "minVersion": "1.763.0",
+        "maxVersion": "1.x.x"
+      }
+    }
+  },
   "dependencies": {
     "fetch-retry": "^5.0.6",
     "tiny-invariant": "^1.3.1"

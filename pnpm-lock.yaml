@@ -318,8 +318,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       find-up:
-        specifier: ^6.3.0
-        version: 6.3.0
+        specifier: ^7.0.0
+        version: 7.0.0
       open:
         specifier: ^9.1.0
         version: 9.1.0
@@ -395,8 +395,8 @@ importers:
         specifier: ^3.2.3
         version: 3.2.3
       find-up:
-        specifier: ^6.3.0
-        version: 6.3.0
+        specifier: ^7.0.0
+        version: 7.0.0
       handlebars:
         specifier: ^4.7.8
         version: 4.7.8
@@ -493,9 +493,15 @@ importers:
 
   packages/gateway-generator:
     dependencies:
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
+      yaml:
+        specifier: ^2.3.4
+        version: 2.3.4
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -4251,6 +4257,7 @@ packages:
     dependencies:
       locate-path: 7.2.0
       path-exists: 5.0.0
+    dev: true
 
   /find-up@7.0.0:
     resolution: {integrity: sha512-YyZM99iHrqLKjmt4LJDj58KI+fYyufRLBSYcqycxf//KpBk9FoewoGX0450m9nB44qrZnovzC2oeP5hUibxc/g==}
@@ -5795,7 +5802,7 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       postcss: 8.4.31
-      yaml: 2.3.2
+      yaml: 2.3.4
     dev: true
 
   /postcss-nested@6.0.1(postcss@8.4.31):
@@ -7392,10 +7399,9 @@ packages:
     engines: {node: '>= 14'}
     dev: true
 
-  /yaml@2.3.2:
-    resolution: {integrity: sha512-N/lyzTPaJasoDmfV7YTrYCI0G/3ivm/9wdG0aHuheKowWQwGTsK0Eoiw6utmzAnI6pkJa0DUVygvp3spqqEKXg==}
+  /yaml@2.3.4:
+    resolution: {integrity: sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==}
     engines: {node: '>= 14'}
-    dev: true
 
   /yargs-parser@18.1.3:
     resolution: {integrity: sha512-o50j0JeToy/4K6OZcaQmW6lyXXKhq7csREXcDwk2omFPJEwUNOVtJKvmDr9EI1fAJZUyZcRF7kxGBWmRXudrCQ==}
