@@ -34,6 +34,7 @@ export type ActionExecutionOptions = {
 };
 
 export type BulkActionExecutionOptions = {
+  mode?: never;
   returnEdits?: ReturnEditsMode;
 };
 

@@ -73,11 +73,11 @@ describe("Actions", () => {
 
   describe("type tests", () => {
     it("creates proper parameters", async () => {
-      expectTypeOf<Parameters<typeof actions.createTask>>().toEqualTypeOf<
+      expectTypeOf<Parameters<typeof actions.createTask>>().toMatchTypeOf<
         [
           {
             id?: number;
-          },
+          } | { id?: number }[],
           ActionExecutionOptions?,
         ]
       >();
@@ -113,7 +113,14 @@ describe("Actions", () => {
                 typeof MockOntology,
                 "Task"
               >["__primaryKey"];
-          },
+          } | {
+            task?:
+              | OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              | OsdkLegacyObjectFrom<
+                typeof MockOntology,
+                "Task"
+              >["__primaryKey"];
+          }[],
           ActionExecutionOptions?,
         ]
       >();
@@ -138,7 +145,7 @@ describe("Actions", () => {
   describe("proxy", () => {
     it("proxies action calls with parameters", async () => {
       mockFetchResponse(fetch, {});
-      const actionResponse = await actions.createTask([{ id: 1 }]);
+      const actionResponse = await actions.createTask({ id: 1 });
       expectFetchToBeCalledWithBody(
         fetch,
         `Ontology/actions/createTask/apply`,

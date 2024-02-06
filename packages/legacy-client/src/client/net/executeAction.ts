@@ -51,14 +51,14 @@ export async function executeAction<
 ): WrappedActionReturnType<O, A, Op, P> {
   return wrapResult(
     async () => {
-      if (params && Array.isArray(params)) {
+      if (Array.isArray(params)) {
         const response = await applyActionBatchV2(
           createOpenApiRequest(client.stack, client.fetch),
           client.ontology.metadata.ontologyApiName,
           actionApiName as string,
           {
             requests: params
-              ? remapBulkActionParams(params)
+              ? remapBulkActionParams<O, A>(params)
               : [],
             options: options ? remapOptions(options) : {},
           },
@@ -75,7 +75,9 @@ export async function executeAction<
           client.ontology.metadata.ontologyApiName,
           actionApiName as string,
           {
-            parameters: params ? remapActionParams(params) : {},
+            parameters: params
+              ? remapActionParams<O, A>(params as ActionArgs<O, A>)
+              : {},
             options: options ? remapOptions(options) : {},
           },
         );

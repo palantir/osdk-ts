@@ -141,6 +141,7 @@ export type {
   BucketKey,
   BucketValue,
   BulkActionExecutionOptions,
+  BulkActionResponseFromOptions,
   BulkEdits,
   CommonApiError,
   CompositePrimaryKeyNotSupported,
