@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import type { CliCommonArgs } from "./CliCommonArgs.js";
 import auth from "./commands/auth/index.js";
-import site from "./commands/site/index.js";
+import siteHandler from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
-import { loadFoundryConfig } from "./util/config.js";
-import type { LoadedFoundryConfig } from "./util/config.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
-  const config: LoadedFoundryConfig | undefined = await loadFoundryConfig();
+  const site = await siteHandler();
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
     .version(false)
@@ -49,18 +46,10 @@ export async function cli(args: string[] = process.argv) {
       aliases: ["experimental"],
       builder: async (argv) => {
         return argv
-          .command(site(config?.foundryConfig))
+          .command(site)
           .command(typescript)
           .command(auth)
-          .demandCommand()
-          .check((_args) => {
-            if (config != null) {
-              consola.debug(
-                `Using configuration from file: "${config.configFilePath}"`,
-              );
-            }
-            return true;
-          });
+          .demandCommand();
       },
       handler: (_args) => {},
     });

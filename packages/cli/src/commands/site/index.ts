@@ -18,18 +18,20 @@ import { consola } from "consola";
 import type * as yargs from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
-import type { FoundryConfig } from "../../util/config.js";
+import type { LoadedFoundryConfig } from "../../util/config.js";
+import configLoader from "../../util/configLoader.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
-import deploy from "./deploy/index.js";
+import deployHandler from "./deploy/index.js";
 import version from "./version/index.js";
 
-function siteHandler(
-  config?: FoundryConfig,
-): yargs.CommandModule<CliCommonArgs, CommonSiteArgs> {
-  const application = config?.site.application;
-  const foundryUrl = config?.foundryUrl;
-  const siteConfig = config?.site;
+async function siteHandler(): Promise<
+  yargs.CommandModule<CliCommonArgs, CommonSiteArgs>
+> {
+  const config: LoadedFoundryConfig | undefined = await configLoader();
+  const application = config?.foundryConfig.site.application;
+  const foundryUrl = config?.foundryConfig.foundryUrl;
 
+  const deploy = await deployHandler();
   const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
     command: "site",
     describe: "Manage your site",
@@ -69,7 +71,7 @@ function siteHandler(
           "Common Arguments",
         )
         .command(version)
-        .command(deploy(siteConfig))
+        .command(deploy)
         .check((argv) => {
           if (application != null && argv.application !== application) {
             consola.debug(
