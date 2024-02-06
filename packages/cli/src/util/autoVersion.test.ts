@@ -56,7 +56,7 @@ describe("autoVersion", () => {
 
     expect(version).toBe("1.2.3");
     expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty --match=\"/^@package@/*\"",
+      "git describe --tags --first-parent --dirty --match=\"@package@*\"",
       { encoding: "utf8" },
     );
   });
@@ -69,7 +69,7 @@ describe("autoVersion", () => {
 
     expect(version).toBe("1.2.3-package");
     expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty --match=\"/^-package/*\"",
+      "git describe --tags --first-parent --dirty --match=\"-package*\"",
       { encoding: "utf8" },
     );
   });

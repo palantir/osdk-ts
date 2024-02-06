@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Git describe using regex instead of glob for autoVersion util
+  links:
+  - https://github.com/palantir/osdk-ts/pull/35
