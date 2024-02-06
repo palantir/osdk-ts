@@ -118,13 +118,7 @@ function remapBulkActionParams<
   const remappedParams: { parameters: { [parameterName: string]: any } }[] =
     params.map(
       param => {
-        const parameterMap: { [parameterName: string]: any } = {};
-        return {
-          parameters: Object.entries(param).reduce((acc, [key, value]) => {
-            acc[key] = getParameterValueMapping(value);
-            return acc;
-          }, parameterMap),
-        };
+        return { parameters: remapActionParams<O, A>(param) };
       },
     );
 
