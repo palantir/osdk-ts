@@ -23,6 +23,9 @@
       "path": "../shared.net"
     },
     {
+      "path": "../generator"
+    },
+    {
       "path": "../shared.test"
     }
   ]
