@@ -32,6 +32,7 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
     );
   }
   return {
+    type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
     description: objectTypeWithLink.objectType.description,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(

@@ -1,6 +1,7 @@
 import type { InterfaceDefinition } from '@osdk/api';
 
 export const SimpleInterface = {
+  type: 'interface',
   apiName: 'SimpleInterface',
   description: 'Its a todo item.',
   properties: {

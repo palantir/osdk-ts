@@ -45,6 +45,7 @@ export interface ObjectTypeDefinition<
   K extends string,
   L extends string,
 > {
+  type: "object";
   apiName: K;
   description?: string;
   primaryKeyType: keyof WirePropertyTypes;

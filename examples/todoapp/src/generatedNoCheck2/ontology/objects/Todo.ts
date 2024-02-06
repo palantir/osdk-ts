@@ -1,6 +1,7 @@
 import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const Todo = {
+  type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
   primaryKeyType: 'string',

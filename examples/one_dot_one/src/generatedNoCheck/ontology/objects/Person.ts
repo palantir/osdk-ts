@@ -14,6 +14,7 @@ export interface Person extends OntologyObject {
 }
 
 export const Person = {
+  type: 'object',
   apiName: 'Person',
   description: 'A person',
   primaryKeyType: 'string',

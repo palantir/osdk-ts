@@ -16,6 +16,7 @@ export interface Todo extends OntologyObject {
 }
 
 export const Todo = {
+  type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
   primaryKeyType: 'string',

@@ -45,6 +45,7 @@ export interface InterfaceDefinition<
   K extends string,
   _L extends string,
 > {
+  type: "interface";
   apiName: K;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;

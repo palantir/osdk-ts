@@ -1,6 +1,7 @@
 import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const Person = {
+  type: 'object',
   apiName: 'Person',
   description: 'A person',
   primaryKeyType: 'string',

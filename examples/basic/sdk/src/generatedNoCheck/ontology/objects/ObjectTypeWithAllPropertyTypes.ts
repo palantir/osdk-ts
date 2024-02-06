@@ -1,6 +1,7 @@
 import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const ObjectTypeWithAllPropertyTypes = {
+  type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
   primaryKeyType: 'integer',

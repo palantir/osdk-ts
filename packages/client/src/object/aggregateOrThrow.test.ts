@@ -32,6 +32,7 @@ const mockOntology = {
   },
   objects: {
     Todo: {
+      type: "object",
       apiName: "Todo",
       links: {},
       primaryKeyType: "double",
@@ -143,6 +144,7 @@ describe("aggregateOrThrow", () => {
         metadata: any;
         objects: {
           Todo: {
+            type: "object";
             apiName: "Todo";
             primaryKeyType: "double";
             links: {};
@@ -171,6 +173,7 @@ describe("aggregateOrThrow", () => {
         metadata: any;
         objects: {
           Todo: {
+            type: "object";
             apiName: "Todo";
             primaryKeyType: "double";
             links: {};

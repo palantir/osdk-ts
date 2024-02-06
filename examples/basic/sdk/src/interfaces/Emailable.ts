@@ -17,6 +17,7 @@
 import type { InterfaceDefinition } from "@osdk/api";
 
 export const Emailable = {
+  type: "interface",
   apiName: "Emailable",
 
   properties: {

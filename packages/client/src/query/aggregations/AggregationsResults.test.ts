@@ -23,6 +23,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};
@@ -56,6 +57,7 @@ type Q = AggregationResultsWithoutGroups<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};

@@ -41,6 +41,7 @@ function wireInterfaceTypeV2ToSdkObjectDefinition(
   v2: boolean,
 ): InterfaceDefinition<any, any> {
   return {
+    type: "interface",
     apiName: interfaceType.apiName,
     description: interfaceType.description,
     properties: Object.fromEntries(

@@ -24,6 +24,7 @@ export const MockOntology = {
   },
   objects: {
     Task: {
+      type: "object",
       apiName: "Task",
       primaryKeyType: "integer",
       properties: {
@@ -42,6 +43,7 @@ export const MockOntology = {
       },
     },
     Todo: {
+      type: "object",
       apiName: "Todo",
       primaryKeyType: "integer",
       properties: {
@@ -51,6 +53,7 @@ export const MockOntology = {
       links: {},
     },
     Person: {
+      type: "object",
       apiName: "Person",
       primaryKeyType: "integer",
       properties: {

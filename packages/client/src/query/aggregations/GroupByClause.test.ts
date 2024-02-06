@@ -22,6 +22,7 @@ export type F = GroupByClause<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};

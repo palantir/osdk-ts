@@ -31,6 +31,7 @@ export function wireActionTypeV2ToSdkActionDefinition(
 ): ActionDefinition<any, any> {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
+    type: "action",
     apiName: input.apiName,
     parameters: Object.fromEntries(
       Object.entries(input.parameters).map((

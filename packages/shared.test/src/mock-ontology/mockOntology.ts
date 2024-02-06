@@ -26,6 +26,7 @@ export const MockOntology = {
   },
   objects: {
     Task: {
+      type: "object",
       apiName: "Task",
       primaryKeyType: "integer",
       properties: {
@@ -36,6 +37,7 @@ export const MockOntology = {
       },
     },
     Todo: {
+      type: "object",
       apiName: "Todo",
       primaryKeyType: "string",
       description: "A todo object",
@@ -60,6 +62,7 @@ export const MockOntology = {
   },
   actions: {
     createTask: {
+      type: "action",
       apiName: "createTask",
       parameters: {
         id: { type: "integer", nullable: true },
@@ -69,6 +72,7 @@ export const MockOntology = {
       },
     },
     createTodo: {
+      type: "action",
       apiName: "createTodo",
       parameters: {},
       modifiedEntities: {
@@ -76,6 +80,7 @@ export const MockOntology = {
       },
     },
     updateTask: {
+      type: "action",
       apiName: "updateTask",
       parameters: {
         task: {
@@ -106,6 +111,7 @@ export const MockOntology = {
   },
   queries: {
     queryTakesNoParameters: {
+      type: "query",
       apiName: "queryTakesNoParameters",
       description: "a query that does not require parameters",
       version: "version",
@@ -116,6 +122,7 @@ export const MockOntology = {
       },
     },
     queryReturnsAggregation: {
+      type: "query",
       apiName: "queryReturnsAggregation",
       description: "a query that returns an aggregation",
       version: "version",
@@ -130,6 +137,7 @@ export const MockOntology = {
       },
     },
     queryTakesAllParameterTypes: {
+      type: "query",
       apiName: "queryTakesAllParameterTypes",
       description: "description of the query that takes all parameter types",
       displayName: "qTAPT",
@@ -230,6 +238,7 @@ export const MockOntology = {
       },
     },
     queryTakesNestedObjects: {
+      type: "query",
       apiName: "queryTakesNestedObjects",
       description: "a query that takes nested objects inside other types",
       version: "version",
@@ -258,6 +267,7 @@ export const MockOntology = {
       },
     },
     queryWithOnlyOptionalArgs: {
+      type: "query",
       apiName: "queryWithOnlyOptionalArgs",
       description: "a query that only has optional args",
       version: "version",
@@ -270,6 +280,7 @@ export const MockOntology = {
       },
     },
     queryWithOnlyRequiredArgs: {
+      type: "query",
       apiName: "queryWithOnlyRequiredArgs",
       description: "a query that only has required args",
       version: "version",

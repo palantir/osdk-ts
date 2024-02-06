@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 
 export const ObjectTypeWithReservedNames = {
+  type: "object",
   apiName: "ObjectTypeWithReservedNames",
   primaryKeyType: "integer",
   links: {

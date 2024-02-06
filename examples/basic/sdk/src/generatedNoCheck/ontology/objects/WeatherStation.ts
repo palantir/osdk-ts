@@ -1,6 +1,7 @@
 import type { ObjectTypeDefinition } from '@osdk/api';
 
 export const WeatherStation = {
+  type: 'object',
   apiName: 'WeatherStation',
   description: 'Weather Station',
   primaryKeyType: 'string',
