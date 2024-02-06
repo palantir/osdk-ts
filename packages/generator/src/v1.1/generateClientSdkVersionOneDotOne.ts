@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { mkdir } from "node:fs/promises";
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
@@ -45,6 +46,7 @@ export async function generateClientSdkVersionOneDotOne(
   const queriesDir = path.join(outDir, "ontology", "queries");
 
   await verifyOutdir(outDir, fs);
+  await mkdir(outDir);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir, importExt);
