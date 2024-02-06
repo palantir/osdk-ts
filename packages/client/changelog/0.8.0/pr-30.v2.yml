@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Adds geopoint $within where clauses
+  links:
+    - https://github.com/palantir/osdk-ts/pull/30

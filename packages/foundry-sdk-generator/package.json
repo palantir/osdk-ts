@@ -50,14 +50,15 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "foundry-sdk-generator": "./bin/foundry-sdk-generator"
   },
   "files": [
     "build/types",
     "build/js",
-    "CHANGELOG.md",
+    "changelog",
+    "CHANGELOG_OLD.md",
     "package.json",
     "templates",
     "*.d.ts"
