@@ -26,7 +26,11 @@ import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults, WhereClause } from "../query/index.js";
+import type {
+  AggregationClause,
+  AggregationsResults,
+  WhereClause,
+} from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
@@ -69,7 +73,9 @@ export interface BaseObjectSet<
   //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
   // >;
 
-  aggregateOrThrow: <const AO extends AggregateOpts<O, K, any>>(
+  aggregateOrThrow: <
+    AO extends AggregateOpts<O, K, AggregationClause<O, K>>,
+  >(
     req: AO,
   ) => Promise<AggregationsResults<O, K, AO>>;
 
