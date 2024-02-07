@@ -15,13 +15,13 @@
  */
 
 import { consola } from "consola";
-import type * as yargs from "yargs";
+import type { CommandModule } from "yargs";
 import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export const command: yargs.CommandModule<
+export const command: CommandModule<
   CommonSiteArgs,
   SiteDeployArgs
 > = {

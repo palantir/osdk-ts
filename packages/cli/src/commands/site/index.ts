@@ -15,7 +15,7 @@
  */
 
 import { consola } from "consola";
-import type * as yargs from "yargs";
+import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
@@ -24,7 +24,7 @@ import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import version from "./version/index.js";
 
-export const command: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
+export const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
   command: "site",
   describe: "Manage your site",
   builder: async (argv) => {
