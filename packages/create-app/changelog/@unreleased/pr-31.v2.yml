@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Refactor create-app dotfile generation and add unit tests
+  links:
+  - https://github.com/palantir/osdk-ts/pull/31

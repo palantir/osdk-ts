@@ -20,8 +20,8 @@ import { fileURLToPath } from "node:url";
 import type { DirResult } from "tmp";
 import { dirSync } from "tmp";
 import { beforeEach, expect, test, vi } from "vitest";
-import { cli } from "../cli.js";
-import { TEMPLATES } from "../templates.js";
+import { cli } from "./cli.js";
+import { TEMPLATES } from "./templates.js";
 
 const snapshotsDir = path.join(
   path.dirname(fileURLToPath(import.meta.url)),

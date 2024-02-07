@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
+import type { BBox } from "geojson";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
@@ -24,6 +25,8 @@ import type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "../../query/index.js";
+import type { GeoFilter_Within } from "../../query/WhereClause.js";
+import { DistanceUnitMapping } from "../../query/WhereClause.js";
 
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,
@@ -54,84 +57,108 @@ export function modernToLegacyWhereClause<
   const parts = Object.entries(whereClause);
 
   if (parts.length === 1) {
-    const [field, filter] = parts[0];
-    invariant(
-      filter != null,
-      "Defined key values are only allowed when they are not undefined.",
-    );
-    if (typeof filter === "string" || typeof filter === "number") {
-      return {
-        type: "eq",
-        field,
-        value: filter,
-      };
-    }
-
-    invariant(
-      Object.keys(filter).length === 1,
-      "WhereClause Filter with multiple properties isn't allowed",
-    );
-    const type = Object.keys(filter)[0] as PossibleWhereClauseFilters;
-    invariant(filter[type] != null);
-
-    if (type === "ne") {
-      return {
-        type: "not",
-        value: {
-          type: "eq",
-          field,
-          value: filter[type],
-        },
-      };
-    }
-
-    return {
-      type,
-      field,
-      value: filter[type] as any,
-    };
+    return handleWherePair(parts[0]);
   }
 
   return {
     type: "and",
-    value: Object.entries(whereClause).map<SearchJsonQueryV2>(
-      ([field, filter]) => {
-        invariant(
-          filter != null,
-          "Defined key values are only allowed when they are not undefined.",
-        );
-        if (typeof filter === "string" || typeof filter === "number") {
-          return {
-            type: "eq",
-            field,
-            value: filter,
-          };
-        }
-
-        invariant(
-          Object.keys(filter).length === 1,
-          "WhereClause Filter with multiple properties isn't allowed",
-        );
-        const q = Object.keys(filter)[0] as PossibleWhereClauseFilters;
-        invariant(filter[q] != null);
-
-        if (q === "ne") {
-          return {
-            type: "not",
-            value: {
-              type: "eq",
-              field,
-              value: filter[q],
-            },
-          };
-        }
-
-        return {
-          type: q,
-          field,
-          value: filter[q] as any,
-        };
-      },
+    value: parts.map<SearchJsonQueryV2>(
+      handleWherePair,
     ),
+  };
+}
+
+function makeWithinBbox(field: string, bbox: BBox): SearchJsonQueryV2 {
+  return {
+    type: "withinBoundingBox",
+    field,
+    value: {
+      topLeft: {
+        type: "Point",
+        coordinates: [bbox[0], bbox[3]],
+      },
+      bottomRight: {
+        type: "Point",
+        coordinates: [bbox[2], bbox[1]],
+      },
+    },
+  };
+}
+
+function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
+  invariant(
+    filter != null,
+    "Defined key values are only allowed when they are not undefined.",
+  );
+
+  if (typeof filter === "string" || typeof filter === "number") {
+    return {
+      type: "eq",
+      field,
+      value: filter,
+    };
+  }
+
+  invariant(
+    Object.keys(filter).length === 1,
+    "WhereClause Filter with multiple properties isn't allowed",
+  );
+  const firstKey = Object.keys(filter)[0] as PossibleWhereClauseFilters;
+  invariant(filter[firstKey] != null);
+
+  if (firstKey === "ne") {
+    return {
+      type: "not",
+      value: {
+        type: "eq",
+        field,
+        value: filter[firstKey],
+      },
+    };
+  }
+
+  if (firstKey === "$within") {
+    const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
+
+    if (Array.isArray(withinBody)) {
+      return makeWithinBbox(field, withinBody);
+    } else if ("bbox" in withinBody && !("type" in withinBody)) {
+      return makeWithinBbox(field, withinBody.bbox);
+    } else if ("distance" in withinBody && "of" in withinBody) {
+      return {
+        type: "withinDistanceOf",
+        field,
+        value: {
+          center: Array.isArray(withinBody.of)
+            ? {
+              type: "Point",
+              coordinates: withinBody.of,
+            }
+            : withinBody.of,
+          distance: {
+            value: withinBody.distance[0],
+            unit: DistanceUnitMapping[withinBody.distance[1]],
+          },
+        },
+      };
+    } else {
+      const coordinates = ("polygon" in withinBody)
+        ? withinBody.polygon
+        : withinBody.coordinates;
+      return {
+        type: "withinPolygon",
+        field,
+        value: {
+          type: "Polygon",
+          coordinates,
+        },
+      };
+    }
+  }
+
+  return {
+    type: firstKey,
+    field,
+    value: filter[firstKey] as any,
   };
 }

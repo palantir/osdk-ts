@@ -18,6 +18,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node ./generateMockOntology.mjs",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -37,6 +38,7 @@
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
+    "@osdk/generator": "workspace:*",
     "@osdk/shared.test": "workspace:*",
     "@types/luxon": "^3.3.3",
     "@types/ngeohash": "^0.6.4",
@@ -50,7 +52,8 @@
   "files": [
     "build/types",
     "build/js",
-    "CHANGELOG.md",
+    "changelog",
+    "CHANGELOG_OLD.md",
     "package.json",
     "templates",
     "*.d.ts"

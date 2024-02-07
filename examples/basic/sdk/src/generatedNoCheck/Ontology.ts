@@ -7,6 +7,7 @@ import * as Objects from './ontology/objects.js';
 const _Ontology = {
   metadata: OntologyMetadata,
   objects: {
+    WeatherStation: Objects.WeatherStation,
     Todo: Objects.Todo,
     Person: Objects.Person,
     Employee: Objects.Employee,
@@ -22,7 +23,7 @@ const _Ontology = {
   interfaces: {
     SimpleInterface: Interfaces.SimpleInterface,
   },
-} satisfies OntologyDefinition<'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'>;
+} satisfies OntologyDefinition<'WeatherStation' | 'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'>;
 
 type _Ontology = typeof _Ontology;
 export interface Ontology extends _Ontology {}
