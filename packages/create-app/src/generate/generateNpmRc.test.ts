@@ -14,31 +14,19 @@
  * limitations under the License.
  */
 
-export interface Template {
-  id: string;
-  label: string;
-  envPrefix: string;
-}
+import { expect, test } from "vitest";
+import { generateNpmRc } from "./generateNpmRc.js";
 
-export interface TemplateContext {
-  project: string;
-  osdkPackage: string;
-}
+const expected = `
+//registry.com:_authToken=\${FOUNDRY_SDK_AUTH_TOKEN}
+@myapp:registry=https://registry.com
+`.trimStart();
 
-export const TEMPLATES: readonly Template[] = [
-  {
-    id: "template-react",
-    label: "React",
-    envPrefix: "VITE_",
-  },
-  {
-    id: "template-vue",
-    label: "Vue",
-    envPrefix: "VITE_",
-  },
-  {
-    id: "template-next-static-export",
-    label: "Next (static export)",
-    envPrefix: "NEXT_PUBLIC_",
-  },
-];
+test("it generates .npmrc for packge and registry", () => {
+  expect(
+    generateNpmRc({
+      osdkPackage: "@myapp/sdk",
+      osdkRegistryUrl: "https://registry.com",
+    }),
+  ).toEqual(expected);
+});

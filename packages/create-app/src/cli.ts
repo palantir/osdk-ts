@@ -23,8 +23,13 @@ import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { consola } from "./consola.js";
+import {
+  generateEnvDevelopment,
+  generateEnvProduction,
+} from "./generate/generateEnv.js";
+import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green, italic } from "./highlight.js";
-import type { Template } from "./templates.js";
+import type { Template, TemplateContext } from "./templates.js";
 import { TEMPLATES } from "./templates.js";
 
 interface CliArgs {
@@ -132,6 +137,10 @@ export async function cli(args: string[] = process.argv) {
 
   fs.cpSync(templateDir, root, { recursive: true });
 
+  const templateContext: TemplateContext = {
+    project,
+    osdkPackage,
+  };
   const templateHbs = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
       file = dir + "/" + file;
@@ -143,9 +152,8 @@ export async function cli(args: string[] = process.argv) {
       if (!file.endsWith(".hbs")) {
         return;
       }
-      const hbsContext = { project, osdkPackage };
       const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
-        hbsContext,
+        templateContext,
       );
       fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
       fs.rmSync(file);
@@ -153,27 +161,20 @@ export async function cli(args: string[] = process.argv) {
   };
   templateHbs(root);
 
-  const npmRc = `//${
-    osdkRegistryUrl.replace(
-      /^https:\/\//,
-      "",
-    )
-  }:_authToken=\${FOUNDRY_SDK_AUTH_TOKEN}\n`
-    + `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
+  const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
-
-  const envDevelopment = `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
-    + `${template.envPrefix}FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback\n`
-    + `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
+  const envDevelopment = generateEnvDevelopment({
+    envPrefix: template.envPrefix,
+    foundryUrl,
+    clientId,
+  });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-
-  const envProduction = `${template.envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
-    + `${template.envPrefix}FOUNDRY_REDIRECT_URL=${
-      applicationUrl != null
-        ? applicationUrl
-        : "<Fill in the domain at which you deploy your application>"
-    }/auth/callback\n`
-    + `${template.envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
+  const envProduction = generateEnvProduction({
+    envPrefix: template.envPrefix,
+    foundryUrl,
+    applicationUrl,
+    clientId,
+  });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
 
   consola.success("Success");
