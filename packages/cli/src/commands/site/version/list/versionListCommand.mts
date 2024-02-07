@@ -42,7 +42,7 @@ export default async function versionListCommand(
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
   ]);
 
-  if (versions.length == 0) {
+  if (versions.length === 0) {
     consola.warn(
       "Successfully connected to server, but no versions were found.",
     );
