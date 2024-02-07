@@ -73,6 +73,18 @@ async function runTests() {
       interfaceResults.data[0].body;
     }
 
+    // only works in default ontology
+    const result = await client.objects.WeatherStation.where({
+      geohash: {
+        $within: {
+          distance: [1_000, "miles"],
+          of: [0, 0],
+        },
+      },
+    }).fetchPageOrThrow();
+
+    console.log(result.data[0].geohash);
+
     await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);

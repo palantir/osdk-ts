@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import type { BBox, Point, Polygon } from "geojson";
+
 import type {
   ObjectOrInterfaceDefinition,
   ObjectTypePropertyDefinition,
 } from "@osdk/api";
+import type { DistanceUnit } from "@osdk/gateway/types";
 
 export type PossibleWhereClauseFilters =
   | "gt"
@@ -27,14 +30,13 @@ export type PossibleWhereClauseFilters =
   | "contains"
   | "gte"
   | "lt"
-  | "lte";
+  | "lte"
+  | "$within";
 
 // We need to conditional here to force the union to be distributed
-type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ?
-    & Omit<{ [k in PossibleWhereClauseFilters]?: undefined }, K>
-    & {
-      [k in K]: V;
-    }
+type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
+    [k in K]: V;
+  }
   : never;
 
 type BaseFilter<T> =
@@ -47,8 +49,50 @@ type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"gt" | "gte" | "lt" | "lte", number>;
 
+export const DistanceUnitMapping = {
+  "centimeter": "CENTIMETERS",
+  "centimeters": "CENTIMETERS",
+  "cm": "CENTIMETERS",
+  "meter": "METERS",
+  "meters": "METERS",
+  "m": "METERS",
+  "kilometer": "KILOMETERS",
+  "kilometers": "KILOMETERS",
+  "km": "KILOMETERS",
+  "inch": "INCHES",
+  "inches": "INCHES",
+  "foot": "FEET",
+  "feet": "FEET",
+  "yard": "YARDS",
+  "yards": "YARDS",
+  "mile": "MILES",
+  "miles": "MILES",
+  "nautical_mile": "NAUTICAL_MILES",
+  "nauticalMile": "NAUTICAL_MILES",
+  "nautical miles": "NAUTICAL_MILES",
+} satisfies Record<string, DistanceUnit>;
+
+export type GeoFilter_Within = {
+  "$within":
+    | {
+      distance: [number, keyof typeof DistanceUnitMapping];
+      of: [number, number] | Readonly<Point>;
+    }
+    | {
+      bbox: BBox;
+    }
+    | BBox
+    | {
+      polygon: Polygon["coordinates"];
+    }
+    | Polygon;
+};
+
+export type GeoFilter = GeoFilter_Within;
+
 type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
+  : PD["type"] extends "geopoint" ? GeoFilter
   : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<
