@@ -46,7 +46,6 @@ async function siteHandler(): Promise<
               : { demandOption: true },
             description: "Application RID",
           },
-          // TODO: Handle trailing slash for foundryUrl here and also in config file
           foundryUrl: {
             type: "string",
             ...foundryUrl
