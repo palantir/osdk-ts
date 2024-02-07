@@ -62,17 +62,16 @@ describe("loadToken", () => {
   });
 });
 
-describe("loadTokenFile", async () => {
-  it("should throw an error if the token file is not found", async () => {
-    await expect(() => loadTokenFile("doesnt-exist.txt"))
+describe("loadTokenFile", () => {
+  it("should throw an error if the token file is not found", () => {
+    expect(() => loadTokenFile("doesnt-exist.txt"))
       .rejects.toThrow(`Unable to read token file "doesnt-exist.txt"`);
   });
 });
 
 describe("validate", () => {
   it("should throw an error if the token is invalid", () => {
-    expect(() => validate("token")).toThrow(
-      `Token does not appear to be a JWT`,
-    );
+    expect(() => validate("token"))
+      .toThrow(`Token does not appear to be a JWT`);
   });
 });
