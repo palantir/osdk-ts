@@ -34,27 +34,50 @@ describe(generateActions, () => {
 
     expect(helper.getFiles()[`${BASE_PATH}/Actions.ts`])
       .toMatchInlineSnapshot(`
-        "import type {
-          ActionError,
-          ActionExecutionOptions,
-          ActionResponseFromOptions,
-          Edits,
-          Result,
-        } from '@osdk/legacy-client';
-        import type { Todo } from '../objects/Todo';
-        export interface Actions {
-          /**
-           * An action which takes different types of parameters
-           * @param {Todo | Todo["__primaryKey"]} params.object
-           */
-          markTodoCompleted<O extends ActionExecutionOptions>(
-            params: {
+      "import type {
+        ActionError,
+        ActionExecutionOptions,
+        ActionResponseFromOptions,
+        BulkActionExecutionOptions,
+        BulkActionResponseFromOptions,
+        Edits,
+        Result,
+      } from '@osdk/legacy-client';
+      import type { Todo } from '../objects/Todo';
+      export interface Actions {
+        /**
+         * An action which takes different types of parameters
+         * @param {Todo | Todo["__primaryKey"]} params.object
+         */
+        markTodoCompleted<
+          P extends
+            | {
+                object?: Todo | Todo['__primaryKey'];
+              }
+            | {
+                object?: Todo | Todo['__primaryKey'];
+              }[],
+          O extends P extends {
+            object?: Todo | Todo['__primaryKey'];
+          }[]
+            ? BulkActionExecutionOptions
+            : ActionExecutionOptions,
+        >(
+          params: P,
+          options?: O,
+        ): Promise<
+          Result<
+            P extends {
               object?: Todo | Todo['__primaryKey'];
-            },
-            options?: O,
-          ): Promise<Result<ActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
-        }
-        "
+            }[]
+              ? BulkActionResponseFromOptions<O, Edits<void, Todo>>
+              : ActionResponseFromOptions<O, Edits<void, Todo>>,
+            ActionError
+          >
+        >;
+      }
+      "
+      
       `);
   });
 });

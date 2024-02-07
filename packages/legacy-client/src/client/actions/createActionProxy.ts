@@ -42,10 +42,12 @@ export function createActionProxy<
           }
 
           return async function<
-            Op extends ActionExecutionOptions | BulkActionExecutionOptions,
             P extends
               | ActionArgs<O, typeof p>
               | ActionArgs<O, typeof p>[],
+            Op extends P extends ActionArgs<O, typeof p>[]
+              ? BulkActionExecutionOptions
+              : ActionExecutionOptions,
           >(
             params: P,
             options?: Op,

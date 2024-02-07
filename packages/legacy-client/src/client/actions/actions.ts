@@ -20,13 +20,15 @@ import type {
   ActionExecutionOptions,
   ActionResponseFromOptions,
   Attachment,
-  BulkActionExecutionOptions,
   Edits,
   LocalDate,
   Result,
   Timestamp,
 } from "../..";
-import type { BulkActionResponseFromOptions } from "../baseTypes";
+import type {
+  BulkActionExecutionOptions,
+  BulkActionResponseFromOptions,
+} from "../baseTypes";
 import type { ObjectSet } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";

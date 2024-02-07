@@ -43,41 +43,63 @@ export async function generateActions(
       jsDocBlock.push(`* ${action.description}`);
     }
 
-    let parameterBlock = "";
+    let interiorParameters = "";
     if (entries.length > 0) {
-      parameterBlock = `params: { \n`;
+      interiorParameters = "{ \n";
       for (
         const [parameterName, parameterData] of entries
       ) {
-        parameterBlock += `"${parameterName}"`;
-        parameterBlock += parameterData.required ? ": " : "?: ";
+        interiorParameters += `"${parameterName}"`;
+        interiorParameters += parameterData.required ? ": " : "?: ";
         const typeScriptType = getTypeScriptTypeFromDataType(
           parameterData.dataType,
           importedObjects,
         );
-        parameterBlock += `${typeScriptType};\n`;
+        interiorParameters += `${typeScriptType};\n`;
 
         jsDocBlock.push(
           `* @param {${typeScriptType}} params.${parameterName}`,
         );
       }
-      parameterBlock += "}, ";
+      interiorParameters += "} ";
     }
 
     jsDocBlock.push(`*/`);
     actionSignatures.push(
-      `
+      entries.length > 0
+        ? `
       ${jsDocBlock.join("\n")}
-      ${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
-        Promise<Result<ActionResponseFromOptions<O, Edits<${
-        addedObjects.length > 0
-          ? addedObjects.join(" | ")
-          : "void"
-      }, ${
-        modifiedObjects.length > 0
-          ? modifiedObjects.join(" | ")
-          : "void"
-      }>>, ActionError>>;`,
+      ${action.apiName}<P extends ${interiorParameters} | ${interiorParameters}[],O extends P extends ${interiorParameters}[]? BulkActionExecutionOptions: ActionExecutionOptions>(
+        params:P ,options?: O): 
+        Promise<Result<P extends ${interiorParameters}[] ? BulkActionResponseFromOptions<O,Edits<${
+          addedObjects.length > 0
+            ? addedObjects.join(" | ")
+            : "void"
+        }, ${
+          modifiedObjects.length > 0
+            ? modifiedObjects.join(" | ")
+            : "void"
+        }>>:ActionResponseFromOptions<O, Edits<${
+          addedObjects.length > 0
+            ? addedObjects.join(" | ")
+            : "void"
+        }, ${
+          modifiedObjects.length > 0
+            ? modifiedObjects.join(" | ")
+            : "void"
+        }>>, ActionError>>;`
+        : `
+        ${jsDocBlock.join("\n")}
+        ${action.apiName}<O extends ActionExecutionOptions>(options?:O):
+        Promise<Result<ActionResponseFromOptions<O,Edits<${
+          addedObjects.length > 0
+            ? addedObjects.join(" | ")
+            : "void"
+        }, ${
+          modifiedObjects.length > 0
+            ? modifiedObjects.join(" | ")
+            : "void"
+        }>>, ActionError>>;`,
     );
   }
 
@@ -85,7 +107,7 @@ export async function generateActions(
   await fs.writeFile(
     path.join(outDir, "Actions.ts"),
     await formatTs(`
-    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
+    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions, BulkActionExecutionOptions, BulkActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
         `import type { ${importedObject} } from "../objects/${importedObject}${importExt}";`
