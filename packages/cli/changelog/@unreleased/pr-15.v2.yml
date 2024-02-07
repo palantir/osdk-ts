@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: '[1/] Improvement: Add utility functions for CLI improvements'
+  links:
+  - https://github.com/palantir/osdk-ts/pull/15

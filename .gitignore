@@ -24,3 +24,5 @@ tsconfig.tsbuildinfo
 /tmp/
 
 packages/client/src/generatedNoCheck
+packages/legacy-client/src/generatedNoCheck
+

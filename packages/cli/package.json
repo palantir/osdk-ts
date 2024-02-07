@@ -31,6 +31,7 @@
     "@osdk/gateway": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/shared.net": "workspace:*",
+    "ajv": "^8.12.0",
     "archiver": "^6.0.1",
     "conjure-lite": "^0.3.3",
     "consola": "^3.2.3",
@@ -52,14 +53,15 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },
   "files": [
     "build/types",
     "build/js",
-    "CHANGELOG.md",
+    "changelog",
+    "CHANGELOG_OLD.md",
     "package.json",
     "templates",
     "*.d.ts"
