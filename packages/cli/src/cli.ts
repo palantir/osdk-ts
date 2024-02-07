@@ -22,6 +22,7 @@ import auth from "./commands/auth/index.js";
 import siteHandler from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
+import { logConfigFileMiddleware } from "./util/configLoader.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
@@ -40,6 +41,7 @@ export async function cli(args: string[] = process.argv) {
     )
     .demandCommand()
     .middleware(logVersionMiddleware, true)
+    .middleware(logConfigFileMiddleware, true)
     .strict()
     .command({
       command: "unstable",
@@ -57,7 +59,6 @@ export async function cli(args: string[] = process.argv) {
   try {
     return base.parseAsync();
   } catch (e) {
-    // TODO: Figure out when this path is hit
     if (e instanceof ExitProcessError) {
       const Consola = await import("consola");
       Consola.consola.error(e.message);

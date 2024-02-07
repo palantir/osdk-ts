@@ -18,21 +18,27 @@ import type { FoundryConfig } from "./config.js";
 import { loadFoundryConfig } from "./config.js";
 
 let config: FoundryConfig | undefined | null = null;
+let configFilePath: string | undefined | null = null;
 
-async function configLoader() {
+async function getConfig(): Promise<FoundryConfig | undefined | null> {
   if (config === null) {
     const loadedConfig = await loadFoundryConfig();
     config = loadedConfig?.foundryConfig;
-    if (loadedConfig) {
-      const Consola = await import("consola");
-      const consola = Consola.consola;
-      // TODO: Can we find how to do this as debug instead of info with respect to --verbose
-      consola.info(
-        `Using configuration from file: "${loadedConfig.configFilePath}"`,
-      );
-    }
+    configFilePath = loadedConfig?.configFilePath;
   }
   return config;
 }
 
-export default configLoader;
+// This middleware will be run after parsing is complete so we know
+// we have loaded the config prior during construction of the commands
+export async function logConfigFileMiddleware(): Promise<void> {
+  if (configFilePath != null) {
+    const Consola = await import("consola");
+    const consola = Consola.consola;
+    consola.debug(
+      `Using configuration from file: "${configFilePath}"`,
+    );
+  }
+}
+
+export default getConfig;
