@@ -70,8 +70,9 @@ describe("loadTokenFile", async () => {
 });
 
 describe("validate", () => {
-  it("should throw an error if the token is invalid", async () => {
-    await expect(() => validate("token"))
-      .toThrow(`Token does not appear to be a JWT`);
+  it("should throw an error if the token is invalid", () => {
+    expect(() => validate("token")).toThrow(
+      `Token does not appear to be a JWT`,
+    );
   });
 });
