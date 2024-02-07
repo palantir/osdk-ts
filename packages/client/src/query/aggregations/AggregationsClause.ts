@@ -21,8 +21,9 @@ import type {
 } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 
-type StringAggregateOption = "approximateDistinct";
+type StringAggregateOption = "approximateDistinct" | "count";
 type NumericAggregateOption =
+  | "count"
   | "min"
   | "max"
   | "sum"
@@ -38,7 +39,8 @@ export type AggregationClause<
     K
   >[P]["type"] extends "string"
     ? StringAggregateOption | StringAggregateOption[]
-    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"] extends "double"
+    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"] extends
+      "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
       ? NumericAggregateOption | NumericAggregateOption[]
-    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"];
+    : never;
 };

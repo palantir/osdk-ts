@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Fix intellisense for aggregations and fill in more number types
+  links:
+  - https://github.com/palantir/osdk-ts/pull/43
