@@ -41,8 +41,7 @@ export default async function siteDeployCommand(
   }: SiteDeployArgs,
 ) {
   if (!version && !autoVersion) {
-    throw new ExitProcessError(
-      2,
+    throw new Error(
       "Either version or autoVersion must be specified",
     );
   }

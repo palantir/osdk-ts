@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "../../../ExitProcessError.js";
 import { createFetch } from "../../createFetch.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
 import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
@@ -37,7 +38,8 @@ export async function fetchSiteVersions(
     const response: SiteAssetVersions = await result.json();
     return response.versions;
   } else {
-    throw new Error(
+    throw new ExitProcessError(
+      result.status,
       `Unexpected response code ${result.status} (${result.statusText})`,
     );
   }

@@ -53,14 +53,18 @@ export async function cli(args: string[] = process.argv) {
           .demandCommand();
       },
       handler: (_args) => {},
+    })
+    .fail(async (msg, err, yargs) => {
+      const Consola = await import("consola");
+      if (err && err instanceof ExitProcessError) {
+        Consola.consola.error(err);
+      } else {
+        yargs.showHelp();
+        // eslint-disable-next-line no-console
+        console.error(msg);
+      }
+      process.exit(1);
     });
 
-  try {
-    return base.parseAsync();
-  } catch (e) {
-    if (e instanceof ExitProcessError) {
-      const Consola = await import("consola");
-      Consola.consola.error(e.message);
-    }
-  }
+  return base.parseAsync();
 }

@@ -17,7 +17,6 @@
 import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import { ExitProcessError } from "../../ExitProcessError.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
 import configLoader from "../../util/configLoader.js";
@@ -81,7 +80,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         }
 
         if (!argv.foundryUrl.startsWith("https://")) {
-          throw new ExitProcessError(1, "foundryUrl must start with https://");
+          throw new Error("foundryUrl must start with https://");
         }
 
         argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
