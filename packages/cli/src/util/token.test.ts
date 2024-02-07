@@ -63,8 +63,8 @@ describe("loadToken", () => {
 });
 
 describe("loadTokenFile", () => {
-  it("should throw an error if the token file is not found", () => {
-    expect(() => loadTokenFile("doesnt-exist.txt"))
+  it("should throw an error if the token file is not found", async () => {
+    await expect(() => loadTokenFile("doesnt-exist.txt"))
       .rejects.toThrow(`Unable to read token file "doesnt-exist.txt"`);
   });
 });
