@@ -20,7 +20,7 @@ import { loadFoundryConfig } from "./config.js";
 let config: FoundryConfig | undefined | null = null;
 let configFilePath: string | undefined | null = null;
 
-async function getConfig(): Promise<FoundryConfig | undefined | null> {
+async function getConfig(): Promise<FoundryConfig | undefined> {
   if (config === null) {
     const loadedConfig = await loadFoundryConfig();
     config = loadedConfig?.foundryConfig;
