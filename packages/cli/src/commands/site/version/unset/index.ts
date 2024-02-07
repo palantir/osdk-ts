@@ -14,9 +14,22 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { CommandModule } from "yargs";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
-export interface UploadArgs extends CommonSiteArgs {
-  siteVersion: string;
-  dir?: string;
-}
+const command: CommandModule<
+  CommonSiteArgs,
+  CommonSiteArgs
+> = {
+  command: "unset",
+  describe: "Clear the currently set live site version.",
+  builder: (argv) => {
+    return argv;
+  },
+  handler: async (args) => {
+    const command = await import("./versionUnsetCommand.mjs");
+    await command.default(args);
+  },
+};
+
+export default command;

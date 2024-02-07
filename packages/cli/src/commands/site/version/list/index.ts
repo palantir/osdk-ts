@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { CommandModule } from "yargs";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
-export interface SiteDeployArgs extends CommonSiteArgs {
-  version?: string;
-  directory: string;
-  uploadOnly: boolean;
-  autoVersion?: string;
-  gitTagPrefix?: string;
-}
+const command: CommandModule<
+  CommonSiteArgs,
+  CommonSiteArgs
+> = {
+  command: "list",
+  describe: "List application versions",
+  builder: (argv) => {
+    return argv;
+  },
+  handler: async (args) => {
+    const command = await import("./versionListCommand.mjs");
+    await command.default(args);
+  },
+};
+
+export default command;

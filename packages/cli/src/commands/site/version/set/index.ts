@@ -15,27 +15,25 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
-import type { UploadArgs } from "./UploadArgs.js";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
+import type { SiteVersionArgs } from "../SiteVersionArgs.js";
 
-export const command: CommandModule<
+const command: CommandModule<
   CommonSiteArgs,
-  UploadArgs
+  SiteVersionArgs
 > = {
-  command: "upload",
-  describe: "Upload an application version",
+  command: "set <version>",
+  describe: "Set the live site version",
   builder: (argv) => {
     return argv
-      .option("siteVersion", {
+      .positional("version", {
         type: "string",
         demandOption: true,
-      })
-      .option("dir", {
-        type: "string",
+        description: "Version to set as live",
       });
   },
   handler: async (args) => {
-    const command = await import("./siteUploadCommand.mjs");
+    const command = await import("./versionSetCommand.mjs");
     await command.default(args);
   },
 };

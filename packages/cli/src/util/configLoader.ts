@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { LoadedFoundryConfig } from "./config.js";
+import { loadFoundryConfig } from "./config.js";
 
-export interface SiteDeployArgs extends CommonSiteArgs {
-  version?: string;
-  directory: string;
-  uploadOnly: boolean;
-  autoVersion?: string;
-  gitTagPrefix?: string;
+let configPromise: Promise<LoadedFoundryConfig | undefined> | undefined =
+  undefined;
+
+function getConfig(): Promise<LoadedFoundryConfig | undefined> {
+  if (configPromise == null) {
+    configPromise = loadFoundryConfig();
+  }
+  return configPromise;
 }
+
+export default getConfig;

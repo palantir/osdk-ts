@@ -21,24 +21,15 @@ import {
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
-import type { SiteDeployArgs } from "./SiteDeployArgs.js";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
-export default async function handleSiteDeploy(
-  { siteVersion: version, appRid, baseUrl, clearVersion }: SiteDeployArgs,
+export default async function versionUnsetCommand(
+  { application, foundryUrl }: CommonSiteArgs,
 ) {
+  consola.start("Clearing live site version");
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(baseUrl, appRid);
-
-  const ctx = createConjureContext(baseUrl, "/artifacts/api");
-  if (version) {
-    await ArtifactsSitesAdminV2Service.updateDeployedVersion(
-      ctx,
-      repositoryRid,
-      { siteVersion: { version } },
-    );
-  } else if (clearVersion) {
-    await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
-  }
-
-  consola.success("Deploy successful");
+    .fetchWebsiteRepositoryRid(foundryUrl, application);
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
+  consola.success("Cleared live site version");
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { consola, LogLevels } from "consola";
+import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { createFetch } from "../../createFetch.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
@@ -45,7 +45,6 @@ export async function deleteSiteVersion(
   );
 
   if (result.status >= 200 && result.status < 300) {
-    consola.level = LogLevels.debug;
     consola.debug(`${result.status} - Status Text: '${result.statusText}'`);
     return true;
   } else {

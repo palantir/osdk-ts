@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import getConfig from "../util/configLoader.js";
 
-export interface SiteDeployArgs extends CommonSiteArgs {
-  version?: string;
-  directory: string;
-  uploadOnly: boolean;
-  autoVersion?: string;
-  gitTagPrefix?: string;
+let firstTime = true;
+export async function logConfigFileMiddleware() {
+  if (firstTime) {
+    firstTime = false;
+    const config = getConfig();
+    const configFilePath = (await config)?.configFilePath;
+    if (configFilePath) {
+      const Consola = await import("consola");
+      const consola = Consola.consola;
+      consola.debug(
+        `Using configuration from file: "${configFilePath}"`,
+      );
+    }
+  }
 }

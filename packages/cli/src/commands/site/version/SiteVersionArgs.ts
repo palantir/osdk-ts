@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import { artifacts } from "../../../net/index.mjs";
-import type { DeleteArgs } from "./DeleteArgs.js";
+import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
-export default async function siteDeleteCommand(args: DeleteArgs) {
-  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
-    args.baseUrl,
-    args.appRid,
-    args.siteVersion,
-  );
-
-  consola.success(
-    "Delete successful",
-  );
+export interface SiteVersionArgs extends CommonSiteArgs {
+  version: string;
 }

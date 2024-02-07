@@ -22,24 +22,27 @@ import {
 } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
-export default async function siteVersionsCommand(
-  { baseUrl, appRid }: CommonSiteArgs,
+export default async function versionListCommand(
+  { foundryUrl, application }: CommonSiteArgs,
 ) {
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(baseUrl, appRid);
+    .fetchWebsiteRepositoryRid(foundryUrl, application);
 
-  const ctx = createConjureContext(baseUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
 
   const [versions, deployedVersion] = await Promise.all([
-    artifacts.SiteAssetArtifactsService.fetchSiteVersions(baseUrl, appRid),
+    artifacts.SiteAssetArtifactsService.fetchSiteVersions(
+      foundryUrl,
+      application,
+    ),
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
   ]);
 
-  if (versions.length == 0) {
+  if (versions.length === 0) {
     consola.warn(
       "Successfully connected to server, but no versions were found.",
     );
