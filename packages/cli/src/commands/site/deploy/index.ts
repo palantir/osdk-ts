@@ -16,124 +16,120 @@
 
 import { consola } from "consola";
 import type * as yargs from "yargs";
-import type { FoundryConfig, SiteConfig } from "../../../util/config.js";
+import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-async function deployHandler(): Promise<
-  yargs.CommandModule<CommonSiteArgs, SiteDeployArgs>
-> {
-  const config: FoundryConfig | undefined = await configLoader();
-  const siteConfig: SiteConfig | undefined = config?.site;
-  const directory = siteConfig?.directory;
-  const autoVersion = siteConfig?.autoVersion;
-  const gitTagPrefix = autoVersion?.tagPrefix;
+export const command: yargs.CommandModule<
+  CommonSiteArgs,
+  SiteDeployArgs
+> = {
+  command: "deploy",
+  describe: "Deploy an uploaded version",
+  builder: async (argv) => {
+    const config: LoadedFoundryConfig | undefined = await configLoader();
+    const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
+    const directory = siteConfig?.directory;
+    const autoVersion = siteConfig?.autoVersion;
+    const gitTagPrefix = autoVersion?.tagPrefix;
 
-  const command: yargs.CommandModule<
-    CommonSiteArgs,
-    SiteDeployArgs
-  > = {
-    command: "deploy",
-    describe: "Deploy an uploaded version",
-    builder: (argv) => {
-      return argv
-        .options({
-          directory: {
-            type: "string",
-            description: "Directory to deploy",
-            ...directory
-              ? { default: directory }
-              : { demandOption: true },
-          },
-          uploadOnly: {
-            type: "boolean",
-            description: "Upload the directory but do not deploy it",
-            default: false,
-          },
-          version: {
-            type: "string",
-            description: "Version to deploy",
-            ...autoVersion == null
-              ? { conflicts: "autoVersion" }
-              : {},
-          },
-          autoVersion: {
-            type: "string",
-            description:
-              "Enables autoversioning. Can be set to 'git-describe' to use git describe to determine the version.",
-            ...(autoVersion != null)
-              ? { default: autoVersion.type }
-              : { conflicts: "version" },
-          },
-          gitTagPrefix: {
-            type: "string",
-            description:
-              "Prefix to match git tags against when --autoVersion=git-describe is used. If not provided, a default prefix 'v' is used.",
-            ...gitTagPrefix
-              ? { default: gitTagPrefix }
-              : {},
-          },
-        }).group(
-          ["autoVersion", "gitTagPrefix"],
-          "Autoversion Arguments",
-        )
-        .group(
-          ["version", "directory", "uploadOnly"],
-          "Common Arguments",
-        )
-        .check((argv) => {
-          // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
-          // So this case is for when nothing is provided.
-          if (
-            autoVersion == null && argv.autoVersion == null
-            && argv.version == null
-          ) {
+    return argv
+      .options({
+        directory: {
+          type: "string",
+          description: "Directory to deploy",
+          ...directory
+            ? { default: directory }
+            : { demandOption: true },
+        },
+        uploadOnly: {
+          type: "boolean",
+          description: "Upload the directory but do not deploy it",
+          default: false,
+        },
+        version: {
+          type: "string",
+          description: "Version to deploy",
+          ...autoVersion == null
+            ? { conflicts: "autoVersion" }
+            : {},
+        },
+        autoVersion: {
+          type: "string",
+          description:
+            "Enables autoversioning. Can be set to 'git-describe' to use git describe to determine the version.",
+          ...(autoVersion != null)
+            ? { default: autoVersion.type }
+            : { conflicts: "version" },
+        },
+        gitTagPrefix: {
+          type: "string",
+          description:
+            "Prefix to match git tags against when --autoVersion=git-describe is used. If not provided, a default prefix 'v' is used.",
+          ...gitTagPrefix
+            ? { default: gitTagPrefix }
+            : {},
+        },
+      }).group(
+        ["autoVersion", "gitTagPrefix"],
+        "Autoversion Arguments",
+      )
+      .group(
+        ["version", "directory", "uploadOnly"],
+        "Common Arguments",
+      )
+      .check((argv) => {
+        // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
+        // So this case is for when nothing is provided.
+        if (
+          autoVersion == null && argv.autoVersion == null
+          && argv.version == null
+        ) {
+          throw new Error(
+            "One of --version or --autoVersion must be specified",
+          );
+        }
+
+        if (
+          (autoVersion?.type != "git-describe"
+            || argv.autoVersion != "git-describe")
+          && argv.gitTagPrefix != null
+        ) {
+          throw new Error(
+            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+          );
+        }
+
+        if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
+          consola.debug(
+            `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
+          );
+          if (argv.autoVersion != "git-describe") {
             throw new Error(
-              "One of --version or --autoVersion must be specified",
+              `Only 'git-describe' is supported for autoVersion`,
             );
           }
+        }
 
-          if (
-            (autoVersion?.type != "git-describe"
-              || argv.autoVersion != "git-describe")
-            && argv.gitTagPrefix != null
-          ) {
-            throw new Error(
-              `--gitTagPrefix is only supported when --autoVersion=git-describe`,
-            );
-          }
+        if (directory != null && argv.directory !== directory) {
+          consola.debug(
+            `Overriding "directory" from config file with ${argv.directory}`,
+          );
+        }
 
-          if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
-            consola.debug(
-              `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
-            );
-            if (argv.autoVersion != "git-describe") {
-              throw new Error(
-                `Only 'git-describe' is supported for autoVersion`,
-              );
-            }
-          }
+        if (gitTagPrefix != null && argv.gitTagPrefix !== gitTagPrefix) {
+          consola.debug(
+            `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
+          );
+        }
+        return true;
+      });
+  },
+  handler: async (args) => {
+    const command = await import("./siteDeployCommand.mjs");
+    await command.default(args);
+  },
+};
 
-          if (directory != null && argv.directory !== directory) {
-            consola.debug(
-              `Overriding "directory" from config file with ${argv.directory}`,
-            );
-          }
-
-          if (gitTagPrefix != null && argv.gitTagPrefix !== gitTagPrefix) {
-            consola.debug(
-              `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
-            );
-          }
-          return true;
-        });
-    },
-    handler: async (args) => {
-      const command = await import("./siteDeployCommand.mjs");
-      await command.default(args);
-    },
-  };
-  return command;
-}
-export default deployHandler;
+export default command;

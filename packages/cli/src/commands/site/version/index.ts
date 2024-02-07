@@ -37,8 +37,7 @@ export const command: CommandModule<
       .command(get)
       .demandCommand();
   },
-  handler: async (args) => {
-  },
+  handler: async (args) => {},
 };
 
 export default command;

@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
-import { artifacts } from "../../../../net/index.mjs";
-import type { SiteVersionArgs } from "../SiteVersionArgs.js";
+import getConfig from "../util/configLoader.js";
 
-export default async function versionDeleteCommand(
-  { version, application, foundryUrl }: SiteVersionArgs,
-) {
-  consola.start(`Deleting version ${version}`);
-  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
-    foundryUrl,
-    application,
-    version,
-  );
-  consola.success(
-    `Deleted version ${version}`,
-  );
+let firstTime = true;
+export async function logConfigFileMiddleware() {
+  if (firstTime) {
+    const configPromise = getConfig();
+    if (configPromise != null) {
+      const configFilePath = (await configPromise)?.configFilePath;
+      if (configFilePath) {
+        const Consola = await import("consola");
+        const consola = Consola.consola;
+        consola.debug(
+          `Using configuration from file: "${configFilePath}"`,
+        );
+      }
+    }
+    firstTime = false;
+  }
 }

@@ -29,7 +29,7 @@ import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export default async function handleSiteDeploy(
+export default async function siteDeployCommand(
   {
     version,
     application,

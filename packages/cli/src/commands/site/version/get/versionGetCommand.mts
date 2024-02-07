@@ -25,7 +25,7 @@ import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 export default async function versionGetCommand(
   { foundryUrl, application }: CommonSiteArgs,
 ) {
-  consola.start("Getting deployed version");
+  consola.start("Getting live version");
 
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(foundryUrl, application);
@@ -40,6 +40,6 @@ export default async function versionGetCommand(
   if (!deployedVersion) {
     consola.info("No live site version set");
   } else {
-    consola.success(`Current deployed version is ${deployedVersion.version}`);
+    consola.success(`Live site version is ${deployedVersion.version}`);
   }
 }

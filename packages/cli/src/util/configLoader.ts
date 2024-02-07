@@ -14,31 +14,17 @@
  * limitations under the License.
  */
 
-import type { FoundryConfig } from "./config.js";
+import type { LoadedFoundryConfig } from "./config.js";
 import { loadFoundryConfig } from "./config.js";
 
-let config: FoundryConfig | undefined | null = null;
-let configFilePath: string | undefined | null = null;
+let configPromise: Promise<LoadedFoundryConfig | undefined> | undefined =
+  undefined;
 
-async function getConfig(): Promise<FoundryConfig | undefined> {
-  if (config === null) {
-    const loadedConfig = await loadFoundryConfig();
-    config = loadedConfig?.foundryConfig;
-    configFilePath = loadedConfig?.configFilePath;
+function getConfig(): Promise<LoadedFoundryConfig | undefined> {
+  if (configPromise == null) {
+    configPromise = loadFoundryConfig();
   }
-  return config;
-}
-
-// This middleware will be run after parsing is complete so we know
-// we have loaded the config prior during construction of the commands
-export async function logConfigFileMiddleware(): Promise<void> {
-  if (configFilePath != null) {
-    const Consola = await import("consola");
-    const consola = Consola.consola;
-    consola.debug(
-      `Using configuration from file: "${configFilePath}"`,
-    );
-  }
+  return configPromise;
 }
 
 export default getConfig;

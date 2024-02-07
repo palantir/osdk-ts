@@ -19,14 +19,13 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import type { CliCommonArgs } from "./CliCommonArgs.js";
 import auth from "./commands/auth/index.js";
-import siteHandler from "./commands/site/index.js";
+import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
-import { logConfigFileMiddleware } from "./util/configLoader.js";
+import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
-  const site = await siteHandler();
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .env("OSDK")
     .version(false)
@@ -41,7 +40,7 @@ export async function cli(args: string[] = process.argv) {
     )
     .demandCommand()
     .middleware(logVersionMiddleware, true)
-    .middleware(logConfigFileMiddleware, true)
+    .middleware(logConfigFileMiddleware)
     .strict()
     .command({
       command: "unstable",
