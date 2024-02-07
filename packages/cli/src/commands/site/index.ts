@@ -84,6 +84,14 @@ async function siteHandler(): Promise<
               `Overriding "foundryUrl" from config file with ${argv.foundryUrl}`,
             );
           }
+
+          if (!argv.foundryUrl.startsWith("https://")) {
+            throw new Error(
+              "foundryUrl must start with https://",
+            );
+          }
+
+          argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
           return true;
         })
         .demandCommand();
