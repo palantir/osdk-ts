@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import { ExitProcessError } from "../../ExitProcessError.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
 import configLoader from "../../util/configLoader.js";
+import { logSiteCommandDebugMiddleware } from "../../yargs/logCommandDebugMiddlewares.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import version from "./version/index.js";
@@ -68,25 +68,15 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .command(version)
       .command(deploy)
       .check((argv) => {
-        if (application != null && argv.application !== application) {
-          consola.debug(
-            `Overriding "application" from config file with ${argv.application}`,
-          );
-        }
-
-        if (foundryUrl != null && argv.foundryUrl !== foundryUrl) {
-          consola.debug(
-            `Overriding "foundryUrl" from config file with ${argv.foundryUrl}`,
-          );
-        }
-
+        argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
         if (!argv.foundryUrl.startsWith("https://")) {
           throw new ExitProcessError(1, "foundryUrl must start with https://");
         }
-
-        argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
         return true;
       })
+      .middleware((argv) =>
+        logSiteCommandDebugMiddleware(argv, application, foundryUrl)
+      )
       .demandCommand();
   },
   handler: async (args) => {},

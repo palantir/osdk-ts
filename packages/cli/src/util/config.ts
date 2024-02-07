@@ -17,7 +17,7 @@
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 
-interface GitDescribeAutoVersionConfig {
+export interface GitDescribeAutoVersionConfig {
   type: "git-describe";
   tagPrefix?: string;
 }
