@@ -191,7 +191,7 @@ export async function cli(args: string[] = process.argv) {
     message: `Done! Run the following commands to get started:\n`
       + `\n`
       + `  \`cd ${cdRelative}\`\n`
-      + `  \`export FOUNDRY_SDK_AUTH_TOKEN=<token>\`\n`
+      + `  \`export FOUNDRY_TOKEN=<token>\`\n`
       + `  \`npm install\`\n`
       + `  \`npm run dev\``,
     style: {

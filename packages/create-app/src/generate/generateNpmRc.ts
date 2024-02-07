@@ -22,6 +22,6 @@ export function generateNpmRc({
   osdkRegistryUrl: string;
 }): string {
   const withoutProtocol = osdkRegistryUrl.replace(/^https:\/\//, "");
-  return `//${withoutProtocol}:_authToken=\${FOUNDRY_SDK_AUTH_TOKEN}\n`
+  return `//${withoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
     + `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
 }
