@@ -35,19 +35,25 @@ describe("loadToken", () => {
       validToken,
     );
     const token = await loadToken(undefined, "valid-token.txt");
-
     expect(token).toBe(validToken);
   });
 
-  it("should load a valid token from an environment variable", async () => {
+  it("should load a valid token from the FOUNDRY_TOKEN environment variable", async () => {
     vi.stubEnv("FOUNDRY_TOKEN", validToken);
+    vi.stubEnv("FOUNDRY_SDK_AUTH_TOKEN", "");
+    expect(await loadToken()).toBe(validToken);
+  });
 
-    const token = await loadToken();
-    expect(token).toBe(validToken);
+  it("should load a valid token from the deprecated FOUNDRY_SDK_AUTH_TOKEN environment variable", async () => {
+    vi.stubEnv("FOUNDRY_TOKEN", "");
+    vi.stubEnv("FOUNDRY_SDK_AUTH_TOKEN", validToken);
+    expect(await loadToken()).toBe(validToken);
   });
 
   it("should throw an error if no token is found", async () => {
-    expect(() => loadToken()).rejects.toThrow("No token found.");
+    vi.stubEnv("FOUNDRY_TOKEN", "");
+    vi.stubEnv("FOUNDRY_SDK_AUTH_TOKEN", "");
+    await expect(() => loadToken()).rejects.toThrow("No token found.");
   });
 
   afterEach(() => {
@@ -57,15 +63,15 @@ describe("loadToken", () => {
 });
 
 describe("loadTokenFile", async () => {
-  it("should throw an error if the token file is not found", () => {
-    expect(() => loadTokenFile("doesnt-exist.txt"))
+  it("should throw an error if the token file is not found", async () => {
+    await expect(() => loadTokenFile("doesnt-exist.txt"))
       .rejects.toThrow(`Unable to read token file "doesnt-exist.txt"`);
   });
 });
 
 describe("validate", () => {
-  it("should throw an error if the token is invalid", () => {
-    expect(() => validate("token"))
+  it("should throw an error if the token is invalid", async () => {
+    await expect(() => validate("token"))
       .toThrow(`Token does not appear to be a JWT`);
   });
 });
