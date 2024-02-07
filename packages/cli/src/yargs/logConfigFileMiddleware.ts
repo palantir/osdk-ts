@@ -19,17 +19,15 @@ import getConfig from "../util/configLoader.js";
 let firstTime = true;
 export async function logConfigFileMiddleware() {
   if (firstTime) {
-    const configPromise = getConfig();
-    if (configPromise != null) {
-      const configFilePath = (await configPromise)?.configFilePath;
-      if (configFilePath) {
-        const Consola = await import("consola");
-        const consola = Consola.consola;
-        consola.debug(
-          `Using configuration from file: "${configFilePath}"`,
-        );
-      }
-    }
     firstTime = false;
+    const config = getConfig();
+    const configFilePath = (await config)?.configFilePath;
+    if (configFilePath) {
+      const Consola = await import("consola");
+      const consola = Consola.consola;
+      consola.debug(
+        `Using configuration from file: "${configFilePath}"`,
+      );
+    }
   }
 }

@@ -21,7 +21,7 @@ import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-export const command: CommandModule<
+const command: CommandModule<
   CommonSiteArgs,
   SiteDeployArgs
 > = {
@@ -92,8 +92,8 @@ export const command: CommandModule<
         }
 
         if (
-          (autoVersion?.type != "git-describe"
-            || argv.autoVersion != "git-describe")
+          (autoVersion?.type !== "git-describe"
+            || argv.autoVersion !== "git-describe")
           && argv.gitTagPrefix != null
         ) {
           throw new Error(
@@ -105,7 +105,7 @@ export const command: CommandModule<
           consola.debug(
             `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
           );
-          if (argv.autoVersion != "git-describe") {
+          if (argv.autoVersion !== "git-describe") {
             throw new Error(
               `Only 'git-describe' is supported for autoVersion`,
             );

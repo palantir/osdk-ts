@@ -22,7 +22,7 @@ import list from "./list/index.js";
 import set from "./set/index.js";
 import unset from "./unset/index.js";
 
-export const command: CommandModule<
+const command: CommandModule<
   CommonSiteArgs,
   CommonSiteArgs
 > = {
