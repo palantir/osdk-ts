@@ -26,7 +26,6 @@ export default async function versionDeleteCommand(
     application,
     version,
   );
-  // TODO: Add a check here if the version already exists?
   consola.success(
     `Deleted version ${version}`,
   );

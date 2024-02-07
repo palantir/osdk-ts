@@ -41,7 +41,6 @@ export async function autoVersion(tagPrefix: string = ""): Promise<string> {
     }
 
     return version;
-    // TODO(zka): Find out possible error messages from git describe and show specific messages.
   } catch (error) {
     throw new Error(
       `Unable to determine the version automatically. Please supply a --version argument. ${error}`,

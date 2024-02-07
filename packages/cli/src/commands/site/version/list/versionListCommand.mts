@@ -50,7 +50,6 @@ export default async function versionListCommand(
   }
 
   consola.success("Found versions:");
-  // TODO(zka): Add sorting according to SLSVersion
   for (const version of versions) {
     consola.log(
       `    - ${version}${

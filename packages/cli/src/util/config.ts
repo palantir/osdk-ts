@@ -96,7 +96,6 @@ export async function loadFoundryConfig(): Promise<
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
-      // TODO(zka): Parsing the file should be dependent on the file extension.
       foundryConfig = JSON.parse(fileContent);
     } catch {
       throw Error(`Couldn't read or parse config file ${configFilePath}`);
