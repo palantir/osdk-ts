@@ -17,4 +17,7 @@
 module.exports = {
   extends: ["sane/library"],
   root: true,
+  rules: {
+    "eqeqeq": ["error", "smart"],
+  },
 };
