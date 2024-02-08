@@ -16,8 +16,8 @@
 
 import {
   ArtifactsSitesAdminV2Service,
-  createClientContext,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import { consola } from "consola";
@@ -29,7 +29,7 @@ export default async function versionGetCommand(
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
-  const clientCtx = createClientContext(foundryUrl, tokenProvider);
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Getting live version");
 
   const repositoryRid = await thirdPartyApplicationService

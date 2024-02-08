@@ -17,8 +17,8 @@
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
-  createClientContext,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import { consola } from "consola";
@@ -31,7 +31,7 @@ export default async function versionListCommand(
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
-  const clientCtx = createClientContext(foundryUrl, tokenProvider);
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService

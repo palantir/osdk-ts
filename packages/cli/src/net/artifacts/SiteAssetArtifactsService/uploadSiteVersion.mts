@@ -16,14 +16,14 @@
 
 import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
-import type { ClientContext } from "../../clientContext.mjs";
 import { createFetch } from "../../createFetch.mjs";
+import type { InternalClientContext } from "../../internalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 import type { UploadZippedSiteAssetRequest } from "./UploadZippedSiteAssetRequest.mjs";
 
 export async function uploadZippedSiteAsset(
-  ctx: ClientContext,
+  ctx: InternalClientContext,
   request: UploadZippedSiteAssetRequest,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(

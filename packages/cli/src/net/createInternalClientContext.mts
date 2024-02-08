@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-export interface ClientContext {
-  tokenProvider: () => string;
-  foundryUrl: string;
+import type { InternalClientContext } from "./internalClientContext.mjs";
+
+export function createInternalClientContext(
+  foundryUrl: string,
+  tokenProvider: () => string,
+): InternalClientContext {
+  return {
+    tokenProvider,
+    foundryUrl,
+  };
 }

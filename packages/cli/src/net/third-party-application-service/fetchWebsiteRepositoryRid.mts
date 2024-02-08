@@ -15,13 +15,13 @@
  */
 
 import { consola } from "consola";
-import type { ClientContext } from "../clientContext.mjs";
 import { createFetch } from "../createFetch.mjs";
+import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { RepositoryRid } from "../RepositoryRid.js";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 
 export async function fetchWebsiteRepositoryRid(
-  ctx: ClientContext,
+  ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<RepositoryRid> {
   const fetch = createFetch(ctx.tokenProvider);

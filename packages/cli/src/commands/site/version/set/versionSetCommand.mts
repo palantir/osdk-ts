@@ -18,8 +18,8 @@ import { consola } from "consola";
 
 import {
   ArtifactsSitesAdminV2Service,
-  createClientContext,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import { loadToken } from "../../../../util/token.js";
@@ -31,7 +31,7 @@ export default async function versionSetCommand(
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
-  const clientCtx = createClientContext(foundryUrl, tokenProvider);
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(clientCtx, application);
 

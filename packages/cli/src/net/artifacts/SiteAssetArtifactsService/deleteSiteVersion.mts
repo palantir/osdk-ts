@@ -16,14 +16,14 @@
 
 import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
-import type { ClientContext } from "../../clientContext.mjs";
 import { createFetch } from "../../createFetch.mjs";
+import type { InternalClientContext } from "../../internalInternalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
 import type { DeleteSiteVersionRequest } from "./DeleteSiteVersionRequest.mjs";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 
 export async function deleteSiteVersion(
-  ctx: ClientContext,
+  ctx: InternalClientContext,
   request: DeleteSiteVersionRequest,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(

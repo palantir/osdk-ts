@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "./clientContext.mjs";
-
-export function createClientContext(
-  foundryUrl: string,
-  tokenProvider: () => string,
-): ClientContext {
-  return {
-    tokenProvider,
-    foundryUrl,
-  };
+export interface InternalClientContext {
+  tokenProvider: () => string;
+  foundryUrl: string;
 }

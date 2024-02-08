@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { artifacts, createClientContext } from "#net";
+import { artifacts, createInternalClientContext } from "#net";
 import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
 import type { SiteVersionArgs } from "../SiteVersionArgs.js";
@@ -24,7 +24,7 @@ export default async function versionDeleteCommand(
   consola.start(`Deleting version ${version}`);
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
-  const clientCtx = createClientContext(foundryUrl, tokenProvider);
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
     clientCtx,
     { application, version },

@@ -19,8 +19,8 @@ import { consola } from "consola";
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
-  createClientContext,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import archiver from "archiver";
@@ -69,7 +69,7 @@ export default async function siteDeployCommand(
 
   const archive = archiver("zip").directory(directory, false);
   const tokenProvider = () => loadedToken;
-  const clientCtx = createClientContext(foundryUrl, tokenProvider);
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   await Promise.all([
     artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
       clientCtx,

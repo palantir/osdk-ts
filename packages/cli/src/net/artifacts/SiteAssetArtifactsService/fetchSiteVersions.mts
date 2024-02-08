@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "../../clientContext.mjs";
 import { createFetch } from "../../createFetch.mjs";
+import type { InternalClientContext } from "../../internalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
 import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 import type { SiteAssetVersions } from "./SiteAssetVersions.mjs";
 
 export async function fetchSiteVersions(
-  ctx: ClientContext,
+  ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
