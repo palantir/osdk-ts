@@ -106,6 +106,8 @@ const command: CommandModule<
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
           );
         }
+
+        return true;
       }).middleware((argv) =>
         logDeployCommandConfigFileOverride(
           argv,
