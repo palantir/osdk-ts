@@ -18,10 +18,10 @@ import type { ClientContext } from "./clientContext.mjs";
 
 export function createClientContext(
   foundryUrl: string,
-  token: string,
+  tokenProvider: () => string,
 ): ClientContext {
   return {
-    tokenProvider: () => token,
+    tokenProvider,
     foundryUrl,
   };
 }

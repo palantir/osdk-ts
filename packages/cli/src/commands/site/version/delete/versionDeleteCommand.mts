@@ -23,7 +23,8 @@ export default async function versionDeleteCommand(
 ) {
   consola.start(`Deleting version ${version}`);
   const loadedToken = await loadToken(token, tokenFile);
-  const clientCtx = createClientContext(foundryUrl, loadedToken);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createClientContext(foundryUrl, tokenProvider);
   await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
     clientCtx,
     { application, version },

@@ -30,11 +30,12 @@ export default async function versionSetCommand(
 ) {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
-  const clientCtx = createClientContext(foundryUrl, loadedToken);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createClientContext(foundryUrl, tokenProvider);
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(clientCtx, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
   if (version) {
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,

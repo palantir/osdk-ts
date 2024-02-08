@@ -29,11 +29,12 @@ export default async function versionUnsetCommand(
   { application, foundryUrl, token, tokenFile }: CommonSiteArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
-  const clientCtx = createClientContext(foundryUrl, loadedToken);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createClientContext(foundryUrl, tokenProvider);
   consola.start("Clearing live site version");
   const repositoryRid = await thirdPartyApplicationService
     .fetchWebsiteRepositoryRid(clientCtx, application);
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
   await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
   consola.success("Cleared live site version");
 }

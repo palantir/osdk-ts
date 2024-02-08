@@ -20,10 +20,10 @@ import { createFetch } from "./createFetch.mjs";
 export function createConjureContext(
   foundryUrl: string,
   servicePath: "/artifacts/api",
-  token: string,
+  tokenProvider: () => string,
 ): ConjureContext {
   return {
-    fetchFn: createFetch(() => token),
+    fetchFn: createFetch(tokenProvider),
     baseUrl: foundryUrl,
     servicePath,
   };

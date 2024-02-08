@@ -68,8 +68,8 @@ export default async function siteDeployCommand(
   consola.start("Zippping site files");
 
   const archive = archiver("zip").directory(directory, false);
-
-  const clientCtx = createClientContext(foundryUrl, loadedToken);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createClientContext(foundryUrl, tokenProvider);
   await Promise.all([
     artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
       clientCtx,
@@ -88,7 +88,11 @@ export default async function siteDeployCommand(
     const repositoryRid = await thirdPartyApplicationService
       .fetchWebsiteRepositoryRid(clientCtx, application);
 
-    const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
+    const ctx = createConjureContext(
+      foundryUrl,
+      "/artifacts/api",
+      tokenProvider,
+    );
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,
