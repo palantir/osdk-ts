@@ -5,7 +5,7 @@
     "directory": "./out",
     "autoVersion": {
       "type": "git-describe",
-      "tagPrefix": "tag-prefix"
+      "tagPrefix": ""
     }
   }
 }

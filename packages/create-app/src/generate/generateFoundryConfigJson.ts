@@ -31,7 +31,7 @@ export function generateFoundryConfigJson({
         directory,
         autoVersion: {
           type: "git-describe",
-          tagPrefix: "tag-prefix",
+          tagPrefix: "",
         },
       },
     },

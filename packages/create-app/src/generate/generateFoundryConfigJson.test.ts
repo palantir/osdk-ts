@@ -25,7 +25,7 @@ const expected = `
     "directory": "./dist",
     "autoVersion": {
       "type": "git-describe",
-      "tagPrefix": "tag-prefix"
+      "tagPrefix": ""
     }
   }
 }
