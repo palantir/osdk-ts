@@ -140,6 +140,12 @@ describe("Actions", () => {
         >
       >();
     });
+
+    expectTypeOf<typeof actions.createTask>().toBeCallableWith([{ id: 1 }], {
+      // @ts-expect-error
+      mode: ActionExecutionMode.VALIDATE_AND_EXECUTE,
+      returnEdits: ReturnEditsMode.ALL,
+    });
   });
 
   describe("proxy", () => {

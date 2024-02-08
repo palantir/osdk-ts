@@ -144,7 +144,7 @@ export type WrappedActionReturnType<
 export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-  Op extends ActionExecutionOptions,
+  Op extends ActionExecutionOptions | BulkActionExecutionOptions,
   P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined,
 > = P extends ActionArgs<O, A>[] ? BulkActionResponseFromOptions<
     Op,
@@ -155,6 +155,24 @@ export type ActionReturnType<
     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
   >;
 
+// export type Actions<
+//   O extends OntologyDefinition<any>,
+// > = {
+//   [A in keyof O["actions"]]:
+//     IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+//       ? <Op extends ActionExecutionOptions>(
+//         options?: Op,
+//       ) => WrappedActionReturnType<O, A, Op>
+//       : <
+//         P extends ActionArgs<O, A> | ActionArgs<O, A>[],
+//         Op extends P extends ActionArgs<O, A>[] ? BulkActionExecutionOptions
+//           : ActionExecutionOptions,
+//       >(
+//         params: P,
+//         options?: Op,
+//       ) => WrappedActionReturnType<O, A, Op, P>;
+// };
+
 export type Actions<
   O extends OntologyDefinition<any>,
 > = {
@@ -163,12 +181,19 @@ export type Actions<
       ? <Op extends ActionExecutionOptions>(
         options?: Op,
       ) => WrappedActionReturnType<O, A, Op>
-      : <
-        P extends ActionArgs<O, A> | ActionArgs<O, A>[],
-        Op extends P extends ActionArgs<O, A>[] ? BulkActionExecutionOptions
-          : ActionExecutionOptions,
-      >(
-        params: P,
-        options?: Op,
-      ) => WrappedActionReturnType<O, A, Op, P>;
+      :
+        & (<
+          P extends ActionArgs<O, A>,
+          Op extends ActionExecutionOptions,
+        >(
+          params: P,
+          options?: Op,
+        ) => WrappedActionReturnType<O, A, Op, P>)
+        & (<
+          P extends ActionArgs<O, A>[],
+          Op extends BulkActionExecutionOptions,
+        >(
+          params: P,
+          options?: Op,
+        ) => WrappedActionReturnType<O, A, Op, P>);
 };

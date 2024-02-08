@@ -3,6 +3,8 @@ import type {
   ActionExecutionOptions,
   ActionResponseFromOptions,
   Attachment,
+  BulkActionExecutionOptions,
+  BulkActionResponseFromOptions,
   Edits,
   LocalDate,
   ObjectSet,
@@ -22,17 +24,52 @@ export interface Actions {
    * @param {Array<LocalDate>} params.dateArray
    * @param {Array<Attachment>} params.attachmentArray
    */
-  actionTakesAllParameterTypes<O extends ActionExecutionOptions>(
-    params: {
+  actionTakesAllParameterTypes<
+    P extends
+      | {
+          objectSet: ObjectSet<Todo>;
+          object?: Person | Person['__primaryKey'];
+          string: string;
+          'time-stamp': Timestamp;
+          dateArray?: Array<LocalDate>;
+          attachmentArray: Array<Attachment>;
+        }
+      | {
+          objectSet: ObjectSet<Todo>;
+          object?: Person | Person['__primaryKey'];
+          string: string;
+          'time-stamp': Timestamp;
+          dateArray?: Array<LocalDate>;
+          attachmentArray: Array<Attachment>;
+        }[],
+    O extends P extends {
       objectSet: ObjectSet<Todo>;
       object?: Person | Person['__primaryKey'];
       string: string;
       'time-stamp': Timestamp;
       dateArray?: Array<LocalDate>;
       attachmentArray: Array<Attachment>;
-    },
+    }[]
+      ? BulkActionExecutionOptions
+      : ActionExecutionOptions,
+  >(
+    params: P,
     options?: O,
-  ): Promise<Result<ActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>>;
+  ): Promise<
+    Result<
+      P extends {
+        objectSet: ObjectSet<Todo>;
+        object?: Person | Person['__primaryKey'];
+        string: string;
+        'time-stamp': Timestamp;
+        dateArray?: Array<LocalDate>;
+        attachmentArray: Array<Attachment>;
+      }[]
+        ? BulkActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>
+        : ActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>,
+      ActionError
+    >
+  >;
 
   /**
    * Creates a new Todo
