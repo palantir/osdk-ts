@@ -18,25 +18,30 @@ import {
   artifacts,
   ArtifactsSitesAdminV2Service,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
+import { loadToken } from "../../../../util/token.js";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
 export default async function versionListCommand(
-  { foundryUrl, application }: CommonSiteArgs,
+  { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
 ) {
+  const loadedToken = await loadToken(token, tokenFile);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
+    .fetchWebsiteRepositoryRid(clientCtx, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
 
   const [versions, deployedVersion] = await Promise.all([
     artifacts.SiteAssetArtifactsService.fetchSiteVersions(
-      foundryUrl,
+      clientCtx,
       application,
     ),
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),

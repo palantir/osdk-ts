@@ -19,18 +19,23 @@ import { consola } from "consola";
 import {
   ArtifactsSitesAdminV2Service,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
+import { loadToken } from "../../../../util/token.js";
 import type { SiteVersionArgs } from "../SiteVersionArgs.js";
 
 export default async function versionSetCommand(
-  { version, application, foundryUrl }: SiteVersionArgs,
+  { version, application, foundryUrl, token, tokenFile }: SiteVersionArgs,
 ) {
   consola.start(`Setting live version`);
+  const loadedToken = await loadToken(token, tokenFile);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
+    .fetchWebsiteRepositoryRid(clientCtx, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
   if (version) {
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,

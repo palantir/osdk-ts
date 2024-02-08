@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-export function generateNpmRc({
-  osdkPackage,
-  osdkRegistryUrl,
-}: {
-  osdkPackage: string;
-  osdkRegistryUrl: string;
-}): string {
-  const withoutProtocol = osdkRegistryUrl.replace(/^https:\/\//, "");
-  return `//${withoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
+import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
+
+export interface UploadZippedSiteAssetRequest {
+  application: ThirdPartyAppRid;
+  version: string;
+  zipFile: ReadableStream | Blob | BufferSource;
 }

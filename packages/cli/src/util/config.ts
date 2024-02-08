@@ -18,7 +18,7 @@ import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { ExitProcessError } from "../ExitProcessError.js";
 
-interface GitDescribeAutoVersionConfig {
+export interface GitDescribeAutoVersionConfig {
   type: "git-describe";
   tagPrefix?: string;
 }
@@ -59,7 +59,7 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
           oneOf: [
             {
               properties: {
-                "type": { enum: ["git-describe"], type: "string" },
+                "type": { const: "git-describe", type: "string" },
                 "tagPrefix": { type: "string", nullable: true },
               },
             },

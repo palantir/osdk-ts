@@ -16,8 +16,8 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import type { Namespace } from "../../spec";
-import { generateNamespace } from "../namespace";
+import type { Namespace } from "../spec";
+import { generateNamespace } from "./namespace";
 
 describe("Namespace", () => {
   it("Generates a resource static method on a namespace correctly", () => {
@@ -119,9 +119,9 @@ describe("Namespace", () => {
     const sourceFiles = project.getSourceFiles();
     const sourceFile = project.getSourceFile("namespaces/Datasets.ts");
     expect(sourceFile?.getFullText()).toMatchInlineSnapshot(`
-            "import type { CreateDatasetRequest } from \\"../components/CreateDatasetRequest\\";
-            import type { Dataset } from \\"../components/Dataset\\";
-            import { OpenApiRequest } from \\"../request\\";
+            "import type { CreateDatasetRequest } from "../components/CreateDatasetRequest";
+            import type { Dataset } from "../components/Dataset";
+            import { OpenApiRequest } from "../request";
 
             /**
              * Creates a new Dataset. A default branch - \`master\` for most enrollments - will be created on the Dataset.
@@ -131,7 +131,7 @@ describe("Namespace", () => {
              */
             export function createDataset<TResponse>(_request: OpenApiRequest<Dataset, TResponse>, request: CreateDatasetRequest): Promise<TResponse> {
                 return _request(
-                    \\"POST\\",
+                    "POST",
                     \`/v1/datasets\`,
                     request,
                     __undefined,
@@ -139,8 +139,8 @@ describe("Namespace", () => {
                 );
             }
 
-            const __anyMediaType: string = \\"*/*\\";
-            const __applicationJson: string = \\"application/json\\";
+            const __anyMediaType: string = "*/*";
+            const __applicationJson: string = "application/json";
             /** Constant reference to \`undefined\` that we expect to get minified and therefore reduce total code size */
             const __undefined: undefined = undefined;
             "

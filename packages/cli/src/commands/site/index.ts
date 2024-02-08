@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
@@ -23,6 +22,7 @@ import configLoader from "../../util/configLoader.js";
 import { YargsCheckError } from "../../YargsCheckError.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
+import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
 import version from "./version/index.js";
 
 const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
@@ -36,13 +36,14 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .options({
         application: {
           type: "string",
-          coerce: (a) => a as ThirdPartyAppRid,
+          coerce: (application) => application as ThirdPartyAppRid,
           ...application
             ? { default: application }
             : { demandOption: true },
           description: "Application RID",
         },
         foundryUrl: {
+          coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
           type: "string",
           ...foundryUrl
             ? { default: foundryUrl }
@@ -68,25 +69,14 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .command(version)
       .command(deploy)
       .check((argv) => {
-        if (application != null && argv.application !== application) {
-          consola.debug(
-            `Overriding "application" from config file with ${argv.application}`,
-          );
-        }
-
-        if (foundryUrl != null && argv.foundryUrl !== foundryUrl) {
-          consola.debug(
-            `Overriding "foundryUrl" from config file with ${argv.foundryUrl}`,
-          );
-        }
-
         if (!argv.foundryUrl.startsWith("https://")) {
           throw new YargsCheckError("foundryUrl must start with https://");
         }
-
-        argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
         return true;
       })
+      .middleware((argv) =>
+        logSiteCommandConfigFileOverride(argv, config?.foundryConfig)
+      )
       .demandCommand();
   },
   handler: async (args) => {},

@@ -15,8 +15,8 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import type { DataType } from "../../spec";
-import { generateType } from "../types";
+import type { DataType } from "../spec";
+import { generateType } from "./types";
 
 describe("generateTypes", () => {
   let referenceSet: Set<string>;

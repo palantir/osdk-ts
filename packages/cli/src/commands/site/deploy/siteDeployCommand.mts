@@ -20,6 +20,7 @@ import {
   artifacts,
   ArtifactsSitesAdminV2Service,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
 import archiver from "archiver";
@@ -27,6 +28,7 @@ import * as fs from "node:fs";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
+import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export default async function siteDeployCommand(
@@ -38,6 +40,8 @@ export default async function siteDeployCommand(
     gitTagPrefix,
     uploadOnly,
     directory,
+    token,
+    tokenFile,
   }: SiteDeployArgs,
 ) {
   if (version == null && autoVersion == null) {
@@ -45,6 +49,7 @@ export default async function siteDeployCommand(
       "Either version or autoVersion must be specified",
     );
   }
+  const loadedToken = await loadToken(token, tokenFile);
 
   // version has a priority over autoVersion. Both could be defined at the same time when
   // autoVersion is present in the config file (it assigns that as a default value to argv.autoVersion)
@@ -68,13 +73,16 @@ export default async function siteDeployCommand(
   consola.start("Zippping site files");
 
   const archive = archiver("zip").directory(directory, false);
-
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   await Promise.all([
     artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
-      foundryUrl,
-      application,
-      siteVersion,
-      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+      clientCtx,
+      {
+        application,
+        version: siteVersion,
+        zipFile: Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+      },
     ),
     archive.finalize(),
   ]);
@@ -83,9 +91,13 @@ export default async function siteDeployCommand(
 
   if (!uploadOnly) {
     const repositoryRid = await thirdPartyApplicationService
-      .fetchWebsiteRepositoryRid(foundryUrl, application);
+      .fetchWebsiteRepositoryRid(clientCtx, application);
 
-    const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+    const ctx = createConjureContext(
+      foundryUrl,
+      "/artifacts/api",
+      tokenProvider,
+    );
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,

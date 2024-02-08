@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export function generateNpmRc({
-  osdkPackage,
-  osdkRegistryUrl,
-}: {
-  osdkPackage: string;
-  osdkRegistryUrl: string;
-}): string {
-  const withoutProtocol = osdkRegistryUrl.replace(/^https:\/\//, "");
-  return `//${withoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${osdkPackage.split("/")[0]}:registry=${osdkRegistryUrl}\n`;
+import type { InternalClientContext } from "./internalClientContext.mjs";
+
+export function createInternalClientContext(
+  foundryUrl: string,
+  tokenProvider: () => string,
+): InternalClientContext {
+  return {
+    tokenProvider,
+    foundryUrl,
+  };
 }
