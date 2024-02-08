@@ -22,6 +22,7 @@ import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
+import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 
 export async function cli(args: string[] = process.argv) {
@@ -39,6 +40,7 @@ export async function cli(args: string[] = process.argv) {
     )
     .demandCommand()
     .middleware(logVersionMiddleware, true)
+    .middleware(logConfigFileMiddleware)
     .strict()
     .command({
       command: "unstable",

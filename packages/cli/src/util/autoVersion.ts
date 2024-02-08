@@ -35,14 +35,12 @@ export async function autoVersion(tagPrefix: string = ""): Promise<string> {
       }`,
       { encoding: "utf8" },
     );
-    const replaceRegExp = new RegExp(prefixRegex);
-    const version = gitVersion.trim().replace(replaceRegExp, "");
+    const version = gitVersion.trim().replace(prefixRegex, "");
     if (!isValidSemver(version)) {
       throw new Error(`The version string ${version} is not SemVer compliant.`);
     }
 
     return version;
-    // TODO(zka): Find out possible error messages from git describe and show specific messages.
   } catch (error) {
     throw new Error(
       `Unable to determine the version automatically. Please supply a --version argument. ${error}`,

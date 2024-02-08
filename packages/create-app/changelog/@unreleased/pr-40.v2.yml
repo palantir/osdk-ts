@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Update create-app to use FOUNDRY_TOKEN in templates instead of FOUNDRY_SDK_AUTH_TOKEN
+  links:
+  - https://github.com/palantir/osdk-ts/pull/40

@@ -20,6 +20,11 @@ export interface Template {
   envPrefix: string;
 }
 
+export interface TemplateContext {
+  project: string;
+  osdkPackage: string;
+}
+
 export const TEMPLATES: readonly Template[] = [
   {
     id: "template-react",
