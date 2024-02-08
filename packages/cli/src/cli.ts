@@ -59,12 +59,27 @@ export async function cli(args: string[] = process.argv) {
       if (err instanceof ExitProcessError) {
         Consola.consola.error(err);
       } else {
-        yargs.showHelp();
-        // eslint-disable-next-line no-console
-        console.error(msg);
+        // if yargs.check returns a string it populates the err variable with a string
+        if (err && typeof err !== "string") {
+          throw err;
+        } else {
+          yargs.showHelp();
+          // eslint-disable-next-line no-console
+          console.log(""); // intentional new line
+          // eslint-disable-next-line no-console
+          console.error(msg);
+        }
       }
       process.exit(1);
     });
 
-  return base.parseAsync();
+  // Special handling where failures happen before yargs does its error handling within .fail
+  try {
+    return await base.parseAsync();
+  } catch (err) {
+    if (err instanceof ExitProcessError) {
+      const Consola = await import("consola");
+      Consola.consola.error(err);
+    }
+  }
 }

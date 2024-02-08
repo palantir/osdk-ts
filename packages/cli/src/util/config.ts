@@ -16,6 +16,7 @@
 
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
+import { ExitProcessError } from "../ExitProcessError.js";
 
 interface GitDescribeAutoVersionConfig {
   type: "git-describe";
@@ -98,15 +99,19 @@ export async function loadFoundryConfig(): Promise<
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
       foundryConfig = JSON.parse(fileContent);
     } catch {
-      throw Error(`Couldn't read or parse config file ${configFilePath}`);
+      throw new ExitProcessError(
+        2,
+        `Couldn't read or parse config file ${configFilePath}`,
+      );
     }
 
     if (!validate(foundryConfig)) {
-      consola.error(
-        "The configuration file does not match the expected schema:",
-        ajv.errorsText(validate.errors),
+      throw new ExitProcessError(
+        2,
+        `The configuration file does not match the expected schema: ${
+          ajv.errorsText(validate.errors)
+        }`,
       );
-      throw new Error("Config file schema is invalid.");
     }
 
     return { foundryConfig, configFilePath };

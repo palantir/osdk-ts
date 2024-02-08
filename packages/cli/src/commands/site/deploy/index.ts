@@ -86,9 +86,7 @@ const command: CommandModule<
           autoVersion == null && argv.autoVersion == null
           && argv.version == null
         ) {
-          throw new Error(
-            "One of --version or --autoVersion must be specified",
-          );
+          return "One of --version or --autoVersion must be specified";
         }
 
         if (
@@ -96,9 +94,7 @@ const command: CommandModule<
             || argv.autoVersion !== "git-describe")
           && argv.gitTagPrefix != null
         ) {
-          throw new Error(
-            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
-          );
+          return `--gitTagPrefix is only supported when --autoVersion=git-describe`;
         }
 
         if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
@@ -106,9 +102,7 @@ const command: CommandModule<
             `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
           );
           if (argv.autoVersion !== "git-describe") {
-            throw new Error(
-              `Only 'git-describe' is supported for autoVersion`,
-            );
+            return `Only 'git-describe' is supported for autoVersion`;
           }
         }
 

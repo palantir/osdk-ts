@@ -80,7 +80,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         }
 
         if (!argv.foundryUrl.startsWith("https://")) {
-          throw new Error("foundryUrl must start with https://");
+          return "foundryUrl must start with https://";
         }
 
         argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
