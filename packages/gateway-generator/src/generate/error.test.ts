@@ -16,36 +16,44 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { generateComponent } from "../component";
+import { generateError } from "./error";
 
-describe("Components", () => {
-  it("generates a component", () => {
+describe("Errors", () => {
+  it("should generate an error interface", () => {
     const project = new Project({});
-    const directory = project.createDirectory("components");
-
-    generateComponent(
+    const directory = project.createDirectory("errors");
+    generateError(
       {
-        name: "MyRid",
-        type: {
-          type: "builtin",
-          builtin: {
-            type: "rid",
-            rid: {},
+        name: "MyError",
+        errorType: "ERROR_TYPE",
+        parameters: {
+          param1: {
+            type: {
+              type: "builtin",
+              builtin: {
+                type: "string",
+                string: {},
+              },
+            },
+            safety: "SAFE",
+            documentation: {},
           },
         },
-        safety: "SAFE",
         documentation: {},
       },
       directory,
-      {
-        generateVisitors: true,
-      },
     );
-
     const sourceFiles = project.getSourceFiles();
-    const sourceFile = project.getSourceFile("components/MyRid.ts");
+    const sourceFile = project.getSourceFile("errors/MyError.ts");
     expect(sourceFile?.getFullText()).toMatchInlineSnapshot(`
-            "export type MyRid = string;
+            "export interface MyError {
+                errorCode: "ERROR_TYPE";
+                errorName: "MyError";
+                errorInstanceId: string;
+                parameters: {
+                        param1: string;
+                    };
+            }
             "
         `);
     expect(sourceFiles.length).toBe(1);
