@@ -56,7 +56,7 @@ export async function cli(args: string[] = process.argv) {
     })
     .fail(async (msg, err, yargs) => {
       const Consola = await import("consola");
-      if (err && err instanceof ExitProcessError) {
+      if (err instanceof ExitProcessError) {
         Consola.consola.error(err);
       } else {
         yargs.showHelp();
