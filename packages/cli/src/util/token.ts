@@ -17,6 +17,7 @@
 import { consola } from "consola";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
+import { ExitProcessError } from "../ExitProcessError.js";
 
 const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
 
@@ -60,7 +61,8 @@ export async function loadToken(
     }
   }
 
-  throw new Error(
+  throw new ExitProcessError(
+    2,
     `No token found. Please supply a --token argument, a --token-file argument or set the ${
       TOKEN_ENV_VARS[0]
     } environment variable.`,
@@ -85,7 +87,10 @@ export async function loadTokenFile(filePath: string): Promise<LoadedToken> {
     token = await fsPromises.readFile(resolvedPath, "utf8");
     token = token.trim();
   } catch (error) {
-    throw new Error(`Unable to read token file "${filePath}": ${error}`);
+    throw new ExitProcessError(
+      2,
+      `Unable to read token file "${filePath}": ${error}`,
+    );
   }
 
   return { filePath: resolvedPath, token };
@@ -93,7 +98,7 @@ export async function loadTokenFile(filePath: string): Promise<LoadedToken> {
 
 export function validate(token: string): void {
   if (!isJWT(token)) {
-    throw new Error(`Token does not appear to be a JWT`);
+    throw new ExitProcessError(2, `Token does not appear to be a JWT`);
   }
 }
 

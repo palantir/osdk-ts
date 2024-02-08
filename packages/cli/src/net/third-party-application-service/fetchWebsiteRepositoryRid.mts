@@ -15,6 +15,7 @@
  */
 
 import { consola } from "consola";
+import { ExitProcessError } from "../../ExitProcessError.js";
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { RepositoryRid } from "../RepositoryRid.js";
@@ -34,7 +35,8 @@ export async function fetchWebsiteRepositoryRid(
     consola.debug(`Repository RID: ${repositoryRid}`);
     return repositoryRid;
   }
-  throw new Error(
+  throw new ExitProcessError(
+    result.status,
     `Unexpected response code ${result.status} (${result.statusText})`,
   );
 }

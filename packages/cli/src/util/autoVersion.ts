@@ -15,6 +15,7 @@
  */
 
 import { execSync } from "node:child_process";
+import { ExitProcessError } from "../ExitProcessError.js";
 import { isValidSemver } from "./isValidSemver.js";
 
 /**
@@ -37,12 +38,16 @@ export async function autoVersion(tagPrefix: string = ""): Promise<string> {
     );
     const version = gitVersion.trim().replace(prefixRegex, "");
     if (!isValidSemver(version)) {
-      throw new Error(`The version string ${version} is not SemVer compliant.`);
+      throw new ExitProcessError(
+        2,
+        `The version string ${version} is not SemVer compliant.`,
+      );
     }
 
     return version;
   } catch (error) {
-    throw new Error(
+    throw new ExitProcessError(
+      2,
       `Unable to determine the version automatically. Please supply a --version argument. ${error}`,
     );
   }

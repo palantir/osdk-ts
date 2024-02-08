@@ -17,6 +17,7 @@
 import type { CommandModule } from "yargs";
 import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
+import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
@@ -86,14 +87,14 @@ const command: CommandModule<
           autoVersion == null && argv.autoVersion == null
           && argv.version == null
         ) {
-          throw new Error(
+          throw new YargsCheckError(
             "One of --version or --autoVersion must be specified",
           );
         }
 
         const autoVersionType = argv.autoVersion ?? autoVersion;
         if (autoVersionType !== "git-describe") {
-          throw new Error(
+          throw new YargsCheckError(
             `Only 'git-describe' is supported for autoVersion`,
           );
         }
@@ -101,7 +102,7 @@ const command: CommandModule<
         const gitTagPrefixValue = argv.gitTagPrefix ?? gitTagPrefix;
         // Future proofing for when we support other autoVersion types
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
-          throw new Error(
+          throw new YargsCheckError(
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
           );
         }

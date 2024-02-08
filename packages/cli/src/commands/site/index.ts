@@ -16,10 +16,10 @@
 
 import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import { ExitProcessError } from "../../ExitProcessError.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
 import configLoader from "../../util/configLoader.js";
+import { YargsCheckError } from "../../YargsCheckError.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
@@ -70,7 +70,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .command(deploy)
       .check((argv) => {
         if (!argv.foundryUrl.startsWith("https://")) {
-          throw new ExitProcessError(1, "foundryUrl must start with https://");
+          throw new YargsCheckError("foundryUrl must start with https://");
         }
         return true;
       })
