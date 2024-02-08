@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 const command: CommandModule<
@@ -91,40 +91,28 @@ const command: CommandModule<
           );
         }
 
-        if (
-          (autoVersion?.type !== "git-describe"
-            || argv.autoVersion !== "git-describe")
-          && argv.gitTagPrefix != null
-        ) {
+        const autoVersionType = argv.autoVersion ?? autoVersion;
+        if (autoVersionType !== "git-describe") {
+          throw new Error(
+            `Only 'git-describe' is supported for autoVersion`,
+          );
+        }
+
+        const gitTagPrefixValue = argv.gitTagPrefix ?? gitTagPrefix;
+        // Future proofing for when we support other autoVersion types
+        if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new Error(
             `--gitTagPrefix is only supported when --autoVersion=git-describe`,
           );
         }
 
-        if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
-          consola.debug(
-            `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
-          );
-          if (argv.autoVersion !== "git-describe") {
-            throw new Error(
-              `Only 'git-describe' is supported for autoVersion`,
-            );
-          }
-        }
-
-        if (directory != null && argv.directory !== directory) {
-          consola.debug(
-            `Overriding "directory" from config file with ${argv.directory}`,
-          );
-        }
-
-        if (gitTagPrefix != null && argv.gitTagPrefix !== gitTagPrefix) {
-          consola.debug(
-            `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
-          );
-        }
         return true;
-      });
+      }).middleware((argv) =>
+        logDeployCommandConfigFileOverride(
+          argv,
+          siteConfig,
+        )
+      );
   },
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
