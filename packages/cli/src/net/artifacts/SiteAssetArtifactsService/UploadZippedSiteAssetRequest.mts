@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-import type { ConjureContext } from "conjure-lite";
-import { createFetch } from "./createFetch.mjs";
+import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
 
-export function createConjureContext(
-  foundryUrl: string,
-  servicePath: "/artifacts/api",
-  tokenProvider: () => string,
-): ConjureContext {
-  return {
-    fetchFn: createFetch(tokenProvider),
-    baseUrl: foundryUrl,
-    servicePath,
-  };
+export interface UploadZippedSiteAssetRequest {
+  application: ThirdPartyAppRid;
+  version: string;
+  zipFile: ReadableStream | Blob | BufferSource;
 }

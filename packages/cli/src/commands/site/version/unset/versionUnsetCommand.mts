@@ -19,17 +19,22 @@ import { consola } from "consola";
 import {
   ArtifactsSitesAdminV2Service,
   createConjureContext,
+  createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
+import { loadToken } from "../../../../util/token.js";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
 export default async function versionUnsetCommand(
-  { application, foundryUrl }: CommonSiteArgs,
+  { application, foundryUrl, token, tokenFile }: CommonSiteArgs,
 ) {
+  const loadedToken = await loadToken(token, tokenFile);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Clearing live site version");
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application);
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api");
+    .fetchWebsiteRepositoryRid(clientCtx, application);
+  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
   await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
   consola.success("Cleared live site version");
 }

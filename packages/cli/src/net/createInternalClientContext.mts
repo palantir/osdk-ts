@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-import type { ConjureContext } from "conjure-lite";
-import { createFetch } from "./createFetch.mjs";
+import type { InternalClientContext } from "./internalClientContext.mjs";
 
-export function createConjureContext(
+export function createInternalClientContext(
   foundryUrl: string,
-  servicePath: "/artifacts/api",
   tokenProvider: () => string,
-): ConjureContext {
+): InternalClientContext {
   return {
-    fetchFn: createFetch(tokenProvider),
-    baseUrl: foundryUrl,
-    servicePath,
+    tokenProvider,
+    foundryUrl,
   };
 }

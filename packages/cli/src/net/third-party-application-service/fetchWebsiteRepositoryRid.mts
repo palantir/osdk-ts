@@ -16,16 +16,17 @@
 
 import { consola } from "consola";
 import { createFetch } from "../createFetch.mjs";
+import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { RepositoryRid } from "../RepositoryRid.js";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 
 export async function fetchWebsiteRepositoryRid(
-  baseUrl: string,
+  ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
 ): Promise<RepositoryRid> {
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(ctx.tokenProvider);
   const url = `
-    ${baseUrl}/third-party-application-service/api/application-websites/${thirdPartyAppRid}`;
+    ${ctx.foundryUrl}/third-party-application-service/api/application-websites/${thirdPartyAppRid}`;
 
   const result = await fetch(url);
   if (result.status >= 200 && result.status < 300) {
