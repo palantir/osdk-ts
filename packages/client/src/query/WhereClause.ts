@@ -23,14 +23,14 @@ import type {
 import type { DistanceUnit } from "@osdk/gateway/types";
 
 export type PossibleWhereClauseFilters =
-  | "gt"
-  | "eq"
-  | "ne"
-  | "isNull"
-  | "contains"
-  | "gte"
-  | "lt"
-  | "lte"
+  | "$gt"
+  | "$eq"
+  | "$ne"
+  | "$isNull"
+  | "$contains"
+  | "$gte"
+  | "$lt"
+  | "$lte"
   | "$within";
 
 // We need to conditional here to force the union to be distributed
@@ -41,13 +41,13 @@ type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
 
 type BaseFilter<T> =
   | T
-  | MakeFilter<"eq" | "ne" | "contains", T>
-  | MakeFilter<"isNull", boolean>;
+  | MakeFilter<"$eq" | "$ne" | "$contains", T>
+  | MakeFilter<"$isNull", boolean>;
 
 type StringFilter = BaseFilter<string>;
 type NumberFilter =
   | BaseFilter<number>
-  | MakeFilter<"gt" | "gte" | "lt" | "lte", number>;
+  | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;
 
 export const DistanceUnitMapping = {
   "centimeter": "CENTIMETERS",
