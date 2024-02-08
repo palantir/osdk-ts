@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ClientContext } from "../../clientContext.mjs";
 import { createFetch } from "../../createFetch.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
 import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
@@ -21,18 +22,16 @@ import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 import type { SiteAssetVersions } from "./SiteAssetVersions.mjs";
 
 export async function fetchSiteVersions(
-  baseUrl: string,
+  ctx: ClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  token: string,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
-    baseUrl,
+    ctx,
     thirdPartyAppRid,
-    token,
   );
 
-  const url = `${getSiteAssetBaseUrl(baseUrl, repositoryRid)}/versions`;
-  const fetch = createFetch(() => token);
+  const url = `${getSiteAssetBaseUrl(ctx.foundryUrl, repositoryRid)}/versions`;
+  const fetch = createFetch(ctx.tokenProvider);
 
   const result = await fetch(url);
   if (result.status === 200) {

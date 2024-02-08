@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-export { ArtifactsSitesAdminV2Service } from "../generated/artifacts-sites/index.js";
-export * as artifacts from "./artifacts/index.mjs";
-export { createClientContext } from "./createClientContext.mjs";
-export { createConjureContext } from "./createConjureContext.mjs";
-export * as thirdPartyApplicationService from "./third-party-application-service/index.mjs";
+import type { ClientContext } from "./clientContext.mjs";
+
+export function createClientContext(
+  foundryUrl: string,
+  token: string,
+): ClientContext {
+  return {
+    tokenProvider: () => token,
+    foundryUrl,
+  };
+}

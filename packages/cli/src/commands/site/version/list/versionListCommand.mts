@@ -17,6 +17,7 @@
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
+  createClientContext,
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
@@ -29,18 +30,18 @@ export default async function versionListCommand(
   { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
+  const clientCtx = createClientContext(foundryUrl, loadedToken);
   consola.start("Fetching versions & deployed version");
 
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
+    .fetchWebsiteRepositoryRid(clientCtx, application);
 
   const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
 
   const [versions, deployedVersion] = await Promise.all([
     artifacts.SiteAssetArtifactsService.fetchSiteVersions(
-      foundryUrl,
+      clientCtx,
       application,
-      loadedToken,
     ),
     ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
   ]);

@@ -16,28 +16,26 @@
 
 import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
+import type { ClientContext } from "../../clientContext.mjs";
 import { createFetch } from "../../createFetch.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
-import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
+import type { DeleteSiteVersionRequest } from "./DeleteSiteVersionRequest.mjs";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 
 export async function deleteSiteVersion(
-  baseUrl: string,
-  thirdPartyAppRid: ThirdPartyAppRid,
-  version: string,
-  token: string,
+  ctx: ClientContext,
+  request: DeleteSiteVersionRequest,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
-    baseUrl,
-    thirdPartyAppRid,
-    token,
+    ctx,
+    request.application,
   );
 
   const url = `${
-    getSiteAssetBaseUrl(baseUrl, repositoryRid)
-  }/versions/${version}`;
+    getSiteAssetBaseUrl(ctx.foundryUrl, repositoryRid)
+  }/versions/${request.version}`;
 
-  const fetch = createFetch(() => token);
+  const fetch = createFetch(ctx.tokenProvider);
 
   const result = await fetch(
     url,

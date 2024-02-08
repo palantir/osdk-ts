@@ -18,6 +18,7 @@ import { consola } from "consola";
 
 import {
   ArtifactsSitesAdminV2Service,
+  createClientContext,
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
@@ -28,9 +29,10 @@ export default async function versionUnsetCommand(
   { application, foundryUrl, token, tokenFile }: CommonSiteArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
+  const clientCtx = createClientContext(foundryUrl, loadedToken);
   consola.start("Clearing live site version");
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
+    .fetchWebsiteRepositoryRid(clientCtx, application);
   const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
   await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
   consola.success("Cleared live site version");

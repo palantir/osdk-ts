@@ -19,6 +19,7 @@ import { consola } from "consola";
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
+  createClientContext,
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
@@ -68,13 +69,15 @@ export default async function siteDeployCommand(
 
   const archive = archiver("zip").directory(directory, false);
 
+  const clientCtx = createClientContext(foundryUrl, loadedToken);
   await Promise.all([
     artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
-      foundryUrl,
-      application,
-      siteVersion,
-      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
-      loadedToken,
+      clientCtx,
+      {
+        application,
+        version: siteVersion,
+        zipFile: Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+      },
     ),
     archive.finalize(),
   ]);
@@ -83,7 +86,7 @@ export default async function siteDeployCommand(
 
   if (!uploadOnly) {
     const repositoryRid = await thirdPartyApplicationService
-      .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
+      .fetchWebsiteRepositoryRid(clientCtx, application);
 
     const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(

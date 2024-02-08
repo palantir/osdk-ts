@@ -18,6 +18,7 @@ import { consola } from "consola";
 
 import {
   ArtifactsSitesAdminV2Service,
+  createClientContext,
   createConjureContext,
   thirdPartyApplicationService,
 } from "#net";
@@ -29,8 +30,9 @@ export default async function versionSetCommand(
 ) {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
+  const clientCtx = createClientContext(foundryUrl, loadedToken);
   const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(foundryUrl, application, loadedToken);
+    .fetchWebsiteRepositoryRid(clientCtx, application);
 
   const ctx = createConjureContext(foundryUrl, "/artifacts/api", loadedToken);
   if (version) {
