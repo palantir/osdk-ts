@@ -91,22 +91,18 @@ const command: CommandModule<
           );
         }
 
-        if (
-          ((autoVersion != null && autoVersion.type !== "git-describe")
-            || argv.autoVersion !== "git-describe")
-          && argv.gitTagPrefix != null
-        ) {
+        const autoVersionType = argv.autoVersion ?? autoVersion;
+        if (autoVersionType !== "git-describe") {
           throw new Error(
-            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+            `Only 'git-describe' is supported for autoVersion`,
           );
         }
 
-        if (
-          autoVersion != null && argv.autoVersion !== autoVersion.type
-          && argv.autoVersion !== "git-describe"
-        ) {
+        const gitTagPrefixValue = argv.gitTagPrefix ?? gitTagPrefix;
+        // Future proofing for when we support other autoVersion types
+        if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new Error(
-            `Only 'git-describe' is supported for autoVersion`,
+            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
           );
         }
 

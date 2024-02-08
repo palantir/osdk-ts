@@ -36,13 +36,14 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .options({
         application: {
           type: "string",
-          coerce: (a) => a as ThirdPartyAppRid,
+          coerce: (application) => application as ThirdPartyAppRid,
           ...application
             ? { default: application }
             : { demandOption: true },
           description: "Application RID",
         },
         foundryUrl: {
+          coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
           type: "string",
           ...foundryUrl
             ? { default: foundryUrl }
@@ -60,9 +61,6 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           conflicts: "token",
           description: "Path to a file containing your Foundry API Token",
         },
-      })
-      .coerce({
-        foundryUrl: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
       })
       .group(
         ["application", "foundryUrl", "token", "tokenFile"],
