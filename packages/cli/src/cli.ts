@@ -24,6 +24,7 @@ import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
 import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
+import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
@@ -54,18 +55,16 @@ export async function cli(args: string[] = process.argv) {
       },
       handler: (_args) => {},
     })
-    .fail(async (msg, err, yargs) => {
+    .fail(async (msg, err, argv) => {
       const Consola = await import("consola");
       if (err instanceof ExitProcessError) {
         Consola.consola.error(err);
       } else {
-        // if yargs.check returns a string it populates the err variable with a string
-        if (err && typeof err !== "string") {
+        if (err instanceof YargsCheckError === false) {
           throw err;
         } else {
-          yargs.showHelp();
-          // eslint-disable-next-line no-console
-          console.log(""); // intentional new line
+          argv.showHelp();
+          Consola.consola.log(""); // intentional blank line
           // eslint-disable-next-line no-console
           console.error(msg);
         }

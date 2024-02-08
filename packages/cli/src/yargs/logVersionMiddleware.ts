@@ -35,7 +35,6 @@ export async function logVersionMiddleware(args: CliCommonArgs) {
       );
     }
 
-    // eslint-disable-next-line no-console
-    console.log(); // Not consola. Just want a blank line
+    consola.log(""); // intentional blank line
   }
 }

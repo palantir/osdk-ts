@@ -18,6 +18,7 @@ import { consola } from "consola";
 import type { CommandModule } from "yargs";
 import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
+import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
@@ -86,7 +87,9 @@ const command: CommandModule<
           autoVersion == null && argv.autoVersion == null
           && argv.version == null
         ) {
-          return "One of --version or --autoVersion must be specified";
+          throw new YargsCheckError(
+            "One of --version or --autoVersion must be specified",
+          );
         }
 
         if (
@@ -94,7 +97,9 @@ const command: CommandModule<
             || argv.autoVersion !== "git-describe")
           && argv.gitTagPrefix != null
         ) {
-          return `--gitTagPrefix is only supported when --autoVersion=git-describe`;
+          throw new YargsCheckError(
+            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+          );
         }
 
         if (autoVersion != null && argv.autoVersion !== autoVersion.type) {
@@ -102,7 +107,9 @@ const command: CommandModule<
             `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
           );
           if (argv.autoVersion !== "git-describe") {
-            return `Only 'git-describe' is supported for autoVersion`;
+            throw new YargsCheckError(
+              `Only 'git-describe' is supported for autoVersion`,
+            );
           }
         }
 

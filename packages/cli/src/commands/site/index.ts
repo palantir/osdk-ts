@@ -20,6 +20,7 @@ import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
 import configLoader from "../../util/configLoader.js";
+import { YargsCheckError } from "../../YargsCheckError.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
 import version from "./version/index.js";
@@ -80,7 +81,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
         }
 
         if (!argv.foundryUrl.startsWith("https://")) {
-          return "foundryUrl must start with https://";
+          throw new YargsCheckError("foundryUrl must start with https://");
         }
 
         argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
