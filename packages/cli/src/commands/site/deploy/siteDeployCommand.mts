@@ -40,14 +40,20 @@ export default async function siteDeployCommand(
     directory,
   }: SiteDeployArgs,
 ) {
-  if (!version && !autoVersion) {
+  if (version == null && autoVersion == null) {
     throw new Error(
       "Either version or autoVersion must be specified",
     );
   }
 
-  const siteVersion = !version ? await findAutoVersion(gitTagPrefix) : version;
-  if (!version && autoVersion) {
+  // version has a priority over autoVersion. Both could be defined at the same time when
+  // autoVersion is present in the config file (it assigns that as a default value to argv.autoVersion)
+  // and --version is passed as an argument
+  let siteVersion: string;
+  if (version != null) {
+    siteVersion = version;
+  } else {
+    siteVersion = await findAutoVersion(gitTagPrefix);
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );
