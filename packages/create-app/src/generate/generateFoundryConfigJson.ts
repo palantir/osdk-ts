@@ -14,35 +14,28 @@
  * limitations under the License.
  */
 
-export interface Template {
-  id: string;
-  label: string;
-  envPrefix: string;
-  buildDirectory: string;
+export function generateFoundryConfigJson({
+  foundryUrl,
+  application,
+  directory,
+}: {
+  foundryUrl: string;
+  application: string;
+  directory: string;
+}): string {
+  return JSON.stringify(
+    {
+      foundryUrl,
+      site: {
+        application,
+        directory,
+        autoVersion: {
+          type: "git-describe",
+          tagPrefix: "tag-prefix",
+        },
+      },
+    },
+    null,
+    2,
+  ) + "\n";
 }
-
-export interface TemplateContext {
-  project: string;
-  osdkPackage: string;
-}
-
-export const TEMPLATES: readonly Template[] = [
-  {
-    id: "template-react",
-    label: "React",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-  },
-  {
-    id: "template-vue",
-    label: "Vue",
-    envPrefix: "VITE_",
-    buildDirectory: "./dist",
-  },
-  {
-    id: "template-next-static-export",
-    label: "Next (static export)",
-    envPrefix: "NEXT_PUBLIC_",
-    buildDirectory: "./out",
-  },
-];
