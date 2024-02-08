@@ -47,7 +47,7 @@ export default async function siteDeployCommand(
   }
 
   const siteVersion = !version ? await findAutoVersion(gitTagPrefix) : version;
-  if (autoVersion) {
+  if (!version && autoVersion) {
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );
