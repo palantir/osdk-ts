@@ -20,9 +20,9 @@ import { ExitProcessError } from "../../ExitProcessError.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 import type { LoadedFoundryConfig } from "../../util/config.js";
 import configLoader from "../../util/configLoader.js";
-import { logSiteCommandDebugMiddleware } from "../../yargs/logCommandDebugMiddlewares.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 import deploy from "./deploy/index.js";
+import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
 import version from "./version/index.js";
 
 const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
@@ -61,6 +61,9 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           description: "Path to a file containing your Foundry API Token",
         },
       })
+      .coerce({
+        foundryUrl: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
+      })
       .group(
         ["application", "foundryUrl", "token", "tokenFile"],
         "Common Arguments",
@@ -68,14 +71,13 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       .command(version)
       .command(deploy)
       .check((argv) => {
-        argv.foundryUrl = argv.foundryUrl.replace(/\/$/, "");
         if (!argv.foundryUrl.startsWith("https://")) {
           throw new ExitProcessError(1, "foundryUrl must start with https://");
         }
         return true;
       })
       .middleware((argv) =>
-        logSiteCommandDebugMiddleware(argv, application, foundryUrl)
+        logSiteCommandConfigFileOverride(argv, config?.foundryConfig)
       )
       .demandCommand();
   },

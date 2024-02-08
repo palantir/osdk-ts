@@ -17,8 +17,8 @@
 import type { CommandModule } from "yargs";
 import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
-import { logDeployCommandDebugMiddleware } from "../../../yargs/logCommandDebugMiddlewares.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 const command: CommandModule<
@@ -92,7 +92,7 @@ const command: CommandModule<
         }
 
         if (
-          (autoVersion?.type !== "git-describe"
+          ((autoVersion != null && autoVersion.type !== "git-describe")
             || argv.autoVersion !== "git-describe")
           && argv.gitTagPrefix != null
         ) {
@@ -112,11 +112,9 @@ const command: CommandModule<
 
         return true;
       }).middleware((argv) =>
-        logDeployCommandDebugMiddleware(
+        logDeployCommandConfigFileOverride(
           argv,
-          autoVersion,
-          gitTagPrefix,
-          directory,
+          siteConfig,
         )
       );
   },
