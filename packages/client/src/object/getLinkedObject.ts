@@ -20,9 +20,12 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
-import type { SelectArg } from "./fetchPageOrThrow.js";
-import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
+import type { SelectArg } from "./fetchPage.js";
+import { pageLinkedObjects } from "./pageLinkedObjects.js";
 
+/**
+ * @deprecated use `getLinkedObject`.
+ */
 export async function getLinkedObjectOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
@@ -35,7 +38,28 @@ export async function getLinkedObjectOrThrow<
   linkTypeApiName: L,
   select?: S,
 ) {
-  const result = await pageLinkedObjectsOrThrow(
+  return getLinkedObject<O, T, L, S>(
+    client,
+    sourceApiName,
+    primaryKey,
+    linkTypeApiName,
+    select,
+  );
+}
+
+export async function getLinkedObject<
+  O extends OntologyDefinition<any>,
+  T extends ObjectTypeKeysFrom<O> & string,
+  L extends ObjectTypeLinkKeysFrom<O, T> & string,
+  S extends SelectArg<O, T>["select"],
+>(
+  client: ClientContext<O>,
+  sourceApiName: T,
+  primaryKey: any,
+  linkTypeApiName: L,
+  select?: S,
+) {
+  const result = await pageLinkedObjects(
     client,
     sourceApiName,
     primaryKey,

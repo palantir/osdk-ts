@@ -27,7 +27,35 @@ import { createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
+/**
+ * @deprecated use `getLinkedObjectByPk`
+ */
 export async function getLinkedObjectByPkOrThrow<
+  O extends OntologyDefinition<any>,
+  T extends ObjectTypeKeysFrom<O> & string,
+  L extends ObjectTypeLinkKeysFrom<O, T> & string,
+  S = ReadonlyArray<
+    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  >,
+>(
+  client: ClientContext<O>,
+  sourceApiName: T,
+  primaryKey: any,
+  linkTypeApiName: L,
+  linkedObjectPrimaryKey: any,
+  select?: S,
+) {
+  return getLinkedObjectByPk<O, T, L, S>(
+    client,
+    sourceApiName,
+    primaryKey,
+    linkTypeApiName,
+    linkedObjectPrimaryKey,
+    select,
+  );
+}
+
+export async function getLinkedObjectByPk<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
   L extends ObjectTypeLinkKeysFrom<O, T> & string,

@@ -19,10 +19,10 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
 import { Attachment } from "./Attachment.js";
-import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
-import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
-import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
-import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
+import type { FetchPageArgs, SelectArg } from "./fetchPage.js";
+import { getLinkedObject } from "./getLinkedObject.js";
+import { getLinkedObjectByPk } from "./getLinkedObjectByPk.js";
+import { pageLinkedObjects } from "./pageLinkedObjects.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 const getConverter = createCachedOntologyTransform(createConverter);
@@ -65,7 +65,7 @@ function createPrototype<
               >(
                 options?: A,
               ) =>
-                getLinkedObjectOrThrow(
+                getLinkedObject(
                   client,
                   type,
                   primaryKey,
@@ -81,7 +81,7 @@ function createPrototype<
                   typeof linkDef.targetType
                 >,
               >(targetPrimaryKey: any, options?: A) =>
-                getLinkedObjectByPkOrThrow(
+                getLinkedObjectByPk(
                   client,
                   type,
                   primaryKey,
@@ -89,13 +89,13 @@ function createPrototype<
                   targetPrimaryKey,
                   options?.select,
                 ),
-              fetchPageOrThrow: (
-                options?: FetchPageOrThrowArgs<
+              fetchPage: (
+                options?: FetchPageArgs<
                   O,
                   typeof linkDef.targetType
                 >,
               ) =>
-                pageLinkedObjectsOrThrow(client, type, primaryKey, p, {
+                pageLinkedObjects(client, type, primaryKey, p, {
                   nextPageToken: options?.nextPageToken,
                   pageSize: options?.pageSize,
                   select: options?.select,

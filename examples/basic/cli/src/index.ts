@@ -69,7 +69,7 @@ async function runTests() {
     const interfaceImplementationComplete = false;
     if (interfaceImplementationComplete) {
       const interfaceResults = await client.objects.SimpleInterface
-        .fetchPageOrThrow();
+        .fetchPage();
       interfaceResults.data[0].body;
     }
 
@@ -81,7 +81,7 @@ async function runTests() {
           of: [0, 0],
         },
       },
-    }).fetchPageOrThrow();
+    }).fetchPage();
 
     console.log(result.data[0].geohash);
 

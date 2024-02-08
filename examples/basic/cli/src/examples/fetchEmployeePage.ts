@@ -20,7 +20,7 @@ import { expectType } from "ts-expect";
 import type { Employee } from "../OntologyType.js";
 
 export async function fetchEmployeePage(client: Client<Ontology>) {
-  const result = await client.objectSet("Employee").fetchPageOrThrow();
+  const result = await client.objectSet("Employee").fetchPage();
 
   expectType<string | undefined>(""); // FIXME: this isn't strict enough of a check for below
   expectType<string | undefined>(result.data[0].businessTitle);

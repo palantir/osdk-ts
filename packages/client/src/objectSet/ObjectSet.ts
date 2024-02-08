@@ -22,7 +22,7 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type { FetchPageArgs } from "../object/fetchPage.js";
 import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
@@ -45,10 +45,22 @@ export interface BaseObjectSet<
 > {
   definition: WireObjectSet;
 
+  fetchPage: <
+    L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
+  >(
+    args?: FetchPageArgs<O, K, L>,
+  ) => Promise<
+    PageResult<
+      K extends InterfaceKeysFrom<O> ? OsdkInterfaceFrom<K, O, L>
+        : OsdkObjectFrom<K, O, L>
+    >
+  >;
+
+  /** @deprecated use `fetchPage` */
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
   >(
-    args?: FetchPageOrThrowArgs<O, K, L>,
+    args?: FetchPageArgs<O, K, L>,
   ) => Promise<
     PageResult<
       K extends InterfaceKeysFrom<O> ? OsdkInterfaceFrom<K, O, L>
@@ -59,8 +71,8 @@ export interface BaseObjectSet<
   // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
 
   // @alpha
-  // fetchPage: <L extends PropertyKeysFrom<O, K>>(
-  //   args?: FetchPageOrThrowArgs<O, K, L>,
+  // fetchPageWithStatus: <L extends PropertyKeysFrom<O, K>>(
+  //   args?: FetchPageArgs<O, K, L>,
   // ) => Promise<ResultOrError<PageResult<OsdkObjectFrom<K, O, L>>>>;
 
   // @alpha
@@ -73,6 +85,13 @@ export interface BaseObjectSet<
   //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
   // >;
 
+  aggregate: <
+    AO extends AggregateOpts<O, K, AggregationClause<O, K>>,
+  >(
+    req: AO,
+  ) => Promise<AggregationsResults<O, K, AO>>;
+
+  /** @deprecated use `aggregate` */
   aggregateOrThrow: <
     AO extends AggregateOpts<O, K, AggregationClause<O, K>>,
   >(
@@ -80,7 +99,7 @@ export interface BaseObjectSet<
   ) => Promise<AggregationsResults<O, K, AO>>;
 
   // @alpha
-  // aggregate: <const AO extends AggregateOpts<O, K, any>>(
+  // aggregateWithStatus: <const AO extends AggregateOpts<O, K, any>>(
   //   req: AO,
   // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 

@@ -25,7 +25,25 @@ import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+
+/**
+ * @deprecated use `followLink` instead
+ */
 export async function followLinkOrThrow<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypeLinkKeysFrom<O, K>,
+>(
+  clientCtx: ClientContext<O>,
+  sourceObject: OsdkObjectFrom<K, O>,
+  link: L,
+): Promise<
+  PageResult<OsdkObjectFrom<ObjectTypeLinkTargetTypeFrom<O, K, L>, O>>
+> {
+  return followLink<O, K, L>(clientCtx, sourceObject, link);
+}
+
+export async function followLink<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
   L extends ObjectTypeLinkKeysFrom<O, K>,

@@ -37,7 +37,7 @@ declare const client: Client<typeof Ontology>;
 //       .objectSet("Todo")
 //       // ALSO SHOWS AND
 //       .where({ $and: [{ id: { gt: 5 } }, { priority: 0 }] })
-//       .fetchPageOrThrow({ nextPageToken }));
+//       .fetchPage({ nextPageToken }));
 
 //     for (const todo of data) {
 //       console.log(todo.text);
@@ -98,7 +98,7 @@ declare const client: Client<typeof Ontology>;
 //       select: ["text"],
 //       where: { id: { gt: 5 } },
 //     })
-//     .fetchPageOrThrow();
+//     .fetchPage();
 
 //   for await (const todo of client.objectSet("Todo", {
 //     select: ["text"],
@@ -126,7 +126,7 @@ declare const client: Client<typeof Ontology>;
 //  * Aggregation without groups
 //  */
 // async function aggregateThingsWithoutGroups() {
-//   const q = await client.objectSet("Todo").aggregateOrThrow({
+//   const q = await client.objectSet("Todo").aggregate({
 //     select: {
 //       priority: ["max", "avg"],
 //       text: "approximateDistinct",
@@ -135,7 +135,7 @@ declare const client: Client<typeof Ontology>;
 //   // q
 //   q.priority;
 
-//   const { priority, text } = await client.objectSet("Todo").aggregateOrThrow({
+//   const { priority, text } = await client.objectSet("Todo").aggregate({
 //     select: {
 //       priority: ["max", "avg"],
 //       text: "approximateDistinct",
@@ -150,7 +150,7 @@ declare const client: Client<typeof Ontology>;
 //  * Aggregation with groups
 //  */
 // async function aggregateThingsWithGroups() {
-//   const result = await client.objectSet("Todo").aggregateOrThrow({
+//   const result = await client.objectSet("Todo").aggregate({
 //     select: { priority: ["max", "avg"], text: "approximateDistinct" },
 //     groupBy: { text: "exact" },
 //     where: { id: { gt: 5 } },
@@ -165,7 +165,7 @@ declare const client: Client<typeof Ontology>;
  * Aggregation with groups and handle errors
  */
 async function aggregateThingsWithGroupsAndHandleErrors() {
-  const result = await client.objectSet("Todo").aggregateOrThrow({
+  const result = await client.objectSet("Todo").aggregate({
     select: { priority: ["max", "avg"], text: "approximateDistinct" },
     groupBy: {
       text: "exact",

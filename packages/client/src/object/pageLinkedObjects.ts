@@ -27,7 +27,46 @@ import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
+/**
+ * @deprecated use `pageLinkedObjects`
+ */
 export async function pageLinkedObjectsOrThrow<
+  O extends OntologyDefinition<any>,
+  T extends ObjectTypeKeysFrom<O>,
+  L extends ObjectTypeLinkKeysFrom<O, T>,
+  S = ReadonlyArray<
+    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  >,
+>(
+  client: ClientContext<O>,
+  sourceApiName: T & string,
+  primaryKey: any,
+  linkTypeApiName: string,
+  options?: {
+    nextPageToken?: string;
+    pageSize?: number;
+    select?: S;
+  },
+): Promise<
+  PageResult<
+    OsdkObjectFrom<
+      T,
+      O,
+      S extends readonly string[] ? S[number]
+        : ObjectOrInterfacePropertyKeysFrom<O, T>
+    >
+  >
+> {
+  return pageLinkedObjects<O, T, L, S>(
+    client,
+    sourceApiName,
+    primaryKey,
+    linkTypeApiName,
+    options,
+  );
+}
+
+export async function pageLinkedObjects<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O>,
   L extends ObjectTypeLinkKeysFrom<O, T>,

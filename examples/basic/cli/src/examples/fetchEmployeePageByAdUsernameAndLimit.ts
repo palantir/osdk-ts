@@ -31,7 +31,7 @@ export async function fetchEmployeePageByAdUsernameAndLimit(
       { employeeNumber: { $ne: 5 } },
       { employeeNumber: { $gte: 5 } },
     ],
-  }).fetchPageOrThrow({
+  }).fetchPage({
     select: ["adUsername", "employeeNumber", "jobProfile"],
   });
 

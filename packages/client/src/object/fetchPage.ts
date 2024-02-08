@@ -35,7 +35,16 @@ export interface SelectArg<
   select?: readonly L[];
 }
 
-export interface FetchPageOrThrowArgs<
+/**
+ * @deprecated use `FetchPageArgs`
+ */
+export type FetchPageOrThrowArgs<
+  O extends OntologyDefinition<any>,
+  K extends ObjectOrInterfaceKeysFrom<O>,
+  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
+> = FetchPageArgs<O, K, L>;
+
+export interface FetchPageArgs<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
   L = ObjectOrInterfacePropertyKeysFrom<O, K>,
@@ -44,10 +53,50 @@ export interface FetchPageOrThrowArgs<
   pageSize?: number;
 }
 
+/**
+ * @deprecated Use fetchPage instead. Same great taste, fewer calories.
+ */
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectOrInterfaceKeysFrom<O>,
-  const A extends FetchPageOrThrowArgs<
+  const A extends FetchPageArgs<
+    O,
+    T
+  >,
+>(
+  client: ClientContext<O>,
+  objectType: T & string,
+  args: A,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType,
+  },
+): Promise<
+  PageResult<
+    OsdkObjectFrom<
+      T,
+      O,
+      A["select"] extends readonly string[] ? A["select"][number]
+        : ObjectOrInterfacePropertyKeysFrom<O, T>
+    >
+  >
+> {
+  return fetchPage<O, T, A>(client, objectType, args, objectSet);
+}
+
+/**
+ * Fetches a page of objects from the server, or throws an error if the request fails.
+ *
+ * @param client the clientcontext that provides fetch and primary ontology information
+ * @param objectType The type of object to fetch
+ * @param args options such as `nextPageToken` and `pageSize`
+ * @param objectSet objectSet query to use. Defaults to all of objectType.
+ * @returns
+ */
+export async function fetchPage<
+  O extends OntologyDefinition<any>,
+  T extends ObjectOrInterfaceKeysFrom<O>,
+  const A extends FetchPageArgs<
     O,
     T
   >,

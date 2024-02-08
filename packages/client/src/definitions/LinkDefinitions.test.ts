@@ -16,10 +16,7 @@
 
 import type { ObjectOrInterfacePropertyKeysFrom } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
+import type { FetchPageArgs, SelectArg } from "../object/fetchPage.js";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
@@ -59,7 +56,26 @@ describe("LinkDefinitions", () => {
                   >
               >;
               fetchPageOrThrow: <
-                A extends FetchPageOrThrowArgs<
+                A extends FetchPageArgs<
+                  typeof MockOntology,
+                  "Todo",
+                  ObjectOrInterfacePropertyKeysFrom<typeof MockOntology, "Todo">
+                >,
+              >(options?: A | undefined) => Promise<
+                PageResult<
+                  OsdkObjectFrom<
+                    "Todo",
+                    typeof MockOntology,
+                    A["select"] extends readonly string[] ? A["select"][number]
+                      : ObjectOrInterfacePropertyKeysFrom<
+                        typeof MockOntology,
+                        "Todo"
+                      >
+                  >
+                >
+              >;
+              fetchPage: <
+                A extends FetchPageArgs<
                   typeof MockOntology,
                   "Todo",
                   ObjectOrInterfacePropertyKeysFrom<typeof MockOntology, "Todo">

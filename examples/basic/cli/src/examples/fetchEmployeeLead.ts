@@ -27,7 +27,7 @@ export async function fetchEmployeeLead(
     adUsername,
   })
     .pivotTo("lead")
-    .fetchPageOrThrow({
+    .fetchPage({
       select: ["adUsername", "businessTitle", "employeeNumber"],
     });
 
@@ -38,7 +38,7 @@ export async function fetchEmployeeLead(
   //   .pivotTo("lead", {
   //     $where: { locationCity: "New York" },
   //   })
-  //   .fetchPageOrThrow({
+  //   .fetchPage({
   //     select: ["adUsername", "businessTitle", "employeeNumber"],
   //   });
 

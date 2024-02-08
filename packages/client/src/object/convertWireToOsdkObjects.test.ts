@@ -40,7 +40,7 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reuses the object prototype across objects", async () => {
-    const employees = await client.objects.Employee.fetchPageOrThrow();
+    const employees = await client.objects.Employee.fetchPage();
     expect(employees.data.length).toBeGreaterThanOrEqual(2);
     const [a, b] = employees.data;
     expect(Object.getPrototypeOf(a)).toBe(Object.getPrototypeOf(b));
@@ -49,7 +49,7 @@ describe("convertWireToOsdkObjects", () => {
   it("converts attachments as expected", async () => {
     const withValues = await client.objects.objectTypeWithAllPropertyTypes
       .where({ id: 1 })
-      .fetchPageOrThrow();
+      .fetchPage();
     expect(withValues.data.length).toBeGreaterThanOrEqual(1);
 
     const { attachment, attachmentArray } = withValues.data[0];
@@ -59,7 +59,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(attachmentArray![0]).toBeInstanceOf(Attachment);
 
     const withoutValues = await client.objects.objectTypeWithAllPropertyTypes
-      .where({ id: 2 }).fetchPageOrThrow();
+      .where({ id: 2 }).fetchPage();
     const {
       attachment: emptyAttachment,
       attachmentArray: emptyAttachmentArray,

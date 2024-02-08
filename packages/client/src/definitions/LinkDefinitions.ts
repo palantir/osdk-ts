@@ -21,10 +21,7 @@ import type {
   ObjectTypeLinkKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
+import type { FetchPageArgs, SelectArg } from "../object/fetchPage.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
@@ -76,9 +73,29 @@ export type OsdkObjectLinksEntry<
         >
     >;
 
-    /** pages through the linked objects */
+    /** @deprecated */
     fetchPageOrThrow: <
-      A extends FetchPageOrThrowArgs<
+      A extends FetchPageArgs<
+        O,
+        T
+      >,
+    >(options?: A) => Promise<
+      PageResult<
+        OsdkObjectFrom<
+          T,
+          O,
+          A["select"] extends readonly string[] ? A["select"][number]
+            : ObjectOrInterfacePropertyKeysFrom<
+              O,
+              T
+            >
+        >
+      >
+    >;
+
+    /** pages through the linked objects */
+    fetchPage: <
+      A extends FetchPageArgs<
         O,
         T
       >,

@@ -32,7 +32,22 @@ import type {
   AggregationsResults,
 } from "../query/index.js";
 
+/**
+ * @deprecated use `aggregate`
+ */
 export async function aggregateOrThrow<
+  T extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<T>,
+  const AO extends AggregateOpts<T, K, any>,
+>(
+  clientCtx: ClientContext<T>,
+  objectType: K & string,
+  req: AO,
+): Promise<AggregationsResults<T, K, AO>> {
+  return aggregate<T, K, AO>(clientCtx, objectType, req);
+}
+
+export async function aggregate<
   T extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<T>,
   const AO extends AggregateOpts<T, K, any>,

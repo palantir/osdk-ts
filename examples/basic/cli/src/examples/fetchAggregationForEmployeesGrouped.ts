@@ -23,7 +23,7 @@ import { expectType } from "ts-expect";
 export async function fetchAggregationForEmployeesGrouped(
   client: Client<Ontology>,
 ) {
-  const result = await client.objectSet("Employee").aggregateOrThrow({
+  const result = await client.objectSet("Employee").aggregate({
     select: {
       locationCity: "approximateDistinct",
       locationName: "approximateDistinct",

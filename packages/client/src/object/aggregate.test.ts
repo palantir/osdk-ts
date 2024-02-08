@@ -22,7 +22,7 @@ import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import { USER_AGENT } from "../util/UserAgent.js";
-import { aggregateOrThrow } from "./aggregateOrThrow.js";
+import { aggregate } from "./aggregate.js";
 
 const mockOntology = {
   metadata: {
@@ -57,7 +57,7 @@ const mockOntology = {
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
 
-describe("aggregateOrThrow", () => {
+describe("aggregate", () => {
   it("works", async () => {
     const mockFetch: Mock = vi.fn();
 
@@ -103,7 +103,7 @@ describe("aggregateOrThrow", () => {
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(clientCtx, "Todo", {
+    const notGrouped = await aggregate(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
         priority: "avg",
@@ -124,7 +124,7 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(clientCtx, "Todo", {
+    const grouped = await aggregate(clientCtx, "Todo", {
       select: {
         text: "approximateDistinct",
       },

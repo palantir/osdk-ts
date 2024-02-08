@@ -53,7 +53,7 @@ export async function typeChecks(client: Client<Ontology>) {
   // just a demo of aggregations
   {
     const q = await client.objects.ObjectTypeWithAllPropertyTypes
-      .aggregateOrThrow({
+      .aggregate({
         select: {
           integer: "sum",
           float: "sum",
@@ -75,7 +75,7 @@ export async function typeChecks(client: Client<Ontology>) {
   {
     const page = await client.objectSet("Employee").where({
       adUsername: "adUsername",
-    }).fetchPageOrThrow();
+    }).fetchPage();
     const employee = page.data[0];
 
     // lead is an employee
@@ -90,7 +90,7 @@ export async function typeChecks(client: Client<Ontology>) {
     expectType<TypeOf<{ jobProfile: any[] }, typeof leadName>>(false);
 
     // peeps is a page of employees, but only get the adUsername and employeeNumber
-    const peeps = await employee.$link.peeps.fetchPageOrThrow({
+    const peeps = await employee.$link.peeps.fetchPage({
       select: ["adUsername", "employeeNumber"],
     });
     expectType<

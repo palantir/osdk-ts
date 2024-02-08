@@ -18,8 +18,8 @@ import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { FetchPageArgs } from "../object/fetchPage.js";
+import { aggregate, fetchPage } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
@@ -57,18 +57,40 @@ export function createObjectSet<
     >(
       req: AO,
     ): Promise<AggregationsResults<O, K, AO>> => {
-      return aggregateOrThrow(clientCtx, objectType, req);
+      return aggregate(clientCtx, objectType, req);
+    },
+    aggregate: async <
+      AC extends AggregationClause<O, K>,
+      // GBC extends GroupByClause<O, K>,
+      AO extends AggregateOpts<O, K, AC>,
+    >(
+      req: AO,
+    ): Promise<AggregationsResults<O, K, AO>> => {
+      return aggregate(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
     fetchPageOrThrow: async (
-      args?: FetchPageOrThrowArgs<
+      args?: FetchPageArgs<
         O,
         K
       >,
     ) => {
-      return fetchPageOrThrow(
+      return fetchPage(
+        clientCtx,
+        objectType,
+        args ?? {},
+        objectSet,
+      ) as any;
+    },
+    fetchPage: async (
+      args?: FetchPageArgs<
+        O,
+        K
+      >,
+    ) => {
+      return fetchPage(
         clientCtx,
         objectType,
         args ?? {},
