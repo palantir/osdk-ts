@@ -55,15 +55,23 @@ export async function cli(args: string[] = process.argv) {
       },
       handler: (_args) => {},
     })
-    .fail(async (msg, err, argv) => {
+    .fail(async (msg, err, yargsContext) => {
       const Consola = await import("consola");
+      const isVerbose = args.some(arg =>
+        ["-v", "--v", "--verbose"].includes(arg)
+      );
+
       if (err instanceof ExitProcessError) {
-        Consola.consola.error(err);
+        if (isVerbose) {
+          Consola.consola.error(err);
+        } else {
+          Consola.consola.error(err.message);
+        }
       } else {
-        if (err instanceof YargsCheckError === false) {
+        if (err && err instanceof YargsCheckError === false) {
           throw err;
         } else {
-          argv.showHelp();
+          yargsContext.showHelp();
           Consola.consola.log(""); // intentional blank line
           // eslint-disable-next-line no-console
           console.error(msg);
