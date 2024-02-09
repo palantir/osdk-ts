@@ -14,35 +14,32 @@
  * limitations under the License.
  */
 
-import { consola, LogLevels } from "consola";
+import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { createFetch } from "../../createFetch.mjs";
+import type { InternalClientContext } from "../../internalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
-import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
+import type { UploadZippedSiteAssetRequest } from "./UploadZippedSiteAssetRequest.mjs";
 
 export async function uploadZippedSiteAsset(
-  baseUrl: string,
-  thirdPartyAppRid: ThirdPartyAppRid,
-  version: string,
-  zipFile: ReadableStream | Blob | BufferSource,
+  ctx: InternalClientContext,
+  request: UploadZippedSiteAssetRequest,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
-    baseUrl,
-    thirdPartyAppRid,
+    ctx,
+    request.application,
   );
 
   const url = `${
-    getSiteAssetBaseUrl(baseUrl, repositoryRid)
-  }/versions/zip/${version}`;
-
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
-
+    getSiteAssetBaseUrl(ctx.foundryUrl, repositoryRid)
+  }/versions/zip/${request.version}`;
+  const fetch = createFetch(ctx.tokenProvider);
   const result = await fetch(
     url,
     {
       method: "PUT",
-      body: zipFile,
+      body: request.zipFile,
       headers: {
         "Content-Type": "application/octet-stream",
       },
@@ -51,7 +48,6 @@ export async function uploadZippedSiteAsset(
   );
 
   if (result.status >= 200 && result.status < 300) {
-    consola.level = LogLevels.debug;
     consola.debug("Status Text: " + result.statusText);
     return true;
   } else if (result.status === 409) {

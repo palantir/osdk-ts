@@ -223,7 +223,7 @@ describe(modernToLegacyWhereClause, () => {
 
     it("inverts ne short hand properly", () => {
       expect(modernToLegacyWhereClause<ObjAllProps>({
-        integer: { ne: 5 },
+        integer: { $ne: 5 },
       })).toMatchInlineSnapshot(`
         {
           "type": "not",

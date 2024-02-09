@@ -99,14 +99,28 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
     };
   }
 
+  const keysOfFilter = Object.keys(filter);
+
+  // If any of the keys start with `$` then they must be the only one.
+  // e.g. `where({ name: { $eq: "foo", $ne: "bar" } })` is invalid currently
+  const hasDollarSign = keysOfFilter.some((key) => key.startsWith("$"));
   invariant(
-    Object.keys(filter).length === 1,
-    "WhereClause Filter with multiple properties isn't allowed",
+    !hasDollarSign
+      || keysOfFilter.length === 1,
+    "WhereClause Filter with multiple clauses isn't allowed",
   );
-  const firstKey = Object.keys(filter)[0] as PossibleWhereClauseFilters;
+
+  if (!hasDollarSign) {
+    // Future case for structs
+    throw new Error(
+      "Unsupported filter. Did you forget to use a $-prefixed filter?",
+    );
+  }
+
+  const firstKey = keysOfFilter[0] as PossibleWhereClauseFilters;
   invariant(filter[firstKey] != null);
 
-  if (firstKey === "ne") {
+  if (firstKey === "$ne") {
     return {
       type: "not",
       value: {
@@ -157,8 +171,11 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
   }
 
   return {
-    type: firstKey,
+    type: firstKey.substring(1) as DropDollarSign<typeof firstKey>,
     field,
     value: filter[firstKey] as any,
   };
 }
+
+type DropDollarSign<T extends `$${string}`> = T extends `$${infer U}` ? U
+  : never;

@@ -25,7 +25,7 @@ export async function fetchEmployeePageByAdUsername(
   adUsername: string,
 ) {
   const result = await client.objects.Employee.where({
-    $and: [{ adUsername }, { employeeNumber: { ne: 5 } }],
+    $and: [{ adUsername }, { employeeNumber: { $ne: 5 } }],
   }).fetchPageOrThrow();
   // for await (const e of client.objects.Employee.asyncIter()) {
   //   e.__apiName;

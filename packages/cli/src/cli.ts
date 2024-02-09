@@ -22,7 +22,9 @@ import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
+import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
 import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
+import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
@@ -39,6 +41,7 @@ export async function cli(args: string[] = process.argv) {
     )
     .demandCommand()
     .middleware(logVersionMiddleware, true)
+    .middleware(logConfigFileMiddleware)
     .strict()
     .command({
       command: "unstable",
@@ -51,14 +54,39 @@ export async function cli(args: string[] = process.argv) {
           .demandCommand();
       },
       handler: (_args) => {},
+    })
+    .fail(async (msg, err, yargsContext) => {
+      const Consola = await import("consola");
+      const isVerbose = args.some(arg =>
+        ["-v", "--v", "--verbose"].includes(arg)
+      );
+
+      if (err instanceof ExitProcessError) {
+        if (isVerbose) {
+          Consola.consola.error(err);
+        } else {
+          Consola.consola.error(err.message);
+        }
+      } else {
+        if (err && err instanceof YargsCheckError === false) {
+          throw err;
+        } else {
+          yargsContext.showHelp();
+          Consola.consola.log(""); // intentional blank line
+          // eslint-disable-next-line no-console
+          console.error(msg);
+        }
+      }
+      process.exit(1);
     });
 
+  // Special handling where failures happen before yargs does its error handling within .fail
   try {
-    return base.parseAsync();
-  } catch (e) {
-    if (e instanceof ExitProcessError) {
+    return await base.parseAsync();
+  } catch (err) {
+    if (err instanceof ExitProcessError) {
       const Consola = await import("consola");
-      Consola.consola.error(e.message);
+      Consola.consola.error(err);
     }
   }
 }

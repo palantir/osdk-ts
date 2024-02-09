@@ -18,6 +18,12 @@ export interface Template {
   id: string;
   label: string;
   envPrefix: string;
+  buildDirectory: string;
+}
+
+export interface TemplateContext {
+  project: string;
+  osdkPackage: string;
 }
 
 export const TEMPLATES: readonly Template[] = [
@@ -25,15 +31,18 @@ export const TEMPLATES: readonly Template[] = [
     id: "template-react",
     label: "React",
     envPrefix: "VITE_",
+    buildDirectory: "./dist",
   },
   {
     id: "template-vue",
     label: "Vue",
     envPrefix: "VITE_",
+    buildDirectory: "./dist",
   },
   {
     id: "template-next-static-export",
     label: "Next (static export)",
     envPrefix: "NEXT_PUBLIC_",
+    buildDirectory: "./out",
   },
 ];

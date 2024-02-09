@@ -170,7 +170,7 @@ async function aggregateThingsWithGroupsAndHandleErrors() {
     groupBy: {
       text: "exact",
     },
-    where: { id: { gt: 5 } },
+    where: { id: { $gt: 5 } },
   });
 
   if (isOk(result)) {

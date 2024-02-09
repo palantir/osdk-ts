@@ -65,7 +65,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "Config file schema is invalid.",
+      "The configuration file does not match",
     );
   });
 
@@ -84,7 +84,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "Config file schema is invalid.",
+      "The configuration file does not match",
     );
   });
 
@@ -106,7 +106,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "Config file schema is invalid.",
+      "The configuration file does not match",
     );
   });
 
@@ -123,7 +123,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "Config file schema is invalid.",
+      "The configuration file does not match",
     );
   });
 
@@ -141,7 +141,7 @@ describe("loadFoundryConfig", () => {
     );
 
     await expect(loadFoundryConfig()).rejects.toThrow(
-      "Config file schema is invalid.",
+      "The configuration file does not match",
     );
   });
 

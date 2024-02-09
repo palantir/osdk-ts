@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-import { consola, LogLevels } from "consola";
+import { consola } from "consola";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { createFetch } from "../../createFetch.mjs";
+import type { InternalClientContext } from "../../internalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";
-import type { ThirdPartyAppRid } from "../../ThirdPartyAppRid.js";
+import type { DeleteSiteVersionRequest } from "./DeleteSiteVersionRequest.mjs";
 import { getSiteAssetBaseUrl } from "./getSiteAssetBaseUrl.mjs";
 
 export async function deleteSiteVersion(
-  baseUrl: string,
-  thirdPartyAppRid: ThirdPartyAppRid,
-  version: string,
+  ctx: InternalClientContext,
+  request: DeleteSiteVersionRequest,
 ) {
   const repositoryRid = await fetchWebsiteRepositoryRid(
-    baseUrl,
-    thirdPartyAppRid,
+    ctx,
+    request.application,
   );
 
   const url = `${
-    getSiteAssetBaseUrl(baseUrl, repositoryRid)
-  }/versions/${version}`;
+    getSiteAssetBaseUrl(ctx.foundryUrl, repositoryRid)
+  }/versions/${request.version}`;
 
-  const fetch = createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string);
+  const fetch = createFetch(ctx.tokenProvider);
 
   const result = await fetch(
     url,
@@ -45,7 +45,6 @@ export async function deleteSiteVersion(
   );
 
   if (result.status >= 200 && result.status < 300) {
-    consola.level = LogLevels.debug;
     consola.debug(`${result.status} - Status Text: '${result.statusText}'`);
     return true;
   } else {

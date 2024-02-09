@@ -68,8 +68,8 @@ describe("OsdkObject", () => {
       // slightly weird request here to hit the existing mocks for employee2
       const employees = await client.objects.Employee.where({
         $and: [
-          { "employeeId": { "gt": 50030 } },
-          { "employeeId": { "lt": 50032 } },
+          { "employeeId": { "$gt": 50030 } },
+          { "employeeId": { "$lt": 50032 } },
         ],
       }).fetchPageOrThrow();
       const lead = employees.data[0];
@@ -90,8 +90,8 @@ describe("OsdkObject", () => {
       // slightly weird request here to hit the existing mocks for employee2
       const employees = await client.objects.Employee.where({
         $and: [
-          { "employeeId": { "gt": 50030 } },
-          { "employeeId": { "lt": 50032 } },
+          { "employeeId": { "$gt": 50030 } },
+          { "employeeId": { "$lt": 50032 } },
         ],
       }).fetchPageOrThrow();
       const lead = employees.data[0];

@@ -14,40 +14,72 @@
  * limitations under the License.
  */
 
-import type * as yargs from "yargs";
+import type { CommandModule } from "yargs";
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
+import type { LoadedFoundryConfig } from "../../util/config.js";
+import configLoader from "../../util/configLoader.js";
+import { YargsCheckError } from "../../YargsCheckError.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
-import siteDelete from "./delete/index.js";
-import siteDeploy from "./deploy/index.js";
-import upload from "./upload/index.js";
-import versions from "./versions/index.js";
+import deploy from "./deploy/index.js";
+import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
+import version from "./version/index.js";
 
-const site: yargs.CommandModule<CliCommonArgs, CommonSiteArgs> = {
+const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
   command: "site",
   describe: "Manage your site",
-  builder: (argv) => {
+  builder: async (argv) => {
+    const config: LoadedFoundryConfig | undefined = await configLoader();
+    const application = config?.foundryConfig.site.application;
+    const foundryUrl = config?.foundryConfig.foundryUrl;
     return argv
       .options({
-        appRid: {
+        application: {
           type: "string",
-          demandOption: true,
-          coerce: (a) => a as ThirdPartyAppRid,
+          coerce: (application) => application as ThirdPartyAppRid,
+          ...application
+            ? { default: application }
+            : { demandOption: true },
+          description: "Application RID",
         },
-        baseUrl: {
+        foundryUrl: {
+          coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
           type: "string",
-          demandOption: true,
+          ...foundryUrl
+            ? { default: foundryUrl }
+            : { demandOption: true },
+          description:
+            "Foundry Stack URL with Protocol (e.g. https://example.palantirfoundry.com)",
+        },
+        token: {
+          type: "string",
+          conflicts: "tokenFile",
+          description: "Foundry API Token",
+        },
+        tokenFile: {
+          type: "string",
+          conflicts: "token",
+          description: "Path to a file containing your Foundry API Token",
         },
       })
-      .group(["appRid", "baseUrl"], "Common Arguments")
-      .command(versions)
-      .command(upload)
-      .command(siteDelete)
-      .command(siteDeploy)
+      .group(
+        ["application", "foundryUrl", "token", "tokenFile"],
+        "Common Arguments",
+      )
+      .command(version)
+      .command(deploy)
+      .check((argv) => {
+        if (!argv.foundryUrl.startsWith("https://")) {
+          throw new YargsCheckError("foundryUrl must start with https://");
+        }
+        return true;
+      })
+      .middleware((argv) =>
+        logSiteCommandConfigFileOverride(argv, config?.foundryConfig)
+      )
       .demandCommand();
   },
-  handler: async (args) => {
-  },
+  handler: async (args) => {},
 };
 
-export default site;
+export default command;

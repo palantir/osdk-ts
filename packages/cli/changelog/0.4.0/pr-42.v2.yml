@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Move argv override logging to middleware
+  links:
+  - https://github.com/palantir/osdk-ts/pull/42
