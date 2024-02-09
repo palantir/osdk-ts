@@ -27,8 +27,10 @@ import {
   generateEnvDevelopment,
   generateEnvProduction,
 } from "./generate/generateEnv.js";
+import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
 import { generateNpmRc } from "./generate/generateNpmRc.js";
 import { green } from "./highlight.js";
+import { promptApplicationRid } from "./prompts/promptApplicationRid.js";
 import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
@@ -46,6 +48,7 @@ interface CliArgs {
   foundryUrl?: string;
   applicationUrl?: string;
   skipApplicationUrl?: boolean;
+  application?: string;
   clientId?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
@@ -86,6 +89,10 @@ export async function cli(args: string[] = process.argv) {
             describe:
               "Skip filling in URL the production application will be hosted on",
           })
+          .option("application", {
+            type: "string",
+            describe: "Application resource identifier (rid)",
+          })
           .option("client-id", {
             type: "string",
             describe: "OAuth client ID for application",
@@ -106,6 +113,7 @@ export async function cli(args: string[] = process.argv) {
   const template: Template = await promptTemplate(parsed);
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
+  const application: string = await promptApplicationRid(parsed);
   const clientId: string = await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
@@ -183,6 +191,12 @@ export async function cli(args: string[] = process.argv) {
     clientId,
   });
   fs.writeFileSync(path.join(root, ".env.production"), envProduction);
+  const foundryConfigJson = generateFoundryConfigJson({
+    foundryUrl,
+    application,
+    directory: template.buildDirectory,
+  });
+  fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
 
   consola.success("Success");
 

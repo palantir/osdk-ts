@@ -57,6 +57,8 @@ for (const template of TEMPLATES) {
       "https://example.palantirfoundry.com",
       "--application-url",
       "https://app.example.palantirfoundry.com",
+      "--application",
+      "ri.third-party-applications.main.application.fake",
       "--client-id",
       "123",
       "--osdk-package",

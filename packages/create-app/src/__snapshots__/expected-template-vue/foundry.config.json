@@ -1,0 +1,11 @@
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.fake",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    }
+  }
+}
