@@ -33,7 +33,10 @@ export const MockOntology = {
         id: { type: "integer", nullable: true },
       },
       links: {
-        linkedTodos: { multiplicity: true, targetType: "Todo" },
+        linkedTodos: {
+          multiplicity: true,
+          targetType: "Todo",
+        },
       },
     },
     Todo: {
@@ -54,7 +57,10 @@ export const MockOntology = {
         points: { type: "integer", nullable: true },
       },
       links: {
-        linkedTask: { multiplicity: false, targetType: "Task" },
+        linkedTask: {
+          multiplicity: false,
+          targetType: "Task",
+        },
       },
     },
     ObjectTypeWithAllPropertyTypes,

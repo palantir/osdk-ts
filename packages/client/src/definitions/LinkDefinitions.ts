@@ -16,17 +16,24 @@
 
 import type {
   ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   ObjectTypeKeysFrom,
+  ObjectTypeLinkDefinition,
   ObjectTypeLinkDefinitionFrom,
   ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
+  SelectArg2,
 } from "../object/fetchPageOrThrow.js";
+import type { ObjectSet2 } from "../objectSet/ObjectSet.js";
 import type {
   OsdkObjectFrom,
+  OsdkObjectFrom2,
   OsdkObjectPrimaryKeyType,
 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -37,6 +44,12 @@ export type OsdkObjectLinksObject<
   O extends OntologyDefinition<any>,
 > = ObjectTypeLinkKeysFrom<O, K> extends never ? never : {
   [L in ObjectTypeLinkKeysFrom<O, K>]: OsdkObjectLinksEntry<K, O, L>;
+};
+
+export type OsdkObjectLinksObject2<
+  O extends ObjectTypeDefinition<any>,
+> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
+  [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry2<O, L>;
 };
 
 export type OsdkObjectLinksEntry<
@@ -96,3 +109,26 @@ export type OsdkObjectLinksEntry<
       >
     >;
   };
+
+export type LinkTargetType<
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectTypeLinkKeysFrom2<O>,
+> = O["links"][L]["targetType"];
+
+export type OsdkObjectLinksEntry2<
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectTypeLinkKeysFrom2<O>,
+> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
+    M extends false ? {
+        /** Load the linked object */
+        get: <A extends SelectArg2<T>>(
+          options?: A,
+        ) => OsdkObjectFrom2<
+          T,
+          A["select"] extends readonly string[] ? A["select"][number]
+            : ObjectOrInterfacePropertyKeysFrom2<T>
+        >;
+      }
+      : ObjectSet2<T>
+  )
+  : never;

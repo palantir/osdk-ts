@@ -140,6 +140,5 @@ export const ObjectTypeWithAllPropertyTypes = {
     },
   },
 } satisfies ObjectTypeDefinition<
-  "ObjectTypeWithAllPropertyTypes",
   "ObjectTypeWithAllPropertyTypes"
 >;

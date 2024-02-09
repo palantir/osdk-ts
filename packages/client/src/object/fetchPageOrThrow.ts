@@ -17,6 +17,8 @@
 import type {
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   OntologyDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
@@ -35,11 +37,26 @@ export interface SelectArg<
   select?: readonly L[];
 }
 
+export interface SelectArg2<
+  O extends ObjectTypeDefinition<any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+> {
+  select?: readonly L[];
+}
+
 export interface FetchPageOrThrowArgs<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
   L = ObjectOrInterfacePropertyKeysFrom<O, K>,
 > extends SelectArg<O, K, L> {
+  nextPageToken?: string;
+  pageSize?: number;
+}
+
+export interface FetchPageOrThrowArgs2<
+  O extends ObjectTypeDefinition<any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+> extends SelectArg2<O, L> {
   nextPageToken?: string;
   pageSize?: number;
 }

@@ -18,6 +18,8 @@ import type {
   InterfaceKeysFrom,
   InterfacePropertyDefinitionFrom,
   InterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
@@ -25,7 +27,10 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
-import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
+import type {
+  OsdkObjectLinksObject,
+  OsdkObjectLinksObject2,
+} from "./definitions/LinkDefinitions.js";
 
 export type OsdkObjectPrimaryKeyType<
   TObjectName,
@@ -34,6 +39,31 @@ export type OsdkObjectPrimaryKeyType<
     ObjectTypeDefinitionFrom<O, TObjectName>["primaryKeyType"]
   ]
   : never;
+
+export type OsdkObjectPrimaryKeyType2<
+  O extends ObjectTypeDefinition<any>,
+> = WirePropertyTypes[O["primaryKeyType"]];
+
+export type OsdkObjectFrom2<
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<O> =
+    ObjectOrInterfacePropertyKeysFrom2<O>,
+> =
+  & {
+    [P in L]: OsdkObjectPropertyType<
+      O["properties"][P]
+    >;
+  }
+  & {
+    __apiName: O["apiName"];
+    __primaryKey: OsdkObjectPrimaryKeyType2<O>;
+    /**
+     * Future versions will require explicitly asking for this field. For now we are marking
+     * as always optional to avoid breaking changes.
+     */
+    __rid?: string;
+    $link: OsdkObjectLinksObject2<O>;
+  }; // TODO
 
 export type OsdkObjectFrom<
   T_ObjectTypeKey extends ObjectTypeKeysFrom<T_Ontology>,

@@ -20,26 +20,55 @@ import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkOb
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConst(
   object: ObjectTypeWithLink,
+  importExt: string,
   v2: boolean = false,
 ) {
   const uniqueLinkTargetTypes = new Set(
     object.linkTypes.map(a => a.objectTypeApiName),
   );
+
+  const definition = wireObjectTypeV2ToSdkObjectDefinition(
+    object,
+    v2,
+  );
+
+  const imports = Array.from(uniqueLinkTargetTypes).filter(type =>
+    type != definition.apiName
+  ).map(type => `import type { ${type}Def } from "./${type}${importExt}";`);
+
   return `
-    export const ${object.objectType.apiName} = ${
-    JSON.stringify(
-      wireObjectTypeV2ToSdkObjectDefinition(
-        object,
-        v2,
-      ),
-      null,
-      2,
-    )
-  } satisfies ObjectTypeDefinition<"${object.objectType.apiName}", ${
-    uniqueLinkTargetTypes.size > 0
-      ? [...uniqueLinkTargetTypes].map(apiName => `"${apiName}"`).join(
-        "|",
-      )
-      : "never"
-  }>;`;
+  ${imports.join("\n")}
+    export interface ${object.objectType.apiName}Def extends ObjectTypeDefinition<"${object.objectType.apiName}"> {
+      type: "${definition.type}",
+      apiName: "${definition.apiName}",
+      ${
+    definition.description != null
+      ? `description: ${JSON.stringify(definition.description)},`
+      : ""
+  }
+      primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
+      links: {${
+    Object.entries(definition.links).map(
+      (
+        [linkApiName, definition],
+      ) =>
+        `${linkApiName}: ObjectTypeLinkDefinition<${definition.targetType}Def, ${definition.multiplicity}>`,
+    ).join(",\n")
+  }
+  },
+      properties: ${JSON.stringify(definition.properties, null, 2)},
+    }
+
+    export const ${object.objectType.apiName}: ${object.objectType.apiName}Def = {
+      type: "${definition.type}",
+      apiName: "${definition.apiName}",
+      ${
+    definition.description != null
+      ? `description: ${JSON.stringify(definition.description)},`
+      : ""
+  }
+      primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
+      links: ${JSON.stringify(definition.links, null, 2)} as const,
+      properties: ${JSON.stringify(definition.properties, null, 2)},
+    };`;
 }

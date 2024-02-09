@@ -90,7 +90,7 @@ describe("LinkDefinitions", () => {
                 >,
               >(
                 options?: A,
-              ) => OsdkObjectFrom<
+              ) => OsdkObjectFrom2<
                 "Person",
                 typeof MockOntology,
                 A["select"] extends readonly string[] ? A["select"][number]

@@ -33,6 +33,5 @@ export const ObjectTypeWithReservedNames = {
     },
   },
 } satisfies ObjectTypeDefinition<
-  "ObjectTypeWithReservedNames",
   "ObjectTypeWithReservedNames"
 >;

@@ -35,6 +35,7 @@ export type {
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
 } from "./ontology/ObjectOrInterface";
 export type {
   ObjectTypeDefinition,
@@ -43,6 +44,7 @@ export type {
   ObjectTypeLinkDefinition,
   ObjectTypeLinkDefinitionFrom,
   ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkKeysFrom2,
   ObjectTypeLinkTargetTypeFrom,
   ObjectTypePropertyDefinition,
   ObjectTypePropertyDefinitionFrom,

@@ -1,6 +1,43 @@
-import type { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 
-export const Todo = {
+import type { PersonDef } from './Person.js';
+export interface TodoDef extends ObjectTypeDefinition<'Todo'> {
+  type: 'object';
+  apiName: 'Todo';
+  description: 'Its a todo item.';
+  primaryKeyType: 'integer';
+  links: { Assignee: ObjectTypeLinkDefinition<PersonDef, false> };
+  properties: {
+    id: {
+      multiplicity: false;
+      type: 'integer';
+      nullable: false;
+    };
+    body: {
+      multiplicity: false;
+      description: 'The text of the todo';
+      type: 'string';
+      nullable: true;
+    };
+    text: {
+      multiplicity: false;
+      type: 'string';
+      nullable: true;
+    };
+    priority: {
+      multiplicity: false;
+      type: 'integer';
+      nullable: true;
+    };
+    complete: {
+      multiplicity: false;
+      type: 'boolean';
+      nullable: true;
+    };
+  };
+}
+
+export const Todo: TodoDef = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
@@ -10,7 +47,7 @@ export const Todo = {
       multiplicity: false,
       targetType: 'Person',
     },
-  },
+  } as const,
   properties: {
     id: {
       multiplicity: false,
@@ -39,4 +76,4 @@ export const Todo = {
       nullable: true,
     },
   },
-} satisfies ObjectTypeDefinition<'Todo', 'Person'>;
+};
