@@ -77,7 +77,34 @@ describe(generateActions, () => {
         >;
       }
       "
-      
+
       `);
+
+    // expect(helper.getFiles()[`${BASE_PATH}/Actions.ts`])
+    //   .toMatchInlineSnapshot(`
+    //   "import type { ActionError, ActionExecutionOptions, BulkActionExecutionOptions, Result } from '@osdk/legacy-client';
+    //   import type { Todo } from '../objects/Todo';
+    //   export interface Actions {
+    //     /**
+    //      * An action which takes different types of parameters
+    //      * @param {Todo | Todo["__primaryKey"]} params.object
+    //      */
+    //     markTodoCompleted<
+    //       P extends
+    //         | {
+    //             object?: Todo | Todo['__primaryKey'];
+    //           }
+    //         | {
+    //             object?: Todo | Todo['__primaryKey'];
+    //           }[],
+    //       O extends BulkActionExecutionOptions | ActionExecutionOptions,
+    //     >(
+    //       params: P,
+    //       options?: O,
+    //     ): Promise<Result<any, ActionError>>;
+    //   }
+    //   "
+
+    //   `);
   });
 });

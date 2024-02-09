@@ -17,6 +17,7 @@
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
+  apiServer,
   getMockTodoObject,
   MOCK_ORIGIN,
   mockFetchResponse,
@@ -24,7 +25,9 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import {
+  afterAll,
   assert,
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -41,6 +44,7 @@ import type {
   Result,
 } from "../..";
 import { ActionExecutionMode, ReturnEditsMode } from "../..";
+import { Ontology as MockOntologyGenerated } from "../../generatedNoCheck/Ontology";
 
 import { USER_AGENT } from "../../USER_AGENT";
 import {
@@ -54,13 +58,30 @@ import { createActionProxy } from "./createActionProxy";
 
 describe("Actions", () => {
   let client: ClientContext<typeof MockOntology>;
+  // use generated ontology in this client instead
+  let sharedClient: ClientContext<typeof MockOntologyGenerated>;
   let fetch: MockedFunction<typeof globalThis.fetch>;
   let actions: Actions<
     typeof MockOntology
   >;
 
+  let sharedActions: Actions<typeof MockOntologyGenerated>;
+  beforeAll(async () => {
+    apiServer.listen();
+    sharedClient = createClientContext(
+      MockOntologyGenerated,
+      "https://stack.palantir.com",
+      () => "myAccessToken",
+      USER_AGENT,
+      globalThis.fetch,
+    );
+    sharedActions = createActionProxy<typeof MockOntologyGenerated>(
+      sharedClient,
+    );
+  });
   beforeEach(() => {
     fetch = vi.fn();
+    apiServer.listen();
     client = createClientContext(
       MockOntology,
       MOCK_ORIGIN,
@@ -68,7 +89,12 @@ describe("Actions", () => {
       USER_AGENT,
       fetch,
     );
+
     actions = createActionProxy<typeof MockOntology>(client);
+  });
+
+  afterAll(() => {
+    apiServer.close();
   });
 
   describe("type tests", () => {
@@ -284,4 +310,50 @@ describe("Actions", () => {
       ]
     `);
   });
+
+  // it("conditionally returns edits in batch mode", async () => {
+  //   const result = await sharedActions.moveOffice([
+  //     {
+  //       officeId: "SEA",
+  //       newAddress: "456 Good Place",
+  //       newCapacity: 40,
+  //     },
+  //     {
+  //       officeId: "NYC",
+  //       newAddress: "123 Main Street",
+  //       newCapacity: 80,
+  //     },
+  //   ], { returnEdits: ReturnEditsMode.ALL });
+
+  //   expect(result).toMatchInlineSnapshot(` edits: {
+  //     type: "edits",
+  //     edits: [{
+  //       type: "modifyObject",
+  //       primaryKey: "SEA",
+  //       objectType: officeObjectType.apiName,
+  //     }, {
+  //       type: "modifyObject",
+  //       primaryKey: "NYC",
+  //       objectType: officeObjectType.apiName,
+  //     }],
+  //     addedObjectCount: 0,
+  //     addedLinksCount: 0,
+  //     modifiedObjectsCount: 2,
+  //   },`);
+
+  //   const noEditsResult = await sharedActions.moveOffice([
+  //     {
+  //       officeId: "SEA",
+  //       newAddress: "456 Good Place",
+  //       newCapacity: 40,
+  //     },
+  //     {
+  //       officeId: "NYC",
+  //       newAddress: "123 Main Street",
+  //       newCapacity: 80,
+  //     },
+  //   ]);
+
+  //   expect(noEditsResult).toBeUndefined();
+  // });
 });
