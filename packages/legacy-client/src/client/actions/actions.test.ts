@@ -311,49 +311,55 @@ describe("Actions", () => {
     `);
   });
 
-  // it("conditionally returns edits in batch mode", async () => {
-  //   const result = await sharedActions.moveOffice([
-  //     {
-  //       officeId: "SEA",
-  //       newAddress: "456 Good Place",
-  //       newCapacity: 40,
-  //     },
-  //     {
-  //       officeId: "NYC",
-  //       newAddress: "123 Main Street",
-  //       newCapacity: 80,
-  //     },
-  //   ], { returnEdits: ReturnEditsMode.ALL });
+  it("conditionally returns edits in batch mode", async () => {
+    const result = await sharedActions.moveOffice([
+      {
+        officeId: "SEA",
+        newAddress: "456 Good Place",
+        newCapacity: 40,
+      },
+      {
+        officeId: "NYC",
+        newAddress: "123 Main Street",
+        newCapacity: 80,
+      },
+    ], { returnEdits: ReturnEditsMode.ALL });
 
-  //   expect(result).toMatchInlineSnapshot(` edits: {
-  //     type: "edits",
-  //     edits: [{
-  //       type: "modifyObject",
-  //       primaryKey: "SEA",
-  //       objectType: officeObjectType.apiName,
-  //     }, {
-  //       type: "modifyObject",
-  //       primaryKey: "NYC",
-  //       objectType: officeObjectType.apiName,
-  //     }],
-  //     addedObjectCount: 0,
-  //     addedLinksCount: 0,
-  //     modifiedObjectsCount: 2,
-  //   },`);
+    expect(unwrapResultOrThrow(result)).toMatchInlineSnapshot(` 
+     {
+  "edits": {
+    "added": [],
+    "modified": [
+      {
+        "apiName": "Office",
+        "get": [Function],
+        "primaryKey": "SEA",
+      },
+      {
+        "apiName": "Office",
+        "get": [Function],
+        "primaryKey": "NYC",
+      },
+    ],
+    "type": "edits",
+  },
+}`);
 
-  //   const noEditsResult = await sharedActions.moveOffice([
-  //     {
-  //       officeId: "SEA",
-  //       newAddress: "456 Good Place",
-  //       newCapacity: 40,
-  //     },
-  //     {
-  //       officeId: "NYC",
-  //       newAddress: "123 Main Street",
-  //       newCapacity: 80,
-  //     },
-  //   ]);
+    const noEditsResult = await sharedActions.moveOffice([
+      {
+        officeId: "SEA",
+        newAddress: "456 Good Place",
+        newCapacity: 40,
+      },
+      {
+        officeId: "NYC",
+        newAddress: "123 Main Street",
+        newCapacity: 80,
+      },
+    ]);
 
-  //   expect(noEditsResult).toBeUndefined();
-  // });
+    expect(unwrapResultOrThrow(noEditsResult)).toMatchInlineSnapshot(` 
+    {}
+    `);
+  });
 });

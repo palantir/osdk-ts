@@ -336,7 +336,7 @@ export const actionResponseMap: {
     [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
     [stableStringify(actionRequestMoveOffice2)]: undefined,
     [stableStringify(actionRequestMoveOffice3)]: undefined,
-    [stableStringify(actionRequestMoveOfficeBatch)]: undefined,
+    [stableStringify(actionRequestMoveOfficeBatch)]: {},
     [stableStringify(actionRequestMoveOfficeBatchWithEdits)]:
       actionResponseMoveOfficeBatch,
     [stableStringify(actionRequestMoveOfficeBatchInvalid)]: undefined,

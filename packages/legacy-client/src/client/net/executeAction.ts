@@ -60,7 +60,7 @@ export async function executeAction<
             requests: params
               ? remapBulkActionParams<O, A>(params)
               : [],
-            options: options ? remapOptions(options) : {},
+            options: options ? remapOptions(options, true) : {},
           },
         );
         return BulkActionResponse.of(client, response) as ActionReturnType<
@@ -127,10 +127,16 @@ function remapBulkActionParams<
 
 function remapOptions(
   options: ActionExecutionOptions,
+  bulkOptions?: boolean = false,
 ): ApplyActionRequestOptions {
   if (options.mode === ActionExecutionMode.VALIDATE_ONLY) {
     return {
       mode: "VALIDATE_ONLY",
+    };
+  }
+  if (bulkOptions) {
+    return {
+      returnEdits: options.returnEdits === ReturnEditsMode.ALL ? "ALL" : "NONE",
     };
   }
   return {
