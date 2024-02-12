@@ -55,6 +55,9 @@ export default async function versionListCommand(
   }
 
   consola.success("Found versions:");
+
+  const semver = await import("semver");
+  semver.sort(versions);
   for (const version of versions) {
     consola.log(
       `    - ${version}${
