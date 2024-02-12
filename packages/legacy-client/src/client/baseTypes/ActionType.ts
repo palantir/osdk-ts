@@ -162,8 +162,8 @@ export const ActionResponse = {
       ],
     };
     if (response.edits?.type === "edits") {
-      const added: any[] = [];
-      const modified: any[] = [];
+      const added = [];
+      const modified = [];
       for (const edit of response.edits.edits) {
         if (edit.type === "addObject") {
           added.push({
@@ -213,8 +213,8 @@ export const BulkActionResponse = {
     response: BatchApplyActionResponseV2,
   ): BulkActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
     if (response.edits?.type === "edits") {
-      const added: any[] = [];
-      const modified: any[] = [];
+      const added = [];
+      const modified = [];
       for (const edit of response.edits.edits) {
         if (edit.type === "addObject") {
           added.push({
