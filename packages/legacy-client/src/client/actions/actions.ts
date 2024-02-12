@@ -133,47 +133,55 @@ export type WrappedActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-  P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined = undefined,
 > = Promise<
   Result<
-    ActionReturnType<O, A, Op, P>,
+    ActionReturnType<O, A, Op>,
     ActionError
   >
 >;
 
-// export type WrappedBulkActionReturnType<
-//   O extends OntologyDefinition<any>,
-//   A extends keyof O["actions"],
-//   Op extends BulkActionExecutionOptions,
-// > = Promise<
-//   Result<
-//     BulkActionReturnType<O, A, Op>,
-//     ActionError
-//   >
-// >;
+export type WrappedBulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = Promise<
+  Result<
+    BulkActionReturnType<O, A, Op>,
+    ActionError
+  >
+>;
 
-// export type BulkActionReturnType<
+export type BulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = BulkActionResponseFromOptions<
+  Op,
+  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+>;
+
+// export type ActionReturnType<
 //   O extends OntologyDefinition<any>,
 //   A extends keyof O["actions"],
-//   Op extends BulkActionExecutionOptions,
-// > = BulkActionResponseFromOptions<
-//   Op,
-//   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-// >;
+//   Op extends ActionExecutionOptions,
+//   P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined,
+// > = P extends ActionArgs<O, A>[] ? BulkActionResponseFromOptions<
+//     Op,
+//     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+//   >
+//   : ActionResponseFromOptions<
+//     Op,
+//     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+//   >;
 
 export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-  P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined,
-> = P extends ActionArgs<O, A>[] ? BulkActionResponseFromOptions<
-    Op,
-    Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-  >
-  : ActionResponseFromOptions<
-    Op,
-    Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-  >;
+> = ActionResponseFromOptions<
+  Op,
+  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+>;
 
 export type Actions<
   O extends OntologyDefinition<any>,
@@ -194,9 +202,9 @@ export type BulkActions<O extends OntologyDefinition<any>> = {
     IsEmptyRecord<O["actions"][A]["parameters"]> extends true
       ? <Op extends BulkActionExecutionOptions>(
         options?: Op,
-      ) => WrappedActionReturnType<O, A, Op>
+      ) => WrappedBulkActionReturnType<O, A, Op>
       : <Op extends BulkActionExecutionOptions, P extends ActionArgs<O, A>[]>(
         params: P,
         options?: Op,
-      ) => WrappedActionReturnType<O, A, Op, P>;
+      ) => WrappedBulkActionReturnType<O, A, Op>;
 };

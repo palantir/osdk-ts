@@ -61,14 +61,14 @@ export async function generateBulkActions(
           `* @param {${typeScriptType}} params.${parameterName}`,
         );
       }
-      parameterBlock += "} ";
+      parameterBlock += "}[], ";
     }
 
     jsDocBlock.push(`*/`);
     actionSignatures.push(
       `
       ${jsDocBlock.join("\n")}
-      ${action.apiName}<O extends BulkActionExecutionOptions>(${parameterBlock}[],options?: O): 
+      ${action.apiName}<O extends BulkActionExecutionOptions>(${parameterBlock}options?: O): 
         Promise<Result<BulkActionResponseFromOptions<O, Edits<${
         addedObjects.length > 0
           ? addedObjects.join(" | ")

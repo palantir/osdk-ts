@@ -12,7 +12,7 @@ import type {
 import type { ObjectTypeWithAllPropertyTypes } from '../objects/ObjectTypeWithAllPropertyTypes';
 import type { Person } from '../objects/Person';
 import type { Todo } from '../objects/Todo';
-export interface Actions {
+export interface BulkActions {
   /**
    * An action which takes different types of parameters
    * @param {ObjectSet<Todo>} params.objectSet
@@ -38,7 +38,6 @@ export interface Actions {
    * Creates a new Todo
    */
   createTodo<O extends BulkActionExecutionOptions>(
-    [],
     options?: O,
   ): Promise<Result<BulkActionResponseFromOptions<O, Edits<Todo, void>>, ActionError>>;
 }

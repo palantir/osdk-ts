@@ -6,7 +6,7 @@ import type {
   Result,
 } from '@osdk/legacy-client';
 import type { Todo } from '../objects/Todo';
-export interface Actions {
+export interface BulkActions {
   /**
    * Creates Todo
    * @param {string} params.Todo

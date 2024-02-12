@@ -22,7 +22,9 @@ import type { ClientContext } from "@osdk/shared.net";
 import type {
   ActionArgs,
   ActionReturnType,
+  BulkActionReturnType,
   WrappedActionReturnType,
+  WrappedBulkActionReturnType,
 } from "../actions/actions";
 import {
   ActionExecutionMode,
@@ -48,7 +50,7 @@ export async function executeAction<
   actionApiName: A,
   params?: P,
   options?: Op,
-): WrappedActionReturnType<O, A, Op, P> {
+): WrappedActionReturnType<O, A, Op> {
   return wrapResult(
     async () => {
       const response = await applyActionV2(
@@ -64,8 +66,7 @@ export async function executeAction<
       return ActionResponse.of(client, response) as ActionReturnType<
         O,
         A,
-        Op,
-        P
+        Op
       >;
     },
     e =>
@@ -87,7 +88,7 @@ export async function executeBatchAction<
   actionApiName: A,
   params?: P,
   options?: Op,
-): WrappedActionReturnType<O, A, Op, P> {
+): WrappedBulkActionReturnType<O, A, Op> {
   return wrapResult(
     async () => {
       const response = await applyActionBatchV2(
@@ -101,11 +102,10 @@ export async function executeBatchAction<
           options: options ? remapBulkOptions(options) : {},
         },
       );
-      return BulkActionResponse.of(client, response) as ActionReturnType<
+      return BulkActionResponse.of(client, response) as BulkActionReturnType<
         O,
         A,
-        Op,
-        P
+        Op
       >;
     },
     e =>

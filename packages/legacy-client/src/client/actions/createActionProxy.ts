@@ -24,6 +24,7 @@ import type {
   Actions,
   BulkActions,
   WrappedActionReturnType,
+  WrappedBulkActionReturnType,
 } from "./actions";
 
 export function createActionProxy<
@@ -53,7 +54,7 @@ export function createActionProxy<
           >(
             params: P,
             options?: Op,
-          ): Promise<WrappedActionReturnType<O, typeof p, Op, P>> {
+          ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
             return executeAction<O, typeof p, Op, P>(
               client,
               p,
@@ -93,7 +94,7 @@ export function createBulkActionProxy<
           if (Object.keys(client.ontology.actions[p].parameters).length === 0) {
             return async function<Op extends BulkActionExecutionOptions>(
               options?: Op,
-            ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
+            ): Promise<WrappedBulkActionReturnType<O, typeof p, Op>> {
               return executeBatchAction<O, typeof p, Op, undefined>(
                 client,
                 p,
@@ -109,7 +110,7 @@ export function createBulkActionProxy<
           >(
             params: P,
             options?: Op,
-          ): Promise<WrappedActionReturnType<O, typeof p, Op, P>> {
+          ): Promise<WrappedBulkActionReturnType<O, typeof p, Op>> {
             return executeBatchAction<O, typeof p, Op, P>(
               client,
               p,

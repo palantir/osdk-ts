@@ -139,7 +139,7 @@ export type ActionResponseFromOptions<
   : ActionResponse;
 
 export type BulkActionResponseFromOptions<
-  TOptions extends ActionExecutionOptions | undefined = undefined,
+  TOptions extends BulkActionExecutionOptions | undefined = undefined,
   TEdits extends Edits<any, any> | undefined = undefined,
 > = TOptions extends {
   returnEdits: ReturnEditsMode.ALL;
