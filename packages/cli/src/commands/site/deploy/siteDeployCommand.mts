@@ -25,6 +25,7 @@ import {
 } from "#net";
 import archiver from "archiver";
 import * as fs from "node:fs";
+import path from "node:path";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
@@ -64,15 +65,20 @@ export default async function siteDeployCommand(
     );
   }
 
+  consola.debug(`Using directory for site files: "${path.resolve(directory)}`);
   const stat = await fs.promises.stat(directory);
   if (!stat.isDirectory()) {
-    consola.error("Specified path is not a directory");
-    throw new ExitProcessError(2);
+    throw new ExitProcessError(
+      2,
+      "Specified path exists but is not a directory",
+    );
   }
 
-  consola.start("Zippping site files");
-
+  consola.start("Zipping site files");
   const archive = archiver("zip").directory(directory, false);
+  logArchiveStats(archive);
+
+  consola.start("Uploading site files");
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   await Promise.all([
@@ -86,7 +92,6 @@ export default async function siteDeployCommand(
     ),
     archive.finalize(),
   ]);
-
   consola.success("Upload complete");
 
   if (!uploadOnly) {
@@ -108,4 +113,19 @@ export default async function siteDeployCommand(
   } else {
     consola.debug("Upload only mode enabled, skipping deployment");
   }
+}
+
+function logArchiveStats(archive: archiver.Archiver): void {
+  let archiveStats = { fileCount: 0, bytes: 0 };
+  archive.on("progress", (progress) => {
+    archiveStats = {
+      fileCount: progress.entries.total,
+      bytes: progress.fs.totalBytes,
+    };
+  });
+  archive.on("finish", () => {
+    consola.debug(
+      `Zipped ${archiveStats.fileCount} files and ${archiveStats.bytes} bytes`,
+    );
+  });
 }
