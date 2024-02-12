@@ -17,7 +17,6 @@
 import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
@@ -30,14 +29,6 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
-> {
-  select?: readonly L[];
-}
-
-export interface SelectArg2<
   O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
 > {
@@ -47,7 +38,7 @@ export interface SelectArg2<
 export interface FetchPageOrThrowArgs2<
   O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
-> extends SelectArg2<O, L> {
+> extends SelectArg<O, L> {
   nextPageToken?: string;
   pageSize?: number;
 }

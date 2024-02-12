@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   FetchPageOrThrowArgs2,
-  SelectArg2,
+  SelectArg,
 } from "../object/fetchPageOrThrow.js";
 import type { ObjectSet2 } from "../objectSet/ObjectSet.js";
 import type {
@@ -40,7 +40,7 @@ export type OsdkObjectLinksObject<
 
 export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
   /** Load the linked object */
-  get: <A extends SelectArg2<T>>(options?: A) => OsdkObjectFrom<
+  get: <A extends SelectArg<T>>(options?: A) => OsdkObjectFrom<
     T,
     A["select"] extends readonly string[] ? A["select"][number]
       : ObjectOrInterfacePropertyKeysFrom2<T>
@@ -50,7 +50,7 @@ export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
 export interface MultitonLinkAccessor<T extends ObjectTypeDefinition<any>>
   extends ObjectSet2<T>
 {
-  get: <A extends SelectArg2<T>>(
+  get: <A extends SelectArg<T>>(
     pk: OsdkObjectPrimaryKeyType<T>,
     options?: A,
   ) => OsdkObjectFrom<
