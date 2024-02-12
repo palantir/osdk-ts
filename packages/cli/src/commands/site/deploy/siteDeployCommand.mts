@@ -16,6 +16,7 @@
 
 import { consola } from "consola";
 
+import type { SiteDomainInfo } from "#net";
 import {
   artifacts,
   ArtifactsSitesAdminV2Service,
@@ -24,6 +25,7 @@ import {
   thirdPartyApplicationService,
 } from "#net";
 import archiver from "archiver";
+import { colorize } from "consola/utils";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
@@ -51,6 +53,13 @@ export default async function siteDeployCommand(
     );
   }
   const loadedToken = await loadToken(token, tokenFile);
+  const tokenProvider = () => loadedToken;
+  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
+  const ctx = createConjureContext(
+    foundryUrl,
+    "/artifacts/api",
+    tokenProvider,
+  );
 
   // version has a priority over autoVersion. Both could be defined at the same time when
   // autoVersion is present in the config file (it assigns that as a default value to argv.autoVersion)
@@ -79,8 +88,6 @@ export default async function siteDeployCommand(
   logArchiveStats(archive);
 
   consola.start("Uploading site files");
-  const tokenProvider = () => loadedToken;
-  const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   await Promise.all([
     artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
       clientCtx,
@@ -94,26 +101,50 @@ export default async function siteDeployCommand(
   ]);
   consola.success("Upload complete");
 
-  if (!uploadOnly) {
-    const repositoryRid = await thirdPartyApplicationService
-      .fetchWebsiteRepositoryRid(clientCtx, application);
-
-    const ctx = createConjureContext(
-      foundryUrl,
-      "/artifacts/api",
-      tokenProvider,
+  const repositoryRid = await thirdPartyApplicationService
+    .fetchWebsiteRepositoryRid(clientCtx, application);
+  const registeredSiteDomains = await ArtifactsSitesAdminV2Service
+    .getRegisteredSiteDomains(
+      ctx,
+      repositoryRid,
     );
+  const domain = getFirstSiteDomain(registeredSiteDomains);
+
+  if (!uploadOnly) {
     await ArtifactsSitesAdminV2Service.updateDeployedVersion(
       ctx,
       repositoryRid,
       { siteVersion: { version: siteVersion } },
     );
-
     consola.success(`Deployed ${siteVersion} successfully`);
+    consola.box({
+      message: `View live site:\n\n${
+        colorize(
+          "green",
+          `https://${domain}`,
+        )
+      }`,
+      style: BOX_STYLES,
+    });
   } else {
     consola.debug("Upload only mode enabled, skipping deployment");
+    consola.box({
+      message: `Preview link:\n\n${
+        colorize(
+          "green",
+          `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
+        )
+      }`,
+      style: BOX_STYLES,
+    });
   }
 }
+
+const BOX_STYLES = {
+  padding: 2,
+  borderColor: "green",
+  borderStyle: "rounded",
+};
 
 function logArchiveStats(archive: archiver.Archiver): void {
   let archiveStats = { fileCount: 0, bytes: 0 };
@@ -128,4 +159,19 @@ function logArchiveStats(archive: archiver.Archiver): void {
       `Zipped ${archiveStats.fileCount} files and ${archiveStats.bytes} bytes`,
     );
   });
+}
+
+function getFirstSiteDomain(
+  domains: Array<SiteDomainInfo>,
+): string | undefined {
+  if (domains.length === 0) {
+    consola.debug("No registered domains for site found");
+    return undefined;
+  }
+  switch (domains[0].type) {
+    case "controlPanelManaged":
+      return domains[0].controlPanelManaged.siteDomain.domain;
+    default:
+      const _: never = domains[0].type;
+  }
 }
