@@ -17,8 +17,14 @@
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { ActionExecutionOptions } from "../..";
-import { executeAction } from "../net/executeAction";
-import type { ActionArgs, Actions, WrappedActionReturnType } from "./actions";
+import type { BulkActionExecutionOptions } from "../baseTypes";
+import { executeAction, executeBatchAction } from "../net/executeAction";
+import type {
+  ActionArgs,
+  Actions,
+  BulkActions,
+  WrappedActionReturnType,
+} from "./actions";
 
 export function createActionProxy<
   O extends OntologyDefinition<any>,
@@ -41,11 +47,19 @@ export function createActionProxy<
             };
           }
 
-          return async function<Op extends ActionExecutionOptions>(
-            params: ActionArgs<O, typeof p>,
+          return async function<
+            Op extends ActionExecutionOptions,
+            P extends ActionArgs<O, typeof p>,
+          >(
+            params: P,
             options?: Op,
-          ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
-            return executeAction<O, typeof p, Op>(client, p, params, options);
+          ): Promise<WrappedActionReturnType<O, typeof p, Op, P>> {
+            return executeAction<O, typeof p, Op, P>(
+              client,
+              p,
+              params,
+              options,
+            );
           };
         }
 
@@ -65,5 +79,61 @@ export function createActionProxy<
       },
     },
   ) as Actions<O>;
+  return proxy;
+}
+
+export function createBulkActionProxy<
+  O extends OntologyDefinition<any>,
+>(client: ClientContext<O>): BulkActions<O> {
+  const proxy = new Proxy(
+    {},
+    {
+      get: (_target, p: keyof O["actions"], _receiver) => {
+        if (typeof p === "string") {
+          if (Object.keys(client.ontology.actions[p].parameters).length === 0) {
+            return async function<Op extends BulkActionExecutionOptions>(
+              options?: Op,
+            ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
+              return executeBatchAction<O, typeof p, Op, undefined>(
+                client,
+                p,
+                undefined,
+                options,
+              );
+            };
+          }
+
+          return async function<
+            Op extends BulkActionExecutionOptions,
+            P extends ActionArgs<O, typeof p>[],
+          >(
+            params: P,
+            options?: Op,
+          ): Promise<WrappedActionReturnType<O, typeof p, Op, P>> {
+            return executeBatchAction<O, typeof p, Op, P>(
+              client,
+              p,
+              params,
+              options,
+            );
+          };
+        }
+
+        return undefined;
+      },
+      ownKeys(_target) {
+        return Object.keys(client.ontology.actions);
+      },
+      getOwnPropertyDescriptor(_target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: client.ontology.actions[p] != null,
+            configurable: true,
+            value: proxy[p],
+          };
+        }
+      },
+    },
+  ) as BulkActions<O>;
   return proxy;
 }

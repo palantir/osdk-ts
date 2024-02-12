@@ -15,6 +15,7 @@
  */
 
 import type {
+  BatchApplyActionResponse,
   ListActionTypesResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
@@ -96,6 +97,47 @@ export const actionHandlers: RestHandler<
 
         const actionResponse =
           actionResponseMap[actionType][stableStringify(parsedBody)];
+        if (
+          req.params.ontologyApiName === defaultOntology.apiName
+          && actionResponse
+        ) {
+          return res(ctx.json(actionResponse));
+        }
+
+        return res(ctx.status(400), ctx.json(ApplyActionFailedError));
+      },
+    ),
+  ),
+  /**
+   * Apply a Batch Action
+   */
+  rest.post(
+    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actions/:actionType/applyBatch",
+    authHandlerMiddleware(
+      async (
+        req,
+        res: ResponseComposition<
+          BatchApplyActionResponse | BaseAPIError
+        >,
+        ctx,
+      ) => {
+        const body = await req.text();
+        const parsedBody = JSON.parse(body);
+        const ontologyApiName = req.params.ontologyApiName;
+        const actionType = req.params.actionType;
+
+        if (
+          typeof ontologyApiName !== "string" || typeof actionType !== "string"
+        ) {
+          return res(
+            ctx.status(400),
+            ctx.json(InvalidRequest("Invalid parameters")),
+          );
+        }
+
+        const actionResponse =
+          actionResponseMap[actionType][stableStringify(parsedBody)];
+
         if (
           req.params.ontologyApiName === defaultOntology.apiName
           && actionResponse

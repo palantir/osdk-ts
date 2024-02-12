@@ -15,7 +15,7 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import { applyActionV2 } from "@osdk/gateway/requests";
+import { applyActionBatchV2, applyActionV2 } from "@osdk/gateway/requests";
 import type { ApplyActionRequestOptions } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
@@ -27,9 +27,13 @@ import type {
 import {
   ActionExecutionMode,
   ActionResponse,
+  BulkActionResponse,
   ReturnEditsMode,
 } from "../baseTypes";
-import type { ActionExecutionOptions } from "../baseTypes";
+import type {
+  ActionExecutionOptions,
+  BulkActionExecutionOptions,
+} from "../baseTypes";
 import { ExecuteActionErrorHandler, handleExecuteActionError } from "../errors";
 import { getParameterValueMapping } from "./util/getParameterValueMapping";
 import { wrapResult } from "./util/wrapResult";
@@ -38,12 +42,13 @@ export async function executeAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
+  P extends ActionArgs<O, A> | undefined = undefined,
 >(
   client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
-  params?: ActionArgs<O, A>,
+  params?: P,
   options?: Op,
-): WrappedActionReturnType<O, A, Op> {
+): WrappedActionReturnType<O, A, Op, P> {
   return wrapResult(
     async () => {
       const response = await applyActionV2(
@@ -59,7 +64,48 @@ export async function executeAction<
       return ActionResponse.of(client, response) as ActionReturnType<
         O,
         A,
-        Op
+        Op,
+        P
+      >;
+    },
+    e =>
+      handleExecuteActionError(
+        new ExecuteActionErrorHandler(),
+        e,
+        e.parameters,
+      ),
+  );
+}
+
+export async function executeBatchAction<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+  P extends ActionArgs<O, A>[] | undefined = undefined,
+>(
+  client: ClientContext<OntologyDefinition<any>>,
+  actionApiName: A,
+  params?: P,
+  options?: Op,
+): WrappedActionReturnType<O, A, Op, P> {
+  return wrapResult(
+    async () => {
+      const response = await applyActionBatchV2(
+        createOpenApiRequest(client.stack, client.fetch),
+        client.ontology.metadata.ontologyApiName,
+        actionApiName as string,
+        {
+          requests: params
+            ? remapBulkActionParams<O, A>(params)
+            : [],
+          options: options ? remapBulkOptions(options) : {},
+        },
+      );
+      return BulkActionResponse.of(client, response) as ActionReturnType<
+        O,
+        A,
+        Op,
+        P
       >;
     },
     e =>
@@ -84,6 +130,20 @@ function remapActionParams<
   return remappedParams;
 }
 
+function remapBulkActionParams<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+>(params: ActionArgs<O, A>[]) {
+  const remappedParams: { parameters: { [parameterName: string]: any } }[] =
+    params.map(
+      param => {
+        return { parameters: remapActionParams<O, A>(param) };
+      },
+    );
+
+  return remappedParams;
+}
+
 function remapOptions(
   options: ActionExecutionOptions,
 ): ApplyActionRequestOptions {
@@ -94,6 +154,14 @@ function remapOptions(
   }
   return {
     mode: "VALIDATE_AND_EXECUTE",
+    returnEdits: options.returnEdits === ReturnEditsMode.ALL ? "ALL" : "NONE",
+  };
+}
+
+function remapBulkOptions(
+  options: BulkActionExecutionOptions,
+): ApplyActionRequestOptions {
+  return {
     returnEdits: options.returnEdits === ReturnEditsMode.ALL ? "ALL" : "NONE",
   };
 }
