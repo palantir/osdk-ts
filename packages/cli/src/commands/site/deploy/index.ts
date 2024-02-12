@@ -117,7 +117,13 @@ const command: CommandModule<
   },
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
-    await command.default(args);
+    const selectedVersion = args.version != null
+      ? args.version
+      : {
+        type: args.autoVersion as "git-describe",
+        tagPrefix: args.gitTagPrefix,
+      };
+    await command.default({ ...args, selectedVersion });
   },
 };
 
