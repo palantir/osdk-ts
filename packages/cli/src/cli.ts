@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -46,6 +47,7 @@ export async function cli(args: string[] = process.argv) {
     .command({
       command: "unstable",
       aliases: ["experimental"],
+      describe: "Unstable commands",
       builder: async (argv) => {
         return argv
           .command(site)
@@ -55,26 +57,17 @@ export async function cli(args: string[] = process.argv) {
       },
       handler: (_args) => {},
     })
-    .fail(async (msg, err, yargsContext) => {
-      const Consola = await import("consola");
-      const isVerbose = args.some(arg =>
-        ["-v", "--v", "--verbose"].includes(arg)
-      );
-
+    .fail(async (msg, err, argv) => {
       if (err instanceof ExitProcessError) {
-        if (isVerbose) {
-          Consola.consola.error(err);
-        } else {
-          Consola.consola.error(err.message);
-        }
+        consola.error(err.message);
+        consola.debug(err.stack);
       } else {
         if (err && err instanceof YargsCheckError === false) {
           throw err;
         } else {
-          yargsContext.showHelp();
-          Consola.consola.log(""); // intentional blank line
-          // eslint-disable-next-line no-console
-          console.error(msg);
+          argv.showHelp();
+          consola.log(""); // intentional blank line
+          consola.error(msg);
         }
       }
       process.exit(1);
@@ -85,8 +78,7 @@ export async function cli(args: string[] = process.argv) {
     return await base.parseAsync();
   } catch (err) {
     if (err instanceof ExitProcessError) {
-      const Consola = await import("consola");
-      Consola.consola.error(err);
+      consola.error(err);
     }
   }
 }
