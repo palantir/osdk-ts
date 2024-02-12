@@ -14,38 +14,36 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type { Arguments } from "yargs";
 import type { SiteConfig } from "../../../util/config.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
 export async function logDeployCommandConfigFileOverride(
-  argv: Arguments<SiteDeployArgs>,
+  args: Arguments<SiteDeployArgs>,
   config: SiteConfig | undefined,
 ) {
-  const Consola = await import("consola");
-  const consola = Consola.consola;
-
   if (
-    config?.autoVersion != null && argv.autoVersion !== config?.autoVersion.type
+    config?.autoVersion != null && args.autoVersion !== config?.autoVersion.type
   ) {
     consola.debug(
-      `Overriding "autoVersion" from config file with ${argv.autoVersion}`,
+      `Overriding "autoVersion" from config file with ${args.autoVersion}`,
     );
   }
 
-  if (config?.directory != null && argv.directory !== config?.directory) {
+  if (config?.directory != null && args.directory !== config?.directory) {
     consola.debug(
-      `Overriding "directory" from config file with ${argv.directory}`,
+      `Overriding "directory" from config file with ${args.directory}`,
     );
   }
 
   if (
     config?.autoVersion?.tagPrefix != null
-    && argv.gitTagPrefix != null
-    && argv.gitTagPrefix !== config?.autoVersion.tagPrefix
+    && args.gitTagPrefix != null
+    && args.gitTagPrefix !== config?.autoVersion.tagPrefix
   ) {
     consola.debug(
-      `Overriding "gitTagPrefix" from config file with ${argv.gitTagPrefix}`,
+      `Overriding "gitTagPrefix" from config file with ${args.gitTagPrefix}`,
     );
   }
 }

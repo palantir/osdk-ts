@@ -87,9 +87,6 @@ export async function loadFoundryConfig(): Promise<
   const ajv = new Ajv({ allErrors: true });
   const validate = ajv.compile(CONFIG_FILE_SCHEMA);
 
-  const Consola = await import("consola");
-  const consola = Consola.consola;
-
   const { findUp } = await import("find-up");
   const configFilePath = await findUp(CONFIG_FILE_NAMES);
 

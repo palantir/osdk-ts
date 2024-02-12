@@ -82,14 +82,14 @@ export const command: CommandModule<
         "OR Generate from a stack",
       )
       .check(
-        (argv) => {
-          if (!argv.ontologyPath && !argv.stack) {
+        (args) => {
+          if (!args.ontologyPath && !args.stack) {
             throw new Error(
               "Error: Must specify either ontologyPath or stack and clientId",
             );
           }
 
-          if (argv.version !== "dev" && !isValidSemver(argv.version)) {
+          if (args.version !== "dev" && !isValidSemver(args.version)) {
             throw new Error(
               "Error: Version must be 'dev' or a valid semver version",
             );

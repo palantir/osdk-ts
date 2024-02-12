@@ -80,26 +80,26 @@ const command: CommandModule<
         ["version", "directory", "uploadOnly"],
         "Common Arguments",
       )
-      .check((argv) => {
+      .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
         // So this case is for when nothing is provided.
         if (
-          autoVersion == null && argv.autoVersion == null
-          && argv.version == null
+          autoVersion == null && args.autoVersion == null
+          && args.version == null
         ) {
           throw new YargsCheckError(
             "One of --version or --autoVersion must be specified",
           );
         }
 
-        const autoVersionType = argv.autoVersion ?? autoVersion;
+        const autoVersionType = args.autoVersion ?? autoVersion;
         if (autoVersionType !== "git-describe") {
           throw new YargsCheckError(
             `Only 'git-describe' is supported for autoVersion`,
           );
         }
 
-        const gitTagPrefixValue = argv.gitTagPrefix ?? gitTagPrefix;
+        const gitTagPrefixValue = args.gitTagPrefix ?? gitTagPrefix;
         // Future proofing for when we support other autoVersion types
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
@@ -108,9 +108,9 @@ const command: CommandModule<
         }
 
         return true;
-      }).middleware((argv) =>
+      }).middleware((args) =>
         logDeployCommandConfigFileOverride(
-          argv,
+          args,
           siteConfig,
         )
       );
