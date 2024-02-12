@@ -16,6 +16,7 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type {
+  ActionResults_Edits,
   BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
@@ -162,31 +163,9 @@ export const ActionResponse = {
       ],
     };
     if (response.edits?.type === "edits") {
-      const added = [];
-      const modified = [];
-      for (const edit of response.edits.edits) {
-        if (edit.type === "addObject") {
-          added.push({
-            apiName: edit.objectType,
-            primaryKey: edit.primaryKey,
-            get: () => getObject(client, edit.objectType, edit.primaryKey),
-          });
-        }
-        if (edit.type === "modifyObject") {
-          modified.push({
-            apiName: edit.objectType,
-            primaryKey: edit.primaryKey,
-            get: () => getObject(client, edit.objectType, edit.primaryKey),
-          });
-        }
-      }
       return {
         validation,
-        edits: {
-          type: "edits",
-          added,
-          modified,
-        },
+        ...getEdits(response.edits, client),
       } as ActionResponse<Edits<TAddedObjects, TModifiedObjects>>;
     }
     if (response.edits?.type === "largeScaleEdits") {
@@ -213,31 +192,9 @@ export const BulkActionResponse = {
     response: BatchApplyActionResponseV2,
   ): BulkActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
     if (response.edits?.type === "edits") {
-      const added = [];
-      const modified = [];
-      for (const edit of response.edits.edits) {
-        if (edit.type === "addObject") {
-          added.push({
-            apiName: edit.objectType,
-            primaryKey: edit.primaryKey,
-            get: () => getObject(client, edit.objectType, edit.primaryKey),
-          });
-        }
-        if (edit.type === "modifyObject") {
-          modified.push({
-            apiName: edit.objectType,
-            primaryKey: edit.primaryKey,
-            get: () => getObject(client, edit.objectType, edit.primaryKey),
-          });
-        }
-      }
-      return {
-        edits: {
-          type: "edits",
-          added,
-          modified,
-        },
-      } as BulkActionResponse<Edits<TAddedObjects, TModifiedObjects>>;
+      return getEdits(response.edits, client) as BulkActionResponse<
+        Edits<TAddedObjects, TModifiedObjects>
+      >;
     }
     if (response.edits?.type === "largeScaleEdits") {
       return {
@@ -249,3 +206,34 @@ export const BulkActionResponse = {
     return {} as BulkActionResponse;
   },
 };
+
+function getEdits(
+  response: ActionResults_Edits,
+  client: ClientContext<OntologyDefinition<any>>,
+) {
+  const added = [];
+  const modified = [];
+  for (const edit of response.edits) {
+    if (edit.type === "addObject") {
+      added.push({
+        apiName: edit.objectType,
+        primaryKey: edit.primaryKey,
+        get: () => getObject(client, edit.objectType, edit.primaryKey),
+      });
+    }
+    if (edit.type === "modifyObject") {
+      modified.push({
+        apiName: edit.objectType,
+        primaryKey: edit.primaryKey,
+        get: () => getObject(client, edit.objectType, edit.primaryKey),
+      });
+    }
+  }
+  return {
+    edits: {
+      type: "edits",
+      added,
+      modified,
+    },
+  };
+}
