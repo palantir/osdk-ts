@@ -75,11 +75,11 @@ const command: CommandModule<
       })
       .group(
         ["directory", "version", "uploadOnly"],
-        "Deploy Arguments",
+        "Deploy Options",
       )
       .group(
         ["autoVersion", "gitTagPrefix"],
-        "Auto Version Arguments",
+        "Auto Version Options",
       )
       .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
