@@ -14,7 +14,89 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  OntologyDefinition,
+} from "@osdk/api";
+
+const Task: TaskDef = {
+  type: "object",
+  apiName: "Task",
+  primaryKeyType: "integer",
+  properties: {
+    id: { type: "integer" },
+    name: { type: "string" },
+  },
+  links: {
+    "Todos": {
+      targetType: "Todo",
+      multiplicity: true,
+    },
+    "RP": {
+      targetType: "Person",
+      multiplicity: false,
+    },
+  },
+};
+
+interface TaskDef extends ObjectTypeDefinition<"Task"> {
+  type: "object";
+  apiName: "Task";
+  primaryKeyType: "integer";
+  properties: {
+    id: { type: "integer" };
+    name: { type: "string" };
+  };
+  links: {
+    "Todos": ObjectTypeLinkDefinition<TodoDef, true>;
+    "RP": ObjectTypeLinkDefinition<PersonDef, false>;
+  };
+}
+
+const Todo: TodoDef = {
+  type: "object",
+  apiName: "Todo",
+  primaryKeyType: "integer",
+  properties: {
+    id: { type: "integer" },
+    text: { type: "string" },
+  },
+  links: {},
+};
+
+interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+  type: "object";
+  apiName: "Todo";
+  primaryKeyType: "integer";
+  properties: {
+    id: { type: "integer" };
+    text: { type: "string" };
+  };
+  links: {};
+}
+
+const Person: PersonDef = {
+  type: "object",
+  apiName: "Person",
+  primaryKeyType: "integer",
+  properties: {
+    id: { type: "integer" },
+    name: { type: "string" },
+  },
+  links: {},
+};
+
+interface PersonDef extends ObjectTypeDefinition<"Person"> {
+  type: "object";
+  apiName: "Person";
+  primaryKeyType: "integer";
+  properties: {
+    id: { type: "integer" };
+    name: { type: "string" };
+  };
+  links: {};
+}
 
 export const MockOntology = {
   metadata: {
@@ -23,45 +105,9 @@ export const MockOntology = {
     userAgent: "userAgent",
   },
   objects: {
-    Task: {
-      type: "object",
-      apiName: "Task",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        name: { type: "string" },
-      },
-      links: {
-        "Todos": {
-          targetType: "Todo",
-          multiplicity: true,
-        },
-        "RP": {
-          targetType: "Person",
-          multiplicity: false,
-        },
-      },
-    },
-    Todo: {
-      type: "object",
-      apiName: "Todo",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        text: { type: "string" },
-      },
-      links: {},
-    },
-    Person: {
-      type: "object",
-      apiName: "Person",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer" },
-        name: { type: "string" },
-      },
-      links: {},
-    },
+    Task,
+    Todo,
+    Person,
   },
   actions: {},
   queries: {},

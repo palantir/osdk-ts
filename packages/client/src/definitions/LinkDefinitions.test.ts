@@ -14,92 +14,43 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfacePropertyKeysFrom } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
-import type { PageResult } from "../PageResult.js";
+import type { ObjectSet2 } from "../objectSet/ObjectSet.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
-import type { OsdkObjectLinksObject } from "./LinkDefinitions.js";
+import type {
+  OsdkObjectLinksObject2,
+  SingletonLinkAccessor,
+} from "./LinkDefinitions.js";
 
 describe("LinkDefinitions", () => {
   describe("OsdkObjectLinkObject", () => {
     it("is correctly absent on types with no links", () => {
-      expectTypeOf<OsdkObjectLinksObject<"Todo", typeof MockOntology>>()
+      expectTypeOf<
+        OsdkObjectLinksObject2<typeof MockOntology["objects"]["Todo"]>
+      >()
         .toEqualTypeOf<never>();
     });
 
     it("populates on types with links", () => {
-      expectTypeOf<OsdkObjectLinksObject<"Task", typeof MockOntology>>()
+      type Objects = typeof MockOntology["objects"];
+      type TaskDef = Objects["Task"];
+      type PersonDef = Objects["Person"];
+      type TodoDef = Objects["Todo"];
+
+      expectTypeOf<OsdkObjectLinksObject2<TaskDef>["Todos"]>()
+        .toEqualTypeOf<ObjectSet2<TodoDef>>();
+
+      expectTypeOf<OsdkObjectLinksObject2<TaskDef>["RP"]>()
+        .toEqualTypeOf<SingletonLinkAccessor<PersonDef>>();
+
+      const q: OsdkObjectLinksObject2<TaskDef> = {} as any;
+      q.Todos.definition;
+
+      expectTypeOf<OsdkObjectLinksObject2<TaskDef>>()
         .toEqualTypeOf<
           {
-            Todos: {
-              get: <
-                A extends SelectArg<
-                  typeof MockOntology,
-                  "Todo",
-                  ObjectOrInterfacePropertyKeysFrom<
-                    typeof MockOntology,
-                    "Todo"
-                  >
-                >,
-              >(
-                primaryKey: number,
-                options?: A,
-              ) => OsdkObjectFrom<
-                "Todo",
-                typeof MockOntology,
-                A["select"] extends readonly string[] ? A["select"][number]
-                  : ObjectOrInterfacePropertyKeysFrom<
-                    typeof MockOntology,
-                    "Todo"
-                  >
-              >;
-              fetchPageOrThrow: <
-                A extends FetchPageOrThrowArgs<
-                  typeof MockOntology,
-                  "Todo",
-                  ObjectOrInterfacePropertyKeysFrom<typeof MockOntology, "Todo">
-                >,
-              >(options?: A | undefined) => Promise<
-                PageResult<
-                  OsdkObjectFrom<
-                    "Todo",
-                    typeof MockOntology,
-                    A["select"] extends readonly string[] ? A["select"][number]
-                      : ObjectOrInterfacePropertyKeysFrom<
-                        typeof MockOntology,
-                        "Todo"
-                      >
-                  >
-                >
-              >;
-            };
-            RP: {
-              get: <
-                A extends SelectArg<
-                  typeof MockOntology,
-                  "Person",
-                  ObjectOrInterfacePropertyKeysFrom<
-                    typeof MockOntology,
-                    "Person"
-                  >
-                >,
-              >(
-                options?: A,
-              ) => OsdkObjectFrom2<
-                "Person",
-                typeof MockOntology,
-                A["select"] extends readonly string[] ? A["select"][number]
-                  : ObjectOrInterfacePropertyKeysFrom<
-                    typeof MockOntology,
-                    "Person"
-                  >
-              >;
-            };
+            Todos: ObjectSet2<TodoDef>;
+            RP: SingletonLinkAccessor<PersonDef>;
           }
         >();
     });

@@ -14,9 +14,79 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  OntologyDefinition,
+} from "@osdk/api";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+
+const Task: TaskDef = {
+  type: "object",
+  apiName: "Task",
+  primaryKeyType: "integer",
+  properties: {
+    id: { type: "integer", nullable: true },
+  },
+  links: {
+    linkedTodos: {
+      multiplicity: true,
+      targetType: "Todo",
+    },
+  },
+};
+
+const Todo: TodoDef = {
+  type: "object",
+  apiName: "Todo",
+  primaryKeyType: "string",
+  description: "A todo object",
+  properties: {
+    id: { type: "string", nullable: true, description: "The id" },
+    body: { type: "string", nullable: true },
+    class: { type: "string", nullable: true },
+    complete: { type: "boolean", nullable: true },
+    tags: { type: "string", multiplicity: true, nullable: true },
+    points: { type: "integer", nullable: true },
+  },
+  links: {
+    linkedTask: {
+      multiplicity: false,
+      targetType: "Task",
+    },
+  },
+};
+
+interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+  type: "object";
+  apiName: "Todo";
+  primaryKeyType: "string";
+  description: "A todo object";
+  properties: {
+    id: { type: "string"; nullable: true; description: "The id" };
+    body: { type: "string"; nullable: true };
+    class: { type: "string"; nullable: true };
+    complete: { type: "boolean"; nullable: true };
+    tags: { type: "string"; multiplicity: true; nullable: true };
+    points: { type: "integer"; nullable: true };
+  };
+  links: {
+    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
+  };
+}
+
+interface TaskDef extends ObjectTypeDefinition<"Task"> {
+  type: "object";
+  apiName: "Task";
+  primaryKeyType: "integer";
+  properties: {
+    id: { type: "integer"; nullable: true };
+  };
+  links: {
+    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
+  };
+}
 
 export const MockOntology = {
   metadata: {
@@ -25,44 +95,8 @@ export const MockOntology = {
     userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
   },
   objects: {
-    Task: {
-      type: "object",
-      apiName: "Task",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer", nullable: true },
-      },
-      links: {
-        linkedTodos: {
-          multiplicity: true,
-          targetType: "Todo",
-        },
-      },
-    },
-    Todo: {
-      type: "object",
-      apiName: "Todo",
-      primaryKeyType: "string",
-      description: "A todo object",
-      properties: {
-        id: {
-          type: "string",
-          nullable: true,
-          description: "The id of the Todo Object",
-        },
-        body: { type: "string", nullable: true },
-        class: { type: "string", nullable: true },
-        complete: { type: "boolean", nullable: true },
-        tags: { type: "string", multiplicity: true, nullable: true },
-        points: { type: "integer", nullable: true },
-      },
-      links: {
-        linkedTask: {
-          multiplicity: false,
-          targetType: "Task",
-        },
-      },
-    },
+    Task,
+    Todo,
     ObjectTypeWithAllPropertyTypes,
     ObjectTypeWithReservedNames,
   },

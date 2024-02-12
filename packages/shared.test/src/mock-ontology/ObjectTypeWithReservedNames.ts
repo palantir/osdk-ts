@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from "@osdk/api";
 
-export const ObjectTypeWithReservedNames = {
+export interface ObjectTypeWithReservedNamesDef
+  extends ObjectTypeDefinition<"ObjectTypeWithReservedNames">
+{
+  type: "object";
+  apiName: "ObjectTypeWithReservedNames";
+  primaryKeyType: "integer";
+  links: {
+    const: ObjectTypeLinkDefinition<ObjectTypeWithReservedNamesDef, false>;
+  };
+  properties: {
+    catch: {
+      multiplicity: false;
+      type: "integer";
+    };
+  };
+}
+
+export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
   type: "object",
   apiName: "ObjectTypeWithReservedNames",
   primaryKeyType: "integer",
@@ -32,6 +49,4 @@ export const ObjectTypeWithReservedNames = {
       type: "integer",
     },
   },
-} satisfies ObjectTypeDefinition<
-  "ObjectTypeWithReservedNames"
->;
+};

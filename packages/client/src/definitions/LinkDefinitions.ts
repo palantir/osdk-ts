@@ -119,16 +119,18 @@ export type OsdkObjectLinksEntry2<
   O extends ObjectTypeDefinition<any>,
   L extends ObjectTypeLinkKeysFrom2<O>,
 > = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
-    M extends false ? {
-        /** Load the linked object */
-        get: <A extends SelectArg2<T>>(
-          options?: A,
-        ) => OsdkObjectFrom2<
-          T,
-          A["select"] extends readonly string[] ? A["select"][number]
-            : ObjectOrInterfacePropertyKeysFrom2<T>
-        >;
-      }
+    M extends false ? SingletonLinkAccessor<T>
       : ObjectSet2<T>
   )
   : never;
+
+// export type Q<O, >
+
+export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
+  /** Load the linked object */
+  get: <A extends SelectArg2<T>>(options?: A) => OsdkObjectFrom2<
+    T,
+    A["select"] extends readonly string[] ? A["select"][number]
+      : ObjectOrInterfacePropertyKeysFrom2<T>
+  >;
+}
