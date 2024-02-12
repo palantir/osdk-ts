@@ -27,14 +27,14 @@ const command: CommandModule<
   CommonSiteArgs
 > = {
   command: "version",
-  describe: "Manage application version",
+  describe: "Manage site versions",
   builder: (argv) => {
     return argv
       .command(list)
+      .command(get)
       .command(set)
       .command(unset)
       .command(deleteCmd)
-      .command(get)
       .demandCommand();
   },
   handler: async (args) => {},

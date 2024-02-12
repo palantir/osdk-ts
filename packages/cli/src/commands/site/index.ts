@@ -40,7 +40,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           ...application
             ? { default: application }
             : { demandOption: true },
-          description: "Application RID",
+          description: "Application resource identifier (rid)",
         },
         foundryUrl: {
           coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
@@ -48,18 +48,17 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           ...foundryUrl
             ? { default: foundryUrl }
             : { demandOption: true },
-          description:
-            "Foundry Stack URL with Protocol (e.g. https://example.palantirfoundry.com)",
+          description: "Foundry URL including protocol",
         },
         token: {
           type: "string",
           conflicts: "tokenFile",
-          description: "Foundry API Token",
+          description: "Foundry API token",
         },
         tokenFile: {
           type: "string",
           conflicts: "token",
-          description: "Path to a file containing your Foundry API Token",
+          description: "Path to file containing Foundry API token",
         },
       })
       .group(
