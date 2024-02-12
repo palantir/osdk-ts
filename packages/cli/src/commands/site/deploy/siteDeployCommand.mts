@@ -117,26 +117,30 @@ export default async function siteDeployCommand(
       { siteVersion: { version: siteVersion } },
     );
     consola.success(`Deployed ${siteVersion} successfully`);
-    consola.box({
-      message: `View live site:\n\n${
-        colorize(
-          "green",
-          `https://${domain}`,
-        )
-      }`,
-      style: BOX_STYLES,
-    });
+    if (domain != null) {
+      consola.box({
+        message: `View live site:\n\n${
+          colorize(
+            "green",
+            `https://${domain}`,
+          )
+        }`,
+        style: BOX_STYLES,
+      });
+    }
   } else {
     consola.debug("Upload only mode enabled, skipping deployment");
-    consola.box({
-      message: `Preview link:\n\n${
-        colorize(
-          "green",
-          `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
-        )
-      }`,
-      style: BOX_STYLES,
-    });
+    if (domain != null) {
+      consola.box({
+        message: `Preview link:\n\n${
+          colorize(
+            "green",
+            `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
+          )
+        }`,
+        style: BOX_STYLES,
+      });
+    }
   }
 }
 
@@ -165,7 +169,7 @@ function getFirstSiteDomain(
   domains: Array<SiteDomainInfo>,
 ): string | undefined {
   if (domains.length === 0) {
-    consola.debug("No registered domains for site found");
+    consola.warn("No registered domains for site found");
     return undefined;
   }
   switch (domains[0].type) {
