@@ -160,20 +160,6 @@ export type BulkActionReturnType<
   Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
 >;
 
-// export type ActionReturnType<
-//   O extends OntologyDefinition<any>,
-//   A extends keyof O["actions"],
-//   Op extends ActionExecutionOptions,
-//   P extends ActionArgs<O, A> | ActionArgs<O, A>[] | undefined,
-// > = P extends ActionArgs<O, A>[] ? BulkActionResponseFromOptions<
-//     Op,
-//     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-//   >
-//   : ActionResponseFromOptions<
-//     Op,
-//     Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
-//   >;
-
 export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],

@@ -98,7 +98,7 @@ export async function generateActions(
   );
 }
 
-function getTypeScriptTypeFromDataType(
+export function getTypeScriptTypeFromDataType(
   actionParameter: ActionParameterType,
   importedObjects: Set<string>,
 ): string {

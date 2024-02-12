@@ -50,12 +50,11 @@ export function createActionProxy<
 
           return async function<
             Op extends ActionExecutionOptions,
-            P extends ActionArgs<O, typeof p>,
           >(
-            params: P,
+            params: ActionArgs<O, typeof p>,
             options?: Op,
           ): Promise<WrappedActionReturnType<O, typeof p, Op>> {
-            return executeAction<O, typeof p, Op, P>(
+            return executeAction<O, typeof p, Op>(
               client,
               p,
               params,
@@ -95,7 +94,7 @@ export function createBulkActionProxy<
             return async function<Op extends BulkActionExecutionOptions>(
               options?: Op,
             ): Promise<WrappedBulkActionReturnType<O, typeof p, Op>> {
-              return executeBatchAction<O, typeof p, Op, undefined>(
+              return executeBatchAction<O, typeof p, Op>(
                 client,
                 p,
                 undefined,
@@ -106,12 +105,11 @@ export function createBulkActionProxy<
 
           return async function<
             Op extends BulkActionExecutionOptions,
-            P extends ActionArgs<O, typeof p>[],
           >(
-            params: P,
+            params: ActionArgs<O, typeof p>[],
             options?: Op,
           ): Promise<WrappedBulkActionReturnType<O, typeof p, Op>> {
-            return executeBatchAction<O, typeof p, Op, P>(
+            return executeBatchAction<O, typeof p, Op>(
               client,
               p,
               params,

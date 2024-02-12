@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ActionParameterType } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { getModifiedEntityTypes } from "../shared/getEditedEntities";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { getTypeScriptTypeFromDataType } from "./generateActions";
 
 export async function generateBulkActions(
   ontology: WireOntologyDefinition,
@@ -97,43 +97,4 @@ export async function generateBulkActions(
     }
   `),
   );
-}
-
-function getTypeScriptTypeFromDataType(
-  actionParameter: ActionParameterType,
-  importedObjects: Set<string>,
-): string {
-  switch (actionParameter.type) {
-    case "objectSet": {
-      const objectType = actionParameter.objectTypeApiName!;
-      importedObjects.add(objectType);
-      return `ObjectSet<${objectType}>`;
-    }
-    case "object": {
-      const objectType = actionParameter.objectTypeApiName!;
-      importedObjects.add(objectType);
-      return `${objectType} | ${objectType}["__primaryKey"]`;
-    }
-    case "array":
-      return `Array<${
-        getTypeScriptTypeFromDataType(actionParameter.subType, importedObjects)
-      }>`;
-    case "string":
-      return `string`;
-    case "boolean":
-      return `boolean`;
-    case "attachment":
-      return `Attachment`;
-    case "date":
-      return `LocalDate`;
-    case "double":
-    case "integer":
-    case "long":
-      return `number`;
-    case "timestamp":
-      return `Timestamp`;
-    default:
-      const _: never = actionParameter;
-      throw new Error(`Unsupported action parameter type: ${actionParameter}`);
-  }
 }

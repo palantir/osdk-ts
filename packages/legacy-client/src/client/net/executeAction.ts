@@ -44,11 +44,10 @@ export async function executeAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends ActionExecutionOptions,
-  P extends ActionArgs<O, A> | undefined = undefined,
 >(
   client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
-  params?: P,
+  params?: ActionArgs<O, A>,
   options?: Op,
 ): WrappedActionReturnType<O, A, Op> {
   return wrapResult(
@@ -82,11 +81,10 @@ export async function executeBatchAction<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends BulkActionExecutionOptions,
-  P extends ActionArgs<O, A>[] | undefined = undefined,
 >(
   client: ClientContext<OntologyDefinition<any>>,
   actionApiName: A,
-  params?: P,
+  params?: ActionArgs<O, A>[],
   options?: Op,
 ): WrappedBulkActionReturnType<O, A, Op> {
   return wrapResult(
