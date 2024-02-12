@@ -23,8 +23,11 @@ import stableStringify from "json-stable-stringify";
 import type {
   DefaultBodyType,
   MockedRequest,
+  PathParams,
   ResponseComposition,
+  RestContext,
   RestHandler,
+  RestRequest,
 } from "msw";
 import { rest } from "msw";
 import type { BaseAPIError } from "../BaseError";
@@ -76,77 +79,53 @@ export const actionHandlers: RestHandler<
   rest.post(
     "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actions/:actionType/apply",
     authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<SyncApplyActionResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        const body = await req.text();
-        const parsedBody = JSON.parse(body);
-        const ontologyApiName = req.params.ontologyApiName;
-        const actionType = req.params.actionType;
-
-        if (
-          typeof ontologyApiName !== "string" || typeof actionType !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
-
-        const actionResponse =
-          actionResponseMap[actionType][stableStringify(parsedBody)];
-        if (
-          req.params.ontologyApiName === defaultOntology.apiName
-          && actionResponse
-        ) {
-          return res(ctx.json(actionResponse));
-        }
-
-        return res(ctx.status(400), ctx.json(ApplyActionFailedError));
-      },
+      handleAction<SyncApplyActionResponseV2>,
     ),
   ),
+
   /**
    * Apply a Batch Action
    */
   rest.post(
     "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actions/:actionType/applyBatch",
     authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<
-          BatchApplyActionResponse | BaseAPIError
-        >,
-        ctx,
-      ) => {
-        const body = await req.text();
-        const parsedBody = JSON.parse(body);
-        const ontologyApiName = req.params.ontologyApiName;
-        const actionType = req.params.actionType;
-
-        if (
-          typeof ontologyApiName !== "string" || typeof actionType !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
-
-        const actionResponse =
-          actionResponseMap[actionType][stableStringify(parsedBody)];
-
-        if (
-          req.params.ontologyApiName === defaultOntology.apiName
-          && actionResponse
-        ) {
-          return res(ctx.json(actionResponse));
-        }
-
-        return res(ctx.status(400), ctx.json(ApplyActionFailedError));
-      },
+      handleAction<BatchApplyActionResponse>,
     ),
   ),
 ];
+
+async function handleAction<
+  T extends BatchApplyActionResponse | SyncApplyActionResponseV2,
+>(
+  req: RestRequest<DefaultBodyType, PathParams<string>>,
+  res: ResponseComposition<
+    T | BaseAPIError
+  >,
+  ctx: RestContext,
+) {
+  const body = await req.text();
+  const parsedBody = JSON.parse(body);
+  const ontologyApiName = req.params.ontologyApiName;
+  const actionType = req.params.actionType;
+
+  if (
+    typeof ontologyApiName !== "string" || typeof actionType !== "string"
+  ) {
+    return res(
+      ctx.status(400),
+      ctx.json(InvalidRequest("Invalid parameters")),
+    );
+  }
+
+  const actionResponse =
+    actionResponseMap[actionType][stableStringify(parsedBody)];
+
+  if (
+    req.params.ontologyApiName === defaultOntology.apiName
+    && actionResponse
+  ) {
+    return res(ctx.json(actionResponse));
+  }
+
+  return res(ctx.status(400), ctx.json(ApplyActionFailedError));
+}
