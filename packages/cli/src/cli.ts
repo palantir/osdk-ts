@@ -28,7 +28,7 @@ import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
-    .wrap(Math.min(150, process.stdout.columns))
+    .wrap(Math.min(150, yargs().terminalWidth()))
     .env("OSDK")
     .version(false)
     .option(
