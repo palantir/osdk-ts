@@ -26,7 +26,7 @@ export const WeatherStation: WeatherStationDef = {
   apiName: 'WeatherStation',
   description: 'Weather Station',
   primaryKeyType: 'string',
-  links: {} as const,
+  links: {},
   properties: {
     stationId: {
       multiplicity: false,

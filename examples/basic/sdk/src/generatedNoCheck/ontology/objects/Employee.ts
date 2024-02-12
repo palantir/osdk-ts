@@ -69,7 +69,7 @@ export const Employee: EmployeeDef = {
       multiplicity: true,
       targetType: 'Employee',
     },
-  } as const,
+  },
   properties: {
     adUsername: {
       multiplicity: false,

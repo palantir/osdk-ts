@@ -31,7 +31,7 @@ export const Todo: TodoDef = {
   apiName: 'Todo',
   description: 'Its a todo item.',
   primaryKeyType: 'string',
-  links: {} as const,
+  links: {},
   properties: {
     id: {
       multiplicity: false,

@@ -43,7 +43,7 @@ export const Person: PersonDef = {
       multiplicity: true,
       targetType: 'Person',
     },
-  } as const,
+  },
   properties: {
     email: {
       multiplicity: false,

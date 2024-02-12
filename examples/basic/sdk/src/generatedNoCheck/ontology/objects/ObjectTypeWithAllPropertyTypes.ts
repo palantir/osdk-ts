@@ -170,7 +170,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
   primaryKeyType: 'integer',
-  links: {} as const,
+  links: {},
   properties: {
     id: {
       multiplicity: false,

@@ -47,7 +47,7 @@ export const Todo: TodoDef = {
       multiplicity: false,
       targetType: 'Person',
     },
-  } as const,
+  },
   properties: {
     id: {
       multiplicity: false,

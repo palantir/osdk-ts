@@ -68,7 +68,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       : ""
   }
       primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
-      links: ${JSON.stringify(definition.links, null, 2)} as const,
+      links: ${JSON.stringify(definition.links, null, 2)},
       properties: ${JSON.stringify(definition.properties, null, 2)},
     };`;
 }
