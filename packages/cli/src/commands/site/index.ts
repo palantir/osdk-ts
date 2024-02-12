@@ -68,14 +68,14 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
       )
       .command(version)
       .command(deploy)
-      .check((argv) => {
-        if (!argv.foundryUrl.startsWith("https://")) {
+      .check((args) => {
+        if (!args.foundryUrl.startsWith("https://")) {
           throw new YargsCheckError("foundryUrl must start with https://");
         }
         return true;
       })
-      .middleware((argv) =>
-        logSiteCommandConfigFileOverride(argv, config?.foundryConfig)
+      .middleware((args) =>
+        logSiteCommandConfigFileOverride(args, config?.foundryConfig)
       )
       .demandCommand();
   },
