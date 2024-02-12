@@ -16,6 +16,7 @@
 
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
+import { extname } from "node:path";
 import { ExitProcessError } from "../ExitProcessError.js";
 
 export interface GitDescribeAutoVersionConfig {
@@ -42,6 +43,10 @@ export interface LoadedFoundryConfig {
 
 const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
+];
+
+const SUPPORTED_EXTENSIONS: string[] = [
+  ".json",
 ];
 
 const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
@@ -91,10 +96,17 @@ export async function loadFoundryConfig(): Promise<
   const configFilePath = await findUp(CONFIG_FILE_NAMES);
 
   if (configFilePath) {
+    const extension = extname(configFilePath);
+    if (!SUPPORTED_EXTENSIONS.includes(extension)) {
+      throw new ExitProcessError(
+        2,
+        `Unsupported file extension: ${extension} for config file. Only the following extensions are allowed ${SUPPORTED_EXTENSIONS}`,
+      );
+    }
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
-      foundryConfig = JSON.parse(fileContent);
+      foundryConfig = parseConfigFile(fileContent, extension);
     } catch {
       throw new ExitProcessError(
         2,
@@ -115,4 +127,14 @@ export async function loadFoundryConfig(): Promise<
   }
 
   return undefined;
+}
+
+function parseConfigFile(
+  fileContent: string,
+  extension: string,
+): FoundryConfig {
+  if (extension === ".json") {
+    return JSON.parse(fileContent);
+  }
+  throw Error();
 }
