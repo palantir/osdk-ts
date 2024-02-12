@@ -15,32 +15,20 @@
  */
 
 import type {
-  InterfaceKeysFrom,
-  InterfacePropertyDefinitionFrom,
-  InterfacePropertyKeysFrom,
+  InterfaceDefinition,
+  InterfacePropertyKeysFrom2,
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
-import type { OsdkObjectLinksObject2 } from "./definitions/LinkDefinitions.js";
+import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 
 export type OsdkObjectPrimaryKeyType<
-  TObjectName,
-  O extends OntologyDefinition<any>,
-> = TObjectName extends ObjectTypeKeysFrom<O> ? WirePropertyTypes[
-    ObjectTypeDefinitionFrom<O, TObjectName>["primaryKeyType"]
-  ]
-  : never;
-
-export type OsdkObjectPrimaryKeyType2<
   O extends ObjectTypeDefinition<any>,
 > = WirePropertyTypes[O["primaryKeyType"]];
 
-export type OsdkObjectFrom2<
+export type OsdkObjectFrom<
   O extends ObjectTypeDefinition<any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<O> =
     ObjectOrInterfacePropertyKeysFrom2<O>,
@@ -52,55 +40,27 @@ export type OsdkObjectFrom2<
   }
   & {
     __apiName: O["apiName"];
-    __primaryKey: OsdkObjectPrimaryKeyType2<O>;
+    __primaryKey: OsdkObjectPrimaryKeyType<O>;
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
      * as always optional to avoid breaking changes.
      */
     __rid?: string;
-    $link: OsdkObjectLinksObject2<O>;
+    $link: OsdkObjectLinksObject<O>;
   }; // TODO
 
-// export type OsdkObjectFrom<
-//   T_ObjectTypeKey extends ObjectTypeKeysFrom<T_Ontology>,
-//   T_Ontology extends OntologyDefinition<any>,
-//   T_PropertyKeys extends ObjectTypePropertyKeysFrom<
-//     T_Ontology,
-//     T_ObjectTypeKey
-//   > = ObjectTypePropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
-// > =
-//   & {
-//     [P in T_PropertyKeys]: OsdkObjectPropertyType<
-//       ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
-//     >;
-//   }
-//   & {
-//     __apiName: T_ObjectTypeKey;
-//     __primaryKey: OsdkObjectPrimaryKeyType<T_ObjectTypeKey, T_Ontology>;
-//     /**
-//      * Future versions will require explicitly asking for this field. For now we are marking
-//      * as always optional to avoid breaking changes.
-//      */
-//     __rid?: string;
-
-//     $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
-//   }; // TODO
-
 export type OsdkInterfaceFrom<
-  T_InterfaceKey extends InterfaceKeysFrom<T_Ontology>,
-  T_Ontology extends OntologyDefinition<any>,
-  T_PropertyKeys extends InterfacePropertyKeysFrom<
-    T_Ontology,
-    T_InterfaceKey
-  > = InterfacePropertyKeysFrom<T_Ontology, T_InterfaceKey>,
+  Q extends InterfaceDefinition<any, any>,
+  T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
+    InterfacePropertyKeysFrom2<Q>,
 > =
   & {
     [P in T_PropertyKeys]: OsdkObjectPropertyType<
-      InterfacePropertyDefinitionFrom<T_Ontology, T_InterfaceKey, P>
+      Q["properties"][P]
     >;
   }
   & {
-    __apiName: T_InterfaceKey;
+    __apiName: Q["apiName"];
     __primaryKey: unknown;
     // $uniqueId: string; // will be dynamic
     /**

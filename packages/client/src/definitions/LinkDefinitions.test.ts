@@ -18,7 +18,7 @@ import { describe, expectTypeOf, it } from "vitest";
 import type { MockOntology } from "../util/test/mockOntology.js";
 import type {
   MultitonLinkAccessor,
-  OsdkObjectLinksObject2,
+  OsdkObjectLinksObject,
   SingletonLinkAccessor,
 } from "./LinkDefinitions.js";
 
@@ -26,7 +26,7 @@ describe("LinkDefinitions", () => {
   describe("OsdkObjectLinkObject", () => {
     it("is correctly absent on types with no links", () => {
       expectTypeOf<
-        OsdkObjectLinksObject2<typeof MockOntology["objects"]["Todo"]>
+        OsdkObjectLinksObject<typeof MockOntology["objects"]["Todo"]>
       >()
         .toEqualTypeOf<never>();
     });
@@ -37,16 +37,16 @@ describe("LinkDefinitions", () => {
       type PersonDef = Objects["Person"];
       type TodoDef = Objects["Todo"];
 
-      expectTypeOf<OsdkObjectLinksObject2<TaskDef>["Todos"]>()
+      expectTypeOf<OsdkObjectLinksObject<TaskDef>["Todos"]>()
         .toEqualTypeOf<MultitonLinkAccessor<TodoDef>>();
 
-      expectTypeOf<OsdkObjectLinksObject2<TaskDef>["RP"]>()
+      expectTypeOf<OsdkObjectLinksObject<TaskDef>["RP"]>()
         .toEqualTypeOf<SingletonLinkAccessor<PersonDef>>();
 
-      const q: OsdkObjectLinksObject2<TaskDef> = {} as any;
+      const q: OsdkObjectLinksObject<TaskDef> = {} as any;
       q.Todos.definition;
 
-      expectTypeOf<OsdkObjectLinksObject2<TaskDef>>()
+      expectTypeOf<OsdkObjectLinksObject<TaskDef>>()
         .toEqualTypeOf<
           {
             Todos: MultitonLinkAccessor<TodoDef>;

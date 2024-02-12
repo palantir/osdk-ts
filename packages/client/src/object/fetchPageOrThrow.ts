@@ -25,7 +25,7 @@ import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
@@ -66,7 +66,7 @@ export async function fetchPageOrThrow<
   },
 ): Promise<
   PageResult<
-    OsdkObjectFrom2<
+    OsdkObjectFrom<
       O["objects"][T],
       A["select"] extends readonly string[] ? A["select"][number]
         : ObjectOrInterfacePropertyKeysFrom2<O["objects"][T]>

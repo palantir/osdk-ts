@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
-import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 import type { FetchPageOrThrowArgs2 } from "./fetchPageOrThrow.js";
@@ -41,7 +41,7 @@ export async function pageLinkedObjectsOrThrow<
   options: A,
 ): Promise<
   PageResult<
-    OsdkObjectFrom2<
+    OsdkObjectFrom<
       Q,
       A["select"] extends readonly string[] ? A["select"][number]
         : ObjectOrInterfacePropertyKeysFrom2<Q>
@@ -68,6 +68,6 @@ export async function pageLinkedObjectsOrThrow<
 
   return {
     nextPageToken: page.nextPageToken,
-    data: page.data as OsdkObjectFrom2<Q>[],
+    data: page.data as OsdkObjectFrom<Q>[],
   };
 }

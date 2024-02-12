@@ -42,7 +42,7 @@ import {
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
@@ -437,7 +437,7 @@ async function convertFoundryToOsdkObjects<
   client: ClientContext<O>,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Promise<Array<OsdkObjectFrom2<O["objects"][K]>>> {
+): Promise<Array<OsdkObjectFrom<O["objects"][K]>>> {
   const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
@@ -465,7 +465,7 @@ async function convertFoundryToOsdkObjects<
 
   convertWireToOsdkObjects(client, osdkObjects);
 
-  return osdkObjects as OsdkObjectFrom2<O["objects"][K]>[];
+  return osdkObjects as OsdkObjectFrom<O["objects"][K]>[];
 }
 
 export type ObjectPropertyMapping = {

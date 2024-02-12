@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 
 export type ObjectSetListener<
   O extends OntologyDefinition<any>,
@@ -25,7 +25,7 @@ export type ObjectSetListener<
     /**
      * Specific objects have changed and can be immediately updated
      */
-    onChange: (objects: Array<OsdkObjectFrom2<O["objects"][K]>>) => void;
+    onChange: (objects: Array<OsdkObjectFrom<O["objects"][K]>>) => void;
 
     /**
      * The ObjectSet has become outdated and should be re-fetched in its entirety.

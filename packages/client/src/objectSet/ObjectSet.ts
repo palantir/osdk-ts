@@ -15,7 +15,7 @@
  */
 
 import type {
-  InterfaceKeysFrom,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
@@ -24,7 +24,7 @@ import type {
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { FetchPageOrThrowArgs2 } from "../object/fetchPageOrThrow.js";
-import type { OsdkInterfaceFrom, OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
+import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
@@ -40,7 +40,7 @@ export interface ObjectSet2<O extends ObjectTypeDefinition<any>> {
     args?: FetchPageOrThrowArgs2<O, S>,
   ) => Promise<
     PageResult<
-      OsdkObjectFrom2<O, S>
+      OsdkObjectFrom<O, S>
     >
   >;
 }
@@ -61,11 +61,11 @@ export interface BaseObjectSet<
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   >(
-    args?: FetchPageOrThrowArgs2<O["objects"][K], L>,
+    args?: FetchPageOrThrowArgs2<Q, L>,
   ) => Promise<
     PageResult<
-      K extends InterfaceKeysFrom<O> ? OsdkInterfaceFrom<K, O, L>
-        : OsdkObjectFrom2<O["objects"][K], L>
+      Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L>
+        : OsdkObjectFrom<O["objects"][K], L>
     >
   >;
 

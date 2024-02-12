@@ -20,7 +20,7 @@ import type { Office } from "./generatedNoCheck/ontology/objects.js";
 import { Employee } from "./generatedNoCheck/ontology/objects.js";
 import type { Client } from "./index.js";
 import type { ObjectSet2 } from "./objectSet/ObjectSet.js";
-import type { OsdkObjectFrom2 } from "./OsdkObjectFrom.js";
+import type { OsdkObjectFrom } from "./OsdkObjectFrom.js";
 
 describe("client", () => {
   it("can be called with an object definition", async () => {
@@ -32,14 +32,14 @@ describe("client", () => {
 
     const result = await objSet.fetchPageOrThrow();
     expectTypeOf<typeof result.data[0]>().toEqualTypeOf<
-      OsdkObjectFrom2<
+      OsdkObjectFrom<
         typeof Employee
       >
     >();
 
     const office = await result.data[0].$link.officeLink.get();
     expectTypeOf<typeof office>().toEqualTypeOf<
-      OsdkObjectFrom2<typeof Office>
+      OsdkObjectFrom<typeof Office>
     >();
   });
 });
