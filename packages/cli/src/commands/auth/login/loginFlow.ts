@@ -29,7 +29,7 @@ import { isTokenErrorResponse } from "./token.js";
 const BROWSER_PROMPT_TIME_MS = 60 * 1000;
 
 export default async function invokeLoginFlow(args: LoginArgs) {
-  consola.start(`Authenticating using application id: ${args.applicationId}`);
+  consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;
   let resolve: (value: string) => void;
@@ -54,7 +54,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
   });
 
   server.listen(port);
-  const clientId = args.applicationId;
+  const clientId = args.clientId;
   const state = generateRandomString();
   const codeVerifier = generateRandomString();
   const codeChallenge = await generateCodeChallenge(codeVerifier);

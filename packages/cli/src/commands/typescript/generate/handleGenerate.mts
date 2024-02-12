@@ -65,7 +65,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     & { foundryUrl: string; clientId: string };
 
   const token = await invokeLoginFlow({
-    applicationId: clientId,
+    clientId,
     foundryUrl,
     verbose: 0,
   });

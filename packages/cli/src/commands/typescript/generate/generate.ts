@@ -46,7 +46,7 @@ export const command: CommandModule<
             demandOption: false,
             conflicts: "ontologyPath",
             implies: "clientId",
-            alias: "stack", // For backwards compatibility
+            alias: "stack", // for backwards compatibility
           },
           clientId: {
             description: "The application's client id",
