@@ -24,7 +24,7 @@ import type {
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export async function getLinkedObjectByPkOrThrow<
@@ -56,5 +56,5 @@ export async function getLinkedObjectByPkOrThrow<
 
   const objects = [object];
   convertWireToOsdkObjects(client, objects);
-  return objects[0] as OsdkObjectFrom<T, O>;
+  return objects[0] as OsdkObjectFrom2<O["objects"][T]>;
 }

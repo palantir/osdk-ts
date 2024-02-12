@@ -44,9 +44,8 @@ export type ObjectOrInterfacePropertyKeysFrom<
   : ObjectTypePropertyKeysFrom<O, K>;
 
 export type ObjectOrInterfacePropertyKeysFrom2<
-  O extends ObjectTypeDefinition<any>,
-> = O extends ObjectTypeDefinition<any> ? keyof O["properties"] & string
-  : never;
+  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+> = keyof O["properties"] & string;
 
 export type ObjectOrInterfaceDefinitionFrom<
   O extends OntologyDefinition<any, any>,

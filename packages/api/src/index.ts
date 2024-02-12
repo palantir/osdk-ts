@@ -29,6 +29,7 @@ export type {
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
+  InterfacePropertyKeysFrom2,
 } from "./ontology/InterfaceDefinition";
 export type {
   ObjectOrInterfaceDefinition,

@@ -16,18 +16,18 @@
 
 import type {
   ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
-import type { SelectArg } from "./fetchPageOrThrow.js";
+import type { SelectArg2 } from "./fetchPageOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 export async function getLinkedObjectOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
-  L extends ObjectTypeLinkKeysFrom<O, T> & string,
-  S extends SelectArg<O, T>["select"],
+  L extends ObjectTypeLinkKeysFrom2<O["objects"][T]> & string,
+  S extends SelectArg2<O["objects"][T]>["select"],
 >(
   client: ClientContext<O>,
   sourceApiName: T,

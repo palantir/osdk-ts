@@ -15,9 +15,9 @@
  */
 
 import { describe, expectTypeOf, it } from "vitest";
-import type { ObjectSet2 } from "../objectSet/ObjectSet.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
 import type {
+  MultitonLinkAccessor,
   OsdkObjectLinksObject2,
   SingletonLinkAccessor,
 } from "./LinkDefinitions.js";
@@ -38,7 +38,7 @@ describe("LinkDefinitions", () => {
       type TodoDef = Objects["Todo"];
 
       expectTypeOf<OsdkObjectLinksObject2<TaskDef>["Todos"]>()
-        .toEqualTypeOf<ObjectSet2<TodoDef>>();
+        .toEqualTypeOf<MultitonLinkAccessor<TodoDef>>();
 
       expectTypeOf<OsdkObjectLinksObject2<TaskDef>["RP"]>()
         .toEqualTypeOf<SingletonLinkAccessor<PersonDef>>();
@@ -49,7 +49,7 @@ describe("LinkDefinitions", () => {
       expectTypeOf<OsdkObjectLinksObject2<TaskDef>>()
         .toEqualTypeOf<
           {
-            Todos: ObjectSet2<TodoDef>;
+            Todos: MultitonLinkAccessor<TodoDef>;
             RP: SingletonLinkAccessor<PersonDef>;
           }
         >();

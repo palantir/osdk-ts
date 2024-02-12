@@ -30,6 +30,10 @@ export type InterfacePropertyKeysFrom<
   K extends InterfaceKeysFrom<O>,
 > = keyof InterfaceDefinitionFrom<O, K>["properties"] & string;
 
+export type InterfacePropertyKeysFrom2<
+  I extends InterfaceDefinition<any, any>,
+> = keyof I["properties"] & string;
+
 export type InterfacePropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,
   K extends InterfaceKeysFrom<O>,

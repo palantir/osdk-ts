@@ -18,7 +18,7 @@ import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs2 } from "../object/fetchPageOrThrow.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
@@ -63,10 +63,7 @@ export function createObjectSet<
     //   throw "TODO";
     // },
     fetchPageOrThrow: async (
-      args?: FetchPageOrThrowArgs<
-        O,
-        K
-      >,
+      args?: FetchPageOrThrowArgs2<O["objects"][K]>,
     ) => {
       return fetchPageOrThrow(
         clientCtx,

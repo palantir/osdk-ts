@@ -70,6 +70,7 @@ async function runTests() {
     if (interfaceImplementationComplete) {
       const interfaceResults = await client.objects.SimpleInterface
         .fetchPageOrThrow();
+
       interfaceResults.data[0].body;
     }
 

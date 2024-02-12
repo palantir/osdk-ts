@@ -68,6 +68,7 @@ export interface ObjectTypeLinkDefinition<
   O extends ObjectTypeDefinition<any>,
   M extends boolean,
 > {
+  __Mark?: O;
   targetType: O["apiName"];
   multiplicity: M;
 }

@@ -15,42 +15,36 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom,
-  ObjectTypeLinkTargetTypeFrom,
+  ObjectTypeLinkKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { FetchPageOrThrowArgs2 } from "./fetchPageOrThrow.js";
 
 export async function pageLinkedObjectsOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O>,
-  L extends ObjectTypeLinkKeysFrom<O, T>,
-  S = ReadonlyArray<
-    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
-  >,
+  L extends ObjectTypeLinkKeysFrom2<O["objects"][T]>,
+  Q extends O["objects"][T]["links"][L]["__Mark"],
+  const A extends FetchPageOrThrowArgs2<Q>,
 >(
   client: ClientContext<O>,
   sourceApiName: T & string,
   primaryKey: any,
   linkTypeApiName: string,
-  options?: {
-    nextPageToken?: string;
-    pageSize?: number;
-    select?: S;
-  },
+  options: A,
 ): Promise<
   PageResult<
-    OsdkObjectFrom<
-      T,
-      O,
-      S extends readonly string[] ? S[number]
-        : ObjectOrInterfacePropertyKeysFrom<O, T>
+    OsdkObjectFrom2<
+      Q,
+      A["select"] extends readonly string[] ? A["select"][number]
+        : ObjectOrInterfacePropertyKeysFrom2<Q>
     >
   >
 > {
@@ -74,6 +68,6 @@ export async function pageLinkedObjectsOrThrow<
 
   return {
     nextPageToken: page.nextPageToken,
-    data: page.data as OsdkObjectFrom<T, O>[],
+    data: page.data as OsdkObjectFrom2<Q>[],
   };
 }

@@ -22,15 +22,11 @@ import type {
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
   OntologyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
-import type {
-  OsdkObjectLinksObject,
-  OsdkObjectLinksObject2,
-} from "./definitions/LinkDefinitions.js";
+import type { OsdkObjectLinksObject2 } from "./definitions/LinkDefinitions.js";
 
 export type OsdkObjectPrimaryKeyType<
   TObjectName,
@@ -65,30 +61,30 @@ export type OsdkObjectFrom2<
     $link: OsdkObjectLinksObject2<O>;
   }; // TODO
 
-export type OsdkObjectFrom<
-  T_ObjectTypeKey extends ObjectTypeKeysFrom<T_Ontology>,
-  T_Ontology extends OntologyDefinition<any>,
-  T_PropertyKeys extends ObjectTypePropertyKeysFrom<
-    T_Ontology,
-    T_ObjectTypeKey
-  > = ObjectTypePropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
-> =
-  & {
-    [P in T_PropertyKeys]: OsdkObjectPropertyType<
-      ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
-    >;
-  }
-  & {
-    __apiName: T_ObjectTypeKey;
-    __primaryKey: OsdkObjectPrimaryKeyType<T_ObjectTypeKey, T_Ontology>;
-    /**
-     * Future versions will require explicitly asking for this field. For now we are marking
-     * as always optional to avoid breaking changes.
-     */
-    __rid?: string;
+// export type OsdkObjectFrom<
+//   T_ObjectTypeKey extends ObjectTypeKeysFrom<T_Ontology>,
+//   T_Ontology extends OntologyDefinition<any>,
+//   T_PropertyKeys extends ObjectTypePropertyKeysFrom<
+//     T_Ontology,
+//     T_ObjectTypeKey
+//   > = ObjectTypePropertyKeysFrom<T_Ontology, T_ObjectTypeKey>,
+// > =
+//   & {
+//     [P in T_PropertyKeys]: OsdkObjectPropertyType<
+//       ObjectTypeDefinitionFrom<T_Ontology, T_ObjectTypeKey>["properties"][P]
+//     >;
+//   }
+//   & {
+//     __apiName: T_ObjectTypeKey;
+//     __primaryKey: OsdkObjectPrimaryKeyType<T_ObjectTypeKey, T_Ontology>;
+//     /**
+//      * Future versions will require explicitly asking for this field. For now we are marking
+//      * as always optional to avoid breaking changes.
+//      */
+//     __rid?: string;
 
-    $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
-  }; // TODO
+//     $link: OsdkObjectLinksObject<T_ObjectTypeKey, T_Ontology>;
+//   }; // TODO
 
 export type OsdkInterfaceFrom<
   T_InterfaceKey extends InterfaceKeysFrom<T_Ontology>,

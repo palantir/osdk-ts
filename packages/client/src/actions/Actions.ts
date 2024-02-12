@@ -27,7 +27,7 @@ import type {
 import type { ObjectSet } from "../index.js";
 import type { Attachment } from "../object/Attachment.js";
 import type {
-  OsdkObjectFrom,
+  OsdkObjectFrom2,
   OsdkObjectPrimaryKeyType,
 } from "../OsdkObjectFrom.js";
 import type { NOOP } from "../util/NOOP.js";
@@ -72,8 +72,9 @@ type OsdkActionParameterBaseType<
   K extends ActionKeysFrom<O>,
   P extends keyof O["actions"][K]["parameters"],
 > = ActionParameterTypeFrom<O, K, P> extends
-  ObjectActionDataType<infer TObjectName>
-  ? OsdkObjectFrom<TObjectName, O> | OsdkObjectPrimaryKeyType<TObjectName, O>
+  ObjectActionDataType<infer TObjectName> ?
+    | OsdkObjectFrom2<O["objects"][TObjectName]>
+    | OsdkObjectPrimaryKeyType<TObjectName, O>
   : ActionParameterTypeFrom<O, K, P> extends
     ObjectSetActionDataType<infer TObjectName> ? ObjectSet<O, TObjectName>
   : ActionParameterTypeFrom<O, K, P> extends keyof OverrideWirePropertyTypes

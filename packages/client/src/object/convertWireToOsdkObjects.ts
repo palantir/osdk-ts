@@ -19,7 +19,7 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
 import { Attachment } from "./Attachment.js";
-import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs2, SelectArg2 } from "./fetchPageOrThrow.js";
 import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
 import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
@@ -58,10 +58,7 @@ function createPrototype<
           if (!linkDef.multiplicity) {
             return {
               get: <
-                A extends SelectArg<
-                  O,
-                  typeof linkDef.targetType
-                >,
+                A extends SelectArg2<O["objects"][typeof linkDef.targetType]>,
               >(
                 options?: A,
               ) =>
@@ -76,10 +73,7 @@ function createPrototype<
           } else {
             return {
               get: <
-                A extends SelectArg<
-                  O,
-                  typeof linkDef.targetType
-                >,
+                A extends SelectArg2<O["objects"][typeof linkDef.targetType]>,
               >(targetPrimaryKey: any, options?: A) =>
                 getLinkedObjectByPkOrThrow(
                   client,
@@ -90,9 +84,8 @@ function createPrototype<
                   options?.select,
                 ),
               fetchPageOrThrow: (
-                options?: FetchPageOrThrowArgs<
-                  O,
-                  typeof linkDef.targetType
+                options?: FetchPageOrThrowArgs2<
+                  O["objects"][typeof linkDef.targetType]
                 >,
               ) =>
                 pageLinkedObjectsOrThrow(client, type, primaryKey, p, {

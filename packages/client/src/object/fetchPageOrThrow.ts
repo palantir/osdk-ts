@@ -15,17 +15,17 @@
  */
 
 import type {
+  ObjectOrInterfaceDefinition,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
   OntologyDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { OsdkObjectFrom2 } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
@@ -38,23 +38,14 @@ export interface SelectArg<
 }
 
 export interface SelectArg2<
-  O extends ObjectTypeDefinition<any>,
+  O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
 > {
   select?: readonly L[];
 }
 
-export interface FetchPageOrThrowArgs<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
-> extends SelectArg<O, K, L> {
-  nextPageToken?: string;
-  pageSize?: number;
-}
-
 export interface FetchPageOrThrowArgs2<
-  O extends ObjectTypeDefinition<any>,
+  O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
 > extends SelectArg2<O, L> {
   nextPageToken?: string;
@@ -64,10 +55,7 @@ export interface FetchPageOrThrowArgs2<
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectOrInterfaceKeysFrom<O>,
-  const A extends FetchPageOrThrowArgs<
-    O,
-    T
-  >,
+  const A extends FetchPageOrThrowArgs2<O["objects"][T]>,
 >(
   client: ClientContext<O>,
   objectType: T & string,
@@ -78,11 +66,10 @@ export async function fetchPageOrThrow<
   },
 ): Promise<
   PageResult<
-    OsdkObjectFrom<
-      T,
-      O,
+    OsdkObjectFrom2<
+      O["objects"][T],
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom<O, T>
+        : ObjectOrInterfacePropertyKeysFrom2<O["objects"][T]>
     >
   >
 > {
