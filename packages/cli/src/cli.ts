@@ -79,7 +79,6 @@ export async function cli(args: string[] = process.argv) {
   } catch (err) {
     if (err instanceof ExitProcessError) {
       consola.error(err);
-      consola.debug(err.stack);
     }
   }
 }
