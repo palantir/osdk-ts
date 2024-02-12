@@ -1,5 +1,5 @@
 type: improvement
 improvement:
-  description: Set yargs wrap property to null
+  description: Increase CLI max width to 150 columns
   links:
   - https://github.com/palantir/osdk-ts/pull/47
