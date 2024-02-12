@@ -35,7 +35,7 @@ export default async function handleGenerate(args: TypescriptGenerateArgs) {
   let success = false;
   if (args.ontologyPath) {
     success = await generateFromLocalFile(args);
-  } else if (args.stack && args.clientId) {
+  } else if (args.foundryUrl && args.clientId) {
     success = await generateFromStack(args);
   } else {
     throw new Error("Must have specified ontologyPath or stack and clientId");
@@ -60,13 +60,13 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
-  const { stack, clientId, ontologyWritePath } = args as
+  const { foundryUrl, clientId, ontologyWritePath } = args as
     & TypescriptGenerateArgs
-    & { stack: string; clientId: string };
+    & { foundryUrl: string; clientId: string };
 
   const token = await invokeLoginFlow({
     applicationId: clientId,
-    baseUrl: stack,
+    foundryUrl,
     verbose: 0,
   });
   const { fetch } = createClientContext(
@@ -75,14 +75,14 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
         userAgent: USER_AGENT,
       },
     },
-    args.stack!,
+    args.foundryUrl!,
     () => token.access_token,
     USER_AGENT,
   );
 
   try {
     const ontologies = await listOntologiesV2(
-      createOpenApiRequest(stack, fetch),
+      createOpenApiRequest(foundryUrl, fetch),
     );
 
     if (ontologies.data.length !== 1) {
@@ -93,7 +93,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     }
 
     const ontology = await getOntologyFullMetadata(
-      createOpenApiRequest(stack, fetch),
+      createOpenApiRequest(foundryUrl, fetch),
       ontologies.data[0].apiName,
     );
 

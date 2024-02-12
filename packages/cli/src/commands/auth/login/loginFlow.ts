@@ -60,7 +60,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
   const codeChallenge = await generateCodeChallenge(codeVerifier);
 
   const authorizeUrl = generateAuthorizeUrl(
-    args.baseUrl,
+    args.foundryUrl,
     clientId,
     state,
     redirectUrl,
@@ -91,7 +91,7 @@ export default async function invokeLoginFlow(args: LoginArgs) {
     clientId,
     redirectUrl,
     code,
-    args.baseUrl,
+    args.foundryUrl,
     codeVerifier,
   );
 
