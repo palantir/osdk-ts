@@ -22,7 +22,7 @@ const command: CommandModule<
   CommonSiteArgs
 > = {
   command: "get",
-  describe: "Get the currently set live site version",
+  describe: "Get live site version",
   builder: (argv) => {
     return argv;
   },

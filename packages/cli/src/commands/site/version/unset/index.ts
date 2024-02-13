@@ -22,7 +22,7 @@ const command: CommandModule<
   CommonSiteArgs
 > = {
   command: "unset",
-  describe: "Clear the currently set live site version.",
+  describe: "Clear live site version",
   builder: (argv) => {
     return argv;
   },

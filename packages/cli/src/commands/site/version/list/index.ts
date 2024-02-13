@@ -22,7 +22,7 @@ const command: CommandModule<
   CommonSiteArgs
 > = {
   command: "list",
-  describe: "List application versions",
+  describe: "List site versions",
   builder: (argv) => {
     return argv;
   },

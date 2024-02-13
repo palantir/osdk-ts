@@ -23,7 +23,7 @@ const command: CommandModule<
   SiteVersionArgs
 > = {
   command: "set <version>",
-  describe: "Set the live site version",
+  describe: "Set live site version",
   builder: (argv) => {
     return argv
       .positional("version", {

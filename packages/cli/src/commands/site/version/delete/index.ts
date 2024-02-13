@@ -23,7 +23,7 @@ const command: CommandModule<
   SiteVersionArgs
 > = {
   command: "delete <version>",
-  describe: "Delete the specified site version.",
+  describe: "Delete site version",
   builder: (argv) => {
     return argv
       .positional("version", {
