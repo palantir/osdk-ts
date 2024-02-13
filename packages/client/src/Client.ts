@@ -16,21 +16,14 @@
 
 import type {
   ObjectOrInterfaceKeysFrom,
-  ObjectTypeDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions } from "./actions/Actions.js";
-import type { ObjectSet, ObjectSet2 } from "./objectSet/ObjectSet.js";
+import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
-export type CallableClient = <
-  O extends ObjectTypeDefinition<any>,
->(
-  definition: O,
-) => ObjectSet2<O>;
-
-export type Client<O extends OntologyDefinition<any>> = CallableClient & {
+export interface Client<O extends OntologyDefinition<any>> {
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
   ) => ObjectSet<O, K>;
@@ -43,4 +36,4 @@ export type Client<O extends OntologyDefinition<any>> = CallableClient & {
     type: K,
     rid: string,
   ): ObjectSet<O, K>;
-};
+}

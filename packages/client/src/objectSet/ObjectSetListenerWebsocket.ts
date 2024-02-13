@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectTypeKeysFrom,
   OntologyDefinition,
@@ -79,7 +80,7 @@ export class ObjectSetListenerWebsocket<
   #listeners = new Map<
     string,
     {
-      listener: ObjectSetListener<O, any>;
+      listener: ObjectSetListener<any>;
       subscriptionId?: string;
       objectSet: ObjectSet;
       expiry: NodeJS.Timeout;
@@ -119,7 +120,7 @@ export class ObjectSetListenerWebsocket<
 
   subscribe<K extends ObjectOrInterfaceKeysFrom<O>>(
     objectSet: ObjectSet,
-    listener: ObjectSetListener<O, K>,
+    listener: ObjectSetListener<ObjectOrInterfaceDefinitionFrom<O, K>>,
   ): () => void {
     const requestId = crypto.randomUUID();
     const expiry = setTimeout(() => {
@@ -410,18 +411,18 @@ export class ObjectSetListenerWebsocket<
     }
   };
 
-  #getCallbackByRequestId<T extends keyof ObjectSetListener<O, any>>(
+  #getCallbackByRequestId<T extends keyof ObjectSetListener<any>>(
     requestId: string,
     type: T,
-  ): ObjectSetListener<O, any>[T] | undefined {
+  ): ObjectSetListener<any>[T] | undefined {
     const maybeListener = this.#listeners.get(requestId);
     return maybeListener?.listener?.[type];
   }
 
-  #getCallback<T extends keyof ObjectSetListener<O, any>>(
+  #getCallback<T extends keyof ObjectSetListener<any>>(
     subscriptionId: string,
     type: T,
-  ): ObjectSetListener<O, any>[T] | undefined {
+  ): ObjectSetListener<any>[T] | undefined {
     const requestId = this.#subscriptionToRequestId.get(subscriptionId);
     if (requestId) {
       return this.#getCallbackByRequestId(requestId, type);

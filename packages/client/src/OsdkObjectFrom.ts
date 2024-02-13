@@ -65,3 +65,11 @@ export type OsdkInterfaceFrom<
   T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
     InterfacePropertyKeysFrom2<Q>,
 > = OsdkCommonFrom<Q, T_PropertyKeys>;
+
+export type OsdkObjectOrInterfaceFrom<
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+> = Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L>
+  : Q extends ObjectTypeDefinition<any> ? OsdkObjectFrom<Q, L>
+  : never;
