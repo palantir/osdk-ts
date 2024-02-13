@@ -27,4 +27,5 @@ export const Emailable = {
       nullable: false,
     },
   },
+  links: {},
 } satisfies InterfaceDefinition<"Emailable", string>;

@@ -57,5 +57,6 @@ function wireInterfaceTypeV2ToSdkObjectDefinition(
         ];
       }),
     ),
+    links: {},
   };
 }

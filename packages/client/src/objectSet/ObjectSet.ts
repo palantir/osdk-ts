@@ -26,7 +26,6 @@ import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
-import type { LinkTypesFrom } from "./LinkTypesFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
@@ -77,16 +76,14 @@ export interface BaseObjectSet<
   // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
   where: (
-    clause: WhereClause<
-      ObjectOrInterfaceDefinitionFrom<O, K>
-    >,
+    clause: WhereClause<Q>,
   ) => ObjectSet<O, K>;
 
-  pivotTo: <T extends LinkTypesFrom<O, K>>(
+  pivotTo: <T extends keyof Q["links"]>(
     type: T & string,
-  ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
+  ) => ObjectSet<O, Q["links"][T]["targetType"]>;
 
-  subscribe: (listener: ObjectSetListener<O, K>) => () => void;
+  subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <

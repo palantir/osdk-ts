@@ -27,4 +27,5 @@ export const SimpleInterface = {
       nullable: true,
     },
   },
+  links: {},
 } satisfies InterfaceDefinition<'SimpleInterface', ''>;
