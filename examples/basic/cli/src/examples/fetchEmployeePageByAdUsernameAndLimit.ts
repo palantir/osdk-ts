@@ -28,8 +28,8 @@ export async function fetchEmployeePageByAdUsernameAndLimit(
   const result = await client.objects.Employee.where({
     $and: [
       { adUsername },
-      { employeeNumber: { ne: 5 } },
-      { employeeNumber: { gte: 5 } },
+      { employeeNumber: { $ne: 5 } },
+      { employeeNumber: { $gte: 5 } },
     ],
   }).fetchPageOrThrow({
     select: ["adUsername", "employeeNumber", "jobProfile"],

@@ -18,12 +18,13 @@ import type { ConjureContext } from "conjure-lite";
 import { createFetch } from "./createFetch.mjs";
 
 export function createConjureContext(
-  baseUrl: string,
+  foundryUrl: string,
   servicePath: "/artifacts/api",
+  tokenProvider: () => string,
 ): ConjureContext {
   return {
-    fetchFn: createFetch(() => process.env.FOUNDRY_SDK_AUTH_TOKEN as string),
-    baseUrl,
+    fetchFn: createFetch(tokenProvider),
+    baseUrl: foundryUrl,
     servicePath,
   };
 }

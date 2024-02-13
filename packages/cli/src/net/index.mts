@@ -17,4 +17,5 @@
 export { ArtifactsSitesAdminV2Service } from "../generated/artifacts-sites/index.js";
 export * as artifacts from "./artifacts/index.mjs";
 export { createConjureContext } from "./createConjureContext.mjs";
+export { createInternalClientContext } from "./createInternalClientContext.mjs";
 export * as thirdPartyApplicationService from "./third-party-application-service/index.mjs";

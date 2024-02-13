@@ -45,6 +45,7 @@ export async function generateClientSdkVersionOneDotOne(
   const queriesDir = path.join(outDir, "ontology", "queries");
 
   await verifyOutdir(outDir, fs);
+  await fs.mkdir(outDir, { recursive: true });
 
   const sanitizedOntology = sanitizeMetadata(ontology);
   await generateFoundryClientFile(fs, outDir, importExt);

@@ -18,6 +18,8 @@ import type { CliCommonArgs } from "../../CliCommonArgs.js";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 
 export interface CommonSiteArgs extends CliCommonArgs {
-  appRid: ThirdPartyAppRid;
-  baseUrl: string;
+  application: ThirdPartyAppRid;
+  foundryUrl: string;
+  token?: string;
+  tokenFile?: string;
 }

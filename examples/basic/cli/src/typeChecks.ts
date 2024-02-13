@@ -50,6 +50,27 @@ export async function typeChecks(client: Client<Ontology>) {
     );
   }
 
+  // just a demo of aggregations
+  {
+    const q = await client.objects.ObjectTypeWithAllPropertyTypes
+      .aggregateOrThrow({
+        select: {
+          integer: "sum",
+          float: "sum",
+          decimal: "sum",
+          short: ["max"],
+          string: "approximateDistinct",
+        },
+        groupBy: {
+          string: "exact",
+          stringArray: "exact",
+        },
+        orderBy: {
+          group: "string",
+        },
+      });
+  }
+
   // object $link examples
   {
     const page = await client.objectSet("Employee").where({

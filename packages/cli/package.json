@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -21,6 +21,7 @@
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -53,7 +54,7 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [],
+  "keywords": [ ],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },

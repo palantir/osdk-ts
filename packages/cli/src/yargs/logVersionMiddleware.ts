@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;
 export async function logVersionMiddleware(args: CliCommonArgs) {
   if (firstTime) {
-    const Consola = await import("consola");
+    firstTime = false;
     // This will be called before any command is executed
-    const consola = Consola.consola;
-
     consola.info(
       `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
     );
@@ -34,8 +33,6 @@ export async function logVersionMiddleware(args: CliCommonArgs) {
       );
     }
 
-    // eslint-disable-next-line no-console
-    console.log(); // Not consola. Just want a blank line
-    firstTime = false;
+    consola.log(""); // intentional blank line
   }
 }
