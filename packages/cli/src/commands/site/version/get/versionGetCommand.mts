@@ -22,10 +22,10 @@ import {
 } from "#net";
 import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
+import type { VersionGetArgs } from "./VersionGetArgs.js";
 
 export default async function versionGetCommand(
-  { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
+  { foundryUrl, application, token, tokenFile }: VersionGetArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

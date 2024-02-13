@@ -23,10 +23,10 @@ import {
   thirdPartyApplicationService,
 } from "#net";
 import { loadToken } from "../../../../util/token.js";
-import type { SiteVersionArgs } from "../SiteVersionArgs.js";
+import type { VersionSetArgs } from "./VersionSetArgs.js";
 
 export default async function versionSetCommand(
-  { version, application, foundryUrl, token, tokenFile }: SiteVersionArgs,
+  { version, application, foundryUrl, token, tokenFile }: VersionSetArgs,
 ) {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);
