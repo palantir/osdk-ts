@@ -28,8 +28,8 @@ export type OsdkObjectPrimaryKeyType<
   O extends ObjectTypeDefinition<any>,
 > = WirePropertyTypes[O["primaryKeyType"]];
 
-export type OsdkObjectFrom<
-  O extends ObjectTypeDefinition<any>,
+type OsdkCommonFrom<
+  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<O> =
     ObjectOrInterfacePropertyKeysFrom2<O>,
 > =
@@ -40,32 +40,28 @@ export type OsdkObjectFrom<
   }
   & {
     __apiName: O["apiName"];
-    __primaryKey: OsdkObjectPrimaryKeyType<O>;
+    __primaryKey: O extends ObjectTypeDefinition<any>
+      ? OsdkObjectPrimaryKeyType<O>
+      : unknown;
+    // $uniqueId: string; // will be dynamic
+
     /**
      * Future versions will require explicitly asking for this field. For now we are marking
      * as always optional to avoid breaking changes.
      */
     __rid?: string;
-    $link: OsdkObjectLinksObject<O>;
-  }; // TODO
+  };
+
+export type OsdkObjectFrom<
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<O> =
+    ObjectOrInterfacePropertyKeysFrom2<O>,
+> = OsdkCommonFrom<O, L> & {
+  $link: OsdkObjectLinksObject<O>;
+}; // TODO
 
 export type OsdkInterfaceFrom<
   Q extends InterfaceDefinition<any, any>,
   T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
     InterfacePropertyKeysFrom2<Q>,
-> =
-  & {
-    [P in T_PropertyKeys]: OsdkObjectPropertyType<
-      Q["properties"][P]
-    >;
-  }
-  & {
-    __apiName: Q["apiName"];
-    __primaryKey: unknown;
-    // $uniqueId: string; // will be dynamic
-    /**
-     * Future versions will require explicitly asking for this field. For now we are marking
-     * as always optional to avoid breaking changes.
-     */
-    __rid?: string;
-  }; // TODO
+> = OsdkCommonFrom<Q, T_PropertyKeys>;
