@@ -122,37 +122,40 @@ async function runTests() {
 
     const intersectResultGeojson = await client.objects.BoundariesUsState
       .where({
-        geometry10M: {
-          $intersects: {
-            type: "Polygon",
-            coordinates: [
-              [
+        $not: {
+          geometry10M: {
+            $intersects: {
+              type: "Polygon",
+              coordinates: [
                 [
-                  -75.09653518696345,
-                  41.45348773788706,
-                ],
-                [
-                  -74.72935560273072,
-                  40.946390252360715,
-                ],
-                [
-                  -74.06735144976177,
-                  41.20045829999643,
-                ],
-                [
-                  -74.3141382218981,
-                  41.67866397375818,
-                ],
-                [
-                  -75.09653518696345,
-                  41.45348773788706,
+                  [
+                    -75.09653518696345,
+                    41.45348773788706,
+                  ],
+                  [
+                    -74.72935560273072,
+                    40.946390252360715,
+                  ],
+                  [
+                    -74.06735144976177,
+                    41.20045829999643,
+                  ],
+                  [
+                    -74.3141382218981,
+                    41.67866397375818,
+                  ],
+                  [
+                    -75.09653518696345,
+                    41.45348773788706,
+                  ],
                 ],
               ],
-            ],
+            },
           },
         },
       }).fetchPageOrThrow();
 
+    // should be every state except NJ,NY,PA
     console.log(intersectResultGeojson.data.map(data => data.usState));
 
     // drew a bbox that intersects NY, NJ and PA
