@@ -16,6 +16,7 @@
 
 import { artifacts, createInternalClientContext } from "#net";
 import { consola } from "consola";
+import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
@@ -26,7 +27,9 @@ export default async function versionDeleteCommand(
 ) {
   if (!yes) {
     const confirmed = await consola.prompt(
-      `Are you sure you want to delete the version ${version}? This action cannot be undone.`,
+      `Are you sure you want to delete the version ${version}?\n${
+        colorize("bold", "This action cannot be undone.")
+      }`,
       { type: "confirm" },
     );
     handlePromptCancel(confirmed);
