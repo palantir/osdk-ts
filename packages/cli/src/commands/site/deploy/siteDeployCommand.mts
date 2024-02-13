@@ -118,37 +118,21 @@ export default async function siteDeployCommand(
     );
     consola.success(`Deployed ${siteVersion} successfully`);
     if (domain != null) {
-      consola.box({
-        message: `View live site:\n\n${
-          colorize(
-            "green",
-            `https://${domain}`,
-          )
-        }`,
-        style: BOX_STYLES,
-      });
+      logSiteLink(
+        "View live site:",
+        `https://${domain}`,
+      );
     }
   } else {
     consola.debug("Upload only mode enabled, skipping deployment");
     if (domain != null) {
-      consola.box({
-        message: `Preview link:\n\n${
-          colorize(
-            "green",
-            `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
-          )
-        }`,
-        style: BOX_STYLES,
-      });
+      logSiteLink(
+        "Preview link:",
+        `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
+      );
     }
   }
 }
-
-const BOX_STYLES = {
-  padding: 2,
-  borderColor: "green",
-  borderStyle: "rounded",
-};
 
 function logArchiveStats(archive: archiver.Archiver): void {
   let archiveStats = { fileCount: 0, bytes: 0 };
@@ -162,6 +146,17 @@ function logArchiveStats(archive: archiver.Archiver): void {
     consola.debug(
       `Zipped ${archiveStats.fileCount} files and ${archiveStats.bytes} bytes`,
     );
+  });
+}
+
+function logSiteLink(title: string, link: string): void {
+  consola.box({
+    message: `${title}\n\n${colorize("green", link)}`,
+    style: {
+      padding: 2,
+      borderColor: "green",
+      borderStyle: "rounded",
+    },
   });
 }
 
