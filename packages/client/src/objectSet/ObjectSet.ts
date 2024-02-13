@@ -85,4 +85,4 @@ export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
   K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
-) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>; // FIXME
+) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;

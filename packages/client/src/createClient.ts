@@ -45,7 +45,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   const objectSetFactory: ObjectSetFactory<O> = <
     K extends ObjectOrInterfaceKeysFrom<O>,
   >(type: K) =>
-    createObjectSet<O, K, ObjectOrInterfaceDefinitionFrom<O, K>>(
+    createObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
       (ontology["objects"][type]
         ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
           O,

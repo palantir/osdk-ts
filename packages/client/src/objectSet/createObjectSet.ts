@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
@@ -32,8 +28,6 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
   Q extends ObjectOrInterfaceDefinition,
 >(
   objectType: Q,
@@ -67,7 +61,7 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<O["objects"][K]>) => {
+    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q>) => {
       return fetchPageOrThrow(
         clientCtx,
         objectType,
@@ -90,9 +84,9 @@ export function createObjectSet<
     //   throw "";
     // },
 
-    pivotTo: function<T extends LinkTypesFrom<O, K>>(
+    pivotTo: function<T extends LinkTypesFrom<Q>>(
       type: T & string,
-    ): ObjectSet<O["objects"][K]["links"][T]["targetType"]> {
+    ): ObjectSet<Q["links"][T]["targetType"]> {
       return createSearchAround(type)();
     },
 
@@ -102,7 +96,7 @@ export function createObjectSet<
     },
   };
 
-  function createSearchAround<S extends LinkTypesFrom<O, K>>(link: S & string) {
+  function createSearchAround<S extends LinkTypesFrom<Q>>(link: S & string) {
     return () => {
       return createObjectSet(
         objectType,
