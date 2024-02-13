@@ -85,6 +85,91 @@ async function runTests() {
 
     console.log(result.data[0].geohash);
 
+    // drew a polygon that intersects NY, NJ and PA
+    const intersectResult = await client.objects.BoundariesUsState.where({
+      geometry10M: {
+        $intersects: {
+          polygon: [
+            [
+              [
+                -75.09653518696345,
+                41.45348773788706,
+              ],
+              [
+                -74.72935560273072,
+                40.946390252360715,
+              ],
+              [
+                -74.06735144976177,
+                41.20045829999643,
+              ],
+              [
+                -74.3141382218981,
+                41.67866397375818,
+              ],
+              [
+                -75.09653518696345,
+                41.45348773788706,
+              ],
+            ],
+          ],
+        },
+      },
+    }).fetchPageOrThrow();
+
+    console.log(intersectResult.data.map(data => data.usState));
+    console.log(intersectResult.data[0].geometry10M);
+
+    const intersectResultGeojson = await client.objects.BoundariesUsState
+      .where({
+        geometry10M: {
+          $intersects: {
+            type: "Polygon",
+            coordinates: [
+              [
+                [
+                  -75.09653518696345,
+                  41.45348773788706,
+                ],
+                [
+                  -74.72935560273072,
+                  40.946390252360715,
+                ],
+                [
+                  -74.06735144976177,
+                  41.20045829999643,
+                ],
+                [
+                  -74.3141382218981,
+                  41.67866397375818,
+                ],
+                [
+                  -75.09653518696345,
+                  41.45348773788706,
+                ],
+              ],
+            ],
+          },
+        },
+      }).fetchPageOrThrow();
+
+    console.log(intersectResultGeojson.data.map(data => data.usState));
+
+    // drew a bbox that intersects NY, NJ and PA
+    const intersectResultbbox = await client.objects.BoundariesUsState
+      .where({
+        geometry10M: {
+          $intersects: [
+            -75.18845865422688,
+            41.151409247298204,
+            -74.38919193981752,
+            41.676311210175015,
+          ],
+        },
+      }).fetchPageOrThrow();
+
+    console.log(intersectResultbbox.data.map(data => data.usState));
+
     await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);
