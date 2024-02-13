@@ -16,6 +16,7 @@
 
 import type {
   ObjectActionDataType,
+  ObjectOrInterfaceDefinitionFrom,
   ObjectSetActionDataType,
   OntologyDefinition,
   WirePropertyTypes,
@@ -76,7 +77,8 @@ type OsdkActionParameterBaseType<
     | OsdkObjectFrom<O["objects"][TObjectName]>
     | OsdkObjectPrimaryKeyType<O["objects"][TObjectName]>
   : ActionParameterTypeFrom<O, K, P> extends
-    ObjectSetActionDataType<infer TObjectName> ? ObjectSet<O, TObjectName>
+    ObjectSetActionDataType<infer TObjectName>
+    ? ObjectSet<ObjectOrInterfaceDefinitionFrom<O, TObjectName>>
   : ActionParameterTypeFrom<O, K, P> extends keyof OverrideWirePropertyTypes
     ? OverrideWirePropertyTypes[ActionParameterTypeFrom<O, K, P>]
   : never;

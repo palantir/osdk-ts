@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinitionFrom,
+  ObjectOrInterfaceKeysFrom,
+  ObjectTypeKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import { createClientContext } from "@osdk/shared.net";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
@@ -37,8 +42,17 @@ export function createClient<O extends OntologyDefinition<any>>(
     fetchFn,
   );
 
-  const objectSetFactory: ObjectSetFactory<O> = (type) =>
-    createObjectSet(type, clientCtx);
+  const objectSetFactory: ObjectSetFactory<O> = <
+    K extends ObjectOrInterfaceKeysFrom<O>,
+  >(type: K) =>
+    createObjectSet<O, K, ObjectOrInterfaceDefinitionFrom<O, K>>(
+      (ontology["objects"][type]
+        ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
+          O,
+          K
+        >,
+      clientCtx,
+    );
 
   const client: Client<O> = Object.defineProperties(
     {} as Client<O>,
@@ -54,19 +68,24 @@ export function createClient<O extends OntologyDefinition<any>>(
           objectType: K,
           rid: string,
         ) => {
-          return createObjectSet(objectType as K & string, clientCtx, {
-            type: "intersect",
-            objectSets: [
-              {
-                type: "base",
-                objectType: objectType as K & string,
-              },
-              {
-                type: "reference",
-                reference: rid,
-              },
-            ],
-          });
+          return createObjectSet(
+            ontology["interfaces"]?.[objectType]
+              ?? ontology["objects"][objectType],
+            clientCtx,
+            {
+              type: "intersect",
+              objectSets: [
+                {
+                  type: "base",
+                  objectType: objectType as K & string,
+                },
+                {
+                  type: "reference",
+                  reference: rid,
+                },
+              ],
+            },
+          );
         },
       },
     } satisfies Record<keyof Client<any>, PropertyDescriptor>,

@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
@@ -37,13 +33,11 @@ import type {
 } from "../query/index.js";
 
 export async function aggregateOrThrow<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  Q extends ObjectOrInterfaceDefinitionFrom<O, K>,
+  Q extends ObjectOrInterfaceDefinition,
   const AO extends AggregateOpts<Q, any>,
 >(
-  clientCtx: ClientContext<O>,
-  objectType: K & string,
+  clientCtx: ClientContext<any>,
+  objectType: Q,
   req: AO,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
@@ -68,7 +62,7 @@ export async function aggregateOrThrow<
       clientCtx.fetch,
     ),
     clientCtx.ontology.metadata.ontologyApiName,
-    objectType,
+    objectType["apiName"],
     body,
   );
 

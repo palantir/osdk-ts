@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
 import { createClientContext } from "@osdk/shared.net";
 import type { TypeOf } from "ts-expect";
@@ -24,6 +24,48 @@ import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import { USER_AGENT } from "../util/UserAgent.js";
 import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
+interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+  type: "object";
+  apiName: "Todo";
+  links: {};
+  primaryKeyType: "double";
+  properties: {
+    text: {
+      type: "string";
+    };
+    id: {
+      type: "double";
+    };
+    priority: {
+      type: "double";
+    };
+    other: {
+      type: "string";
+    };
+  };
+}
+
+const Todo: TodoDef = {
+  type: "object",
+  apiName: "Todo",
+  links: {},
+  primaryKeyType: "double",
+  properties: {
+    text: {
+      type: "string",
+    },
+    id: {
+      type: "double",
+    },
+    priority: {
+      type: "double",
+    },
+    other: {
+      type: "string",
+    },
+  },
+};
+
 const mockOntology = {
   metadata: {
     ontologyRid: "ri.a.b.c.d",
@@ -31,26 +73,7 @@ const mockOntology = {
     userAgent: "",
   },
   objects: {
-    Todo: {
-      type: "object",
-      apiName: "Todo",
-      links: {},
-      primaryKeyType: "double",
-      properties: {
-        text: {
-          type: "string",
-        },
-        id: {
-          type: "double",
-        },
-        priority: {
-          type: "double",
-        },
-        other: {
-          type: "string",
-        },
-      },
-    },
+    Todo,
   },
   actions: {},
   queries: {},
@@ -104,7 +127,7 @@ describe("aggregateOrThrow", () => {
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(clientCtx, "Todo", {
+    const notGrouped = await aggregateOrThrow(clientCtx, Todo, {
       select: {
         text: "approximateDistinct",
         priority: "avg",
@@ -125,7 +148,7 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(clientCtx, "Todo", {
+    const grouped = await aggregateOrThrow(clientCtx, Todo, {
       select: {
         text: "approximateDistinct",
       },

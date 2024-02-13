@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
@@ -29,16 +30,10 @@ import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
-  O extends OntologyDefinition<string>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> = BaseObjectSet<O, K>;
+  Q extends ObjectOrInterfaceDefinition,
+> = BaseObjectSet<Q>;
 
-export interface BaseObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-  Q extends ObjectOrInterfaceDefinitionFrom<O, K> =
-    ObjectOrInterfaceDefinitionFrom<O, K>,
-> {
+export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
   definition: WireObjectSet;
 
   fetchPageOrThrow: <
@@ -77,11 +72,11 @@ export interface BaseObjectSet<
 
   where: (
     clause: WhereClause<Q>,
-  ) => ObjectSet<O, K>;
+  ) => ObjectSet<Q>;
 
   pivotTo: <T extends keyof Q["links"]>(
     type: T & string,
-  ) => ObjectSet<O, Q["links"][T]["targetType"]>;
+  ) => ObjectSet<NonNullable<Q["links"][T]["__Mark"]>>;
 
   subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
@@ -90,4 +85,4 @@ export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
   K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
-) => ObjectSet<O, K>; // FIXME
+) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>; // FIXME

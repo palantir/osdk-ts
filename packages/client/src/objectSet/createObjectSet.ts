@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinitionFrom,
+  ObjectOrInterfaceDefinition,
   ObjectOrInterfaceKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -34,15 +34,16 @@ const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectOrInterfaceKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition,
 >(
-  objectType: K & string,
-  clientCtx: ClientContext<O>,
+  objectType: Q,
+  clientCtx: ClientContext<any>,
   objectSet: WireObjectSet = {
     type: "base",
-    objectType,
+    objectType: objectType["apiName"] as string,
   },
-): ObjectSet<O, K> {
-  const base: BaseObjectSet<O, K> = {
+): ObjectSet<Q> {
+  const base: BaseObjectSet<Q> = {
     definition: objectSet,
     // aggregate: <
     //   AC extends AggregationClause<O, K>,
@@ -55,10 +56,9 @@ export function createObjectSet<
     //   throw "TODO";
     // },
     aggregateOrThrow: async <
-      AC extends AggregationClause<ObjectOrInterfaceDefinitionFrom<O, K>>,
+      AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<ObjectOrInterfaceDefinitionFrom<O, K>, AC>,
-      Q extends ObjectOrInterfaceDefinitionFrom<O, K>,
+      AO extends AggregateOpts<Q, AC>,
     >(
       req: AO,
     ): Promise<AggregationsResults<Q, AO>> => {
@@ -92,7 +92,7 @@ export function createObjectSet<
 
     pivotTo: function<T extends LinkTypesFrom<O, K>>(
       type: T & string,
-    ): ObjectSet<O, O["objects"][K]["links"][T]["targetType"]> {
+    ): ObjectSet<O["objects"][K]["links"][T]["targetType"]> {
       return createSearchAround(type)();
     },
 
@@ -116,7 +116,7 @@ export function createObjectSet<
     };
   }
 
-  return new Proxy(base as ObjectSet<O, K>, {
+  return new Proxy(base as ObjectSet<Q>, {
     get(target, p, receiver) {
       if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
         return createSearchAround(p.substring(searchAroundPrefix.length));

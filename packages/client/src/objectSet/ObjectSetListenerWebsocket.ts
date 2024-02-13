@@ -15,8 +15,7 @@
  */
 
 import type {
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfaceDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -74,7 +73,7 @@ export class ObjectSetListenerWebsocket<
 
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
-  #client: ClientContext<O>;
+  #client: ClientContext<any>;
 
   /** map of listenerId to listener */
   #listeners = new Map<
@@ -118,9 +117,9 @@ export class ObjectSetListenerWebsocket<
     };
   }
 
-  subscribe<K extends ObjectOrInterfaceKeysFrom<O>>(
+  subscribe<Q extends ObjectOrInterfaceDefinition>(
     objectSet: ObjectSet,
-    listener: ObjectSetListener<ObjectOrInterfaceDefinitionFrom<O, K>>,
+    listener: ObjectSetListener<Q>,
   ): () => void {
     const requestId = crypto.randomUUID();
     const expiry = setTimeout(() => {

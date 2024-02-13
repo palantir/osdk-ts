@@ -16,9 +16,8 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
-  OntologyDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
@@ -44,23 +43,22 @@ export interface FetchPageOrThrowArgs<
 }
 
 export async function fetchPageOrThrow<
-  O extends OntologyDefinition<any>,
-  T extends ObjectOrInterfaceKeysFrom<O>,
-  const A extends FetchPageOrThrowArgs<O["objects"][T]>,
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends FetchPageOrThrowArgs<Q>,
 >(
-  client: ClientContext<O>,
-  objectType: T & string,
+  client: ClientContext<any>,
+  objectType: Q,
   args: A,
   objectSet: ObjectSet = {
     type: "base",
-    objectType,
+    objectType: objectType["apiName"] as string,
   },
 ): Promise<
   PageResult<
     OsdkObjectFrom<
-      O["objects"][T],
+      Q extends ObjectTypeDefinition<any> ? Q : never,
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<O["objects"][T]>
+        : ObjectOrInterfacePropertyKeysFrom2<Q>
     >
   >
 > {
