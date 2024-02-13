@@ -35,8 +35,16 @@ import type { PageResult } from "../PageResult.js";
 export type OsdkObjectLinksObject<
   O extends ObjectTypeDefinition<any>,
 > = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
-  [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry2<O, L>;
+  [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
+
+export type OsdkObjectLinksEntry<
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectTypeLinkKeysFrom2<O>,
+> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
+    M extends false ? SingletonLinkAccessor<T> : MultitonLinkAccessor<T>
+  )
+  : never;
 
 export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
   /** Load the linked object */
@@ -71,19 +79,3 @@ export interface MultitonLinkAccessor<T extends ObjectTypeDefinition<any>>
     >
   >;
 }
-
-export type LinkTargetType<
-  O extends ObjectTypeDefinition<any>,
-  L extends ObjectTypeLinkKeysFrom2<O>,
-> = O["links"][L]["targetType"];
-
-export type OsdkObjectLinksEntry2<
-  O extends ObjectTypeDefinition<any>,
-  L extends ObjectTypeLinkKeysFrom2<O>,
-> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
-    M extends false ? SingletonLinkAccessor<T>
-      : MultitonLinkAccessor<T>
-  )
-  : never;
-
-// export type Q<O, >

@@ -37,15 +37,6 @@ describe("LinkDefinitions", () => {
       type PersonDef = Objects["Person"];
       type TodoDef = Objects["Todo"];
 
-      expectTypeOf<OsdkObjectLinksObject<TaskDef>["Todos"]>()
-        .toEqualTypeOf<MultitonLinkAccessor<TodoDef>>();
-
-      expectTypeOf<OsdkObjectLinksObject<TaskDef>["RP"]>()
-        .toEqualTypeOf<SingletonLinkAccessor<PersonDef>>();
-
-      const q: OsdkObjectLinksObject<TaskDef> = {} as any;
-      q.Todos.definition;
-
       expectTypeOf<OsdkObjectLinksObject<TaskDef>>()
         .toEqualTypeOf<
           {
