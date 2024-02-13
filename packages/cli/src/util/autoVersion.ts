@@ -25,30 +25,72 @@ import { isValidSemver } from "./isValidSemver.js";
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
-export async function autoVersion(tagPrefix: string = ""): Promise<string> {
+export function autoVersion(tagPrefix: string = ""): string {
   const [matchPrefix, prefixRegex] = tagPrefix !== ""
     ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
     : [undefined, new RegExp(`^v?`)];
+
+  const gitVersion = gitDescribe(matchPrefix);
+  const version = gitVersion.trim().replace(prefixRegex, "");
+  if (!isValidSemver(version)) {
+    throw new ExitProcessError(
+      2,
+      `The version string ${version} is not SemVer compliant.`,
+    );
+  }
+
+  return version;
+}
+
+function gitDescribe(matchPrefix: string | undefined): string {
+  let gitVersion;
   try {
-    const gitVersion = execSync(
+    gitVersion = execSync(
       `git describe --tags --first-parent --dirty${
         matchPrefix != null ? ` --match="${matchPrefix}*"` : ""
       }`,
       { encoding: "utf8" },
     );
-    const version = gitVersion.trim().replace(prefixRegex, "");
-    if (!isValidSemver(version)) {
-      throw new ExitProcessError(
-        2,
-        `The version string ${version} is not SemVer compliant.`,
-      );
+  } catch (error: any) {
+    if (error instanceof Error) {
+      const errorMessage: string = error.message.toLowerCase();
+
+      if (
+        errorMessage.includes("not recognized")
+        || errorMessage.includes("command not found")
+        || errorMessage.includes("no such file or directory")
+      ) {
+        throw new ExitProcessError(
+          2,
+          `Unable to determine the version using git-describe as git is not installed or found in the PATH.\nPlease correctly configure git or supply a --version option.`,
+        );
+      }
+
+      if (
+        errorMessage.includes("fatal: not a git repository")
+      ) {
+        throw new ExitProcessError(
+          2,
+          `Unable to determine the version using git-describe as the current directory is not a git repository.\nPlease run the command in a git respository or supply a --version option.`,
+        );
+      }
+
+      if (
+        errorMessage.includes(
+          "fatal: no names found, cannot describe anything.",
+        )
+      ) {
+        throw new ExitProcessError(
+          2,
+          `Unable to determine the version using git-describe as no tags were found.\nPlease tag a version or supply a --version option.`,
+        );
+      }
     }
 
-    return version;
-  } catch (error) {
     throw new ExitProcessError(
       2,
-      `Unable to determine the version automatically. Please supply a --version argument. ${error}`,
+      `Unable to determine the version automatically: ${error}.\nPlease supply a --version argument.`,
     );
   }
+  return gitVersion;
 }
