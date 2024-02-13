@@ -71,23 +71,6 @@ export function modernToLegacyWhereClause<
   };
 }
 
-// function makeWithinBbox(field: string, bbox: BBox): SearchJsonQueryV2 {
-//   return {
-//     type: "withinBoundingBox",
-//     field,
-//     value: {
-//       topLeft: {
-//         type: "Point",
-//         coordinates: [bbox[0], bbox[3]],
-//       },
-//       bottomRight: {
-//         type: "Point",
-//         coordinates: [bbox[2], bbox[1]],
-//       },
-//     },
-//   };
-// }
-
 function makeGeoFilterBbox(
   field: string,
   bbox: BBox,
