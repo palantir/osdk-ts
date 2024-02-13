@@ -49,6 +49,7 @@ export type {
   ObjectTypeLinkTargetTypeFrom,
   ObjectTypePropertyDefinition,
   ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyDefinitionFrom2,
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
 } from "./ontology/ObjectTypeDefinition";

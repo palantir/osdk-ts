@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "..";
 import type { OntologyDefinition } from "./OntologyDefinition";
 import type { WirePropertyTypes } from "./WirePropertyTypes";
 
@@ -40,6 +41,11 @@ export type ObjectTypePropertyDefinitionFrom<
   K extends ObjectTypeKeysFrom<O>,
   P extends ObjectTypePropertyKeysFrom<O, K>,
 > = ObjectTypePropertyDefinitionsFrom<O, K>[P];
+
+export type ObjectTypePropertyDefinitionFrom2<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  P extends keyof Q["properties"] & string,
+> = Q["properties"][P];
 
 export interface ObjectTypeDefinition<
   K extends string,

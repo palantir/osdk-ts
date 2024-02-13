@@ -39,8 +39,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     };
     actions: {};
     queries: {};
-  },
-  "Todo",
+  }["objects"]["Todo"],
   {
     select: {
       locationCity: "approximateDistinct";
@@ -73,8 +72,7 @@ type Q = AggregationResultsWithoutGroups<
     };
     actions: {};
     queries: {};
-  },
-  "Todo",
+  }["objects"]["Todo"],
   {
     locationCity: "approximateDistinct";
     id: ["max", "sum"];

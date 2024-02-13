@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
-
-type Q<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  P extends ObjectTypePropertyKeysFrom<O, K>,
-> = ObjectTypeDefinitionFrom<O, K>["properties"][P]["type"] extends "string" ? K
-  : ObjectTypeDefinitionFrom<O, K>["properties"][P]["type"] extends "double" ? K
-  : never;
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 
 export type AggregatableKeys<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
 > = keyof {
-  [P in ObjectTypePropertyKeysFrom<O, K>]: any;
+  [P in keyof Q["properties"]]: any;
 };

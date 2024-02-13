@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { AggregationGroupByV2 } from "@osdk/gateway/types";
 import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
-export function modernToLegacyGroupByClause<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
->(groupByClause: GroupByClause<O, K> | undefined) {
+export function modernToLegacyGroupByClause(
+  groupByClause: GroupByClause<any> | undefined,
+) {
   if (!groupByClause) return [];
 
   return Object.entries(

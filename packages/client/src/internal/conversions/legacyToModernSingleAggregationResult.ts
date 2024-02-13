@@ -23,10 +23,10 @@ import type {
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
 export function legacyToModernSingleAggregationResult<
-  AC extends AggregationClause<any, any>,
+  AC extends AggregationClause<any>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
-): AggregationResultsWithoutGroups<any, any, AC> {
+): AggregationResultsWithoutGroups<any, AC> {
   return entry.metrics.reduce(
     (accumulator, curValue) => {
       const parts = curValue.name.split(".");
@@ -41,6 +41,6 @@ export function legacyToModernSingleAggregationResult<
 
       return accumulator;
     },
-    {} as AggregationResultsWithoutGroups<any, any, any>,
+    {} as AggregationResultsWithoutGroups<any, any>,
   );
 }

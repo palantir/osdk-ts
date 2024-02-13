@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 
 export type AggregationsResults<
-  T extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<T>,
-  AO extends AggregateOpts<T, K, any>,
+  Q extends ObjectOrInterfaceDefinition,
+  AO extends AggregateOpts<Q, any>,
 > = unknown extends AO["groupBy"] // groupBy is missing
-  ? AggregationResultsWithoutGroups<T, K, AO["select"]>
+  ? AggregationResultsWithoutGroups<Q, AO["select"]>
   : Exclude<AO["groupBy"], undefined> extends never // groupBy is explicitly undefined
-    ? AggregationResultsWithoutGroups<T, K, AO["select"]>
-  : AggregationResultsWithGroups<T, K, AO["select"], AO["groupBy"]>;
+    ? AggregationResultsWithoutGroups<Q, AO["select"]>
+  : AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>;

@@ -66,9 +66,9 @@ export interface BaseObjectSet<
   //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
   // >;
 
-  aggregateOrThrow: <const AO extends AggregateOpts<O, K, any>>(
+  aggregateOrThrow: <const AO extends AggregateOpts<Q, any>>(
     req: AO,
-  ) => Promise<AggregationsResults<O, K, AO>>;
+  ) => Promise<AggregationsResults<Q, AO>>;
 
   // @alpha
   // aggregate: <const AO extends AggregateOpts<O, K, any>>(

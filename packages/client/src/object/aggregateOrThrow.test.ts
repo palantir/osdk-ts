@@ -160,8 +160,7 @@ describe("aggregateOrThrow", () => {
         };
         actions: {};
         queries: {};
-      },
-      "Todo",
+      }["objects"]["Todo"],
       {
         locationCity: "approximateDistinct";
         text: "approximateDistinct";
@@ -189,8 +188,7 @@ describe("aggregateOrThrow", () => {
         };
         actions: {};
         queries: {};
-      },
-      "Todo",
+      }["objects"]["Todo"],
       {
         locationCity: "approximateDistinct";
         text: "approximateDistinct";

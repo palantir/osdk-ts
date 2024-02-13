@@ -39,8 +39,7 @@ export type huh = AggregatableKeys<
     };
     actions: {};
     queries: {};
-  },
-  "Todo"
+  }["objects"]["Todo"]
 >;
 
 export type Q = AggregationClause<
@@ -64,8 +63,7 @@ export type Q = AggregationClause<
     };
     actions: {};
     queries: {};
-  },
-  "Todo"
+  }["objects"]["Todo"]
 >;
 
 describe("AggregationClause", () => {

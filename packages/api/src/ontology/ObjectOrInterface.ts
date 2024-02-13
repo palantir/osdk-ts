@@ -33,7 +33,10 @@ export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
   | ObjectTypeKeysFrom<O>
   | InterfaceKeysFrom<O>;
 
-export type ObjectOrInterfaceDefinition<K extends string, L extends string> =
+export type ObjectOrInterfaceDefinition<
+  K extends string = any,
+  L extends string = any,
+> =
   | ObjectTypeDefinition<K>
   | InterfaceDefinition<K, L>;
 

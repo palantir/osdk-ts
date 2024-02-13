@@ -38,8 +38,7 @@ export type F = GroupByClause<
     };
     actions: {};
     queries: {};
-  },
-  "Todo"
+  }["objects"]["Todo"]
 >;
 
 describe("GroupByClause", () => {

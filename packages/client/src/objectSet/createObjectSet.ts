@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinitionFrom,
+  ObjectOrInterfaceKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
@@ -51,12 +55,13 @@ export function createObjectSet<
     //   throw "TODO";
     // },
     aggregateOrThrow: async <
-      AC extends AggregationClause<O, K>,
+      AC extends AggregationClause<ObjectOrInterfaceDefinitionFrom<O, K>>,
       // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<O, K, AC>,
+      AO extends AggregateOpts<ObjectOrInterfaceDefinitionFrom<O, K>, AC>,
+      Q extends ObjectOrInterfaceDefinitionFrom<O, K>,
     >(
       req: AO,
-    ): Promise<AggregationsResults<O, K, AO>> => {
+    ): Promise<AggregationsResults<Q, AO>> => {
       return aggregateOrThrow(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
