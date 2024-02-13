@@ -25,29 +25,26 @@ import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { FetchPageOrThrowArgs2 } from "./fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs2, SelectArg } from "./fetchPageOrThrow.js";
+
+export type SelectArgToKeys<A extends SelectArg<any>> = A["select"] extends
+  readonly string[] ? A["select"][number]
+  : A extends SelectArg<infer Q> ? ObjectOrInterfacePropertyKeysFrom2<Q>
+  : never;
 
 export async function pageLinkedObjectsOrThrow<
   O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O>,
-  L extends ObjectTypeLinkKeysFrom2<O["objects"][T]>,
-  Q extends O["objects"][T]["links"][L]["__Mark"],
+  T_SourceTypeKey extends ObjectTypeKeysFrom<O>,
+  T_LinkApiName extends ObjectTypeLinkKeysFrom2<O["objects"][T_SourceTypeKey]>,
+  Q extends O["objects"][T_SourceTypeKey]["links"][T_LinkApiName]["__Mark"],
   const A extends FetchPageOrThrowArgs2<Q>,
 >(
   client: ClientContext<O>,
-  sourceApiName: T & string,
+  sourceApiName: T_SourceTypeKey & string,
   primaryKey: any,
   linkTypeApiName: string,
   options: A,
-): Promise<
-  PageResult<
-    OsdkObjectFrom<
-      Q,
-      A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>
-    >
-  >
-> {
+): Promise<PageResult<OsdkObjectFrom<Q, SelectArgToKeys<A>>>> {
   const page = await listLinkedObjectsV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
