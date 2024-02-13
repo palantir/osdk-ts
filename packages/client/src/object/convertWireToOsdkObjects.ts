@@ -19,7 +19,7 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
 import { Attachment } from "./Attachment.js";
-import type { FetchPageOrThrowArgs2, SelectArg } from "./fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
 import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
 import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
@@ -81,7 +81,7 @@ function createPrototype<
                   options?.select,
                 ),
               fetchPageOrThrow: (
-                options?: FetchPageOrThrowArgs2<
+                options?: FetchPageOrThrowArgs<
                   O["objects"][typeof linkDef.targetType]
                 >,
               ) =>

@@ -35,7 +35,7 @@ export interface SelectArg<
   select?: readonly L[];
 }
 
-export interface FetchPageOrThrowArgs2<
+export interface FetchPageOrThrowArgs<
   O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
 > extends SelectArg<O, L> {
@@ -46,7 +46,7 @@ export interface FetchPageOrThrowArgs2<
 export async function fetchPageOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectOrInterfaceKeysFrom<O>,
-  const A extends FetchPageOrThrowArgs2<O["objects"][T]>,
+  const A extends FetchPageOrThrowArgs<O["objects"][T]>,
 >(
   client: ClientContext<O>,
   objectType: T & string,

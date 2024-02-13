@@ -23,7 +23,7 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { FetchPageOrThrowArgs2 } from "../object/fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
@@ -37,7 +37,7 @@ export interface ObjectSet2<O extends ObjectTypeDefinition<any>> {
   fetchPageOrThrow: <
     S extends ObjectOrInterfacePropertyKeysFrom2<O>,
   >(
-    args?: FetchPageOrThrowArgs2<O, S>,
+    args?: FetchPageOrThrowArgs<O, S>,
   ) => Promise<
     PageResult<
       OsdkObjectFrom<O, S>
@@ -61,7 +61,7 @@ export interface BaseObjectSet<
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   >(
-    args?: FetchPageOrThrowArgs2<Q, L>,
+    args?: FetchPageOrThrowArgs<Q, L>,
   ) => Promise<
     PageResult<
       Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L>

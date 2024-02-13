@@ -25,7 +25,7 @@ import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { FetchPageOrThrowArgs2, SelectArg } from "./fetchPageOrThrow.js";
+import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
 
 export type SelectArgToKeys<A extends SelectArg<any>> = A["select"] extends
   readonly string[] ? A["select"][number]
@@ -37,7 +37,7 @@ export async function pageLinkedObjectsOrThrow<
   T_SourceTypeKey extends ObjectTypeKeysFrom<O>,
   T_LinkApiName extends ObjectTypeLinkKeysFrom2<O["objects"][T_SourceTypeKey]>,
   Q extends O["objects"][T_SourceTypeKey]["links"][T_LinkApiName]["__Mark"],
-  const A extends FetchPageOrThrowArgs2<Q>,
+  const A extends FetchPageOrThrowArgs<Q>,
 >(
   client: ClientContext<O>,
   sourceApiName: T_SourceTypeKey & string,
