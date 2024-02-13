@@ -16,7 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
-import type { BBox } from "geojson";
+import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
@@ -90,6 +90,21 @@ function makeGeoFilterBbox(
         type: "Point",
         coordinates: [bbox[2], bbox[1]],
       },
+    },
+  };
+}
+
+function makeGeoFilterPolygon(
+  field: string,
+  coordinates: Position[][],
+  filterType: "intersectsPolygon" | "withinPolygon",
+): SearchJsonQueryV2 {
+  return {
+    type: filterType,
+    field,
+    value: {
+      type: "Polygon",
+      coordinates,
     },
   };
 }
@@ -168,14 +183,7 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
       const coordinates = ("polygon" in withinBody)
         ? withinBody.polygon
         : withinBody.coordinates;
-      return {
-        type: "withinPolygon",
-        field,
-        value: {
-          type: "Polygon",
-          coordinates,
-        },
-      };
+      return makeGeoFilterPolygon(field, coordinates, "withinPolygon");
     }
   }
   if (firstKey === "$intersects") {
@@ -189,14 +197,7 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
       const coordinates = ("polygon" in intersectsBody)
         ? intersectsBody.polygon
         : intersectsBody.coordinates;
-      return {
-        type: "intersectsPolygon",
-        field,
-        value: {
-          type: "Polygon",
-          coordinates,
-        },
-      };
+      return makeGeoFilterPolygon(field, coordinates, "intersectsPolygon");
     }
   }
 
