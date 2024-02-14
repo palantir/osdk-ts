@@ -87,7 +87,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as no matching tags were found.`,
+          `Unable to determine auto version using git-describe as no matching tags were found.`,
           `You can create a tag matching the configured tag prefix and try again or supply a --version option to set the version manually`,
         );
       }
