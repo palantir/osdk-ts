@@ -22,3 +22,4 @@ export { PalantirApiError } from "./PalantirApiError.js";
 export { isOk, type ResultOrError } from "./ResultOrError.js";
 export { UnknownError } from "./UnknownError.js";
 export { createFetchHeaderMutator } from "./util/createFetchHeaderMutator.js";
+export { createFetchOrThrow } from "./util/createFetchOrThrow.js";

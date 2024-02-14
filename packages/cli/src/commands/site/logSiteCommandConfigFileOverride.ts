@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type { Arguments } from "yargs";
 import type { FoundryConfig } from "../../util/config.js";
 import type { CommonSiteArgs } from "./CommonSiteArgs.js";
 
 export async function logSiteCommandConfigFileOverride(
-  argv: Arguments<CommonSiteArgs>,
+  args: Arguments<CommonSiteArgs>,
   config: FoundryConfig | undefined,
 ) {
-  const Consola = await import("consola");
-  const consola = Consola.consola;
-
   if (
     config?.site.application != null
-    && argv.application !== config.site.application
+    && args.application !== config.site.application
   ) {
     consola.debug(
-      `Overriding "application" from config file with ${argv.application}`,
+      `Overriding "application" from config file with ${args.application}`,
     );
   }
 
-  if (config?.foundryUrl != null && argv.foundryUrl !== config.foundryUrl) {
+  if (config?.foundryUrl != null && args.foundryUrl !== config.foundryUrl) {
     consola.debug(
-      `Overriding "foundryUrl" from config file with ${argv.foundryUrl}`,
+      `Overriding "foundryUrl" from config file with ${args.foundryUrl}`,
     );
   }
 }

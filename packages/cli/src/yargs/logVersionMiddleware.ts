@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;
 export async function logVersionMiddleware(args: CliCommonArgs) {
   if (firstTime) {
     firstTime = false;
-    const Consola = await import("consola");
     // This will be called before any command is executed
-    const consola = Consola.consola;
-
     consola.info(
       `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
     );

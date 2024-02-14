@@ -16,13 +16,14 @@
 
 import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
+import type { VersionListArgs } from "./VersionListArgs.js";
 
 const command: CommandModule<
   CommonSiteArgs,
-  CommonSiteArgs
+  VersionListArgs
 > = {
   command: "list",
-  describe: "List application versions",
+  describe: "List site versions",
   builder: (argv) => {
     return argv;
   },

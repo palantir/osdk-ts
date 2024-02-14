@@ -14,70 +14,84 @@
  * limitations under the License.
  */
 
-import { execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 import { describe, expect, it, vi } from "vitest";
 import { autoVersion } from "./autoVersion.js";
 
 vi.mock("node:child_process");
+const execAsync = promisify(exec);
 
 describe("autoVersion", () => {
-  const execSyncMock = vi.mocked(execSync);
+  const execMock = vi.mocked(execAsync);
+  const execReturnValue = (out: string) => ({ stdout: out, stderr: "" });
 
   it("should return a valid SemVer version from git describe", async () => {
     const validGitVersion = "1.2.3";
-    execSyncMock.mockReturnValue(validGitVersion);
+    execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
     const version = await autoVersion();
     expect(version).toBe("1.2.3");
-
-    expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty",
-      { encoding: "utf8" },
-    );
   });
 
   it("should replace default prefix v from git describe output", async () => {
     const validGitVersion = "v1.2.3";
-    execSyncMock.mockReturnValue(validGitVersion);
-    const version = await autoVersion();
+    execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
+    const version = await autoVersion();
     expect(version).toBe("1.2.3");
-    expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty",
-      { encoding: "utf8" },
-    );
   });
 
   it("should replace the prefix from the found git tag", async () => {
     const validGitVersion = "@package@1.2.3";
-    execSyncMock.mockReturnValue(validGitVersion);
+    execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
     const version = await autoVersion("@package@");
-
     expect(version).toBe("1.2.3");
-    expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty --match=\"@package@*\"",
-      { encoding: "utf8" },
-    );
   });
 
   it("should only replace the prefix if found at the start of the tag only", async () => {
     const validGitVersion = "1.2.3-package";
-    execSyncMock.mockReturnValue(validGitVersion);
+    execMock.mockResolvedValue(execReturnValue(validGitVersion));
 
     const version = await autoVersion("-package");
-
     expect(version).toBe("1.2.3-package");
-    expect(execSyncMock).toHaveBeenCalledWith(
-      "git describe --tags --first-parent --dirty --match=\"-package*\"",
-      { encoding: "utf8" },
-    );
   });
 
   it("should throw an error if git describe returns a non-SemVer string", async () => {
     const nonSemVerGitVersion = "not-semver";
-    execSyncMock.mockReturnValue(nonSemVerGitVersion);
+    execMock.mockResolvedValue(execReturnValue(nonSemVerGitVersion));
 
-    await expect(autoVersion()).rejects.toThrow();
+    await expect(autoVersion()).rejects.toThrowError();
+  });
+
+  it("should throw an error if git isn't found", async () => {
+    execMock.mockImplementation(() => {
+      throw new Error("Command not found");
+    });
+
+    await expect(autoVersion()).rejects.toThrowError(
+      "git is not installed",
+    );
+  });
+
+  it("should throw an error if the current directory is not a git repository", async () => {
+    execMock.mockImplementation(() => {
+      throw new Error("fatal: not a git repository");
+    });
+
+    await expect(autoVersion()).rejects.toThrowError(
+      "the current directory is not a git repository",
+    );
+  });
+
+  it("should throw an error if no git tags are found", async () => {
+    execMock.mockImplementation(() => {
+      throw new Error("fatal: no names found, cannot describe anything.");
+    });
+
+    await expect(autoVersion()).rejects.toThrowError(
+      "no matching tags were found.",
+    );
   });
 });

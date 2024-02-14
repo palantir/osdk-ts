@@ -17,5 +17,5 @@
 import type { CliCommonArgs } from "../../CliCommonArgs.js";
 
 export interface CommonAuthArgs extends CliCommonArgs {
-  baseUrl: string;
+  foundryUrl: string;
 }
