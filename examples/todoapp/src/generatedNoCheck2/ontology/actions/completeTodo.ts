@@ -1,6 +1,43 @@
-import { ActionDefinition } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
+import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type { TodoDef } from '../objects';
 
-export const completeTodo = {
+// Represents the definition of the parameters for the action
+export type ActionDef$completeTodo$Params = {
+  Todo: {
+    type: ObjectActionDataType<'Todo', TodoDef>;
+    multiplicity: false;
+    nullable: false;
+    description: 'A todo Object';
+  };
+  is_complete: {
+    type: 'boolean';
+    multiplicity: false;
+    nullable: false;
+  };
+};
+
+// Represents the runtime arguments for the action
+export type completeTodo$Params = NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>;
+
+// Represents a fqn of the action
+export interface completeTodo {
+  /**
+   * Completes Todo
+   */
+  <OP extends ApplyActionOptions>(args: completeTodo$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+}
+
+// Represents the definition of the action
+export interface ActionDef$completeTodo extends ActionDefinition<'completeTodo', 'Todo', completeTodo> {
+  type: 'action';
+  apiName: 'completeTodo';
+  description: 'Completes Todo';
+  modifiedEntities: { Todo: { created: false; modified: true } };
+  parameters: ActionDef$completeTodo$Params;
+}
+
+export const completeTodo: ActionDef$completeTodo = {
   type: 'action',
   apiName: 'completeTodo',
   parameters: {
@@ -26,4 +63,4 @@ export const completeTodo = {
       modified: true,
     },
   },
-} satisfies ActionDefinition<'completeTodo', 'Todo'>;
+};

@@ -18,14 +18,21 @@ import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
+import { deleteUndefineds } from "../util/deleteUndefineds";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { getDescriptionIfPresent } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
+
+function stringifyWithoutOutterBraces(obj: any) {
+  return JSON.stringify(obj, null, 2).replace(/^\{\n/, "").replace(/\n\}$/, "");
+}
 
 export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
-  importExt: string = "",
+  importExt: string,
+  v2: boolean,
 ) {
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
@@ -33,26 +40,114 @@ export async function generatePerActionDataFiles(
       const uniqueApiNames = new Set(
         extractReferencedObjectsFromAction(action),
       );
+
+      const uniqueApiNamesString = uniqueApiNames.size > 0
+        ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join("|")
+        : "never";
+
+      const fullActionDef = deleteUndefineds(
+        wireActionTypeV2ToSdkActionDefinition(action),
+      );
+
+      const { parameters, ...actionDefSansParameters } = fullActionDef;
+
+      const actionDefIdentifier = `ActionDef$${action.apiName}`;
+      const paramsDefIdentifier = `${actionDefIdentifier}$Params`;
+      const paramsIdentifier = `${action.apiName}$Params`;
+
+      function createInterface() {
+        // the params must be a `type` to align properly with the `ActionDefinition` interface
+        // this way we can generate a strict type for the function itself and reference it from the Aciton Definition
+        return `
+        
+          // Represents the definition of the parameters for the action
+          export type ${paramsDefIdentifier} = {
+            ${
+          Object.entries(parameters)
+            .map(([key, value]) => {
+              const { type, ...remain } = value;
+
+              let q;
+
+              if (typeof type === "string") {
+                q = JSON.stringify(type);
+              } else if (type.type === "object") {
+                q = `ObjectActionDataType<"${type.object}", ${type.object}Def>`;
+              } else if (type.type === "objectSet") {
+                q =
+                  `ObjectSetActionDataType<"${type.objectSet}", ${type.objectSet}Def>`;
+              }
+
+              return `"${key}": {
+                type: ${q};
+                ${stringifyWithoutOutterBraces(remain)}
+              }
+              `;
+            })
+            .join(";\n")
+        }
+          }
+
+          // Represents the runtime arguments for the action
+          export type ${paramsIdentifier} = NOOP<OsdkActionParameters<${paramsDefIdentifier}>>;
+
+          
+          // Represents a fqn of the action
+          export interface ${action.apiName} {
+            ${getDescriptionIfPresent(action.description)}
+             <OP extends ApplyActionOptions>(args: ${paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+          }
+
+          
+          // Represents the definition of the action
+          export interface ${actionDefIdentifier} extends ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}, ${action.apiName}>{
+          ${
+          Object.entries(actionDefSansParameters).map(([key, value]) => {
+            return `${key}: ${JSON.stringify(value)};`;
+          }).join("\n")
+        }
+          parameters: ${paramsDefIdentifier}
+        }`;
+      }
+
+      function createV2Object() {
+        return `  export const ${action.apiName}: ${actionDefIdentifier} = ${
+          JSON.stringify(fullActionDef, null, 2)
+        } `;
+      }
+
+      function createV1Object() {
+        return `  export const ${action.apiName} = ${
+          JSON.stringify(fullActionDef, null, 2)
+        } satisfies ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}>;`;
+      }
+
+      const referencedObjectDefs = new Set();
+      for (const p of Object.values(action.parameters)) {
+        if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
+          referencedObjectDefs.add(p.dataType.objectApiName + "Def");
+          referencedObjectDefs.add(p.dataType.objectTypeApiName + "Def");
+        }
+      }
+
+      const importObjects = referencedObjectDefs.size > 0
+        ? `import type {${
+          [...referencedObjectDefs].join(",")
+        }} from "../objects${importExt}";`
+        : "";
+
       await fs.writeFile(
         path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
-          import { ActionDefinition } from "@osdk/api";
-  
-           export const ${action.apiName} = ${
-          JSON.stringify(
-            wireActionTypeV2ToSdkActionDefinition(
-              action,
-            ),
-            null,
-            2,
-          )
-        } satisfies ActionDefinition<"${action.apiName}", ${
-          uniqueApiNames.size > 0
-            ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join(
-              "|",
-            )
-            : "never"
-        }>;`),
+          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
+          import type { ActionSignature, ApplyActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client';
+          ${importObjects}
+
+        
+          ${v2 ? createInterface() : ""}
+
+          ${v2 ? createV2Object() : createV1Object()}
+        `),
       );
     }),
   );

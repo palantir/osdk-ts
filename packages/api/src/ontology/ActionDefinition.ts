@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "..";
+
 export interface ActionDefinition<
   A extends string,
   K extends string,
+  T = never, // used in client 2
 > {
+  __OsdkActionType?: T;
   type: "action";
   apiName: A;
   description?: string;
   displayName?: string;
-  parameters: Record<string, ActionParameterDefinition<K>>;
+  parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
 }
 
@@ -42,23 +46,37 @@ export interface ValidBaseActionParameterTypes {
   attachment: any;
 }
 
-export interface ObjectActionDataType<K extends string> {
+export interface ObjectActionDataType<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> {
+  __OsdkTargetType?: T_Target;
   type: "object";
   object: K;
 }
 
-export interface ObjectSetActionDataType<K extends string> {
+export interface ObjectSetActionDataType<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> {
+  __OsdkTargetType?: T_Target;
   type: "objectSet";
   objectSet: K;
 }
 
-export type ValidActionParameterTypes<K extends string = never> =
+export type ValidActionParameterTypes<
+  K extends string = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> =
   | keyof ValidBaseActionParameterTypes
-  | ObjectActionDataType<K>
-  | ObjectSetActionDataType<K>;
+  | ObjectActionDataType<K, T_Target>
+  | ObjectSetActionDataType<K, T_Target>;
 
-export interface ActionParameterDefinition<K extends string = never> {
-  type: ValidActionParameterTypes<K>;
+export interface ActionParameterDefinition<
+  K extends string = never,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> {
+  type: ValidActionParameterTypes<K, T_Target>;
   description?: string;
   multiplicity?: boolean;
   nullable?: boolean;

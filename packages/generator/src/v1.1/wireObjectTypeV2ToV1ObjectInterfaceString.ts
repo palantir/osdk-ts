@@ -36,9 +36,8 @@ ${
     ).join("\n")
   }
 
-  ${
-    getDescriptionIfPresent(objectTypeWithLinks.objectType.description)
-  }export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
+  ${getDescriptionIfPresent(objectTypeWithLinks.objectType.description)}
+  export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
   readonly __apiName: "${objectTypeWithLinks.objectType.apiName}";
   readonly __primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(
@@ -57,7 +56,7 @@ ${
       );
       const entries = [
         `${
-          getDescriptionIfPresent(propertyDefinition.description)
+          getDescriptionIfPresent(propertyDefinition.description, true)
         }readonly ${propertyName}: ${propertyType} | undefined`,
       ];
 
@@ -129,11 +128,14 @@ function wirePropertyTypeV2ToTypeScriptType(
   }
 }
 
-function getDescriptionIfPresent(description?: string) {
+export function getDescriptionIfPresent(
+  description?: string,
+  includeNewline?: boolean,
+) {
   if (description) {
     return `/**
  * ${description}
- */\n`;
+ */${includeNewline ? "\n" : ""}`;
   }
   return "";
 }

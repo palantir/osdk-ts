@@ -15,8 +15,8 @@
  */
 
 import type {
+  ActionParameterDefinition,
   ObjectActionDataType,
-  ObjectOrInterfaceDefinitionFrom,
   ObjectSetActionDataType,
   OntologyDefinition,
   WirePropertyTypes,
@@ -34,90 +34,63 @@ import type {
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
-import type {
-  ActionReturnTypeForOptions,
-  ApplyActionOptions,
-} from "./applyAction.js";
+import type { ActionReturnTypeForOptions } from "./applyAction.js";
 
-type ActionKeysFrom<O extends OntologyDefinition<any>> = keyof O["actions"];
-
-type ActionDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-> = O["actions"][K];
-
-type ActionParameterKeysFrom<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-> = keyof ActionDefinitionFrom<O, K>["parameters"];
-
-type ActionParameterDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-  P extends keyof O["actions"][K]["parameters"],
-> = ActionDefinitionFrom<O, K>["parameters"][P];
-
-type ActionParameterTypeFrom<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-  P extends ActionParameterKeysFrom<O, K>,
-> = ActionParameterDefinitionFrom<O, K, P>["type"];
+export type ApplyActionOptions =
+  | { returnEdits?: true; validateOnly?: false }
+  | {
+    validateOnly?: true;
+    returnEdits?: false;
+  };
 
 // we have to override the @osdk/api WirePropertyTypes to specify how we handle the Attachment types
 interface OverrideWirePropertyTypes extends WirePropertyTypes {
   attachment: Attachment;
 }
+// THIS IS IT
+type BaseType<APD extends ActionParameterDefinition<any, any>> =
+  APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
+      | OsdkObjectFrom<TTargetType>
+      | OsdkObjectPrimaryKeyType<TTargetType>
+    : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
+      ? ObjectSet<TTargetType>
+    : APD["type"] extends keyof OverrideWirePropertyTypes
+      ? OverrideWirePropertyTypes[APD["type"]]
+    : never;
 
-type OsdkActionParameterBaseType<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-  P extends keyof O["actions"][K]["parameters"],
-> = ActionParameterTypeFrom<O, K, P> extends
-  ObjectActionDataType<infer TObjectName> ?
-    | OsdkObjectFrom<O["objects"][TObjectName]>
-    | OsdkObjectPrimaryKeyType<O["objects"][TObjectName]>
-  : ActionParameterTypeFrom<O, K, P> extends
-    ObjectSetActionDataType<infer TObjectName>
-    ? ObjectSet<ObjectOrInterfaceDefinitionFrom<O, TObjectName>>
-  : ActionParameterTypeFrom<O, K, P> extends keyof OverrideWirePropertyTypes
-    ? OverrideWirePropertyTypes[ActionParameterTypeFrom<O, K, P>]
-  : never;
+type MaybeArrayType<APD extends ActionParameterDefinition<any, any>> =
+  APD["multiplicity"] extends true ? Array<BaseType<APD>>
+    : BaseType<APD>;
 
-type OsdkActionParameterMaybeArrayType<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-  P extends ActionParameterKeysFrom<O, K>,
-> = ActionParameterDefinitionFrom<O, K, P>["multiplicity"] extends true
-  ? Array<OsdkActionParameterBaseType<O, K, P>>
-  : OsdkActionParameterBaseType<O, K, P>;
-
-type OsdkActionParametersNotOptional<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-> = {
-  [P in ActionParameterKeysFrom<O, K>]: OsdkActionParameterMaybeArrayType<
-    O,
-    K,
-    P
-  >;
+type NotOptionalParams<X extends ActionParametersDefinition> = {
+  [P in keyof X]: MaybeArrayType<X[P]>;
 };
 
-type OsdkActionParameters<
-  O extends OntologyDefinition<any>,
-  K extends ActionKeysFrom<O>,
-> = NullableProps<ActionDefinitionFrom<O, K>["parameters"]> extends never
-  ? OsdkActionParametersNotOptional<O, K>
-  : PartialByNotStrict<
-    OsdkActionParametersNotOptional<O, K>,
-    NullableProps<ActionDefinitionFrom<O, K>["parameters"]>
-  >;
+export type OsdkActionParameters<
+  X extends ActionParametersDefinition,
+> = NullableProps<X> extends never ? NotOptionalParams<X>
+  : PartialByNotStrict<NotOptionalParams<X>, NullableProps<X>>;
 
 export type Actions<O extends OntologyDefinition<any>> = {
-  [K in ActionKeysFrom<O>]: <OP extends ApplyActionOptions>(
-    args: NOOP<OsdkActionParameters<O, K>>,
-    options?: OP,
-  ) => Promise<ActionReturnTypeForOptions<OP>>;
+  [K in keyof O["actions"]]:
+    NonNullable<O["actions"][K]["__OsdkActionType"]> extends never
+      ? ActionSignature<O["actions"][K]["parameters"]>
+      : NonNullable<O["actions"][K]["__OsdkActionType"]>;
 };
+
+type ActionParametersDefinition = Record<
+  any,
+  ActionParameterDefinition<any, any>
+>;
+
+export type ActionSignature<
+  X extends Record<any, ActionParameterDefinition<any, any>>,
+> = <
+  OP extends ApplyActionOptions,
+>(
+  args: NOOP<OsdkActionParameters<X>>,
+  options?: OP,
+) => Promise<ActionReturnTypeForOptions<OP>>;
 
 export type ActionEditResponse = ActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;

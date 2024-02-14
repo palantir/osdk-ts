@@ -29,19 +29,19 @@ export type OsdkObjectPrimaryKeyType<
 > = WirePropertyTypes[O["primaryKeyType"]];
 
 type OsdkCommonFrom<
-  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<O> =
-    ObjectOrInterfacePropertyKeysFrom2<O>,
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
 > =
   & {
     [P in L]: OsdkObjectPropertyType<
-      O["properties"][P]
+      Q["properties"][P]
     >;
   }
   & {
-    __apiName: O["apiName"];
-    __primaryKey: O extends ObjectTypeDefinition<any>
-      ? OsdkObjectPrimaryKeyType<O>
+    __apiName: Q["apiName"];
+    __primaryKey: Q extends ObjectTypeDefinition<any>
+      ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
     // $uniqueId: string; // will be dynamic
 
