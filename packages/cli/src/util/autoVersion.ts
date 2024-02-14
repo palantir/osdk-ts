@@ -75,7 +75,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as the current directory is not a git repository.`,
+          `Unable to determine auto version using git-describe as the current directory is not a git repository.`,
           `You can run the command in a git respository and try again or supply a --version option`,
         );
       }
