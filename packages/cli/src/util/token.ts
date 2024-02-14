@@ -64,7 +64,7 @@ export async function loadToken(
   throw new ExitProcessError(
     2,
     `No token found.`,
-    `You can supply a --token option, a --token-file option or set the ${
+    `You can supply a --token or --token-file option, or set the ${
       TOKEN_ENV_VARS[0]
     } environment variable`,
   );
