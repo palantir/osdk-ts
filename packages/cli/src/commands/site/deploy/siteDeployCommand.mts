@@ -31,8 +31,17 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
+import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";
-import type { SiteDeployCommandHandlerArgs } from "./SiteDeployCommandHandlerArgs.js";
+import type { SiteDeployArgs } from "./SiteDeployArgs.js";
+
+interface SiteDeployInternalArgs
+  extends Omit<SiteDeployArgs, "version" | "autoVersion">
+{
+  selectedVersion: string | AutoVersionConfig;
+  directory: string;
+  uploadOnly: boolean;
+}
 
 export default async function siteDeployCommand(
   {
@@ -43,7 +52,7 @@ export default async function siteDeployCommand(
     directory,
     token,
     tokenFile,
-  }: SiteDeployCommandHandlerArgs,
+  }: SiteDeployInternalArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

@@ -15,7 +15,11 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
+import type {
+  AutoVersionConfigType,
+  LoadedFoundryConfig,
+  SiteConfig,
+} from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
@@ -57,6 +61,7 @@ const command: CommandModule<
             : {},
         },
         autoVersion: {
+          coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
           choices: ["git-describe"],
           description: "Enable auto versioning",
@@ -118,13 +123,14 @@ const command: CommandModule<
   },
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
+    const { version, autoVersion, gitTagPrefix, ...restArgs } = args;
     const selectedVersion = args.version != null
       ? args.version
       : {
-        type: args.autoVersion as "git-describe",
+        type: args.autoVersion!,
         tagPrefix: args.gitTagPrefix,
       };
-    await command.default({ ...args, selectedVersion });
+    await command.default({ ...restArgs, selectedVersion });
   },
 };
 

@@ -23,7 +23,7 @@ export interface GitDescribeAutoVersionConfig {
   tagPrefix?: string;
 }
 export type AutoVersionConfig = GitDescribeAutoVersionConfig;
-
+export type AutoVersionConfigType = AutoVersionConfig["type"];
 export interface SiteConfig {
   application: string;
   directory: string;
