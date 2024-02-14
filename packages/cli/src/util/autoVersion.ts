@@ -65,7 +65,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as git is not installed or found in the PATH.`,
+          "Unable to determine auto version using git-describe as git is not installed or found in the PATH.",
           `You can set up git and try again or supply a --version option to set the version manually`,
         );
       }
