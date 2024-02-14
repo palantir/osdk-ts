@@ -65,7 +65,8 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as git is not installed or found in the PATH.\nPlease correctly configure git or supply a --version option.`,
+          `Unable to determine the version using git-describe as git is not installed or found in the PATH.`,
+          `You can correctly configure git and try again or supply a --version option`,
         );
       }
 
@@ -74,7 +75,8 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as the current directory is not a git repository.\nPlease run the command in a git respository or supply a --version option.`,
+          `Unable to determine the version using git-describe as the current directory is not a git repository.`,
+          `You can run the command in a git respository and try again or supply a --version option`,
         );
       }
 
@@ -85,14 +87,16 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as no matching tags were found.\nPlease tag a matching version or supply a --version option.`,
+          `Unable to determine the version using git-describe as no matching tags were found.`,
+          `You can tag a matching version and try again or supply a --version option`,
         );
       }
     }
 
     throw new ExitProcessError(
       2,
-      `Unable to determine the version automatically: ${error}.\nPlease supply a --version option.`,
+      `Unable to determine the version automatically: ${error}.`,
+      `You can supply a --version option to set the version manually`,
     );
   }
 
