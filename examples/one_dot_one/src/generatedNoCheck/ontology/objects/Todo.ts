@@ -18,12 +18,15 @@ export interface Todo extends OntologyObject {
 }
 
 import type { PersonDef } from './Person';
-export interface TodoDef extends ObjectTypeDefinition<'Todo'> {
+
+export interface TodoDef extends ObjectTypeDefinition<'Todo', Todo> {
   type: 'object';
   apiName: 'Todo';
   description: 'Its a todo item.';
   primaryKeyType: 'integer';
-  links: { Assignee: ObjectTypeLinkDefinition<PersonDef, false> };
+  links: {
+    Assignee: ObjectTypeLinkDefinition<PersonDef, false>;
+  };
   properties: {
     id: {
       multiplicity: false;

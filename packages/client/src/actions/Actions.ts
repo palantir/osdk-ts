@@ -27,10 +27,7 @@ import type {
 } from "@osdk/gateway/types";
 import type { ObjectSet } from "../index.js";
 import type { Attachment } from "../object/Attachment.js";
-import type {
-  OsdkObjectFrom,
-  OsdkObjectPrimaryKeyType,
-} from "../OsdkObjectFrom.js";
+import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
@@ -50,7 +47,7 @@ interface OverrideWirePropertyTypes extends WirePropertyTypes {
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
-      | OsdkObjectFrom<TTargetType>
+      | Osdk<TTargetType>
       | OsdkObjectPrimaryKeyType<TTargetType>
     : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
       ? ObjectSet<TTargetType>

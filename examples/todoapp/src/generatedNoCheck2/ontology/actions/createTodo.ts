@@ -4,13 +4,13 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionPa
 // Represents the definition of the parameters for the action
 export type ActionDef$createTodo$Params = {
   Todo: {
-    type: 'string';
     multiplicity: false;
+    type: 'string';
     nullable: false;
   };
   is_complete: {
-    type: 'boolean';
     multiplicity: false;
+    type: 'boolean';
     nullable: false;
   };
 };

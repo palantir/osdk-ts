@@ -1,38 +1,38 @@
 import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
-import type { PersonDef, TodoDef } from '../objects.js';
+import type { Person, Todo } from '../objects.js';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$actionTakesAllParameterTypes$Params = {
   objectSet: {
-    type: ObjectSetActionDataType<'Todo', TodoDef>;
     multiplicity: false;
+    type: ObjectSetActionDataType<'Todo', Todo>;
     nullable: false;
   };
   object: {
-    type: ObjectActionDataType<'Person', PersonDef>;
     multiplicity: false;
+    type: ObjectActionDataType<'Person', Person>;
     nullable: true;
     description: 'A person Object';
   };
   string: {
-    type: 'string';
     multiplicity: false;
+    type: 'string';
     nullable: false;
   };
   'time-stamp': {
-    type: 'timestamp';
     multiplicity: false;
+    type: 'timestamp';
     nullable: false;
   };
   dateArray: {
-    type: 'datetime';
     multiplicity: true;
+    type: 'datetime';
     nullable: true;
   };
   attachmentArray: {
-    type: 'attachment';
     multiplicity: true;
+    type: 'attachment';
     nullable: false;
   };
 };

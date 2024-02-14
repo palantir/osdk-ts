@@ -14,41 +14,30 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom2,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { MultiLinkReturnType } from "../definitions/LinkDefinitions.js";
+import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
-
-export type SelectArgToKeys<A extends SelectArg<any>> = A["select"] extends
-  readonly string[] ? A["select"][number]
-  : A extends SelectArg<infer Q> ? ObjectOrInterfacePropertyKeysFrom2<Q>
-  : never;
+import type { FetchPageOrThrowArgs } from "./fetchPageOrThrow.js";
 
 export async function pageLinkedObjectsOrThrow<
-  O extends OntologyDefinition<any>,
-  T_SourceTypeKey extends ObjectTypeKeysFrom<O>,
-  T_LinkApiName extends ObjectTypeLinkKeysFrom2<O["objects"][T_SourceTypeKey]>,
-  Q extends O["objects"][T_SourceTypeKey]["links"][T_LinkApiName]["__Mark"],
-  const A extends FetchPageOrThrowArgs<Q>,
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  const A extends FetchPageOrThrowArgs<LinkedType<Q, L>>,
 >(
-  client: ClientContext<O>,
-  sourceApiName: T_SourceTypeKey & string,
+  client: ClientContext<any>,
+  source: Q,
   primaryKey: any,
-  linkTypeApiName: string,
-  options: A,
-): Promise<PageResult<OsdkObjectFrom<Q, SelectArgToKeys<A>>>> {
+  linkTypeApiName: L,
+  options?: A,
+): MultiLinkReturnType<LinkedType<Q, L>, A> {
   const page = await listLinkedObjectsV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
-    sourceApiName,
+    source.apiName,
     primaryKey,
     linkTypeApiName,
     {
@@ -66,6 +55,6 @@ export async function pageLinkedObjectsOrThrow<
 
   return {
     nextPageToken: page.nextPageToken,
-    data: page.data as OsdkObjectFrom<Q>[],
-  };
+    data: page.data as any[],
+  } as PageResult<any> as any;
 }

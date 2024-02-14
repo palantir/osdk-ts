@@ -15,7 +15,13 @@
  */
 
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import { deleteUndefineds } from "../util/deleteUndefineds";
+import { stringify } from "../util/stringify";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
+
+export function getObjectDefIdentifier(name: string, v2: boolean) {
+  return v2 ? name : `${name}Def`;
+}
 
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConst(
@@ -27,48 +33,88 @@ export function wireObjectTypeV2ToSdkObjectConst(
     object.linkTypes.map(a => a.objectTypeApiName),
   );
 
-  const definition = wireObjectTypeV2ToSdkObjectDefinition(
-    object,
+  const definition = deleteUndefineds(
+    wireObjectTypeV2ToSdkObjectDefinition(
+      object,
+      v2,
+    ),
+  );
+
+  const objectDefIdentifier = getObjectDefIdentifier(
+    object.objectType.apiName,
     v2,
   );
 
+  function getV1Types() {
+    return `
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}> {
+        ${
+      stringify(definition, {
+        links: (_value) =>
+          `{
+          ${
+            stringify(definition.links, {
+              "*": (definition) =>
+                `ObjectTypeLinkDefinition<${
+                  getObjectDefIdentifier(definition.targetType, v2)
+                }, ${definition.multiplicity}>`,
+            })
+          }
+        }`,
+      })
+    }
+      }
+    `;
+  }
+
+  function getV2Types() {
+    return `
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}> {
+        ${
+      stringify(definition, {
+        type: () => undefined,
+        apiName: () => undefined,
+        links: (_value) =>
+          `{
+          ${
+            stringify(definition.links, {
+              "*": (definition) =>
+                `ObjectTypeLinkDefinition<${
+                  getObjectDefIdentifier(definition.targetType, v2)
+                }, ${definition.multiplicity}>`,
+            })
+          }
+        }`,
+        properties: (_value) => (`{
+          ${
+          stringify(definition.properties, {
+            "*": (propertyDefinition) =>
+              `PropertyDef<"${propertyDefinition.type}", "${
+                propertyDefinition.nullable ? "nullable" : "non-nullable"
+              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
+          })
+        }
+        }`),
+      })
+    }
+      }
+
+    `;
+  }
+
   const imports = Array.from(uniqueLinkTargetTypes).filter(type =>
     type !== definition.apiName
-  ).map(type => `import type { ${type}Def } from "./${type}${importExt}";`);
+  ).map(type =>
+    `import type { ${
+      getObjectDefIdentifier(type, v2)
+    } } from "./${type}${importExt}";`
+  );
 
-  return `
-  ${imports.join("\n")}
-    export interface ${object.objectType.apiName}Def extends ObjectTypeDefinition<"${object.objectType.apiName}"> {
-      type: "${definition.type}",
-      apiName: "${definition.apiName}",
-      ${
-    definition.description != null
-      ? `description: ${JSON.stringify(definition.description)},`
-      : ""
-  }
-      primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
-      links: {${
-    Object.entries(definition.links).map(
-      (
-        [linkApiName, definition],
-      ) =>
-        `${linkApiName}: ObjectTypeLinkDefinition<${definition.targetType}Def, ${definition.multiplicity}>`,
-    ).join(",\n")
-  }
-  },
-      properties: ${JSON.stringify(definition.properties, null, 2)},
-    }
+  return `${imports.join("\n")}
 
-    export const ${object.objectType.apiName}: ${object.objectType.apiName}Def = {
-      type: "${definition.type}",
-      apiName: "${definition.apiName}",
-      ${
-    definition.description != null
-      ? `description: ${JSON.stringify(definition.description)},`
-      : ""
-  }
-      primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
-      links: ${JSON.stringify(definition.links, null, 2)},
-      properties: ${JSON.stringify(definition.properties, null, 2)},
+    ${v2 ? getV2Types() : getV1Types()}
+
+    export const ${object.objectType.apiName}: ${objectDefIdentifier} = {
+      ${stringify(definition)}
     };`;
 }

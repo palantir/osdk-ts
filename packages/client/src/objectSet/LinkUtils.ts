@@ -16,6 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 
-export type LinkTypesFrom<
+export type LinkNames<Q extends ObjectOrInterfaceDefinition> =
+  & keyof Q["links"]
+  & string;
+
+export type LinkedType<
   Q extends ObjectOrInterfaceDefinition,
-> = keyof Q["links"];
+  L extends keyof Q["links"] & string,
+> = NonNullable<Q["links"][L]["__OsdkLinkTargetType"]>;
