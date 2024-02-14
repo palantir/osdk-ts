@@ -47,7 +47,7 @@ export type ApplyActionOptions =
 interface OverrideWirePropertyTypes extends WirePropertyTypes {
   attachment: Attachment;
 }
-// THIS IS IT
+
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
       | OsdkObjectFrom<TTargetType>
