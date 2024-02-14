@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Debug log site zip stats
+  links:
+  - https://github.com/palantir/osdk-ts/pull/49

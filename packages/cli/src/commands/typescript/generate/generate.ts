@@ -23,7 +23,7 @@ export const command: CommandModule<
   TypescriptGenerateArgs
 > = {
   command: "generate",
-  describe: "Generate typescript from ontology",
+  describe: "Generate TypeScript SDK from ontology",
   builder: (argv) => {
     return argv
       .options(
@@ -84,14 +84,14 @@ export const command: CommandModule<
         "OR Generate from Foundry",
       )
       .check(
-        (argv) => {
-          if (!argv.ontologyPath && !argv.foundryUrl) {
+        (args) => {
+          if (!args.ontologyPath && !args.foundryUrl) {
             throw new Error(
               "Error: Must specify either ontologyPath or foundryUrl and clientId",
             );
           }
 
-          if (argv.version !== "dev" && !isValidSemver(argv.version)) {
+          if (args.version !== "dev" && !isValidSemver(args.version)) {
             throw new Error(
               "Error: Version must be 'dev' or a valid semver version",
             );

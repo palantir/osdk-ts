@@ -16,21 +16,27 @@
 
 import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
-import type { SiteVersionArgs } from "../SiteVersionArgs.js";
+import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
 const command: CommandModule<
   CommonSiteArgs,
-  SiteVersionArgs
+  VersionDeleteArgs
 > = {
   command: "delete <version>",
-  describe: "Delete the specified site version.",
+  describe: "Delete site version",
   builder: (argv) => {
     return argv
       .positional("version", {
         type: "string",
         demandOption: true,
         description: "Version to set as live",
-      });
+      })
+      .option("yes", {
+        alias: "y",
+        type: "boolean",
+        description: "Automatically confirm destructive changes",
+      })
+      .group(["yes"], "Delete Options");
   },
   handler: async (args) => {
     const command = await import("./versionDeleteCommand.mjs");
