@@ -33,7 +33,7 @@ export async function loadToken(
   tokenFile?: string,
 ): Promise<string> {
   if (token) {
-    consola.debug(`Using token from --token argument`);
+    consola.debug(`Using token from --token option`);
     validate(token);
     return token;
   }
@@ -41,7 +41,7 @@ export async function loadToken(
   if (tokenFile) {
     const loadedToken = await loadTokenFile(tokenFile);
     consola.debug(
-      `Using token from --tokenFile=${loadedToken.filePath} argument`,
+      `Using token from --tokenFile=${loadedToken.filePath} option`,
     );
     validate(loadedToken.token);
     return loadedToken.token;
@@ -63,9 +63,10 @@ export async function loadToken(
 
   throw new ExitProcessError(
     2,
-    `No token found. Please supply a --token argument, a --token-file argument or set the ${
+    `No token found.`,
+    `You can supply a --token or --token-file option, or set the ${
       TOKEN_ENV_VARS[0]
-    } environment variable.`,
+    } environment variable`,
   );
 }
 

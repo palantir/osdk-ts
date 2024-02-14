@@ -71,7 +71,7 @@ describe("autoVersion", () => {
     });
 
     await expect(autoVersion()).rejects.toThrowError(
-      "Unable to determine the version using git-describe as git is not installed",
+      "git is not installed",
     );
   });
 
@@ -81,7 +81,7 @@ describe("autoVersion", () => {
     });
 
     await expect(autoVersion()).rejects.toThrowError(
-      "Unable to determine the version using git-describe as the current directory is not a git repository",
+      "the current directory is not a git repository",
     );
   });
 
@@ -91,7 +91,7 @@ describe("autoVersion", () => {
     });
 
     await expect(autoVersion()).rejects.toThrowError(
-      "Unable to determine the version using git-describe as no matching tags were found.",
+      "no matching tags were found.",
     );
   });
 });
