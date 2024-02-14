@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-import type { ActionParameterType } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { getModifiedEntityTypes } from "../shared/getEditedEntities";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import { getTypeScriptTypeFromDataType } from "./generateActions";
 
-export async function generateActions(
+export async function generateBulkActions(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
   importExt: string = "",
 ) {
   const importedObjects = new Set<string>();
-  let actionSignatures = [];
+  let actionSignatures: any[] = [];
   for (const action of Object.values(ontology.actionTypes)) {
     const entries = Object.entries(action.parameters);
 
@@ -61,15 +61,17 @@ export async function generateActions(
           `* @param {${typeScriptType}} params.${parameterName}`,
         );
       }
-      parameterBlock += "}, ";
+      parameterBlock += "}[], ";
+    } else {
+      parameterBlock = `params: Record<string,never>[], `;
     }
 
     jsDocBlock.push(`*/`);
     actionSignatures.push(
       `
       ${jsDocBlock.join("\n")}
-      ${action.apiName}<O extends ActionExecutionOptions>(${parameterBlock}options?: O): 
-        Promise<Result<ActionResponseFromOptions<O, Edits<${
+      ${action.apiName}<O extends BulkActionExecutionOptions>(${parameterBlock}options?: O): 
+        Promise<Result<BulkActionResponseFromOptions<O, Edits<${
         addedObjects.length > 0
           ? addedObjects.join(" | ")
           : "void"
@@ -77,64 +79,24 @@ export async function generateActions(
         modifiedObjects.length > 0
           ? modifiedObjects.join(" | ")
           : "void"
-      }>>, ActionError>>;`,
+      }>>, ActionError>>;
+      `,
     );
   }
 
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, "Actions.ts"),
+    path.join(outDir, "BulkActions.ts"),
     await formatTs(`
-    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, ActionError, Result, ActionResponseFromOptions } from "@osdk/legacy-client";
+    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, BulkActionExecutionOptions, ActionError, Result, ActionResponseFromOptions, BulkActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
         `import type { ${importedObject} } from "../objects/${importedObject}${importExt}";`
       ).join("\n")
     }
-    export interface Actions {
+    export interface BulkActions {
     ${actionSignatures.join("\n")}
     }
   `),
   );
-}
-
-export function getTypeScriptTypeFromDataType(
-  actionParameter: ActionParameterType,
-  importedObjects: Set<string>,
-): string {
-  switch (actionParameter.type) {
-    case "objectSet": {
-      const objectType = actionParameter.objectTypeApiName!;
-      importedObjects.add(objectType);
-      return `ObjectSet<${objectType}>`;
-    }
-    case "object": {
-      const objectType = actionParameter.objectTypeApiName!;
-      importedObjects.add(objectType);
-      return `${objectType} | ${objectType}["__primaryKey"]`;
-    }
-    case "array":
-      return `Array<${
-        getTypeScriptTypeFromDataType(actionParameter.subType, importedObjects)
-      }>`;
-    case "string":
-      return `string`;
-    case "boolean":
-      return `boolean`;
-    case "attachment":
-      return `Attachment`;
-    case "date":
-      return `LocalDate`;
-    case "double":
-    case "integer":
-    case "long":
-      return `number`;
-    case "timestamp":
-      return `Timestamp`;
-    case "marking":
-      return "string";
-    default:
-      const _: never = actionParameter;
-      throw new Error(`Unsupported action parameter type: ${actionParameter}`);
-  }
 }

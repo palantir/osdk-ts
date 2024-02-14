@@ -16,6 +16,8 @@
 
 import type {
   ApplyActionRequestV2,
+  BatchApplyActionRequestV2,
+  BatchApplyActionResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
@@ -150,6 +152,58 @@ export const actionRequestWithAttachment: ApplyActionRequestV2 = {
   parameters: { attachment: "attachment.rid" },
 };
 
+export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
+  requests: [{
+    parameters: {
+      officeId: "SEA",
+      newAddress: "456 Good Place",
+      newCapacity: 40,
+    },
+  }, {
+    parameters: {
+      officeId: "NYC",
+      newAddress: "123 Main Street",
+      newCapacity: 80,
+    },
+  }],
+  options: {},
+};
+
+export const actionRequestMoveOfficeBatchWithEdits: BatchApplyActionRequestV2 =
+  {
+    requests: [{
+      parameters: {
+        officeId: "SEA",
+        newAddress: "456 Good Place",
+        newCapacity: 40,
+      },
+    }, {
+      parameters: {
+        officeId: "NYC",
+        newAddress: "123 Main Street",
+        newCapacity: 80,
+      },
+    }],
+    options: { returnEdits: "ALL" },
+  };
+
+export const actionRequestMoveOfficeBatchInvalid: BatchApplyActionRequestV2 = {
+  requests: [{
+    parameters: {
+      officeId: "SEA",
+      newAddress: "456 Pike Place",
+      newCapacity: 40,
+    },
+  }, {
+    parameters: {
+      officeId: "NYC",
+      newAddress: "123 Main Street",
+      newCapacity: 80,
+    },
+  }],
+  options: { returnEdits: "ALL" },
+};
+
 const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
   validation: {
     submissionCriteria: [],
@@ -242,6 +296,24 @@ const actionResponseInvalid: SyncApplyActionResponseV2 = {
   },
 };
 
+const actionResponseMoveOfficeBatch: BatchApplyActionResponseV2 = {
+  edits: {
+    type: "edits",
+    edits: [{
+      type: "modifyObject",
+      primaryKey: "SEA",
+      objectType: officeObjectType.apiName,
+    }, {
+      type: "modifyObject",
+      primaryKey: "NYC",
+      objectType: officeObjectType.apiName,
+    }],
+    addedObjectCount: 0,
+    addedLinksCount: 0,
+    modifiedObjectsCount: 2,
+  },
+};
+
 export const actionResponseMap: {
   [actionApiName: string]: {
     [actionBody: string]: any;
@@ -264,6 +336,10 @@ export const actionResponseMap: {
     [stableStringify(actionRequestMoveOfficeInvalid)]: actionResponseInvalid,
     [stableStringify(actionRequestMoveOffice2)]: undefined,
     [stableStringify(actionRequestMoveOffice3)]: undefined,
+    [stableStringify(actionRequestMoveOfficeBatch)]: {},
+    [stableStringify(actionRequestMoveOfficeBatchWithEdits)]:
+      actionResponseMoveOfficeBatch,
+    [stableStringify(actionRequestMoveOfficeBatchInvalid)]: undefined,
   },
   createOfficeAndEmployee: {
     [stableStringify(actionRequestCreateOfficeAndEmployee)]:
