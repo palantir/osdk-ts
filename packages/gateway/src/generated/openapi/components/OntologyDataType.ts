@@ -24,6 +24,7 @@ import type { DoubleType } from "./DoubleType";
 import type { FloatType } from "./FloatType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { MarkingType } from "./MarkingType";
 import type { OntologyArrayType } from "./OntologyArrayType";
 import type { OntologyMapType } from "./OntologyMapType";
 import type { OntologyObjectSetType } from "./OntologyObjectSetType";
@@ -73,6 +74,10 @@ export interface OntologyDataType_Integer extends IntegerType {
 
 export interface OntologyDataType_Long extends LongType {
   type: "long";
+}
+
+export interface OntologyDataType_Marking extends MarkingType {
+  type: "marking";
 }
 
 export interface OntologyDataType_Short extends ShortType {
@@ -126,6 +131,7 @@ export type OntologyDataType =
   | OntologyDataType_Float
   | OntologyDataType_Integer
   | OntologyDataType_Long
+  | OntologyDataType_Marking
   | OntologyDataType_Short
   | OntologyDataType_String
   | OntologyDataType_Timestamp

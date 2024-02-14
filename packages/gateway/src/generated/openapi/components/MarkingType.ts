@@ -14,26 +14,5 @@
  * limitations under the License.
  */
 
-import type * as GeoJSON from "geojson";
-
-export interface WirePropertyTypes {
-  string: string;
-  datetime: string;
-  double: number;
-  boolean: boolean;
-  integer: number;
-  timestamp: string;
-  short: number;
-  long: number;
-  float: number;
-  decimal: number;
-  byte: number;
-  marking: string;
-
-  numericTimeseries: any;
-  stringTimeseries: any;
-
-  attachment: any;
-  geopoint: GeoJSON.Point;
-  geoshape: GeoJSON.Geometry;
+export interface MarkingType {
 }

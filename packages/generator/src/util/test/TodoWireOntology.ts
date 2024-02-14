@@ -83,6 +83,8 @@ export const TodoWireOntology = {
         status: "ACTIVE",
         foreignKeyPropertyApiName: "email",
       }],
+      implementsInterfaces: [],
+      sharedPropertyTypeMapping: {},
     },
     Person: {
       objectType: {
@@ -109,6 +111,8 @@ export const TodoWireOntology = {
         status: "ACTIVE",
         foreignKeyPropertyApiName: "id",
       }],
+      implementsInterfaces: [],
+      sharedPropertyTypeMapping: {},
     },
   },
   queryTypes: {

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeWithLink } from "@osdk/gateway/types";
+import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
 
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConst(
-  object: ObjectTypeWithLink,
+  object: ObjectTypeFullMetadata,
   v2: boolean = false,
 ) {
   const uniqueLinkTargetTypes = new Set(

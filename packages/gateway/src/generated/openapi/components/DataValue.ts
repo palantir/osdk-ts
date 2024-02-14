@@ -28,6 +28,7 @@
  * | Double                      | number                                                | `3.14159265`                                                                  |
  * | Integer                     | number                                                | `238940`                                                                      |
  * | Long                        | string                                                | `"58319870951433"`                                                            |
+ * | Marking                     | string                                                | `"MU"`                                                                        |
  * | Null                        | null                                                  | `null`                                                                        |
  * | Object Set                  | string OR the object set definition                   | `ri.object-set.main.versioned-object-set.h13274m8-23f5-431c-8aee-a4554157c57z`|
  * | Ontology Object Reference   | JSON encoding of the object's primary key             | `10033123` or `"EMP1234"`                                                     |

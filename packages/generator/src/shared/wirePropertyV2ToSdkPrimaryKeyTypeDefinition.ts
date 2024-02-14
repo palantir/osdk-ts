@@ -43,6 +43,7 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     }
     case "timeseries":
     case "array":
+    case "marking":
       throw new Error(
         `Type not supported for primaryKey: ${input.dataType.type}`,
       );

@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
 import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
 import type { ObjectTypeV2 } from "./ObjectTypeV2";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
 
-export interface ObjectTypeWithLink {
+export interface ObjectTypeFullMetadata {
   objectType: ObjectTypeV2;
   linkTypes: Array<LinkTypeSideV2>;
+  /** A list of interfaces that this object type implements. */
+  implementsInterfaces: Array<InterfaceTypeApiName>;
+  /**
+   * A map from shared property type API name to backing local property API name for the shared property types
+   * present on this object type.
+   */
+  sharedPropertyTypeMapping: Record<SharedPropertyTypeApiName, PropertyApiName>;
 }

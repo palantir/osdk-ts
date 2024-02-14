@@ -131,6 +131,8 @@ function getTypeScriptTypeFromDataType(
       return `number`;
     case "timestamp":
       return `Timestamp`;
+    case "marking":
+      return "string";
     default:
       const _: never = actionParameter;
       throw new Error(`Unsupported action parameter type: ${actionParameter}`);
