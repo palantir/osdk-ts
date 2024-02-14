@@ -84,7 +84,7 @@ function createPrototype<
     Object.defineProperty(proto, k, {
       get: function() {
         const client = this[OriginClient] as ClientContext<any>;
-        if (multiplicity == true) {
+        if (multiplicity === true) {
           return createMultiLinkStep(
             client,
             objDef.apiName,

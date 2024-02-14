@@ -26,6 +26,8 @@ module.exports = {
   rules: {
     "@typescript-eslint/consistent-type-imports": "error",
 
+    eqeqeq: ["error", "always", { null: "never" }],
+
     "header/header": [
       2,
       "block",

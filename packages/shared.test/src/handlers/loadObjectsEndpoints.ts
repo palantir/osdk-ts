@@ -253,10 +253,10 @@ export const loadObjectsEndpoints: RestHandler<
         }
 
         const paginationParams = {
-          pageSize: req.url.searchParams.get("pageSize") === null
+          pageSize: req.url.searchParams.get("pageSize") == null
             ? undefined
             : Number(req.url.searchParams.get("pageSize")),
-          pageToken: req.url.searchParams.get("pageToken") === null
+          pageToken: req.url.searchParams.get("pageToken") == null
             ? undefined
             : (req.url.searchParams.get("pageToken") as string),
         };
