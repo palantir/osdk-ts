@@ -22,6 +22,7 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
   input: QueryTypeV2,
 ): QueryDefinition<any, any> {
   return {
+    type: "query",
     apiName: input.apiName,
     description: input.description,
     displayName: input.displayName,

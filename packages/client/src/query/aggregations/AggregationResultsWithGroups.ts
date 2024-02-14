@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyDefinitionFrom,
-  ObjectTypePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
 import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 import type { AggregationClause } from "./AggregationsClause.js";
 import type { GroupByClause } from "./GroupByClause.js";
 
 export type AggregationResultsWithGroups<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  A extends AggregationClause<O, K>,
-  G extends GroupByClause<O, K> | undefined,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  A extends AggregationClause<Q>,
+  G extends GroupByClause<Q> | undefined,
 > = {
   group: {
-    [P in keyof G & ObjectTypePropertyKeysFrom<O, K>]: OsdkObjectPropertyType<
-      ObjectTypePropertyDefinitionFrom<O, K, P>
+    [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
+      Q["properties"][P]
     >;
   };
-  values: AggregationResultsWithoutGroups<O, K, A>;
+  values: AggregationResultsWithoutGroups<Q, A>;
 }[];

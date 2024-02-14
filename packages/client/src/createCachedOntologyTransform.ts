@@ -34,7 +34,7 @@ export function createCachedOntologyTransform<
 ) {
   // We can use the ObjectTypeDefinition as the key because it will be a globally unique singleton
   // Use Map instead of WeakMap here so usage for things like object prototypes do not churn over time
-  const cache = new Map<ObjectTypeDefinition<any, any>, T>();
+  const cache = new Map<ObjectTypeDefinition<any>, T>();
 
   return (ontology: O, type: K) => {
     const objectDefinition = ontology.objects[type];

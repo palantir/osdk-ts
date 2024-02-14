@@ -14,9 +14,79 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  OntologyDefinition,
+} from "@osdk/api";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+
+const Task: TaskDef = {
+  type: "object",
+  apiName: "Task",
+  primaryKeyType: "integer",
+  properties: {
+    id: { type: "integer", nullable: true },
+  },
+  links: {
+    linkedTodos: {
+      multiplicity: true,
+      targetType: "Todo",
+    },
+  },
+};
+
+const Todo: TodoDef = {
+  type: "object",
+  apiName: "Todo",
+  primaryKeyType: "string",
+  description: "A todo object",
+  properties: {
+    id: { type: "string", nullable: true, description: "The id" },
+    body: { type: "string", nullable: true },
+    class: { type: "string", nullable: true },
+    complete: { type: "boolean", nullable: true },
+    tags: { type: "string", multiplicity: true, nullable: true },
+    points: { type: "integer", nullable: true },
+  },
+  links: {
+    linkedTask: {
+      multiplicity: false,
+      targetType: "Task",
+    },
+  },
+};
+
+interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+  type: "object";
+  apiName: "Todo";
+  primaryKeyType: "string";
+  description: "A todo object";
+  properties: {
+    id: { type: "string"; nullable: true; description: "The id" };
+    body: { type: "string"; nullable: true };
+    class: { type: "string"; nullable: true };
+    complete: { type: "boolean"; nullable: true };
+    tags: { type: "string"; multiplicity: true; nullable: true };
+    points: { type: "integer"; nullable: true };
+  };
+  links: {
+    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
+  };
+}
+
+interface TaskDef extends ObjectTypeDefinition<"Task"> {
+  type: "object";
+  apiName: "Task";
+  primaryKeyType: "integer";
+  properties: {
+    id: { type: "integer"; nullable: true };
+  };
+  links: {
+    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
+  };
+}
 
 export const MockOntology = {
   metadata: {
@@ -25,41 +95,14 @@ export const MockOntology = {
     userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
   },
   objects: {
-    Task: {
-      apiName: "Task",
-      primaryKeyType: "integer",
-      properties: {
-        id: { type: "integer", nullable: true },
-      },
-      links: {
-        linkedTodos: { multiplicity: true, targetType: "Todo" },
-      },
-    },
-    Todo: {
-      apiName: "Todo",
-      primaryKeyType: "string",
-      description: "A todo object",
-      properties: {
-        id: {
-          type: "string",
-          nullable: true,
-          description: "The id of the Todo Object",
-        },
-        body: { type: "string", nullable: true },
-        class: { type: "string", nullable: true },
-        complete: { type: "boolean", nullable: true },
-        tags: { type: "string", multiplicity: true, nullable: true },
-        points: { type: "integer", nullable: true },
-      },
-      links: {
-        linkedTask: { multiplicity: false, targetType: "Task" },
-      },
-    },
+    Task,
+    Todo,
     ObjectTypeWithAllPropertyTypes,
     ObjectTypeWithReservedNames,
   },
   actions: {
     createTask: {
+      type: "action",
       apiName: "createTask",
       parameters: {
         id: { type: "integer", nullable: true },
@@ -69,6 +112,7 @@ export const MockOntology = {
       },
     },
     createTodo: {
+      type: "action",
       apiName: "createTodo",
       parameters: {},
       modifiedEntities: {
@@ -76,6 +120,7 @@ export const MockOntology = {
       },
     },
     updateTask: {
+      type: "action",
       apiName: "updateTask",
       parameters: {
         task: {
@@ -106,6 +151,7 @@ export const MockOntology = {
   },
   queries: {
     queryTakesNoParameters: {
+      type: "query",
       apiName: "queryTakesNoParameters",
       description: "a query that does not require parameters",
       version: "version",
@@ -116,6 +162,7 @@ export const MockOntology = {
       },
     },
     queryReturnsAggregation: {
+      type: "query",
       apiName: "queryReturnsAggregation",
       description: "a query that returns an aggregation",
       version: "version",
@@ -130,6 +177,7 @@ export const MockOntology = {
       },
     },
     queryTakesAllParameterTypes: {
+      type: "query",
       apiName: "queryTakesAllParameterTypes",
       description: "description of the query that takes all parameter types",
       displayName: "qTAPT",
@@ -230,6 +278,7 @@ export const MockOntology = {
       },
     },
     queryTakesNestedObjects: {
+      type: "query",
       apiName: "queryTakesNestedObjects",
       description: "a query that takes nested objects inside other types",
       version: "version",
@@ -258,6 +307,7 @@ export const MockOntology = {
       },
     },
     queryWithOnlyOptionalArgs: {
+      type: "query",
       apiName: "queryWithOnlyOptionalArgs",
       description: "a query that only has optional args",
       version: "version",
@@ -270,6 +320,7 @@ export const MockOntology = {
       },
     },
     queryWithOnlyRequiredArgs: {
+      type: "query",
       apiName: "queryWithOnlyRequiredArgs",
       description: "a query that only has required args",
       version: "version",

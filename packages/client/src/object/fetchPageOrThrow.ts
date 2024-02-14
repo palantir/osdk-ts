@@ -15,9 +15,9 @@
  */
 
 import type {
-  ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
-  OntologyDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
@@ -28,44 +28,37 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
+  O extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<O>,
 > {
   select?: readonly L[];
 }
 
 export interface FetchPageOrThrowArgs<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-  L = ObjectOrInterfacePropertyKeysFrom<O, K>,
-> extends SelectArg<O, K, L> {
+  O extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+> extends SelectArg<O, L> {
   nextPageToken?: string;
   pageSize?: number;
 }
 
 export async function fetchPageOrThrow<
-  O extends OntologyDefinition<any>,
-  T extends ObjectOrInterfaceKeysFrom<O>,
-  const A extends FetchPageOrThrowArgs<
-    O,
-    T
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends FetchPageOrThrowArgs<Q>,
 >(
-  client: ClientContext<O>,
-  objectType: T & string,
+  client: ClientContext<any>,
+  objectType: Q,
   args: A,
   objectSet: ObjectSet = {
     type: "base",
-    objectType,
+    objectType: objectType["apiName"] as string,
   },
 ): Promise<
   PageResult<
     OsdkObjectFrom<
-      T,
-      O,
+      Q extends ObjectTypeDefinition<any> ? Q : never,
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom<O, T>
+        : ObjectOrInterfacePropertyKeysFrom2<Q>
     >
   >
 > {

@@ -15,16 +15,15 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom,
-  ObjectTypeKeysFrom,
-  ObjectTypeLinkDefinitionFrom,
-  ObjectTypeLinkKeysFrom,
-  OntologyDefinition,
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
 } from "../object/fetchPageOrThrow.js";
+import type { SelectArgToKeys } from "../object/pageLinkedObjectsOrThrow.js";
 import type {
   OsdkObjectFrom,
   OsdkObjectPrimaryKeyType,
@@ -33,66 +32,33 @@ import type { PageResult } from "../PageResult.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
-  K extends ObjectTypeKeysFrom<O>,
-  O extends OntologyDefinition<any>,
-> = ObjectTypeLinkKeysFrom<O, K> extends never ? never : {
-  [L in ObjectTypeLinkKeysFrom<O, K>]: OsdkObjectLinksEntry<K, O, L>;
+  O extends ObjectTypeDefinition<any>,
+> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
+  [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 export type OsdkObjectLinksEntry<
-  K extends ObjectTypeKeysFrom<O>,
-  O extends OntologyDefinition<any>,
-  L extends ObjectTypeLinkKeysFrom<O, K>,
-  T = ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"],
-> = ObjectTypeLinkDefinitionFrom<O, K, L> extends { multiplicity: false } ? {
-    /** Load the linked object */
-    get: <A extends SelectArg<O, T>>(
-      options?: A,
-    ) => OsdkObjectFrom<
-      T,
-      O,
-      A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom<
-          O,
-          T
-        >
-    >;
-  }
-  : {
-    /** Loads the linked object for a given primary key */
-    get: <A extends SelectArg<O, T>>(
-      primaryKey: OsdkObjectPrimaryKeyType<
-        T,
-        O
-      >,
-      options?: A,
-    ) => OsdkObjectFrom<
-      T,
-      O,
-      A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom<
-          O,
-          T
-        >
-    >;
+  O extends ObjectTypeDefinition<any>,
+  L extends ObjectTypeLinkKeysFrom2<O>,
+> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
+    M extends false ? SingletonLinkAccessor<T> : MultitonLinkAccessor<T>
+  )
+  : never;
 
-    /** pages through the linked objects */
-    fetchPageOrThrow: <
-      A extends FetchPageOrThrowArgs<
-        O,
-        T
-      >,
-    >(options?: A) => Promise<
-      PageResult<
-        OsdkObjectFrom<
-          T,
-          O,
-          A["select"] extends readonly string[] ? A["select"][number]
-            : ObjectOrInterfacePropertyKeysFrom<
-              O,
-              T
-            >
-        >
-      >
-    >;
-  };
+export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
+  /** Load the linked object */
+  get: <A extends SelectArg<T>>(
+    options?: A,
+  ) => Promise<OsdkObjectFrom<T, SelectArgToKeys<A>>>;
+}
+
+export interface MultitonLinkAccessor<T extends ObjectTypeDefinition<any>> {
+  get: <A extends SelectArg<T>>(
+    pk: OsdkObjectPrimaryKeyType<T>,
+    options?: A,
+  ) => Promise<OsdkObjectFrom<T, SelectArgToKeys<A>>>;
+
+  fetchPageOrThrow: <
+    A extends FetchPageOrThrowArgs<T>,
+  >(options?: A) => Promise<PageResult<OsdkObjectFrom<T, SelectArgToKeys<A>>>>;
+}

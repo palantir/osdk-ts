@@ -22,7 +22,7 @@ import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkProp
 export function wireObjectTypeV2ToSdkObjectDefinition(
   objectTypeWithLink: ObjectTypeFullMetadata,
   v2: boolean,
-): ObjectTypeDefinition<any, any> {
+): ObjectTypeDefinition<any> {
   if (
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined
@@ -32,6 +32,7 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
     );
   }
   return {
+    type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
     description: objectTypeWithLink.objectType.description,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(

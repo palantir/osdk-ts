@@ -1,6 +1,7 @@
 import { QueryDefinition } from '@osdk/api';
 
 export const queryTakesAllParameterTypes = {
+  type: 'query',
   apiName: 'queryTakesAllParameterTypes',
   description: 'description of the query that takes all parameter types',
   displayName: 'qTAPT',

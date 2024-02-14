@@ -15,10 +15,9 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom,
-  ObjectTypeLinkTargetTypeFrom,
+  ObjectTypeLinkKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
@@ -26,34 +25,26 @@ import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
+
+export type SelectArgToKeys<A extends SelectArg<any>> = A["select"] extends
+  readonly string[] ? A["select"][number]
+  : A extends SelectArg<infer Q> ? ObjectOrInterfacePropertyKeysFrom2<Q>
+  : never;
 
 export async function pageLinkedObjectsOrThrow<
   O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O>,
-  L extends ObjectTypeLinkKeysFrom<O, T>,
-  S = ReadonlyArray<
-    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
-  >,
+  T_SourceTypeKey extends ObjectTypeKeysFrom<O>,
+  T_LinkApiName extends ObjectTypeLinkKeysFrom2<O["objects"][T_SourceTypeKey]>,
+  Q extends O["objects"][T_SourceTypeKey]["links"][T_LinkApiName]["__Mark"],
+  const A extends FetchPageOrThrowArgs<Q>,
 >(
   client: ClientContext<O>,
-  sourceApiName: T & string,
+  sourceApiName: T_SourceTypeKey & string,
   primaryKey: any,
   linkTypeApiName: string,
-  options?: {
-    nextPageToken?: string;
-    pageSize?: number;
-    select?: S;
-  },
-): Promise<
-  PageResult<
-    OsdkObjectFrom<
-      T,
-      O,
-      S extends readonly string[] ? S[number]
-        : ObjectOrInterfacePropertyKeysFrom<O, T>
-    >
-  >
-> {
+  options: A,
+): Promise<PageResult<OsdkObjectFrom<Q, SelectArgToKeys<A>>>> {
   const page = await listLinkedObjectsV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
@@ -74,6 +65,6 @@ export async function pageLinkedObjectsOrThrow<
 
   return {
     nextPageToken: page.nextPageToken,
-    data: page.data as OsdkObjectFrom<T, O>[],
+    data: page.data as OsdkObjectFrom<Q>[],
   };
 }

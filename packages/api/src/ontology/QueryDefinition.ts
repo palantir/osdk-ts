@@ -15,6 +15,7 @@
  */
 
 export interface QueryDefinition<Q extends string, K extends string> {
+  type: "query";
   apiName: Q;
   description?: string;
   displayName?: string;

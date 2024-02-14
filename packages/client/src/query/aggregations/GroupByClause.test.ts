@@ -22,6 +22,7 @@ export type F = GroupByClause<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};
@@ -37,8 +38,7 @@ export type F = GroupByClause<
     };
     actions: {};
     queries: {};
-  },
-  "Todo"
+  }["objects"]["Todo"]
 >;
 
 describe("GroupByClause", () => {
