@@ -14,37 +14,72 @@
  * limitations under the License.
  */
 
-import { createFetchHeaderMutator } from "@osdk/shared.net";
+import {
+  createFetchHeaderMutator,
+  createFetchOrThrow,
+  PalantirApiError,
+} from "@osdk/shared.net";
 import { consola } from "consola";
+import { ExitProcessError } from "../ExitProcessError.js";
+import { USER_AGENT } from "./UserAgent.js";
 
 export function createFetch(
   tokenProvider: () => Promise<string> | string,
   fetchFn: typeof fetch = fetch,
 ) {
   return createFetchHeaderMutator(
-    createDebugLoggingFetch(fetchFn),
+    createRequestLoggingFetch(
+      createErrorExitingFetch(
+        createFetchOrThrow(fetchFn),
+      ),
+    ),
     async (headers) => {
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
-      headers.set("Fetch-User-Agent", "");
+      headers.set("Fetch-User-Agent", USER_AGENT);
       return headers;
     },
   );
 }
 
-function createDebugLoggingFetch(fetchFn: typeof fetch = fetch): typeof fetch {
-  return function debugLoggingFetch(
+function createErrorExitingFetch(fetchFn: typeof fetch = fetch): typeof fetch {
+  return function errorExitingFetch(
     input: RequestInfo | URL,
     init?: RequestInit,
   ) {
-    if (typeof input === "string" || input instanceof URL) {
-      consola.debug(`${init?.method ?? "GET"}: ${input.toString().trim()}`);
-    } else {
-      consola.debug(`${input.method ?? "GET"}: ${input.url.toString().trim()}`);
-    }
+    return fetchFn(input, init).catch(handleFetchError);
+  };
+}
 
+function handleFetchError(e: unknown): Promise<Response> {
+  if (!(e instanceof PalantirApiError)) {
+    throw new ExitProcessError(1, "Unexpected fetch error");
+  }
+
+  let tip;
+  if (e.statusCode === 401) {
+    tip = "Check your token is valid and has not expired or been disabled";
+  } else if (e.statusCode === 403) {
+    tip = "Check your token has the required scopes for this operation";
+  }
+
+  throw new ExitProcessError(1, e.message, tip);
+}
+
+function createRequestLoggingFetch(
+  fetchFn: typeof fetch = fetch,
+): typeof fetch {
+  return function requestLoggingFetch(
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) {
+    const requestLog = typeof input === "string" || input instanceof URL
+      ? `${init?.method ?? "GET"}: ${input.toString().trim()}`
+      : `${input.method ?? "GET"}: ${input.url.toString().trim()}`;
+
+    consola.trace(requestLog);
     return fetchFn(input, init).then((a) => {
-      consola.debug("Finished fetch");
+      consola.trace(`FINISH ${requestLog}`);
       return a;
     });
   };

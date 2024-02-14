@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-export { createOpenApiRequest } from "./client/createOpenApiRequest.js";
-export type { ClientContext } from "./ClientContext.js";
-export { createClientContext } from "./createClientContext.js";
-export type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
-export { PalantirApiError } from "./PalantirApiError.js";
-export { isOk, type ResultOrError } from "./ResultOrError.js";
-export { UnknownError } from "./UnknownError.js";
-export { createFetchHeaderMutator } from "./util/createFetchHeaderMutator.js";
-export { createFetchOrThrow } from "./util/createFetchOrThrow.js";
+export const USER_AGENT = `osdk-cli/${process.env.PACKAGE_VERSION}`;
