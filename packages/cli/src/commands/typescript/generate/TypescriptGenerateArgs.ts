@@ -18,7 +18,7 @@ export interface TypescriptGenerateArgs {
   outDir: string;
   ontologyPath?: string;
   ontologyWritePath?: string;
-  stack?: string;
+  foundryUrl?: string;
   clientId?: string;
   beta?: boolean;
   packageType: "commonjs" | "module";

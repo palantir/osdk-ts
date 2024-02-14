@@ -34,27 +34,29 @@ export const command: CommandModule<
             demandOption: true,
           },
           ontologyPath: {
-            description: "path to the ontology wire json",
+            description: "Path to the ontology wire json",
             type: "string",
             demandOption: false,
-            conflicts: ["stack", "clientId"],
+            conflicts: ["foundryUrl", "clientId"],
           },
-          stack: {
-            description: "the URL to the stack that contains the ontology",
+          foundryUrl: {
+            description:
+              "The URL to the foundry stack that contains the ontology",
             type: "string",
             demandOption: false,
             conflicts: "ontologyPath",
             implies: "clientId",
+            alias: "stack", // for backwards compatibility
           },
           clientId: {
-            description: "the application's client id",
+            description: "The application's client id",
             type: "string",
             demandOption: false,
             conflicts: "ontologyPath",
-            implies: "stack",
+            implies: "foundryUrl",
           },
           ontologyWritePath: {
-            description: "path to write the ontology wire json",
+            description: "Path to write the ontology wire json",
             type: "string",
             demandOption: false,
             conflicts: ["ontologyPath"],
@@ -78,14 +80,14 @@ export const command: CommandModule<
         ["ontologyPath", "outDir", "version"],
         "Generate from a local file",
       ).group(
-        ["stack", "clientId", "outDir", "ontologyWritePath", "version"],
-        "OR Generate from a stack",
+        ["foundryUrl", "clientId", "outDir", "ontologyWritePath", "version"],
+        "OR Generate from Foundry",
       )
       .check(
         (args) => {
-          if (!args.ontologyPath && !args.stack) {
+          if (!args.ontologyPath && !args.foundryUrl) {
             throw new Error(
-              "Error: Must specify either ontologyPath or stack and clientId",
+              "Error: Must specify either ontologyPath or foundryUrl and clientId",
             );
           }
 
