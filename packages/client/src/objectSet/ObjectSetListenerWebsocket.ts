@@ -15,7 +15,7 @@
  */
 
 import type {
-  ObjectOrInterfaceKeysFrom,
+  ObjectOrInterfaceDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -73,13 +73,13 @@ export class ObjectSetListenerWebsocket<
 
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
-  #client: ClientContext<O>;
+  #client: ClientContext<any>;
 
   /** map of listenerId to listener */
   #listeners = new Map<
     string,
     {
-      listener: ObjectSetListener<O, any>;
+      listener: ObjectSetListener<any>;
       subscriptionId?: string;
       objectSet: ObjectSet;
       expiry: NodeJS.Timeout;
@@ -117,9 +117,9 @@ export class ObjectSetListenerWebsocket<
     };
   }
 
-  subscribe<K extends ObjectOrInterfaceKeysFrom<O>>(
+  subscribe<Q extends ObjectOrInterfaceDefinition>(
     objectSet: ObjectSet,
-    listener: ObjectSetListener<O, K>,
+    listener: ObjectSetListener<Q>,
   ): () => void {
     const requestId = crypto.randomUUID();
     const expiry = setTimeout(() => {
@@ -410,18 +410,18 @@ export class ObjectSetListenerWebsocket<
     }
   };
 
-  #getCallbackByRequestId<T extends keyof ObjectSetListener<O, any>>(
+  #getCallbackByRequestId<T extends keyof ObjectSetListener<any>>(
     requestId: string,
     type: T,
-  ): ObjectSetListener<O, any>[T] | undefined {
+  ): ObjectSetListener<any>[T] | undefined {
     const maybeListener = this.#listeners.get(requestId);
     return maybeListener?.listener?.[type];
   }
 
-  #getCallback<T extends keyof ObjectSetListener<O, any>>(
+  #getCallback<T extends keyof ObjectSetListener<any>>(
     subscriptionId: string,
     type: T,
-  ): ObjectSetListener<O, any>[T] | undefined {
+  ): ObjectSetListener<any>[T] | undefined {
     const requestId = this.#subscriptionToRequestId.get(subscriptionId);
     if (requestId) {
       return this.#getCallbackByRequestId(requestId, type);
@@ -437,7 +437,7 @@ async function convertFoundryToOsdkObjects<
   client: ClientContext<O>,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Promise<Array<OsdkObjectFrom<K, O>>> {
+): Promise<Array<OsdkObjectFrom<O["objects"][K]>>> {
   const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
@@ -465,7 +465,7 @@ async function convertFoundryToOsdkObjects<
 
   convertWireToOsdkObjects(client, osdkObjects);
 
-  return osdkObjects as OsdkObjectFrom<K & String, O>[];
+  return osdkObjects as OsdkObjectFrom<O["objects"][K]>[];
 }
 
 export type ObjectPropertyMapping = {

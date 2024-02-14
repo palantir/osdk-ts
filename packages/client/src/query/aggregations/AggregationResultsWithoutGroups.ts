@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyDefinitionFrom,
-  ObjectTypePropertyKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
 import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
 import type { AggregationClause } from "./AggregationsClause.js";
 
-type SubselectKeys<AC extends AggregationClause<any, any>, P extends keyof AC> =
+type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
   AC[P] extends readonly string[] | string ? P : never;
 
 export type AggregationResultsWithoutGroups<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  AC extends AggregationClause<O, K>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  AC extends AggregationClause<any>,
 > = {
-  [P in ObjectTypePropertyKeysFrom<O, K> as SubselectKeys<AC, P>]: AC[P] extends
+  [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
     readonly string[] | string ? {
       [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
-        : OsdkObjectPropertyType<ObjectTypePropertyDefinitionFrom<O, K, P>>;
+        : OsdkObjectPropertyType<Q["properties"][P]>;
     }
     : never;
 };

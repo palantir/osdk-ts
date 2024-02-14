@@ -33,8 +33,11 @@ export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
   | ObjectTypeKeysFrom<O>
   | InterfaceKeysFrom<O>;
 
-export type ObjectOrInterfaceDefinition<K extends string, L extends string> =
-  | ObjectTypeDefinition<K, L>
+export type ObjectOrInterfaceDefinition<
+  K extends string = any,
+  L extends string = any,
+> =
+  | ObjectTypeDefinition<K>
   | InterfaceDefinition<K, L>;
 
 export type ObjectOrInterfacePropertyKeysFrom<
@@ -42,6 +45,10 @@ export type ObjectOrInterfacePropertyKeysFrom<
   K extends ObjectOrInterfaceKeysFrom<O>,
 > = K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
   : ObjectTypePropertyKeysFrom<O, K>;
+
+export type ObjectOrInterfacePropertyKeysFrom2<
+  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+> = keyof O["properties"] & string;
 
 export type ObjectOrInterfaceDefinitionFrom<
   O extends OntologyDefinition<any, any>,

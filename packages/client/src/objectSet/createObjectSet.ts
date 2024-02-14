@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
@@ -28,17 +28,16 @@ import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition,
 >(
-  objectType: K & string,
-  clientCtx: ClientContext<O>,
+  objectType: Q,
+  clientCtx: ClientContext<any>,
   objectSet: WireObjectSet = {
     type: "base",
-    objectType,
+    objectType: objectType["apiName"] as string,
   },
-): ObjectSet<O, K> {
-  const base: BaseObjectSet<O, K> = {
+): ObjectSet<Q> {
+  const base: BaseObjectSet<Q> = {
     definition: objectSet,
     // aggregate: <
     //   AC extends AggregationClause<O, K>,
@@ -51,23 +50,18 @@ export function createObjectSet<
     //   throw "TODO";
     // },
     aggregateOrThrow: async <
-      AC extends AggregationClause<O, K>,
+      AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<O, K, AC>,
+      AO extends AggregateOpts<Q, AC>,
     >(
       req: AO,
-    ): Promise<AggregationsResults<O, K, AO>> => {
+    ): Promise<AggregationsResults<Q, AO>> => {
       return aggregateOrThrow(clientCtx, objectType, req);
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async (
-      args?: FetchPageOrThrowArgs<
-        O,
-        K
-      >,
-    ) => {
+    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q>) => {
       return fetchPageOrThrow(
         clientCtx,
         objectType,
@@ -90,9 +84,9 @@ export function createObjectSet<
     //   throw "";
     // },
 
-    pivotTo: function<T extends LinkTypesFrom<O, K>>(
+    pivotTo: function<T extends LinkTypesFrom<Q>>(
       type: T & string,
-    ): ObjectSet<O, O["objects"][K]["links"][T]["targetType"]> {
+    ): ObjectSet<Q["links"][T]["targetType"]> {
       return createSearchAround(type)();
     },
 
@@ -102,7 +96,7 @@ export function createObjectSet<
     },
   };
 
-  function createSearchAround<S extends LinkTypesFrom<O, K>>(link: S & string) {
+  function createSearchAround<S extends LinkTypesFrom<Q>>(link: S & string) {
     return () => {
       return createObjectSet(
         objectType,
@@ -116,7 +110,7 @@ export function createObjectSet<
     };
   }
 
-  return new Proxy(base as ObjectSet<O, K>, {
+  return new Proxy(base as ObjectSet<Q>, {
     get(target, p, receiver) {
       if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
         return createSearchAround(p.substring(searchAroundPrefix.length));

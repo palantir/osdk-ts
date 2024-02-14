@@ -70,7 +70,7 @@ export function toDataValue(value: any): DataValue {
   return value;
 }
 
-function isObjectSet(o: any): o is ObjectSet<any, any> {
+function isObjectSet(o: any): o is ObjectSet<any> {
   return o != null && typeof o === "object"
-    && isWireObjectSet((o as ObjectSet<any, any>).definition);
+    && isWireObjectSet((o as ObjectSet<any>).definition);
 }

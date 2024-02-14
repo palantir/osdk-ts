@@ -80,7 +80,9 @@ export async function typeChecks(client: Client<Ontology>) {
 
     // lead is an employee
     const lead = await employee.$link.lead.get();
-    expectType<TypeOf<typeof lead, OsdkObjectFrom<"Employee", Ontology>>>(true);
+    expectType<
+      TypeOf<typeof lead, OsdkObjectFrom<Ontology["objects"]["Employee"]>>
+    >(true);
 
     // lead is an employee but we downselect to just their adUsername
     const leadName = await employee.$link.lead.get({ select: ["adUsername"] });
@@ -97,7 +99,10 @@ export async function typeChecks(client: Client<Ontology>) {
       TypeOf<
         typeof peeps,
         PageResult<
-          OsdkObjectFrom<"Employee", Ontology, "adUsername" | "employeeNumber">
+          OsdkObjectFrom<
+            Ontology["objects"]["Employee"],
+            "adUsername" | "employeeNumber"
+          >
         >
       >
     >(true);
@@ -112,7 +117,7 @@ export async function typeChecks(client: Client<Ontology>) {
     expectType<
       TypeOf<
         typeof peepById,
-        OsdkObjectFrom<"Employee", Ontology, "adUsername">
+        OsdkObjectFrom<Ontology["objects"]["Employee"], "adUsername">
       >
     >(
       true,

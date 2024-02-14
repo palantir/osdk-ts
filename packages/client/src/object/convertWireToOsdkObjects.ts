@@ -57,14 +57,7 @@ function createPrototype<
 
           if (!linkDef.multiplicity) {
             return {
-              get: <
-                A extends SelectArg<
-                  O,
-                  typeof linkDef.targetType
-                >,
-              >(
-                options?: A,
-              ) =>
+              get: <A extends SelectArg<any>>(options?: A) =>
                 getLinkedObjectOrThrow(
                   client,
                   type,
@@ -75,12 +68,10 @@ function createPrototype<
             };
           } else {
             return {
-              get: <
-                A extends SelectArg<
-                  O,
-                  typeof linkDef.targetType
-                >,
-              >(targetPrimaryKey: any, options?: A) =>
+              get: <A extends SelectArg<any>>(
+                targetPrimaryKey: any,
+                options?: A,
+              ) =>
                 getLinkedObjectByPkOrThrow(
                   client,
                   type,
@@ -91,8 +82,7 @@ function createPrototype<
                 ),
               fetchPageOrThrow: (
                 options?: FetchPageOrThrowArgs<
-                  O,
-                  typeof linkDef.targetType
+                  O["objects"][typeof linkDef.targetType]
                 >,
               ) =>
                 pageLinkedObjectsOrThrow(client, type, primaryKey, p, {

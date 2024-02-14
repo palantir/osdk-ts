@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 
-export type ObjectSetListener<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> = Partial<
-  {
-    /**
-     * Specific objects have changed and can be immediately updated
-     */
-    onChange: (objects: Array<OsdkObjectFrom<K, O>>) => void;
+export interface ObjectSetListener<
+  O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+> {
+  /**
+   * Specific objects have changed and can be immediately updated
+   */
+  onChange?: (objects: Array<OsdkObjectOrInterfaceFrom<O>>) => void;
 
-    /**
-     * The ObjectSet has become outdated and should be re-fetched in its entirety.
-     * This is also sent when the subscription is first initialized.
-     */
-    onOutOfDate: () => void;
+  /**
+   * The ObjectSet has become outdated and should be re-fetched in its entirety.
+   * This is also sent when the subscription is first initialized.
+   */
+  onOutOfDate?: () => void;
 
-    /**
-     * There was a fatal error with the subscription process
-     */
-    onError: (error: unknown) => void;
-  }
->;
+  /**
+   * There was a fatal error with the subscription process
+   */
+  onError?: (error: unknown) => void;
+}

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypePropertyDefinition } from "./ObjectTypeDefinition";
+import type {
+  ObjectTypeLinkDefinition,
+  ObjectTypePropertyDefinition,
+} from "./ObjectTypeDefinition";
 import type { OntologyDefinition } from "./OntologyDefinition";
 
 export type InterfaceDefinitionFrom<
@@ -29,6 +32,10 @@ export type InterfacePropertyKeysFrom<
   O extends OntologyDefinition<any>,
   K extends InterfaceKeysFrom<O>,
 > = keyof InterfaceDefinitionFrom<O, K>["properties"] & string;
+
+export type InterfacePropertyKeysFrom2<
+  I extends InterfaceDefinition<any, any>,
+> = keyof I["properties"] & string;
 
 export type InterfacePropertyDefinitionsFrom<
   O extends OntologyDefinition<any>,
@@ -45,7 +52,12 @@ export interface InterfaceDefinition<
   K extends string,
   _L extends string,
 > {
+  type: "interface";
   apiName: K;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
+  links: Record<
+    string,
+    ObjectTypeLinkDefinition<any, any>
+  >;
 }

@@ -16,129 +16,257 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 
-export const ObjectTypeWithAllPropertyTypes = {
-  apiName: "ObjectTypeWithAllPropertyTypes",
-  primaryKeyType: "integer",
-  links: {},
+export interface ObjectTypeWithAllPropertyTypesDef
+  extends ObjectTypeDefinition<"ObjectTypeWithAllPropertyTypes">
+{
+  type: "object";
+  apiName: "ObjectTypeWithAllPropertyTypes";
+  primaryKeyType: "integer";
+  links: {};
   properties: {
     id: {
-      multiplicity: false,
-      type: "integer",
-    },
+      multiplicity: false;
+      type: "integer";
+    };
     string: {
-      multiplicity: false,
-      type: "string",
-    },
+      multiplicity: false;
+      type: "string";
+    };
     boolean: {
-      multiplicity: false,
-      type: "boolean",
-    },
+      multiplicity: false;
+      type: "boolean";
+    };
     date: {
-      multiplicity: false,
-      type: "datetime",
-    },
+      multiplicity: false;
+      type: "datetime";
+    };
     dateTime: {
-      multiplicity: false,
-      type: "timestamp",
-    },
+      multiplicity: false;
+      type: "timestamp";
+    };
     decimal: {
-      multiplicity: false,
-      type: "decimal",
-    },
+      multiplicity: false;
+      type: "decimal";
+    };
     integer: {
-      multiplicity: false,
-      type: "integer",
-    },
+      multiplicity: false;
+      type: "integer";
+    };
     long: {
-      multiplicity: false,
-      type: "long",
-    },
+      multiplicity: false;
+      type: "long";
+    };
     short: {
-      multiplicity: false,
-      type: "short",
-    },
+      multiplicity: false;
+      type: "short";
+    };
     float: {
-      multiplicity: false,
-      type: "float",
-    },
+      multiplicity: false;
+      type: "float";
+    };
     double: {
-      multiplicity: false,
-      type: "double",
-    },
+      multiplicity: false;
+      type: "double";
+    };
     byte: {
-      multiplicity: false,
-      type: "byte",
-    },
+      multiplicity: false;
+      type: "byte";
+    };
     attachment: {
-      multiplicity: false,
-      type: "attachment",
-    },
+      multiplicity: false;
+      type: "attachment";
+    };
     geoPoint: {
-      multiplicity: false,
-      type: "geopoint",
-    },
+      multiplicity: false;
+      type: "geopoint";
+    };
     geoShape: {
-      multiplicity: false,
-      type: "geoshape",
-    },
+      multiplicity: false;
+      type: "geoshape";
+    };
     stringArray: {
-      multiplicity: true,
-      type: "string",
-    },
+      multiplicity: true;
+      type: "string";
+    };
     booleanArray: {
-      multiplicity: true,
-      type: "boolean",
-    },
+      multiplicity: true;
+      type: "boolean";
+    };
     dateArray: {
-      multiplicity: true,
-      type: "datetime",
-    },
+      multiplicity: true;
+      type: "datetime";
+    };
     dateTimeArray: {
-      multiplicity: true,
-      type: "timestamp",
-    },
+      multiplicity: true;
+      type: "timestamp";
+    };
     decimalArray: {
-      multiplicity: true,
-      type: "decimal",
-    },
+      multiplicity: true;
+      type: "decimal";
+    };
     integerArray: {
-      multiplicity: true,
-      type: "integer",
-    },
+      multiplicity: true;
+      type: "integer";
+    };
     longArray: {
-      multiplicity: true,
-      type: "long",
-    },
+      multiplicity: true;
+      type: "long";
+    };
     shortArray: {
-      multiplicity: true,
-      type: "short",
-    },
+      multiplicity: true;
+      type: "short";
+    };
     floatArray: {
-      multiplicity: true,
-      type: "float",
-    },
+      multiplicity: true;
+      type: "float";
+    };
     doubleArray: {
-      multiplicity: true,
-      type: "double",
-    },
+      multiplicity: true;
+      type: "double";
+    };
     byteArray: {
-      multiplicity: true,
-      type: "byte",
-    },
+      multiplicity: true;
+      type: "byte";
+    };
     attachmentArray: {
-      multiplicity: true,
-      type: "attachment",
-    },
+      multiplicity: true;
+      type: "attachment";
+    };
     geoPointArray: {
-      multiplicity: true,
-      type: "geopoint",
-    },
+      multiplicity: true;
+      type: "geopoint";
+    };
     geoShapeArray: {
-      multiplicity: true,
-      type: "geoshape",
+      multiplicity: true;
+      type: "geoshape";
+    };
+  };
+}
+
+export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
+  {
+    type: "object",
+    apiName: "ObjectTypeWithAllPropertyTypes",
+    primaryKeyType: "integer",
+    links: {},
+    properties: {
+      id: {
+        multiplicity: false,
+        type: "integer",
+      },
+      string: {
+        multiplicity: false,
+        type: "string",
+      },
+      boolean: {
+        multiplicity: false,
+        type: "boolean",
+      },
+      date: {
+        multiplicity: false,
+        type: "datetime",
+      },
+      dateTime: {
+        multiplicity: false,
+        type: "timestamp",
+      },
+      decimal: {
+        multiplicity: false,
+        type: "decimal",
+      },
+      integer: {
+        multiplicity: false,
+        type: "integer",
+      },
+      long: {
+        multiplicity: false,
+        type: "long",
+      },
+      short: {
+        multiplicity: false,
+        type: "short",
+      },
+      float: {
+        multiplicity: false,
+        type: "float",
+      },
+      double: {
+        multiplicity: false,
+        type: "double",
+      },
+      byte: {
+        multiplicity: false,
+        type: "byte",
+      },
+      attachment: {
+        multiplicity: false,
+        type: "attachment",
+      },
+      geoPoint: {
+        multiplicity: false,
+        type: "geopoint",
+      },
+      geoShape: {
+        multiplicity: false,
+        type: "geoshape",
+      },
+      stringArray: {
+        multiplicity: true,
+        type: "string",
+      },
+      booleanArray: {
+        multiplicity: true,
+        type: "boolean",
+      },
+      dateArray: {
+        multiplicity: true,
+        type: "datetime",
+      },
+      dateTimeArray: {
+        multiplicity: true,
+        type: "timestamp",
+      },
+      decimalArray: {
+        multiplicity: true,
+        type: "decimal",
+      },
+      integerArray: {
+        multiplicity: true,
+        type: "integer",
+      },
+      longArray: {
+        multiplicity: true,
+        type: "long",
+      },
+      shortArray: {
+        multiplicity: true,
+        type: "short",
+      },
+      floatArray: {
+        multiplicity: true,
+        type: "float",
+      },
+      doubleArray: {
+        multiplicity: true,
+        type: "double",
+      },
+      byteArray: {
+        multiplicity: true,
+        type: "byte",
+      },
+      attachmentArray: {
+        multiplicity: true,
+        type: "attachment",
+      },
+      geoPointArray: {
+        multiplicity: true,
+        type: "geopoint",
+      },
+      geoShapeArray: {
+        multiplicity: true,
+        type: "geoshape",
+      },
     },
-  },
-} satisfies ObjectTypeDefinition<
-  "ObjectTypeWithAllPropertyTypes",
-  "ObjectTypeWithAllPropertyTypes"
->;
+  } satisfies ObjectTypeDefinition<
+    "ObjectTypeWithAllPropertyTypes"
+  >;

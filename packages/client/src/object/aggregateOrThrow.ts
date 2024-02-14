@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { aggregateObjectsV2 } from "@osdk/gateway/requests";
 import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
@@ -33,16 +33,15 @@ import type {
 } from "../query/index.js";
 
 export async function aggregateOrThrow<
-  T extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<T>,
-  const AO extends AggregateOpts<T, K, any>,
+  Q extends ObjectOrInterfaceDefinition,
+  const AO extends AggregateOpts<Q, any>,
 >(
-  clientCtx: ClientContext<T>,
-  objectType: K & string,
+  clientCtx: ClientContext<any>,
+  objectType: Q,
   req: AO,
-): Promise<AggregationsResults<T, K, AO>> {
+): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<T, K, AO["select"]>(
+    aggregation: modernToLegacyAggregationClause<AO["select"]>(
       req.select,
     ),
     groupBy: [],
@@ -63,7 +62,7 @@ export async function aggregateOrThrow<
       clientCtx.fetch,
     ),
     clientCtx.ontology.metadata.ontologyApiName,
-    objectType,
+    objectType["apiName"],
     body,
   );
 
@@ -78,7 +77,7 @@ export async function aggregateOrThrow<
     ) as any;
   }
 
-  const ret: AggregationResultsWithGroups<T, K, AO["select"], any> = result.data
+  const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
     .map((entry) => {
       return {
         group: entry.group as any,

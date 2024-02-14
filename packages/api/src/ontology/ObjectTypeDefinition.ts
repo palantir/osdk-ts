@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "..";
 import type { OntologyDefinition } from "./OntologyDefinition";
 import type { WirePropertyTypes } from "./WirePropertyTypes";
 
@@ -41,15 +42,23 @@ export type ObjectTypePropertyDefinitionFrom<
   P extends ObjectTypePropertyKeysFrom<O, K>,
 > = ObjectTypePropertyDefinitionsFrom<O, K>[P];
 
+export type ObjectTypePropertyDefinitionFrom2<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  P extends keyof Q["properties"] & string,
+> = Q["properties"][P];
+
 export interface ObjectTypeDefinition<
   K extends string,
-  L extends string,
 > {
+  type: "object";
   apiName: K;
   description?: string;
   primaryKeyType: keyof WirePropertyTypes;
   properties: Record<string, ObjectTypePropertyDefinition>;
-  links: Record<string, ObjectTypeLinkDefinition<L>>;
+  links: Record<
+    string,
+    ObjectTypeLinkDefinition<any, any>
+  >;
 }
 
 export type ObjectTypeLinkKeysFrom<
@@ -57,9 +66,17 @@ export type ObjectTypeLinkKeysFrom<
   K extends ObjectTypeKeysFrom<O>,
 > = keyof ObjectTypeDefinitionFrom<O, K>["links"];
 
-export interface ObjectTypeLinkDefinition<K extends string> {
-  targetType: K;
-  multiplicity: boolean;
+export type ObjectTypeLinkKeysFrom2<O extends ObjectTypeDefinition<any>> =
+  & keyof O["links"]
+  & string;
+
+export interface ObjectTypeLinkDefinition<
+  O extends ObjectTypeDefinition<any>,
+  M extends boolean,
+> {
+  __Mark?: O;
+  targetType: O["apiName"];
+  multiplicity: M;
 }
 
 export type ObjectTypeLinkDefinitionFrom<
