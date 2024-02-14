@@ -19,7 +19,7 @@ import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 
 export interface CommonSiteArgs extends CliCommonArgs {
   application: ThirdPartyAppRid;
-  foundryUrl: string;
+  "foundry-url": string;
+  "token-file"?: string;
   token?: string;
-  tokenFile?: string;
 }

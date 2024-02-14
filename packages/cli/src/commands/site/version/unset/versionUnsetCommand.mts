@@ -27,8 +27,18 @@ import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionUnsetArgs } from "./VersionUnsetArgs.js";
 
+interface VersionUnsetInternalArgs extends
+  Omit<
+    VersionUnsetArgs,
+    "foundry-url" | "token-file"
+  >
+{
+  foundryUrl: string;
+  tokenFile?: string;
+}
+
 export default async function versionUnsetCommand(
-  { yes, application, foundryUrl, token, tokenFile }: VersionUnsetArgs,
+  { yes, application, foundryUrl, token, tokenFile }: VersionUnsetInternalArgs,
 ) {
   if (!yes) {
     const confirmed = await consola.prompt(

@@ -25,7 +25,10 @@ import deploy from "./deploy/index.js";
 import { logSiteCommandConfigFileOverride } from "./logSiteCommandConfigFileOverride.js";
 import version from "./version/index.js";
 
-const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
+const command: CommandModule<
+  CliCommonArgs,
+  CommonSiteArgs
+> = {
   command: "site",
   describe: "Manage your site",
   builder: async (argv) => {
@@ -42,7 +45,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
             : { demandOption: true },
           description: "Application resource identifier (rid)",
         },
-        foundryUrl: {
+        "foundry-url": {
           coerce: (foundryUrl) => foundryUrl.replace(/\/$/, ""),
           type: "string",
           ...foundryUrl
@@ -55,21 +58,22 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           conflicts: "tokenFile",
           description: "Foundry API token",
         },
-        tokenFile: {
+        "token-file": {
           type: "string",
           conflicts: "token",
           description: "Path to file containing Foundry API token",
         },
       })
       .group(
-        ["application", "foundryUrl", "token", "tokenFile"],
+        ["application", "foundry-url", "token", "token-file"],
         "Common Options",
       )
       .command(version)
       .command(deploy)
       .check((args) => {
-        if (!args.foundryUrl.startsWith("https://")) {
-          throw new YargsCheckError("foundryUrl must start with https://");
+        // Could also do args["foundry-url"] to not do the type assertion
+        if (!(args.foundryUrl as string).startsWith("https://")) {
+          throw new YargsCheckError("foundry-url must start with https://");
         }
         return true;
       })

@@ -25,8 +25,19 @@ import {
 import { loadToken } from "../../../../util/token.js";
 import type { VersionSetArgs } from "./VersionSetArgs.js";
 
+interface VersionSetInternalArgs extends
+  Omit<
+    VersionSetArgs,
+    "foundry-url" | "token-file"
+  >
+{
+  foundryUrl: string;
+  tokenFile?: string;
+}
+
 export default async function versionSetCommand(
-  { version, application, foundryUrl, token, tokenFile }: VersionSetArgs,
+  { version, application, foundryUrl, token, tokenFile }:
+    VersionSetInternalArgs,
 ) {
   consola.start(`Setting live version`);
   const loadedToken = await loadToken(token, tokenFile);

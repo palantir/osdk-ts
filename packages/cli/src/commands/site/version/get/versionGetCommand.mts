@@ -24,8 +24,18 @@ import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionGetArgs } from "./VersionGetArgs.js";
 
+interface VersionGetInternalArgs extends
+  Omit<
+    VersionGetArgs,
+    "foundry-url" | "token-file"
+  >
+{
+  foundryUrl: string;
+  tokenFile?: string;
+}
+
 export default async function versionGetCommand(
-  { foundryUrl, application, token, tokenFile }: VersionGetArgs,
+  { foundryUrl, application, token, tokenFile }: VersionGetInternalArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

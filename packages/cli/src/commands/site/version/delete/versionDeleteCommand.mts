@@ -21,9 +21,19 @@ import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
 
+interface VersionDeleteInternalArgs extends
+  Omit<
+    VersionDeleteArgs,
+    "foundry-url" | "token-file"
+  >
+{
+  foundryUrl: string;
+  tokenFile?: string;
+}
+
 export default async function versionDeleteCommand(
   { version, yes, application, foundryUrl, token, tokenFile }:
-    VersionDeleteArgs,
+    VersionDeleteInternalArgs,
 ) {
   if (!yes) {
     const confirmed = await consola.prompt(

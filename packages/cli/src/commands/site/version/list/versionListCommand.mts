@@ -26,8 +26,15 @@ import { colorize } from "consola/utils";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionListArgs } from "./VersionListArgs.js";
 
+interface VersionListInternalArgs
+  extends Omit<VersionListArgs, "foundry-url" | "token-file">
+{
+  foundryUrl: string;
+  tokenFile?: string;
+}
+
 export default async function versionListCommand(
-  { foundryUrl, application, token, tokenFile }: VersionListArgs,
+  { foundryUrl, application, token, tokenFile }: VersionListInternalArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

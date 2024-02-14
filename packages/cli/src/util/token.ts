@@ -41,7 +41,7 @@ export async function loadToken(
   if (tokenFile) {
     const loadedToken = await loadTokenFile(tokenFile);
     consola.debug(
-      `Using token from --tokenFile=${loadedToken.filePath} option`,
+      `Using token from --token-file=${loadedToken.filePath} option`,
     );
     validate(loadedToken.token);
     return loadedToken.token;

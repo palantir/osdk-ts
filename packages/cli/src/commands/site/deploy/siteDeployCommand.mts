@@ -35,12 +35,21 @@ import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
-interface SiteDeployInternalArgs
-  extends Omit<SiteDeployArgs, "version" | "autoVersion">
+interface SiteDeployInternalArgs extends
+  Omit<
+    SiteDeployArgs,
+    | "version"
+    | "autoVersion"
+    | "auto-version"
+    | "foundry-url"
+    | "token-file"
+    | "upload-only"
+  >
 {
   selectedVersion: string | AutoVersionConfig;
-  directory: string;
   uploadOnly: boolean;
+  foundryUrl: string;
+  tokenFile?: string;
 }
 
 export default async function siteDeployCommand(

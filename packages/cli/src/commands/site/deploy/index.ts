@@ -48,7 +48,7 @@ const command: CommandModule<
             ? { default: directory }
             : { demandOption: true },
         },
-        uploadOnly: {
+        "upload-only": {
           type: "boolean",
           description: "Upload new site version only without setting as live",
           default: false,
@@ -60,7 +60,7 @@ const command: CommandModule<
             ? { conflicts: "autoVersion" }
             : {},
         },
-        autoVersion: {
+        "auto-version": {
           coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
           choices: ["git-describe"],
@@ -69,7 +69,7 @@ const command: CommandModule<
             ? { default: autoVersion.type }
             : { conflicts: "version" },
         },
-        gitTagPrefix: {
+        "git-tag-prefix": {
           type: "string",
           description:
             "Prefix to match git tags on when 'git-describe' auto versioning is used. If not provided, all tags are matched and the prefix 'v' is stripped if present.",
@@ -79,29 +79,29 @@ const command: CommandModule<
         },
       })
       .group(
-        ["directory", "version", "uploadOnly"],
+        ["directory", "version", "upload-only"],
         "Deploy Options",
       )
       .group(
-        ["autoVersion", "gitTagPrefix"],
+        ["auto-version", "git-tag-prefix"],
         "Auto Version Options",
       )
       .check((args) => {
-        // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
+        // This is required because we can't use demandOption with conflicts. Conflicts protect us against the case where both are provided.
         // So this case is for when nothing is provided.
         if (
           autoVersion == null && args.autoVersion == null
           && args.version == null
         ) {
           throw new YargsCheckError(
-            "One of --version or --autoVersion must be specified",
+            "One of --version or --auto-version must be specified",
           );
         }
 
         const autoVersionType = args.autoVersion ?? autoVersion;
         if (autoVersionType !== "git-describe") {
           throw new YargsCheckError(
-            `Only 'git-describe' is supported for autoVersion`,
+            `Only 'git-describe' is supported for --auto-version`,
           );
         }
 
@@ -109,7 +109,7 @@ const command: CommandModule<
         // Future proofing for when we support other autoVersion types
         if (gitTagPrefixValue != null && autoVersionType !== "git-describe") {
           throw new YargsCheckError(
-            `--gitTagPrefix is only supported when --autoVersion=git-describe`,
+            `--git-tag-prefix is only supported when --auto-version=git-describe`,
           );
         }
 
