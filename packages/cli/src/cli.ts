@@ -15,6 +15,7 @@
  */
 
 import { consola } from "consola";
+import { colorize } from "consola/utils";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -61,13 +62,17 @@ export async function cli(args: string[] = process.argv) {
     .fail(async (msg, err, argv) => {
       if (err instanceof ExitProcessError) {
         consola.error(err.message);
+        if (err.tip != null) {
+          consola.log(colorize("bold", `💡 Tip: ${err.tip}`));
+          consola.log("");
+        }
         consola.debug(err.stack);
       } else {
         if (err && err instanceof YargsCheckError === false) {
           throw err;
         } else {
           argv.showHelp();
-          consola.log(""); // intentional blank line
+          consola.log("");
           consola.error(msg);
         }
       }

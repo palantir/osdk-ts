@@ -39,6 +39,10 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     }
 
     if (!response.ok) {
+      if (response.headers.get("Content-Type") === "text/plain") {
+        throw new PalantirApiError(await response.text());
+      }
+
       let body;
       try {
         body = await response.json();
