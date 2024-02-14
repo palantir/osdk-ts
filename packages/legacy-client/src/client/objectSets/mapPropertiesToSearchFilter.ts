@@ -86,6 +86,7 @@ function mapPropertyTypeToSearchFilter(
 
   switch (propertyDefinition.type) {
     case "string":
+    case "marking":
       return StringFilter(propertyApiName);
     case "boolean":
       return BooleanFilter(propertyApiName);

@@ -190,6 +190,7 @@ function setPropertyAccessors<
       case "float":
       case "decimal":
       case "byte":
+      case "marking":
         break;
       default:
         const _: never = v.type;

@@ -40,7 +40,7 @@
     "archiver": "^6.0.1",
     "conjure-lite": "^0.3.3",
     "consola": "^3.2.3",
-    "find-up": "^6.3.0",
+    "find-up": "^7.0.0",
     "open": "^9.1.0",
     "semver": "^7.6.0",
     "yargs": "^17.7.2"

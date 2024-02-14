@@ -25,6 +25,7 @@ import type { GeoPointType } from "./GeoPointType";
 import type { GeoShapeType } from "./GeoShapeType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { MarkingType } from "./MarkingType";
 import type { OntologyObjectArrayType } from "./OntologyObjectArrayType";
 import type { ShortType } from "./ShortType";
 import type { StringType } from "./StringType";
@@ -79,6 +80,10 @@ export interface ObjectPropertyType_Long extends LongType {
   type: "long";
 }
 
+export interface ObjectPropertyType_Marking extends MarkingType {
+  type: "marking";
+}
+
 export interface ObjectPropertyType_Short extends ShortType {
   type: "short";
 }
@@ -108,6 +113,7 @@ export type ObjectPropertyType =
   | ObjectPropertyType_Geoshape
   | ObjectPropertyType_Integer
   | ObjectPropertyType_Long
+  | ObjectPropertyType_Marking
   | ObjectPropertyType_Short
   | ObjectPropertyType_String
   | ObjectPropertyType_Timestamp

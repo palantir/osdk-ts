@@ -39,6 +39,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
   "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
+      "implementsInterfaces": [],
       "linkTypes": [
         {
           "apiName": "peeps",
@@ -98,8 +99,10 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
         "status": "ACTIVE",
       },
+      "sharedPropertyTypeMapping": {},
     },
     "Office": {
+      "implementsInterfaces": [],
       "linkTypes": [],
       "objectType": {
         "apiName": "Office",
@@ -132,6 +135,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
         "status": "ACTIVE",
       },
+      "sharedPropertyTypeMapping": {},
     },
   },
   "ontology": {
@@ -184,6 +188,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
   "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
+      "implementsInterfaces": [],
       "linkTypes": [],
       "objectType": {
         "apiName": "Employee",
@@ -228,6 +233,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
         "status": "ACTIVE",
       },
+      "sharedPropertyTypeMapping": {},
     },
   },
   "ontology": {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeWithLink } from "@osdk/gateway/types";
+import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import {
   leadLinkType,
   occupants,
@@ -29,32 +29,43 @@ import {
   officeObjectType,
 } from "./objectTypeV2";
 
-export const employeeObjectWithLinkTypes: ObjectTypeWithLink = {
+export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: employeeObjectType,
   linkTypes: [peepsLinkType, leadLinkType, officeLinkType],
+  implementsInterfaces: [],
+  sharedPropertyTypeMapping: {},
 };
 
-export const officeObjectTypeWithLinkTypes: ObjectTypeWithLink = {
+export const officeObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: officeObjectType,
   linkTypes: [occupants],
+  implementsInterfaces: [],
+  sharedPropertyTypeMapping: {},
 };
 
-export const objectTypeWithAllPropertyTypesWithLinkTypes: ObjectTypeWithLink = {
-  objectType: objectTypeWithAllPropertyTypes,
-  linkTypes: [],
-};
+export const objectTypeWithAllPropertyTypesWithLinkTypes:
+  ObjectTypeFullMetadata = {
+    objectType: objectTypeWithAllPropertyTypes,
+    linkTypes: [],
+    implementsInterfaces: [],
+    sharedPropertyTypeMapping: {},
+  };
 export const objectTypeWithTimestampPrimaryKeyWithLinkTypes:
-  ObjectTypeWithLink = {
+  ObjectTypeFullMetadata = {
     objectType: objectTypeWithTimestampPrimaryKey,
     linkTypes: [],
+    implementsInterfaces: [],
+    sharedPropertyTypeMapping: {},
   };
-export const equipmentObjectTypeWithLinkTypes: ObjectTypeWithLink = {
+export const equipmentObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: equipmentObjectType,
   linkTypes: [],
+  implementsInterfaces: [],
+  sharedPropertyTypeMapping: {},
 };
 
 export const objectTypesWithLinkTypes: {
-  [objectTypeApiName: string]: ObjectTypeWithLink;
+  [objectTypeApiName: string]: ObjectTypeFullMetadata;
 } = {
   [employeeObjectType.apiName]: employeeObjectWithLinkTypes,
   [officeObjectType.apiName]: officeObjectTypeWithLinkTypes,
