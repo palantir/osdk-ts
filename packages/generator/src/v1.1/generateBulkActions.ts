@@ -62,6 +62,8 @@ export async function generateBulkActions(
         );
       }
       parameterBlock += "}[], ";
+    } else {
+      parameterBlock = `params: {}[], `;
     }
 
     jsDocBlock.push(`*/`);

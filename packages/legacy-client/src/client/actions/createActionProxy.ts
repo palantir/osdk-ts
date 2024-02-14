@@ -90,19 +90,6 @@ export function createBulkActionProxy<
     {
       get: (_target, p: keyof O["actions"], _receiver) => {
         if (typeof p === "string") {
-          if (Object.keys(client.ontology.actions[p].parameters).length === 0) {
-            return async function<Op extends BulkActionExecutionOptions>(
-              options?: Op,
-            ): Promise<WrappedBulkActionReturnType<O, typeof p, Op>> {
-              return executeBatchAction<O, typeof p, Op>(
-                client,
-                p,
-                undefined,
-                options,
-              );
-            };
-          }
-
           return async function<
             Op extends BulkActionExecutionOptions,
           >(
