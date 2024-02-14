@@ -16,7 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
-import type { BBox } from "geojson";
+import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
@@ -25,7 +25,10 @@ import type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "../../query/index.js";
-import type { GeoFilter_Within } from "../../query/WhereClause.js";
+import type {
+  GeoFilter_Intersects,
+  GeoFilter_Within,
+} from "../../query/WhereClause.js";
 import { DistanceUnitMapping } from "../../query/WhereClause.js";
 
 export function modernToLegacyWhereClause<
@@ -68,9 +71,15 @@ export function modernToLegacyWhereClause<
   };
 }
 
-function makeWithinBbox(field: string, bbox: BBox): SearchJsonQueryV2 {
+function makeGeoFilterBbox(
+  field: string,
+  bbox: BBox,
+  filterType: "$within" | "$intersects",
+): SearchJsonQueryV2 {
   return {
-    type: "withinBoundingBox",
+    type: filterType === "$within"
+      ? "withinBoundingBox"
+      : "intersectsBoundingBox",
     field,
     value: {
       topLeft: {
@@ -81,6 +90,21 @@ function makeWithinBbox(field: string, bbox: BBox): SearchJsonQueryV2 {
         type: "Point",
         coordinates: [bbox[2], bbox[1]],
       },
+    },
+  };
+}
+
+function makeGeoFilterPolygon(
+  field: string,
+  coordinates: Position[][],
+  filterType: "intersectsPolygon" | "withinPolygon",
+): SearchJsonQueryV2 {
+  return {
+    type: filterType,
+    field,
+    value: {
+      type: "Polygon",
+      coordinates,
     },
   };
 }
@@ -135,9 +159,9 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
     const withinBody = filter[firstKey] as GeoFilter_Within["$within"];
 
     if (Array.isArray(withinBody)) {
-      return makeWithinBbox(field, withinBody);
+      return makeGeoFilterBbox(field, withinBody, firstKey);
     } else if ("bbox" in withinBody && !("type" in withinBody)) {
-      return makeWithinBbox(field, withinBody.bbox);
+      return makeGeoFilterBbox(field, withinBody.bbox, firstKey);
     } else if ("distance" in withinBody && "of" in withinBody) {
       return {
         type: "withinDistanceOf",
@@ -159,14 +183,21 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
       const coordinates = ("polygon" in withinBody)
         ? withinBody.polygon
         : withinBody.coordinates;
-      return {
-        type: "withinPolygon",
-        field,
-        value: {
-          type: "Polygon",
-          coordinates,
-        },
-      };
+      return makeGeoFilterPolygon(field, coordinates, "withinPolygon");
+    }
+  }
+  if (firstKey === "$intersects") {
+    const intersectsBody =
+      filter[firstKey] as GeoFilter_Intersects["$intersects"];
+    if (Array.isArray(intersectsBody)) {
+      return makeGeoFilterBbox(field, intersectsBody, firstKey);
+    } else if ("bbox" in intersectsBody && !("type" in intersectsBody)) {
+      return makeGeoFilterBbox(field, intersectsBody.bbox, firstKey);
+    } else {
+      const coordinates = ("polygon" in intersectsBody)
+        ? intersectsBody.polygon
+        : intersectsBody.coordinates;
+      return makeGeoFilterPolygon(field, coordinates, "intersectsPolygon");
     }
   }
 

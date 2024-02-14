@@ -98,7 +98,7 @@ export async function generateActions(
   );
 }
 
-function getTypeScriptTypeFromDataType(
+export function getTypeScriptTypeFromDataType(
   actionParameter: ActionParameterType,
   importedObjects: Set<string>,
 ): string {
@@ -131,6 +131,8 @@ function getTypeScriptTypeFromDataType(
       return `number`;
     case "timestamp":
       return `Timestamp`;
+    case "marking":
+      return "string";
     default:
       const _: never = actionParameter;
       throw new Error(`Unsupported action parameter type: ${actionParameter}`);

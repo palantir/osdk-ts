@@ -26,7 +26,8 @@ export const command: CommandModule<
   describe: "Authenticate with an application ID",
   builder: (argv) => {
     return argv
-      .option("applicationId", {
+      .option("clientId", {
+        alias: "applicationId", // for backwards compatibility
         type: "string",
         demandOption: true,
       });

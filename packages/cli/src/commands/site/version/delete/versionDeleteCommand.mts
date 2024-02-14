@@ -16,11 +16,25 @@
 
 import { artifacts, createInternalClientContext } from "#net";
 import { consola } from "consola";
+import { colorize } from "consola/utils";
+import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
-import type { SiteVersionArgs } from "../SiteVersionArgs.js";
+import type { VersionDeleteArgs } from "./VersionDeleteArgs.js";
+
 export default async function versionDeleteCommand(
-  { version, application, foundryUrl, token, tokenFile }: SiteVersionArgs,
+  { version, yes, application, foundryUrl, token, tokenFile }:
+    VersionDeleteArgs,
 ) {
+  if (!yes) {
+    const confirmed = await consola.prompt(
+      `Are you sure you want to delete the version ${version}?\n${
+        colorize("bold", "This action cannot be undone.")
+      }`,
+      { type: "confirm" },
+    );
+    handlePromptCancel(confirmed);
+  }
+
   consola.start(`Deleting version ${version}`);
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;

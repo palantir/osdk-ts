@@ -61,6 +61,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     case "long":
     case "objectSet":
     case "timestamp":
+    case "marking":
       return {
         multiplicity: false,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
@@ -70,7 +71,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     case "array":
       return {
         multiplicity: true,
-        type: actionPropertyToSdkPropertyDefinition(value.dataType),
+        type: actionPropertyToSdkPropertyDefinition(value.dataType.subType),
         nullable: value.required ? false : true,
         description: value.description,
       };
@@ -88,6 +89,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "marking":
       return parameterType.type;
     case "date":
       return "datetime";

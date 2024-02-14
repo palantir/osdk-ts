@@ -15,7 +15,11 @@
  */
 
 import type { CommandModule } from "yargs";
-import type { LoadedFoundryConfig, SiteConfig } from "../../../util/config.js";
+import type {
+  AutoVersionConfigType,
+  LoadedFoundryConfig,
+  SiteConfig,
+} from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
@@ -27,7 +31,7 @@ const command: CommandModule<
   SiteDeployArgs
 > = {
   command: "deploy",
-  describe: "Deploy an uploaded version",
+  describe: "Deploy a new site version",
   builder: async (argv) => {
     const config: LoadedFoundryConfig | undefined = await configLoader();
     const siteConfig: SiteConfig | undefined = config?.foundryConfig.site;
@@ -39,27 +43,28 @@ const command: CommandModule<
       .options({
         directory: {
           type: "string",
-          description: "Directory to deploy",
+          description: "Directory containing site files",
           ...directory
             ? { default: directory }
             : { demandOption: true },
         },
         uploadOnly: {
           type: "boolean",
-          description: "Upload the directory but do not deploy it",
+          description: "Upload new site version only without setting as live",
           default: false,
         },
         version: {
           type: "string",
-          description: "Version to deploy",
+          description: "New version of site to deploy",
           ...autoVersion == null
             ? { conflicts: "autoVersion" }
             : {},
         },
         autoVersion: {
+          coerce: (autoVersion) => autoVersion as AutoVersionConfigType,
           type: "string",
-          description:
-            "Enables autoversioning. Can be set to 'git-describe' to use git describe to determine the version.",
+          choices: ["git-describe"],
+          description: "Enable auto versioning",
           ...(autoVersion != null)
             ? { default: autoVersion.type }
             : { conflicts: "version" },
@@ -67,18 +72,19 @@ const command: CommandModule<
         gitTagPrefix: {
           type: "string",
           description:
-            "Prefix to match git tags against when --autoVersion=git-describe is used. If not provided, a default prefix 'v' is used.",
+            "Prefix to match git tags on when 'git-describe' auto versioning is used. If not provided, all tags are matched and the prefix 'v' is stripped if present.",
           ...gitTagPrefix
             ? { default: gitTagPrefix }
             : {},
         },
-      }).group(
-        ["autoVersion", "gitTagPrefix"],
-        "Autoversion Arguments",
+      })
+      .group(
+        ["directory", "version", "uploadOnly"],
+        "Deploy Options",
       )
       .group(
-        ["version", "directory", "uploadOnly"],
-        "Common Arguments",
+        ["autoVersion", "gitTagPrefix"],
+        "Auto Version Options",
       )
       .check((args) => {
         // This is required because we can't use demandOption with conflicts. conflicts protects us against the case where both are provided.
@@ -117,7 +123,14 @@ const command: CommandModule<
   },
   handler: async (args) => {
     const command = await import("./siteDeployCommand.mjs");
-    await command.default(args);
+    const { version, autoVersion, gitTagPrefix, ...restArgs } = args;
+    const selectedVersion = args.version != null
+      ? args.version
+      : {
+        type: args.autoVersion!,
+        tagPrefix: args.gitTagPrefix,
+      };
+    await command.default({ ...restArgs, selectedVersion });
   },
 };
 

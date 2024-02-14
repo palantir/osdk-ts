@@ -31,7 +31,8 @@ export type PossibleWhereClauseFilters =
   | "$gte"
   | "$lt"
   | "$lte"
-  | "$within";
+  | "$within"
+  | "$intersects";
 
 // We need to conditional here to force the union to be distributed
 type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
@@ -88,11 +89,23 @@ export type GeoFilter_Within = {
     | Polygon;
 };
 
-export type GeoFilter = GeoFilter_Within;
+export type GeoFilter_Intersects = {
+  "$intersects":
+    | {
+      bbox: BBox;
+    }
+    | BBox
+    | {
+      polygon: Polygon["coordinates"];
+    }
+    | Polygon;
+};
+
+export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 
 type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
-  : PD["type"] extends "geopoint" ? GeoFilter
+  : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
   : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<

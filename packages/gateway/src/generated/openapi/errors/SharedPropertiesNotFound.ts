@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-import type { CommonSiteArgs } from "../CommonSiteArgs.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
 
-export interface SiteVersionArgs extends CommonSiteArgs {
-  version: string;
+/** The requested shared property types are not present on every object type. */
+export interface SharedPropertiesNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "SharedPropertiesNotFound";
+  errorInstanceId: string;
+  parameters: {
+    objectType: Array<ObjectTypeApiName>;
+    missingSharedProperties: Array<SharedPropertyTypeApiName>;
+  };
 }

@@ -16,12 +16,12 @@
 
 import type {
   ObjectPropertyType,
-  ObjectTypeWithLink,
+  ObjectTypeFullMetadata,
 } from "@osdk/gateway/types";
 import { isReservedKeyword } from "../util/reservedKeywords";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
-  objectTypeWithLinks: ObjectTypeWithLink,
+  objectTypeWithLinks: ObjectTypeFullMetadata,
   importExt = "",
 ) {
   const uniqueLinkTargets = new Set<string>(
@@ -122,6 +122,8 @@ function wirePropertyTypeV2ToTypeScriptType(
       return property.itemType.type === "string"
         ? `TimeSeries<string>`
         : `TimeSeries<number>`;
+    case "marking":
+      return "string";
     default:
       const _: never = property;
       throw new Error(`Unknown property type ${property}`);

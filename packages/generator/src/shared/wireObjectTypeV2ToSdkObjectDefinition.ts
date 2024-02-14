@@ -15,12 +15,12 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeWithLink } from "@osdk/gateway/types";
+import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
 export function wireObjectTypeV2ToSdkObjectDefinition(
-  objectTypeWithLink: ObjectTypeWithLink,
+  objectTypeWithLink: ObjectTypeFullMetadata,
   v2: boolean,
 ): ObjectTypeDefinition<any> {
   if (

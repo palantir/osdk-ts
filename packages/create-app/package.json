@@ -4,6 +4,10 @@
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
@@ -30,7 +34,7 @@
   },
   "dependencies": {
     "consola": "^3.2.3",
-    "find-up": "^6.3.0",
+    "find-up": "^7.0.0",
     "handlebars": "^4.7.8",
     "yargs": "^17.7.2"
   },

@@ -44,6 +44,7 @@ export interface ValidBaseActionParameterTypes {
   datetime: Date;
   timestamp: Date;
   attachment: any;
+  marking: string;
 }
 
 export interface ObjectActionDataType<

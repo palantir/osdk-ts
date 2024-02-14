@@ -55,6 +55,7 @@ export function mapPropertiesToMultipleAggregationProperties<
         case "geopoint":
         case "geoshape":
         case "string":
+        case "marking":
           acc[property] = ApproximateDistinctCountAggregatableProperty(
             property,
           );

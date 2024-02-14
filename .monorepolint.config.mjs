@@ -313,6 +313,10 @@ export default {
       options: {
         entries: {
           license: "Apache-2.0",
+          repository: {
+            "type": "git",
+            "url": "https://github.com/palantir/osdk-ts.git",
+          },
         },
         entriesExist: ["version"],
       },
@@ -357,6 +361,7 @@ package you do so at your own risk.
           "access",
           "author",
           "license",
+          "repository",
           "exports",
           "file",
           "scripts",

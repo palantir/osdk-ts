@@ -16,14 +16,15 @@
 
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
+import { extname } from "node:path";
 import { ExitProcessError } from "../ExitProcessError.js";
 
 export interface GitDescribeAutoVersionConfig {
   type: "git-describe";
   tagPrefix?: string;
 }
-type AutoVersionConfig = GitDescribeAutoVersionConfig;
-
+export type AutoVersionConfig = GitDescribeAutoVersionConfig;
+export type AutoVersionConfigType = AutoVersionConfig["type"];
 export interface SiteConfig {
   application: string;
   directory: string;
@@ -94,11 +95,11 @@ export async function loadFoundryConfig(): Promise<
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
-      foundryConfig = JSON.parse(fileContent);
-    } catch {
+      foundryConfig = parseConfigFile(fileContent, configFilePath);
+    } catch (error) {
       throw new ExitProcessError(
         2,
-        `Couldn't read or parse config file ${configFilePath}`,
+        `Couldn't read or parse config file ${configFilePath}. Error: ${error}`,
       );
     }
 
@@ -115,4 +116,20 @@ export async function loadFoundryConfig(): Promise<
   }
 
   return undefined;
+}
+
+function parseConfigFile(
+  fileContent: string,
+  configFilePath: string,
+): FoundryConfig {
+  const extension = extname(configFilePath);
+  switch (extension) {
+    case ".json":
+      return JSON.parse(fileContent);
+    default:
+      throw new ExitProcessError(
+        2,
+        `Unsupported file extension: ${extension} for config file.`,
+      );
+  }
 }

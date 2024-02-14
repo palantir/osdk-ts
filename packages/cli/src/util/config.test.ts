@@ -16,14 +16,19 @@
 
 import { findUp } from "find-up";
 import { promises as fsPromises } from "node:fs";
-import { describe, expect, it, vi } from "vitest";
+import { extname } from "node:path";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { loadFoundryConfig } from "./config.js";
 
 vi.mock("find-up");
 vi.mock("node:fs");
+vi.mock("node:path");
 
 describe("loadFoundryConfig", () => {
-  vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
+  beforeEach(() => {
+    vi.mocked(findUp).mockResolvedValue("/path/foundry.config.json");
+    vi.mocked(extname).mockReturnValue(".json");
+  });
 
   it("should load and parse the configuration file correctly", async () => {
     const correctConfig = {
@@ -148,5 +153,12 @@ describe("loadFoundryConfig", () => {
   it("should return undefined if the configuration file is not found", async () => {
     vi.mocked(findUp).mockResolvedValue(undefined);
     await expect(loadFoundryConfig()).resolves.toBeUndefined();
+  });
+
+  it("should throw if config file extension isn't supported", async () => {
+    vi.mocked(extname).mockResolvedValue(".yaml");
+    await expect(loadFoundryConfig()).rejects.toThrow(
+      "Unsupported file extension:",
+    );
   });
 });

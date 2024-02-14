@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
-import type { ObjectTypeV2 } from "./ObjectTypeV2";
+import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
 
-export interface ObjectTypeWithLink {
-  objectType: ObjectTypeV2;
-  linkTypes: Array<LinkTypeSideV2>;
+export interface VersionUnsetArgs extends CommonSiteArgs {
+  yes?: boolean;
 }
