@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { execSync } from "node:child_process";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
 import { ExitProcessError } from "../ExitProcessError.js";
 import { isValidSemver } from "./isValidSemver.js";
 
@@ -25,12 +26,12 @@ import { isValidSemver } from "./isValidSemver.js";
  * @returns A promise that resolves to the version string.
  * @throws An error if the version string is not SemVer compliant or if the version cannot be determined.
  */
-export function autoVersion(tagPrefix: string = ""): string {
+export async function autoVersion(tagPrefix: string = ""): Promise<string> {
   const [matchPrefix, prefixRegex] = tagPrefix !== ""
     ? [tagPrefix, new RegExp(`^${tagPrefix}`)]
     : [undefined, new RegExp(`^v?`)];
 
-  const gitVersion = gitDescribe(matchPrefix);
+  const gitVersion = await gitDescribe(matchPrefix);
   const version = gitVersion.trim().replace(prefixRegex, "");
   if (!isValidSemver(version)) {
     throw new ExitProcessError(
@@ -42,15 +43,17 @@ export function autoVersion(tagPrefix: string = ""): string {
   return version;
 }
 
-function gitDescribe(matchPrefix: string | undefined): string {
+async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
   let gitVersion;
   try {
-    gitVersion = execSync(
+    const execAsync = promisify(exec);
+    const { stdout } = await execAsync(
       `git describe --tags --first-parent --dirty${
         matchPrefix != null ? ` --match="${matchPrefix}*"` : ""
       }`,
       { encoding: "utf8" },
     );
+    gitVersion = stdout;
   } catch (error: any) {
     if (error instanceof Error) {
       const errorMessage: string = error.message.toLowerCase();
@@ -82,7 +85,7 @@ function gitDescribe(matchPrefix: string | undefined): string {
       ) {
         throw new ExitProcessError(
           2,
-          `Unable to determine the version using git-describe as no tags were found.\nPlease tag a version or supply a --version option.`,
+          `Unable to determine the version using git-describe as no matching tags were found.\nPlease tag a matching version or supply a --version option.`,
         );
       }
     }
@@ -92,5 +95,6 @@ function gitDescribe(matchPrefix: string | undefined): string {
       `Unable to determine the version automatically: ${error}.\nPlease supply a --version argument.`,
     );
   }
+
   return gitVersion;
 }

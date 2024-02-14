@@ -45,10 +45,6 @@ const CONFIG_FILE_NAMES: string[] = [
   "foundry.config.json",
 ];
 
-const SUPPORTED_EXTENSIONS: string[] = [
-  ".json",
-];
-
 const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
   type: "object",
   properties: {
@@ -96,21 +92,15 @@ export async function loadFoundryConfig(): Promise<
   const configFilePath = await findUp(CONFIG_FILE_NAMES);
 
   if (configFilePath) {
-    const extension = extname(configFilePath);
-    if (!SUPPORTED_EXTENSIONS.includes(extension)) {
-      throw new ExitProcessError(
-        2,
-        `Unsupported file extension: ${extension} for config file. Only the following extensions are allowed ${SUPPORTED_EXTENSIONS}`,
-      );
-    }
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
+      const extension = extname(configFilePath);
       foundryConfig = parseConfigFile(fileContent, extension);
-    } catch {
+    } catch (error) {
       throw new ExitProcessError(
         2,
-        `Couldn't read or parse config file ${configFilePath}`,
+        `Couldn't read or parse config file ${configFilePath}. Error: ${error}`,
       );
     }
 
@@ -133,8 +123,13 @@ function parseConfigFile(
   fileContent: string,
   extension: string,
 ): FoundryConfig {
-  if (extension === ".json") {
-    return JSON.parse(fileContent);
+  switch (extension) {
+    case ".json":
+      return JSON.parse(fileContent);
+    default:
+      throw new ExitProcessError(
+        2,
+        `Unsupported file extension: ${extension} for config file.`,
+      );
   }
-  throw Error();
 }

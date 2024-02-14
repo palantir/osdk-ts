@@ -59,7 +59,7 @@ export default async function siteDeployCommand(
   if (version != null) {
     siteVersion = version;
   } else {
-    siteVersion = findAutoVersion(gitTagPrefix);
+    siteVersion = await findAutoVersion(gitTagPrefix);
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );
