@@ -70,7 +70,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     case "array":
       return {
         multiplicity: true,
-        type: actionPropertyToSdkPropertyDefinition(value.dataType),
+        type: actionPropertyToSdkPropertyDefinition(value.dataType.subType),
         nullable: value.required ? false : true,
         description: value.description,
       };
