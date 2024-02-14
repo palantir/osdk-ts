@@ -91,7 +91,7 @@ describe("autoVersion", () => {
     });
 
     await expect(autoVersion()).rejects.toThrowError(
-      "Unable to determine the version using git-describe as no tags were found.",
+      "Unable to determine the version using git-describe as no matching tags were found.",
     );
   });
 });
