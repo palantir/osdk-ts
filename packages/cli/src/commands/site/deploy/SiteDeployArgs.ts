@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import type { AutoVersionConfigType } from "../../../util/config.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 
 export interface SiteDeployArgs extends CommonSiteArgs {
   version?: string;
   directory: string;
   uploadOnly: boolean;
-  autoVersion?: string;
+  autoVersion?: AutoVersionConfigType;
   gitTagPrefix?: string;
 }

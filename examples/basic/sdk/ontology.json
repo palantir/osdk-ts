@@ -114,6 +114,31 @@
       },
       "linkTypes": []
     },
+    "BoundariesUsState": {
+      "objectType": {
+        "apiName": "BoundariesUsState",
+        "primaryKey": "usState",
+        "displayName": "Boundaries US State",
+        "description": "Boundaries US State",
+        "properties": {
+          "usState": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "geometry10M": {
+            "dataType": {
+              "type": "geoshape"
+            },
+            "description": "geoshape",
+            "displayName": "Geometry10M"
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridforBoundariesUsState"
+      },
+      "linkTypes": []
+    },
     "Todo": {
       "objectType": {
         "apiName": "Todo",

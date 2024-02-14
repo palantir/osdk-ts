@@ -17,5 +17,5 @@
 import type { CommonAuthArgs } from "../CommonAuthArgs.js";
 
 export interface LoginArgs extends CommonAuthArgs {
-  applicationId: string;
+  clientId: string;
 }

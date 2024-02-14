@@ -25,9 +25,10 @@ const site: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
   builder: (argv) => {
     return argv
       .options({
-        baseUrl: {
+        foundryUrl: {
           type: "string",
           demandOption: true,
+          alias: "baseUrl", // for backwards compatibility
         },
       })
       .command(login)

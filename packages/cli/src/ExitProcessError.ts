@@ -15,7 +15,11 @@
  */
 
 export class ExitProcessError extends Error {
-  constructor(public readonly errorCode: number, msg?: string) {
+  constructor(
+    public readonly errorCode: number,
+    public readonly msg?: string,
+    public readonly tip?: string,
+  ) {
     super(msg);
   }
 }

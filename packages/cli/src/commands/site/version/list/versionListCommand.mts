@@ -24,10 +24,10 @@ import {
 import { consola } from "consola";
 import { colorize } from "consola/utils";
 import { loadToken } from "../../../../util/token.js";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
+import type { VersionListArgs } from "./VersionListArgs.js";
 
 export default async function versionListCommand(
-  { foundryUrl, application, token, tokenFile }: CommonSiteArgs,
+  { foundryUrl, application, token, tokenFile }: VersionListArgs,
 ) {
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
@@ -55,7 +55,10 @@ export default async function versionListCommand(
   }
 
   consola.success("Found versions:");
-  for (const version of versions) {
+
+  const semver = await import("semver");
+  const sortedVersions = semver.rsort(versions.filter(v => semver.valid(v)));
+  for (const version of sortedVersions) {
     consola.log(
       `    - ${version}${
         deployedVersion

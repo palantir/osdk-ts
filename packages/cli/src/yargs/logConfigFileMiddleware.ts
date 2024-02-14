@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { consola } from "consola";
 import getConfig from "../util/configLoader.js";
 
 let firstTime = true;
@@ -23,8 +24,6 @@ export async function logConfigFileMiddleware() {
     const config = getConfig();
     const configFilePath = (await config)?.configFilePath;
     if (configFilePath) {
-      const Consola = await import("consola");
-      const consola = Consola.consola;
       consola.debug(
         `Using configuration from file: "${configFilePath}"`,
       );

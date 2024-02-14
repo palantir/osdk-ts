@@ -1,9 +1,13 @@
 {
   "name": "@osdk/shared.net",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",

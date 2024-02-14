@@ -61,7 +61,7 @@ export async function cli(args: string[] = process.argv) {
     .help()
     .command(
       "$0 [project] [--<option>]",
-      "Create a new OSDK application based on framework templates. Information may be provided through arguments to skip interactive prompts.",
+      "Create a new OSDK application based on framework templates. Information may be provided through options to skip interactive prompts.",
       (yargs) =>
         yargs
           .positional("project", {
