@@ -57,7 +57,7 @@ const command: CommandModule<
           type: "string",
           description: "New version of site to deploy",
           ...autoVersion == null
-            ? { conflicts: "autoVersion" }
+            ? { conflicts: "auto-version" }
             : {},
         },
         "auto-version": {

@@ -55,7 +55,7 @@ const command: CommandModule<
         },
         token: {
           type: "string",
-          conflicts: "tokenFile",
+          conflicts: "token-file",
           description: "Foundry API token",
         },
         "token-file": {
