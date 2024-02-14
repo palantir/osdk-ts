@@ -184,8 +184,14 @@ export type Actions<
 };
 
 export type BulkActions<O extends OntologyDefinition<any>> = {
-  [A in keyof O["actions"]]: <Op extends BulkActionExecutionOptions>(
-    params: ActionArgs<O, A>[],
-    options?: Op,
-  ) => WrappedBulkActionReturnType<O, A, Op>;
+  [A in keyof O["actions"]]:
+    IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+      ? <Op extends BulkActionExecutionOptions>(
+        params: Record<string, never>[],
+        options?: Op,
+      ) => WrappedBulkActionReturnType<O, A, Op>
+      : <Op extends BulkActionExecutionOptions>(
+        params: ActionArgs<O, A>[],
+        options?: Op,
+      ) => WrappedBulkActionReturnType<O, A, Op>;
 };

@@ -162,7 +162,7 @@ describe("Actions", () => {
 
       expectTypeOf<Parameters<typeof bulkActions.createTodo>>().toEqualTypeOf<
         [
-          {}[],
+          Record<string, never>[],
           BulkActionExecutionOptions?,
         ]
       >();
