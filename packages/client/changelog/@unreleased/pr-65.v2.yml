@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Prep for actions
+  links:
+  - https://github.com/palantir/osdk-ts/pull/65
