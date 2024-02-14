@@ -38,7 +38,7 @@ export interface BulkActions {
    * Creates a new Todo
    */
   createTodo<O extends BulkActionExecutionOptions>(
-    params: {}[],
+    params: Record<string, never>[],
     options?: O,
   ): Promise<Result<BulkActionResponseFromOptions<O, Edits<Todo, void>>, ActionError>>;
 }

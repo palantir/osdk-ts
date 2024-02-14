@@ -63,7 +63,7 @@ export async function generateBulkActions(
       }
       parameterBlock += "}[], ";
     } else {
-      parameterBlock = `params: {}[], `;
+      parameterBlock = `params: Record<string,never>[], `;
     }
 
     jsDocBlock.push(`*/`);
