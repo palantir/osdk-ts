@@ -74,10 +74,10 @@ interface LoadedToken {
   token: string;
 }
 /**
- * Synchronously reads a JWT Auth Token from a file.
+ * Reads a JWT Auth Token from a file.
  * @param filePath The path to the token file.
  * @returns The token as a string.
- * @throws An error if the file cannot be read or if the file does not contain a valid JWT.
+ * @throws An error if the file cannot be read.
  */
 export async function loadTokenFile(filePath: string): Promise<LoadedToken> {
   let token: string;
