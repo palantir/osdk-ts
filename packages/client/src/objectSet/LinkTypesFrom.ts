@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 
 export type LinkTypesFrom<
-  O extends OntologyDefinition<string>,
-  K extends ObjectTypeKeysFrom<O>,
-> = keyof O["objects"][K]["links"];
+  Q extends ObjectOrInterfaceDefinition,
+> = keyof Q["links"];

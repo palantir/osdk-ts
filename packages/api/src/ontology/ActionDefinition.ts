@@ -18,6 +18,7 @@ export interface ActionDefinition<
   A extends string,
   K extends string,
 > {
+  type: "action";
   apiName: A;
   description?: string;
   displayName?: string;

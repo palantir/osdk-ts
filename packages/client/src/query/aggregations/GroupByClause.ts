@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyDefinitionFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
 > = {
-  [P in AggregatableKeys<O, K>]?: GroupByEntry<O, K, P>;
+  [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };
 export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
 type GroupByEntry<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  P extends AggregatableKeys<O, K>,
-> = ObjectTypePropertyDefinitionFrom<O, K, P>["type"] extends
-  keyof GroupByMapper
-  ? GroupByMapper[ObjectTypePropertyDefinitionFrom<O, K, P>["type"]]
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  P extends AggregatableKeys<Q>,
+> = Q["properties"][P]["type"] extends keyof GroupByMapper
+  ? GroupByMapper[Q["properties"][P]["type"]]
   : never;
 
 export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];

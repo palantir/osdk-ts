@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   AggregationClause,
   GroupByClause,
@@ -26,11 +22,10 @@ import type {
 } from "../../query/index.js";
 
 export type AggregateOpts<
-  T extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<T>,
-  AC extends AggregationClause<T, K>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  AC extends AggregationClause<Q>,
 > = {
   select: AC;
-  where?: WhereClause<ObjectTypeDefinitionFrom<T, K>>;
-  groupBy?: GroupByClause<T, K>;
+  where?: WhereClause<Q>;
+  groupBy?: GroupByClause<Q>;
 };
