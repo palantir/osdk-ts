@@ -95,8 +95,7 @@ export async function loadFoundryConfig(): Promise<
     let foundryConfig: FoundryConfig;
     try {
       const fileContent = await fsPromises.readFile(configFilePath, "utf-8");
-      const extension = extname(configFilePath);
-      foundryConfig = parseConfigFile(fileContent, extension);
+      foundryConfig = parseConfigFile(fileContent, configFilePath);
     } catch (error) {
       throw new ExitProcessError(
         2,
@@ -121,8 +120,9 @@ export async function loadFoundryConfig(): Promise<
 
 function parseConfigFile(
   fileContent: string,
-  extension: string,
+  configFilePath: string,
 ): FoundryConfig {
+  const extension = extname(configFilePath);
   switch (extension) {
     case ".json":
       return JSON.parse(fileContent);

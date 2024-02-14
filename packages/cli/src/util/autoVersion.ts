@@ -92,7 +92,7 @@ async function gitDescribe(matchPrefix: string | undefined): Promise<string> {
 
     throw new ExitProcessError(
       2,
-      `Unable to determine the version automatically: ${error}.\nPlease supply a --version argument.`,
+      `Unable to determine the version automatically: ${error}.\nPlease supply a --version option.`,
     );
   }
 
