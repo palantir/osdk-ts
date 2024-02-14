@@ -220,6 +220,141 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
     });
+    describe("$intersects", () => {
+      it("properly generates bbox shortcut", async () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            geoShape: {
+              $intersects: [-5, 5, -10, 10],
+            },
+          },
+        )).toMatchInlineSnapshot(`
+        {
+          "field": "geoShape",
+          "type": "intersectsBoundingBox",
+          "value": {
+            "bottomRight": {
+              "coordinates": [
+                -10,
+                5,
+              ],
+              "type": "Point",
+            },
+            "topLeft": {
+              "coordinates": [
+                -5,
+                10,
+              ],
+              "type": "Point",
+            },
+          },
+        }
+      `);
+      });
+      it("properly generates bbox long form", async () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            geoShape: {
+              $intersects: {
+                bbox: [-5, 5, -10, 10],
+              },
+            },
+          },
+        )).toMatchInlineSnapshot(`
+          {
+            "field": "geoShape",
+            "type": "intersectsBoundingBox",
+            "value": {
+              "bottomRight": {
+                "coordinates": [
+                  -10,
+                  5,
+                ],
+                "type": "Point",
+              },
+              "topLeft": {
+                "coordinates": [
+                  -5,
+                  10,
+                ],
+                "type": "Point",
+              },
+            },
+          }
+        `);
+      });
+
+      it("properly generates interesects polygon", async () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            geoShape: {
+              $intersects: { polygon: [[[0, 1], [3, 2], [0, 1]]] },
+            },
+          },
+        )).toMatchInlineSnapshot(`
+            {
+              "field": "geoShape",
+              "type": "intersectsPolygon",
+              "value": {
+                "coordinates": [
+                  [
+                    [
+                      0,
+                      1,
+                    ],
+                    [
+                      3,
+                      2,
+                    ],
+                    [
+                      0,
+                      1,
+                    ],
+                  ],
+                ],
+                "type": "Polygon",
+              },
+            }
+          `);
+      });
+
+      it("properly generates within polygon geojson", async () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            geoShape: {
+              $intersects: {
+                type: "Polygon",
+                coordinates: [[[0, 1], [3, 2], [0, 1]]],
+              },
+            },
+          },
+        )).toMatchInlineSnapshot(`
+            {
+              "field": "geoShape",
+              "type": "intersectsPolygon",
+              "value": {
+                "coordinates": [
+                  [
+                    [
+                      0,
+                      1,
+                    ],
+                    [
+                      3,
+                      2,
+                    ],
+                    [
+                      0,
+                      1,
+                    ],
+                  ],
+                ],
+                "type": "Polygon",
+              },
+            }
+          `);
+      });
+    });
 
     it("inverts ne short hand properly", () => {
       expect(modernToLegacyWhereClause<ObjAllProps>({
