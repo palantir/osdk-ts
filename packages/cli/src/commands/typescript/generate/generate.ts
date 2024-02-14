@@ -23,7 +23,7 @@ export const command: CommandModule<
   TypescriptGenerateArgs
 > = {
   command: "generate",
-  describe: "Generate typescript from ontology",
+  describe: "Generate TypeScript SDK from ontology",
   builder: (argv) => {
     return argv
       .options(

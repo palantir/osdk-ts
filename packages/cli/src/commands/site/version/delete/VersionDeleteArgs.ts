@@ -14,23 +14,9 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
 import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
-import type { VersionGetArgs } from "./VersionGetArgs.js";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionGetArgs
-> = {
-  command: "get",
-  describe: "Get live site version",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./versionGetCommand.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+export interface VersionDeleteArgs extends CommonSiteArgs {
+  version: string;
+  yes?: boolean;
+}

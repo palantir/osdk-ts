@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-import type { CommandModule } from "yargs";
-import type { CommonSiteArgs } from "../../CommonSiteArgs.js";
-import type { VersionGetArgs } from "./VersionGetArgs.js";
+import { consola } from "consola";
 
-const command: CommandModule<
-  CommonSiteArgs,
-  VersionGetArgs
-> = {
-  command: "get",
-  describe: "Get live site version",
-  builder: (argv) => {
-    return argv;
-  },
-  handler: async (args) => {
-    const command = await import("./versionGetCommand.mjs");
-    await command.default(args);
-  },
-};
-
-export default command;
+export function handlePromptCancel(promptResponse: any) {
+  const isFalse = typeof promptResponse === "boolean" && !promptResponse;
+  // https://github.com/unjs/consola/issues/251
+  const isSigInt = typeof promptResponse === "symbol"
+    && promptResponse.toString() === "Symbol(clack:cancel)";
+  if (isSigInt || isFalse) {
+    consola.fail("Operation cancelled");
+    process.exit(0);
+  }
+}
