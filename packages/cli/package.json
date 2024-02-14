@@ -1,9 +1,13 @@
 {
   "name": "@osdk/cli",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
@@ -54,7 +58,7 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },

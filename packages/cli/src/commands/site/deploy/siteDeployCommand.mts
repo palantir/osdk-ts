@@ -31,27 +31,29 @@ import path from "node:path";
 import { Readable } from "node:stream";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
+import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";
 
+interface SiteDeployInternalArgs
+  extends Omit<SiteDeployArgs, "version" | "autoVersion">
+{
+  selectedVersion: string | AutoVersionConfig;
+  directory: string;
+  uploadOnly: boolean;
+}
+
 export default async function siteDeployCommand(
   {
-    version,
+    selectedVersion,
     application,
     foundryUrl,
-    autoVersion,
-    gitTagPrefix,
     uploadOnly,
     directory,
     token,
     tokenFile,
-  }: SiteDeployArgs,
+  }: SiteDeployInternalArgs,
 ) {
-  if (version == null && autoVersion == null) {
-    throw new Error(
-      "Either version or autoVersion must be specified",
-    );
-  }
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
@@ -61,14 +63,11 @@ export default async function siteDeployCommand(
     tokenProvider,
   );
 
-  // version has a priority over autoVersion. Both could be defined at the same time when
-  // autoVersion is present in the config file (it assigns that as a default value to argv.autoVersion)
-  // and --version is passed as an argument
   let siteVersion: string;
-  if (version != null) {
-    siteVersion = version;
+  if (typeof selectedVersion === "string") {
+    siteVersion = selectedVersion;
   } else {
-    siteVersion = await findAutoVersion(gitTagPrefix);
+    siteVersion = await findAutoVersion(selectedVersion.tagPrefix);
     consola.info(
       `Auto version inferred next version to be: ${siteVersion}`,
     );
@@ -118,37 +117,21 @@ export default async function siteDeployCommand(
     );
     consola.success(`Deployed ${siteVersion} successfully`);
     if (domain != null) {
-      consola.box({
-        message: `View live site:\n\n${
-          colorize(
-            "green",
-            `https://${domain}`,
-          )
-        }`,
-        style: BOX_STYLES,
-      });
+      logSiteLink(
+        "View live site:",
+        `https://${domain}`,
+      );
     }
   } else {
     consola.debug("Upload only mode enabled, skipping deployment");
     if (domain != null) {
-      consola.box({
-        message: `Preview link:\n\n${
-          colorize(
-            "green",
-            `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
-          )
-        }`,
-        style: BOX_STYLES,
-      });
+      logSiteLink(
+        "Preview link:",
+        `https://${domain}/.system/preview?previewVersion=${siteVersion}`,
+      );
     }
   }
 }
-
-const BOX_STYLES = {
-  padding: 2,
-  borderColor: "green",
-  borderStyle: "rounded",
-};
 
 function logArchiveStats(archive: archiver.Archiver): void {
   let archiveStats = { fileCount: 0, bytes: 0 };
@@ -162,6 +145,17 @@ function logArchiveStats(archive: archiver.Archiver): void {
     consola.debug(
       `Zipped ${archiveStats.fileCount} files and ${archiveStats.bytes} bytes`,
     );
+  });
+}
+
+function logSiteLink(title: string, link: string): void {
+  consola.box({
+    message: `${title}\n\n${colorize("green", link)}`,
+    style: {
+      padding: 2,
+      borderColor: "green",
+      borderStyle: "rounded",
+    },
   });
 }
 
