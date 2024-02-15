@@ -92,12 +92,3 @@ export async function aggregateOrThrow<
 
   return ret as any; // FIXME
 }
-
-// [{
-//   type: "count",
-//   name: "count",
-//   metricValueType: MetricValueType.NUMERIC,
-//   namedAggregation: true,
-// }];
-
-// return { type: "count", name: aggregationClause.name };
