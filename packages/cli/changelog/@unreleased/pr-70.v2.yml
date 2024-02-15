@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Log OSDK CLI version on start of CLI
+  links:
+  - https://github.com/palantir/osdk-ts/pull/70
