@@ -45,8 +45,7 @@ export function generateEnvProduction({
   return generateEnv({
     envPrefix,
     foundryUrl,
-    applicationUrl: applicationUrl
-      ?? "<Fill in the domain at which you deploy your application>",
+    applicationUrl,
     clientId,
   });
 }
@@ -59,10 +58,13 @@ function generateEnv({
 }: {
   envPrefix: string;
   foundryUrl: string;
-  applicationUrl: string;
+  applicationUrl: string | undefined;
   clientId: string;
 }): string {
   return `${envPrefix}FOUNDRY_API_URL=${foundryUrl}\n`
-    + `${envPrefix}FOUNDRY_REDIRECT_URL=${applicationUrl}/auth/callback\n`
+    + `${applicationUrl == null ? "# " : ""}${envPrefix}FOUNDRY_REDIRECT_URL=${
+      applicationUrl
+        ?? "<Fill in the domain at which you deploy your application>"
+    }/auth/callback\n`
     + `${envPrefix}FOUNDRY_CLIENT_ID=${clientId}\n`;
 }

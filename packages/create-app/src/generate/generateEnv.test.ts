@@ -34,7 +34,7 @@ PUBLIC_FOUNDRY_CLIENT_ID=123
 
 const expectedEnvProductionNoAppUrl = `
 PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
-PUBLIC_FOUNDRY_REDIRECT_URL=<Fill in the domain at which you deploy your application>/auth/callback
+# PUBLIC_FOUNDRY_REDIRECT_URL=<Fill in the domain at which you deploy your application>/auth/callback
 PUBLIC_FOUNDRY_CLIENT_ID=123
 `.trimStart();
 
