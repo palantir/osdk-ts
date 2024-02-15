@@ -24,16 +24,24 @@ import { expectType } from "ts-expect";
 export async function fetchAggregationForEmployeesGroupedThin(
   clientCtx: ClientContext<Ontology>,
 ) {
-  const result = await aggregateOrThrow(clientCtx, Ontology.objects.Employee, {
-    select: {
-      locationCity: "approximateDistinct",
-      locationName: "approximateDistinct",
-      employeeNumber: ["avg", "max", "min"],
+  const result = await aggregateOrThrow(
+    clientCtx,
+    Ontology.objects.Employee,
+    {
+      type: "base",
+      objectType: "Employee",
     },
-    groupBy: {
-      locationType: "exact",
+    {
+      select: {
+        locationCity: "approximateDistinct",
+        locationName: "approximateDistinct",
+        employeeNumber: ["avg", "max", "min"],
+      },
+      groupBy: {
+        locationType: "exact",
+      },
     },
-  });
+  );
 
   result[0].values.employeeNumber.avg;
   result[0].group.locationType;

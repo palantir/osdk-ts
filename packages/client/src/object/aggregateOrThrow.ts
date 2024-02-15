@@ -15,8 +15,8 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { aggregateObjectsV2 } from "@osdk/gateway/requests";
-import type { AggregateObjectsRequestV2 } from "@osdk/gateway/types";
+import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
+import type { AggregateObjectsRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
@@ -38,6 +38,10 @@ export async function aggregateOrThrow<
 >(
   clientCtx: ClientContext<any>,
   objectType: Q,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
   req: AO,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
@@ -53,17 +57,18 @@ export async function aggregateOrThrow<
   }
   if (req.where) {
     body.where = modernToLegacyWhereClause(req.where);
-    // TODO: orderBy
-    // TODO The token stuff here sucks
   }
-  const result = await aggregateObjectsV2(
+  const result = await aggregateObjectSetV2(
     createOpenApiRequest(
       clientCtx.stack,
       clientCtx.fetch,
     ),
     clientCtx.ontology.metadata.ontologyApiName,
-    objectType["apiName"],
-    body,
+    {
+      objectSet,
+      groupBy: body.groupBy,
+      aggregation: body.aggregation,
+    },
   );
 
   if (!req.groupBy) {

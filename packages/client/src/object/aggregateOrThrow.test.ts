@@ -127,13 +127,21 @@ describe("aggregateOrThrow", () => {
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(clientCtx, Todo, {
-      select: {
-        text: "approximateDistinct",
-        priority: "avg",
-        id: ["max", "avg"],
+    const notGrouped = await aggregateOrThrow(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
       },
-    });
+      {
+        select: {
+          text: "approximateDistinct",
+          priority: "avg",
+          id: ["max", "avg"],
+        },
+      },
+    );
 
     expectType<number>(notGrouped.text.approximateDistinct);
     expectType<number | undefined>(notGrouped.priority.avg);
@@ -148,14 +156,22 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(clientCtx, Todo, {
-      select: {
-        text: "approximateDistinct",
+    const grouped = await aggregateOrThrow(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
       },
-      groupBy: {
-        text: "exact",
+      {
+        select: {
+          text: "approximateDistinct",
+        },
+        groupBy: {
+          text: "exact",
+        },
       },
-    });
+    );
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].group.text);
     expectType<number>(grouped[0].values.text.approximateDistinct);
