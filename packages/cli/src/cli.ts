@@ -25,7 +25,7 @@ import site from "./commands/site/index.js";
 import typescript from "./commands/typescript/index.js";
 import { ExitProcessError } from "./ExitProcessError.js";
 import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
-import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
+import { logLevelMiddleware } from "./yargs/logLevelMiddleware.js";
 import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
@@ -47,7 +47,7 @@ export async function cli(args: string[] = process.argv) {
       },
     )
     .demandCommand()
-    .middleware(logVersionMiddleware, true)
+    .middleware(logLevelMiddleware, true)
     .middleware(logConfigFileMiddleware)
     .strict()
     .command({

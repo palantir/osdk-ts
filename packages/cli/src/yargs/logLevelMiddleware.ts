@@ -18,7 +18,7 @@ import { consola } from "consola";
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;
-export async function logVersionMiddleware(args: CliCommonArgs) {
+export async function logLevelMiddleware(args: CliCommonArgs) {
   if (firstTime) {
     firstTime = false;
 
