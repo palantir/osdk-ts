@@ -29,6 +29,7 @@ const site: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
           type: "string",
           demandOption: true,
           alias: "baseUrl", // for backwards compatibility
+          describe: "URL for the Foundry stack",
         },
       })
       .command(login)

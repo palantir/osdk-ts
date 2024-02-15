@@ -30,6 +30,7 @@ export const command: CommandModule<
         alias: "applicationId", // for backwards compatibility
         type: "string",
         demandOption: true,
+        describe: "OAuth client ID for application",
       });
   },
   handler: async (args) => {
