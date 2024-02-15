@@ -56,7 +56,12 @@ export function createObjectSet<
     >(
       req: AO,
     ): Promise<AggregationsResults<Q, AO>> => {
-      return aggregateOrThrow(clientCtx, objectType, req);
+      return aggregateOrThrow<Q, AO>(
+        clientCtx,
+        objectType,
+        objectSet,
+        req,
+      );
     },
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
