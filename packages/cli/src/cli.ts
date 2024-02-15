@@ -29,6 +29,10 @@ import { logVersionMiddleware } from "./yargs/logVersionMiddleware.js";
 import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
+  consola.info(
+    `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
+  );
+
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
     .wrap(Math.min(150, yargs().terminalWidth()))
     .env("OSDK")
