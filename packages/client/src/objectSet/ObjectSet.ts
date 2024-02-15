@@ -74,6 +74,18 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     clause: WhereClause<Q>,
   ) => ObjectSet<Q>;
 
+  union: (
+    ...objectSets: ReadonlyArray<ObjectSet<Q>>
+  ) => ObjectSet<Q>;
+
+  intersect: (
+    ...objectSets: ReadonlyArray<ObjectSet<Q>>
+  ) => ObjectSet<Q>;
+
+  subtract: (
+    ...objectSets: ReadonlyArray<ObjectSet<Q>>
+  ) => ObjectSet<Q>;
+
   pivotTo: <T extends keyof Q["links"]>(
     type: T & string,
   ) => ObjectSet<NonNullable<Q["links"][T]["__Mark"]>>;

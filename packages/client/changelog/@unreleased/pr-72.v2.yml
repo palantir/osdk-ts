@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Add intersect, subtract, union ObjectSet operations
+  links:
+  - https://github.com/palantir/osdk-ts/pull/72
