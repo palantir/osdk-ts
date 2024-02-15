@@ -27,7 +27,7 @@ export async function promptOsdkPackage(
     osdkPackage = await consola.prompt(
       `Enter the OSDK package name for your application from Developer Console:\n${
         italic(
-          "(Example @my-app/sdk)",
+          "(Example: @my-app/sdk)",
         )
       }`,
       { type: "text" },

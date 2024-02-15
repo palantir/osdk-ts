@@ -34,7 +34,7 @@ export async function promptApplicationRid(
     application = await consola.prompt(
       `Enter the application resource identifier (rid) for your application from Developer Console:\n${
         italic(
-          "(Example ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)",
+          "(Example: ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace)",
         )
       }`,
       { type: "text" },

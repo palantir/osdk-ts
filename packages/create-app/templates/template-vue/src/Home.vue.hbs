@@ -14,21 +14,21 @@ const queryApiNames = Object.keys(client.ontology.queries);
   <div class="methods">
     <div>
       <h2>Objects (\{{ objectApiNames.length }})</h2>
-      <p v-for="objectApiName in objectApiNames" key="objectApiName">
+      <pre v-for="objectApiName in objectApiNames" key="objectApiName">
         client.ontology.objects.\{{ objectApiName }}
-      </p>
+      </pre>
     </div>
     <div>
       <h2>Actions (\{{ actionApiNames.length }})</h2>
-      <p v-for="actionApiName in actionApiNames" key="actionApiName">
+      <pre v-for="actionApiName in actionApiNames" key="actionApiName">
         client.ontology.actions.\{{ actionApiName }}
-      </p>
+      </pre>
     </div>
     <div>
       <h2>Queries (\{{ queryApiNames.length }})</h2>
-      <p v-for="queryApiName in queryApiNames" key="queryApiName">
+      <pre v-for="queryApiName in queryApiNames" key="queryApiName">
         client.ontology.queries.\{{ queryApiName }}
-      </p>
+      </pre>
     </div>
   </div>
 </template>

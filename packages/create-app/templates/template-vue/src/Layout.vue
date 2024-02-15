@@ -1,13 +1,10 @@
 <template>
   <div>
-    <a href="https://www.palantir.com/" target="_blank">
-      <img src="/palantir.svg" class="logo" alt="Palantir logo" />
-    </a>
     <a
       href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
       target="_blank"
     >
-      <img src="/dev-console.svg" class="logo" alt="Developer Console logo" />
+      <img src="/palantir.svg" class="logo" alt="Palantir logo" />
     </a>
     <a href="https://vuejs.org/" target="_blank">
       <img src="/vue.svg" class="logo" alt="Vue logo" />

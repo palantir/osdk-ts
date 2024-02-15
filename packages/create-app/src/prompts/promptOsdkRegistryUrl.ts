@@ -35,7 +35,7 @@ export async function promptOsdkRegistryUrl(
     osdkRegistryUrl = await consola.prompt(
       `Enter the NPM registry URL to install your OSDK package from Developer Console:\n${
         italic(
-          "(Example https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
+          "(Example: https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.a4a7fe1c-486f-4226-b706-7b90005f527d/contents/release/npm)",
         )
       }`,
       { type: "text" },

@@ -27,7 +27,7 @@ export async function promptClientId(
     clientId = await consola.prompt(
       `Enter the OAuth client ID for your application from Developer Console:\n${
         italic(
-          "(Example 2650385ab6c5e0df3b44aff776b00a42)",
+          "(Example: 2650385ab6c5e0df3b44aff776b00a42)",
         )
       }`,
       { type: "text" },
