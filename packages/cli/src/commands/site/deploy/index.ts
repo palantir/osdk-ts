@@ -21,6 +21,7 @@ import type {
   SiteConfig,
 } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
+import { isValidSemver } from "../../../util/isValidSemver.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
@@ -95,6 +96,12 @@ const command: CommandModule<
         ) {
           throw new YargsCheckError(
             "One of --version or --autoVersion must be specified",
+          );
+        }
+
+        if (args.version != null && !isValidSemver(args.version)) {
+          throw new YargsCheckError(
+            "--version must be a valid SemVer string",
           );
         }
 
