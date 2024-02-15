@@ -33,5 +33,11 @@ export type { ClientContext } from "@osdk/shared.net";
 export type {
   ActionEditResponse,
   ActionValidationResponse,
+  ApplyActionOptions,
+  OsdkActionParameters,
 } from "./actions/Actions.js";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
+
+export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
+
+export type { NOOP } from "./util/NOOP.js";

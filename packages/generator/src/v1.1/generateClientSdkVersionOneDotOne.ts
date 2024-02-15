@@ -86,6 +86,7 @@ export async function generateClientSdkVersionOneDotOne(
     fs,
     actionsDir,
     importExt,
+    false,
   );
   await generateQueries(sanitizedOntology, fs, queriesDir, importExt);
   await generatePerQueryDataFiles(

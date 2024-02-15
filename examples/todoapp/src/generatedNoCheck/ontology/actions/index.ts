@@ -1,2 +1,2 @@
-export * from './completeTodo';
-export * from './createTodo';
+export { completeTodo } from './completeTodo';
+export { createTodo } from './createTodo';

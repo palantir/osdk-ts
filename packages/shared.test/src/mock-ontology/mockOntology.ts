@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionDefinition,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   OntologyDefinition,
@@ -88,6 +89,68 @@ interface TaskDef extends ObjectTypeDefinition<"Task"> {
   };
 }
 
+export type ActionDef$updateTask$Parameters = {
+  task: {
+    type: {
+      type: "object";
+      object: "Task";
+    };
+    multiplicity: false;
+    nullable: true;
+  };
+  tasks: {
+    type: {
+      type: "objectSet";
+      objectSet: "Task";
+    };
+    multiplicity: false;
+    nullable: true;
+  };
+  value: {
+    type: "boolean";
+    nullable: true;
+  };
+};
+
+interface ActionDef$updateTask extends ActionDefinition<"updateTask", "Task"> {
+  type: "action";
+  apiName: "updateTask";
+  parameters: ActionDef$updateTask$Parameters;
+  modifiedEntities: {
+    Task: { modified: true; created: false };
+  };
+}
+
+const updateTask: ActionDef$updateTask = {
+  type: "action",
+  apiName: "updateTask",
+  parameters: {
+    task: {
+      type: {
+        type: "object",
+        object: "Task",
+      },
+      multiplicity: false,
+      nullable: true,
+    },
+    tasks: {
+      type: {
+        type: "objectSet",
+        objectSet: "Task",
+      },
+      multiplicity: false,
+      nullable: true,
+    },
+    value: {
+      type: "boolean",
+      nullable: true,
+    },
+  },
+  modifiedEntities: {
+    Task: { modified: true, created: false },
+  },
+};
+
 export const MockOntology = {
   metadata: {
     ontologyRid: "",
@@ -119,35 +182,7 @@ export const MockOntology = {
         Todo: { modified: false, created: true },
       },
     },
-    updateTask: {
-      type: "action",
-      apiName: "updateTask",
-      parameters: {
-        task: {
-          type: {
-            type: "object",
-            object: "Task",
-          },
-          multiplicity: false,
-          nullable: true,
-        },
-        tasks: {
-          type: {
-            type: "objectSet",
-            objectSet: "Task",
-          },
-          multiplicity: false,
-          nullable: true,
-        },
-        value: {
-          type: "boolean",
-          nullable: true,
-        },
-      },
-      modifiedEntities: {
-        Task: { modified: true, created: false },
-      },
-    },
+    updateTask,
   },
   queries: {
     queryTakesNoParameters: {

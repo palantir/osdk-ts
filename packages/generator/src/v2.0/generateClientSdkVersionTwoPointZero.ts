@@ -142,6 +142,7 @@ export async function generateClientSdkVersionTwoPointZero(
     fs,
     actionsDir,
     importExt,
+    true,
   );
 
   await fs.writeFile(

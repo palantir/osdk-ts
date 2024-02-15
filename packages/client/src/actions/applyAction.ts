@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type { ActionDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
 import type { DataValue } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
@@ -22,18 +22,13 @@ import { createOpenApiRequest } from "@osdk/shared.net";
 import { toDataValue } from "../util/toDataValue.js";
 import type {
   ActionEditResponse,
-  Actions,
   ActionValidationResponse,
+  ApplyActionOptions,
+  OsdkActionParameters,
 } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 // cannot specify both validateOnly and returnEdits as true
-export type ApplyActionOptions =
-  | { returnEdits?: true; validateOnly?: false }
-  | {
-    validateOnly?: true;
-    returnEdits?: false;
-  };
 
 export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
   Op extends { validateOnly: true } ? ActionValidationResponse
@@ -41,19 +36,18 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
     : undefined;
 
 export async function applyAction<
-  O extends OntologyDefinition<any>,
-  A extends keyof O["actions"],
+  AD extends ActionDefinition<any, any>,
   Op extends ApplyActionOptions,
 >(
-  client: ClientContext<O>,
-  actionApiName: A,
-  parameters?: Parameters<Actions<O>[A]>[0],
+  client: ClientContext<any>,
+  action: AD,
+  parameters?: OsdkActionParameters<AD["parameters"]>,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
-    actionApiName as string,
+    action.apiName,
     {
       parameters: remapActionParams(parameters),
       options: {
@@ -77,9 +71,10 @@ export async function applyAction<
 }
 
 function remapActionParams<
-  O extends OntologyDefinition<any>,
-  A extends keyof O["actions"],
->(params: Parameters<Actions<O>[A]>[0] | undefined): Record<string, DataValue> {
+  AD extends ActionDefinition<any, any>,
+>(
+  params: OsdkActionParameters<AD["parameters"]> | undefined,
+): Record<string, DataValue> {
   if (params == null) {
     return {};
   }

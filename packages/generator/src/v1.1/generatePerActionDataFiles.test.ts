@@ -28,6 +28,8 @@ describe(generatePerActionDataFiles, () => {
       TodoWireOntology,
       helper.minimalFiles,
       BASE_PATH,
+      "",
+      false,
     );
 
     expect(helper.minimalFiles.writeFile).toBeCalled();

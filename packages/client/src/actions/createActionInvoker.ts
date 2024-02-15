@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { Actions } from "./Actions.js";
 import { applyAction } from "./applyAction.js";
 
-export function createActionInvoker<T extends ClientContext<any>>(client: T) {
+export function createActionInvoker<
+  T extends ClientContext<OntologyDefinition<any>>,
+>(client: T) {
   const proxy: Actions<any> = new Proxy(
     {},
     {
       get: (_target, p, _receiver) => {
         if (typeof p === "string") {
           return function(...args: any[]) {
-            return applyAction(client, p, ...args);
+            return applyAction(client, client.ontology.actions[p], ...args);
           };
         }
 

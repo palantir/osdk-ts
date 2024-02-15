@@ -1,4 +1,4 @@
-import { ActionDefinition } from '@osdk/api';
+import type { ActionDefinition } from '@osdk/api';
 
 export const createTodo = {
   type: 'action',
