@@ -90,6 +90,27 @@ export function createObjectSet<
       return createSearchAround(type)();
     },
 
+    union: (...objectSets) => {
+      return createObjectSet(objectType, clientCtx, {
+        type: "union",
+        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+      });
+    },
+
+    intersect: (...objectSets) => {
+      return createObjectSet(objectType, clientCtx, {
+        type: "intersect",
+        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+      });
+    },
+
+    subtract: (...objectSets) => {
+      return createObjectSet(objectType, clientCtx, {
+        type: "subtract",
+        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+      });
+    },
+
     subscribe(listener) {
       const instance = ObjectSetListenerWebsocket.getInstance(clientCtx);
       return instance.subscribe(objectSet, listener);
