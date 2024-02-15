@@ -2,7 +2,7 @@ import type { ActionDefinition } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
 
 // Represents the definition of the parameters for the action
-export type ActionDef$createTodo$Params = {};
+export type ActionDef$createTodo$Params = Record<string, never>;
 
 // Represents the runtime arguments for the action
 export type createTodo$Params = NOOP<OsdkActionParameters<ActionDef$createTodo$Params>>;

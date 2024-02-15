@@ -55,14 +55,16 @@ export async function generatePerActionDataFiles(
       const paramsDefIdentifier = `${actionDefIdentifier}$Params`;
       const paramsIdentifier = `${action.apiName}$Params`;
 
-      function createInterface() {
-        // the params must be a `type` to align properly with the `ActionDefinition` interface
-        // this way we can generate a strict type for the function itself and reference it from the Aciton Definition
-        return `
-        
-          // Represents the definition of the parameters for the action
-          export type ${paramsDefIdentifier} = {
-            ${
+      function createParamsDef() {
+        const entries = Object.entries(parameters);
+        if (entries.length === 0) {
+          return `// Represents the definition of the parameters for the action
+          export type ${paramsDefIdentifier} = Record<string, never>;`;
+        }
+
+        return `// Represents the definition of the parameters for the action
+        export type ${paramsDefIdentifier} = {
+          ${
           Object.entries(parameters)
             .map(([key, value]) => {
               const { type, ...remain } = value;
@@ -79,14 +81,23 @@ export async function generatePerActionDataFiles(
               }
 
               return `"${key}": {
-                type: ${q};
-                ${stringifyWithoutOuterBraces(remain)}
-              }
-              `;
+              type: ${q};
+              ${stringifyWithoutOuterBraces(remain)}
+            }
+            `;
             })
             .join(";\n")
         }
-          }
+        }`;
+      }
+
+      function createV2Types() {
+        // the params must be a `type` to align properly with the `ActionDefinition` interface
+        // this way we can generate a strict type for the function itself and reference it from the Aciton Definition
+        return `
+        
+          ${createParamsDef()}
+          
 
           // Represents the runtime arguments for the action
           export type ${paramsIdentifier} = NOOP<OsdkActionParameters<${paramsDefIdentifier}>>;
@@ -144,7 +155,7 @@ export async function generatePerActionDataFiles(
           ${importObjects}
 
         
-          ${v2 ? createInterface() : ""}
+          ${v2 ? createV2Types() : ""}
 
           ${v2 ? createV2Object() : createV1Object()}
         `),
