@@ -101,7 +101,7 @@ const command: CommandModule<
 
         if (args.version != null && !isValidSemver(args.version)) {
           throw new YargsCheckError(
-          `--version "${args.version}" must be a valid SemVer string`,
+            `--version "${args.version}" must be a valid SemVer string`,
           );
         }
 
