@@ -25,6 +25,10 @@ import type {
   Result,
   Timestamp,
 } from "../..";
+import type {
+  BulkActionExecutionOptions,
+  BulkActionResponseFromOptions,
+} from "../baseTypes";
 import type { ObjectSet } from "../interfaces";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
@@ -136,6 +140,26 @@ export type WrappedActionReturnType<
   >
 >;
 
+export type WrappedBulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = Promise<
+  Result<
+    BulkActionReturnType<O, A, Op>,
+    ActionError
+  >
+>;
+
+export type BulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = BulkActionResponseFromOptions<
+  Op,
+  Edits<CreatedObjectOrVoid<O, A>, ModifiedObjectsOrVoid<O, A>>
+>;
+
 export type ActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
@@ -157,4 +181,17 @@ export type Actions<
         params: ActionArgs<O, A>,
         options?: Op,
       ) => WrappedActionReturnType<O, A, Op>;
+};
+
+export type BulkActions<O extends OntologyDefinition<any>> = {
+  [A in keyof O["actions"]]:
+    IsEmptyRecord<O["actions"][A]["parameters"]> extends true
+      ? <Op extends BulkActionExecutionOptions>(
+        params: Record<string, never>[],
+        options?: Op,
+      ) => WrappedBulkActionReturnType<O, A, Op>
+      : <Op extends BulkActionExecutionOptions>(
+        params: ActionArgs<O, A>[],
+        options?: Op,
+      ) => WrappedBulkActionReturnType<O, A, Op>;
 };

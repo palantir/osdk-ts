@@ -21,6 +21,7 @@ import type { DateType } from "./DateType";
 import type { DoubleType } from "./DoubleType";
 import type { IntegerType } from "./IntegerType";
 import type { LongType } from "./LongType";
+import type { MarkingType } from "./MarkingType";
 import type { OntologyObjectSetType } from "./OntologyObjectSetType";
 import type { OntologyObjectType } from "./OntologyObjectType";
 import type { StringType } from "./StringType";
@@ -54,6 +55,10 @@ export interface ActionParameterType_Long extends LongType {
   type: "long";
 }
 
+export interface ActionParameterType_Marking extends MarkingType {
+  type: "marking";
+}
+
 export interface ActionParameterType_ObjectSet extends OntologyObjectSetType {
   type: "objectSet";
 }
@@ -78,6 +83,7 @@ export type ActionParameterType =
   | ActionParameterType_Double
   | ActionParameterType_Integer
   | ActionParameterType_Long
+  | ActionParameterType_Marking
   | ActionParameterType_ObjectSet
   | ActionParameterType_Object
   | ActionParameterType_String

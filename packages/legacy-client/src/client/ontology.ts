@@ -16,8 +16,11 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Actions } from "./actions/actions";
-import { createActionProxy } from "./actions/createActionProxy";
+import type { Actions, BulkActions } from "./actions/actions";
+import {
+  createActionProxy,
+  createBulkActionProxy,
+} from "./actions/createActionProxy";
 import { Attachments } from "./baseTypes";
 import type { Objects } from "./objects";
 import { createBaseOsdkObjectSet } from "./objectSets/OsdkObjectSet";
@@ -36,6 +39,10 @@ export class Ontology<O extends OntologyDefinition<any>> {
 
   get actions(): Actions<O> {
     return createActionProxy(this.#client);
+  }
+
+  get bulkActions(): BulkActions<O> {
+    return createBulkActionProxy(this.#client);
   }
 
   get queries(): Queries<O> {

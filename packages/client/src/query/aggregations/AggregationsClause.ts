@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyDefinitionsFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 
 type StringAggregateOption = "approximateDistinct" | "count";
@@ -31,15 +27,11 @@ type NumericAggregateOption =
   | "approximateDistinct";
 
 export type AggregationClause<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
 > = {
-  [P in AggregatableKeys<O, K>]?: ObjectTypePropertyDefinitionsFrom<
-    O,
-    K
-  >[P]["type"] extends "string"
+  [P in AggregatableKeys<Q>]?: Q["properties"][P]["type"] extends "string"
     ? StringAggregateOption | StringAggregateOption[]
-    : ObjectTypePropertyDefinitionsFrom<O, K>[P]["type"] extends
+    : Q["properties"][P]["type"] extends
       "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
       ? NumericAggregateOption | NumericAggregateOption[]
     : never;

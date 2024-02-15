@@ -1,6 +1,7 @@
 import { ActionDefinition } from '@osdk/api';
 
 export const createTodo = {
+  type: 'action',
   apiName: 'createTodo',
   parameters: {},
   description: 'Creates a new Todo',

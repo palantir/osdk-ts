@@ -29,12 +29,14 @@ export type {
   InterfacePropertyDefinitionFrom,
   InterfacePropertyDefinitionsFrom,
   InterfacePropertyKeysFrom,
+  InterfacePropertyKeysFrom2,
 } from "./ontology/InterfaceDefinition";
 export type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
 } from "./ontology/ObjectOrInterface";
 export type {
   ObjectTypeDefinition,
@@ -43,9 +45,11 @@ export type {
   ObjectTypeLinkDefinition,
   ObjectTypeLinkDefinitionFrom,
   ObjectTypeLinkKeysFrom,
+  ObjectTypeLinkKeysFrom2,
   ObjectTypeLinkTargetTypeFrom,
   ObjectTypePropertyDefinition,
   ObjectTypePropertyDefinitionFrom,
+  ObjectTypePropertyDefinitionFrom2,
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
 } from "./ontology/ObjectTypeDefinition";

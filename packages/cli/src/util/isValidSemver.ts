@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const semver =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+import { valid } from "semver";
 
 export function isValidSemver(semverString: string): boolean {
-  return semver.test(semverString);
+  return valid(semverString) != null;
 }

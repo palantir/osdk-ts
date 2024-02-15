@@ -39,6 +39,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BulkActions } from './ontology/actions/BulkActions';
       import { markTodoCompleted } from './ontology/actions/markTodoCompleted';
       import type { Objects } from './ontology/objects/Objects';
       import { Person } from './ontology/objects/Person';
@@ -83,6 +84,7 @@ describe(generateMetadataFile, () => {
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        bulkActions: BulkActions;
         queries: Queries;
       }
       "
@@ -115,6 +117,8 @@ describe(generateMetadataFile, () => {
               },
             },
             linkTypes: [],
+            implementsInterfaces: [],
+            sharedPropertyTypeMapping: {},
           },
         },
         actionTypes: {
@@ -165,6 +169,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BulkActions } from './ontology/actions/BulkActions';
       import { bar } from './ontology/actions/bar';
       import { foo as fooAction } from './ontology/actions/foo';
       import type { Objects } from './ontology/objects/Objects';
@@ -212,6 +217,7 @@ describe(generateMetadataFile, () => {
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        bulkActions: BulkActions;
         queries: Queries;
       }
       "
@@ -249,6 +255,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BulkActions } from './ontology/actions/BulkActions';
       import type { Objects } from './ontology/objects/Objects';
       import type { Queries } from './ontology/queries/Queries';
 
@@ -275,6 +282,7 @@ describe(generateMetadataFile, () => {
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        bulkActions: BulkActions;
         queries: Queries;
       }
       "

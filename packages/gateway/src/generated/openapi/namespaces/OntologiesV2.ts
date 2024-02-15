@@ -516,7 +516,9 @@ export function getInterfaceType<TResponse>(
  *   To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
- * Search for objects in the specified ontology and interface type. The following search queries are supported:
+ * Search for objects in the specified ontology and interface type. Any properties specified in the "where" or
+ * "orderBy" parameters must be shared property type API names defined on the interface. The following search
+ * queries are supported:
  *
  * | Query type                              | Description                                                                                                       | Supported Types                 |
  * |-----------------------------------------|-------------------------------------------------------------------------------------------------------------------|---------------------------------|
@@ -563,8 +565,8 @@ export function searchObjectsForInterface<TResponse>(
  *   To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
- * Perform functions on object fields in the specified ontology and of the specified interface type. Any specified
- * properties must be shared property types defined on the interface.
+ * Perform functions on object fields in the specified ontology and of the specified interface type. Any
+ * properties specified in the query must be shared property type API names defined on the interface.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */

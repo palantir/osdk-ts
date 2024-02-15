@@ -49,6 +49,7 @@ export interface ValidLegacyPropertyTypes {
   float: number;
   decimal: number;
   byte: number;
+  marking: string;
 
   attachment: Attachment;
   geopoint: GeoPoint;

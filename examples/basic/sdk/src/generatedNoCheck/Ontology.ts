@@ -8,6 +8,7 @@ const _Ontology = {
   metadata: OntologyMetadata,
   objects: {
     WeatherStation: Objects.WeatherStation,
+    BoundariesUsState: Objects.BoundariesUsState,
     Todo: Objects.Todo,
     Person: Objects.Person,
     Employee: Objects.Employee,
@@ -23,7 +24,9 @@ const _Ontology = {
   interfaces: {
     SimpleInterface: Interfaces.SimpleInterface,
   },
-} satisfies OntologyDefinition<'WeatherStation' | 'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'>;
+} satisfies OntologyDefinition<
+  'WeatherStation' | 'BoundariesUsState' | 'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'
+>;
 
 type _Ontology = typeof _Ontology;
 export interface Ontology extends _Ontology {}

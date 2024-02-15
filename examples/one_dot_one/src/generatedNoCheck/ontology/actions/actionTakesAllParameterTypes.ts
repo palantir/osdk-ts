@@ -1,6 +1,7 @@
 import { ActionDefinition } from '@osdk/api';
 
 export const actionTakesAllParameterTypes = {
+  type: 'action',
   apiName: 'actionTakesAllParameterTypes',
   parameters: {
     objectSet: {

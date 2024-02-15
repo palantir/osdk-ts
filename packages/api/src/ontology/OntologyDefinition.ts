@@ -28,7 +28,7 @@ export interface OntologyDefinition<
 > {
   metadata: OntologyMetadata;
   objects: {
-    [KK in K]: ObjectTypeDefinition<KK, K>;
+    [KK in K]: ObjectTypeDefinition<KK>;
   };
   actions: {
     [AA in A]: ActionDefinition<AA, K>;

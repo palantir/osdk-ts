@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectTypeKeysFrom,
   OntologyDefinition,
@@ -26,7 +27,7 @@ import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 export interface Client<O extends OntologyDefinition<any>> {
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
-  ) => ObjectSet<O, K>;
+  ) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
 
   objects: ObjectSetCreator<O>;
 
@@ -35,5 +36,5 @@ export interface Client<O extends OntologyDefinition<any>> {
   __UNSTABLE_preexistingObjectSet<const K extends ObjectTypeKeysFrom<O>>(
     type: K,
     rid: string,
-  ): ObjectSet<O, K>;
+  ): ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
 }

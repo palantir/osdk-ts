@@ -51,6 +51,7 @@ export function mapPropertiesToGroupByProperties<
           acc[property] = NumericGroupBy(property);
           break;
         case "string":
+        case "marking":
           acc[property] = StringGroupBy(property);
           break;
         case "geopoint":

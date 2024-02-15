@@ -15,45 +15,33 @@
  */
 
 import type {
-  InterfaceKeysFrom,
+  ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
+  ObjectOrInterfacePropertyKeysFrom2,
   OntologyDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
-import type { OsdkInterfaceFrom, OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type {
-  AggregationClause,
-  AggregationsResults,
-  WhereClause,
-} from "../query/index.js";
-import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
 export type ObjectSet<
-  O extends OntologyDefinition<string>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> = BaseObjectSet<O, K>;
+  Q extends ObjectOrInterfaceDefinition,
+> = BaseObjectSet<Q>;
 
-export interface BaseObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> {
+export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
   definition: WireObjectSet;
 
   fetchPageOrThrow: <
-    L extends ObjectOrInterfacePropertyKeysFrom<O, K>,
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   >(
-    args?: FetchPageOrThrowArgs<O, K, L>,
+    args?: FetchPageOrThrowArgs<Q, L>,
   ) => Promise<
-    PageResult<
-      K extends InterfaceKeysFrom<O> ? OsdkInterfaceFrom<K, O, L>
-        : OsdkObjectFrom<K, O, L>
-    >
+    PageResult<OsdkObjectOrInterfaceFrom<Q, L>>
   >;
 
   // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
@@ -73,11 +61,9 @@ export interface BaseObjectSet<
   //   OsdkObjectFrom<K, O, PropertyKeysFrom<O, K>>
   // >;
 
-  aggregateOrThrow: <
-    AO extends AggregateOpts<O, K, AggregationClause<O, K>>,
-  >(
+  aggregateOrThrow: <const AO extends AggregateOpts<Q, any>>(
     req: AO,
-  ) => Promise<AggregationsResults<O, K, AO>>;
+  ) => Promise<AggregationsResults<Q, AO>>;
 
   // @alpha
   // aggregate: <const AO extends AggregateOpts<O, K, any>>(
@@ -85,20 +71,18 @@ export interface BaseObjectSet<
   // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
 
   where: (
-    clause: WhereClause<
-      ObjectOrInterfaceDefinitionFrom<O, K>
-    >,
-  ) => ObjectSet<O, K>;
+    clause: WhereClause<Q>,
+  ) => ObjectSet<Q>;
 
-  pivotTo: <T extends LinkTypesFrom<O, K>>(
+  pivotTo: <T extends keyof Q["links"]>(
     type: T & string,
-  ) => ObjectSet<O, O["objects"][K]["links"][T]["targetType"]>;
+  ) => ObjectSet<NonNullable<Q["links"][T]["__Mark"]>>;
 
-  subscribe: (listener: ObjectSetListener<O, K>) => () => void;
+  subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
   K extends ObjectOrInterfaceKeysFrom<O>,
 >(
   type: K & string,
-) => ObjectSet<O, K>; // FIXME
+) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;

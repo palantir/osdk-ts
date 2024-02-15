@@ -56,5 +56,5 @@ export async function getLinkedObjectByPkOrThrow<
 
   const objects = [object];
   convertWireToOsdkObjects(client, objects);
-  return objects[0] as OsdkObjectFrom<T, O>;
+  return objects[0] as OsdkObjectFrom<O["objects"][T]>;
 }

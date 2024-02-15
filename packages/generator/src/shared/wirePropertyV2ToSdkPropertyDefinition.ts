@@ -40,6 +40,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "geoshape":
     case "timestamp":
     case "timeseries":
+    case "marking":
       return {
         multiplicity: false,
         description: input.description,
@@ -79,6 +80,7 @@ function objectPropertyTypeToSdkPropertyDefinition(
     case "geopoint":
     case "geoshape":
     case "timestamp":
+    case "marking":
       return propertyType.type;
     case "date":
       return "datetime";

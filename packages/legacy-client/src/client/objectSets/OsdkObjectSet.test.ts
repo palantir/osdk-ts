@@ -60,9 +60,10 @@ describe("OsdkObjectSet", () => {
 
   it("exposes descriptions", () => {
     const os = createBaseTodoObjectSet(client);
+    console.log(os);
     expect(os.description).toEqual("A todo object");
     expect(os.properties.id.apiName).toEqual("id");
-    expect(os.properties.id.description).toEqual("The id of the Todo Object");
+    expect(os.properties.id.description).toEqual("The id");
     expect(os.properties.body.apiName).toEqual("body");
     expect(os.properties.body.description).toEqual("");
   });

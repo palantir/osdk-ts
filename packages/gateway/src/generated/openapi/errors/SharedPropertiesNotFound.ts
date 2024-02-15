@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
-import type { ObjectTypeV2 } from "./ObjectTypeV2";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
 
-export interface ObjectTypeWithLink {
-  objectType: ObjectTypeV2;
-  linkTypes: Array<LinkTypeSideV2>;
+/** The requested shared property types are not present on every object type. */
+export interface SharedPropertiesNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "SharedPropertiesNotFound";
+  errorInstanceId: string;
+  parameters: {
+    objectType: Array<ObjectTypeApiName>;
+    missingSharedProperties: Array<SharedPropertyTypeApiName>;
+  };
 }

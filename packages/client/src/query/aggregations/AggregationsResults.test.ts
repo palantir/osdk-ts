@@ -23,6 +23,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};
@@ -38,8 +39,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     };
     actions: {};
     queries: {};
-  },
-  "Todo",
+  }["objects"]["Todo"],
   {
     select: {
       locationCity: "approximateDistinct";
@@ -56,6 +56,7 @@ type Q = AggregationResultsWithoutGroups<
     metadata: any;
     objects: {
       Todo: {
+        type: "object";
         apiName: "Todo";
         primaryKeyType: "double";
         links: {};
@@ -71,8 +72,7 @@ type Q = AggregationResultsWithoutGroups<
     };
     actions: {};
     queries: {};
-  },
-  "Todo",
+  }["objects"]["Todo"],
   {
     locationCity: "approximateDistinct";
     id: ["max", "sum"];

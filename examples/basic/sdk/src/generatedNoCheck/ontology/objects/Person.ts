@@ -1,6 +1,23 @@
-import type { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 
-export const Person = {
+import type { TodoDef } from './Todo.js';
+export interface PersonDef extends ObjectTypeDefinition<'Person'> {
+  type: 'object';
+  apiName: 'Person';
+  description: 'A person';
+  primaryKeyType: 'string';
+  links: { Todos: ObjectTypeLinkDefinition<TodoDef, true>; Friends: ObjectTypeLinkDefinition<PersonDef, true> };
+  properties: {
+    email: {
+      multiplicity: false;
+      type: 'string';
+      nullable: false;
+    };
+  };
+}
+
+export const Person: PersonDef = {
+  type: 'object',
   apiName: 'Person',
   description: 'A person',
   primaryKeyType: 'string',
@@ -21,4 +38,4 @@ export const Person = {
       nullable: false,
     },
   },
-} satisfies ObjectTypeDefinition<'Person', 'Todo' | 'Person'>;
+};

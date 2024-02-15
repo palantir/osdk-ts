@@ -28,6 +28,7 @@ export interface WirePropertyTypes {
   float: number;
   decimal: number;
   byte: number;
+  marking: string;
 
   numericTimeseries: any;
   stringTimeseries: any;

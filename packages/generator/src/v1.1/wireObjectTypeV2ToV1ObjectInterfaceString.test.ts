@@ -69,6 +69,8 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
           status: "ACTIVE",
           objectTypeApiName: "Todo",
         }],
+        implementsInterfaces: [],
+        sharedPropertyTypeMapping: {},
       },
     );
     expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`

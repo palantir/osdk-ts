@@ -15,14 +15,14 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeWithLink } from "@osdk/gateway/types";
+import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
 export function wireObjectTypeV2ToSdkObjectDefinition(
-  objectTypeWithLink: ObjectTypeWithLink,
+  objectTypeWithLink: ObjectTypeFullMetadata,
   v2: boolean,
-): ObjectTypeDefinition<any, any> {
+): ObjectTypeDefinition<any> {
   if (
     objectTypeWithLink.objectType
       .properties[objectTypeWithLink.objectType.primaryKey] === undefined
@@ -32,6 +32,7 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
     );
   }
   return {
+    type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
     description: objectTypeWithLink.objectType.description,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(

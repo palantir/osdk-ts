@@ -1,4 +1,4 @@
-import type { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 import type { MultiLink, OntologyObject } from '@osdk/legacy-client';
 import type { Todo } from './Todo';
 
@@ -13,7 +13,24 @@ export interface Person extends OntologyObject {
   readonly Friends: MultiLink<Person>;
 }
 
-export const Person = {
+import type { TodoDef } from './Todo';
+export interface PersonDef extends ObjectTypeDefinition<'Person'> {
+  type: 'object';
+  apiName: 'Person';
+  description: 'A person';
+  primaryKeyType: 'string';
+  links: { Todos: ObjectTypeLinkDefinition<TodoDef, true>; Friends: ObjectTypeLinkDefinition<PersonDef, true> };
+  properties: {
+    email: {
+      multiplicity: false;
+      type: 'string';
+      nullable: true;
+    };
+  };
+}
+
+export const Person: PersonDef = {
+  type: 'object',
   apiName: 'Person',
   description: 'A person',
   primaryKeyType: 'string',
@@ -34,4 +51,4 @@ export const Person = {
       nullable: true,
     },
   },
-} satisfies ObjectTypeDefinition<'Person', 'Todo' | 'Person'>;
+};

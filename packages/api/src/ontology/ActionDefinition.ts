@@ -18,6 +18,7 @@ export interface ActionDefinition<
   A extends string,
   K extends string,
 > {
+  type: "action";
   apiName: A;
   description?: string;
   displayName?: string;
@@ -39,6 +40,7 @@ export interface ValidBaseActionParameterTypes {
   datetime: Date;
   timestamp: Date;
   attachment: any;
+  marking: string;
 }
 
 export interface ObjectActionDataType<K extends string> {

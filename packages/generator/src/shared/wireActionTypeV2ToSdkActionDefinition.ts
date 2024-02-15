@@ -31,6 +31,7 @@ export function wireActionTypeV2ToSdkActionDefinition(
 ): ActionDefinition<any, any> {
   const modifiedEntityTypes = getModifiedEntityTypes(input);
   return {
+    type: "action",
     apiName: input.apiName,
     parameters: Object.fromEntries(
       Object.entries(input.parameters).map((
@@ -60,6 +61,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     case "long":
     case "objectSet":
     case "timestamp":
+    case "marking":
       return {
         multiplicity: false,
         type: actionPropertyToSdkPropertyDefinition(value.dataType),
@@ -69,7 +71,7 @@ function wireActionParameterV2ToSdkParameterDefinition(
     case "array":
       return {
         multiplicity: true,
-        type: actionPropertyToSdkPropertyDefinition(value.dataType),
+        type: actionPropertyToSdkPropertyDefinition(value.dataType.subType),
         nullable: value.required ? false : true,
         description: value.description,
       };
@@ -87,6 +89,7 @@ function actionPropertyToSdkPropertyDefinition(
     case "integer":
     case "long":
     case "timestamp":
+    case "marking":
       return parameterType.type;
     case "date":
       return "datetime";

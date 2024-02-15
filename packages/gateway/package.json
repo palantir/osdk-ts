@@ -52,5 +52,13 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "sls": {
+    "dependencies": {
+      "com.palantir.foundry.api:api-gateway": {
+        "minVersion": "1.763.0",
+        "maxVersion": "1.x.x"
+      }
+    }
+  }
 }

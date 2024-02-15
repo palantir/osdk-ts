@@ -112,9 +112,9 @@ export async function generateClientSdkVersionTwoPointZero(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
     
-      import type { ObjectTypeDefinition } from "@osdk/api";
+      import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from "@osdk/api";
 
-      ${wireObjectTypeV2ToSdkObjectConst(obj, true)}
+      ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
 
       ${
         /* TODO: FIXME

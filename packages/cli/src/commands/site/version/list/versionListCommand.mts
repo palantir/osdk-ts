@@ -55,7 +55,10 @@ export default async function versionListCommand(
   }
 
   consola.success("Found versions:");
-  for (const version of versions) {
+
+  const semver = await import("semver");
+  const sortedVersions = semver.rsort(versions.filter(v => semver.valid(v)));
+  for (const version of sortedVersions) {
     consola.log(
       `    - ${version}${
         deployedVersion

@@ -18,5 +18,7 @@ import type { OsdkObjectFrom } from "@osdk/client";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 
 // Demo for if you want concrete types
-export interface Employee extends OsdkObjectFrom<"Employee", Ontology> {}
-export interface Todo extends OsdkObjectFrom<"Todo", Ontology> {}
+export interface Employee
+  extends OsdkObjectFrom<Ontology["objects"]["Employee"]>
+{}
+export interface Todo extends OsdkObjectFrom<Ontology["objects"]["Todo"]> {}
