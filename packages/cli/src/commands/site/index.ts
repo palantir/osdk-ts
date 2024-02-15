@@ -48,7 +48,7 @@ const command: CommandModule<CliCommonArgs, CommonSiteArgs> = {
           ...foundryUrl
             ? { default: foundryUrl }
             : { demandOption: true },
-          description: "Foundry URL including protocol",
+          description: "URL for the Foundry stack",
         },
         token: {
           type: "string",

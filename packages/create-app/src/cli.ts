@@ -57,6 +57,7 @@ interface CliArgs {
 export async function cli(args: string[] = process.argv) {
   const base: Argv<CliArgs> = yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
+    .wrap(Math.min(150, yargs().terminalWidth()))
     .strict()
     .help()
     .command(
@@ -76,15 +77,15 @@ export async function cli(args: string[] = process.argv) {
             type: "string",
             describe: "Template name to use",
           })
-          .option("foundry-url", {
+          .option("foundryUrl", {
             type: "string",
             describe: "URL for the Foundry stack",
           })
-          .option("application-url", {
+          .option("applicationUrl", {
             type: "string",
             describe: "URL the production application will be hosted on",
           })
-          .option("skip-application-url", {
+          .option("skipApplicationUrl", {
             type: "boolean",
             describe:
               "Skip filling in URL the production application will be hosted on",
@@ -93,15 +94,15 @@ export async function cli(args: string[] = process.argv) {
             type: "string",
             describe: "Application resource identifier (rid)",
           })
-          .option("client-id", {
+          .option("clientId", {
             type: "string",
             describe: "OAuth client ID for application",
           })
-          .option("osdk-package", {
+          .option("osdkPackage", {
             type: "string",
             describe: "OSDK package name for application",
           })
-          .option("osdk-registry-url", {
+          .option("osdkRegistryUrl", {
             type: "string",
             describe: "URL for NPM registry to install OSDK package",
           }),

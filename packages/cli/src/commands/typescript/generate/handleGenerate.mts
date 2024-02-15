@@ -26,6 +26,7 @@ import {
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import * as fs from "node:fs";
+import { YargsCheckError } from "../../../YargsCheckError.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
@@ -38,7 +39,9 @@ export default async function handleGenerate(args: TypescriptGenerateArgs) {
   } else if (args.foundryUrl && args.clientId) {
     success = await generateFromStack(args);
   } else {
-    throw new Error("Must have specified ontologyPath or stack and clientId");
+    throw new YargsCheckError(
+      "Must have specified ontologyPath or stack and clientId",
+    );
   }
 
   if (success) {

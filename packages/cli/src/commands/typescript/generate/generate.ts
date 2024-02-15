@@ -16,6 +16,7 @@
 
 import type { CommandModule } from "yargs";
 import { isValidSemver } from "../../../util/isValidSemver.js";
+import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 export const command: CommandModule<
@@ -40,8 +41,7 @@ export const command: CommandModule<
             conflicts: ["foundryUrl", "clientId"],
           },
           foundryUrl: {
-            description:
-              "The URL to the foundry stack that contains the ontology",
+            description: "URL for the foundry stack that contains the ontology",
             type: "string",
             demandOption: false,
             conflicts: "ontologyPath",
@@ -49,7 +49,7 @@ export const command: CommandModule<
             alias: "stack", // for backwards compatibility
           },
           clientId: {
-            description: "The application's client id",
+            description: "OAuth client ID for application",
             type: "string",
             demandOption: false,
             conflicts: "ontologyPath",
@@ -86,14 +86,14 @@ export const command: CommandModule<
       .check(
         (args) => {
           if (!args.ontologyPath && !args.foundryUrl) {
-            throw new Error(
-              "Error: Must specify either ontologyPath or foundryUrl and clientId",
+            throw new YargsCheckError(
+              "Must specify either ontologyPath or foundryUrl and clientId",
             );
           }
 
           if (args.version !== "dev" && !isValidSemver(args.version)) {
-            throw new Error(
-              "Error: Version must be 'dev' or a valid semver version",
+            throw new YargsCheckError(
+              "Version must be 'dev' or a valid semver version",
             );
           }
 
