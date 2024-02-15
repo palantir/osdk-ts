@@ -38,10 +38,11 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
   >(
-    args?: FetchPageOrThrowArgs<Q, L>,
+    args?: FetchPageOrThrowArgs<Q, L, R>,
   ) => Promise<
-    PageResult<OsdkObjectOrInterfaceFrom<Q, L>>
+    PageResult<OsdkObjectOrInterfaceFrom<Q, L, R>>
   >;
 
   // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;

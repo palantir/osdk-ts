@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
-import { apiServer, stubData } from "@osdk/shared.test";
+import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+
+function asV2Object(o: any, includeRid?: boolean) {
+  o = includeRid ? { ...o } : withoutRid(o);
+  o.$apiName = o.__apiName;
+  o.$objectType = o.__apiName;
+  o.$primaryKey = o.__primaryKey;
+  delete o.__apiName;
+  delete o.__primaryKey;
+  return o;
+}
 
 describe("OsdkObject", () => {
   describe("link", () => {
@@ -44,7 +54,7 @@ describe("OsdkObject", () => {
 
       // we should get the employee we requested
       const employee = result.data[0];
-      expect(employee).toEqual(stubData.employee1);
+      expect(employee).toEqual(asV2Object(stubData.employee1));
 
       // it should have the prototype that we assign at hydration time
       expect(Object.keys(employee.$link.lead)).toBeDefined();

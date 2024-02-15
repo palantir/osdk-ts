@@ -61,7 +61,7 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q>) => {
+    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q, any, any>) => {
       return fetchPageOrThrow(
         clientCtx,
         objectType,

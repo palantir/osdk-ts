@@ -32,6 +32,7 @@ type OsdkCommonFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
 > =
   & {
     [P in L]: OsdkObjectPropertyType<
@@ -39,24 +40,23 @@ type OsdkCommonFrom<
     >;
   }
   & {
+    /** @deprecated use $apiName */
     __apiName: Q["apiName"];
+
+    /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
     // $uniqueId: string; // will be dynamic
-
-    /**
-     * Future versions will require explicitly asking for this field. For now we are marking
-     * as always optional to avoid breaking changes.
-     */
-    __rid?: string;
-  };
+  }
+  & (R extends true ? { $rid: string } : {});
 
 export type OsdkObjectFrom<
   O extends ObjectTypeDefinition<any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<O> =
     ObjectOrInterfacePropertyKeysFrom2<O>,
-> = OsdkCommonFrom<O, L> & {
+  R extends boolean = false,
+> = OsdkCommonFrom<O, L, R> & {
   $link: OsdkObjectLinksObject<O>;
 }; // TODO
 
@@ -64,12 +64,14 @@ export type OsdkInterfaceFrom<
   Q extends InterfaceDefinition<any, any>,
   T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
     InterfacePropertyKeysFrom2<Q>,
-> = OsdkCommonFrom<Q, T_PropertyKeys>;
+  R extends boolean = false,
+> = OsdkCommonFrom<Q, T_PropertyKeys, R>;
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
-> = Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L>
-  : Q extends ObjectTypeDefinition<any> ? OsdkObjectFrom<Q, L>
+  R extends boolean = false,
+> = Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L, R>
+  : Q extends ObjectTypeDefinition<any> ? OsdkObjectFrom<Q, L, R>
   : never;
