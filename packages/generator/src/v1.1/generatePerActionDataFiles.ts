@@ -23,7 +23,7 @@ import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { getDescriptionIfPresent } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
 
-function stringifyWithoutOutterBraces(obj: any) {
+function stringifyWithoutOuterBraces(obj: any) {
   return JSON.stringify(obj, null, 2).replace(/^\{\n/, "").replace(/\n\}$/, "");
 }
 
@@ -80,7 +80,7 @@ export async function generatePerActionDataFiles(
 
               return `"${key}": {
                 type: ${q};
-                ${stringifyWithoutOutterBraces(remain)}
+                ${stringifyWithoutOuterBraces(remain)}
               }
               `;
             })
