@@ -27,8 +27,8 @@ import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeeP
 import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin.js";
 import { typeChecks } from "./typeChecks.js";
 
-invariant(process.env.FOUNDRY_STACK != undefined);
-invariant(process.env.FOUNDRY_USER_TOKEN != undefined);
+invariant(process.env.FOUNDRY_STACK !== undefined);
+invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
 /**
  * TLDR: If you're starting out, just use `client` and ignore ` clientCtx`.

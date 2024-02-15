@@ -31,7 +31,7 @@ export function legacyToModernSingleAggregationResult<
     (accumulator, curValue) => {
       const parts = curValue.name.split(".");
       invariant(
-        parts.length == 2,
+        parts.length === 2,
         "assumed we were getting a `${key}.${type}`",
       );
       if (!(parts[0] in accumulator)) {

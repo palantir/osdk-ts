@@ -33,7 +33,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
   );
 
   const imports = Array.from(uniqueLinkTargetTypes).filter(type =>
-    type != definition.apiName
+    type !== definition.apiName
   ).map(type => `import type { ${type}Def } from "./${type}${importExt}";`);
 
   return `

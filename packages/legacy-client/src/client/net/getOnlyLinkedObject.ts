@@ -44,7 +44,7 @@ export async function getOnlyLinkedObject<
     return result;
   }
 
-  if (result.type == "ok" && result.value.length > 1) {
+  if (result.type === "ok" && result.value.length > 1) {
     return createErrorResponse(
       {
         name: "Too many objects",
@@ -61,7 +61,7 @@ export async function getOnlyLinkedObject<
     );
   }
 
-  if (result.type == "ok" && result.value.length != 1) {
+  if (result.type === "ok" && result.value.length !== 1) {
     return createErrorResponse(
       {
         name: "Object not found",
