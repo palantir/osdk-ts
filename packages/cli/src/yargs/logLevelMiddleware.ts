@@ -25,10 +25,10 @@ export async function logLevelMiddleware(args: CliCommonArgs) {
     consola.level = 3 + args.verbose; // so 1 -v is debug logs and -vv is trace
     if (consola.level > 3) {
       consola.debug(
-        `Verbose logging enabled (${consola.level === 4 ? "debug" : "trace"})`,
+        `Verbose logging enabled (${
+          consola.level === 4 ? "debug" : "trace"
+        })\n`,
       );
     }
-
-    consola.log(""); // intentional blank line
   }
 }

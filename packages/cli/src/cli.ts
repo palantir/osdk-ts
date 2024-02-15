@@ -30,7 +30,7 @@ import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
   consola.info(
-    `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
+    `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
   );
 
   const base: Argv<CliCommonArgs> = yargs(hideBin(args))
