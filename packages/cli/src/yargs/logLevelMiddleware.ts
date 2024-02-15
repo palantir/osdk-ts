@@ -18,21 +18,17 @@ import { consola } from "consola";
 import type { CliCommonArgs } from "../CliCommonArgs.js";
 
 let firstTime = true;
-export async function logVersionMiddleware(args: CliCommonArgs) {
+export async function logLevelMiddleware(args: CliCommonArgs) {
   if (firstTime) {
     firstTime = false;
-    // This will be called before any command is executed
-    consola.info(
-      `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}`,
-    );
 
     consola.level = 3 + args.verbose; // so 1 -v is debug logs and -vv is trace
     if (consola.level > 3) {
       consola.debug(
-        `Verbose logging enabled (${consola.level === 4 ? "debug" : "trace"})`,
+        `Verbose logging enabled (${
+          consola.level === 4 ? "debug" : "trace"
+        })\n`,
       );
     }
-
-    consola.log(""); // intentional blank line
   }
 }
