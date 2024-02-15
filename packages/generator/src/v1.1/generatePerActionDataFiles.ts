@@ -157,7 +157,7 @@ export async function generatePerActionDataFiles(
     await formatTs(`
       ${
       Object.values(ontology.actionTypes).map(action =>
-        `export * from "./${action.apiName}${importExt}";`
+        `export {${action.apiName}} from "./${action.apiName}${importExt}";`
       )
         .join("\n")
     }
