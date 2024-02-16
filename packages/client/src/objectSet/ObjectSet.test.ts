@@ -85,4 +85,48 @@ describe("ObjectSet", () => {
     }
     expect(iter).toEqual(1);
   });
+
+  it("orders objects in ascending order without a filter, and returns all results", async () => {
+    const { data: employees } = await client.objects.Employee.fetchPageOrThrow({
+      orderBy: { "employeeId": "asc" },
+    });
+
+    expect(employees).toMatchInlineSnapshot(`
+      [
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50030,
+          "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "class": "Red",
+          "employeeId": 50030,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "John Doe",
+          "office": "NYC",
+          "startDate": "2019-01-01",
+        },
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50031,
+          "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+          "class": "Blue",
+          "employeeId": 50031,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jane Doe",
+          "office": "SEA",
+          "startDate": "2012-02-12",
+        },
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50032,
+          "__rid": "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+          "class": "Red",
+          "employeeId": 50032,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jack Smith",
+          "office": "LON",
+          "startDate": "2015-05-15",
+        },
+      ]
+    `);
+  });
 });

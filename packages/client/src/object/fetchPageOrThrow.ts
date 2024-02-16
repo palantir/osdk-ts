@@ -28,16 +28,28 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
 > {
   select?: readonly L[];
 }
 
+export interface OrderByArg<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+> {
+  orderBy?: {
+    [K in L & string]?: "asc" | "desc";
+  };
+}
+
 export interface FetchPageOrThrowArgs<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
-> extends SelectArg<O, L> {
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+> extends
+  SelectArg<Q, L>,
+  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
+{
   nextPageToken?: string;
   pageSize?: number;
 }
@@ -74,6 +86,15 @@ export async function fetchPageOrThrow<
 
   if (args?.pageSize != null) {
     body.pageSize = args.pageSize;
+  }
+
+  if (args?.orderBy != null) {
+    body.orderBy = {
+      fields: Object.entries(args.orderBy).map(([field, direction]) => ({
+        field,
+        direction,
+      })),
+    };
   }
 
   const r = await loadObjectSetV2(
