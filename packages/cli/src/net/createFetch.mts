@@ -63,7 +63,12 @@ function handleFetchError(e: unknown): Promise<Response> {
     tip = "Check your token has the required scopes for this operation";
   }
 
-  throw new ExitProcessError(1, e.message, tip);
+  let message = e.message;
+  if (e.errorName === "Artifacts:ArtifactAlreadyExists") {
+    message = "Version already exists";
+  }
+
+  throw new ExitProcessError(1, message, tip);
 }
 
 function createRequestLoggingFetch(
