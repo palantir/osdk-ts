@@ -4,6 +4,7 @@ export interface BoundariesUsStateDef extends ObjectTypeDefinition<'BoundariesUs
   type: 'object';
   apiName: 'BoundariesUsState';
   description: 'Boundaries US State';
+  primaryKeyApiName: 'usState';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -25,6 +26,7 @@ export const BoundariesUsState: BoundariesUsStateDef = {
   type: 'object',
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',
+  primaryKeyApiName: 'usState' as const,
   primaryKeyType: 'string',
   links: {},
   properties: {

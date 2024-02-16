@@ -52,6 +52,7 @@ export interface ObjectTypeWithAllPropertyTypesDef extends ObjectTypeDefinition<
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
   description: 'A type with all property types';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
   links: {};
   properties: {
@@ -217,6 +218,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  primaryKeyApiName: 'id' as const,
   primaryKeyType: 'integer',
   links: {},
   properties: {

@@ -25,6 +25,7 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
       Todo: {
         type: "object";
         apiName: "Todo";
+        primaryKeyApiName: "id";
         primaryKeyType: "double";
         links: {};
         properties: {
@@ -58,6 +59,7 @@ type Q = AggregationResultsWithoutGroups<
       Todo: {
         type: "object";
         apiName: "Todo";
+        primaryKeyApiName: "id";
         primaryKeyType: "double";
         links: {};
         properties: {

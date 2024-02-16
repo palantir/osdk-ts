@@ -4,6 +4,7 @@ export interface EmployeeDef extends ObjectTypeDefinition<'Employee'> {
   type: 'object';
   apiName: 'Employee';
   description: 'An employee';
+  primaryKeyApiName: 'adUsername';
   primaryKeyType: 'string';
   links: { lead: ObjectTypeLinkDefinition<EmployeeDef, false>; peeps: ObjectTypeLinkDefinition<EmployeeDef, true> };
   properties: {
@@ -59,6 +60,7 @@ export const Employee: EmployeeDef = {
   type: 'object',
   apiName: 'Employee',
   description: 'An employee',
+  primaryKeyApiName: 'adUsername' as const,
   primaryKeyType: 'string',
   links: {
     lead: {

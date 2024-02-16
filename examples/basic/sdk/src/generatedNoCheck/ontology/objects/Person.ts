@@ -5,6 +5,7 @@ export interface PersonDef extends ObjectTypeDefinition<'Person'> {
   type: 'object';
   apiName: 'Person';
   description: 'A person';
+  primaryKeyApiName: 'email';
   primaryKeyType: 'string';
   links: { Todos: ObjectTypeLinkDefinition<TodoDef, true>; Friends: ObjectTypeLinkDefinition<PersonDef, true> };
   properties: {
@@ -20,6 +21,7 @@ export const Person: PersonDef = {
   type: 'object',
   apiName: 'Person',
   description: 'A person',
+  primaryKeyApiName: 'email' as const,
   primaryKeyType: 'string',
   links: {
     Todos: {

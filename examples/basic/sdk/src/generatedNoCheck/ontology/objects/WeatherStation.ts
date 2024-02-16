@@ -4,6 +4,7 @@ export interface WeatherStationDef extends ObjectTypeDefinition<'WeatherStation'
   type: 'object';
   apiName: 'WeatherStation';
   description: 'Weather Station';
+  primaryKeyApiName: 'stationId';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -25,6 +26,7 @@ export const WeatherStation: WeatherStationDef = {
   type: 'object',
   apiName: 'WeatherStation',
   description: 'Weather Station',
+  primaryKeyApiName: 'stationId' as const,
   primaryKeyType: 'string',
   links: {},
   properties: {

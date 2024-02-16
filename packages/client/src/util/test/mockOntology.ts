@@ -23,6 +23,7 @@ import type {
 const Task: TaskDef = {
   type: "object",
   apiName: "Task",
+  primaryKeyApiName: "id",
   primaryKeyType: "integer",
   properties: {
     id: { type: "integer" },
@@ -43,6 +44,7 @@ const Task: TaskDef = {
 interface TaskDef extends ObjectTypeDefinition<"Task"> {
   type: "object";
   apiName: "Task";
+  primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer" };
@@ -57,6 +59,7 @@ interface TaskDef extends ObjectTypeDefinition<"Task"> {
 const Todo: TodoDef = {
   type: "object",
   apiName: "Todo",
+  primaryKeyApiName: "id",
   primaryKeyType: "integer",
   properties: {
     id: { type: "integer" },
@@ -68,6 +71,7 @@ const Todo: TodoDef = {
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
   apiName: "Todo";
+  primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer" };
@@ -79,6 +83,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
 const Person: PersonDef = {
   type: "object",
   apiName: "Person",
+  primaryKeyApiName: "id",
   primaryKeyType: "integer",
   properties: {
     id: { type: "integer" },
@@ -90,6 +95,7 @@ const Person: PersonDef = {
 interface PersonDef extends ObjectTypeDefinition<"Person"> {
   type: "object";
   apiName: "Person";
+  primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer" };

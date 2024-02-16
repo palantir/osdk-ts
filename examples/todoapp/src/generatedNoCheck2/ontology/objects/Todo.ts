@@ -4,6 +4,7 @@ export interface TodoDef extends ObjectTypeDefinition<'Todo'> {
   type: 'object';
   apiName: 'Todo';
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -30,6 +31,7 @@ export const Todo: TodoDef = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id' as const,
   primaryKeyType: 'string',
   links: {},
   properties: {
