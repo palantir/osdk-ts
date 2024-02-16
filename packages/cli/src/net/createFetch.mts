@@ -61,6 +61,8 @@ function handleFetchError(e: unknown): Promise<Response> {
     tip = "Check your token is valid and has not expired or been disabled";
   } else if (e.statusCode === 403) {
     tip = "Check your token has the required scopes for this operation";
+  } else if (e.errorName === "Artifacts:ArtifactAlreadyExists") {
+    e.message = "Version already exists";
   }
 
   throw new ExitProcessError(1, e.message, tip);
