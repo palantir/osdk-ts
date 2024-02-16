@@ -31,8 +31,19 @@ test("it accepts valid template from prompt", async () => {
   expect(vi.mocked(consola).prompt).toHaveBeenCalledTimes(1);
 });
 
-test("it accepts valid initial value without prompt", async () => {
+test("it accepts valid initial template id value without prompt", async () => {
   expect(await promptTemplate({ template: TEMPLATES[0].id })).toEqual(
+    TEMPLATES[0],
+  );
+  expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();
+});
+
+test("it accepts valid initial template id value without 'template-' prefix without prompt", async () => {
+  expect(
+    await promptTemplate({
+      template: TEMPLATES[0].id.substring("template-".length),
+    }),
+  ).toEqual(
     TEMPLATES[0],
   );
   expect(vi.mocked(consola).prompt).not.toHaveBeenCalled();

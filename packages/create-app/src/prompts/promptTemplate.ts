@@ -21,7 +21,9 @@ import { type Template, TEMPLATES } from "../templates.js";
 export async function promptTemplate(
   parsed: { template?: string },
 ): Promise<Template> {
-  let template = TEMPLATES.find((t) => t.id === parsed.template);
+  let template = TEMPLATES.find((t) =>
+    t.id === parsed.template || t.id === `template-${parsed.template}`
+  );
   if (template == null) {
     const templateId = (await consola.prompt(
       parsed.template != null

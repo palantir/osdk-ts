@@ -43,8 +43,8 @@ npx @osdk/create-app [project] [--<option>]
 
 ## Templates
 
-| Template ID                 | Description                                                                                                                           |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| template-react              | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html)                                                            |
-| template-vue                | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)                                                              |
-| template-next-static-export | [Next.js](https://nextjs.org/) with [static export](https://nextjs.org/docs/pages/building-your-application/deploying/static-exports) |
+| Template name      | Description                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| react              | [React](https://react.dev/) with [Vite](https://vitejs.dev/guide/why.html)                                                            |
+| vue                | [Vue](https://vuejs.org/) with [Vite](https://vitejs.dev/guide/why.html)                                                              |
+| next-static-export | [Next.js](https://nextjs.org/) with [static export](https://nextjs.org/docs/pages/building-your-application/deploying/static-exports) |
