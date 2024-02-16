@@ -53,6 +53,7 @@ export interface ObjectTypeDefinition<
   type: "object";
   apiName: K;
   description?: string;
+  primaryKeyApiName: keyof this["properties"];
   primaryKeyType: keyof WirePropertyTypes;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<

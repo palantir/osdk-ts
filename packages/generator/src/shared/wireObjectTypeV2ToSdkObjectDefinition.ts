@@ -35,6 +35,7 @@ export function wireObjectTypeV2ToSdkObjectDefinition(
     type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
     description: objectTypeWithLink.objectType.description,
+    primaryKeyApiName: objectTypeWithLink.objectType.primaryKey,
     primaryKeyType: wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
       objectTypeWithLink.objectType
         .properties[objectTypeWithLink.objectType.primaryKey],

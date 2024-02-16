@@ -46,6 +46,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       ? `description: ${JSON.stringify(definition.description)},`
       : ""
   }
+      primaryKeyApiName: ${JSON.stringify(definition.primaryKeyApiName)},
       primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
       links: {${
     Object.entries(definition.links).map(
@@ -67,6 +68,9 @@ export function wireObjectTypeV2ToSdkObjectConst(
       ? `description: ${JSON.stringify(definition.description)},`
       : ""
   }
+      primaryKeyApiName: ${
+    JSON.stringify(definition.primaryKeyApiName)
+  } as const,
       primaryKeyType: ${JSON.stringify(definition.primaryKeyType)},
       links: ${JSON.stringify(definition.links, null, 2)},
       properties: ${JSON.stringify(definition.properties, null, 2)},
