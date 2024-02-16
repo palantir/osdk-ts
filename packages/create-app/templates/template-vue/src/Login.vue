@@ -20,7 +20,6 @@ const login = async () => {
 };
 
 onUpdated(() => {
-  console.log(client.auth.token);
   // If the token exists but a user tries to load /login, redirect to the home page instead
   if (client.auth.token != null) {
     router.replace("/");

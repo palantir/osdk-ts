@@ -16,23 +16,13 @@ function RootLayout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <body className={inter.className}>
         <div id="root">
-          <a href="https://www.palantir.com/" target="_blank">
-            <Image
-              src="/palantir.svg"
-              alt="Palantir logo"
-              className={css.logo}
-              width={16}
-              height={16}
-              priority
-            />
-          </a>
           <a
             href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
             target="_blank"
           >
             <Image
-              src="/dev-console.svg"
-              alt="Developer Console logo"
+              src="/palantir.svg"
+              alt="Palantir logo"
               className={css.logo}
               width={16}
               height={16}

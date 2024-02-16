@@ -24,19 +24,25 @@ function Home() {
         <div>
           <h2>Objects ({objectApiNames.length})</h2>
           {objectApiNames.map((objectApiName) => (
-            <p key={objectApiName}>client.ontology.objects.{objectApiName}</p>
+            <pre key={objectApiName}>
+              client.ontology.objects.{objectApiName}
+            </pre>
           ))}
         </div>
         <div>
           <h2>Actions ({actionApiNames.length})</h2>
           {actionApiNames.map((actionApiName) => (
-            <p key={actionApiName}>client.ontology.actions.{actionApiName}</p>
+            <pre key={actionApiName}>
+              client.ontology.actions.{actionApiName}
+            </pre>
           ))}
         </div>
         <div>
           <h2>Queries ({queryApiNames.length})</h2>
           {queryApiNames.map((queryApiName) => (
-            <p key={queryApiName}>client.ontology.queries.{queryApiName}</p>
+            <pre key={queryApiName}>
+              client.ontology.queries.{queryApiName}
+            </pre>
           ))}
         </div>
       </div>

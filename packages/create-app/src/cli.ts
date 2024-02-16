@@ -84,6 +84,7 @@ export async function cli(args: string[] = process.argv) {
           .option("applicationUrl", {
             type: "string",
             describe: "URL the production application will be hosted on",
+            conflicts: "skipApplicationUrl",
           })
           .option("skipApplicationUrl", {
             type: "boolean",

@@ -53,7 +53,7 @@ export async function promptApplicationUrl(
     applicationUrl = await consola.prompt(
       `Enter the URL your production application will be hosted on:\n${
         italic(
-          "(Example https://myapp.example.palantirfoundry.com/)",
+          "(Example: https://myapp.example.palantirfoundry.com)",
         )
       }`,
       { type: "text" },
