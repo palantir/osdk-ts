@@ -44,7 +44,7 @@ export async function fetchAggregationForEmployeesGroupedThin(
   );
 
   result[0].values.employeeNumber.avg;
-  result[0].group.locationType;
+  result[0].$group.locationType;
 
   // const {action, authorized, lastResultIsValid, loading} = useOsdkAction(client.actions.doFoo);
   // isOk(result) && result.value.validation.result;
@@ -68,7 +68,7 @@ export async function fetchAggregationForEmployeesGroupedThin(
   expectType<
     TypeOf<
       Array<{
-        group: {
+        $group: {
           locationType: string | undefined;
         };
         values: {

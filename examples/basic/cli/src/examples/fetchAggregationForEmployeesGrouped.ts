@@ -82,7 +82,7 @@ fetchAggregationForEmployeesGrouped()
   expectType<
     TypeOf<
       Array<{
-        group: {
+        $group: {
           locationType: string | undefined;
         };
         values: {

@@ -25,7 +25,7 @@ export type AggregationResultsWithGroups<
   A extends AggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
 > = {
-  group: {
+  $group: {
     [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
       Q["properties"][P]
     >;
