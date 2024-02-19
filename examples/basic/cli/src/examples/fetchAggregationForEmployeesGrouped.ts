@@ -85,18 +85,17 @@ fetchAggregationForEmployeesGrouped()
         $group: {
           locationType: string | undefined;
         };
-        values: {
-          "employeeNumber": {
-            max: number | undefined;
-            avg: number | undefined;
-            min: number | undefined;
-          };
-          locationCity: {
-            approximateDistinct: number;
-          };
-          locationName: {
-            approximateDistinct: number;
-          };
+
+        "employeeNumber": {
+          max: number | undefined;
+          avg: number | undefined;
+          min: number | undefined;
+        };
+        locationCity: {
+          approximateDistinct: number;
+        };
+        locationName: {
+          approximateDistinct: number;
         };
       }>,
       typeof result
@@ -107,10 +106,10 @@ fetchAggregationForEmployeesGrouped()
   invariant(Array.isArray(result), "groups means we should get an array");
   invariant(Object.keys(result).length >= 1, "there should be one group");
   invariant(
-    "employeeNumber" in result[0].values
-      && "locationName" in result[0].values
-      && "locationCity" in result[0].values,
+    "employeeNumber" in result[0]
+      && "locationName" in result[0]
+      && "locationCity" in result[0],
     "The keys should be the expected ones",
   );
-  invariant(Object.keys(result[0].values.employeeNumber).length === 3);
+  invariant(Object.keys(result[0].employeeNumber).length === 3);
 }
