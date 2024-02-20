@@ -93,6 +93,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
       return "numericTimeseries";
     default:
       const _: never = propertyType;
-      throw new Error(`Unexecpected data type ${propertyType}`);
+      throw new Error(`Unexecpected data type ${JSON.stringify(propertyType)}`);
   }
 }
