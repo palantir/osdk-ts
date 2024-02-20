@@ -26,24 +26,24 @@ export function useTodos() {
         // index incoming objects by apiName and then by pk value
         const byApiNameByPK = new Map<
           string,
-          Map<(typeof objects)[0]["__primaryKey"], (typeof objects)[0]>
+          Map<(typeof objects)[0]["$primaryKey"], (typeof objects)[0]>
         >();
         for (const object of objects) {
-          const byPk = byApiNameByPK.get(object.__apiName);
+          const byPk = byApiNameByPK.get(object.$apiName);
           if (byPk) {
-            byPk.set(object.__primaryKey, object);
+            byPk.set(object.$primaryKey, object);
           } else {
             byApiNameByPK.set(
-              object.__apiName,
-              new Map([[object.__primaryKey, object]])
+              object.$apiName,
+              new Map([[object.$primaryKey, object]])
             );
           }
         }
 
         // get the new version of an object that has changed, removing it from the list of updates
         const getUpdate = (
-          apiName: (typeof objects)[0]["__apiName"],
-          primaryKey: (typeof objects)[0]["__primaryKey"]
+          apiName: (typeof objects)[0]["$apiName"],
+          primaryKey: (typeof objects)[0]["$primaryKey"]
         ) => {
           const byPk = byApiNameByPK.get(apiName);
           if (byPk) {

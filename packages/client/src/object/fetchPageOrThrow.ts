@@ -30,8 +30,10 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
 > {
   select?: readonly L[];
+  includeRid?: R;
 }
 
 export interface OrderByArg<
@@ -47,8 +49,9 @@ export interface OrderByArg<
 export interface FetchPageOrThrowArgs<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
 > extends
-  SelectArg<Q, L>,
+  SelectArg<Q, L, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
   nextPageToken?: string;
@@ -57,7 +60,7 @@ export interface FetchPageOrThrowArgs<
 
 export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q>,
+  const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
   client: ClientContext<any>,
   objectType: Q,
@@ -71,7 +74,8 @@ export async function fetchPageOrThrow<
     OsdkObjectFrom<
       Q extends ObjectTypeDefinition<any> ? Q : never,
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>
+        : ObjectOrInterfacePropertyKeysFrom2<Q>,
+      A["includeRid"] extends true ? true : false
     >
   >
 > {
@@ -79,6 +83,7 @@ export async function fetchPageOrThrow<
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
     select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+    excludeRid: !args?.includeRid,
   };
 
   if (args?.nextPageToken) {

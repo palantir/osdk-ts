@@ -55,6 +55,7 @@ export async function pageLinkedObjectsOrThrow<
       pageSize: options?.pageSize,
       pageToken: options?.nextPageToken,
       select: (options?.select as string[] | undefined) ?? [],
+      excludeRid: !options?.includeRid,
     },
   );
 
