@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     port: 8080,
     proxy: {
-      "^(/multipass|/api)": {
+      "^(/multipass/api|/api)": {
         target: "https://example.palantirfoundry.com",
         changeOrigin: true,
         secure: true,

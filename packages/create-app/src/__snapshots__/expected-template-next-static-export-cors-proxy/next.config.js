@@ -6,7 +6,7 @@ const nextConfig = {
   // and will warn when using this feature together with export.
   rewrites: () => [
     {
-      source: "/:prefix(multipass|api)/:path*",
+      source: "/:prefix(multipass/api|api)/:path*",
       destination: "https://example.palantirfoundry.com/:prefix/:path*",
     },
   ],
