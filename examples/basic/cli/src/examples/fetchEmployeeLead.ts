@@ -31,6 +31,13 @@ export async function fetchEmployeeLead(
       select: ["adUsername", "businessTitle", "employeeNumber"],
     });
 
+  const lead = await result.data[0].$link.lead.get({
+    select: ["adUsername"],
+    includeRid: false,
+  });
+  const lead2 = await result.data[0].$link.lead.get({});
+  const peeps = await result.data[0].$link.peeps.fetchPageOrThrow({});
+
   // const result = await client
   //   .objectSet("Employee", {
   //     $where: { locationCity: "Palo Alto" },

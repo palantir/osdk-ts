@@ -59,7 +59,7 @@ export function createClient<O extends OntologyDefinition<any>>(
 
   const actionInvoker = createActionInvoker(clientCtx);
 
-  function newClient<
+  function clientFn<
     T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any>,
   >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
     : T extends ActionDefinition<any, any> ? ActionSignatureFromDef<T>
@@ -75,7 +75,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   }
 
   const client: Client<O> = Object.defineProperties(
-    newClient as Client<O>,
+    clientFn as Client<O>,
     {
       objectSet: { get: () => objectSetFactory },
       objects: { get: () => createObjectSetCreator(client, clientCtx) },

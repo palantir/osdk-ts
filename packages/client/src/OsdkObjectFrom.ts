@@ -25,8 +25,7 @@ import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 export type OsdkObjectPrimaryKeyType<
   O extends ObjectTypeDefinition<any>,
 > = WirePropertyTypes[O["primaryKeyType"]];
-
-type OsdkCommonFrom<
+export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
@@ -66,53 +65,3 @@ export type OsdkObjectOrInterfaceFrom<
   P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
 > = Osdk<Q, P, R>;
-
-export type Osdk<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends keyof Q["properties"] | "$all" = "$all",
-  R extends boolean = false,
-> = OsdkCommonFrom<Q, P, R>;
-
-// type ObjectShaped<T extends string> = {
-//   __apiName: string & { __OsdkType?: ObjectTypeDefinition<any> };
-// };
-
-// type Q<T> = T extends ObjectTypeDefinition<any> ? number : string;
-
-// // type Osdk<
-// //   T extends ObjectShaped<string>,
-// //   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
-// // > = NonNullable<T["__apiName"]["__OsdkType"]> extends
-// //   ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
-// //   ? OsdkObjectFrom<NonNullable<T["__apiName"]["__OsdkType"]>, K>
-// //   : never;
-
-// type Osdk<
-//   T extends ObjectShaped<string>,
-//   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
-// > = NOOP<Q<T>>;
-
-// type ObjectShaped<T extends string> = {
-//   __apiName: T & { __OsdkType?: ObjectTypeDefinition<any> };
-// };
-
-// type Q<T, L> = T extends ObjectTypeDefinition<any> ? L extends string & keyof T["properties"] ? OsdkObjectFrom<T, L> : string : never;
-
-// // type Osdk<
-// //   T extends ObjectShaped<string>,
-// //   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
-// // > = NonNullable<T["__apiName"]["__OsdkType"]> extends
-// //   ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
-// //   ? OsdkObjectFrom<NonNullable<T["__apiName"]["__OsdkType"]>, K>
-// //   : never;
-
-// type Osdk<
-//   T extends ObjectShaped<string>,
-//   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
-// > = Q<NonNullable<T["__apiName"]["__OsdkType"]>, K>;
-
-// type qq = NOOP<Osdk<Employee, "employeeNumber">>;
-
-// export interface Employee extends OsdkObjectFrom<EmployeeDef, keyof ObjectDef$Employee$Properties, EmployeeDef> {}
-
-// const q: Employee = {}  as any;

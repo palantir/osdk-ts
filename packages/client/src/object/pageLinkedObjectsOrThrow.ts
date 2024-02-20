@@ -17,11 +17,15 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { listLinkedObjectsV2 } from "@osdk/gateway/requests";
 import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
-import type { MultiLinkReturnType } from "../definitions/LinkDefinitions.js";
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { FetchPageOrThrowArgs } from "./fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArgToKeys,
+} from "./fetchPageOrThrow.js";
 
 export async function pageLinkedObjectsOrThrow<
   Q extends ObjectOrInterfaceDefinition,
@@ -33,7 +37,17 @@ export async function pageLinkedObjectsOrThrow<
   primaryKey: any,
   linkTypeApiName: L,
   options?: A,
-): MultiLinkReturnType<LinkedType<Q, L>, A> {
+): Promise<
+  PageResult<
+    DefaultToFalse<A["includeRid"]> extends false
+      ? Osdk<LinkedType<Q, L>, SelectArgToKeys<LinkedType<Q, L>, A>>
+      : Osdk<
+        LinkedType<Q, L>,
+        SelectArgToKeys<LinkedType<Q, L>, A>,
+        true
+      >
+  >
+> {
   const page = await listLinkedObjectsV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
