@@ -16,9 +16,19 @@
 
 import { createClient, createClientContext } from "@osdk/client";
 import { Ontology } from "@osdk/examples.basic.sdk";
+import invariant from "tiny-invariant";
+import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
+import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
+import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin.js";
+import { fetchEmployeeLead } from "./examples/fetchEmployeeLead.js";
+import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
+import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
+import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
+import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin.js";
+import { typeChecks } from "./typeChecks.js";
 
-// invariant(process.env.FOUNDRY_STACK !== undefined);
-// invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
+invariant(process.env.FOUNDRY_STACK !== undefined);
+invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
 /**
  * TLDR: If you're starting out, just use `client` and ignore ` clientCtx`.
@@ -33,37 +43,35 @@ import { Ontology } from "@osdk/examples.basic.sdk";
  */
 export const client = createClient(
   Ontology,
-  "https://swirl.palantirfoundry.com/",
-  () =>
-    "eyJwbG50ciI6IkU5U09pcmdxVHFDclU3SElDcWYxdXc9PSIsImFsZyI6IkVTMjU2In0.eyJleHAiOjE3MDg1MTk0MDEsInNpZCI6ImtjSWVPREZWU2VxTnI0cEFhamt5Z2c9PSIsInN1YiI6ImdueDRCUTNGUmdDVjlaa0h4ZzhEbnc9PSIsIm9yZyI6Imh4TUdqdEZTVEdXRUFIcStQTWlsVlE9PSJ9.SaLct7Ezix8LYCp-RMkyR8VKfr7Sk9mACtp9b_xg281bGqWFJQgcJwthxYCzoel1qrYBoleEXYrdYcYogI112w",
+  process.env.FOUNDRY_STACK,
+  () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
 export const clientCtx = createClientContext(
   Ontology,
-  "https://swirl.palantirfoundry.com/",
-  () =>
-    "eyJwbG50ciI6IkU5U09pcmdxVHFDclU3SElDcWYxdXc9PSIsImFsZyI6IkVTMjU2In0.eyJleHAiOjE3MDg1MTk0MDEsInNpZCI6ImtjSWVPREZWU2VxTnI0cEFhamt5Z2c9PSIsInN1YiI6ImdueDRCUTNGUmdDVjlaa0h4ZzhEbnc9PSIsIm9yZyI6Imh4TUdqdEZTVEdXRUFIcStQTWlsVlE9PSJ9.SaLct7Ezix8LYCp-RMkyR8VKfr7Sk9mACtp9b_xg281bGqWFJQgcJwthxYCzoel1qrYBoleEXYrdYcYogI112w",
+  process.env.FOUNDRY_STACK,
+  () => process.env.FOUNDRY_USER_TOKEN!,
   `typescript-sdk/dev osdk-cli/dev`,
 );
 
 async function runTests() {
   try {
-    // await fetchEmployeePage(client);
-    // await fetchEmployeePageByAdUsername(client, "fish");
-    // await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
-    // await fetchAggregationForEmployees(client);
-    // await fetchAggregationForEmployeesGrouped(client);
-    // await fetchEmployeePageThin(clientCtx);
+    await fetchEmployeePage(client);
+    await fetchEmployeePageByAdUsername(client, "fish");
+    await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
+    await fetchAggregationForEmployees(client);
+    await fetchAggregationForEmployeesGrouped(client);
+    await fetchEmployeePageThin(clientCtx);
 
-    // await fetchAggregationForEmployeesGroupedThin(clientCtx);
-    // await fetchEmployeeLead(client, "bob");
+    await fetchAggregationForEmployeesGroupedThin(clientCtx);
+    await fetchEmployeeLead(client, "bob");
 
-    // const interfaceImplementationComplete = false;
-    // if (interfaceImplementationComplete) {
-    //   const interfaceResults = await client.objects.SimpleInterface
-    //     .fetchPageOrThrow();
-    //   interfaceResults.data[0].body;
-    // }
+    const interfaceImplementationComplete = false;
+    if (interfaceImplementationComplete) {
+      const interfaceResults = await client.objects.SimpleInterface
+        .fetchPageOrThrow();
+      interfaceResults.data[0].body;
+    }
 
     // only works in default ontology
     const result = await client.objects.WeatherStation.where({
@@ -191,7 +199,7 @@ async function runTests() {
       testAggregateCountWithGroups[0].latitude.min,
     );
 
-    // await typeChecks(client);
+    await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);
     console.error(e);
