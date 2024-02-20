@@ -31,4 +31,5 @@ export type AggregationResultsWithGroups<
     >;
   };
   values: AggregationResultsWithoutGroups<Q, A>;
+  $count?: number;
 }[];

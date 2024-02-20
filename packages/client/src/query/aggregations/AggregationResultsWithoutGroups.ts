@@ -25,14 +25,11 @@ type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   AC extends AggregationClause<any>,
-> =
-  & ({
-    [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
-      readonly string[] | string ? {
-        [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct"
-          ? number
-          : OsdkObjectPropertyType<Q["properties"][P]>;
-      }
-      : never;
-  })
-  & ("$count" extends keyof AC ? { ["$count"]: number } : {});
+> = {
+  [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
+    readonly string[] | string ? {
+      [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
+        : OsdkObjectPropertyType<Q["properties"][P]>;
+    }
+    : never;
+};

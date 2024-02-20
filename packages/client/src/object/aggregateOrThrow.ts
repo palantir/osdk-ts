@@ -16,7 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
-import type { AggregateObjectsRequestV2, ObjectSet } from "@osdk/gateway/types";
+import type {
+  AggregateObjectsRequestV2,
+  AggregateObjectsResponseV2,
+  ObjectSet,
+} from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
@@ -31,6 +35,7 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "../query/index.js";
+import type { ArrayElement } from "../util/ArrayElement.js";
 
 export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
@@ -87,8 +92,19 @@ export async function aggregateOrThrow<
       return {
         group: entry.group as any,
         values: legacyToModernSingleAggregationResult(entry),
+        $count: aggregationToCountResult(entry),
       };
     }) as any; // fixme
 
   return ret as any; // FIXME
+}
+
+export function aggregationToCountResult(
+  entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
+): { $count: number } | undefined {
+  for (const aggregateResult of entry.metrics) {
+    if (aggregateResult.name === "count") {
+      return { $count: aggregateResult.value };
+    }
+  }
 }

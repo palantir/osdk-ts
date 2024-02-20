@@ -30,6 +30,9 @@ export function legacyToModernSingleAggregationResult<
   return entry.metrics.reduce(
     (accumulator, curValue) => {
       const parts = curValue.name.split(".");
+      if (parts[0] === "count") {
+        return accumulator;
+      }
       invariant(
         parts.length === 2,
         "assumed we were getting a `${key}.${type}`",
