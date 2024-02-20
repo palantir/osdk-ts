@@ -21,7 +21,8 @@ export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,
 >(select: AC) {
   return Object.entries(select).flatMap<Aggregation>(([k, v]) => {
-    if (Array.isArray(v)) {
+    if (k === "$count" && v) return { type: "count", name: "count" };
+    else if (Array.isArray(v)) {
       return v.map((v2) => {
         return {
           type: v2,

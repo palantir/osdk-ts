@@ -26,13 +26,17 @@ type NumericAggregateOption =
   | "avg"
   | "approximateDistinct";
 
+type totalCountOption = { $count?: boolean };
+
 export type AggregationClause<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-> = {
-  [P in AggregatableKeys<Q>]?: Q["properties"][P]["type"] extends "string"
-    ? StringAggregateOption | StringAggregateOption[]
-    : Q["properties"][P]["type"] extends
-      "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
-      ? NumericAggregateOption | NumericAggregateOption[]
-    : never;
-};
+> =
+  & {
+    [P in AggregatableKeys<Q>]?: Q["properties"][P]["type"] extends "string"
+      ? StringAggregateOption | StringAggregateOption[]
+      : Q["properties"][P]["type"] extends
+        "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
+        ? NumericAggregateOption | NumericAggregateOption[]
+      : never;
+  }
+  & totalCountOption;
