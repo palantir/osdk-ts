@@ -16,7 +16,7 @@
 
 import type { ClientContext } from "@osdk/client";
 import { aggregateOrThrow } from "@osdk/client/objects";
-import { Ontology } from "@osdk/examples.basic.sdk";
+import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -26,7 +26,7 @@ export async function fetchAggregationForEmployeesGroupedThin(
 ) {
   const result = await aggregateOrThrow(
     clientCtx,
-    Ontology.objects.Employee,
+    Employee,
     {
       type: "base",
       objectType: "Employee",

@@ -15,7 +15,7 @@
  */
 
 import type { Client } from "@osdk/client";
-import type { Ontology } from "@osdk/examples.basic.sdk";
+import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
@@ -23,7 +23,7 @@ export async function fetchEmployeeLead(
   client: Client<Ontology>,
   adUsername: string,
 ) {
-  const result = await client.objects.Employee.where({
+  const result = await client(Employee).where({
     adUsername,
   })
     .pivotTo("lead")
