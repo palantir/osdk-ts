@@ -43,8 +43,14 @@ type OsdkCommonFrom<
     /** @deprecated use $apiName */
     __apiName: Q["apiName"];
 
+    $apiName: Q["apiName"];
+
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
+      ? OsdkObjectPrimaryKeyType<Q>
+      : unknown;
+
+    $primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
     // $uniqueId: string; // will be dynamic
