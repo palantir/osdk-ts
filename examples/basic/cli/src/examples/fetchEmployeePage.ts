@@ -45,7 +45,7 @@ export async function fetchEmployeePage(client: Client<Ontology>) {
   printEmployees(result.data);
 
   console.log({
-    apiname: result.data[0].__apiName,
+    apiname: result.data[0].$apiName,
   });
   console.log(result.data[0]);
 

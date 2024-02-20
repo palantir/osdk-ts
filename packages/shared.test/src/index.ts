@@ -18,3 +18,4 @@ export * as handlers from "./handlers";
 export * from "./mock-ontology";
 export { apiServer } from "./setupServers";
 export * as stubData from "./stubs";
+export { withoutRid } from "./withoutRid";

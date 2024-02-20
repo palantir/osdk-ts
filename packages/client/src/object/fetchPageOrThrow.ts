@@ -30,21 +30,24 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 export interface SelectArg<
   O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
+  R extends boolean = false,
 > {
   select?: readonly L[];
+  includeRid?: R;
 }
 
 export interface FetchPageOrThrowArgs<
   O extends ObjectOrInterfaceDefinition<any, any>,
   L = ObjectOrInterfacePropertyKeysFrom2<O>,
-> extends SelectArg<O, L> {
+  R extends boolean = false,
+> extends SelectArg<O, L, R> {
   nextPageToken?: string;
   pageSize?: number;
 }
 
 export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q>,
+  const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
   client: ClientContext<any>,
   objectType: Q,
@@ -58,7 +61,8 @@ export async function fetchPageOrThrow<
     OsdkObjectFrom<
       Q extends ObjectTypeDefinition<any> ? Q : never,
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>
+        : ObjectOrInterfacePropertyKeysFrom2<Q>,
+      A["includeRid"] extends true ? true : false
     >
   >
 > {
@@ -66,6 +70,7 @@ export async function fetchPageOrThrow<
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
     select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+    excludeRid: !args?.includeRid,
   };
 
   if (args?.nextPageToken) {
