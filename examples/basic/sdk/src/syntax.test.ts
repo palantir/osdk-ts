@@ -174,8 +174,8 @@ async function aggregateThingsWithGroupsAndHandleErrors() {
   });
 
   if (isOk(result)) {
-    for (const { group, values } of result) {
-      console.log(`${group.text}: ${values.priority.max}`);
+    for (const aggEntry of result) {
+      console.log(`${aggEntry.$group.text}: ${aggEntry.priority.max}`);
     }
   }
 }

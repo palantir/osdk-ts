@@ -24,12 +24,12 @@ export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   A extends AggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
-> = {
-  group: {
+> = ({
+  $group: {
     [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
       Q["properties"][P]
     >;
   };
-  values: AggregationResultsWithoutGroups<Q, A>;
+
   $count?: number;
-}[];
+} & AggregationResultsWithoutGroups<Q, A>)[];

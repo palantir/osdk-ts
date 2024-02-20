@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Minor aggregation syntax changes
+  links:
+  - https://github.com/palantir/osdk-ts/pull/79
