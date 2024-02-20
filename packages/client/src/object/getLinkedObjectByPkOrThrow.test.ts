@@ -27,7 +27,7 @@ describe(getLinkedObjectByPkOrThrow, () => {
   type PersonDef = Objects["Person"];
 
   it("infers select properly", () => {
-    // this helper lets us get returntypeso of functions that are generic
+    // this helper lets us get return types of functions that are generic
     class Helper<
       T extends ObjectTypeDefinition<any, any>,
       const L extends keyof T["links"] & string,

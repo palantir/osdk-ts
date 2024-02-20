@@ -46,9 +46,9 @@ export interface OrderByArg<
 }
 
 export type SelectArgToKeys<
-  T extends ObjectOrInterfaceDefinition,
-  A extends SelectArg<T>,
-> = A extends SelectArg<T, never> ? "$all"
+  Q extends ObjectOrInterfaceDefinition,
+  A extends SelectArg<Q>,
+> = A extends SelectArg<Q, never> ? "$all"
   : A["select"] extends readonly string[] ? A["select"][number]
   : "$all";
 

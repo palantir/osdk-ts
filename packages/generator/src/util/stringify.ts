@@ -50,7 +50,7 @@ export function stringify<T extends Record<string, any>>(
   } = {},
   separator = ",\n",
 ) {
-  const defaultKeyFormatter = (key: string) => `"${key}"`;
+  const defaultKeyFormatter = (key: string) => `${JSON.stringify(key)}`;
   const entries: Array<string> = [];
 
   for (const [key, value] of Object.entries(obj)) {

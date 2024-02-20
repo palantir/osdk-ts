@@ -28,7 +28,7 @@ describe(pageLinkedObjectsOrThrow, () => {
   type TodoDef = Objects["Todo"];
 
   it("infers select properly", () => {
-    // this helper lets us get returntypeso of functions that are generic
+    // this helper lets us get return types of functions that are generic
     class Helper<
       Q extends ObjectOrInterfaceDefinition,
       L extends keyof Q["links"] & string,

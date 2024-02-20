@@ -55,7 +55,7 @@ describe("LinkDefinitions", () => {
 
     describe("SingletonLinkAccessor", () => {
       it("infers select properly", () => {
-        // this helper lets us get returntypeso of functions that are generic
+        // this helper lets us get return types of functions that are generic
         class Helper<
           T extends ObjectTypeDefinition<any, any>,
           const A extends SelectArg<T>,
@@ -99,7 +99,7 @@ describe("LinkDefinitions", () => {
 
     describe("MultitonLinkAccessor", () => {
       it("infers select properly", () => {
-        // this helper lets us get returntypeso of functions that are generic
+        // this helper lets us get return types of functions that are generic
         class Helper<
           T extends ObjectTypeDefinition<any, any>,
           const A extends SelectArg<T>,

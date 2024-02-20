@@ -28,7 +28,7 @@ export type OsdkObjectPrimaryKeyType<
 
 type OsdkCommonFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends keyof Q["properties"] | "all" = "$all",
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
 > =
   & {
@@ -63,7 +63,7 @@ type OsdkCommonFrom<
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends keyof Q["properties"] | "all" = "$all",
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
 > = Osdk<Q, P, R>;
 
