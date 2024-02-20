@@ -173,8 +173,8 @@ describe("aggregateOrThrow", () => {
       },
     );
     expectType<Array<any>>(grouped);
-    expectType<string | undefined>(grouped[0].$group?.text);
-    expectType<number>(grouped[0].id?.approximateDistinct);
+    expectType<string | undefined>(grouped[0].$group.text);
+    expectType<number>(grouped[0].id.approximateDistinct);
   });
 
   it("works with where: todo", async () => {
