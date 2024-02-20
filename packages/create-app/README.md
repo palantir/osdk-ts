@@ -30,17 +30,18 @@ The CLI can be run without any arguments and the user will be guided with intera
 npx @osdk/create-app [project] [--<option>]
 ```
 
-| Option               | Description                                                                |
-| -------------------- | -------------------------------------------------------------------------- |
-| --overwrite          | Overwrite project directory if already exists [boolean]                    |
-| --template           | Template name to use [string]                                              |
-| --foundryUrl         | URL for the Foundry stack [string]                                         |
-| --applicationUrl     | URL the production application will be hosted on [string]                  |
-| --skipApplicationUrl | Skip filling in URL the production application will be hosted on [boolean] |
-| --application        | Application resource identifier (rid) [string]                             |
-| --clientId           | OAuth client ID for application [string]                                   |
-| --osdkPackage        | OSDK package name for application [string]                                 |
-| --osdkRegistryUrl    | URL for NPM registry to install OSDK package [string]                      |
+| Option               | Description                                                                      |
+| -------------------- | -------------------------------------------------------------------------------- |
+| --overwrite          | Overwrite project directory if already exists [boolean]                          |
+| --template           | Template name to use [string]                                                    |
+| --foundryUrl         | URL for the Foundry stack [string]                                               |
+| --applicationUrl     | URL the production application will be hosted on [string]                        |
+| --skipApplicationUrl | Skip filling in URL the production application will be hosted on [boolean]       |
+| --application        | Application resource identifier (rid) [string]                                   |
+| --clientId           | OAuth client ID for application [string]                                         |
+| --osdkPackage        | OSDK package name for application [string]                                       |
+| --osdkRegistryUrl    | URL for NPM registry to install OSDK package [string]                            |
+| --corsProxy          | Include a CORS proxy for Foundry API requests during local development [boolean] |
 
 ## Templates
 

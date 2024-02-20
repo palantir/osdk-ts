@@ -6,6 +6,15 @@ export default defineConfig({
   plugins: [vue()],
   server: {
     port: 8080,
+    {{#if corsProxy}}
+    proxy: {
+      "^(/multipass/api|/api)": {
+        target: "{{foundryUrl}}",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+    {{/if}}
   },
   resolve: {
     alias: {

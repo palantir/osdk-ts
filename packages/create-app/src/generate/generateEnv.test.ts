@@ -26,6 +26,12 @@ PUBLIC_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
 PUBLIC_FOUNDRY_CLIENT_ID=123
 `.trimStart();
 
+const expectedEnvDevelopmentCorsProxy = `
+PUBLIC_FOUNDRY_API_URL=http://localhost:8080
+PUBLIC_FOUNDRY_REDIRECT_URL=http://localhost:8080/auth/callback
+PUBLIC_FOUNDRY_CLIENT_ID=123
+`.trimStart();
+
 const expectedEnvProduction = `
 PUBLIC_FOUNDRY_API_URL=https://example.palantirfoundry.com
 PUBLIC_FOUNDRY_REDIRECT_URL=https://app.com/auth/callback
@@ -43,7 +49,17 @@ test("it generates .env.development", () => {
     envPrefix: "PUBLIC_",
     foundryUrl: "https://example.palantirfoundry.com",
     clientId: "123",
+    corsProxy: false,
   })).toEqual(expectedEnvDevelopment);
+});
+
+test("it generates .env.development assuming CORS proxy", () => {
+  expect(generateEnvDevelopment({
+    envPrefix: "PUBLIC_",
+    foundryUrl: "https://example.palantirfoundry.com",
+    clientId: "123",
+    corsProxy: true,
+  })).toEqual(expectedEnvDevelopmentCorsProxy);
 });
 
 test("it generates .env.production", () => {

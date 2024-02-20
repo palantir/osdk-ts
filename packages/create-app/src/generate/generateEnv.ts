@@ -18,14 +18,16 @@ export function generateEnvDevelopment({
   envPrefix,
   foundryUrl,
   clientId,
+  corsProxy,
 }: {
   envPrefix: string;
   foundryUrl: string;
   clientId: string;
+  corsProxy: boolean;
 }): string {
   return generateEnv({
     envPrefix,
-    foundryUrl,
+    foundryUrl: corsProxy ? "http://localhost:8080" : foundryUrl,
     applicationUrl: "http://localhost:8080",
     clientId,
   });
