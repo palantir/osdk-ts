@@ -12,6 +12,16 @@ export interface BoundariesUsStateDef extends ObjectTypeDefinition<'BoundariesUs
       type: 'string';
       nullable: false;
     };
+    latitude: {
+      multiplicity: false;
+      type: 'double';
+      nullable: true;
+    };
+    longitude: {
+      multiplicity: false;
+      type: 'double';
+      nullable: true;
+    };
     geometry10M: {
       multiplicity: false;
       description: 'geoshape';
@@ -32,6 +42,16 @@ export const BoundariesUsState: BoundariesUsStateDef = {
       multiplicity: false,
       type: 'string',
       nullable: false,
+    },
+    latitude: {
+      multiplicity: false,
+      type: 'double',
+      nullable: true,
+    },
+    longitude: {
+      multiplicity: false,
+      type: 'double',
+      nullable: true,
     },
     geometry10M: {
       multiplicity: false,

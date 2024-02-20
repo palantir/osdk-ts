@@ -126,6 +126,16 @@
               "type": "string"
             }
           },
+          "latitude": {
+            "dataType": {
+              "type": "double"
+            }
+          },
+          "longitude": {
+            "dataType": {
+              "type": "double"
+            }
+          },
           "geometry10M": {
             "dataType": {
               "type": "geoshape"

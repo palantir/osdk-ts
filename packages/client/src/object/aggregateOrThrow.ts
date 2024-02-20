@@ -82,9 +82,12 @@ export async function aggregateOrThrow<
       "no group by clause should mean only one data result",
     );
 
-    return legacyToModernSingleAggregationResult<AO["select"]>(
-      result.data[0],
-    ) as any;
+    return {
+      $count: aggregationToCountResult(result.data[0]),
+      ...legacyToModernSingleAggregationResult<AO["select"]>(
+        result.data[0],
+      ),
+    } as any;
   }
 
   const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
