@@ -86,7 +86,7 @@ export async function aggregateOrThrow<
     .map((entry) => {
       return {
         group: entry.group as any,
-        values: legacyToModernSingleAggregationResult(entry),
+        ...legacyToModernSingleAggregationResult(entry),
       };
     }) as any; // fixme
 
