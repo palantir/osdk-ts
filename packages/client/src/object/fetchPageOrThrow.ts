@@ -36,10 +36,11 @@ export interface SelectArg<
 
 export interface OrderByArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
 > {
   orderBy?: {
-    [K in L & string]?: "asc" | "desc";
+    [K in L]?: "asc" | "desc";
   };
 }
 
