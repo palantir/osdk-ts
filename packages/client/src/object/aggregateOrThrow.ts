@@ -85,7 +85,7 @@ export async function aggregateOrThrow<
   const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
     .map((entry) => {
       return {
-        group: entry.group as any,
+        $group: entry.group as any,
         ...legacyToModernSingleAggregationResult(entry),
       };
     }) as any; // fixme
