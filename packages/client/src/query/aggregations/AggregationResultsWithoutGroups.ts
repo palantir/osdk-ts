@@ -33,3 +33,8 @@ export type AggregationResultsWithoutGroups<
     }
     : never;
 };
+
+export type AggregationCountResult<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  A extends AggregationClause<Q>,
+> = "$count" extends keyof A ? { $count: number } : {};

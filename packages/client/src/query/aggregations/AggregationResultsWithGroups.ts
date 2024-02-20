@@ -16,7 +16,10 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
-import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
+import type {
+  AggregationCountResult,
+  AggregationResultsWithoutGroups,
+} from "./AggregationResultsWithoutGroups.js";
 import type { AggregationClause } from "./AggregationsClause.js";
 import type { GroupByClause } from "./GroupByClause.js";
 
@@ -24,12 +27,14 @@ export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   A extends AggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
-> = ({
-  $group: {
-    [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
-      Q["properties"][P]
-    >;
-  };
-
-  $count?: number;
-} & AggregationResultsWithoutGroups<Q, A>)[];
+> = (
+  & {
+    $group: {
+      [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
+        Q["properties"][P]
+      >;
+    };
+  }
+  & AggregationCountResult<Q, A>
+  & AggregationResultsWithoutGroups<Q, A>
+)[];

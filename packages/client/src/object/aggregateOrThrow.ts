@@ -99,7 +99,7 @@ export async function aggregateOrThrow<
   return ret as any; // FIXME
 }
 
-export function aggregationToCountResult(
+function aggregationToCountResult(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
 ): { $count: number } | undefined {
   for (const aggregateResult of entry.metrics) {
