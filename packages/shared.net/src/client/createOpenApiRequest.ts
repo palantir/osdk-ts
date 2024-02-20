@@ -100,6 +100,16 @@ function withHttps(url: string): string {
   const httpsProtocol = "https://";
 
   return protocolRegex.test(url)
-    ? url.replace(/^http:\/\//i, httpsProtocol)
+    ? replaceHttpIfNotLocalhost(url)
     : `${httpsProtocol}${url}`;
+}
+
+function replaceHttpIfNotLocalhost(url: string): string {
+  const parsed = new URL(url);
+  if (parsed.protocol === "http:" && parsed.hostname === "localhost") {
+    // Allow special case http for localhost CORS proxy during development
+    return url;
+  }
+  parsed.protocol = "https:";
+  return parsed.toString();
 }
