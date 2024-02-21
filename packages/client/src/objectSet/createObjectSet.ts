@@ -21,7 +21,7 @@ import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationClause, AggregationsResults } from "../query/index.js";
+import type { AggregationsResults } from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
 import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
@@ -50,9 +50,9 @@ export function createObjectSet<
     //   throw "TODO";
     // },
     aggregateOrThrow: async <
-      AC extends AggregationClause<Q>,
+      // AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<Q, AC>,
+      AO extends AggregateOpts<Q>,
     >(
       req: AO,
     ): Promise<AggregationsResults<Q, AO>> => {

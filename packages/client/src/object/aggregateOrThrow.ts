@@ -39,7 +39,7 @@ import type { ArrayElement } from "../util/ArrayElement.js";
 
 export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const AO extends AggregateOpts<Q, any>,
+  AO extends AggregateOpts<Q>,
 >(
   clientCtx: ClientContext<any>,
   objectType: Q,

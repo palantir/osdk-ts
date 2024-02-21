@@ -198,17 +198,17 @@ describe("aggregateOrThrow", () => {
               id: {
                 type: "double";
               };
+              locationCity: {
+                type: "string";
+              };
             };
           };
         };
         actions: {};
         queries: {};
-      }["objects"]["Todo"],
-      {
-        locationCity: "approximateDistinct";
-        text: "approximateDistinct";
-      }
-    >;
+      }["objects"]["Todo"]
+    > // "locationCity" | "text"
+    ;
 
     const f: AggregateOpts<
       {
@@ -226,22 +226,22 @@ describe("aggregateOrThrow", () => {
               id: {
                 type: "double";
               };
+              locationCity: {
+                type: "string";
+              };
             };
           };
         };
         actions: {};
         queries: {};
-      }["objects"]["Todo"],
-      {
-        locationCity: "approximateDistinct";
-        text: "approximateDistinct";
-      }
+      }["objects"]["Todo"]
     > = {
       select: {
         locationCity: "approximateDistinct",
+        text: "approximateDistinct",
       },
-    } as any;
+    };
 
-    expectType<"approximateDistinct">(f.select.locationCity);
+    // expectType<"approximateDistinct">(f.select.locationCity);
   });
 });

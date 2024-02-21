@@ -24,7 +24,7 @@ type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  AC extends AggregationClause<any>,
+  AC extends AggregationClause<Q>,
 > = {
   [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
     readonly string[] | string ? {

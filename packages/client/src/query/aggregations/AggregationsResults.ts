@@ -24,7 +24,7 @@ import type {
 
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q, any>,
+  AO extends AggregateOpts<Q>,
 > = unknown extends AO["groupBy"] // groupBy is missing
   ?
     & AggregationResultsWithoutGroups<Q, AO["select"]>
