@@ -16,8 +16,6 @@
 
 import type {
   InterfaceDefinition,
-  InterfacePropertyKeysFrom2,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
@@ -30,20 +28,23 @@ export type OsdkObjectPrimaryKeyType<
 
 type OsdkCommonFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
 > =
   & {
-    [P in L]: OsdkObjectPropertyType<
-      Q["properties"][P]
+    [
+      PP in keyof Q["properties"] as (P extends "$all" ? PP
+        : PP extends P ? PP
+        : never)
+    ]: OsdkObjectPropertyType<
+      Q["properties"][PP]
     >;
   }
   & {
     /** @deprecated use $apiName */
-    __apiName: Q["apiName"];
+    __apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
-    $apiName: Q["apiName"];
+    $apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
@@ -54,30 +55,64 @@ type OsdkCommonFrom<
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
     // $uniqueId: string; // will be dynamic
+
+    $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
+      : never;
   }
   & (R extends true ? { $rid: string } : {});
 
-export type OsdkObjectFrom<
-  O extends ObjectTypeDefinition<any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<O> =
-    ObjectOrInterfacePropertyKeysFrom2<O>,
-  R extends boolean = false,
-> = OsdkCommonFrom<O, L, R> & {
-  $link: OsdkObjectLinksObject<O>;
-}; // TODO
-
-export type OsdkInterfaceFrom<
-  Q extends InterfaceDefinition<any, any>,
-  T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
-    InterfacePropertyKeysFrom2<Q>,
-  R extends boolean = false,
-> = OsdkCommonFrom<Q, T_PropertyKeys, R>;
-
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
-> = Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L, R>
-  : Q extends ObjectTypeDefinition<any> ? OsdkObjectFrom<Q, L, R>
-  : never;
+> = Osdk<Q, P, R>;
+
+export type Osdk<
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  P extends keyof Q["properties"] | "$all" = "$all",
+  R extends boolean = false,
+> = OsdkCommonFrom<Q, P, R>;
+
+// type ObjectShaped<T extends string> = {
+//   __apiName: string & { __OsdkType?: ObjectTypeDefinition<any> };
+// };
+
+// type Q<T> = T extends ObjectTypeDefinition<any> ? number : string;
+
+// // type Osdk<
+// //   T extends ObjectShaped<string>,
+// //   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
+// // > = NonNullable<T["__apiName"]["__OsdkType"]> extends
+// //   ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
+// //   ? OsdkObjectFrom<NonNullable<T["__apiName"]["__OsdkType"]>, K>
+// //   : never;
+
+// type Osdk<
+//   T extends ObjectShaped<string>,
+//   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
+// > = NOOP<Q<T>>;
+
+// type ObjectShaped<T extends string> = {
+//   __apiName: T & { __OsdkType?: ObjectTypeDefinition<any> };
+// };
+
+// type Q<T, L> = T extends ObjectTypeDefinition<any> ? L extends string & keyof T["properties"] ? OsdkObjectFrom<T, L> : string : never;
+
+// // type Osdk<
+// //   T extends ObjectShaped<string>,
+// //   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
+// // > = NonNullable<T["__apiName"]["__OsdkType"]> extends
+// //   ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
+// //   ? OsdkObjectFrom<NonNullable<T["__apiName"]["__OsdkType"]>, K>
+// //   : never;
+
+// type Osdk<
+//   T extends ObjectShaped<string>,
+//   K extends keyof NonNullable<T["__apiName"]["__OsdkType"]>["properties"],
+// > = Q<NonNullable<T["__apiName"]["__OsdkType"]>, K>;
+
+// type qq = NOOP<Osdk<Employee, "employeeNumber">>;
+
+// export interface Employee extends OsdkObjectFrom<EmployeeDef, keyof ObjectDef$Employee$Properties, EmployeeDef> {}
+
+// const q: Employee = {}  as any;

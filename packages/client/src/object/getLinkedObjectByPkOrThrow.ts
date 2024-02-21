@@ -14,48 +14,41 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom,
-  ObjectTypeLinkTargetTypeFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { SingleLinkReturnType } from "../definitions/LinkDefinitions.js";
+import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 import type { SelectArg } from "./fetchPageOrThrow.js";
 
 export async function getLinkedObjectByPkOrThrow<
-  O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O> & string,
-  L extends ObjectTypeLinkKeysFrom<O, T> & string,
-  S extends SelectArg<ObjectTypeLinkTargetTypeFrom<O, T, L>> = SelectArg<
-    ObjectTypeLinkTargetTypeFrom<O, T, L>
-  >,
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  const A extends SelectArg<Q>,
 >(
-  client: ClientContext<O>,
-  sourceApiName: T,
+  client: ClientContext<any>,
+  objectType: Q,
   primaryKey: any,
   linkTypeApiName: L,
   linkedObjectPrimaryKey: any,
-  options?: S,
-) {
+  selectOpts?: A,
+): SingleLinkReturnType<LinkedType<Q, L>, A> {
   const object = await getLinkedObjectV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
-    sourceApiName,
+    objectType.apiName,
     primaryKey,
     linkTypeApiName,
     linkedObjectPrimaryKey,
     {
-      select: (options?.select as string[] | undefined) ?? [],
-      excludeRid: !options?.includeRid,
+      select: (selectOpts?.select as string[] | undefined) ?? [],
+      excludeRid: !selectOpts?.includeRid,
     },
   );
 
   const objects = [object];
   convertWireToOsdkObjects(client, objects);
-  return objects[0] as OsdkObjectFrom<O["objects"][T]>;
+  return objects[0] as any;
 }

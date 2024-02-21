@@ -51,6 +51,9 @@ export async function generateClientSdkVersionTwoPointZero(
     await formatTs(
       `
         export { Ontology } from "./Ontology${importExt}";
+        export * from "./ontology/actions/index${importExt}";
+        export * from "./ontology/objects${importExt}";
+        export * from "./ontology/interfaces${importExt}";
     `,
     ),
   );
@@ -111,19 +114,11 @@ export async function generateClientSdkVersionTwoPointZero(
     await fs.writeFile(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
-    
-      import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from "@osdk/api";
+        import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
+        import { Osdk } from "@osdk/client";
 
-      ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
-
-      ${
-        /* TODO: FIXME
-      //   wireObjectTypeV2ToObjectDefinitionInterfaceString(
-      //     obj,
-      //   )
-      */
-        ""}
-    `),
+        ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
+      `),
     );
   }
 
@@ -198,6 +193,11 @@ async function generateOntologyInterfaces(
       Object.keys(ontology.interfaceTypes ?? {}).map(apiName =>
         `export * from "./interfaces/${apiName}${importExt}";`
       ).join("\n")
+    }
+    ${
+      Object.keys(ontology.interfaceTypes ?? {}).length === 0
+        ? "export {}"
+        : ""
     }
     `),
   );

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Client, OsdkObjectFrom, PageResult } from "@osdk/client";
+import type { Client, Osdk, PageResult } from "@osdk/client";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -81,7 +81,7 @@ export async function typeChecks(client: Client<Ontology>) {
     // lead is an employee
     const lead = await employee.$link.lead.get();
     expectType<
-      TypeOf<typeof lead, OsdkObjectFrom<Ontology["objects"]["Employee"]>>
+      TypeOf<typeof lead, Osdk<Ontology["objects"]["Employee"]>>
     >(true);
 
     // lead is an employee but we downselect to just their adUsername
@@ -99,7 +99,7 @@ export async function typeChecks(client: Client<Ontology>) {
       TypeOf<
         typeof peeps,
         PageResult<
-          OsdkObjectFrom<
+          Osdk<
             Ontology["objects"]["Employee"],
             "adUsername" | "employeeNumber"
           >
@@ -117,7 +117,7 @@ export async function typeChecks(client: Client<Ontology>) {
     expectType<
       TypeOf<
         typeof peepById,
-        OsdkObjectFrom<Ontology["objects"]["Employee"], "adUsername">
+        Osdk<Ontology["objects"]["Employee"], "adUsername">
       >
     >(
       true,

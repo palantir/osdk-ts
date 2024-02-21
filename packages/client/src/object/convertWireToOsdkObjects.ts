@@ -60,10 +60,10 @@ function createPrototype<
               get: <A extends SelectArg<any>>(options?: A) =>
                 getLinkedObjectOrThrow(
                   client,
-                  type,
+                  ontology.objects[type],
                   primaryKey,
                   p,
-                  options?.select,
+                  options ?? {},
                 ),
             };
           } else {
@@ -74,22 +74,24 @@ function createPrototype<
               ) =>
                 getLinkedObjectByPkOrThrow(
                   client,
-                  type,
+                  objDef,
                   primaryKey,
                   p,
                   targetPrimaryKey,
                   options,
                 ),
               fetchPageOrThrow: (
-                options?: FetchPageOrThrowArgs<
+                options: FetchPageOrThrowArgs<
                   O["objects"][typeof linkDef.targetType]
-                >,
+                > = {},
               ) =>
-                pageLinkedObjectsOrThrow(client, type, primaryKey, p, {
-                  nextPageToken: options?.nextPageToken,
-                  pageSize: options?.pageSize,
-                  select: options?.select,
-                }),
+                pageLinkedObjectsOrThrow(
+                  client,
+                  objDef,
+                  primaryKey,
+                  p,
+                  options ?? {},
+                ),
             };
           }
         },
