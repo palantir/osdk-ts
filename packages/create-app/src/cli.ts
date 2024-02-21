@@ -33,6 +33,7 @@ import { green } from "./highlight.js";
 import { promptApplicationRid } from "./prompts/promptApplicationRid.js";
 import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
+import { promptCorsProxy } from "./prompts/promptCorsProxy.js";
 import { promptFoundryUrl } from "./prompts/promptFoundryUrl.js";
 import { promptOsdkPackage } from "./prompts/promptOsdkPackage.js";
 import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
@@ -52,6 +53,7 @@ interface CliArgs {
   clientId?: string;
   osdkPackage?: string;
   osdkRegistryUrl?: string;
+  corsProxy?: boolean;
 }
 
 export async function cli(args: string[] = process.argv) {
@@ -106,6 +108,11 @@ export async function cli(args: string[] = process.argv) {
           .option("osdkRegistryUrl", {
             type: "string",
             describe: "URL for NPM registry to install OSDK package",
+          })
+          .option("corsProxy", {
+            type: "boolean",
+            describe:
+              "Include a CORS proxy for Foundry API requests during local development",
           }),
     );
 
@@ -119,6 +126,7 @@ export async function cli(args: string[] = process.argv) {
   const clientId: string = await promptClientId(parsed);
   const osdkPackage: string = await promptOsdkPackage(parsed);
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
+  const corsProxy: boolean = await promptCorsProxy(parsed);
 
   consola.log("");
   consola.start(
@@ -156,7 +164,9 @@ export async function cli(args: string[] = process.argv) {
 
   const templateContext: TemplateContext = {
     project,
+    foundryUrl,
     osdkPackage,
+    corsProxy,
   };
   const templateHbs = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
@@ -184,6 +194,7 @@ export async function cli(args: string[] = process.argv) {
     envPrefix: template.envPrefix,
     foundryUrl,
     clientId,
+    corsProxy,
   });
   fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
   const envProduction = generateEnvProduction({
