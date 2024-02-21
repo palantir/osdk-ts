@@ -15,6 +15,7 @@
  */
 
 import type {
+  ActionDefinition,
   ActionParameterDefinition,
   ObjectActionDataType,
   ObjectSetActionDataType,
@@ -68,11 +69,13 @@ export type OsdkActionParameters<
 > = NullableProps<X> extends never ? NotOptionalParams<X>
   : PartialByNotStrict<NotOptionalParams<X>, NullableProps<X>>;
 
+export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
+  NonNullable<T["__OsdkActionType"]> extends never
+    ? ActionSignature<T["parameters"]>
+    : NonNullable<T["__OsdkActionType"]>;
+
 export type Actions<O extends OntologyDefinition<any>> = {
-  [K in keyof O["actions"]]:
-    NonNullable<O["actions"][K]["__OsdkActionType"]> extends never
-      ? ActionSignature<O["actions"][K]["parameters"]>
-      : NonNullable<O["actions"][K]["__OsdkActionType"]>;
+  [K in keyof O["actions"]]: ActionSignatureFromDef<O["actions"][K]>;
 };
 
 type ActionParametersDefinition = Record<

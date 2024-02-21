@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Add new client invocation syntax
+  links:
+  - https://github.com/palantir/osdk-ts/pull/83
