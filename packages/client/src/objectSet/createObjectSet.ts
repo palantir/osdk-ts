@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  WirePropertyTypes,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArg,
+} from "../object/fetchPageOrThrow.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
 import type { LinkTypesFrom } from "./LinkTypesFrom.js";
 import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+
+function isObjectTypeDefinition(
+  def: ObjectOrInterfaceDefinition,
+): def is ObjectTypeDefinition<any> {
+  return def.type === "object";
+}
 
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<
@@ -37,8 +50,9 @@ export function createObjectSet<
     objectType: objectType["apiName"] as string,
   },
 ): ObjectSet<Q> {
-  const base: BaseObjectSet<Q> = {
+  const base: ObjectSet<Q> = {
     definition: objectSet,
+
     // aggregate: <
     //   AC extends AggregationClause<O, K>,
     //   GBC extends GroupByClause<O, K> | undefined = undefined,
@@ -91,7 +105,7 @@ export function createObjectSet<
 
     pivotTo: function<T extends LinkTypesFrom<Q>>(
       type: T & string,
-    ): ObjectSet<Q["links"][T]["targetType"]> {
+    ): BaseObjectSet<Q["links"][T]["targetType"]> {
       return createSearchAround(type)();
     },
 
@@ -124,7 +138,7 @@ export function createObjectSet<
 
   function createSearchAround<S extends LinkTypesFrom<Q>>(link: S & string) {
     return () => {
-      return createObjectSet(
+      return createBaseObjectSet(
         objectType,
         clientCtx,
         {
@@ -144,4 +158,49 @@ export function createObjectSet<
       return (target as any)[p as any] as any;
     },
   });
+}
+
+export function createBaseObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  objectType: Q,
+  clientCtx: ClientContext<any>,
+  objectSet: WireObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+): BaseObjectSet<Q> {
+  return {
+    ...createObjectSet(objectType, clientCtx, objectSet),
+
+    get: (isObjectTypeDefinition(objectType)
+      ? async <A extends SelectArg<any>>(
+        primaryKey: Q extends ObjectTypeDefinition<any>
+          ? WirePropertyTypes[Q["primaryKeyType"]]
+          : never,
+        options: A,
+      ) => {
+        const withPk: WireObjectSet = {
+          type: "filter",
+          objectSet: objectSet,
+          where: modernToLegacyWhereClause({
+            [objectType.primaryKeyApiName]: primaryKey,
+          }),
+        };
+
+        const { data, nextPageToken } = await fetchPageOrThrow(
+          clientCtx,
+          objectType,
+          options,
+          withPk,
+        );
+
+        if (data.length !== 1 || nextPageToken != null) {
+          throw new Error("Expected exactly one result");
+        }
+
+        return data[0];
+      }
+      : undefined as never) as BaseObjectSet<Q>["get"],
+  };
 }

@@ -19,21 +19,22 @@ import type {
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
   OntologyDefinition,
+  WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArg,
+} from "../object/fetchPageOrThrow.js";
 import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
-export type ObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
-> = BaseObjectSet<Q>;
-
-export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   definition: WireObjectSet;
 
   fetchPageOrThrow: <
@@ -89,9 +90,20 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
   pivotTo: <T extends keyof Q["links"]>(
     type: T & string,
-  ) => ObjectSet<NonNullable<Q["links"][T]["__Mark"]>>;
+  ) => BaseObjectSet<NonNullable<Q["links"][T]["__Mark"]>>;
 
   subscribe: (listener: ObjectSetListener<Q>) => () => void;
+}
+
+export interface BaseObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+> extends ObjectSet<Q> {
+  get: Q extends ObjectTypeDefinition<any>
+    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+      primaryKey: WirePropertyTypes[Q["primaryKeyType"]],
+      options?: SelectArg<Q, L>,
+    ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
+    : never;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <

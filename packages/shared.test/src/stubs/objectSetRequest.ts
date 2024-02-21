@@ -346,6 +346,23 @@ const emptyObjectWithAllPropertyTypes: LoadObjectSetRequestV2 = {
   "select": [],
 };
 
+const getByPkFromSearchAround: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "filter",
+    "objectSet": {
+      "type": "searchAround",
+      "objectSet": {
+        "type": "filter",
+        "objectSet": { "type": "base", "objectType": "Employee" },
+        "where": { "type": "eq", "field": "employeeId", "value": 50031 },
+      },
+      "link": "peeps",
+    },
+    "where": { "type": "eq", "field": "employeeId", "value": 50030 },
+  },
+  "select": [],
+};
+
 export const loadObjectSetRequestHandlers: {
   [key: string]: LoadObjectSetResponseV2["data"];
 } = {
@@ -371,4 +388,5 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(emptyObjectWithAllPropertyTypes)]: [
     objectWithAllPropertyTypesEmptyEntries,
   ],
+  [stableStringify(getByPkFromSearchAround)]: [employee1],
 };
