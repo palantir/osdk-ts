@@ -18,6 +18,7 @@ import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { describe, expect, it, vi } from "vitest";
 import { createClient } from "./createClient.js";
+import { OntologyProviders } from "./index.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 describe(createClient, () => {
@@ -28,6 +29,7 @@ describe(createClient, () => {
       MockOntology,
       "https://mock.com",
       () => "Token",
+      OntologyProviders.CachingOnDemand,
       fetchFunction,
     );
 

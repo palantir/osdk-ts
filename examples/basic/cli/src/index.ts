@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import { createClient, createClientContext } from "@osdk/client";
 import {
+  createClient,
+  createMinimalClient,
+  OntologyProviders,
+} from "@osdk/client";
+import {
+  assignEmployee1,
   BoundariesUsState,
+  Employee,
   Ontology,
+  Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
@@ -49,13 +56,14 @@ export const client = createClient(
   Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
+  OntologyProviders.CachingOnDemand,
 );
 
-export const clientCtx = createClientContext(
-  Ontology,
+export const clientCtx = createMinimalClient(
+  Ontology.metadata,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
-  `typescript-sdk/dev osdk-cli/dev`,
+  OntologyProviders.CachingOnDemand,
 );
 
 const runOld = false;
@@ -181,6 +189,8 @@ async function runTests() {
 
     console.log(intersectResultbbox.data.map(data => data.usState));
 
+    await checkLinksAndActionsForVentures();
+
     const testAggregateCountNoGroup = await client.objects.BoundariesUsState
       .aggregateOrThrow({
         select: { $count: true, latitude: ["min", "max", "avg"] },
@@ -215,3 +225,41 @@ async function runTests() {
 }
 
 runTests();
+
+async function checkLinksAndActionsForVentures() {
+  let didValidateOnce = false;
+  for await (const emp of client(Employee).asyncIter()) {
+    console.log(`Employee: ${emp.id}`);
+
+    // TODO: when links are objectsets switch to asyncIter
+    const { data: ventures } = await emp.$link.ventures
+      .fetchPageOrThrow();
+
+    for (const venture of ventures) {
+      console.log(`  - Venture: ${venture.ventureId} ${venture.ventureName}`);
+    }
+
+    if (ventures.length === 0) {
+      console.log("  - No ventures. ");
+
+      if (!didValidateOnce) {
+        console.log("  - Validating assignEmployee1");
+        didValidateOnce = true;
+
+        const { data: [venture] } = await client(Venture).fetchPageOrThrow();
+
+        const r = await client(assignEmployee1)({
+          "employee-1": emp,
+          "venture-1": venture,
+        }, {
+          validateOnly: true,
+        });
+
+        console.log(r);
+      }
+    } else if (didValidateOnce) {
+      // once we are sure a single action can work and we got some ventures we are good here
+      break;
+    }
+  }
+}

@@ -22,7 +22,6 @@ import type {
   ObjectSet,
 } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
@@ -30,6 +29,7 @@ import {
   modernToLegacyGroupByClause,
   modernToLegacyWhereClause,
 } from "../internal/conversions/index.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type {
   AggregationResultsWithGroups,
@@ -58,7 +58,7 @@ export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
 >(
-  clientCtx: ClientContext<any>,
+  clientCtx: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet = {
     type: "base",

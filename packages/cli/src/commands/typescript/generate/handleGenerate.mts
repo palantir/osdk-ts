@@ -26,6 +26,7 @@ import {
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import * as fs from "node:fs";
+import { ExitProcessError } from "../../../ExitProcessError.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
@@ -46,6 +47,8 @@ export default async function handleGenerate(args: TypescriptGenerateArgs) {
 
   if (success) {
     consola.info("OSDK Generated!");
+  } else {
+    throw new ExitProcessError(1, "Failed to generate the TypeScript SDK");
   }
 }
 
@@ -144,7 +147,12 @@ async function generateClientSdk(
       );
     }
   } catch (e) {
-    consola.error("OSDK generation failed", (e as Error).message);
+    consola.error(
+      "OSDK generation failed",
+      (e as Error).message,
+      (e as Error).stack,
+    );
+
     return false;
   }
   return true;

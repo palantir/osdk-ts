@@ -19,7 +19,7 @@ import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
 
-export function wireObjectTypeV2ToSdkObjectDefinition(
+export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
   objectTypeWithLink: ObjectTypeFullMetadata,
   v2: boolean,
 ): ObjectTypeDefinition<any> {

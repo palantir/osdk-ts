@@ -15,16 +15,14 @@
  */
 
 import * as OsdkApi from "@osdk/client";
-import type { ClientContext } from "@osdk/client";
 import { Objects } from "@osdk/client";
 import { fetchPageOrThrow } from "@osdk/client/objects";
-import type { Ontology } from "@osdk/examples.basic.sdk";
 import { Employee } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
 export async function fetchEmployeePageThin(
-  clientCtx: ClientContext<Ontology>,
+  clientCtx: OsdkApi.MinimalClient,
 ) {
   let result = await fetchPageOrThrow(clientCtx, Employee, {
     select: ["adUsername", "businessTitle", "employeeNumber"],

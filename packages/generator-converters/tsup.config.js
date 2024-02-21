@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export * from "./generateMetadata";
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options)
+);

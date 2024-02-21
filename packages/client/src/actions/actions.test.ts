@@ -32,7 +32,7 @@ import type {
   ActionValidationResponse,
 } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-import { createActionInvoker } from "./createActionInvoker.js";
+import { createOldActionInvoker } from "./createActionInvoker.js";
 
 describe("actions", () => {
   let client: Client<typeof MockOntology>;
@@ -50,7 +50,7 @@ describe("actions", () => {
     apiServer.close();
   });
 
-  describe(createActionInvoker, () => {
+  describe(createOldActionInvoker, () => {
     it("has an enumerable list of actions", () => {
       expect(Object.getOwnPropertyNames(client.actions)).toMatchInlineSnapshot(`
         [

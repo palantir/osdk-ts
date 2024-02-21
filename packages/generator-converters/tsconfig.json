@@ -18,9 +18,6 @@
     },
     {
       "path": "../gateway"
-    },
-    {
-      "path": "../generator-converters"
     }
   ]
 }

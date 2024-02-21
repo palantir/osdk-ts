@@ -17,8 +17,8 @@
 import type { ActionDefinition } from "@osdk/api";
 import { applyActionV2 } from "@osdk/gateway/requests";
 import type { DataValue } from "@osdk/gateway/types";
-import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { toDataValue } from "../util/toDataValue.js";
 import type {
   ActionEditResponse,
@@ -39,7 +39,7 @@ export async function applyAction<
   AD extends ActionDefinition<any, any>,
   Op extends ApplyActionOptions,
 >(
-  client: ClientContext<any>,
+  client: MinimalClient,
   action: AD,
   parameters?: OsdkActionParameters<AD["parameters"]>,
   options: Op = {} as Op,

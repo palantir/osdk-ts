@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "@osdk/client";
+import type { MinimalClient } from "@osdk/client";
 import { aggregateOrThrow } from "@osdk/client/objects";
-import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
+import { Employee } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
 export async function fetchAggregationForEmployeesGroupedThin(
-  clientCtx: ClientContext<Ontology>,
+  clientCtx: MinimalClient,
 ) {
   const result = await aggregateOrThrow(
     clientCtx,
@@ -46,21 +46,6 @@ export async function fetchAggregationForEmployeesGroupedThin(
   result[0].employeeNumber.avg;
   result[0].$group.locationType;
 
-  // const {action, authorized, lastResultIsValid, loading} = useOsdkAction(client.actions.doFoo);
-  // isOk(result) && result.value.validation.result;
-  // await client.ontology.actions.foo({
-  //   ...
-  // })
-  // geo types in actions suck
-  // for (const {
-  //   group,
-  //   values: { employeeNumber },
-  // } of result) {
-  //   console.log(employeeNumber.avg);
-  // }
-  // for (const [group, { employeeNumber }] of result) {
-  //   console.log(employeeNumber.avg);
-  // }
   console.log("fetchAggregationForEmployeesGroupedThin()");
   console.log(JSON.stringify(result, undefined, 2));
   console.log();
