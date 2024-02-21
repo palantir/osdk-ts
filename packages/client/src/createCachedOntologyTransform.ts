@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { MinimalClient } from "./MinimalClientContext.js";
+
+export type Factory<Q extends ObjectOrInterfaceDefinition, T> = (
+  objectDef: Q,
+  client: MinimalClient,
+) => T;
 
 /**
  * Creates a getter function that caches based on the ontology.objects[type] value
@@ -26,22 +28,19 @@ import type {
  * Any extra arguments are passed through, but only the first args passed in will be used and are not considered as part of the caching
  */
 export function createCachedOntologyTransform<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
+  Q extends ObjectOrInterfaceDefinition,
   T,
->(
-  creator: (ontology: O, type: K) => T,
-) {
+>(creator: Factory<Q, T>): Factory<Q, T> {
   // We can use the ObjectTypeDefinition as the key because it will be a globally unique singleton
   // Use Map instead of WeakMap here so usage for things like object prototypes do not churn over time
-  const cache = new Map<ObjectTypeDefinition<any>, T>();
+  // FIXME(EA): is this still true?
+  const cache = new Map<ObjectOrInterfaceDefinition, T>();
 
-  return (ontology: O, type: K) => {
-    const objectDefinition = ontology.objects[type];
+  return (objectDefinition, client) => {
     let result = cache.get(objectDefinition);
 
     if (result == null) {
-      result = creator(ontology, type);
+      result = creator(objectDefinition, client);
       cache.set(objectDefinition, result);
     }
 

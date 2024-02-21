@@ -20,8 +20,9 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
@@ -44,7 +45,7 @@ function isObjectTypeDefinition(
 const searchAroundPrefix = "searchAround_";
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
-  clientCtx: ClientContext<any>,
+  clientCtx: MinimalClient,
   objectSet: WireObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
@@ -77,6 +78,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         req,
       );
     },
+
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
@@ -102,7 +104,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     // [Symbol.asyncIterator]: () => {
     //   throw "";
     // },
-
     pivotTo: function<L extends LinkNames<Q>>(
       type: L,
     ): BaseObjectSet<LinkedType<Q, L>> {
@@ -134,6 +135,20 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       const instance = ObjectSetListenerWebsocket.getInstance(clientCtx);
       return instance.subscribe(objectSet, listener);
     },
+
+    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
+      let pageToken: string | undefined = "";
+      while (pageToken != null) {
+        const { nextPageToken, data } = await base.fetchPageOrThrow({
+          nextPageToken: pageToken ? pageToken : undefined,
+        });
+        convertWireToOsdkObjects(clientCtx, data);
+        for (const d of data) {
+          yield d as any;
+        }
+        pageToken = nextPageToken as any;
+      }
+    },
   };
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
@@ -164,7 +179,7 @@ export function createBaseObjectSet<
   Q extends ObjectOrInterfaceDefinition,
 >(
   objectType: Q,
-  clientCtx: ClientContext<any>,
+  clientCtx: MinimalClient,
   objectSet: WireObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,

@@ -360,12 +360,18 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@osdk/generator-converters':
+        specifier: workspace:*
+        version: link:../generator-converters
       '@osdk/shared.net':
         specifier: workspace:*
         version: link:../shared.net
       conjure-lite:
         specifier: ^0.3.3
         version: 0.3.3
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
@@ -530,6 +536,9 @@ importers:
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
+      '@osdk/generator-converters':
+        specifier: workspace:*
+        version: link:../generator-converters
       fetch-retry:
         specifier: ^5.0.6
         version: 5.0.6
@@ -546,6 +555,25 @@ importers:
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
+      ts-expect:
+        specifier: ^1.3.0
+        version: 1.3.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.2.2
+        version: 1.2.2(@types/node@18.17.15)
+
+  packages/generator-converters:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:*
+        version: link:../api
+      '@osdk/gateway':
+        specifier: workspace:*
+        version: link:../gateway
+    devDependencies:
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0

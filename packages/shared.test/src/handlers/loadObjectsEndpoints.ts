@@ -25,7 +25,6 @@ import type {
   ListObjectTypesV2Response,
   ListOntologiesResponse,
   ListOutgoingLinkTypesResponse,
-  ListOutgoingLinkTypesResponseV2,
   ListQueryTypesResponseV2,
   Ontology,
   OntologyObjectV2,
@@ -426,54 +425,6 @@ export const loadObjectsEndpoints: RestHandler<
 
         if (transformedMap[objectType.toLowerCase()]) {
           return res(ctx.json(transformedMap[objectType.toLowerCase()]));
-        }
-        return res(
-          ctx.json({
-            data: [],
-          }),
-        );
-      },
-    ),
-  ),
-
-  /**
-   * List linkTypes
-   */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectTypes/:objectType/outgoingLinkTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<
-          ListOutgoingLinkTypesResponseV2 | BaseAPIError
-        >,
-        ctx,
-      ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(JSON.stringify(req.params.ontologyApiName)),
-            ),
-          );
-        }
-
-        const objectType = req.params.objectType;
-        if (typeof objectType !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameter objectType")),
-          );
-        }
-
-        const transformedMap = Object.fromEntries(
-          Object.entries(linkTypesResponseMap).map(
-            linkMap => [linkMap[0].toLowerCase(), linkMap[1]],
-          ),
-        );
-
-        if (transformedMap[objectType]) {
-          return res(ctx.json(transformedMap[objectType]));
         }
         return res(
           ctx.json({

@@ -21,7 +21,7 @@ import type {
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { ClientContext } from "@osdk/shared.net";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
@@ -70,7 +70,7 @@ export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
   const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
-  client: ClientContext<any>,
+  client: MinimalClient,
   objectType: Q,
   args: A,
   objectSet: ObjectSet = {
@@ -119,7 +119,7 @@ export async function fetchPageOrThrow<
     body,
   );
 
-  convertWireToOsdkObjects(client, r.data);
+  await convertWireToOsdkObjects(client, r.data);
 
   // any is okay here because we have properly converted the wire objects via prototypes
   // which don't type out correctly.

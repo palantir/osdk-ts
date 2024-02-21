@@ -14,37 +14,26 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
-import type { ClientContext } from "@osdk/shared.net";
-import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
+import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
+import { createCache } from "./Cache.js";
 import type { SelectArg } from "./fetchPageOrThrow.js";
 import { fetchSingle } from "./fetchSingle.js";
 
-const getPrototype = createCachedOntologyTransform(createPrototype);
-const getConverter = createCachedOntologyTransform(createConverter);
-
 const OriginClient = Symbol();
 
-function createPrototype<
-  T extends keyof O["objects"] & string,
-  O extends OntologyDefinition<any>,
->(
-  ontology: O,
-  type: T,
+function createPrototype<Q extends ObjectTypeDefinition<any, any>>(
+  objDef: Q,
+  client: MinimalClient,
 ) {
-  const objDef = ontology.objects[type];
   const proto = {};
-
-  if (!objDef) {
-    return proto;
-  }
 
   Object.defineProperty(proto, "$link", {
     get: function() {
-      const client = this[OriginClient] as ClientContext<O>;
       const primaryKey = this["__primaryKey"];
 
       return new Proxy({}, {
@@ -56,7 +45,7 @@ function createPrototype<
 
           const objectSet = createBaseObjectSet(objDef, client).where({
             [objDef.primaryKeyApiName]: primaryKey,
-          }).pivotTo(p);
+          } as WhereClause<Q>).pivotTo(p);
 
           if (!linkDef.multiplicity) {
             return {
@@ -82,18 +71,9 @@ function createPrototype<
 }
 
 // preprocess the ontology definition to more quickly apply object conversions when needed
-function createConverter<
-  T extends keyof O["objects"] & string,
-  O extends OntologyDefinition<any>,
->(
-  ontology: O,
-  type: T,
+function createConverter<Q extends ObjectTypeDefinition<any, any>>(
+  objDef: Q,
 ) {
-  const objDef = ontology.objects[type];
-  if (!objDef) {
-    return false as const;
-  }
-
   const steps: Array<(o: Record<string, any>) => void> = [];
 
   for (
@@ -122,15 +102,21 @@ function createConverter<
     : false as const;
 }
 
+const protoConverterCache = createCache(
+  (client: MinimalClient, objectDef: ObjectTypeDefinition<any, any>) => {
+    const proto = createPrototype(objectDef, client);
+    const converter = createConverter(objectDef);
+    return { proto, converter };
+  },
+);
+
 const isAfterFeb2024OrNewApis = false;
 
 /**
  * @param objs the objects to be converted, the contents of this array will be mutated
  */
-export function convertWireToOsdkObjects<
-  T_OntologyDefinition extends OntologyDefinition<any>,
->(
-  client: ClientContext<T_OntologyDefinition>,
+export async function convertWireToOsdkObjects(
+  client: MinimalClient,
   objs: OntologyObjectV2[],
 ) {
   for (const obj of objs) {
@@ -166,8 +152,16 @@ export function convertWireToOsdkObjects<
       });
     }
 
-    const proto = getPrototype(client.ontology, obj.__apiName);
-    const converter = getConverter(client.ontology, obj.__apiName);
+    const objectDef = await client.ontology.provider
+      .getObjectOrInterfaceDefinition(
+        obj.$apiName,
+      );
+
+    if (objectDef.type === "interface") {
+      throw new Error("Interface objects are not supported currently");
+    }
+
+    const { proto, converter } = protoConverterCache.get(client, objectDef);
 
     Object.setPrototypeOf(obj, proto);
 

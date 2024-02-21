@@ -64,9 +64,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   // ) => Promise<ResultOrError<PageResult<Osdk<K, O, L>>>>;
 
   // @alpha
-  // asyncIter: () => AsyncIterableIterator<
-  //   Osdk<K, O, PropertyKeysFrom<O, K>>
-  // >;
+  asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
 
   // @alpha
   // [Symbol.asyncIterator](): AsyncIterableIterator<
