@@ -24,6 +24,7 @@ import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
 import type {
+  DefaultToFalse,
   MultiLinkAccessor,
   OsdkObjectLinksObject,
   SingleLinkAccessor,
@@ -51,6 +52,15 @@ describe("LinkDefinitions", () => {
             RP: SingleLinkAccessor<PersonDef>;
           }
         >();
+    });
+
+    describe("DefaultToFalse", () => {
+      it("infers properly", () => {
+        expectTypeOf<DefaultToFalse<true>>().toEqualTypeOf<true>();
+        expectTypeOf<DefaultToFalse<false>>().toEqualTypeOf<false>();
+        expectTypeOf<DefaultToFalse<undefined>>().toEqualTypeOf<false>();
+        expectTypeOf<DefaultToFalse<boolean>>().toEqualTypeOf<false>();
+      });
     });
 
     describe("SingletonLinkAccessor", () => {

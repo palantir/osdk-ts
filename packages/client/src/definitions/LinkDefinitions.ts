@@ -45,6 +45,7 @@ export type OsdkObjectLinksEntry<
 
 export type DefaultToFalse<B extends boolean | undefined> = false extends B
   ? false
+  : undefined extends B ? false
   : true;
 
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
