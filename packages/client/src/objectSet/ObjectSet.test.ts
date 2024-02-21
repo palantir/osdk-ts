@@ -85,4 +85,48 @@ describe("ObjectSet", () => {
     }
     expect(iter).toEqual(1);
   });
+
+  it("orders objects in ascending order without a filter, and returns all results", async () => {
+    const { data: employees } = await client.objects.Employee.fetchPageOrThrow({
+      orderBy: { "employeeId": "asc" },
+    });
+
+    expect(employees).toMatchInlineSnapshot(`
+      [
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50030,
+          "class": "Red",
+          "employeeId": 50030,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "John Doe",
+          "office": "NYC",
+          "startDate": "2019-01-01",
+        },
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "class": "Blue",
+          "employeeId": 50031,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jane Doe",
+          "office": "SEA",
+          "startDate": "2012-02-12",
+        },
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50032,
+          "class": "Red",
+          "employeeId": 50032,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jack Smith",
+          "office": "LON",
+          "startDate": "2015-05-15",
+        },
+      ]
+    `);
+  });
 });

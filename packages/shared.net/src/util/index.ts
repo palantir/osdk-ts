@@ -18,4 +18,5 @@ export { createFetchAsJson } from "./createFetchAsJson.js";
 export { createFetchHeaderMutator } from "./createFetchHeaderMutator.js";
 export { createFetchOrThrow } from "./createFetchOrThrow.js";
 export { createRetryingFetch } from "./createRetryingFetch.js";
+export { replaceHttpIfNotLocalhost } from "./replaceHttpIfNotLocalhost.js";
 export { stringifyBody } from "./stringifyBody.js";

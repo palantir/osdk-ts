@@ -71,4 +71,13 @@ describe("OAuthUris", () => {
       "https://stack.com/multipass-foundry/api/oauth2/revoke_token",
     );
   });
+
+  it("creates uris with http replaced with https except for localhost", () => {
+    expect(getTokenUri("http://stack.com")).toEqual(
+      "https://stack.com/multipass/api/oauth2/token",
+    );
+    expect(getTokenUri("http://localhost:8080")).toEqual(
+      "http://localhost:8080/multipass/api/oauth2/token",
+    );
+  });
 });

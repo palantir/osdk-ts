@@ -167,7 +167,7 @@ describe("aggregateOrThrow", () => {
       },
       {
         select: {
-          text: "approximateDistinct",
+          id: "approximateDistinct",
         },
         groupBy: {
           text: "exact",
@@ -175,8 +175,8 @@ describe("aggregateOrThrow", () => {
       },
     );
     expectType<Array<any>>(grouped);
-    expectType<string | undefined>(grouped[0].group.text);
-    expectType<number>(grouped[0].values.text.approximateDistinct);
+    expectType<string | undefined>(grouped[0].$group.text);
+    expectType<number>(grouped[0].id.approximateDistinct);
   });
 
   it("works with where: todo", async () => {

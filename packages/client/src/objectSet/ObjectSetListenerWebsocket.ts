@@ -458,6 +458,10 @@ async function convertFoundryToOsdkObjects<
           "__apiName",
           propertyMapping?.apiName,
         ],
+        [
+          "$apiName",
+          propertyMapping?.apiName,
+        ],
       ]);
       return convertedObject;
     }),

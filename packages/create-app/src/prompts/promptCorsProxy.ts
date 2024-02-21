@@ -14,4 +14,22 @@
  * limitations under the License.
  */
 
-export type OsdkObject<N extends string> = { __apiName: N };
+import { consola } from "../consola.js";
+import { italic } from "../highlight.js";
+
+export async function promptCorsProxy(
+  { corsProxy }: { corsProxy?: boolean },
+): Promise<boolean> {
+  if (corsProxy != null) {
+    return corsProxy;
+  }
+
+  return consola.prompt(
+    `Include a CORS proxy for Foundry API requests during local development?\n${
+      italic(
+        "This is required if your enrollment has not allowed localhost for CORS.",
+      )
+    }`,
+    { type: "confirm", initial: false },
+  );
+}

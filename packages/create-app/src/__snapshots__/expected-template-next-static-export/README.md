@@ -1,6 +1,6 @@
 # expected-template-next-static-export
 
-This project was generated with `@osdk/create-app` demonstrates using the OSDK package `@fake/sdk` with React on top of Next.js. Check out the [Next.js](https://nextjs.org/docs) docs for further configuration.
+This project was generated with `@osdk/create-app` and demonstrates using the OSDK package `@fake/sdk` with React on top of Next.js. Check out the [Next.js](https://nextjs.org/docs) docs for further configuration.
 
 ## Developing
 

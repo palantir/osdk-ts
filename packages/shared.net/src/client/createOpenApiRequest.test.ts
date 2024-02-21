@@ -119,6 +119,32 @@ describe("createOpenApiRequest", () => {
     );
   });
 
+  it("should allow http protocol with localhost", async () => {
+    const mockFetch = vi.fn();
+
+    mockFetch.mockResolvedValue({
+      json: () => Promise.resolve({ test: 1 }),
+    });
+
+    const request = createOpenApiRequest("http://localhost:8080", mockFetch);
+    expect(
+      await request("POST", "/foo"),
+    ).toEqual(
+      { test: 1 },
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "http://localhost:8080/api/foo",
+      {
+        method: "POST",
+        headers: new Headers({
+          "content-type": "application/json",
+          "accept": "application/json",
+        }),
+      },
+    );
+  });
+
   it("should return readable stream", async () => {
     const mockFetch = vi.fn();
 

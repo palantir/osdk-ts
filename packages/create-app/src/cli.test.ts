@@ -21,6 +21,7 @@ import type { DirResult } from "tmp";
 import { dirSync } from "tmp";
 import { beforeEach, expect, test, vi } from "vitest";
 import { cli } from "./cli.js";
+import type { Template } from "./templates.js";
 import { TEMPLATES } from "./templates.js";
 
 const snapshotsDir = path.join(
@@ -45,34 +46,57 @@ beforeEach(() => {
 
 for (const template of TEMPLATES) {
   test(`CLI creates ${template.id}`, async () => {
-    const project = `expected-${template.id}`;
-    await cli([
-      "npx",
-      "@osdk/create-app",
-      project,
-      "--overwrite",
-      "--template",
-      template.id,
-      "--foundry-url",
-      "https://example.palantirfoundry.com",
-      "--application-url",
-      "https://app.example.palantirfoundry.com",
-      "--application",
-      "ri.third-party-applications.main.application.fake",
-      "--client-id",
-      "123",
-      "--osdk-package",
-      "@fake/sdk",
-      "--osdk-registry-url",
-      "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
-    ]);
-
-    const result = compareSync(
-      path.join(process.cwd(), project),
-      path.join(snapshotsDir, project),
-      { compareContent: true },
-    );
-    expect.soft(result.same).toBe(true);
-    expect.soft(result.differences).toEqual(0);
+    await runTest({
+      project: `expected-${template.id}`,
+      template,
+      corsProxy: false,
+    });
   });
+
+  test(`CLI creates ${template.id} with CORS proxy`, async () => {
+    await runTest({
+      project: `expected-${template.id}-cors-proxy`,
+      template,
+      corsProxy: true,
+    });
+  });
+}
+
+async function runTest(
+  { project, template, corsProxy }: {
+    project: string;
+    template: Template;
+    corsProxy: boolean;
+  },
+): Promise<void> {
+  await cli([
+    "npx",
+    "@osdk/create-app",
+    project,
+    "--overwrite",
+    "--template",
+    template.id,
+    "--foundryUrl",
+    "https://example.palantirfoundry.com",
+    "--applicationUrl",
+    "https://app.example.palantirfoundry.com",
+    "--application",
+    "ri.third-party-applications.main.application.fake",
+    "--clientId",
+    "123",
+    "--osdkPackage",
+    "@fake/sdk",
+    "--osdkRegistryUrl",
+    "https://example.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
+    "--corsProxy",
+    corsProxy.toString(),
+  ]);
+
+  const result = compareSync(
+    path.join(process.cwd(), project),
+    path.join(snapshotsDir, project),
+    { compareContent: true },
+  );
+  expect.soft(result.same).toBe(true);
+  expect.soft(result.differences).toEqual(0);
 }
