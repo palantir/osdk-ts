@@ -162,7 +162,7 @@ describe("ObjectSet", () => {
     await expect(client.objects.Employee.get(-1)).rejects.toThrow();
   });
 
-  it.only("allows fetching by PK from a pivoted object set", async () => {
+  it("allows fetching by PK from a pivoted object set", async () => {
     const employee = await client.objects.Employee.where({
       employeeId: stubData.employee2.employeeId,
     })
