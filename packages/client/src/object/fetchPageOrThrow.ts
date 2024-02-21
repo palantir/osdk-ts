@@ -28,7 +28,8 @@ import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > {
   select?: readonly L[];
@@ -47,14 +48,15 @@ export interface OrderByArg<
 
 export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
-  A extends SelectArg<Q>,
+  A extends SelectArg<Q, any, any>,
 > = A extends SelectArg<Q, never> ? "$all"
   : A["select"] extends readonly string[] ? A["select"][number]
   : "$all";
 
 export interface FetchPageOrThrowArgs<
   Q extends ObjectOrInterfaceDefinition,
-  K = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > extends
   SelectArg<Q, K, R>,

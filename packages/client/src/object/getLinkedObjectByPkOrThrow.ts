@@ -18,15 +18,16 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { getLinkedObjectV2 } from "@osdk/gateway/requests";
 import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
-import type { SingleLinkReturnType } from "../definitions/LinkDefinitions.js";
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { SelectArg } from "./fetchPageOrThrow.js";
+import type { SelectArg, SelectArgToKeys } from "./fetchPageOrThrow.js";
 
 export async function getLinkedObjectByPkOrThrow<
   Q extends ObjectOrInterfaceDefinition,
   L extends LinkNames<Q>,
-  const A extends SelectArg<Q>,
+  const A extends SelectArg<LinkedType<Q, L>>,
 >(
   client: ClientContext<any>,
   objectType: Q,
@@ -34,7 +35,15 @@ export async function getLinkedObjectByPkOrThrow<
   linkTypeApiName: L,
   linkedObjectPrimaryKey: any,
   selectOpts?: A,
-): SingleLinkReturnType<LinkedType<Q, L>, A> {
+): Promise<
+  DefaultToFalse<A["includeRid"]> extends false
+    ? Osdk<LinkedType<Q, L>, SelectArgToKeys<LinkedType<Q, L>, A>>
+    : Osdk<
+      LinkedType<Q, L>,
+      SelectArgToKeys<LinkedType<Q, L>, A>,
+      DefaultToFalse<A["includeRid"]>
+    >
+> {
   const object = await getLinkedObjectV2(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,

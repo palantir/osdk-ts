@@ -15,6 +15,7 @@
  */
 
 import type {
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
@@ -42,30 +43,59 @@ export type OsdkObjectLinksEntry<
   )
   : never;
 
-export type SingleLinkReturnType<
-  T extends ObjectTypeDefinition<any>,
-  A extends SelectArg<T>,
-> = Promise<Osdk<T, SelectArgToKeys<T, A>>>;
-
-export type MultiLinkReturnType<
-  T extends ObjectTypeDefinition<any>,
-  A extends SelectArg<T>,
-> = Promise<PageResult<Osdk<T, SelectArgToKeys<T, A>>>>;
+export type DefaultToFalse<B extends boolean | undefined> = false extends B
+  ? false
+  : undefined extends B ? false
+  : true;
 
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
   /** Load the linked object */
-  get: <const A extends SelectArg<T>>(
+  get: <
+    const A extends SelectArg<
+      T,
+      ObjectOrInterfacePropertyKeysFrom2<T>,
+      boolean
+    >,
+  >(
     options?: A,
-  ) => SingleLinkReturnType<T, A>;
+  ) => Promise<
+    DefaultToFalse<A["includeRid"]> extends false
+      ? Osdk<T, SelectArgToKeys<T, A>>
+      : Osdk<T, SelectArgToKeys<T, A>, DefaultToFalse<A["includeRid"]>>
+  >;
 }
 
+// note to future editor: these types may look gross but they were specifically
+// written to make it clear what the return type is when you use intellisense.
+// sorry i have no way to test this right now (ever?)
+
 export interface MultiLinkAccessor<T extends ObjectTypeDefinition<any>> {
-  get: <const A extends SelectArg<T>>(
+  get: <
+    const A extends SelectArg<
+      T,
+      ObjectOrInterfacePropertyKeysFrom2<T>,
+      boolean
+    >,
+  >(
     pk: OsdkObjectPrimaryKeyType<T>,
     options?: A,
-  ) => SingleLinkReturnType<T, A>;
+  ) => Promise<
+    DefaultToFalse<A["includeRid"]> extends false
+      ? Osdk<T, SelectArgToKeys<T, A>>
+      : Osdk<T, SelectArgToKeys<T, A>, DefaultToFalse<A["includeRid"]>>
+  >;
 
   fetchPageOrThrow: <
-    const A extends FetchPageOrThrowArgs<T>,
-  >(options?: A) => MultiLinkReturnType<T, A>;
+    const A extends FetchPageOrThrowArgs<
+      T,
+      ObjectOrInterfacePropertyKeysFrom2<T>,
+      boolean
+    >,
+  >(options?: A) => Promise<
+    PageResult<
+      DefaultToFalse<A["includeRid"]> extends false
+        ? Osdk<T, SelectArgToKeys<T, A>>
+        : Osdk<T, SelectArgToKeys<T, A>, DefaultToFalse<A["includeRid"]>>
+    >
+  >;
 }

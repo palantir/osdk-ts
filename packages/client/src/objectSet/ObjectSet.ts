@@ -22,6 +22,7 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
@@ -43,9 +44,15 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
   >(
     args?: FetchPageOrThrowArgs<Q, L, R>,
   ) => Promise<
-    ObjectOrInterfacePropertyKeysFrom2<Q> extends L
-      ? PageResult<Osdk<Q, "$all", R>>
-      : PageResult<Osdk<Q, L, R>>
+    PageResult<
+      ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
+          DefaultToFalse<R> extends false ? Osdk<Q, "$all">
+            : Osdk<Q, "$all", true>
+        )
+        : (
+          DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L, true>
+        )
+    >
   >;
 
   // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;

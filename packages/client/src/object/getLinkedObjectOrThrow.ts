@@ -16,9 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
-import type { SingleLinkReturnType } from "../definitions/LinkDefinitions.js";
+
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
-import type { SelectArg } from "./fetchPageOrThrow.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import type { SelectArg, SelectArgToKeys } from "./fetchPageOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 export async function getLinkedObjectOrThrow<
@@ -31,13 +33,23 @@ export async function getLinkedObjectOrThrow<
   primaryKey: any,
   linkTypeApiName: L,
   options: A,
-): SingleLinkReturnType<LinkedType<Q, L>, A> {
+): Promise<
+  DefaultToFalse<A["includeRid"]> extends false ? Osdk<
+      LinkedType<Q, L>,
+      SelectArgToKeys<LinkedType<Q, L>, A>
+    >
+    : Osdk<
+      LinkedType<Q, L>,
+      SelectArgToKeys<LinkedType<Q, L>, A>,
+      true
+    >
+> {
   const result = await pageLinkedObjectsOrThrow(
     client,
     source,
     primaryKey,
     linkTypeApiName,
-    { pageSize: 1, select: options.select },
+    { pageSize: 1, select: options.select, includeRid: options.includeRid },
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {
@@ -48,5 +60,5 @@ export async function getLinkedObjectOrThrow<
     );
   }
 
-  return result.data[0];
+  return result.data[0] as any;
 }
