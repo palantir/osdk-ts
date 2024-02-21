@@ -15,6 +15,7 @@
  */
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
+import { replaceHttpIfNotLocalhost } from "../util/index.js";
 
 export function createOpenApiRequest<
   TExpectedResponse,
@@ -102,14 +103,4 @@ function withHttps(url: string): string {
   return protocolRegex.test(url)
     ? replaceHttpIfNotLocalhost(url)
     : `${httpsProtocol}${url}`;
-}
-
-function replaceHttpIfNotLocalhost(url: string): string {
-  const parsed = new URL(url);
-  if (parsed.protocol === "http:" && parsed.hostname === "localhost") {
-    // Allow special case http for localhost CORS proxy during development
-    return url;
-  }
-  parsed.protocol = "https:";
-  return parsed.toString();
 }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { replaceHttpIfNotLocalhost } from "@osdk/shared.net";
+
 const httpsProtocol = "https://";
 const baseContextPath = "/multipass";
 const authorizeRequestPath = "/api/oauth2/authorize";
@@ -57,14 +59,4 @@ function createUri(
 
   const url = new URL(resolvedPath, baseUri);
   return url.toString();
-}
-
-function replaceHttpIfNotLocalhost(url: string): string {
-  const parsed = new URL(url);
-  if (parsed.protocol === "http:" && parsed.hostname === "localhost") {
-    // Allow special case http for localhost CORS proxy during development
-    return url;
-  }
-  parsed.protocol = "https:";
-  return parsed.toString();
 }
