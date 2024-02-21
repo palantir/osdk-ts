@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Difference } from "dir-compare";
 import { compareSync } from "dir-compare";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -97,6 +98,24 @@ async function runTest(
     path.join(snapshotsDir, project),
     { compareContent: true },
   );
+  const parsedDiffs = (result.diffSet ?? [])
+    .map(parseDiff)
+    .filter(parsedDiff => parsedDiff != null);
   expect.soft(result.same).toBe(true);
-  expect.soft(result.differences).toEqual(0);
+  expect.soft(parsedDiffs).toEqual([]);
+}
+
+function parseDiff(diff: Difference): string | undefined {
+  const path1 = path.join(diff.relativePath, diff.name1 ?? "");
+  const path2 = path.join(diff.relativePath, diff.name2 ?? "");
+  switch (diff.state) {
+    case "equal":
+      return undefined;
+    case "left":
+      return `${path1} only exists on left`;
+    case "right":
+      return `${path2} only exists on right`;
+    case "distinct":
+      return `${path1} exists on both but ${diff.reason}`;
+  }
 }
