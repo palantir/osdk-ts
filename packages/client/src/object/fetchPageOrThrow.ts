@@ -28,23 +28,39 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
 > {
   select?: readonly L[];
+  includeRid?: R;
+}
+
+export interface OrderByArg<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+> {
+  orderBy?: {
+    [K in L]?: "asc" | "desc";
+  };
 }
 
 export interface FetchPageOrThrowArgs<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
-> extends SelectArg<O, L> {
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
+> extends
+  SelectArg<Q, L, R>,
+  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
+{
   nextPageToken?: string;
   pageSize?: number;
 }
 
 export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q>,
+  const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
   client: ClientContext<any>,
   objectType: Q,
@@ -58,7 +74,8 @@ export async function fetchPageOrThrow<
     OsdkObjectFrom<
       Q extends ObjectTypeDefinition<any> ? Q : never,
       A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>
+        : ObjectOrInterfacePropertyKeysFrom2<Q>,
+      A["includeRid"] extends true ? true : false
     >
   >
 > {
@@ -66,6 +83,7 @@ export async function fetchPageOrThrow<
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
     select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+    excludeRid: !args?.includeRid,
   };
 
   if (args?.nextPageToken) {
@@ -74,6 +92,15 @@ export async function fetchPageOrThrow<
 
   if (args?.pageSize != null) {
     body.pageSize = args.pageSize;
+  }
+
+  if (args?.orderBy != null) {
+    body.orderBy = {
+      fields: Object.entries(args.orderBy).map(([field, direction]) => ({
+        field,
+        direction,
+      })),
+    };
   }
 
   const r = await loadObjectSetV2(

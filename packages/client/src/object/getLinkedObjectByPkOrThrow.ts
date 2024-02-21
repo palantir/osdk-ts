@@ -15,7 +15,6 @@
  */
 
 import type {
-  ObjectOrInterfacePropertyKeysFrom,
   ObjectTypeKeysFrom,
   ObjectTypeLinkKeysFrom,
   ObjectTypeLinkTargetTypeFrom,
@@ -26,13 +25,14 @@ import type { ClientContext } from "@osdk/shared.net";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { SelectArg } from "./fetchPageOrThrow.js";
 
 export async function getLinkedObjectByPkOrThrow<
   O extends OntologyDefinition<any>,
   T extends ObjectTypeKeysFrom<O> & string,
   L extends ObjectTypeLinkKeysFrom<O, T> & string,
-  S = ReadonlyArray<
-    ObjectOrInterfacePropertyKeysFrom<O, ObjectTypeLinkTargetTypeFrom<O, T, L>>
+  S extends SelectArg<ObjectTypeLinkTargetTypeFrom<O, T, L>> = SelectArg<
+    ObjectTypeLinkTargetTypeFrom<O, T, L>
   >,
 >(
   client: ClientContext<O>,
@@ -40,7 +40,7 @@ export async function getLinkedObjectByPkOrThrow<
   primaryKey: any,
   linkTypeApiName: L,
   linkedObjectPrimaryKey: any,
-  select?: S,
+  options?: S,
 ) {
   const object = await getLinkedObjectV2(
     createOpenApiRequest(client.stack, client.fetch),
@@ -50,7 +50,8 @@ export async function getLinkedObjectByPkOrThrow<
     linkTypeApiName,
     linkedObjectPrimaryKey,
     {
-      select: (select as string[] | undefined) ?? [],
+      select: (options?.select as string[] | undefined) ?? [],
+      excludeRid: !options?.includeRid,
     },
   );
 

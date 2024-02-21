@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { replaceHttpIfNotLocalhost } from "@osdk/shared.net";
+
 const httpsProtocol = "https://";
 const baseContextPath = "/multipass";
 const authorizeRequestPath = "/api/oauth2/authorize";
@@ -46,15 +48,15 @@ function createUri(
   contextPath: string,
   requestPath: string,
 ): string {
+  const protocolRegex = /^https?:\/\//i;
+  baseUri = protocolRegex.test(baseUri)
+    ? replaceHttpIfNotLocalhost(baseUri)
+    : `${httpsProtocol}${baseUri}`;
+
   const resolvedPath = `${contextPath.replace(/\/$/, "")}/${
     requestPath.replace(/^\//, "")
   }`;
 
-  const url = baseUri.startsWith(httpsProtocol)
-    ? new URL(resolvedPath, baseUri)
-    : new URL(resolvedPath, "https://" + baseUri);
-
-  url.protocol = httpsProtocol;
-
+  const url = new URL(resolvedPath, baseUri);
   return url.toString();
 }

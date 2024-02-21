@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export type OsdkObject<N extends string> = { __apiName: N };
+export function withoutRid<T extends { __rid?: any }>(o: T) {
+  const { __rid, ...r } = o;
+  return r;
+}

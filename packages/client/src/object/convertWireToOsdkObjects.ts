@@ -78,7 +78,7 @@ function createPrototype<
                   primaryKey,
                   p,
                   targetPrimaryKey,
-                  options?.select,
+                  options,
                 ),
               fetchPageOrThrow: (
                 options?: FetchPageOrThrowArgs<
@@ -143,6 +143,8 @@ function createConverter<
     : false as const;
 }
 
+const isAfterFeb2024OrNewApis = false;
+
 /**
  * @param objs the objects to be converted, the contents of this array will be mutated
  */
@@ -153,6 +155,38 @@ export function convertWireToOsdkObjects<
   objs: OntologyObjectV2[],
 ) {
   for (const obj of objs) {
+    if (obj.__rid) {
+      obj.$rid = obj.__rid;
+      delete obj.__rid;
+    }
+
+    // Backend returns as __apiName but we want to stick to $ structure
+    obj.$apiName = obj.__apiName;
+
+    // for now these are the same but when we start doing interface projections the $objectType will always be underlying and
+    // the $apiName will be for the current view (in current designs)
+    obj.$objectType = obj.__apiName;
+
+    // copying over for now as its always returned. In the future, this should just be inferred from underlying
+    obj.$primaryKey = obj.__primaryKey;
+
+    // After Feb 2024 (unless we have new apis):
+    if (isAfterFeb2024OrNewApis) {
+      delete obj.__apiName;
+      delete obj.__primaryKey;
+    } else {
+      // Hide these from things like `console.log` so that people
+      // don't think to use them.
+      Object.defineProperties(obj, {
+        "__apiName": {
+          enumerable: false,
+        },
+        "__primaryKey": {
+          enumerable: false,
+        },
+      });
+    }
+
     const proto = getPrototype(client.ontology, obj.__apiName);
     const converter = getConverter(client.ontology, obj.__apiName);
 

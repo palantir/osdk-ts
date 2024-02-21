@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export * as handlers from "./handlers";
-export * from "./mock-ontology";
-export { apiServer } from "./setupServers";
-export * as stubData from "./stubs";
-export { withoutRid } from "./withoutRid";
+export function replaceHttpIfNotLocalhost(url: string): string {
+  const parsed = new URL(url);
+  if (parsed.protocol === "http:" && parsed.hostname === "localhost") {
+    // Allow special case http for localhost CORS proxy during development
+    return url;
+  }
+  parsed.protocol = "https:";
+  return parsed.toString();
+}
