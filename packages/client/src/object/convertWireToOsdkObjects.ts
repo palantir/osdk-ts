@@ -18,11 +18,10 @@ import type { OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
+import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
 import { Attachment } from "./Attachment.js";
-import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
-import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
-import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
-import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
+import type { SelectArg } from "./fetchPageOrThrow.js";
+import { fetchSingle } from "./fetchSingle.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 const getConverter = createCachedOntologyTransform(createConverter);
@@ -55,44 +54,22 @@ function createPrototype<
             return;
           }
 
+          const objectSet = createBaseObjectSet(objDef, client).where({
+            [objDef.primaryKeyApiName]: primaryKey,
+          }).pivotTo(p);
+
           if (!linkDef.multiplicity) {
             return {
               get: <A extends SelectArg<any>>(options?: A) =>
-                getLinkedObjectOrThrow(
+                fetchSingle(
                   client,
-                  ontology.objects[type],
-                  primaryKey,
-                  p,
+                  objDef,
                   options ?? {},
+                  objectSet.definition,
                 ),
             };
           } else {
-            return {
-              get: <A extends SelectArg<any>>(
-                targetPrimaryKey: any,
-                options?: A,
-              ) =>
-                getLinkedObjectByPkOrThrow(
-                  client,
-                  objDef,
-                  primaryKey,
-                  p,
-                  targetPrimaryKey,
-                  options,
-                ),
-              fetchPageOrThrow: (
-                options: FetchPageOrThrowArgs<
-                  O["objects"][typeof linkDef.targetType]
-                > = {},
-              ) =>
-                pageLinkedObjectsOrThrow(
-                  client,
-                  objDef,
-                  primaryKey,
-                  p,
-                  options ?? {},
-                ),
-            };
+            return objectSet;
           }
         },
       });

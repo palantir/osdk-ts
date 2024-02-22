@@ -26,7 +26,9 @@ import type {
   FetchPageOrThrowArgs,
   SelectArg,
 } from "../object/fetchPageOrThrow.js";
+import { fetchSingle } from "../object/fetchSingle.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
@@ -186,18 +188,12 @@ export function createBaseObjectSet<
           }),
         };
 
-        const { data, nextPageToken } = await fetchPageOrThrow(
+        return await fetchSingle(
           clientCtx,
           objectType,
           options,
           withPk,
-        );
-
-        if (data.length !== 1 || nextPageToken != null) {
-          throw new Error("Expected exactly one result");
-        }
-
-        return data[0];
+        ) as Osdk<Q>;
       }
       : undefined) as BaseObjectSet<Q>["get"],
   };
