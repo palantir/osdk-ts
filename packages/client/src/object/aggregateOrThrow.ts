@@ -83,7 +83,7 @@ export async function aggregateOrThrow<
     );
 
     return {
-      $count: aggregationToCountResult(result.data[0]),
+      ...aggregationToCountResult(result.data[0]),
       ...legacyToModernSingleAggregationResult<AO["select"]>(
         result.data[0],
       ),
@@ -94,7 +94,7 @@ export async function aggregateOrThrow<
     .map((entry) => {
       return {
         $group: entry.group as any,
-        $count: aggregationToCountResult(entry),
+        ...aggregationToCountResult(entry),
         ...legacyToModernSingleAggregationResult(entry),
       };
     }) as any; // fixme
