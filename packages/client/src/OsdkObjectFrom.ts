@@ -16,8 +16,6 @@
 
 import type {
   InterfaceDefinition,
-  InterfacePropertyKeysFrom2,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
@@ -27,23 +25,25 @@ import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 export type OsdkObjectPrimaryKeyType<
   O extends ObjectTypeDefinition<any>,
 > = WirePropertyTypes[O["primaryKeyType"]];
-
-type OsdkCommonFrom<
+export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
 > =
   & {
-    [P in L]: OsdkObjectPropertyType<
-      Q["properties"][P]
+    [
+      PP in keyof Q["properties"] as (P extends "$all" ? PP
+        : PP extends P ? PP
+        : never)
+    ]: OsdkObjectPropertyType<
+      Q["properties"][PP]
     >;
   }
   & {
     /** @deprecated use $apiName */
-    __apiName: Q["apiName"];
+    __apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
-    $apiName: Q["apiName"];
+    $apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
@@ -54,30 +54,14 @@ type OsdkCommonFrom<
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
     // $uniqueId: string; // will be dynamic
+
+    $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
+      : never;
   }
   & (R extends true ? { $rid: string } : {});
 
-export type OsdkObjectFrom<
-  O extends ObjectTypeDefinition<any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<O> =
-    ObjectOrInterfacePropertyKeysFrom2<O>,
-  R extends boolean = false,
-> = OsdkCommonFrom<O, L, R> & {
-  $link: OsdkObjectLinksObject<O>;
-}; // TODO
-
-export type OsdkInterfaceFrom<
-  Q extends InterfaceDefinition<any, any>,
-  T_PropertyKeys extends InterfacePropertyKeysFrom2<Q> =
-    InterfacePropertyKeysFrom2<Q>,
-  R extends boolean = false,
-> = OsdkCommonFrom<Q, T_PropertyKeys, R>;
-
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  P extends keyof Q["properties"] | "$all" = "$all",
   R extends boolean = false,
-> = Q extends InterfaceDefinition<any, any> ? OsdkInterfaceFrom<Q, L, R>
-  : Q extends ObjectTypeDefinition<any> ? OsdkObjectFrom<Q, L, R>
-  : never;
+> = Osdk<Q, P, R>;

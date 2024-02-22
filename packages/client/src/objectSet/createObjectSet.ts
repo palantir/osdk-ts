@@ -29,7 +29,7 @@ import type {
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationClause, AggregationsResults } from "../query/index.js";
-import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
@@ -40,9 +40,7 @@ function isObjectTypeDefinition(
 }
 
 const searchAroundPrefix = "searchAround_";
-export function createObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: ClientContext<any>,
   objectSet: WireObjectSet = {
@@ -103,9 +101,9 @@ export function createObjectSet<
     //   throw "";
     // },
 
-    pivotTo: function<T extends LinkTypesFrom<Q>>(
-      type: T & string,
-    ): BaseObjectSet<Q["links"][T]["targetType"]> {
+    pivotTo: function<L extends LinkNames<Q>>(
+      type: L,
+    ): BaseObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
     },
 
@@ -136,7 +134,7 @@ export function createObjectSet<
     },
   };
 
-  function createSearchAround<S extends LinkTypesFrom<Q>>(link: S & string) {
+  function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
       return createBaseObjectSet(
         objectType,

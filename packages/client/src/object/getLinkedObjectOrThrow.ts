@@ -14,33 +14,42 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeKeysFrom,
-  ObjectTypeLinkKeysFrom2,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
-import type { SelectArg } from "./fetchPageOrThrow.js";
+
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
+import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import type { SelectArg, SelectArgToKeys } from "./fetchPageOrThrow.js";
 import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
 
 export async function getLinkedObjectOrThrow<
-  O extends OntologyDefinition<any>,
-  T extends ObjectTypeKeysFrom<O> & string,
-  L extends ObjectTypeLinkKeysFrom2<O["objects"][T]> & string,
-  S extends SelectArg<O["objects"][T]>["select"],
+  Q extends ObjectOrInterfaceDefinition,
+  L extends LinkNames<Q>,
+  const A extends SelectArg<LinkedType<Q, L>>,
 >(
-  client: ClientContext<O>,
-  sourceApiName: T,
+  client: ClientContext<any>,
+  source: Q,
   primaryKey: any,
   linkTypeApiName: L,
-  select?: S,
-) {
+  options: A,
+): Promise<
+  DefaultToFalse<A["includeRid"]> extends false ? Osdk<
+      LinkedType<Q, L>,
+      SelectArgToKeys<LinkedType<Q, L>, A>
+    >
+    : Osdk<
+      LinkedType<Q, L>,
+      SelectArgToKeys<LinkedType<Q, L>, A>,
+      true
+    >
+> {
   const result = await pageLinkedObjectsOrThrow(
     client,
-    sourceApiName,
+    source,
     primaryKey,
     linkTypeApiName,
-    { pageSize: 1, select },
+    { pageSize: 1, select: options.select, includeRid: options.includeRid },
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {
@@ -51,5 +60,5 @@ export async function getLinkedObjectOrThrow<
     );
   }
 
-  return result.data[0];
+  return result.data[0] as any;
 }

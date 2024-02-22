@@ -17,19 +17,19 @@
 import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > {
   select?: readonly L[];
@@ -46,12 +46,20 @@ export interface OrderByArg<
   };
 }
 
+export type SelectArgToKeys<
+  Q extends ObjectOrInterfaceDefinition,
+  A extends SelectArg<Q, any, any>,
+> = A extends SelectArg<Q, never> ? "$all"
+  : A["select"] extends readonly string[] ? A["select"][number]
+  : "$all";
+
 export interface FetchPageOrThrowArgs<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<Q>,
+  Q extends ObjectOrInterfaceDefinition,
+  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > extends
-  SelectArg<Q, L, R>,
+  SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
   nextPageToken?: string;
@@ -71,10 +79,9 @@ export async function fetchPageOrThrow<
   },
 ): Promise<
   PageResult<
-    OsdkObjectFrom<
-      Q extends ObjectTypeDefinition<any> ? Q : never,
-      A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>,
+    Osdk<
+      Q,
+      SelectArgToKeys<Q, A>,
       A["includeRid"] extends true ? true : false
     >
   >

@@ -56,6 +56,8 @@ describe("OsdkObject", () => {
       const employee = result.data[0];
       expect(employee).toEqual(asV2Object(stubData.employee1));
 
+      employee.startDate;
+
       // it should have the prototype that we assign at hydration time
       expect(Object.keys(employee.$link.lead)).toBeDefined();
     });

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Client } from "@osdk/client";
+import type { Client, Osdk } from "@osdk/client";
+import { Employee } from "@osdk/examples.basic.sdk";
 import type { Ontology } from "@osdk/examples.basic.sdk";
 import { expectType } from "ts-expect";
-import type { Employee } from "../OntologyType.js";
 
 export async function fetchEmployeePage(client: Client<Ontology>) {
-  const result = await client.objectSet("Employee").fetchPageOrThrow();
+  const result = await client(Employee).fetchPageOrThrow();
 
   expectType<string | undefined>(""); // FIXME: this isn't strict enough of a check for below
   expectType<string | undefined>(result.data[0].businessTitle);
@@ -52,7 +52,7 @@ export async function fetchEmployeePage(client: Client<Ontology>) {
   console.log();
 }
 
-function printEmployees(employees: Employee[]) {
+function printEmployees(employees: Osdk<Employee>[]) {
   console.table(
     employees.map(({ adUsername, businessTitle, employeeNumber }) => ({
       adUsername,

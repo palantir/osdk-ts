@@ -15,19 +15,22 @@
  */
 
 import type {
+  ActionDefinition,
+  ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import { createClientContext } from "@osdk/shared.net";
+import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
 import {
   createBaseObjectSet,
   createObjectSet,
 } from "./objectSet/createObjectSet.js";
-import type { ObjectSetFactory } from "./objectSet/ObjectSet.js";
+import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
@@ -57,13 +60,30 @@ export function createClient<O extends OntologyDefinition<any>>(
       clientCtx,
     );
 
+  const actionInvoker = createActionInvoker(clientCtx);
+
+  function clientFn<
+    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any>,
+  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
+    : T extends ActionDefinition<any, any> ? ActionSignatureFromDef<T>
+    : never
+  {
+    if (o.type === "object" || o.type === "interface") {
+      return createObjectSet(o, clientCtx) as ObjectSet<any> as any;
+    } else if (o.type === "action") {
+      return actionInvoker[o.apiName];
+    } else {
+      throw new Error("Unknown definition: " + JSON.stringify(o));
+    }
+  }
+
   const client: Client<O> = Object.defineProperties(
-    {} as Client<O>,
+    clientFn as Client<O>,
     {
       objectSet: { get: () => objectSetFactory },
       objects: { get: () => createObjectSetCreator(client, clientCtx) },
       actions: {
-        get: () => createActionInvoker(clientCtx),
+        get: () => actionInvoker,
       },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>

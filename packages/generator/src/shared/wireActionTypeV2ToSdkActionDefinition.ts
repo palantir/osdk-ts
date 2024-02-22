@@ -50,32 +50,14 @@ export function wireActionTypeV2ToSdkActionDefinition(
 function wireActionParameterV2ToSdkParameterDefinition(
   value: ActionParameterV2,
 ): ActionParameterDefinition<any> {
-  switch (value.dataType.type) {
-    case "string":
-    case "boolean":
-    case "object":
-    case "attachment":
-    case "date":
-    case "double":
-    case "integer":
-    case "long":
-    case "objectSet":
-    case "timestamp":
-    case "marking":
-      return {
-        multiplicity: false,
-        type: actionPropertyToSdkPropertyDefinition(value.dataType),
-        nullable: value.required ? false : true,
-        description: value.description,
-      };
-    case "array":
-      return {
-        multiplicity: true,
-        type: actionPropertyToSdkPropertyDefinition(value.dataType.subType),
-        nullable: value.required ? false : true,
-        description: value.description,
-      };
-  }
+  return {
+    multiplicity: value.dataType.type === "array",
+    type: actionPropertyToSdkPropertyDefinition(
+      value.dataType.type === "array" ? value.dataType.subType : value.dataType,
+    ),
+    nullable: !value.required,
+    description: value.description,
+  };
 }
 
 function actionPropertyToSdkPropertyDefinition(
