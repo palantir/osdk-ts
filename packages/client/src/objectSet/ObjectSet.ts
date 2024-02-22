@@ -24,15 +24,12 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-//
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
-// HEAD
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
 } from "../object/fetchPageOrThrow.js";
 import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
-// origin/main
 import type { PageResult } from "../PageResult.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
