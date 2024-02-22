@@ -23,4 +23,6 @@ export interface TypescriptGenerateArgs {
   beta?: boolean;
   packageType: "commonjs" | "module";
   version: string;
+  token?: string;
+  tokenFile?: string;
 }
