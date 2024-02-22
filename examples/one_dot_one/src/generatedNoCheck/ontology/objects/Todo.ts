@@ -52,7 +52,7 @@ export const Todo: TodoDef = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
-  primaryKeyApiName: 'id' as const,
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {
     Assignee: {

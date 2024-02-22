@@ -24,9 +24,9 @@ import {
   it,
 } from "vitest";
 import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import type { EmployeeDef } from "../generatedNoCheck/ontology/objects.js";
+import type { Employee } from "../generatedNoCheck/ontology/objects.js";
 import { createClient } from "../index.js";
-import type { Client, OsdkObjectFrom } from "../index.js";
+import type { Client, Osdk } from "../index.js";
 
 describe("ObjectSet", () => {
   let client: Client<typeof MockOntology>;
@@ -143,7 +143,7 @@ describe("ObjectSet", () => {
     const employee = await client.objects.Employee.get(
       stubData.employee1.employeeId,
     );
-    expectTypeOf<typeof employee>().toEqualTypeOf<OsdkObjectFrom<EmployeeDef>>;
+    expectTypeOf<typeof employee>().toEqualTypeOf<Osdk<Employee>>;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
@@ -153,7 +153,7 @@ describe("ObjectSet", () => {
       { select: ["fullName"] },
     );
     expectTypeOf<typeof employee>().toEqualTypeOf<
-      OsdkObjectFrom<EmployeeDef, "fullName">
+      Osdk<Employee, "fullName">
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });

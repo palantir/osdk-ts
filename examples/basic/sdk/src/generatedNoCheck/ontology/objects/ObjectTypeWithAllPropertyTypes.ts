@@ -45,7 +45,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
-  primaryKeyApiName: 'id' as const,
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {},
   properties: {

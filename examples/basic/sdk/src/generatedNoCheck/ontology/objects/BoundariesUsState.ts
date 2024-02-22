@@ -15,7 +15,7 @@ export const BoundariesUsState: BoundariesUsState = {
   type: 'object',
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',
-  primaryKeyApiName: 'usState' as const,
+  primaryKeyApiName: 'usState',
   primaryKeyType: 'string',
   links: {},
   properties: {

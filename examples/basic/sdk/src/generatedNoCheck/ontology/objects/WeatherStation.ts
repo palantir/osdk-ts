@@ -15,7 +15,7 @@ export const WeatherStation: WeatherStation = {
   type: 'object',
   apiName: 'WeatherStation',
   description: 'Weather Station',
-  primaryKeyApiName: 'stationId' as const,
+  primaryKeyApiName: 'stationId',
   primaryKeyType: 'string',
   links: {},
   properties: {

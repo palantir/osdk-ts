@@ -19,7 +19,7 @@ export const Person: Person = {
   type: 'object',
   apiName: 'Person',
   description: 'A person',
-  primaryKeyApiName: 'email' as const,
+  primaryKeyApiName: 'email',
   primaryKeyType: 'string',
   links: {
     Todos: {

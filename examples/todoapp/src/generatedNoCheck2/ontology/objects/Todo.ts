@@ -16,7 +16,7 @@ export const Todo: Todo = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
-  primaryKeyApiName: 'id' as const,
+  primaryKeyApiName: 'id',
   primaryKeyType: 'string',
   links: {},
   properties: {

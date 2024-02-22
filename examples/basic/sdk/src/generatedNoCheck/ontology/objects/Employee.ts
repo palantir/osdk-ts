@@ -25,7 +25,7 @@ export const Employee: Employee = {
   type: 'object',
   apiName: 'Employee',
   description: 'An employee',
-  primaryKeyApiName: 'adUsername' as const,
+  primaryKeyApiName: 'adUsername',
   primaryKeyType: 'string',
   links: {
     lead: {
