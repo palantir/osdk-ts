@@ -23,7 +23,7 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
+import type { BaseObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
 export interface Client<O extends OntologyDefinition<any>> {
@@ -36,7 +36,7 @@ export interface Client<O extends OntologyDefinition<any>> {
   /** @deprecated use client(MyType) */
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
-  ) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
+  ) => BaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
 
   /** @deprecated use client(MyType) */
   objects: ObjectSetCreator<O>;

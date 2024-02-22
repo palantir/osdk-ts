@@ -21,11 +21,16 @@ export interface ObjectTypeWithReservedNamesDef
 {
   type: "object";
   apiName: "ObjectTypeWithReservedNames";
+  primaryKeyApiName: "id";
   primaryKeyType: "integer";
   links: {
     const: ObjectTypeLinkDefinition<ObjectTypeWithReservedNamesDef, false>;
   };
   properties: {
+    id: {
+      type: "integer";
+      multiplicity: false;
+    };
     catch: {
       multiplicity: false;
       type: "integer";
@@ -36,6 +41,7 @@ export interface ObjectTypeWithReservedNamesDef
 export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
   type: "object",
   apiName: "ObjectTypeWithReservedNames",
+  primaryKeyApiName: "id" as const,
   primaryKeyType: "integer",
   links: {
     const: {
@@ -44,6 +50,10 @@ export const ObjectTypeWithReservedNames: ObjectTypeWithReservedNamesDef = {
     },
   },
   properties: {
+    id: {
+      type: "integer",
+      multiplicity: false,
+    },
     catch: {
       multiplicity: false,
       type: "integer",

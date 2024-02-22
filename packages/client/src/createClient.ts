@@ -26,7 +26,10 @@ import { createClientContext } from "@osdk/shared.net";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
-import { createObjectSet } from "./objectSet/createObjectSet.js";
+import {
+  createBaseObjectSet,
+  createObjectSet,
+} from "./objectSet/createObjectSet.js";
 import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
 import { USER_AGENT } from "./util/UserAgent.js";
@@ -48,7 +51,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   const objectSetFactory: ObjectSetFactory<O> = <
     K extends ObjectOrInterfaceKeysFrom<O>,
   >(type: K) =>
-    createObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
+    createBaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
       (ontology["objects"][type]
         ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
           O,

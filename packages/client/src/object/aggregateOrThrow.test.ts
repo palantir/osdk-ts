@@ -28,6 +28,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
   apiName: "Todo";
   links: {};
+  primaryKeyApiName: "id";
   primaryKeyType: "double";
   properties: {
     text: {
@@ -49,6 +50,7 @@ const Todo: TodoDef = {
   type: "object",
   apiName: "Todo",
   links: {},
+  primaryKeyApiName: "id",
   primaryKeyType: "double",
   properties: {
     text: {
@@ -185,6 +187,7 @@ describe("aggregateOrThrow", () => {
           Todo: {
             type: "object";
             apiName: "Todo";
+            primaryKeyApiName: "id";
             primaryKeyType: "double";
             links: {};
             properties: {
@@ -213,6 +216,7 @@ describe("aggregateOrThrow", () => {
           Todo: {
             type: "object";
             apiName: "Todo";
+            primaryKeyApiName: "id";
             primaryKeyType: "double";
             links: {};
             properties: {

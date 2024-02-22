@@ -63,6 +63,7 @@ export interface ObjectTypeDefinition<
   N = unknown,
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "object";
+  primaryKeyApiName: keyof this["properties"];
   primaryKeyType: keyof WirePropertyTypes;
 }
 
