@@ -172,7 +172,7 @@ export function createBaseObjectSet<
     ...createObjectSet(objectType, clientCtx, objectSet),
 
     get: (isObjectTypeDefinition(objectType)
-      ? async <A extends SelectArg<any>>(
+      ? async <A extends SelectArg<Q>>(
         primaryKey: Q extends ObjectTypeDefinition<any>
           ? WirePropertyTypes[Q["primaryKeyType"]]
           : never,
@@ -199,6 +199,6 @@ export function createBaseObjectSet<
 
         return data[0];
       }
-      : undefined as never) as BaseObjectSet<Q>["get"],
+      : undefined) as BaseObjectSet<Q>["get"],
   };
 }
