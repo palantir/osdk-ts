@@ -134,3 +134,17 @@ npx @osdk/cli unstable site version delete 0.1.0
 ## `typescript` subcommand
 
 ## `auth` subcommand
+
+## Help and debugging
+
+To see all supported commands and their expected arguments, run your command with the --help flag
+
+```
+npx @osdk/cli unstable site version --help
+```
+
+And for additional information for debugging, you can use the --verbose flag
+
+```
+npx @osdk/cli unstable site version --verbose
+```
