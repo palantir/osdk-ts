@@ -4,6 +4,7 @@ import { foundryClient, foundryClient2 } from "./foundryClient";
 import { isOk, ReturnEditsMode, type Result } from "./generatedNoCheck";
 import type { Todo } from "./generatedNoCheck/ontology/objects";
 import { ActionValidationError } from "@osdk/client";
+import * as MyOsdk from "./generatedNoCheck2";
 
 function orThrow<T, E>(result: Result<T, E>) {
   if (isOk(result)) {
@@ -21,29 +22,29 @@ export function useTodos() {
   );
 
   useEffect(() => {
-    const unsubscribe = foundryClient2.objects.Todo.subscribe({
+    const unsubscribe = foundryClient2(MyOsdk.Todo).subscribe({
       onChange(objects) {
         // index incoming objects by apiName and then by pk value
         const byApiNameByPK = new Map<
           string,
-          Map<(typeof objects)[0]["__primaryKey"], (typeof objects)[0]>
+          Map<(typeof objects)[0]["$primaryKey"], (typeof objects)[0]>
         >();
         for (const object of objects) {
-          const byPk = byApiNameByPK.get(object.__apiName);
+          const byPk = byApiNameByPK.get(object.$apiName);
           if (byPk) {
-            byPk.set(object.__primaryKey, object);
+            byPk.set(object.$primaryKey, object);
           } else {
             byApiNameByPK.set(
-              object.__apiName,
-              new Map([[object.__primaryKey, object]])
+              object.$apiName,
+              new Map([[object.$primaryKey, object]])
             );
           }
         }
 
         // get the new version of an object that has changed, removing it from the list of updates
         const getUpdate = (
-          apiName: (typeof objects)[0]["__apiName"],
-          primaryKey: (typeof objects)[0]["__primaryKey"]
+          apiName: (typeof objects)[0]["$apiName"],
+          primaryKey: (typeof objects)[0]["$primaryKey"]
         ) => {
           const byPk = byApiNameByPK.get(apiName);
           if (byPk) {
@@ -97,7 +98,7 @@ export function useTodos() {
           const actionsV2Ready = true;
 
           if (actionsV2Ready) {
-            await foundryClient2.actions.completeTodo({
+            await foundryClient2(MyOsdk.completeTodo)({
               is_complete: b,
               Todo: todo.__primaryKey,
             });
@@ -126,14 +127,14 @@ export function useTodos() {
     [mutate]
   );
 
-  const createTodo = useCallback(
+  const createTodoMutator = useCallback(
     async (title: string, setError?: (error: string | undefined) => void) => {
       await mutate(
         async () => {
           // Unwrap to get throw behavior on error.
           // Don't return because we want to invalidate cache
           try {
-            await foundryClient2.actions.createTodo({
+            await foundryClient2(MyOsdk.createTodo)({
               Todo: title,
               is_complete: false,
             });
@@ -181,7 +182,7 @@ export function useTodos() {
     error,
     isValidating,
     toggleComplete,
-    createTodo,
+    createTodo: createTodoMutator,
   };
 }
 

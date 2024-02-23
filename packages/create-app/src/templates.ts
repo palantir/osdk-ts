@@ -23,7 +23,9 @@ export interface Template {
 
 export interface TemplateContext {
   project: string;
+  foundryUrl: string;
   osdkPackage: string;
+  corsProxy: boolean;
 }
 
 export const TEMPLATES: readonly Template[] = [

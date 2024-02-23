@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { apiServer, stubData } from "@osdk/shared.test";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import { type Client, createClient } from "../index.js";
+import type { Employee } from "../generatedNoCheck/ontology/objects.js";
+import { createClient } from "../index.js";
+import type { Client, Osdk } from "../index.js";
 
 describe("ObjectSet", () => {
   let client: Client<typeof MockOntology>;
@@ -84,5 +93,81 @@ describe("ObjectSet", () => {
       iter += 1;
     }
     expect(iter).toEqual(1);
+  });
+
+  it("orders objects in ascending order without a filter, and returns all results", async () => {
+    const { data: employees } = await client.objects.Employee.fetchPageOrThrow({
+      orderBy: { "employeeId": "asc" },
+    });
+
+    expect(employees).toMatchInlineSnapshot(`
+      [
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50030,
+          "class": "Red",
+          "employeeId": 50030,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "John Doe",
+          "office": "NYC",
+          "startDate": "2019-01-01",
+        },
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50031,
+          "class": "Blue",
+          "employeeId": 50031,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jane Doe",
+          "office": "SEA",
+          "startDate": "2012-02-12",
+        },
+        {
+          "$apiName": "Employee",
+          "$objectType": "Employee",
+          "$primaryKey": 50032,
+          "class": "Red",
+          "employeeId": 50032,
+          "employeeStatus": "TimeSeries<String>",
+          "fullName": "Jack Smith",
+          "office": "LON",
+          "startDate": "2015-05-15",
+        },
+      ]
+    `);
+  });
+
+  it("allows fetching by PK from a base object set", async () => {
+    const employee = await client.objects.Employee.get(
+      stubData.employee1.employeeId,
+    );
+    expectTypeOf<typeof employee>().toEqualTypeOf<Osdk<Employee>>;
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("allows fetching by PK from a base object set with selected properties", async () => {
+    const employee = await client.objects.Employee.get(
+      stubData.employee1.employeeId,
+      { select: ["fullName"] },
+    );
+    expectTypeOf<typeof employee>().toEqualTypeOf<
+      Osdk<Employee, "fullName">
+    >;
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("throws when fetching by PK with an object that does not exist", async () => {
+    await expect(client.objects.Employee.get(-1)).rejects.toThrow();
+  });
+
+  it("allows fetching by PK from a pivoted object set", async () => {
+    const employee = await client.objects.Employee.where({
+      employeeId: stubData.employee2.employeeId,
+    })
+      .pivotTo("peeps").get(stubData.employee1.employeeId);
+
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 });

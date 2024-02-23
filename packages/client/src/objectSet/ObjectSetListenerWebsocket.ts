@@ -42,7 +42,7 @@ import {
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,
@@ -263,7 +263,9 @@ export class ObjectSetListenerWebsocket<
     }
   };
 
-  #onMessage = async (message: WebSocket.MessageEvent) => {
+  #onMessage = async <Q extends ObjectOrInterfaceDefinition>(
+    message: WebSocket.MessageEvent,
+  ) => {
     const data = JSON.parse(message.data.toString()) as
       | StreamMessage
       | Message;
@@ -291,7 +293,7 @@ export class ObjectSetListenerWebsocket<
               this.#client,
               this.#metadataContext,
               objects,
-            ),
+            ) as Array<Osdk<Q>>,
           );
         }
         break;
@@ -437,7 +439,7 @@ async function convertFoundryToOsdkObjects<
   client: ClientContext<O>,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Promise<Array<OsdkObjectFrom<O["objects"][K]>>> {
+): Promise<Array<Osdk<O["objects"][K]>>> {
   const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
@@ -458,6 +460,10 @@ async function convertFoundryToOsdkObjects<
           "__apiName",
           propertyMapping?.apiName,
         ],
+        [
+          "$apiName",
+          propertyMapping?.apiName,
+        ],
       ]);
       return convertedObject;
     }),
@@ -465,7 +471,7 @@ async function convertFoundryToOsdkObjects<
 
   convertWireToOsdkObjects(client, osdkObjects);
 
-  return osdkObjects as OsdkObjectFrom<O["objects"][K]>[];
+  return osdkObjects as Osdk<O["objects"][K]>[];
 }
 
 export type ObjectPropertyMapping = {

@@ -48,10 +48,12 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly stringTimeseries: TimeSeries<string> | undefined;
 }
 
-export interface ObjectTypeWithAllPropertyTypesDef extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes'> {
+export interface ObjectTypeWithAllPropertyTypesDef
+  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
   type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
   description: 'A type with all property types';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
   links: {};
   properties: {
@@ -217,6 +219,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {},
   properties: {

@@ -1,35 +1,22 @@
-import type { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
-export interface TodoDef extends ObjectTypeDefinition<'Todo'> {
-  type: 'object';
-  apiName: 'Todo';
+export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   links: {};
   properties: {
-    id: {
-      multiplicity: false;
-      type: 'string';
-      nullable: false;
-    };
-    title: {
-      multiplicity: false;
-      description: 'The text of the todo';
-      type: 'string';
-      nullable: true;
-    };
-    isComplete: {
-      multiplicity: false;
-      type: 'boolean';
-      nullable: true;
-    };
+    id: PropertyDef<'string', 'non-nullable', 'single'>;
+    title: PropertyDef<'string', 'nullable', 'single'>;
+    isComplete: PropertyDef<'boolean', 'nullable', 'single'>;
   };
 }
 
-export const Todo: TodoDef = {
+export const Todo: Todo = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'string',
   links: {},
   properties: {

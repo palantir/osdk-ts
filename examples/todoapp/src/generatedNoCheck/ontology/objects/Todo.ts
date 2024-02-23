@@ -15,10 +15,11 @@ export interface Todo extends OntologyObject {
   readonly title: string | undefined;
 }
 
-export interface TodoDef extends ObjectTypeDefinition<'Todo'> {
+export interface TodoDef extends ObjectTypeDefinition<'Todo', Todo> {
   type: 'object';
   apiName: 'Todo';
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -45,6 +46,7 @@ export const Todo: TodoDef = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'string',
   links: {},
   properties: {

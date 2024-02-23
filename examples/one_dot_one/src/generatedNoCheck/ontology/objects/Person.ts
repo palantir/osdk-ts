@@ -14,12 +14,17 @@ export interface Person extends OntologyObject {
 }
 
 import type { TodoDef } from './Todo';
-export interface PersonDef extends ObjectTypeDefinition<'Person'> {
+
+export interface PersonDef extends ObjectTypeDefinition<'Person', Person> {
   type: 'object';
   apiName: 'Person';
   description: 'A person';
+  primaryKeyApiName: 'email';
   primaryKeyType: 'string';
-  links: { Todos: ObjectTypeLinkDefinition<TodoDef, true>; Friends: ObjectTypeLinkDefinition<PersonDef, true> };
+  links: {
+    Todos: ObjectTypeLinkDefinition<TodoDef, true>;
+    Friends: ObjectTypeLinkDefinition<PersonDef, true>;
+  };
   properties: {
     email: {
       multiplicity: false;
@@ -33,6 +38,7 @@ export const Person: PersonDef = {
   type: 'object',
   apiName: 'Person',
   description: 'A person',
+  primaryKeyApiName: 'email',
   primaryKeyType: 'string',
   links: {
     Todos: {

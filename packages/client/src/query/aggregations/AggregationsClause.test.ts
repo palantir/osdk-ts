@@ -25,6 +25,7 @@ export type huh = AggregatableKeys<
       Todo: {
         type: "object";
         apiName: "Todo";
+        primaryKeyApiName: "id";
         primaryKeyType: "double";
         links: {};
         properties: {
@@ -49,6 +50,7 @@ export type Q = AggregationClause<
       Todo: {
         type: "object";
         apiName: "Todo";
+        primaryKeyApiName: "id";
         primaryKeyType: "double";
         links: {};
         properties: {

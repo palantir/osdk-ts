@@ -18,11 +18,10 @@ import type { OntologyDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { createCachedOntologyTransform } from "../createCachedOntologyTransform.js";
+import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
 import { Attachment } from "./Attachment.js";
-import type { FetchPageOrThrowArgs, SelectArg } from "./fetchPageOrThrow.js";
-import { getLinkedObjectByPkOrThrow } from "./getLinkedObjectByPkOrThrow.js";
-import { getLinkedObjectOrThrow } from "./getLinkedObjectOrThrow.js";
-import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
+import type { SelectArg } from "./fetchPageOrThrow.js";
+import { fetchSingle } from "./fetchSingle.js";
 
 const getPrototype = createCachedOntologyTransform(createPrototype);
 const getConverter = createCachedOntologyTransform(createConverter);
@@ -55,42 +54,22 @@ function createPrototype<
             return;
           }
 
+          const objectSet = createBaseObjectSet(objDef, client).where({
+            [objDef.primaryKeyApiName]: primaryKey,
+          }).pivotTo(p);
+
           if (!linkDef.multiplicity) {
             return {
               get: <A extends SelectArg<any>>(options?: A) =>
-                getLinkedObjectOrThrow(
+                fetchSingle(
                   client,
-                  type,
-                  primaryKey,
-                  p,
-                  options?.select,
+                  objDef,
+                  options ?? {},
+                  objectSet.definition,
                 ),
             };
           } else {
-            return {
-              get: <A extends SelectArg<any>>(
-                targetPrimaryKey: any,
-                options?: A,
-              ) =>
-                getLinkedObjectByPkOrThrow(
-                  client,
-                  type,
-                  primaryKey,
-                  p,
-                  targetPrimaryKey,
-                  options?.select,
-                ),
-              fetchPageOrThrow: (
-                options?: FetchPageOrThrowArgs<
-                  O["objects"][typeof linkDef.targetType]
-                >,
-              ) =>
-                pageLinkedObjectsOrThrow(client, type, primaryKey, p, {
-                  nextPageToken: options?.nextPageToken,
-                  pageSize: options?.pageSize,
-                  select: options?.select,
-                }),
-            };
+            return objectSet;
           }
         },
       });
@@ -143,6 +122,8 @@ function createConverter<
     : false as const;
 }
 
+const isAfterFeb2024OrNewApis = false;
+
 /**
  * @param objs the objects to be converted, the contents of this array will be mutated
  */
@@ -153,6 +134,38 @@ export function convertWireToOsdkObjects<
   objs: OntologyObjectV2[],
 ) {
   for (const obj of objs) {
+    if (obj.__rid) {
+      obj.$rid = obj.__rid;
+      delete obj.__rid;
+    }
+
+    // Backend returns as __apiName but we want to stick to $ structure
+    obj.$apiName = obj.__apiName;
+
+    // for now these are the same but when we start doing interface projections the $objectType will always be underlying and
+    // the $apiName will be for the current view (in current designs)
+    obj.$objectType = obj.__apiName;
+
+    // copying over for now as its always returned. In the future, this should just be inferred from underlying
+    obj.$primaryKey = obj.__primaryKey;
+
+    // After Feb 2024 (unless we have new apis):
+    if (isAfterFeb2024OrNewApis) {
+      delete obj.__apiName;
+      delete obj.__primaryKey;
+    } else {
+      // Hide these from things like `console.log` so that people
+      // don't think to use them.
+      Object.defineProperties(obj, {
+        "__apiName": {
+          enumerable: false,
+        },
+        "__primaryKey": {
+          enumerable: false,
+        },
+      });
+    }
+
     const proto = getPrototype(client.ontology, obj.__apiName);
     const converter = getConverter(client.ontology, obj.__apiName);
 

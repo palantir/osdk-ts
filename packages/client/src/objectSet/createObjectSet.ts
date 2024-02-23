@@ -14,22 +14,35 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+  WirePropertyTypes,
+} from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { FetchPageOrThrowArgs } from "../object/fetchPageOrThrow.js";
+import type {
+  FetchPageOrThrowArgs,
+  SelectArg,
+} from "../object/fetchPageOrThrow.js";
+import { fetchSingle } from "../object/fetchSingle.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults } from "../query/index.js";
-import type { LinkTypesFrom } from "./LinkTypesFrom.js";
+import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
+function isObjectTypeDefinition(
+  def: ObjectOrInterfaceDefinition,
+): def is ObjectTypeDefinition<any> {
+  return def.type === "object";
+}
+
 const searchAroundPrefix = "searchAround_";
-export function createObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
->(
+export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: ClientContext<any>,
   objectSet: WireObjectSet = {
@@ -37,8 +50,9 @@ export function createObjectSet<
     objectType: objectType["apiName"] as string,
   },
 ): ObjectSet<Q> {
-  const base: BaseObjectSet<Q> = {
+  const base: ObjectSet<Q> = {
     definition: objectSet,
+
     // aggregate: <
     //   AC extends AggregationClause<O, K>,
     //   GBC extends GroupByClause<O, K> | undefined = undefined,
@@ -66,7 +80,7 @@ export function createObjectSet<
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q>) => {
+    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q, any, any>) => {
       return fetchPageOrThrow(
         clientCtx,
         objectType,
@@ -89,9 +103,9 @@ export function createObjectSet<
     //   throw "";
     // },
 
-    pivotTo: function<T extends LinkTypesFrom<Q>>(
-      type: T & string,
-    ): ObjectSet<Q["links"][T]["targetType"]> {
+    pivotTo: function<L extends LinkNames<Q>>(
+      type: L,
+    ): BaseObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
     },
 
@@ -122,9 +136,9 @@ export function createObjectSet<
     },
   };
 
-  function createSearchAround<S extends LinkTypesFrom<Q>>(link: S & string) {
+  function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
-      return createObjectSet(
+      return createBaseObjectSet(
         objectType,
         clientCtx,
         {
@@ -144,4 +158,43 @@ export function createObjectSet<
       return (target as any)[p as any] as any;
     },
   });
+}
+
+export function createBaseObjectSet<
+  Q extends ObjectOrInterfaceDefinition,
+>(
+  objectType: Q,
+  clientCtx: ClientContext<any>,
+  objectSet: WireObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+): BaseObjectSet<Q> {
+  return {
+    ...createObjectSet(objectType, clientCtx, objectSet),
+
+    get: (isObjectTypeDefinition(objectType)
+      ? async <A extends SelectArg<Q>>(
+        primaryKey: Q extends ObjectTypeDefinition<any>
+          ? WirePropertyTypes[Q["primaryKeyType"]]
+          : never,
+        options: A,
+      ) => {
+        const withPk: WireObjectSet = {
+          type: "filter",
+          objectSet: objectSet,
+          where: modernToLegacyWhereClause({
+            [objectType.primaryKeyApiName]: primaryKey,
+          }),
+        };
+
+        return await fetchSingle(
+          clientCtx,
+          objectType,
+          options,
+          withPk,
+        ) as Osdk<Q>;
+      }
+      : undefined) as BaseObjectSet<Q>["get"],
+  };
 }

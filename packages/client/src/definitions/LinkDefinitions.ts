@@ -15,20 +15,14 @@
  */
 
 import type {
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
-import type { SelectArgToKeys } from "../object/pageLinkedObjectsOrThrow.js";
-import type {
-  OsdkObjectFrom,
-  OsdkObjectPrimaryKeyType,
-} from "../OsdkObjectFrom.js";
-import type { PageResult } from "../PageResult.js";
+import type { SelectArg, SelectArgToKeys } from "../object/fetchPageOrThrow.js";
+import type { BaseObjectSet } from "../objectSet/ObjectSet.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
 export type OsdkObjectLinksObject<
@@ -41,24 +35,28 @@ export type OsdkObjectLinksEntry<
   O extends ObjectTypeDefinition<any>,
   L extends ObjectTypeLinkKeysFrom2<O>,
 > = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
-    M extends false ? SingletonLinkAccessor<T> : MultitonLinkAccessor<T>
+    M extends false ? SingleLinkAccessor<T> : BaseObjectSet<T>
   )
   : never;
 
-export interface SingletonLinkAccessor<T extends ObjectTypeDefinition<any>> {
+export type DefaultToFalse<B extends boolean | undefined> = false extends B
+  ? false
+  : undefined extends B ? false
+  : true;
+
+export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
   /** Load the linked object */
-  get: <A extends SelectArg<T>>(
+  get: <
+    const A extends SelectArg<
+      T,
+      ObjectOrInterfacePropertyKeysFrom2<T>,
+      boolean
+    >,
+  >(
     options?: A,
-  ) => Promise<OsdkObjectFrom<T, SelectArgToKeys<A>>>;
-}
-
-export interface MultitonLinkAccessor<T extends ObjectTypeDefinition<any>> {
-  get: <A extends SelectArg<T>>(
-    pk: OsdkObjectPrimaryKeyType<T>,
-    options?: A,
-  ) => Promise<OsdkObjectFrom<T, SelectArgToKeys<A>>>;
-
-  fetchPageOrThrow: <
-    A extends FetchPageOrThrowArgs<T>,
-  >(options?: A) => Promise<PageResult<OsdkObjectFrom<T, SelectArgToKeys<A>>>>;
+  ) => Promise<
+    DefaultToFalse<A["includeRid"]> extends false
+      ? Osdk<T, SelectArgToKeys<T, A>>
+      : Osdk<T, SelectArgToKeys<T, A>, DefaultToFalse<A["includeRid"]>>
+  >;
 }

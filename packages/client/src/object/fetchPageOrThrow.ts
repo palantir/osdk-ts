@@ -17,34 +17,58 @@
 import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { OsdkObjectFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
 > {
   select?: readonly L[];
+  includeRid?: R;
 }
 
+export interface OrderByArg<
+  Q extends ObjectOrInterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+> {
+  orderBy?: {
+    [K in L]?: "asc" | "desc";
+  };
+}
+
+export type SelectArgToKeys<
+  Q extends ObjectOrInterfaceDefinition,
+  A extends SelectArg<Q, any, any>,
+> = A extends SelectArg<Q, never> ? "$all"
+  : A["select"] extends readonly string[] ? A["select"][number]
+  : "$all";
+
 export interface FetchPageOrThrowArgs<
-  O extends ObjectOrInterfaceDefinition<any, any>,
-  L = ObjectOrInterfacePropertyKeysFrom2<O>,
-> extends SelectArg<O, L> {
+  Q extends ObjectOrInterfaceDefinition,
+  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
+> extends
+  SelectArg<Q, K, R>,
+  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
+{
   nextPageToken?: string;
   pageSize?: number;
 }
 
 export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q>,
+  const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
   client: ClientContext<any>,
   objectType: Q,
@@ -55,10 +79,10 @@ export async function fetchPageOrThrow<
   },
 ): Promise<
   PageResult<
-    OsdkObjectFrom<
-      Q extends ObjectTypeDefinition<any> ? Q : never,
-      A["select"] extends readonly string[] ? A["select"][number]
-        : ObjectOrInterfacePropertyKeysFrom2<Q>
+    Osdk<
+      Q,
+      SelectArgToKeys<Q, A>,
+      A["includeRid"] extends true ? true : false
     >
   >
 > {
@@ -66,6 +90,7 @@ export async function fetchPageOrThrow<
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
     select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+    excludeRid: !args?.includeRid,
   };
 
   if (args?.nextPageToken) {
@@ -74,6 +99,15 @@ export async function fetchPageOrThrow<
 
   if (args?.pageSize != null) {
     body.pageSize = args.pageSize;
+  }
+
+  if (args?.orderBy != null) {
+    body.orderBy = {
+      fields: Object.entries(args.orderBy).map(([field, direction]) => ({
+        field,
+        direction,
+      })),
+    };
   }
 
   const r = await loadObjectSetV2(

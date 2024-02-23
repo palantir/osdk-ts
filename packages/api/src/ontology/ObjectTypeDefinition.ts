@@ -47,18 +47,24 @@ export type ObjectTypePropertyDefinitionFrom2<
   P extends keyof Q["properties"] & string,
 > = Q["properties"][P];
 
-export interface ObjectTypeDefinition<
-  K extends string,
-> {
-  type: "object";
-  apiName: K;
+export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
+  type: "object" | "interface";
+  apiName: K & { __OsdkType?: N };
   description?: string;
-  primaryKeyType: keyof WirePropertyTypes;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<
     string,
     ObjectTypeLinkDefinition<any, any>
   >;
+}
+
+export interface ObjectTypeDefinition<
+  K extends string,
+  N = unknown,
+> extends ObjectInterfaceBaseDefinition<K, N> {
+  type: "object";
+  primaryKeyApiName: keyof this["properties"];
+  primaryKeyType: keyof WirePropertyTypes;
 }
 
 export type ObjectTypeLinkKeysFrom<
@@ -71,10 +77,10 @@ export type ObjectTypeLinkKeysFrom2<O extends ObjectTypeDefinition<any>> =
   & string;
 
 export interface ObjectTypeLinkDefinition<
-  O extends ObjectTypeDefinition<any>,
+  O extends ObjectTypeDefinition<any, any>,
   M extends boolean,
 > {
-  __Mark?: O;
+  __OsdkLinkTargetType?: O;
   targetType: O["apiName"];
   multiplicity: M;
 }
@@ -99,3 +105,17 @@ export interface ObjectTypePropertyDefinition {
   multiplicity?: boolean;
   nullable?: boolean;
 }
+
+export type PropertyDef<
+  T extends keyof WirePropertyTypes,
+  N extends "nullable" | "non-nullable" = "nullable",
+  M extends "array" | "single" = "single",
+  E extends Record<string, any> = {},
+> =
+  & {
+    type: T;
+    multiplicity: M extends "array" ? true : false;
+    nullable: N extends "nullable" ? true : false;
+  }
+  & E
+  & ObjectTypePropertyDefinition;

@@ -1,18 +1,18 @@
 import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
-import type { TodoDef } from '../objects';
+import type { Todo } from '../objects';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$completeTodo$Params = {
   Todo: {
-    type: ObjectActionDataType<'Todo', TodoDef>;
     multiplicity: false;
+    type: ObjectActionDataType<'Todo', Todo>;
     nullable: false;
     description: 'A todo Object';
   };
   is_complete: {
-    type: 'boolean';
     multiplicity: false;
+    type: 'boolean';
     nullable: false;
   };
 };

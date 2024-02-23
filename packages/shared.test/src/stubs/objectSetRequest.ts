@@ -346,6 +346,66 @@ const emptyObjectWithAllPropertyTypes: LoadObjectSetRequestV2 = {
   "select": [],
 };
 
+const getByPkFromSearchAround: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "filter",
+    "objectSet": {
+      "type": "searchAround",
+      "objectSet": {
+        "type": "filter",
+        "objectSet": { "type": "base", "objectType": "Employee" },
+        "where": { "type": "eq", "field": "employeeId", "value": 50031 },
+      },
+      "link": "peeps",
+    },
+    "where": { "type": "eq", "field": "employeeId", "value": 50030 },
+  },
+  "select": [],
+};
+
+const employee1LeadSearchAround: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "searchAround",
+    "objectSet": {
+      "type": "filter",
+      "objectSet": { "type": "base", "objectType": "Employee" },
+      "where": { "type": "eq", "field": "employeeId", "value": 50030 },
+    },
+    "link": "lead",
+  },
+  "select": ["employeeId"],
+};
+
+const employee2ToPeepsSearchAround: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "searchAround",
+    "objectSet": {
+      "type": "filter",
+      "objectSet": { "type": "base", "objectType": "Employee" },
+      "where": { "type": "eq", "field": "employeeId", "value": 50031 },
+    },
+    "link": "peeps",
+  },
+  "select": ["fullName", "employeeId"],
+};
+
+const employee2ToToEmployee1PeepByPk: LoadObjectSetRequestV2 = {
+  "objectSet": {
+    "type": "filter",
+    "objectSet": {
+      "type": "searchAround",
+      "objectSet": {
+        "type": "filter",
+        "objectSet": { "type": "base", "objectType": "Employee" },
+        "where": { "type": "eq", "field": "employeeId", "value": 50031 },
+      },
+      "link": "peeps",
+    },
+    "where": { "type": "eq", "field": "employeeId", "value": 50030 },
+  },
+  "select": ["employeeId"],
+};
+
 export const loadObjectSetRequestHandlers: {
   [key: string]: LoadObjectSetResponseV2["data"];
 } = {
@@ -371,4 +431,8 @@ export const loadObjectSetRequestHandlers: {
   [stableStringify(emptyObjectWithAllPropertyTypes)]: [
     objectWithAllPropertyTypesEmptyEntries,
   ],
+  [stableStringify(getByPkFromSearchAround)]: [employee1],
+  [stableStringify(employee1LeadSearchAround)]: [employee2],
+  [stableStringify(employee2ToPeepsSearchAround)]: [employee1, employee2],
+  [stableStringify(employee2ToToEmployee1PeepByPk)]: [employee1],
 };

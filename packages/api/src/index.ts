@@ -52,6 +52,7 @@ export type {
   ObjectTypePropertyDefinitionFrom2,
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
+  PropertyDef,
 } from "./ontology/ObjectTypeDefinition";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type {

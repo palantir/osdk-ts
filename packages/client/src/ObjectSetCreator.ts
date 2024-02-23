@@ -21,13 +21,13 @@ import type {
 } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { Client } from "./Client.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
+import type { BaseObjectSet } from "./objectSet/ObjectSet.js";
 
 /**
  * A type that creates an object set for each object in the ontology.
  */
 export type ObjectSetCreator<O extends OntologyDefinition<any>> = {
-  [T in ObjectOrInterfaceKeysFrom<O>]: ObjectSet<
+  [T in ObjectOrInterfaceKeysFrom<O>]: BaseObjectSet<
     ObjectOrInterfaceDefinitionFrom<O, T>
   >;
 };

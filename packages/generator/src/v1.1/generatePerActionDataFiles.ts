@@ -18,14 +18,12 @@ import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
+import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { deleteUndefineds } from "../util/deleteUndefineds";
+import { stringify } from "../util/stringify";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { getDescriptionIfPresent } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
-
-function stringifyWithoutOuterBraces(obj: any) {
-  return JSON.stringify(obj, null, 2).replace(/^\{\n/, "").replace(/\n\}$/, "");
-}
 
 export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,
@@ -67,24 +65,27 @@ export async function generatePerActionDataFiles(
           ${
           Object.entries(parameters)
             .map(([key, value]) => {
-              const { type, ...remain } = value;
-
-              let q;
-
-              if (typeof type === "string") {
-                q = JSON.stringify(type);
-              } else if (type.type === "object") {
-                q = `ObjectActionDataType<"${type.object}", ${type.object}Def>`;
-              } else if (type.type === "objectSet") {
-                q =
-                  `ObjectSetActionDataType<"${type.objectSet}", ${type.objectSet}Def>`;
-              }
-
               return `"${key}": {
-              type: ${q};
-              ${stringifyWithoutOuterBraces(remain)}
-            }
-            `;
+                ${
+                stringify(value, {
+                  description: (value, d) => value ? d(value) : undefined, // trick to remove undefineds
+                  type: (type) => {
+                    if (typeof type === "string") {
+                      return JSON.stringify(type);
+                    } else if (type.type === "object") {
+                      return `ObjectActionDataType<"${type.object}", ${
+                        getObjectDefIdentifier(type.object, v2)
+                      }>`;
+                    } else if (type.type === "objectSet") {
+                      return `ObjectSetActionDataType<"${type.objectSet}", ${
+                        getObjectDefIdentifier(type.objectSet, v2)
+                      }>`;
+                    }
+                    return undefined;
+                  },
+                })
+              }
+            }`;
             })
             .join(";\n")
         }
@@ -136,8 +137,12 @@ export async function generatePerActionDataFiles(
       const referencedObjectDefs = new Set();
       for (const p of Object.values(action.parameters)) {
         if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
-          referencedObjectDefs.add(p.dataType.objectApiName + "Def");
-          referencedObjectDefs.add(p.dataType.objectTypeApiName + "Def");
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.objectApiName!, v2),
+          );
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.objectTypeApiName!, v2),
+          );
         }
       }
 

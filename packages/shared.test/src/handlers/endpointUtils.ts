@@ -22,6 +22,7 @@ export type PagedBodyResponse<T> = {
 };
 
 export type PagedRequest = {
+  excludeRid?: boolean;
   pageSize?: number;
   pageToken?: string;
 };
@@ -34,12 +35,21 @@ export function pageThroughResponse<
   handlers: { [key: string]: TResponse["data"] },
   request: TRequest,
 ): PagedBodyResponse<TData> | undefined {
-  const { pageSize, pageToken, ...requestWithoutPagination } = request;
+  const { pageSize, pageToken, excludeRid, ...requestWithoutPagination } =
+    request;
 
-  const data = handlers[stableStringify(requestWithoutPagination)];
+  let data = handlers[stableStringify(requestWithoutPagination)];
 
   if (data === undefined) {
     return undefined;
+  }
+
+  if (excludeRid) {
+    data = data.map(a => {
+      a = { ...a };
+      delete (a as any).__rid;
+      return a;
+    });
   }
 
   const size = request.pageSize ? Number(request.pageSize) : 1000;

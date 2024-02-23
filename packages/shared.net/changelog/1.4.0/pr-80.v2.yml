@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Allow http with localhost for CORS proxy
+  links:
+  - https://github.com/palantir/osdk-ts/pull/80

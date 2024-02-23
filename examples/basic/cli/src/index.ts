@@ -15,7 +15,11 @@
  */
 
 import { createClient, createClientContext } from "@osdk/client";
-import { Ontology } from "@osdk/examples.basic.sdk";
+import {
+  BoundariesUsState,
+  Ontology,
+  WeatherStation,
+} from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
@@ -54,27 +58,31 @@ export const clientCtx = createClientContext(
   `typescript-sdk/dev osdk-cli/dev`,
 );
 
+const runOld = false;
+
 async function runTests() {
   try {
-    await fetchEmployeePage(client);
-    await fetchEmployeePageByAdUsername(client, "fish");
-    await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
-    await fetchAggregationForEmployees(client);
-    await fetchAggregationForEmployeesGrouped(client);
-    await fetchEmployeePageThin(clientCtx);
+    if (runOld) {
+      await fetchEmployeePage(client);
+      await fetchEmployeePageByAdUsername(client, "fish");
+      await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
+      await fetchAggregationForEmployees(client);
+      await fetchAggregationForEmployeesGrouped(client);
+      await fetchEmployeePageThin(clientCtx);
 
-    await fetchAggregationForEmployeesGroupedThin(clientCtx);
-    await fetchEmployeeLead(client, "bob");
+      await fetchAggregationForEmployeesGroupedThin(clientCtx);
+      await fetchEmployeeLead(client, "bob");
 
-    const interfaceImplementationComplete = false;
-    if (interfaceImplementationComplete) {
-      const interfaceResults = await client.objects.SimpleInterface
-        .fetchPageOrThrow();
-      interfaceResults.data[0].body;
+      const interfaceImplementationComplete = false;
+      if (interfaceImplementationComplete) {
+        const interfaceResults = await client.objects.SimpleInterface
+          .fetchPageOrThrow();
+        interfaceResults.data[0].body;
+      }
     }
 
     // only works in default ontology
-    const result = await client.objects.WeatherStation.where({
+    const result = await client(WeatherStation).where({
       geohash: {
         $within: {
           distance: [1_000, "miles"],
@@ -86,7 +94,7 @@ async function runTests() {
     console.log(result.data[0].geohash);
 
     // drew a polygon that intersects NY, NJ and PA
-    const intersectResult = await client.objects.BoundariesUsState.where({
+    const intersectResult = await client(BoundariesUsState).where({
       geometry10M: {
         $intersects: {
           polygon: [
@@ -120,7 +128,7 @@ async function runTests() {
     console.log(intersectResult.data.map(data => data.usState));
     console.log(intersectResult.data[0].geometry10M);
 
-    const intersectResultGeojson = await client.objects.BoundariesUsState
+    const intersectResultGeojson = await client(BoundariesUsState)
       .where({
         $not: {
           geometry10M: {
@@ -159,7 +167,7 @@ async function runTests() {
     console.log(intersectResultGeojson.data.map(data => data.usState));
 
     // drew a bbox that intersects NY, NJ and PA
-    const intersectResultbbox = await client.objects.BoundariesUsState
+    const intersectResultbbox = await client(BoundariesUsState)
       .where({
         geometry10M: {
           $intersects: [
@@ -199,7 +207,7 @@ async function runTests() {
       testAggregateCountWithGroups[0].latitude.min,
     );
 
-    await typeChecks(client);
+    if (runOld) await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);
     console.error(e);
