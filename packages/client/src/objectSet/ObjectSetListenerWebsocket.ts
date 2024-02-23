@@ -263,7 +263,9 @@ export class ObjectSetListenerWebsocket<
     }
   };
 
-  #onMessage = async (message: WebSocket.MessageEvent) => {
+  #onMessage = async <Q extends ObjectOrInterfaceDefinition>(
+    message: WebSocket.MessageEvent,
+  ) => {
     const data = JSON.parse(message.data.toString()) as
       | StreamMessage
       | Message;
@@ -291,7 +293,7 @@ export class ObjectSetListenerWebsocket<
               this.#client,
               this.#metadataContext,
               objects,
-            ),
+            ) as Array<Osdk<Q>>,
           );
         }
         break;

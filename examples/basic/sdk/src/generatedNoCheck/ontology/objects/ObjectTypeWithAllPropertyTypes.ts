@@ -3,6 +3,7 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 export interface ObjectTypeWithAllPropertyTypes
   extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
   description: 'A type with all property types';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
   links: {};
   properties: {
@@ -44,6 +45,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
   type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {},
   properties: {

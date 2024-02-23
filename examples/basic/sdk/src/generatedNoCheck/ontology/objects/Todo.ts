@@ -4,6 +4,7 @@ import type { Person } from './Person.js';
 
 export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
   links: {
     Assignee: ObjectTypeLinkDefinition<Person, false>;
@@ -21,6 +22,7 @@ export const Todo: Todo = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {
     Assignee: {

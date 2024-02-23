@@ -23,6 +23,7 @@ export interface TodoDef extends ObjectTypeDefinition<'Todo', Todo> {
   type: 'object';
   apiName: 'Todo';
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
   links: {
     Assignee: ObjectTypeLinkDefinition<PersonDef, false>;
@@ -51,6 +52,7 @@ export const Todo: TodoDef = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
   links: {
     Assignee: {

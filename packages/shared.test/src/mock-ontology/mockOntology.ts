@@ -26,6 +26,7 @@ import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
 const Task: TaskDef = {
   type: "object",
   apiName: "Task",
+  primaryKeyApiName: "id",
   primaryKeyType: "integer",
   properties: {
     id: { type: "integer", nullable: true },
@@ -41,6 +42,7 @@ const Task: TaskDef = {
 const Todo: TodoDef = {
   type: "object",
   apiName: "Todo",
+  primaryKeyApiName: "id",
   primaryKeyType: "string",
   description: "A todo object",
   properties: {
@@ -62,6 +64,7 @@ const Todo: TodoDef = {
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
   apiName: "Todo";
+  primaryKeyApiName: "id";
   primaryKeyType: "string";
   description: "A todo object";
   properties: {
@@ -80,6 +83,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
 interface TaskDef extends ObjectTypeDefinition<"Task"> {
   type: "object";
   apiName: "Task";
+  primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer"; nullable: true };

@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
   description: 'Its a todo item.';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -15,6 +16,7 @@ export const Todo: Todo = {
   type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'string',
   links: {},
   properties: {

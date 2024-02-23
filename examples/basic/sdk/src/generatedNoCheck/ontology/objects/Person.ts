@@ -4,6 +4,7 @@ import type { Todo } from './Todo.js';
 
 export interface Person extends ObjectTypeDefinition<'Person', Person> {
   description: 'A person';
+  primaryKeyApiName: 'email';
   primaryKeyType: 'string';
   links: {
     Todos: ObjectTypeLinkDefinition<Todo, true>;
@@ -18,6 +19,7 @@ export const Person: Person = {
   type: 'object',
   apiName: 'Person',
   description: 'A person',
+  primaryKeyApiName: 'email',
   primaryKeyType: 'string',
   links: {
     Todos: {

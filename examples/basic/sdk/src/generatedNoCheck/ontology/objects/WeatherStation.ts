@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation> {
   description: 'Weather Station';
+  primaryKeyApiName: 'stationId';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -14,6 +15,7 @@ export const WeatherStation: WeatherStation = {
   type: 'object',
   apiName: 'WeatherStation',
   description: 'Weather Station',
+  primaryKeyApiName: 'stationId',
   primaryKeyType: 'string',
   links: {},
   properties: {

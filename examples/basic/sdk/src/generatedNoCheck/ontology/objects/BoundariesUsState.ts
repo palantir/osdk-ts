@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface BoundariesUsState extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState> {
   description: 'Boundaries US State';
+  primaryKeyApiName: 'usState';
   primaryKeyType: 'string';
   links: {};
   properties: {
@@ -14,6 +15,7 @@ export const BoundariesUsState: BoundariesUsState = {
   type: 'object',
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',
+  primaryKeyApiName: 'usState',
   primaryKeyType: 'string',
   links: {},
   properties: {

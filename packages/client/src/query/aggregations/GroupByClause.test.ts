@@ -24,6 +24,7 @@ export type F = GroupByClause<
       Todo: {
         type: "object";
         apiName: "Todo";
+        primaryKeyApiName: "id";
         primaryKeyType: "double";
         links: {};
         properties: {
