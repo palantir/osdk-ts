@@ -1,9 +1,12 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
 
 export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'A full-time or part-time employee of our firm';
   primaryKeyType: 'integer';
-  links: {};
+  links: {
+    lead: ObjectTypeLinkDefinition<Employee, false>;
+    peeps: ObjectTypeLinkDefinition<Employee, true>;
+  };
   properties: {
     employeeId: PropertyDef<'integer', 'non-nullable', 'single'>;
     class: PropertyDef<'string', 'nullable', 'single'>;
@@ -19,7 +22,16 @@ export const Employee: Employee = {
   apiName: 'Employee',
   description: 'A full-time or part-time employee of our firm',
   primaryKeyType: 'integer',
-  links: {},
+  links: {
+    lead: {
+      multiplicity: false,
+      targetType: 'Employee',
+    },
+    peeps: {
+      multiplicity: true,
+      targetType: 'Employee',
+    },
+  },
   properties: {
     employeeId: {
       multiplicity: false,

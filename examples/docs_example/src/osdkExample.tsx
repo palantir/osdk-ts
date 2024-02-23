@@ -1,24 +1,33 @@
 import { createClient } from "@osdk/client";
-import { Employee, Office, Ontology, Todo } from "./generatedNoCheck2";
+import {
+  Employee,
+  Office,
+  Ontology,
+  promoteEmployee,
+  promoteEmployeeObject,
+} from "./generatedNoCheck2";
 
 export const client = createClient(
   Ontology,
-  import.meta.env.VITE_FOUNDRY_URL,
+  "",
   async () => {
     return "";
   },
 );
 
-export async function tryOsdk() {
-  // Where clauses
+export async function osdkObjectSetExample() {
+  /**
+   * OBJECT SETS
+   */
 
   // Simple where clause
+  // This defaults to AND together all the parameters
   const simpleFilteredEmployeeObjectSet = await client(Employee).where({
     fullName: { $contains: "Clooney" },
     employeeId: { $eq: 12 },
   });
 
-  // Where clause with or, ands, nots
+  // Where clause with ors, ands, nots
   const complexFilteredEmployeeObjectSet = await client(Employee).where({
     $or: [{ fullName: { $contains: "Clooney" }, startDate: { $gt: 10 } }, {
       $and: [{ $not: { fullName: { $contains: "Pitt" } } }, {
@@ -30,7 +39,7 @@ export async function tryOsdk() {
     }],
   });
 
-  // Where clause geotypes
+  // Where clause GEOTYPES
 
   // Within clauses take either a polygon or bounding box
   const withinFilteredObjectSet = await client(Office).where({
@@ -75,13 +84,6 @@ export async function tryOsdk() {
     ],
   });
 
-  // You can orderby when fetching object sets and select properties you want
-  const orderedEmployees = simpleFilteredEmployeeObjectSet.fetchPageOrThrow({
-    select: ["employeeId", "fullName"],
-    orderBy: { "startDate": "asc" },
-    pageSize: 10,
-  });
-
   // objectSet intersect
   const intersectedObjectSet = complexFilteredEmployeeObjectSet.intersect(
     simpleFilteredEmployeeObjectSet,
@@ -96,4 +98,61 @@ export async function tryOsdk() {
   const subtractObjectSet = complexFilteredEmployeeObjectSet.subtract(
     simpleFilteredEmployeeObjectSet,
   );
+
+  // Pivots and links
+  const getPeeps = await client(Employee).pivotTo("peeps").fetchPageOrThrow({});
+  console.log(getPeeps.data);
+
+  const filteredEmployees = await simpleFilteredEmployeeObjectSet
+    .fetchPageOrThrow({});
+  const employeeLead = await filteredEmployees
+    .data[0].$link
+    .lead.get();
+  console.log(employeeLead.fullName);
+
+  // When fetching a page of employees, you can down select properties you want, and also order the results
+  const orderedEmployees = complexFilteredEmployeeObjectSet.fetchPageOrThrow({
+    select: ["employeeId", "fullName", "startDate"],
+    orderBy: { "startDate": "asc" },
+    pageSize: 10,
+  });
+
+  /**
+   * ACTIONS
+   */
+
+  // When calling an action, you can get back the edits that were made
+  const actionResults = await client(promoteEmployee)({
+    employeeId: employeeLead.employeeId,
+    newTitle: "Architect",
+    newCompensation: 1000000,
+  }, { returnEdits: true });
+
+  if (actionResults.type === "edits") {
+    console.log("Edited employee: ", actionResults.edits);
+  }
+
+  // You can also just run validation to make sure the parameters you passed in for valid
+  // Note, this action takes a concrete object, but will also accept the PK of the object (e.g. employeeLead.employeeId)
+  const actionValidation = await client(promoteEmployeeObject)({
+    employee: employeeLead,
+    newTitle: "Architect",
+    newCompensation: 1000000,
+  }, { validateOnly: true });
+
+  // You can get the entire validation result, or validation on a per-param basis
+  console.log(actionValidation.result);
+  console.log(actionValidation.parameters);
+
+  console.log(
+    withinFilteredObjectSet,
+    intersectFilteredObjectSet,
+    orderedEmployees,
+    intersectedObjectSet,
+    unionObjectSet,
+    subtractObjectSet,
+  );
+}
+
+export async function osdkActionExample() {
 }
