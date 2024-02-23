@@ -5,7 +5,7 @@ import {
   Ontology,
   promoteEmployee,
   promoteEmployeeObject,
-} from "./generatedNoCheck2";
+} from "./generatedNoCheck";
 
 export const client = createClient(
   Ontology,
