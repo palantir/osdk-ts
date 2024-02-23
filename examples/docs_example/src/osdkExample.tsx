@@ -153,6 +153,3 @@ export async function osdkObjectSetExample() {
     subtractObjectSet,
   );
 }
-
-export async function osdkActionExample() {
-}
