@@ -1,15 +1,19 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
 
+import type { Venture } from './Venture.js';
+
 export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'An employee';
-  primaryKeyApiName: 'adUsername';
+  primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   links: {
     lead: ObjectTypeLinkDefinition<Employee, false>;
     peeps: ObjectTypeLinkDefinition<Employee, true>;
+    ventures: ObjectTypeLinkDefinition<Venture, true>;
   };
   properties: {
-    adUsername: PropertyDef<'string', 'non-nullable', 'single'>;
+    id: PropertyDef<'string', 'non-nullable', 'single'>;
+    adUsername: PropertyDef<'string', 'nullable', 'single'>;
     locationName: PropertyDef<'string', 'nullable', 'single'>;
     locationCity: PropertyDef<'string', 'nullable', 'single'>;
     firstFullTimeStartDate: PropertyDef<'datetime', 'nullable', 'single'>;
@@ -25,7 +29,7 @@ export const Employee: Employee = {
   type: 'object',
   apiName: 'Employee',
   description: 'An employee',
-  primaryKeyApiName: 'adUsername',
+  primaryKeyApiName: 'id',
   primaryKeyType: 'string',
   links: {
     lead: {
@@ -36,12 +40,21 @@ export const Employee: Employee = {
       multiplicity: true,
       targetType: 'Employee',
     },
+    ventures: {
+      multiplicity: true,
+      targetType: 'Venture',
+    },
   },
   properties: {
-    adUsername: {
+    id: {
       multiplicity: false,
       type: 'string',
       nullable: false,
+    },
+    adUsername: {
+      multiplicity: false,
+      type: 'string',
+      nullable: true,
     },
     locationName: {
       multiplicity: false,
