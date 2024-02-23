@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,41 +15,35 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectSet } from "@osdk/gateway/types";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
+import type { Osdk } from "../index.js";
+import {
+  fetchPageOrThrow,
+  type FetchPageOrThrowArgs,
+  type SelectArgToKeys,
+} from "./fetchPageOrThrow.js";
 
-import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
-import type { LinkedType, LinkNames } from "../objectSet/LinkUtils.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
-import type { SelectArg, SelectArgToKeys } from "./fetchPageOrThrow.js";
-import { pageLinkedObjectsOrThrow } from "./pageLinkedObjectsOrThrow.js";
-
-export async function getLinkedObjectOrThrow<
+export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
-  L extends LinkNames<Q>,
-  const A extends SelectArg<LinkedType<Q, L>>,
+  const A extends FetchPageOrThrowArgs<Q, any, any>,
 >(
   client: ClientContext<any>,
-  source: Q,
-  primaryKey: any,
-  linkTypeApiName: L,
-  options: A,
+  objectType: Q,
+  args: A,
+  objectSet: ObjectSet,
 ): Promise<
-  DefaultToFalse<A["includeRid"]> extends false ? Osdk<
-      LinkedType<Q, L>,
-      SelectArgToKeys<LinkedType<Q, L>, A>
-    >
-    : Osdk<
-      LinkedType<Q, L>,
-      SelectArgToKeys<LinkedType<Q, L>, A>,
-      true
-    >
+  Osdk<
+    Q,
+    SelectArgToKeys<Q, A>,
+    A["includeRid"] extends true ? true : false
+  >
 > {
-  const result = await pageLinkedObjectsOrThrow(
+  const result = await fetchPageOrThrow(
     client,
-    source,
-    primaryKey,
-    linkTypeApiName,
-    { pageSize: 1, select: options.select, includeRid: options.includeRid },
+    objectType,
+    { ...args, pageSize: 1 },
+    objectSet,
   );
 
   if (result.data.length !== 1 || result.nextPageToken != null) {
