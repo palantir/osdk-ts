@@ -18,7 +18,6 @@
     "@osdk/api": "workspace:*",
     "@osdk/client": "workspace:*",
     "@osdk/legacy-client": "workspace:*",
-    "dev": "^0.1.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "swr": "^2.2.4"
