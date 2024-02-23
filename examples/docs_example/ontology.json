@@ -329,30 +329,33 @@
             }
           }
         },
-        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0a912b9efb44",
+        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44",
         "status": "ACTIVE"
       },
-      "linkTypes": [{
-        "apiName": "lead",
-        "cardinality": "ONE",
-        "displayName": "Lead",
-        "objectTypeApiName": "Employee",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "adUsername"
-      }, {
-        "apiName": "peeps",
-        "cardinality": "MANY",
-        "displayName": "Peeps",
-        "objectTypeApiName": "Employee",
-        "status": "ACTIVE",
-        "foreignKeyPropertyApiName": "adUsername"
-      }]
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "cardinality": "ONE",
+          "displayName": "Lead",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "peeps",
+          "cardinality": "MANY",
+          "displayName": "Peeps",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        }
+      ]
     },
     "Office": {
       "objectType": {
         "apiName": "Office",
         "description": "A office in our Company",
-        "primaryKey": ["officeId"],
+        "primaryKey": "officeId",
         "properties": {
           "officeId": {
             "dataType": {
@@ -385,7 +388,7 @@
     "equipment": {
       "objectType": {
         "apiName": "equipment",
-        "primaryKey": ["equipmentId"],
+        "primaryKey": "equipmentId",
         "properties": {
           "equipmentId": {
             "dataType": {

@@ -2,6 +2,7 @@ import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from
 
 export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'A full-time or part-time employee of our firm';
+  primaryKeyApiName: 'employeeId';
   primaryKeyType: 'integer';
   links: {
     lead: ObjectTypeLinkDefinition<Employee, false>;
@@ -21,6 +22,7 @@ export const Employee: Employee = {
   type: 'object',
   apiName: 'Employee',
   description: 'A full-time or part-time employee of our firm',
+  primaryKeyApiName: 'employeeId',
   primaryKeyType: 'integer',
   links: {
     lead: {
