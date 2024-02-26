@@ -86,6 +86,36 @@
           "objectTypeApiName": "Todo"
         }
       ]
+    },
+    "assign-employee-1": {
+      "apiName": "assign-employee-1",
+      "description": "Assigns an employee to a venture",
+      "parameters": {
+        "employee-1": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "venture-1": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Venture",
+            "objectTypeApiName": "Venture"
+          },
+          "required": true
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Employee"
+        }
+      ]
     }
   },
   "objectTypes": {
@@ -222,10 +252,15 @@
     "Employee": {
       "objectType": {
         "apiName": "Employee",
-        "primaryKey": "adUsername",
+        "primaryKey": "id",
         "displayName": "Employee",
         "description": "An employee",
         "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
           "adUsername": {
             "dataType": {
               "type": "string"
@@ -292,6 +327,50 @@
           "objectTypeApiName": "Employee",
           "status": "ACTIVE",
           "foreignKeyPropertyApiName": "adUsername"
+        },
+        {
+          "apiName": "ventures",
+          "cardinality": "MANY",
+          "displayName": "Ventures",
+          "objectTypeApiName": "Venture",
+          "foreignKeyPropertyApiName": "ventureId"
+        }
+      ]
+    },
+    "Venture": {
+      "objectType": {
+        "apiName": "Venture",
+        "primaryKey": "ventureId",
+        "displayName": "Venture",
+        "description": "A venture",
+        "properties": {
+          "ventureId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "ventureName": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "ventureStart": {
+            "dataType": {
+              "type": "date"
+            }
+          }
+        },
+
+        "rid": "ridForVenture",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "employees",
+          "cardinality": "MANY",
+          "displayName": "Employees",
+          "objectTypeApiName": "Employee",
+          "foreignKeyPropertyApiName": "id"
         }
       ]
     },

@@ -12,11 +12,13 @@ const _Ontology = {
     Todo: Objects.Todo,
     Person: Objects.Person,
     Employee: Objects.Employee,
+    Venture: Objects.Venture,
     ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes,
   },
   actions: {
     actionTakesAllParameterTypes: Actions.actionTakesAllParameterTypes,
     createTodo: Actions.createTodo,
+    assignEmployee1: Actions.assignEmployee1,
   },
   queries: {
     // TODO
@@ -25,7 +27,7 @@ const _Ontology = {
     SimpleInterface: Interfaces.SimpleInterface,
   },
 } satisfies OntologyDefinition<
-  'WeatherStation' | 'BoundariesUsState' | 'Todo' | 'Person' | 'Employee' | 'ObjectTypeWithAllPropertyTypes'
+  'WeatherStation' | 'BoundariesUsState' | 'Todo' | 'Person' | 'Employee' | 'Venture' | 'ObjectTypeWithAllPropertyTypes'
 >;
 
 type _Ontology = typeof _Ontology;
