@@ -3,5 +3,6 @@ packages:
   - "examples/basic/*"
   - "examples/one_dot_one"
   - "examples/todoapp"
+  - "examples/docs_example"
   - "monorepo/*"
   - "tests/*"

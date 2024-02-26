@@ -1,0 +1,412 @@
+{
+  "ontology": {
+    "rid": "ri.ontology.main.ontology.a35bb7f9-2c57-4199-a1cd-af461d88bd6e",
+    "apiName": "ontology-d097f725-ab77-46cf-83c0-e3cb9186bff1",
+    "description": "",
+    "displayName": ""
+  },
+  "actionTypes": {
+    "createTodo": {
+      "apiName": "createTodo",
+      "description": "Creates Todo",
+      "parameters": {
+        "Todo": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "rid": "notNeeded?",
+      "operations": [
+        {
+          "type": "createObject",
+          "objectTypeApiName": "Todo"
+        }
+      ],
+      "status": "ACTIVE"
+    },
+    "completeTodo": {
+      "apiName": "completeTodo",
+      "description": "Completes Todo",
+      "parameters": {
+        "Todo": {
+          "description": "A todo Object",
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Todo",
+            "objectTypeApiName": "Todo"
+          },
+          "required": true
+        },
+        "is_complete": {
+          "dataType": {
+            "type": "boolean"
+          },
+          "required": true
+        }
+      },
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "Todo"
+        }
+      ],
+      "status": "ACTIVE",
+      "rid": ""
+    },
+    "promoteEmployee": {
+      "apiName": "promote-employee",
+      "description": "Update an employee's title and compensation",
+      "parameters": {
+        "employeeId": {
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2167",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Employee"
+      }],
+      "status": "ACTIVE"
+    },
+    "promoteEmployeeObject": {
+      "apiName": "promote-employee-object",
+      "description": "Update an employee's title and compensation",
+      "parameters": {
+        "employee": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "Employee",
+            "objectTypeApiName": "Employee"
+          },
+          "required": true
+        },
+        "newTitle": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newCompensation": {
+          "dataType": {
+            "type": "double"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.ontology.main.action-type.7ed72754-7491-428a-bb18-4d7296eb2168",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Employee"
+      }],
+      "status": "ACTIVE"
+    },
+    "createOffice": {
+      "apiName": "create-office",
+      "description": "Create an office's",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "description": "The office's physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "capacity": {
+          "description": "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f1",
+      "operations": [{
+        "type": "createObject",
+        "objectTypeApiName": "Office"
+      }],
+      "status": "ACTIVE"
+    },
+    "createOfficeAndEmployee": {
+      "apiName": "create-office-and-employee",
+      "description": "Create an office and employee",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "address": {
+          "description": "The office's physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "capacity": {
+          "description": "The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "string"
+            }
+          },
+          "required": false
+        },
+        "employeeId": {
+          "description": "New employee Id",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": true
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      "operations": [
+        { "type": "createObject", "objectTypeApiName": "Office" },
+        { "type": "createObject", "objectTypeApiName": "Employee" }
+      ],
+      "status": "ACTIVE"
+    },
+    "moveOffice": {
+      "apiName": "move-office",
+      "description": "Update an office's physical location",
+      "parameters": {
+        "officeId": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        },
+        "newAddress": {
+          "description": "The office's new physical address (not necessarily shipping address)",
+          "dataType": {
+            "type": "string"
+          },
+          "required": false
+        },
+        "newCapacity": {
+          "description": "The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)",
+          "dataType": {
+            "type": "integer"
+          },
+          "required": false
+        },
+        "officeNames": {
+          "description": "A list of all office names",
+          "dataType": {
+            "type": "array",
+            "subType": {
+              "type": "integer"
+            }
+          },
+          "required": false
+        }
+      },
+      "rid": "ri.ontology.main.action-type.9f84017d-cf17-4fa8-84c3-8e01e5d594f2",
+      "operations": [{
+        "type": "modifyObject",
+        "objectTypeApiName": "Office"
+      }],
+      "status": "ACTIVE"
+    }
+  },
+  "objectTypes": {
+    "Todo": {
+      "objectType": {
+        "apiName": "Todo",
+        "primaryKey": "id",
+        "displayName": "Todo",
+        "description": "Its a todo item.",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "title": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "The text of the todo",
+            "displayName": "Title"
+          },
+          "isComplete": {
+            "dataType": {
+              "type": "boolean"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTodo"
+      },
+      "linkTypes": []
+    },
+    "Employee": {
+      "objectType": {
+        "apiName": "Employee",
+        "description": "A full-time or part-time employee of our firm",
+        "primaryKey": "employeeId",
+        "properties": {
+          "employeeId": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "class": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "fullName": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "office": {
+            "description": "The unique of the employee's assigned office. This is some more text.",
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "startDate": {
+            "description": "The date the employee was hired (most recently, if they were re-hired)",
+            "dataType": {
+              "type": "date"
+            }
+          },
+          "employeeStatus": {
+            "description": "TimeSeries of the status of the employee",
+            "dataType": {
+              "type": "timeseries",
+              "itemType": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.401ac022-89eb-4591-8b7e-0aa912b9efb44",
+        "status": "ACTIVE"
+      },
+      "linkTypes": [
+        {
+          "apiName": "lead",
+          "cardinality": "ONE",
+          "displayName": "Lead",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        },
+        {
+          "apiName": "peeps",
+          "cardinality": "MANY",
+          "displayName": "Peeps",
+          "objectTypeApiName": "Employee",
+          "status": "ACTIVE",
+          "foreignKeyPropertyApiName": "employeeId"
+        }
+      ]
+    },
+    "Office": {
+      "objectType": {
+        "apiName": "Office",
+        "description": "A office in our Company",
+        "primaryKey": "officeId",
+        "properties": {
+          "officeId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "entrance": {
+            "dataType": {
+              "type": "geopoint"
+            }
+          },
+          "occupiedArea": {
+            "description": "The occupied area of the Office",
+            "dataType": {
+              "type": "geoshape"
+            }
+          },
+          "name": {
+            "description": "The Name of the Office",
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
+        "status": "ACTIVE"
+      },
+      "linkTypes": []
+    },
+    "equipment": {
+      "objectType": {
+        "apiName": "equipment",
+        "primaryKey": "equipmentId",
+        "properties": {
+          "equipmentId": {
+            "dataType": {
+              "type": "string"
+            },
+            "description": "The id of an equipment"
+          },
+          "type": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ri.ontology.main.object-type.808ac022-89eb-4591-8b7e-1a912b9efb45",
+        "status": "ACTIVE"
+      },
+      "linkTypes": []
+    }
+  },
+  "queryTypes": {}
+}
