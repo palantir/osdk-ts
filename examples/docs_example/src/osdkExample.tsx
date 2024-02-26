@@ -29,7 +29,7 @@ export async function osdkObjectSetExample() {
 
   // Where clause with ors, ands, nots
   const complexFilteredEmployeeObjectSet = await client(Employee).where({
-    $or: [{ fullName: { $contains: "Clooney" }, startDate: { $gt: 10 } }, {
+    $or: [{ fullName: { $contains: "Clooney" }, employeeId: { $gt: 10 } }, {
       $and: [{ $not: { fullName: { $contains: "Pitt" } } }, {
         $or: [{ fullName: { $contains: "Downey" } }, {
           fullName: { $contains: "Hemsworth" },
@@ -50,13 +50,15 @@ export async function osdkObjectSetExample() {
       { entrance: { $within: { bbox: [0, 1, 2, 3] } } },
       { entrance: { $within: [0, 1, 2, 3] } },
       {
-        entrance: { $within: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0]]] } },
+        entrance: {
+          $within: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
+        },
       },
       {
         entrance: {
           $within: {
             type: "Polygon",
-            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0]]],
+            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]],
           },
         },
       },
@@ -70,14 +72,14 @@ export async function osdkObjectSetExample() {
       { entrance: { $intersects: [0, 1, 2, 3] } },
       {
         entrance: {
-          $intersects: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0]]] },
+          $intersects: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
         },
       },
       {
         entrance: {
           $intersects: {
             type: "Polygon",
-            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0]]],
+            coordinates: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]],
           },
         },
       },
@@ -100,11 +102,11 @@ export async function osdkObjectSetExample() {
   );
 
   // Pivots and links
-  const getPeeps = await client(Employee).pivotTo("peeps").fetchPageOrThrow({});
+  const getPeeps = await client(Employee).pivotTo("peeps").fetchPageOrThrow();
   console.log(getPeeps.data);
 
   const filteredEmployees = await simpleFilteredEmployeeObjectSet
-    .fetchPageOrThrow({});
+    .fetchPageOrThrow();
   const employeeLead = await filteredEmployees
     .data[0].$link
     .lead.get();
