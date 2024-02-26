@@ -37,6 +37,23 @@ import type {
 } from "../query/index.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
+export type AggregateOptsThatErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  AO extends AggregateOpts<Q>,
+> =
+  & AO
+  & {
+    select:
+      & Pick<
+        AO["select"],
+        keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+      >
+      & Record<
+        Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+        never
+      >;
+  };
+
 export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
@@ -47,17 +64,7 @@ export async function aggregateOrThrow<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AO & {
-    select:
-      & Pick<
-        AO["select"],
-        keyof AggregateOpts<Q>["select"] & keyof AO["select"]
-      >
-      & Record<
-        Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
-        never
-      >;
-  },
+  req: AggregateOptsThatErrors<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["select"]>(
@@ -121,5 +128,3 @@ function aggregationToCountResult(
     }
   }
 }
-
-// typeof OneOf<

@@ -16,11 +16,11 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
-import {
-  fetchPageOrThrow,
-  type FetchPageOrThrowArgs,
-  type SelectArg,
+import type {
+  FetchPageOrThrowArgs,
+  SelectArgToKeys,
 } from "../object/fetchPageOrThrow.js";
+import { fetchPageOrThrow } from "../object/fetchPageOrThrow.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
@@ -33,10 +33,13 @@ describe(fetchPageOrThrow, () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
       T extends ObjectTypeDefinition<any, any>,
-      const A extends SelectArg<T>,
+      const A extends FetchPageOrThrowArgs<T>,
     > {
-      public fetchPage() {
-        return fetchPageOrThrow<T, A>({} as any, {} as any, {} as any);
+      public fetchPage<
+        L extends SelectArgToKeys<T, A>,
+        R extends A["includeRid"] extends true ? true : false,
+      >() {
+        return fetchPageOrThrow<T, L, R>({} as any, {} as any, {} as any);
       }
     }
 
