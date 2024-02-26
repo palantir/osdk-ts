@@ -63,12 +63,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     // }) => {
     //   throw "TODO";
     // },
-    aggregateOrThrow: async <
+    aggregateOrThrow: (async <
       // AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
       AO extends AggregateOpts<Q>,
     >(
-      req: AO,
+      req: AO & {
+        select:
+          & Pick<
+            AO["select"],
+            keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+          >
+          & Record<
+            Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+            never
+          >;
+      },
     ): Promise<AggregationsResults<Q, AO>> => {
       return aggregateOrThrow<Q, AO>(
         clientCtx,
@@ -76,7 +86,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet,
         req,
       );
-    },
+    }) as any,
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },

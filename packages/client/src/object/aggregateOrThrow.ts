@@ -47,7 +47,17 @@ export async function aggregateOrThrow<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AO,
+  req: AO & {
+    select:
+      & Pick<
+        AO["select"],
+        keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+      >
+      & Record<
+        Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+        never
+      >;
+  },
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["select"]>(
@@ -111,3 +121,5 @@ function aggregationToCountResult(
     }
   }
 }
+
+// typeof OneOf<

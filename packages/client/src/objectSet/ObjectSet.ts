@@ -74,7 +74,17 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   // >;
 
   aggregateOrThrow: <AO extends AggregateOpts<Q>>(
-    req: AO,
+    req: AO & {
+      select:
+        & Pick<
+          AO["select"],
+          keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+        >
+        & Record<
+          Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+          `Invalid property`
+        >;
+    },
   ) => Promise<AggregationsResults<Q, AO>>;
 
   // @alpha
