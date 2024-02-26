@@ -104,7 +104,7 @@ export type GeoFilter_Intersects = {
 export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 
 type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
-  "string" ? StringFilter
+  "string" | "datetime" | "timestamp" ? StringFilter
   : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
   : NumberFilter; // FIXME we need to represent all types
 
