@@ -17,13 +17,20 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
-import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
+import type {
+  AggregationCountResult,
+  AggregationResultsWithoutGroups,
+} from "./AggregationResultsWithoutGroups.js";
 
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q, any>,
+  AO extends AggregateOpts<Q>,
 > = unknown extends AO["groupBy"] // groupBy is missing
-  ? AggregationResultsWithoutGroups<Q, AO["select"]>
+  ?
+    & AggregationResultsWithoutGroups<Q, AO["select"]>
+    & AggregationCountResult<Q, AO["select"]>
   : Exclude<AO["groupBy"], undefined> extends never // groupBy is explicitly undefined
-    ? AggregationResultsWithoutGroups<Q, AO["select"]>
+    ?
+      & AggregationResultsWithoutGroups<Q, AO["select"]>
+      & AggregationCountResult<Q, AO["select"]>
   : AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>;

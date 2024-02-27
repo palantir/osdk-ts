@@ -30,7 +30,7 @@ import { fetchSingle } from "../object/fetchSingle.js";
 import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationClause, AggregationsResults } from "../query/index.js";
+import type { AggregationsResults } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
@@ -64,9 +64,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     //   throw "TODO";
     // },
     aggregateOrThrow: async <
-      AC extends AggregationClause<Q>,
+      // AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<Q, AC>,
+      AO extends AggregateOpts<Q>,
     >(
       req: AO,
     ): Promise<AggregationsResults<Q, AO>> => {

@@ -16,7 +16,11 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
-import type { AggregateObjectsRequestV2, ObjectSet } from "@osdk/gateway/types";
+import type {
+  AggregateObjectsRequestV2,
+  AggregateObjectsResponseV2,
+  ObjectSet,
+} from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import invariant from "tiny-invariant";
@@ -31,10 +35,11 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "../query/index.js";
+import type { ArrayElement } from "../util/ArrayElement.js";
 
 export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const AO extends AggregateOpts<Q, any>,
+  AO extends AggregateOpts<Q>,
 >(
   clientCtx: ClientContext<any>,
   objectType: Q,
@@ -77,18 +82,32 @@ export async function aggregateOrThrow<
       "no group by clause should mean only one data result",
     );
 
-    return legacyToModernSingleAggregationResult<AO["select"]>(
-      result.data[0],
-    ) as any;
+    return {
+      ...aggregationToCountResult(result.data[0]),
+      ...legacyToModernSingleAggregationResult<AO["select"]>(
+        result.data[0],
+      ),
+    } as any;
   }
 
   const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
     .map((entry) => {
       return {
         $group: entry.group as any,
+        ...aggregationToCountResult(entry),
         ...legacyToModernSingleAggregationResult(entry),
       };
     }) as any; // fixme
 
   return ret as any; // FIXME
+}
+
+function aggregationToCountResult(
+  entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
+): { $count: number } | undefined {
+  for (const aggregateResult of entry.metrics) {
+    if (aggregateResult.name === "count") {
+      return { $count: aggregateResult.value };
+    }
+  }
 }
