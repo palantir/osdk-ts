@@ -21,6 +21,7 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { GroupByRange } from "../query/aggregations/GroupByClause.js";
 import { USER_AGENT } from "../util/UserAgent.js";
 import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
@@ -205,7 +206,13 @@ describe("aggregateOrThrow", () => {
         groupBy: {
           text: "exact",
           priority: { exactWithLimit: 10 },
-          intProp: { fixedWidth: 20 },
+          intProp: { ranges: [{ startValue: 1, endValue: 2 }] },
+          shortProp: {
+            ranges: [{ startValue: 2, endValue: 3 }, {
+              startValue: 4,
+              endValue: 5,
+            }],
+          },
         },
       },
     );
@@ -214,6 +221,8 @@ describe("aggregateOrThrow", () => {
     expectType<number>(grouped[0].id.approximateDistinct);
     expectType<number>(grouped[0].$group.priority);
     expectType<number>(grouped[0].$count);
+    expectType<GroupByRange>(grouped[0].$group.intProp);
+    expectType<GroupByRange>(grouped[0].$group.shortProp);
   });
 
   it("works with where: todo", async () => {

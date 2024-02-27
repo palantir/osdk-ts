@@ -21,7 +21,7 @@ import type {
   AggregationResultsWithoutGroups,
 } from "./AggregationResultsWithoutGroups.js";
 import type { AggregationClause } from "./AggregationsClause.js";
-import type { GroupByClause } from "./GroupByClause.js";
+import type { GroupByClause, GroupByRange } from "./GroupByClause.js";
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -30,7 +30,8 @@ export type AggregationResultsWithGroups<
 > = (
   & {
     $group: {
-      [P in keyof G & keyof Q["properties"]]: OsdkObjectPropertyType<
+      [P in keyof G & keyof Q["properties"]]: G[P] extends
+        { ranges: GroupByRange[] } ? GroupByRange : OsdkObjectPropertyType<
         Q["properties"][P]
       >;
     };

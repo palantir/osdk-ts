@@ -25,7 +25,7 @@ export type GroupByClause<
 };
 export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
-export type GroupByRange = { start: number; end: number };
+export type GroupByRange = { startValue?: number; endValue?: number };
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
