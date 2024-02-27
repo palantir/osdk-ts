@@ -27,16 +27,28 @@ export function modernToLegacyGroupByClause(
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
     if (type === "exact") {
       return [{ type, field }];
-    } else if (type.exactWithLimit) {
-      return [
-        {
-          type: "exact",
-          field,
-          maxGroupCount: type.exactWithLimit,
-        },
-      ];
-    } else {
-      return [];
-    }
+    } else if ("exactWithLimit" in type) {
+      {
+        return [
+          {
+            type: "exact",
+            field,
+            maxGroupCount: type.exactWithLimit,
+          },
+        ];
+      }
+    } else if ("fixedWidth" in type) {
+      return [{
+        type: "fixedWidth",
+        field,
+        fixedWidth: type.fixedWidth,
+      }];
+    } else if ("ranges" in type) {
+      return [{
+        type: "ranges",
+        field,
+        ranges: [],
+      }];
+    } else return [];
   });
 }

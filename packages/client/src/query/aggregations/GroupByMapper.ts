@@ -14,8 +14,17 @@
  * limitations under the License.
  */
 
-import type { StringGroupByValue } from "./GroupByClause.js";
+import type {
+  NumericGroupByValue,
+  StringGroupByValue,
+} from "./GroupByClause.js";
 
 export interface GroupByMapper {
   string: StringGroupByValue;
+  short: NumericGroupByValue;
+  float: NumericGroupByValue;
+  decimal: NumericGroupByValue;
+  byte: NumericGroupByValue;
+  double: NumericGroupByValue;
+  integer: NumericGroupByValue;
 }
