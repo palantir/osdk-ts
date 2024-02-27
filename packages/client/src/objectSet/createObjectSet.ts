@@ -16,12 +16,14 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { AggregateOptsThatErrors } from "../object/aggregateOrThrow.js";
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
@@ -63,12 +65,12 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     // }) => {
     //   throw "TODO";
     // },
-    aggregateOrThrow: async <
+    aggregateOrThrow: (<
       // AC extends AggregationClause<Q>,
       // GBC extends GroupByClause<O, K>,
       AO extends AggregateOpts<Q>,
     >(
-      req: AO,
+      req: AggregateOptsThatErrors<Q, AO>,
     ): Promise<AggregationsResults<Q, AO>> => {
       return aggregateOrThrow<Q, AO>(
         clientCtx,
@@ -76,17 +78,22 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         objectSet,
         req,
       );
-    },
+    }),
     // fetchPage: async (args?: { nextPageToken?: string }) => {
     //   throw "TODO";
     // },
-    fetchPageOrThrow: async (args?: FetchPageOrThrowArgs<Q, any, any>) => {
+    fetchPageOrThrow: async <
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+    >(
+      args?: FetchPageOrThrowArgs<Q, L, R>,
+    ) => {
       return fetchPageOrThrow(
         clientCtx,
         objectType,
         args ?? {},
         objectSet,
-      ) as any;
+      );
     },
 
     // asyncIter: () => {

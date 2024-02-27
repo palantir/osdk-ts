@@ -20,8 +20,9 @@ import type {
 } from "@osdk/api";
 import { loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
+import { createOpenApiRequest } from "@osdk/shared.net";
+import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
@@ -66,26 +67,35 @@ export interface FetchPageOrThrowArgs<
   pageSize?: number;
 }
 
+export type FetchPageOrThrowResult<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+> = Promise<
+  PageResult<
+    ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
+        DefaultToFalse<R> extends false ? Osdk<Q, "$all">
+          : Osdk<Q, "$all", true>
+      )
+      : (
+        DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L, true>
+      )
+  >
+>;
+
 export async function fetchPageOrThrow<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q, any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
 >(
   client: ClientContext<any>,
   objectType: Q,
-  args: A,
+  args: FetchPageOrThrowArgs<Q, L, R>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<
-  PageResult<
-    Osdk<
-      Q,
-      SelectArgToKeys<Q, A>,
-      A["includeRid"] extends true ? true : false
-    >
-  >
-> {
+): FetchPageOrThrowResult<Q, L, R> {
   const body: LoadObjectSetRequestV2 = {
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
