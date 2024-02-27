@@ -29,7 +29,7 @@ export async function fetchEmployeePage(client: Client<Ontology>) {
   expectType<
     {
       data: {
-        adUsername: string;
+        adUsername: string | undefined;
         businessTitle: string | undefined;
         employeeNumber: number | undefined;
         favPlace: { type: "Point"; coordinates: number[] } | undefined;

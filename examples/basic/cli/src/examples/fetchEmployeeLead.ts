@@ -54,7 +54,7 @@ export async function fetchEmployeeLead(
     {
       nextPageToken: string | undefined;
       data: {
-        adUsername: string;
+        adUsername: string | undefined;
         businessTitle: string | undefined;
         employeeNumber: number | undefined;
       }[];

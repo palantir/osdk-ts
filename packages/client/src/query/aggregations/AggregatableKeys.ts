@@ -17,7 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 
 export type AggregatableKeys<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
+  Q extends ObjectOrInterfaceDefinition,
 > = keyof {
   [P in keyof Q["properties"]]: any;
 };

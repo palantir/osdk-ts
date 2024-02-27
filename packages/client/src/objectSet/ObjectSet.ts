@@ -73,7 +73,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   //   Osdk<K, O, PropertyKeysFrom<O, K>>
   // >;
 
-  aggregateOrThrow: <const AO extends AggregateOpts<Q, any>>(
+  aggregateOrThrow: <AO extends AggregateOpts<Q>>(
     req: AO,
   ) => Promise<AggregationsResults<Q, AO>>;
 

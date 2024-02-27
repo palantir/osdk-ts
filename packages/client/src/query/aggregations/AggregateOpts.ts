@@ -16,16 +16,17 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
+  AggregatableKeys,
   AggregationClause,
   GroupByClause,
   WhereClause,
 } from "../../query/index.js";
 
 export type AggregateOpts<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  AC extends AggregationClause<Q>,
+  Q extends ObjectOrInterfaceDefinition,
+  KK extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > = {
-  select: AC;
+  select: AggregationClause<Q, KK>;
   where?: WhereClause<Q>;
   groupBy?: GroupByClause<Q>;
 };

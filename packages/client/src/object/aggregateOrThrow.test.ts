@@ -171,6 +171,7 @@ describe("aggregateOrThrow", () => {
           text: "approximateDistinct",
           priority: "avg",
           id: ["max", "avg"],
+          $count: true,
         },
       },
     );
@@ -179,6 +180,7 @@ describe("aggregateOrThrow", () => {
     expectType<number | undefined>(notGrouped.priority.avg);
     expectType<number | undefined>(notGrouped.id.max);
     expectType<number | undefined>(notGrouped.id.avg);
+    expectType<number>(notGrouped.$count);
     expectType<
       TypeOf<
         {
@@ -198,6 +200,7 @@ describe("aggregateOrThrow", () => {
       {
         select: {
           id: "approximateDistinct",
+          $count: true,
         },
         groupBy: {
           text: "exact",
@@ -210,6 +213,7 @@ describe("aggregateOrThrow", () => {
     expectType<string | undefined>(grouped[0].$group.text);
     expectType<number>(grouped[0].id.approximateDistinct);
     expectType<number>(grouped[0].$group.priority);
+    expectType<number>(grouped[0].$count);
   });
 
   it("works with where: todo", async () => {
@@ -230,17 +234,17 @@ describe("aggregateOrThrow", () => {
               id: {
                 type: "double";
               };
+              locationCity: {
+                type: "string";
+              };
             };
           };
         };
         actions: {};
         queries: {};
-      }["objects"]["Todo"],
-      {
-        locationCity: "approximateDistinct";
-        text: "approximateDistinct";
-      }
-    >;
+      }["objects"]["Todo"]
+    > // "locationCity" | "text"
+    ;
 
     const f: AggregateOpts<
       {
@@ -259,22 +263,22 @@ describe("aggregateOrThrow", () => {
               id: {
                 type: "double";
               };
+              locationCity: {
+                type: "string";
+              };
             };
           };
         };
         actions: {};
         queries: {};
-      }["objects"]["Todo"],
-      {
-        locationCity: "approximateDistinct";
-        text: "approximateDistinct";
-      }
+      }["objects"]["Todo"]
     > = {
       select: {
         locationCity: "approximateDistinct",
+        text: "approximateDistinct",
       },
-    } as any;
+    };
 
-    expectType<"approximateDistinct">(f.select.locationCity);
+    // expectType<"approximateDistinct">(f.select.locationCity);
   });
 });

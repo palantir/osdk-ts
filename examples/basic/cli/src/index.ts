@@ -181,6 +181,32 @@ async function runTests() {
 
     console.log(intersectResultbbox.data.map(data => data.usState));
 
+    const testAggregateCountNoGroup = await client.objects.BoundariesUsState
+      .aggregateOrThrow({
+        select: { $count: true, latitude: ["min", "max", "avg"] },
+      });
+
+    // Should be 51 because it includes DC
+    console.log(
+      testAggregateCountNoGroup.$count,
+      testAggregateCountNoGroup.latitude.avg,
+      testAggregateCountNoGroup.latitude.max,
+      testAggregateCountNoGroup.latitude.min,
+    );
+    const testAggregateCountWithGroups = await client.objects.BoundariesUsState
+      .aggregateOrThrow({
+        select: { $count: true, latitude: ["min", "max", "avg"] },
+        groupBy: { usState: "exact" },
+      });
+
+    console.log(
+      testAggregateCountWithGroups[0].$group.usState,
+      testAggregateCountWithGroups[0].$count,
+      testAggregateCountWithGroups[0].latitude.avg,
+      testAggregateCountWithGroups[0].latitude.max,
+      testAggregateCountWithGroups[0].latitude.min,
+    );
+
     if (runOld) await typeChecks(client);
   } catch (e) {
     console.error("Caught an error we did not expect", typeof e);
