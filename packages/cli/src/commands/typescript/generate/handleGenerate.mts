@@ -26,8 +26,10 @@ import {
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import * as fs from "node:fs";
+import { loadToken } from "../../../util/token.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
+import type { TokenSuccessResponse } from "../../auth/login/token.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 const USER_AGENT = `osdk-cli/${process.env.PACKAGE_VERSION}`;
@@ -63,15 +65,29 @@ async function generateFromLocalFile(args: TypescriptGenerateArgs) {
 }
 
 async function generateFromStack(args: TypescriptGenerateArgs) {
-  const { foundryUrl, clientId, ontologyWritePath } = args as
+  const {
+    foundryUrl,
+    clientId,
+    ontologyWritePath,
+    token: tokenArg,
+    tokenFile,
+  } = args as
     & TypescriptGenerateArgs
     & { foundryUrl: string; clientId: string };
 
-  const token = await invokeLoginFlow({
-    clientId,
-    foundryUrl,
-    verbose: 0,
-  });
+  let token: string;
+  try {
+    // This throws if no token is found, so we can catch that and invoke the login flow as the last resort.
+    token = await loadToken(tokenArg, tokenFile);
+  } catch {
+    const tokenResponse: TokenSuccessResponse = await invokeLoginFlow({
+      clientId,
+      foundryUrl,
+      verbose: 0,
+    });
+    token = tokenResponse.access_token;
+  }
+
   const { fetch } = createClientContext(
     {
       metadata: {
@@ -79,7 +95,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       },
     },
     args.foundryUrl!,
-    () => token.access_token,
+    () => token,
     USER_AGENT,
   );
 

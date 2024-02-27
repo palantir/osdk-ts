@@ -75,6 +75,16 @@ export const command: CommandModule<
             description: "Version of the generated code, or 'dev'",
             demandOption: true,
           },
+          token: {
+            type: "string",
+            conflicts: "tokenFile",
+            description: "Foundry API token",
+          },
+          tokenFile: {
+            type: "string",
+            conflicts: "token",
+            description: "Path to file containing Foundry API token",
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],
