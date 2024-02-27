@@ -50,6 +50,10 @@ type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;
 
+type DatetimeFilter =
+  | BaseFilter<string>
+  | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", string>;
+
 export const DistanceUnitMapping = {
   "centimeter": "CENTIMETERS",
   "centimeters": "CENTIMETERS",
@@ -106,6 +110,7 @@ export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
   : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
+  : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
   : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<
