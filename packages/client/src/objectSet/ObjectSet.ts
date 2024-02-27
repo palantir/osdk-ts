@@ -24,13 +24,13 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
+import type { AggregateOptsThatErrors } from "../object/aggregateOrThrow.js";
 import type {
   FetchPageOrThrowArgs,
+  FetchPageOrThrowResult,
   SelectArg,
 } from "../object/fetchPageOrThrow.js";
-import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
-import type { PageResult } from "../PageResult.js";
+import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
@@ -44,17 +44,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
     R extends boolean,
   >(
     args?: FetchPageOrThrowArgs<Q, L, R>,
-  ) => Promise<
-    PageResult<
-      ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
-          DefaultToFalse<R> extends false ? Osdk<Q, "$all">
-            : Osdk<Q, "$all", true>
-        )
-        : (
-          DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L, true>
-        )
-    >
-  >;
+  ) => FetchPageOrThrowResult<Q, L, R>;
 
   // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
 
@@ -74,7 +64,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   // >;
 
   aggregateOrThrow: <AO extends AggregateOpts<Q>>(
-    req: AO,
+    req: AggregateOptsThatErrors<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
   // @alpha
@@ -101,6 +91,11 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   pivotTo: <L extends LinkNames<Q>>(type: L) => BaseObjectSet<LinkedType<Q, L>>;
 
   subscribe: (listener: ObjectSetListener<Q>) => () => void;
+}
+
+declare const InvalidSelection: unique symbol;
+interface InvalidSelectionError<T extends string> {
+  [InvalidSelection]: T;
 }
 
 export interface BaseObjectSet<

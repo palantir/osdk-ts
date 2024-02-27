@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
 import type {
@@ -25,12 +26,17 @@ import type {
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
-> = unknown extends AO["groupBy"] // groupBy is missing
-  ?
-    & AggregationResultsWithoutGroups<Q, AO["select"]>
-    & AggregationCountResult<Q, AO["select"]>
+> = Exclude<keyof AO["select"], AggregatableKeys<Q> | "$count"> extends never
+  ? unknown extends AO["groupBy"] // groupBy is missing
+    ?
+      & AggregationResultsWithoutGroups<Q, AO["select"]>
+      & AggregationCountResult<Q, AO["select"]>
   : Exclude<AO["groupBy"], undefined> extends never // groupBy is explicitly undefined
     ?
       & AggregationResultsWithoutGroups<Q, AO["select"]>
       & AggregationCountResult<Q, AO["select"]>
-  : AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>;
+  : AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>
+  : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
+    keyof AO["select"] & string,
+    AggregatableKeys<Q> | "$count"
+  >}`;
