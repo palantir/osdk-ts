@@ -311,7 +311,6 @@ function generateOperationAsFunction(
         name: "_request",
         kind: StructureKind.Parameter,
         type: `OpenApiRequest<${response.body}, TResponse>`,
-        // `OpenApiRequest<${response.body}, TResponse> | { createOpenApiRequest: () => OpenApiRequest<${response.body}, TResponse>}`,
       },
       ...parameters,
     ],
