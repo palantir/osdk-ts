@@ -21,13 +21,15 @@ import type { MinimalClient } from "../MinimalClientContext.js";
  */
 interface Cache<K, V> {
   get: (client: MinimalClient, key: K) => V;
-  set: (client: MinimalClient, key: K, value: V) => V;
+  set: <X extends V>(client: MinimalClient, key: K, value: X) => X;
 }
 
 /**
  * A simple async cache that can be used to store values for a given client.
  */
 interface AsyncCache<K, V> {
+  getOrUndefined: (client: MinimalClient, key: K) => V | undefined;
+
   get: (client: MinimalClient, key: K) => Promise<V>;
   set: (
     client: MinimalClient,
@@ -91,6 +93,10 @@ export function createAsyncCache<K, V extends {}>(
 ): AsyncCache<K, V> {
   const cache = createCache<K, V>();
 
+  function getOrUndefined(client: MinimalClient, key: K) {
+    return cache.get(client, key);
+  }
+
   async function get(client: MinimalClient, key: K) {
     return cache.get(client, key)
       ?? set(client, key, fn(client, key));
@@ -100,5 +106,5 @@ export function createAsyncCache<K, V extends {}>(
     return cache.set(client, k, await v);
   }
 
-  return { get, set } as any;
+  return { get, set, getOrUndefined };
 }
