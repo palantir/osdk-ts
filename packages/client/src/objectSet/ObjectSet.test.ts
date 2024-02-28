@@ -62,7 +62,7 @@ describe("ObjectSet", () => {
     const objectSet = client.objects.Employee;
     const unionedObjectSet = objectSet.union(objectSet);
     let iter = 0;
-    const { data: employees } = await unionedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await unionedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50030 + iter);
       iter += 1;
@@ -75,7 +75,7 @@ describe("ObjectSet", () => {
     const objectSet2 = client.objects.Employee.where({ employeeId: 50030 });
     const subtractedObjectSet = objectSet.subtract(objectSet2);
     let iter = 0;
-    const { data: employees } = await subtractedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await subtractedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50031 + iter);
       iter += 1;
@@ -87,7 +87,7 @@ describe("ObjectSet", () => {
     const objectSet = client.objects.Employee;
     const intersectedObjectSet = objectSet.intersect(objectSet);
     let iter = 0;
-    const { data: employees } = await intersectedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await intersectedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50032);
       iter += 1;
@@ -96,7 +96,7 @@ describe("ObjectSet", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
-    const { data: employees } = await client.objects.Employee.fetchPageOrThrow({
+    const { data: employees } = await client.objects.Employee.fetchPage({
       orderBy: { "employeeId": "asc" },
     });
 

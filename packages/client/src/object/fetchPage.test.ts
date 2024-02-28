@@ -16,16 +16,13 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArgToKeys,
-} from "../object/fetchPageOrThrow.js";
-import { fetchPageOrThrow } from "../object/fetchPageOrThrow.js";
+import type { FetchPageArgs, SelectArgToKeys } from "../object/fetchPage.js";
+import { fetchPage } from "../object/fetchPage.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
 
-describe(fetchPageOrThrow, () => {
+describe(fetchPage, () => {
   type Objects = typeof MockOntology["objects"];
   type TodoDef = Objects["Todo"];
 
@@ -33,37 +30,37 @@ describe(fetchPageOrThrow, () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
       T extends ObjectTypeDefinition<any, any>,
-      const A extends FetchPageOrThrowArgs<T>,
+      const A extends FetchPageArgs<T>,
     > {
       public fetchPage<
         L extends SelectArgToKeys<T, A>,
         R extends A["includeRid"] extends true ? true : false,
       >() {
-        return fetchPageOrThrow<T, L, R>({} as any, {} as any, {} as any);
+        return fetchPage<T, L, R>({} as any, {} as any, {} as any);
       }
     }
 
-    // e.g. fetchPageOrThrow({});
+    // e.g. fetchPage({});
     expectTypeOf<Awaited<ReturnType<Helper<TodoDef, {}>["fetchPage"]>>>()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
-    // e.g. fetchPageOrThrow({ select: [] });
+    // e.g. fetchPage({ select: [] });
     expectTypeOf<
       Awaited<ReturnType<Helper<TodoDef, { select: [] }>["fetchPage"]>>
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
-    // e.g. fetchPageOrThrow()
+    // e.g. fetchPage()
     expectTypeOf<
       Awaited<
         ReturnType<
-          Helper<TodoDef, FetchPageOrThrowArgs<TodoDef>>["fetchPage"]
+          Helper<TodoDef, FetchPageArgs<TodoDef>>["fetchPage"]
         >
       >
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
-    // e.g. fetchPageOrThrow({ select: ["text"]}
+    // e.g. fetchPage({ select: ["text"]}
     expectTypeOf<
       Awaited<
         ReturnType<Helper<TodoDef, { select: ["text"] }>["fetchPage"]>

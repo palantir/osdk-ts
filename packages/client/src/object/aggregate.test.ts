@@ -21,7 +21,7 @@ import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import { aggregateOrThrow } from "./aggregateOrThrow.js";
+import { aggregate } from "./aggregate.js";
 
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
@@ -112,7 +112,7 @@ const mockOntology = {
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
 
-describe("aggregateOrThrow", () => {
+describe("aggregate", () => {
   it("works", async () => {
     const mockFetch: Mock = vi.fn();
 
@@ -158,7 +158,7 @@ describe("aggregateOrThrow", () => {
       mockFetch,
     );
 
-    const notGrouped = await aggregateOrThrow(
+    const notGrouped = await aggregate(
       clientCtx,
       Todo,
       {
@@ -189,7 +189,7 @@ describe("aggregateOrThrow", () => {
       >
     >(false); // subselect should hide unused keys
 
-    const grouped = await aggregateOrThrow(
+    const grouped = await aggregate(
       clientCtx,
       Todo,
       {

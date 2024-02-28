@@ -23,14 +23,11 @@ import type {
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { AggregateOptsThatErrors } from "../object/aggregateOrThrow.js";
+import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
+import type { FetchPageArgs, SelectArg } from "../object/fetchPage.js";
 import { fetchSingle } from "../object/fetchSingle.js";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import { aggregate, fetchPage } from "../object/index.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults } from "../query/index.js";
@@ -56,24 +53,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   const base: ObjectSet<Q> = {
     definition: objectSet,
 
-    // aggregate: <
-    //   AC extends AggregationClause<O, K>,
-    //   GBC extends GroupByClause<O, K> | undefined = undefined,
-    // >(req: {
-    //   select: AC;
-    //   where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
-    //   groupBy?: GBC;
-    // }) => {
-    //   throw "TODO";
-    // },
-    aggregateOrThrow: (<
-      // AC extends AggregationClause<Q>,
-      // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<Q>,
-    >(
+    aggregate: (<AO extends AggregateOpts<Q>>(
       req: AggregateOptsThatErrors<Q, AO>,
     ): Promise<AggregationsResults<Q, AO>> => {
-      return aggregateOrThrow<Q, AO>(
+      return aggregate<Q, AO>(
         clientCtx,
         objectType,
         objectSet,
@@ -81,16 +64,24 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     }),
 
-    // fetchPage: async (args?: { nextPageToken?: string }) => {
-    //   throw "TODO";
-    // },
-    fetchPageOrThrow: async <
+    aggregateOrThrow: (<AO extends AggregateOpts<Q>>(
+      req: AggregateOptsThatErrors<Q, AO>,
+    ): Promise<AggregationsResults<Q, AO>> => {
+      return aggregate<Q, AO>(
+        clientCtx,
+        objectType,
+        objectSet,
+        req,
+      );
+    }),
+
+    fetchPage: async <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
     >(
-      args?: FetchPageOrThrowArgs<Q, L, R>,
+      args?: FetchPageArgs<Q, L, R>,
     ) => {
-      return fetchPageOrThrow(
+      return fetchPage(
         clientCtx,
         objectType,
         args ?? {},
@@ -98,9 +89,20 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       );
     },
 
-    // asyncIter: () => {
-    //   throw "";
-    // },
+    fetchPageOrThrow: async <
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+    >(
+      args?: FetchPageArgs<Q, L, R>,
+    ) => {
+      return fetchPage(
+        clientCtx,
+        objectType,
+        args ?? {},
+        objectSet,
+      );
+    },
+
     where: (clause) => {
       return createObjectSet(objectType, clientCtx, {
         type: "filter",
@@ -108,9 +110,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         where: modernToLegacyWhereClause(clause),
       });
     },
-    // [Symbol.asyncIterator]: () => {
-    //   throw "";
-    // },
+
     pivotTo: function<L extends LinkNames<Q>>(
       type: L,
     ): BaseObjectSet<LinkedType<Q, L>> {
@@ -146,7 +146,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
       let nextPageToken: string | undefined = undefined;
       do {
-        const result = await base.fetchPageOrThrow({ nextPageToken });
+        const result = await base.fetchPage({ nextPageToken });
         await convertWireToOsdkObjectsInPlace(clientCtx, result.data);
         for (const obj of result.data) {
           yield obj as Osdk<Q, "$all">;

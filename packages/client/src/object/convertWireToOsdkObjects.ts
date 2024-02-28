@@ -21,7 +21,7 @@ import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
 import { createAsyncCache, createCache } from "./Cache.js";
-import type { SelectArg } from "./fetchPageOrThrow.js";
+import type { SelectArg } from "./fetchPage.js";
 import { fetchSingle } from "./fetchSingle.js";
 
 const OriginClient = Symbol();

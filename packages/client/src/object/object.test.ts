@@ -50,7 +50,7 @@ describe("OsdkObject", () => {
     it("loads an employee", async () => {
       const result = await client.objects.Employee.where({
         employeeId: stubData.employee1.employeeId,
-      }).fetchPageOrThrow();
+      }).fetchPage();
 
       // we should get the employee we requested
       const employee = result.data[0];
@@ -65,7 +65,7 @@ describe("OsdkObject", () => {
     it("traverses the link from an employee to their lead", async () => {
       const result = await client.objects.Employee.where({
         employeeId: stubData.employee1.employeeId,
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const employee = result.data[0];
 
       const lead = await employee.$link.lead.get({ select: ["employeeId"] });
@@ -83,11 +83,11 @@ describe("OsdkObject", () => {
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
         ],
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
-      const peepsResult = await lead.$link.peeps.fetchPageOrThrow({
+      const peepsResult = await lead.$link.peeps.fetchPage({
         select: ["fullName", "employeeId"],
       });
       expect(peepsResult.data).toHaveLength(2);
@@ -105,7 +105,7 @@ describe("OsdkObject", () => {
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
         ],
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
