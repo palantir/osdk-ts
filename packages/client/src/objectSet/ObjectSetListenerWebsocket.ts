@@ -21,7 +21,7 @@ import type {
 } from "@osdk/api";
 import { getObjectTypeV2 } from "@osdk/gateway/requests";
 import type { ObjectSet, OntologyObjectV2 } from "@osdk/gateway/types";
-import { type ClientContext, createOpenApiRequest } from "@osdk/shared.net";
+import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
@@ -41,7 +41,8 @@ import {
   loadAllOntologies,
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
@@ -52,17 +53,14 @@ import {
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const MINIMUM_RECONNECT_DELAY_MS = 5 * 1000;
 
-export class ObjectSetListenerWebsocket<
-  O extends OntologyDefinition<any, any, any>,
-> {
+export class ObjectSetListenerWebsocket {
   static #instances = new WeakMap<
-    ClientContext<any>,
-    ObjectSetListenerWebsocket<any>
+    MinimalClient,
+    ObjectSetListenerWebsocket
   >();
 
-  static getInstance<O extends OntologyDefinition<any, any, any>>(
-    client: ClientContext<O>,
-  ): ObjectSetListenerWebsocket<O> {
+  // FIXME
+  static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
     let instance = ObjectSetListenerWebsocket.#instances.get(client);
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
@@ -73,7 +71,7 @@ export class ObjectSetListenerWebsocket<
 
   #ws: WebSocket | undefined;
   #lastWsConnect = 0;
-  #client: ClientContext<any>;
+  #client: MinimalClient;
 
   /** map of listenerId to listener */
   #listeners = new Map<
@@ -93,7 +91,7 @@ export class ObjectSetListenerWebsocket<
   #metadataContext: ConjureContext;
   #ossContext: ConjureContext;
 
-  private constructor(client: ClientContext<O>) {
+  private constructor(client: MinimalClient) {
     this.#client = client;
 
     const stackUrl = new URL(client.stack);
@@ -364,7 +362,7 @@ export class ObjectSetListenerWebsocket<
     });
   }
 
-  async #createTemporaryObjectSet<K extends ObjectTypeKeysFrom<O>>(
+  async #createTemporaryObjectSet(
     objectSet: ObjectSet,
   ) {
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
@@ -436,7 +434,7 @@ async function convertFoundryToOsdkObjects<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
 >(
-  client: ClientContext<O>,
+  client: MinimalClient,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
 ): Promise<Array<Osdk<O["objects"][K]>>> {
@@ -469,7 +467,7 @@ async function convertFoundryToOsdkObjects<
     }),
   );
 
-  convertWireToOsdkObjects(client, osdkObjects);
+  await convertWireToOsdkObjectsInPlace(client, osdkObjects);
 
   return osdkObjects as Osdk<O["objects"][K]>[];
 }
@@ -490,7 +488,7 @@ const objectTypeMapping = new WeakMap<
 const objectApiNameToRid = new Map<string, string>();
 
 async function getOntologyPropertyMappingForApiName(
-  client: ClientContext<OntologyDefinition<any>>,
+  client: MinimalClient,
   ctx: ConjureContext,
   objectApiName: string,
 ) {

@@ -28,6 +28,7 @@ describe(createClient, () => {
       MockOntology,
       "https://mock.com",
       () => "Token",
+      {},
       fetchFunction,
     );
 

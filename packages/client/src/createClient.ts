@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,29 +22,92 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { createClientContext } from "@osdk/shared.net";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
-import { createActionInvoker } from "./actions/createActionInvoker.js";
-import type { Client } from "./Client.js";
+import {
+  createActionInvoker,
+  createOldActionInvoker,
+} from "./actions/createActionInvoker.js";
+import type { Client, FutureClient } from "./Client.js";
+import { createMinimalClient } from "./createMinimalClient.js";
+import type {
+  MinimalClient,
+  MinimalClientParams,
+} from "./MinimalClientContext.js";
 import {
   createBaseObjectSet,
   createObjectSet,
 } from "./objectSet/createObjectSet.js";
 import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
-import { USER_AGENT } from "./util/UserAgent.js";
+import type { OntologyCachingOptions } from "./ontology/providers/StandardOntologyProvider.js";
+
+function createFutureClientPlus(
+  metadata: MinimalClientParams["metadata"],
+  stack: string,
+  tokenProvider: () => Promise<string> | string,
+  ontologyCachingOptions: OntologyCachingOptions = {},
+  fetchFn: typeof globalThis.fetch = fetch,
+): [MinimalClient, FutureClient] {
+  const clientCtx: MinimalClient = createMinimalClient(
+    metadata,
+    stack,
+    tokenProvider,
+    ontologyCachingOptions,
+    fetchFn,
+  );
+
+  function clientFn<
+    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
+    : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : never
+  {
+    if (o.type === "object" || o.type === "interface") {
+      clientCtx.ontology.provider.maybeSeed(o);
+      return createBaseObjectSet(o, clientCtx) as any;
+    } else if (o.type === "action") {
+      clientCtx.ontology.provider.maybeSeed(o);
+      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
+    } else {
+      throw new Error("Unknown definition: " + JSON.stringify(o));
+    }
+  }
+
+  return [clientCtx, clientFn];
+}
+
+// Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `createClient`.
+// For now, its a way to use JUST the new client
+export function createFutureClient(
+  metadata: MinimalClientParams["metadata"],
+  stack: string,
+  tokenProvider: () => Promise<string> | string,
+  ontologyCachingOptions: OntologyCachingOptions = {},
+  fetchFn: typeof globalThis.fetch = fetch,
+): FutureClient {
+  // When `createFutureClient` gets renamed to `createClient`, we
+  // should inline this call as its no longer needed to be separate.
+  return createFutureClientPlus(
+    metadata,
+    stack,
+    tokenProvider,
+    ontologyCachingOptions,
+    fetchFn,
+  )[1];
+}
 
 export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
   stack: string,
   tokenProvider: () => Promise<string> | string,
+  ontologyCachingOptions: OntologyCachingOptions = {},
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client<O> {
-  const clientCtx = createClientContext<O>(
-    ontology,
+  const [clientCtx, clientFn] = createFutureClientPlus(
+    ontology.metadata,
     stack,
     tokenProvider,
-    USER_AGENT,
+    ontologyCachingOptions,
     fetchFn,
   );
 
@@ -60,30 +123,15 @@ export function createClient<O extends OntologyDefinition<any>>(
       clientCtx,
     );
 
-  const actionInvoker = createActionInvoker(clientCtx);
-
-  function clientFn<
-    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any>,
-  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
-    : T extends ActionDefinition<any, any> ? ActionSignatureFromDef<T>
-    : never
-  {
-    if (o.type === "object" || o.type === "interface") {
-      return createObjectSet(o, clientCtx) as ObjectSet<any> as any;
-    } else if (o.type === "action") {
-      return actionInvoker[o.apiName];
-    } else {
-      throw new Error("Unknown definition: " + JSON.stringify(o));
-    }
-  }
+  const oldActionInvoker = createOldActionInvoker(clientCtx, ontology);
 
   const client: Client<O> = Object.defineProperties(
     clientFn as Client<O>,
     {
       objectSet: { get: () => objectSetFactory },
-      objects: { get: () => createObjectSetCreator(client, clientCtx) },
+      objects: { get: () => createObjectSetCreator(client, ontology) },
       actions: {
-        get: () => actionInvoker,
+        get: () => oldActionInvoker,
       },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>

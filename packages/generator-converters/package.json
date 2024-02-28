@@ -1,6 +1,6 @@
 {
-  "name": "@osdk/client",
-  "version": "0.10.0",
+  "name": "@osdk/generator-converters",
+  "version": "1.5.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,11 +22,10 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "node ./generateMockOntology.js",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run --pool=forks",
+    "test": "vitest run",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -34,28 +33,17 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
-    "@osdk/generator-converters": "workspace:*",
-    "@osdk/shared.net": "workspace:*",
-    "conjure-lite": "^0.3.3",
-    "fast-deep-equal": "^3.1.3",
-    "fetch-retry": "^5.0.6",
-    "isomorphic-ws": "^5.0.0",
-    "tiny-invariant": "^1.3.1",
-    "ws": "^8.14.2"
+    "@osdk/gateway": "workspace:*"
   },
   "devDependencies": {
-    "@osdk/generator": "workspace:*",
-    "@osdk/shared.test": "workspace:*",
-    "@types/geojson": "^7946.0.14",
-    "@types/ws": "^8.5.10",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest":  "^1.2.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [],
+  "keywords": [ ],
   "files": [
     "build/types",
     "build/js",
@@ -67,6 +55,5 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
-  "type": "module"
+  "types": "./build/types/index.d.ts"
 }

@@ -41,3 +41,6 @@ export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
 
 export type { NOOP } from "./util/NOOP.js";
+
+export { createMinimalClient } from "./createMinimalClient.js";
+export type { MinimalClient } from "./MinimalClientContext.js";

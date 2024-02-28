@@ -15,9 +15,9 @@
  */
 
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
 import { deleteUndefineds } from "../util/deleteUndefineds";
 import { stringify } from "../util/stringify";
-import { wireObjectTypeV2ToSdkObjectDefinition } from "./wireObjectTypeV2ToSdkObjectDefinition";
 
 export function getObjectDefIdentifier(name: string, v2: boolean) {
   return v2 ? name : `${name}Def`;
@@ -34,7 +34,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
   );
 
   const definition = deleteUndefineds(
-    wireObjectTypeV2ToSdkObjectDefinition(
+    wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
       object,
       v2,
     ),

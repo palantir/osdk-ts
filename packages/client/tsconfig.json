@@ -20,6 +20,9 @@
       "path": "../gateway"
     },
     {
+      "path": "../generator-converters"
+    },
+    {
       "path": "../shared.net"
     },
     {

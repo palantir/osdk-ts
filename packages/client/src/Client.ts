@@ -26,13 +26,9 @@ import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
 import type { BaseObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
-export interface Client<O extends OntologyDefinition<any>> {
-  <
-    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
-  >(o: Q): Q extends ObjectOrInterfaceDefinition ? ObjectSet<Q>
-    : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
-    : never;
-
+export interface Client<O extends OntologyDefinition<any>>
+  extends FutureClient
+{
   /** @deprecated use client(MyType) */
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
@@ -48,4 +44,13 @@ export interface Client<O extends OntologyDefinition<any>> {
     type: K,
     rid: string,
   ): ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
+}
+
+// Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `Client`.
+export interface FutureClient {
+  <
+    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+  >(o: Q): Q extends ObjectOrInterfaceDefinition ? ObjectSet<Q>
+    : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
+    : never;
 }

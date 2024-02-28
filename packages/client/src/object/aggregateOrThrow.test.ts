@@ -16,12 +16,11 @@
 
 import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
-import { createClientContext } from "@osdk/shared.net";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
+import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import { USER_AGENT } from "../util/UserAgent.js";
 import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
@@ -121,11 +120,11 @@ describe("aggregateOrThrow", () => {
       json: () => new Promise((resolve) => resolve(aggregationResponse)),
     });
 
-    const clientCtx = createClientContext(
-      mockOntology as MockOntology,
+    const clientCtx = createMinimalClient(
+      mockOntology.metadata,
       "host.com",
       () => "",
-      USER_AGENT,
+      {},
       mockFetch,
     );
 

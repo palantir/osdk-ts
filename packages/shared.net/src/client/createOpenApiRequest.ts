@@ -77,10 +77,10 @@ export function createOpenApiRequest<
       if (asReadableStream) {
         return response.body;
       }
-      return response.blob();
+      return await response.blob();
     }
 
-    return response.json();
+    return await response.json();
   };
 }
 

@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export * from "./generateMetadata";
+module.exports = {
+  extends: ["sane/library"],
+  root: true,
+};

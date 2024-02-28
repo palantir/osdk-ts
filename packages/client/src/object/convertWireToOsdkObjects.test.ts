@@ -19,9 +19,10 @@ import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { createMinimalClient } from "../createMinimalClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { Attachment } from "./Attachment.js";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjectsInPlace } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
   let client: Client<typeof MockOntology>;
@@ -68,20 +69,26 @@ describe("convertWireToOsdkObjects", () => {
     expect(emptyAttachmentArray).toBeUndefined();
   });
 
-  it("works even with unknown apiNames", () => {
-    const clientCtx = createClientContext(
-      MockOntology,
+  it("works even with unknown apiNames", async () => {
+    const clientCtx = createMinimalClient(
+      MockOntology.metadata,
+      "https://stack.palantir.com",
+      () => "myAccessToken",
+    );
+    createClientContext(
+      // by only taking the metadata, we are seeding a client that knows nothing
+      { metadata: MockOntology.metadata },
       "https://stack.palantir.com",
       () => "myAccessToken",
       "userAgent",
     );
 
     const object = {
-      __apiName: "unknown",
+      __apiName: "Employee",
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    convertWireToOsdkObjects(clientCtx, [object]);
+    await convertWireToOsdkObjectsInPlace(clientCtx, [object]);
     const prototypeAfter = Object.getPrototypeOf(object);
 
     expect(prototypeBefore).not.toBe(prototypeAfter);
