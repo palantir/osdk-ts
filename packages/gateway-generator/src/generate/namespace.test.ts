@@ -17,6 +17,7 @@
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
 import type { Namespace } from "../spec";
+import { addCopyrightForTest } from "./component.test";
 import { generateNamespace } from "./namespace";
 
 describe("Namespace", () => {
@@ -115,7 +116,7 @@ describe("Namespace", () => {
       ],
     };
 
-    generateNamespace(namespace, directory);
+    generateNamespace(namespace, directory, addCopyrightForTest);
     const sourceFiles = project.getSourceFiles();
     const sourceFile = project.getSourceFile("namespaces/Datasets.ts");
     expect(sourceFile?.getFullText()).toMatchInlineSnapshot(`

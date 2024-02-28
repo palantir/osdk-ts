@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
-import type { AggregateObjectSetResponseV2 } from "@osdk/gateway/types";
+import type { AggregateObjectsResponseV2 } from "@osdk/gateway/types";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
@@ -116,7 +116,7 @@ describe("aggregate", () => {
   it("works", async () => {
     const mockFetch: Mock = vi.fn();
 
-    const aggregationResponse: AggregateObjectSetResponseV2 = {
+    const aggregationResponse: AggregateObjectsResponseV2 = {
       data: [
         {
           group: {

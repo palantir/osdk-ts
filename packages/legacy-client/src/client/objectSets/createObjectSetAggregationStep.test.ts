@@ -16,7 +16,7 @@
 
 import type {
   AggregateObjectSetRequestV2,
-  AggregateObjectSetResponseV2,
+  AggregateObjectsResponseV2,
 } from "@osdk/gateway/types";
 import { createClientContext } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
@@ -60,7 +60,7 @@ describe(createObjectSetAggregationStep, () => {
       aggregation: [{ type: "max", name: "max", field: "points" }],
     };
 
-    const aggregationResponse: AggregateObjectSetResponseV2 = {
+    const aggregationResponse: AggregateObjectsResponseV2 = {
       excludedItems: 0,
       data: [{
         metrics: [{
@@ -96,7 +96,7 @@ describe(createObjectSetAggregationStep, () => {
       aggregation: [{ type: "max", name: "max", field: "points" }],
     };
 
-    const aggregationResponse: AggregateObjectSetResponseV2 = {
+    const aggregationResponse: AggregateObjectsResponseV2 = {
       excludedItems: 0,
       data: [{
         metrics: [{

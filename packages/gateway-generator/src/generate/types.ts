@@ -96,7 +96,7 @@ export function generateType(
       return subTypes;
     },
     enum(type: EnumType): string {
-      const values = type.enum.values.map(value => `'${value}'`).join(" | ");
+      const values = type.enum.values.map(value => `"${value}"`).join(" | ");
       return values;
     },
     map(type: MapType): string {

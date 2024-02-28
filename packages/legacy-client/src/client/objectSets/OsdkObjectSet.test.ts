@@ -15,7 +15,7 @@
  */
 
 import type {
-  AggregateObjectSetResponseV2,
+  AggregateObjectsResponseV2,
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
@@ -388,7 +388,7 @@ describe("OsdkObjectSet", () => {
     } as any);
   }
 
-  function mockAggregateResponse(response: AggregateObjectSetResponseV2) {
+  function mockAggregateResponse(response: AggregateObjectsResponseV2) {
     fetch.mockResolvedValue({
       json: () => Promise.resolve(response),
       status: 200,

@@ -16,6 +16,7 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
+import { addCopyrightForTest } from "./component.test";
 import { generateError } from "./error";
 
 describe("Errors", () => {
@@ -42,6 +43,7 @@ describe("Errors", () => {
         documentation: {},
       },
       directory,
+      addCopyrightForTest,
     );
     const sourceFiles = project.getSourceFiles();
     const sourceFile = project.getSourceFile("errors/MyError.ts");

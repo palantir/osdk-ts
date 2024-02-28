@@ -15,7 +15,7 @@
  */
 
 import type {
-  AggregateObjectSetResponseV2,
+  AggregateObjectsResponseV2,
   LoadObjectSetRequestV2,
   LoadObjectSetResponseV2,
 } from "@osdk/gateway/types";
@@ -89,7 +89,7 @@ export const objectSetHandlers: RestHandler<
     authHandlerMiddleware(
       async (
         req,
-        res: ResponseComposition<AggregateObjectSetResponseV2 | BaseAPIError>,
+        res: ResponseComposition<AggregateObjectsResponseV2 | BaseAPIError>,
         ctx,
       ) => {
         if (!req || !res) {
