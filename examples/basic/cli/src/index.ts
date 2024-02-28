@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createClient,
-  createMinimalClient,
-  OntologyProviders,
-} from "@osdk/client";
+import { createClient, createMinimalClient } from "@osdk/client";
 import {
   assignEmployee1,
   BoundariesUsState,
@@ -56,14 +52,12 @@ export const client = createClient(
   Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
-  OntologyProviders.CachingOnDemand,
 );
 
 export const clientCtx = createMinimalClient(
   Ontology.metadata,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
-  OntologyProviders.CachingOnDemand,
 );
 
 const runOld = false;
