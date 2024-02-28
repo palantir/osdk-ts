@@ -30,7 +30,7 @@ import type {
   FetchPageOrThrowResult,
   SelectArg,
 } from "../object/fetchPageOrThrow.js";
-import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
