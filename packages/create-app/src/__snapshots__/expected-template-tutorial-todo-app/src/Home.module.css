@@ -1,0 +1,15 @@
+.projectSelect {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 2em;
+  font-weight: 600;
+}
+
+.projectCard {
+  margin: 2em;
+}
+
+.projectTitle {
+  font-size: 1.5em;
+}

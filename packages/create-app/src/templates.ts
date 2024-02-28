@@ -47,4 +47,10 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "NEXT_PUBLIC_",
     buildDirectory: "./out",
   },
+  {
+    id: "template-tutorial-todo-app",
+    label: "Tutorial: Todo App",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+  },
 ];
