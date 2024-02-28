@@ -22,7 +22,7 @@ import type {
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
 import type {
   FetchPageOrThrowArgs,
   SelectArg,
@@ -137,17 +137,14 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
-      let pageToken: string | undefined = "";
-      while (pageToken != null) {
-        const { nextPageToken, data } = await base.fetchPageOrThrow({
-          nextPageToken: pageToken ? pageToken : undefined,
-        });
-        convertWireToOsdkObjects(clientCtx, data);
-        for (const d of data) {
-          yield d as any;
+      let nextPageToken: string | undefined = undefined;
+      do {
+        const result = await base.fetchPageOrThrow({ nextPageToken });
+        await convertWireToOsdkObjectsInPlace(clientCtx, result.data);
+        for (const obj of result.data) {
+          yield obj as Osdk<Q, "$all">;
         }
-        pageToken = nextPageToken as any;
-      }
+      } while (nextPageToken != null);
     },
   };
 
