@@ -54,7 +54,23 @@ export type AggregateOptsThatErrors<
       >;
   };
 
+/** @deprecated use `aggregate` */
 export async function aggregateOrThrow<
+  Q extends ObjectOrInterfaceDefinition,
+  AO extends AggregateOpts<Q>,
+>(
+  clientCtx: MinimalClient,
+  objectType: Q,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+  req: AggregateOptsThatErrors<Q, AO>,
+): Promise<AggregationsResults<Q, AO>> {
+  return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
+}
+
+export async function aggregate<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
 >(

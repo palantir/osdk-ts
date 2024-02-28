@@ -34,7 +34,7 @@ describe(createClient, () => {
 
     mockFetchResponse(fetchFunction, { data: [] });
 
-    await client.objects.Task.fetchPageOrThrow();
+    await client.objects.Task.fetchPage();
     expect(fetchFunction).toHaveBeenCalledTimes(1);
 
     const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers).get(

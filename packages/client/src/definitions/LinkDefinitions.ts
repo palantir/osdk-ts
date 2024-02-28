@@ -20,7 +20,7 @@ import type {
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
-import type { SelectArg, SelectArgToKeys } from "../object/fetchPageOrThrow.js";
+import type { SelectArg, SelectArgToKeys } from "../object/fetchPage.js";
 import type { BaseObjectSet } from "../objectSet/ObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 

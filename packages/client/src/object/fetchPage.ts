@@ -54,7 +54,7 @@ export type SelectArgToKeys<
   : A["select"] extends readonly string[] ? A["select"][number]
   : "$all";
 
-export interface FetchPageOrThrowArgs<
+export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,
   K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -67,7 +67,7 @@ export interface FetchPageOrThrowArgs<
   pageSize?: number;
 }
 
-export type FetchPageOrThrowResult<
+export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
@@ -83,19 +83,19 @@ export type FetchPageOrThrowResult<
   >
 >;
 
-export async function fetchPageOrThrow<
+export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageOrThrowArgs<Q, L, R>,
+  args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): FetchPageOrThrowResult<Q, L, R> {
+): FetchPageResult<Q, L, R> {
   const body: LoadObjectSetRequestV2 = {
     objectSet,
     // We have to do the following case because LoadObjectSetRequestV2 isnt readonly

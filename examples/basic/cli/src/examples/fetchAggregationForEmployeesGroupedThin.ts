@@ -15,7 +15,7 @@
  */
 
 import type { MinimalClient } from "@osdk/client";
-import { aggregateOrThrow } from "@osdk/client/objects";
+import { aggregate } from "@osdk/client/objects";
 import { Employee } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -24,7 +24,7 @@ import { expectType } from "ts-expect";
 export async function fetchAggregationForEmployeesGroupedThin(
   clientCtx: MinimalClient,
 ) {
-  const result = await aggregateOrThrow(
+  const result = await aggregate(
     clientCtx,
     Employee,
     {

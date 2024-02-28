@@ -18,7 +18,7 @@ import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClient } from "../../createMinimalClient.js";
 import { Ontology as MockOntology } from "../../generatedNoCheck/index.js";
-import { fetchPageOrThrow } from "../../object/index.js";
+import { fetchPage } from "../../object/fetchPage.js";
 import { createStandardOntologyProviderFactory } from "./StandardOntologyProvider.js";
 
 describe(createStandardOntologyProviderFactory, () => {
@@ -44,7 +44,7 @@ describe(createStandardOntologyProviderFactory, () => {
       loads.push(request.url.pathname);
     });
 
-    await fetchPageOrThrow(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, MockOntology.objects.Employee, {});
 
     // first load should lookup employee and its link types
     expect(loads).toEqual([
@@ -55,7 +55,7 @@ describe(createStandardOntologyProviderFactory, () => {
 
     loads = [];
 
-    await fetchPageOrThrow(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, MockOntology.objects.Employee, {});
     // second load should not need to load ontology info
     expect(loads).toEqual([
       "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
@@ -77,7 +77,7 @@ describe(createStandardOntologyProviderFactory, () => {
       loads.push(request.url.pathname);
     });
 
-    await fetchPageOrThrow(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, MockOntology.objects.Employee, {});
 
     expect(loads).toEqual([
       "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
@@ -87,7 +87,7 @@ describe(createStandardOntologyProviderFactory, () => {
 
     loads = [];
 
-    await fetchPageOrThrow(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, MockOntology.objects.Employee, {});
     // we expect it to reload ontology info
     expect(loads).toEqual([
       "/api/v2/ontologies/default-ontology/objectSets/loadObjects",

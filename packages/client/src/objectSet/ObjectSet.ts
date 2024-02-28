@@ -24,12 +24,12 @@ import type {
   WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { AggregateOptsThatErrors } from "../object/aggregateOrThrow.js";
+import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import type {
-  FetchPageOrThrowArgs,
-  FetchPageOrThrowResult,
+  FetchPageArgs,
+  FetchPageResult,
   SelectArg,
-} from "../object/fetchPageOrThrow.js";
+} from "../object/fetchPage.js";
 import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
@@ -39,36 +39,31 @@ import type { ObjectSetListener } from "./ObjectSetListener.js";
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
   definition: WireObjectSet;
 
+  /** @deprecated */
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
   >(
-    args?: FetchPageOrThrowArgs<Q, L, R>,
-  ) => FetchPageOrThrowResult<Q, L, R>;
+    args?: FetchPageArgs<Q, L, R>,
+  ) => FetchPageResult<Q, L, R>;
 
-  // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
+  fetchPage: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+  >(
+    args?: FetchPageArgs<Q, L, R>,
+  ) => FetchPageResult<Q, L, R>;
 
-  // @alpha
-  // fetchPage: <L extends PropertyKeysFrom<O, K>>(
-  //   args?: FetchPageOrThrowArgs<O, K, L>,
-  // ) => Promise<ResultOrError<PageResult<Osdk<K, O, L>>>>;
-
-  // @alpha
   asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
 
-  // @alpha
-  // [Symbol.asyncIterator](): AsyncIterableIterator<
-  //   Osdk<K, O, PropertyKeysFrom<O, K>>
-  // >;
-
+  /** @deprecated use `aggregate` */
   aggregateOrThrow: <AO extends AggregateOpts<Q>>(
     req: AggregateOptsThatErrors<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
-  // @alpha
-  // aggregate: <const AO extends AggregateOpts<O, K, any>>(
-  //   req: AO,
-  // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
+  aggregate: <AO extends AggregateOpts<Q>>(
+    req: AggregateOptsThatErrors<Q, AO>,
+  ) => Promise<AggregationsResults<Q, AO>>;
 
   where: (
     clause: WhereClause<Q>,
