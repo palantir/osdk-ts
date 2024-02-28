@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { AggregationGroupByV2 } from "@osdk/gateway/types";
+import type {
+  AggregationGroupByV2,
+  AggregationRangeV2,
+} from "@osdk/gateway/types";
+import type { GroupByRange } from "../../query/aggregations/GroupByClause.js";
 import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
 export function modernToLegacyGroupByClause(
@@ -47,8 +51,12 @@ export function modernToLegacyGroupByClause(
       return [{
         type: "ranges",
         field,
-        ranges: [],
+        ranges: type.ranges.map(range => convertRange(range)),
       }];
     } else return [];
   });
+}
+
+function convertRange(range: GroupByRange): AggregationRangeV2 {
+  return { startValue: range[0], endValue: range[1] };
 }
