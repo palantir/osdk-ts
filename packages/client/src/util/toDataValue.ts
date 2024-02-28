@@ -16,7 +16,10 @@
 
 import type { DataValue } from "@osdk/gateway/types";
 import { isAttachment } from "../object/Attachment.js";
-import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import {
+  getObjectSetDefinition,
+  isObjectSet,
+} from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -51,7 +54,7 @@ export function toDataValue(value: any): DataValue {
     return value;
   }
   if (isObjectSet(value)) {
-    return value.definition;
+    return getObjectSetDefinition(value);
   }
 
   // TODO (during queries implementation)
@@ -68,9 +71,4 @@ export function toDataValue(value: any): DataValue {
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp
   return value;
-}
-
-function isObjectSet(o: any): o is ObjectSet<any> {
-  return o != null && typeof o === "object"
-    && isWireObjectSet((o as ObjectSet<any>).definition);
 }

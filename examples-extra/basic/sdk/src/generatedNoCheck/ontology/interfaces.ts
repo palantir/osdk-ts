@@ -1,1 +1,1 @@
-export * from './interfaces/SimpleInterface.js';
+export * from './interfaces/FooInterface.js';

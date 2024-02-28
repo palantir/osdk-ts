@@ -15,6 +15,7 @@
  */
 
 import type { ClientContext } from "./ClientContext.js";
+import { PalantirApiError } from "./PalantirApiError.js";
 import {
   createFetchAsJson,
   createFetchHeaderMutator,
@@ -53,10 +54,33 @@ export function createClientContext<
     },
   );
 
+  const fetchThatDoesntLoseStackTracesThankYouFetchRetry = async (
+    input: RequestInfo | URL,
+    init?: RequestInit | undefined,
+  ) => {
+    try {
+      return await retryingFetchWithAuthOrThrow(input, init);
+    } catch (e: any) {
+      const betterError = (e instanceof PalantirApiError)
+        ? new PalantirApiError(
+          e.message,
+          e.errorName,
+          e.errorType,
+          e.statusCode,
+          e.errorInstanceId,
+          e.parameters,
+        )
+        : new Error("Captured stack trace for error: " + e.message ?? e);
+
+      (betterError as any).cause = e;
+      throw betterError;
+    }
+  };
+
   return {
     ontology,
     stack,
-    fetch: retryingFetchWithAuthOrThrow,
+    fetch: fetchThatDoesntLoseStackTracesThankYouFetchRetry,
     fetchJson: createFetchAsJson(retryingFetchWithAuthOrThrow),
     tokenProvider,
   };

@@ -15,17 +15,34 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
 } from "@osdk/api";
-import { loadObjectSetV2 } from "@osdk/gateway/requests";
-import type { LoadObjectSetRequestV2, ObjectSet } from "@osdk/gateway/types";
+import {
+  loadObjectSetV2,
+  searchObjectsForInterface,
+} from "@osdk/gateway/requests";
+import type {
+  LoadObjectSetRequestV2,
+  ObjectSet,
+  OntologyObjectV2,
+  PageSize,
+  PageToken,
+  SearchJsonQueryV2,
+  SearchObjectsForInterfaceRequest,
+  SearchOrderBy,
+} from "@osdk/gateway/types";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import { convertWireToOsdkObjectsInPlace } from "./convertWireToOsdkObjects.js";
+import {
+  convertWireToOsdkInterfaceInPlace,
+  convertWireToOsdkObjectsInPlace,
+} from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -67,6 +84,19 @@ export interface FetchPageArgs<
   pageSize?: number;
 }
 
+export interface FetchInterfacePageArgs<
+  Q extends InterfaceDefinition<any, any>,
+  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
+    ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean = false,
+> extends
+  SelectArg<Q, K, R>,
+  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
+{
+  nextPageToken?: string;
+  pageSize?: number;
+}
+
 export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -83,6 +113,87 @@ export type FetchPageResult<
   >
 >;
 
+/** @internal */
+export function objectSetToSearchJsonV2(
+  objectSet: ObjectSet,
+  expectedApiName: string,
+  existingWhere: SearchJsonQueryV2 | undefined = undefined,
+): SearchJsonQueryV2 | undefined {
+  if (objectSet.type === "base") {
+    if (objectSet.objectType !== expectedApiName) {
+      throw new Error(
+        `Expected objectSet.objectType to be ${expectedApiName}, but got ${objectSet.objectType}`,
+      );
+    }
+
+    return existingWhere;
+  }
+
+  if (objectSet.type === "filter") {
+    return objectSetToSearchJsonV2(
+      objectSet.objectSet,
+      expectedApiName,
+      existingWhere == null ? objectSet.where : {
+        type: "and",
+        value: [existingWhere, objectSet.where],
+      },
+    );
+  }
+
+  throw new Error(`Unsupported objectSet type: ${objectSet.type}`);
+}
+
+async function fetchInterfacePage<
+  Q extends InterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  interfaceType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet,
+): FetchPageResult<Q, L, R> {
+  const body: SearchObjectsForInterfaceRequest = {
+    augmentedProperties: {},
+    augmentedSharedPropertyTypes: {},
+    otherInterfaceTypes: undefined,
+    selectedObjectTypes: undefined,
+    selectedSharedPropertyTypes: undefined, // fixme
+    where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+  } as any;
+
+  const result = await searchObjectsForInterface(
+    createOpenApiRequest(client.stack, client.fetch as typeof fetch),
+    client.ontology.metadata.ontologyApiName,
+    interfaceType.apiName,
+    applyFetchArgs(args, body),
+    { preview: true },
+  );
+  await convertWireToOsdkInterfaceInPlace(
+    client,
+    result.data as OntologyObjectV2[], // drop readonly
+    interfaceType.apiName,
+  );
+  return result as any;
+}
+
+export async function fetchPageInternal<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  objectSet: ObjectSet,
+  args: FetchPageArgs<Q, L, R> = {},
+): FetchPageResult<Q, L, R> {
+  if (objectType.type === "interface") {
+    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
+  } else {
+    return await fetchObjectPage(client, objectType, args, objectSet) as any; // fixme
+  }
+}
+
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -96,13 +207,22 @@ export async function fetchPage<
     objectType: objectType["apiName"] as string,
   },
 ): FetchPageResult<Q, L, R> {
-  const body: LoadObjectSetRequestV2 = {
-    objectSet,
-    // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-    select: ((args?.select as string[] | undefined) ?? []), // FIXME?
-    excludeRid: !args?.includeRid,
-  };
+  return fetchPageInternal(client, objectType, objectSet, args);
+}
 
+function applyFetchArgs<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+  X extends {
+    orderBy?: SearchOrderBy;
+    pageToken?: PageToken;
+    pageSize?: PageSize;
+  },
+>(
+  args: FetchPageArgs<Q, L, R>,
+  body: X,
+): X {
   if (args?.nextPageToken) {
     body.pageToken = args.nextPageToken;
   }
@@ -120,16 +240,36 @@ export async function fetchPage<
     };
   }
 
+  return body;
+}
+
+export async function fetchObjectPage<
+  Q extends ObjectTypeDefinition<any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet,
+): FetchPageResult<Q, L, R> {
+  const body: LoadObjectSetRequestV2 = {
+    objectSet,
+    // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
+    select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+    excludeRid: !args?.includeRid,
+  };
+
   const r = await loadObjectSetV2(
     createOpenApiRequest(
       client.stack,
       client.fetch as typeof fetch,
     ),
     client.ontology.metadata.ontologyApiName,
-    body,
+    applyFetchArgs(args, body),
   );
 
-  await convertWireToOsdkObjectsInPlace(client, r.data);
+  await convertWireToOsdkObjectsInPlace(client, r.data as OntologyObjectV2[]);
 
   // any is okay here because we have properly converted the wire objects via prototypes
   // which don't type out correctly.

@@ -18,7 +18,9 @@ import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
-import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
+import {
+  wireObjectTypeV2ToSdkObjectConst,
+} from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import { verifyOutdir } from "../util/verifyOutdir";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
@@ -173,6 +175,7 @@ async function generateOntologyInterfaces(
   await fs.mkdir(interfacesDir, {
     recursive: true,
   });
+
   for (const name of interfaceNames) {
     const obj = ontology.interfaceTypes![name];
 
@@ -180,7 +183,7 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${name}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition } from "@osdk/api";
+      import type { InterfaceDefinition, PropertyDef } from "@osdk/api";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
     `),

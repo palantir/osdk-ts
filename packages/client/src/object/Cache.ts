@@ -22,15 +22,23 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 interface Cache<K, V> {
   get: (client: MinimalClient, key: K) => V;
   set: <X extends V>(client: MinimalClient, key: K, value: X) => X;
+  remove: (client: MinimalClient, key: K) => boolean;
 }
 
 /**
  * A simple async cache that can be used to store values for a given client.
  */
-interface AsyncCache<K, V> {
+export interface AsyncCache<K, V> {
   getOrUndefined: (client: MinimalClient, key: K) => V | undefined;
 
   get: (client: MinimalClient, key: K) => Promise<V>;
+
+  /**
+   * @param client the client to key from
+   * @param key the subkey to use
+   * @param value the value or a promise to the value
+   * @returns a new promise to the resolved value
+   */
   set: (
     client: MinimalClient,
     key: K,
@@ -80,7 +88,12 @@ export function createCache<K, V extends {}>(
     return value;
   }
 
-  return { get, set } as any;
+  function remove(client: MinimalClient, key: K) {
+    if (cache.get(client) == null) return false;
+    return cache.get(client)!.delete(key);
+  }
+
+  return { get, set, remove } as Cache<K, V>;
 }
 
 /**
@@ -92,18 +105,23 @@ export function createAsyncCache<K, V extends {}>(
   fn: (client: MinimalClient, key: K) => Promise<V>,
 ): AsyncCache<K, V> {
   const cache = createCache<K, V>();
+  const inProgress = createCache<K, Promise<V> | V>();
 
   function getOrUndefined(client: MinimalClient, key: K) {
     return cache.get(client, key);
   }
 
   async function get(client: MinimalClient, key: K) {
-    return cache.get(client, key)
+    return cache.get(client, key) ?? inProgress.get(client, key)
       ?? set(client, key, fn(client, key));
   }
 
   async function set(client: MinimalClient, k: K, v: V | Promise<V>) {
-    return cache.set(client, k, await v);
+    return Promise.resolve(inProgress.set(client, k, v)).then((r) => {
+      cache.set(client, k, r);
+      inProgress.remove(client, k);
+      return r;
+    });
   }
 
   return { get, set, getOrUndefined };

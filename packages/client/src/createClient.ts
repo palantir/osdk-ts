@@ -16,9 +16,11 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
+  ObjectTypeDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
@@ -34,9 +36,13 @@ import type {
   MinimalClientParams,
 } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
-import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
+import type {
+  MinimalObjectSet,
+  ObjectSet,
+  ObjectSetFactory,
+} from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
-import type { OntologyCachingOptions } from "./ontology/providers/StandardOntologyProvider.js";
+import type { OntologyCachingOptions } from "./ontology/StandardOntologyProvider.js";
 
 function createFutureClientPlus(
   metadata: MinimalClientParams["metadata"],
@@ -55,7 +61,8 @@ function createFutureClientPlus(
 
   function clientFn<
     T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
-  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
+  >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
+    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
     : never
   {

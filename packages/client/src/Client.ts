@@ -16,14 +16,16 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
+  ObjectTypeDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
+import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
 export interface Client<O extends OntologyDefinition<any>>
@@ -50,7 +52,10 @@ export interface Client<O extends OntologyDefinition<any>>
 export interface FutureClient {
   <
     Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
-  >(o: Q): Q extends ObjectOrInterfaceDefinition ? ObjectSet<Q>
+  >(
+    o: Q,
+  ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
+    : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
     : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
     : never;
 }
