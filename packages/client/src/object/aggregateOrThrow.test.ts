@@ -20,7 +20,6 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { OntologyProviders } from "../index.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import { aggregateOrThrow } from "./aggregateOrThrow.js";
 
@@ -125,7 +124,7 @@ describe("aggregateOrThrow", () => {
       mockOntology.metadata,
       "host.com",
       () => "",
-      OntologyProviders.CachingOnDemand,
+      {},
       mockFetch,
     );
 

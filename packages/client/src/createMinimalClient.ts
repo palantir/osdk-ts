@@ -19,14 +19,17 @@ import type {
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
-import type { OntologyProviderFactory } from "./ontology/OntologyProvider.js";
+import {
+  createStandardOntologyProviderFactory,
+  type OntologyCachingOptions,
+} from "./ontology/providers/StandardOntologyProvider.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
   stack: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyProviderFactory: OntologyProviderFactory,
+  ontologyCachingOptions: OntologyCachingOptions = {},
   fetchFn: (
     input: RequestInfo | URL,
     init?: RequestInit | undefined,
@@ -42,6 +45,8 @@ export function createMinimalClient(
     USER_AGENT,
     fetchFn,
   );
-  clientCtx.ontology.provider = ontologyProviderFactory(clientCtx);
+  clientCtx.ontology.provider = createStandardOntologyProviderFactory(
+    ontologyCachingOptions,
+  )(clientCtx);
   return clientCtx;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,22 +39,20 @@ import {
 } from "./objectSet/createObjectSet.js";
 import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
-import { OntologyProviders } from "./ontology/index.js";
-import type { OntologyProviderFactory } from "./ontology/OntologyProvider.js";
+import type { OntologyCachingOptions } from "./ontology/providers/StandardOntologyProvider.js";
 
 function createFutureClientPlus(
   metadata: MinimalClientParams["metadata"],
   stack: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyProviderFactory: OntologyProviderFactory =
-    OntologyProviders.CachingOnDemand,
+  ontologyCachingOptions: OntologyCachingOptions = {},
   fetchFn: typeof globalThis.fetch = fetch,
 ): [MinimalClient, FutureClient] {
   const clientCtx: MinimalClient = createMinimalClient(
     metadata,
     stack,
     tokenProvider,
-    ontologyProviderFactory,
+    ontologyCachingOptions,
     fetchFn,
   );
 
@@ -84,8 +82,7 @@ export function createFutureClient(
   metadata: MinimalClientParams["metadata"],
   stack: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyProviderFactory: OntologyProviderFactory =
-    OntologyProviders.CachingOnDemand,
+  ontologyCachingOptions: OntologyCachingOptions = {},
   fetchFn: typeof globalThis.fetch = fetch,
 ): FutureClient {
   // When `createFutureClient` gets renamed to `createClient`, we
@@ -94,7 +91,7 @@ export function createFutureClient(
     metadata,
     stack,
     tokenProvider,
-    ontologyProviderFactory,
+    ontologyCachingOptions,
     fetchFn,
   )[1];
 }
@@ -103,15 +100,14 @@ export function createClient<O extends OntologyDefinition<any>>(
   ontology: O,
   stack: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyProviderFactory: OntologyProviderFactory =
-    OntologyProviders.CachingOnDemand,
+  ontologyCachingOptions: OntologyCachingOptions = {},
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client<O> {
   const [clientCtx, clientFn] = createFutureClientPlus(
     ontology.metadata,
     stack,
     tokenProvider,
-    ontologyProviderFactory,
+    ontologyCachingOptions,
     fetchFn,
   );
 

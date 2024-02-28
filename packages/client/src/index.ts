@@ -44,4 +44,3 @@ export type { NOOP } from "./util/NOOP.js";
 
 export { createMinimalClient } from "./createMinimalClient.js";
 export type { MinimalClient } from "./MinimalClientContext.js";
-export { OntologyProviders } from "./ontology/index.js";

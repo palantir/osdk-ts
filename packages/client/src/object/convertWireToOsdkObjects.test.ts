@@ -21,7 +21,6 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
-import { OntologyProviders } from "../index.js";
 import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjectsInPlace } from "./convertWireToOsdkObjects.js";
 
@@ -75,7 +74,6 @@ describe("convertWireToOsdkObjects", () => {
       MockOntology.metadata,
       "https://stack.palantir.com",
       () => "myAccessToken",
-      OntologyProviders.CachingOnDemand,
     );
     createClientContext(
       // by only taking the metadata, we are seeding a client that knows nothing

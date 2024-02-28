@@ -20,7 +20,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
-import { createCache } from "./Cache.js";
+import { createAsyncCache, createCache } from "./Cache.js";
 import type { SelectArg } from "./fetchPageOrThrow.js";
 import { fetchSingle } from "./fetchSingle.js";
 
@@ -119,6 +119,7 @@ export async function convertWireToOsdkObjectsInPlace(
   client: MinimalClient,
   objs: OntologyObjectV2[],
 ) {
+  // Fix properties
   for (const obj of objs) {
     if (obj.__rid) {
       obj.$rid = obj.__rid;
@@ -151,13 +152,26 @@ export async function convertWireToOsdkObjectsInPlace(
         },
       });
     }
+  }
 
-    const objectDef = await client.ontology.provider
-      .getObjectOrInterfaceDefinition(
-        obj.$apiName,
+  // We dont want to refetch for each object type in this conversion
+  const localObjectCache = createAsyncCache((client, apiName: string) =>
+    client.ontology.provider.getObjectOrInterfaceDefinition(apiName)
+  );
+
+  const uniqueApiNames = new Set<string>(objs.map(o => o.$apiName));
+  await Promise.all(
+    Array.from(uniqueApiNames).map(n => localObjectCache.get(client, n)),
+  );
+
+  for (const obj of objs) {
+    const objectDef = await localObjectCache.get(client, obj.$apiName);
+
+    if (objectDef == null) {
+      throw new Error(
+        `Failed to find ontology definition for '${obj.$apiName}'`,
       );
-
-    if (objectDef.type === "interface") {
+    } else if (objectDef.type === "interface") {
       throw new Error("Interface objects are not supported currently");
     }
 
