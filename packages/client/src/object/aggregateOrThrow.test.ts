@@ -36,6 +36,21 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
     id: {
       type: "double";
     };
+    intProp: {
+      type: "integer";
+    };
+    floatProp: {
+      type: "float";
+    };
+    shortProp: {
+      type: "short";
+    };
+    byteProp: {
+      type: "byte";
+    };
+    decimalProp: {
+      type: "decimal";
+    };
     priority: {
       type: "double";
     };
@@ -60,6 +75,21 @@ const Todo: TodoDef = {
     },
     priority: {
       type: "double",
+    },
+    intProp: {
+      type: "integer",
+    },
+    floatProp: {
+      type: "float",
+    },
+    shortProp: {
+      type: "short",
+    },
+    byteProp: {
+      type: "byte",
+    },
+    decimalProp: {
+      type: "decimal",
     },
     other: {
       type: "string",
@@ -173,13 +203,27 @@ describe("aggregateOrThrow", () => {
         },
         groupBy: {
           text: "exact",
+          priority: { exactWithLimit: 10 },
+          intProp: { ranges: [[1, 2]] },
+          shortProp: {
+            ranges: [[2, 3], [4, 5]],
+          },
+          floatProp: { fixedWidth: 10 },
         },
       },
     );
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.text);
     expectType<number>(grouped[0].id.approximateDistinct);
+    expectType<number>(grouped[0].$group.priority);
     expectType<number>(grouped[0].$count);
+    expectType<{ startValue: number; endValue: number }>(
+      grouped[0].$group.intProp,
+    );
+    expectType<{ startValue: number; endValue: number }>(
+      grouped[0].$group.shortProp,
+    );
+    expectType<number>(grouped[0].$group.floatProp);
   });
 
   it("works with where: todo", async () => {

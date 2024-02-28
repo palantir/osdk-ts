@@ -200,7 +200,37 @@ async function runTests() {
     const testAggregateCountWithGroups = await client.objects.BoundariesUsState
       .aggregateOrThrow({
         select: { $count: true, latitude: ["min", "max", "avg"] },
-        groupBy: { usState: "exact" },
+        groupBy: {
+          usState: "exact",
+          longitude: {
+            fixedWidth: 10,
+          },
+        },
+      });
+
+    const testAggregateCountWithFixedGroups = await client.objects
+      .BoundariesUsState
+      .aggregateOrThrow({
+        select: { $count: true, latitude: ["min", "max", "avg"] },
+        groupBy: {
+          longitude: {
+            exactWithLimit: 40,
+          },
+        },
+      });
+
+    const testAggregateCountWithRangeGroups = await client.objects
+      .BoundariesUsState
+      .aggregateOrThrow({
+        select: { $count: true },
+        groupBy: {
+          latitude: {
+            ranges: [[34, 39], [
+              39,
+              42,
+            ], [43, 45]],
+          },
+        },
       });
 
     console.log(
@@ -210,6 +240,18 @@ async function runTests() {
       testAggregateCountWithGroups[0].latitude.max,
       testAggregateCountWithGroups[0].latitude.min,
     );
+
+    console.log(testAggregateCountWithGroups[0].$group.longitude);
+    console.log(
+      "Limit worked:",
+      testAggregateCountWithFixedGroups.length === 40,
+    );
+
+    for (const group of testAggregateCountWithRangeGroups) {
+      console.log(
+        `start:${group.$group.latitude.startValue},end:${group.$group.latitude.endValue}:${group.$count}`,
+      );
+    }
 
     if (runOld) await typeChecks(client);
   } catch (e) {
