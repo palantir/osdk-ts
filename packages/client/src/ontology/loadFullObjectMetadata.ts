@@ -20,6 +20,7 @@ import {
   listOutgoingLinkTypesV2,
 } from "@osdk/gateway/requests";
 import type {
+  LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
   ObjectTypeFullMetadata,
 } from "@osdk/gateway/types";
@@ -31,21 +32,21 @@ async function loadAllOutgoingLinkTypes(
   client: MinimalClient,
   objtype: string,
 ) {
-  const linkTypes = [];
-  let pageToken: string | undefined = "";
-  while (pageToken != null) {
-    const q: ListOutgoingLinkTypesResponseV2 = await listOutgoingLinkTypesV2(
-      createOpenApiRequest(client.stack, client.fetch),
-      client.ontology.metadata.ontologyApiName,
-      objtype,
-      pageToken ? { pageToken } : undefined,
-    );
+  const linkTypes: LinkTypeSideV2[] = [];
+  let pageToken: string | undefined;
+  do {
+    const result: ListOutgoingLinkTypesResponseV2 =
+      await listOutgoingLinkTypesV2(
+        createOpenApiRequest(client.stack, client.fetch),
+        client.ontology.metadata.ontologyApiName,
+        objtype,
+        { pageToken },
+      );
 
-    const { nextPageToken, data } = q;
+    pageToken = result.nextPageToken;
+    linkTypes.push(...result.data);
+  } while (pageToken != null);
 
-    pageToken = nextPageToken;
-    linkTypes.push(...data);
-  }
   return linkTypes;
 }
 
@@ -53,7 +54,6 @@ export async function loadFullObjectMetadata(
   client: MinimalClient,
   objtype: string,
 ): Promise<ObjectTypeDefinition<any, any>> {
-  // const start = Date.now();
   const { ontologyApiName } = client.ontology.metadata;
 
   const [objectType, linkTypes] = await Promise.all([
@@ -71,8 +71,5 @@ export async function loadFullObjectMetadata(
     objectType,
     sharedPropertyTypeMapping: {}, // FIXME
   };
-
-  // const end = Date.now();
-  // console.log(`DURATION for single type ${objtype}`, end - start);
   return wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
 }

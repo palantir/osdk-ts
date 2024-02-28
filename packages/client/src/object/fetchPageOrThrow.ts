@@ -25,7 +25,7 @@ import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjectsInPlace } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -129,7 +129,7 @@ export async function fetchPageOrThrow<
     body,
   );
 
-  await convertWireToOsdkObjects(client, r.data);
+  await convertWireToOsdkObjectsInPlace(client, r.data);
 
   // any is okay here because we have properly converted the wire objects via prototypes
   // which don't type out correctly.

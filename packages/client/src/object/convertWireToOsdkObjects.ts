@@ -115,7 +115,7 @@ const isAfterFeb2024OrNewApis = false;
 /**
  * @param objs the objects to be converted, the contents of this array will be mutated
  */
-export async function convertWireToOsdkObjects(
+export async function convertWireToOsdkObjectsInPlace(
   client: MinimalClient,
   objs: OntologyObjectV2[],
 ) {
