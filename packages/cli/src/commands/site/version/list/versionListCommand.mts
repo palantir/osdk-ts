@@ -48,9 +48,7 @@ export default async function versionListCommand(
   ]);
 
   if (versions.length === 0) {
-    consola.warn(
-      "Successfully connected to server, but no versions were found.",
-    );
+    consola.info("No site versions found");
     return;
   }
 
