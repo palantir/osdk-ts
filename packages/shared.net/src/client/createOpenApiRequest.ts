@@ -15,6 +15,8 @@
  */
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
+import { PalantirApiError } from "../PalantirApiError.js";
+import { UnknownError } from "../UnknownError.js";
 import { replaceHttpIfNotLocalhost } from "../util/index.js";
 
 export function createOpenApiRequest<
@@ -73,6 +75,12 @@ export function createOpenApiRequest<
       headers: headersInit,
     });
 
+    // error status codes are not thrown by fetch automatically,
+    // we have to look at the ok property and behave accordingly
+    if (!response.ok) {
+      throw await convertError(response);
+    }
+
     if (responseMediaType && responseMediaType === "*/*") {
       if (asReadableStream) {
         return response.body;
@@ -103,4 +111,26 @@ function withHttps(url: string): string {
   return protocolRegex.test(url)
     ? replaceHttpIfNotLocalhost(url)
     : `${httpsProtocol}${url}`;
+}
+
+async function convertError(response: Response) {
+  try {
+    const convertedError = await response.json();
+    return new PalantirApiError(
+      convertedError.message,
+      convertedError.errorName,
+      convertedError.errorCode,
+      response.status,
+      convertedError.errorInstanceId,
+      convertedError.parameters,
+    );
+  } catch (e) {
+    if (e instanceof Error) {
+      return new UnknownError(e.message, "UNKNOWN");
+    }
+    return new UnknownError(
+      "Unable to parse error response",
+      "UNKNOWN",
+    );
+  }
 }
