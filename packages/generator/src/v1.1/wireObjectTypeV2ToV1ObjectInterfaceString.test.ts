@@ -55,6 +55,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
           apiName: "Todo",
           status: "ACTIVE",
           primaryKey: "break",
+          titleProperty: "break",
           properties: {
             "break": {
               dataType: { type: "integer" },

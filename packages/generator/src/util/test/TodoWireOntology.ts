@@ -53,6 +53,7 @@ export const TodoWireOntology = {
         primaryKey: "id",
         displayName: "AwesomeTodoDisplayname",
         description: "Its a todo item.",
+        titleProperty: "body",
         properties: {
           id: {
             dataType: {
@@ -92,6 +93,7 @@ export const TodoWireOntology = {
         primaryKey: "email",
         displayName: "Person",
         description: "A person",
+        titleProperty: "email",
         properties: {
           email: {
             dataType: {
