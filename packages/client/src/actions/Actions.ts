@@ -31,7 +31,7 @@ import type { Attachment } from "../object/Attachment.js";
 import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
-import type { PartialByNotStrict } from "../util/PartialBy.js";
+import type { PartialBy } from "../util/PartialBy.js";
 import type { ActionReturnTypeForOptions } from "./applyAction.js";
 
 export type ApplyActionOptions =
@@ -67,7 +67,7 @@ type NotOptionalParams<X extends ActionParametersDefinition> = {
 export type OsdkActionParameters<
   X extends ActionParametersDefinition,
 > = NullableProps<X> extends never ? NotOptionalParams<X>
-  : PartialByNotStrict<NotOptionalParams<X>, NullableProps<X>>;
+  : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
   NonNullable<T["__OsdkActionType"]> extends never
