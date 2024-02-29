@@ -22,7 +22,7 @@ import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   createObjectSet,
-  getObjectSetDefinition,
+  getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
@@ -60,7 +60,7 @@ function createPrototype<Q extends ObjectTypeDefinition<any, any>>(
                   client,
                   objDef,
                   options ?? {},
-                  getObjectSetDefinition(objectSet),
+                  getWireObjectSet(objectSet),
                 ),
             };
           } else {

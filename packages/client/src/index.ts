@@ -16,7 +16,7 @@
 
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
-export type { ObjectSet } from "./objectSet/ObjectSet.js";
+export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
 export type { PageResult } from "./PageResult.js";
 

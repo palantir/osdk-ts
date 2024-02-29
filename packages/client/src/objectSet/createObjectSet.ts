@@ -44,7 +44,7 @@ export function isObjectSet(o: any): o is ObjectSet<any> {
 }
 
 /** @internal */
-export function getObjectSetDefinition(
+export function getWireObjectSet(
   objectSet: ObjectSet<any> | MinimalObjectSet<any>,
 ): WireObjectSet {
   return objectSetDefinitions.get(objectSet)!;

@@ -22,7 +22,7 @@ import type { FetchPageArgs, SelectArgToKeys } from "../object/fetchPage.js";
 import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
 import {
   createObjectSet,
-  getObjectSetDefinition as getWireObjectSet,
+  getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";

@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
@@ -48,6 +49,11 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
   ) => MinimalObjectSet<Q>;
 
   asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+}
+
+export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
+  extends MinimalObjectSet<Q>
+{
 }
 
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>

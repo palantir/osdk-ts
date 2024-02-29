@@ -16,10 +16,7 @@
 
 import type { DataValue } from "@osdk/gateway/types";
 import { isAttachment } from "../object/Attachment.js";
-import {
-  getObjectSetDefinition,
-  isObjectSet,
-} from "../objectSet/createObjectSet.js";
+import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
@@ -54,7 +51,7 @@ export function toDataValue(value: any): DataValue {
     return value;
   }
   if (isObjectSet(value)) {
-    return getObjectSetDefinition(value);
+    return getWireObjectSet(value);
   }
 
   // TODO (during queries implementation)

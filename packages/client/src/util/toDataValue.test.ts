@@ -19,7 +19,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Attachment } from "../object/Attachment.js";
-import { getObjectSetDefinition } from "../objectSet/createObjectSet.js";
+import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
@@ -85,7 +85,7 @@ describe(toDataValue, () => {
 
   it("passes through object set definitions", () => {
     const clientObjectSet = client.objects.Task.where({ id: 0 });
-    const definition = getObjectSetDefinition(clientObjectSet);
+    const definition = getWireObjectSet(clientObjectSet);
 
     const expected = `
     {

@@ -24,9 +24,9 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export interface OntologyProvider {
   /**
-   * Returns the current known definition for the object or interface.
+   * Returns the current known definition for the object.
    *
-   * May result in mulitiple network calls. May cache results. May invalidate results
+   * May result in multiple network calls. May cache results. May invalidate results
    * @param apiName
    * @returns
    */
@@ -35,9 +35,9 @@ export interface OntologyProvider {
   ) => Promise<ObjectTypeDefinition<any>>;
 
   /**
-   * Returns the current known definition for the object or interface.
+   * Returns the current known definition for the interface.
    *
-   * May result in mulitiple network calls. May cache results. May invalidate results
+   * May result in multiple network calls. May cache results. May invalidate results
    * @param apiName
    * @returns
    */

@@ -81,7 +81,9 @@ export function createClientContext<
     ontology,
     stack,
     fetch: fetchThatDoesntLoseStackTracesThankYouFetchRetry,
-    fetchJson: createFetchAsJson(retryingFetchWithAuthOrThrow),
+    fetchJson: createFetchAsJson(
+      fetchThatDoesntLoseStackTracesThankYouFetchRetry,
+    ),
     tokenProvider,
   };
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/client";
+import type { InterfaceObjectSet, Osdk, PageResult } from "@osdk/client";
 import { createClient, createMinimalClient } from "@osdk/client";
 import { fetchPage } from "@osdk/client/objects";
 import {
@@ -83,12 +83,23 @@ async function runTests() {
     }
 
     try {
-      const r = await fetchPage(clientCtx, FooInterface, {
-        pageSize: 5,
-      });
+      const r = true
+        ? await client(FooInterface)
+          .where({ name: { $ne: "Patti" } })
+          .where({ name: { $ne: "Roth" } })
+          .fetchPage({ pageSize: 5 })
+        : await fetchPage(clientCtx, FooInterface, {
+          pageSize: 5,
+        });
+
       expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
         true,
       );
+
+      const q = client(FooInterface)
+        .where({ name: { $ne: "Patti" } });
+      expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
+
       for (const int of r.data) {
         console.log(int.$apiName);
         console.log(int.name);

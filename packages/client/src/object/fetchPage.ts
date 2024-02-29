@@ -153,20 +153,18 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): FetchPageResult<Q, L, R> {
-  const body: SearchObjectsForInterfaceRequest = {
-    augmentedProperties: {},
-    augmentedSharedPropertyTypes: {},
-    otherInterfaceTypes: undefined,
-    selectedObjectTypes: undefined,
-    selectedSharedPropertyTypes: undefined, // fixme
-    where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-  } as any;
-
   const result = await searchObjectsForInterface(
     createOpenApiRequest(client.stack, client.fetch as typeof fetch),
     client.ontology.metadata.ontologyApiName,
     interfaceType.apiName,
-    applyFetchArgs(args, body),
+    applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+      augmentedProperties: {},
+      augmentedSharedPropertyTypes: {},
+      otherInterfaceTypes: [],
+      selectedObjectTypes: [],
+      selectedSharedPropertyTypes: [],
+      where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+    }),
     { preview: true },
   );
   await convertWireToOsdkInterfaceInPlace(
@@ -211,16 +209,13 @@ export async function fetchPage<
 }
 
 function applyFetchArgs<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean,
   X extends {
     orderBy?: SearchOrderBy;
     pageToken?: PageToken;
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<Q, L, R>,
+  args: FetchPageArgs<any, any, any>,
   body: X,
 ): X {
   if (args?.nextPageToken) {
@@ -253,20 +248,18 @@ export async function fetchObjectPage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): FetchPageResult<Q, L, R> {
-  const body: LoadObjectSetRequestV2 = {
-    objectSet,
-    // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-    select: ((args?.select as string[] | undefined) ?? []), // FIXME?
-    excludeRid: !args?.includeRid,
-  };
-
   const r = await loadObjectSetV2(
     createOpenApiRequest(
       client.stack,
       client.fetch as typeof fetch,
     ),
     client.ontology.metadata.ontologyApiName,
-    applyFetchArgs(args, body),
+    applyFetchArgs<LoadObjectSetRequestV2>(args, {
+      objectSet,
+      // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
+      select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+      excludeRid: !args?.includeRid,
+    }),
   );
 
   await convertWireToOsdkObjectsInPlace(client, r.data as OntologyObjectV2[]);
