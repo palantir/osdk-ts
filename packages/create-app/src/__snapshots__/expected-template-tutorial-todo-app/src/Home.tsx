@@ -27,6 +27,17 @@ function Home() {
 
   return (
     <Layout>
+      <div className={css.tutorialBannerWrapper}>
+        <div className={css.tutorialBanner}>
+          <p className={css.tutorialBannerTitle}>
+            💡 Welcome to this tutorial!
+          </p>
+          <p>
+            The Todo App below has been implemented with fake in memory data.
+            Can you solve how to switch it to use the Ontology SDK instead?
+          </p>
+        </div>
+      </div>
       <div className={css.projectSelect}>
         <span>Project:</span>
         <ProjectSelect
