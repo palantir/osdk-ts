@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * The parameter value must be within the defined range.
- */
-export interface Range {
-  /** Less than */
-  lt?: any;
-  /** Less than or equal */
-  lte?: any;
-  /** Greater than */
-  gt?: any;
-  /** Greater than or equal */
-  gte?: any;
+import type { AggregationMetricName } from "./AggregationMetricName";
+import type { OrderByDirection } from "./OrderByDirection";
+
+/** Computes the maximum value for the provided field. */
+export interface MaxAggregationV2 {
+  field: string;
+  name?: AggregationMetricName;
+  direction?: OrderByDirection;
 }

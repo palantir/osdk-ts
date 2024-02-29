@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import type { Aggregation } from "./Aggregation";
+import type { AggregationAccuracyRequest } from "./AggregationAccuracyRequest";
 import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
+import type { AggregationV2 } from "./AggregationV2";
 import type { ObjectSet } from "./ObjectSet";
 
 export interface AggregateObjectSetRequestV2 {
-  aggregation: Array<Aggregation>;
+  aggregation: Array<AggregationV2>;
   objectSet: ObjectSet;
   groupBy: Array<AggregationGroupByV2>;
+  accuracy?: AggregationAccuracyRequest;
 }

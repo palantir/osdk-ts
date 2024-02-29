@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import type { ParameterOption } from "./ParameterOption";
-
 /**
- * The parameter has a manually predefined set of options.
+ * Aggregation ordering can only be applied to metrics with exactly one groupBy clause.
  */
-export interface OneOf {
-  options: Array<ParameterOption>;
-  /** A flag denoting whether custom, user provided values will be considered valid. This is configured via the **Allowed "Other" value** toggle in the **Ontology Manager**. */
-  otherValuesAllowed: boolean;
+export interface InvalidAggregationOrdering {
+  errorCode: "INVALID_ARGUMENT";
+  errorName: "InvalidAggregationOrdering";
+  errorInstanceId: string;
+  parameters: {};
 }
