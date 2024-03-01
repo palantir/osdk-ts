@@ -1,10 +1,10 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
-  project: Project;
+  project: TodoProject;
   isOpen: boolean;
   onClose: () => void;
 }

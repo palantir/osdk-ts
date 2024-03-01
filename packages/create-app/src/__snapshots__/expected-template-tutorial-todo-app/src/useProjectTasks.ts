@@ -1,17 +1,16 @@
-import { Project, Task } from "@todo-app/sdk/ontology/objects";
+import { TodoProject, TodoTask } from "@fake/sdk/ontology/objects";
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
-import randomId from "./randomId";
 
-export function useProjectTasks(project: Project | undefined) {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<Task[]>(
+export function useProjectTasks(project: TodoProject | undefined) {
+  const { data, isLoading, isValidating, error, mutate } = useSWR<TodoTask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
     async () => {
       if (project == null) {
         return [];
       }
-      const result = await project.task.all();
+      const result = await project.todoTasks.all();
       if (result.type !== "ok") {
         throw result.error;
       }
@@ -21,34 +20,43 @@ export function useProjectTasks(project: Project | undefined) {
 
   const createTask: (
     name: string,
-  ) => Promise<Task["__primaryKey"] | undefined> = useCallback(
+  ) => Promise<TodoTask["__primaryKey"] | undefined> = useCallback(
     async (name) => {
       if (project == null) {
         return undefined;
       }
       // Try to implement this with the Ontology SDK!
-      const id = randomId();
-      await Mocks.createTask({ id, name, projectId: project.__primaryKey });
+      const id = await Mocks.createTask({
+        name,
+        projectId: project.__primaryKey,
+      });
       await mutate();
       return id;
       // Solution:
       //
-      // const id = randomId();
-      // await client.ontology.actions.createTask({
-      //   id,
-      //   name,
-      //   start_date: LocalDate.now(),
-      //   end_date: LocalDate.now().plusWeeks(1),
-      //   status: "Open",
-      //   project_id: project,
-      // });
+      // const result =
+      //   await client.ontology.actions.createTodoTask6bb97c19086d40c9B57285448e244ee3(
+      //     {
+      //       title: name,
+      //       start_date: LocalDate.now(),
+      //       due_date: LocalDate.now().plusWeeks(1),
+      //       status: "IN PROGRESS",
+      //       project_id: project.__primaryKey,
+      //     },
+      //     { returnEdits: ReturnEditsMode.ALL }
+      //   );
+      // if (result.type !== "ok") {
+      //   throw result.error;
+      // } else if (result.value.edits.type !== "edits") {
+      //   throw new Error("Expected edits to be returned");
+      // }
       // await mutate();
-      // return id;
+      // return result.value.edits.added[0].primaryKey;
     },
     [project, mutate],
   );
 
-  const deleteTask: (task: Task) => Promise<void> = useCallback(
+  const deleteTask: (task: TodoTask) => Promise<void> = useCallback(
     async (task) => {
       if (project == null) {
         return;
@@ -58,7 +66,9 @@ export function useProjectTasks(project: Project | undefined) {
       await mutate();
       // Solution:
       //
-      // await client.ontology.actions.deleteTask({ Task: task });
+      // await client.ontology.actions.deleteTodoTask73e95e4bEbfb47d3Ad86C712dfdc1ce5(
+      //   { "todo-task": task }
+      // );
       // await mutate();
     },
     [project, mutate],

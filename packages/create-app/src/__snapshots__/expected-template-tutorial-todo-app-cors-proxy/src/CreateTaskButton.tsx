@@ -1,10 +1,10 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import { useCallback, useState } from "react";
 import CreateTaskDialog from "./CreateTaskDialog";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskButtonProps {
-  project: Project;
+  project: TodoProject;
 }
 
 function CreateTaskButton({ project }: CreateTaskButtonProps) {

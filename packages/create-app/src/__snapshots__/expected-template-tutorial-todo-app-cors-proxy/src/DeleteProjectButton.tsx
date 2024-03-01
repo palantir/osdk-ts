@@ -1,10 +1,10 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import { useCallback, useState } from "react";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import useProjects from "./useProjects";
 
 interface DeleteProjectButtonProps {
-  project: Project;
+  project: TodoProject;
 }
 
 function DeleteProjectButton({ project }: DeleteProjectButtonProps) {

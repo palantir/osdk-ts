@@ -1,10 +1,10 @@
-import { Task } from "@fake/sdk/ontology/objects";
+import { TodoTask } from "@fake/sdk/ontology/objects";
 import { useCallback, useState } from "react";
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {
-  task: Task;
-  deleteTask: (task: Task) => Promise<void>;
+  task: TodoTask;
+  deleteTask: (task: TodoTask) => Promise<void>;
 }
 
 function TaskListItem({ task, deleteTask }: TaskListItemProps) {
@@ -28,7 +28,7 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
         disabled={isDeleting}
       />
       <label className={css.label} htmlFor={`${task.id}`}>
-        {task.name}
+        {task.title}
       </label>
     </li>
   );

@@ -1,4 +1,4 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
@@ -15,7 +15,7 @@ function Home() {
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
-    (p: Project) => setProjectId(p.id),
+    (p: TodoProject) => setProjectId(p.id),
     [],
   );
 

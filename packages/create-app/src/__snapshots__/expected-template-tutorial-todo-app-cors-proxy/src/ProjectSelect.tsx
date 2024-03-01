@@ -1,10 +1,10 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import { ChangeEvent, useCallback } from "react";
 
 interface ProjectSelectProps {
-  project: Project | undefined;
-  projects: Project[];
-  onSelectProject: (project: Project) => void;
+  project: TodoProject | undefined;
+  projects: TodoProject[];
+  onSelectProject: (project: TodoProject) => void;
 }
 
 function ProjectSelect({

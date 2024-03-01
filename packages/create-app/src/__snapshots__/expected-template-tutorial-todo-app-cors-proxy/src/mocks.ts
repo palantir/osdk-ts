@@ -1,42 +1,42 @@
 import { LocalDate } from "@fake/sdk";
-import { Project, Task } from "@fake/sdk/ontology/objects";
+import { TodoProject, TodoTask } from "@fake/sdk/ontology/objects";
 
 interface MockProject {
-  id: number;
+  id: string;
   name: string;
   tasks: MockTask[];
 }
 
 interface MockTask {
-  id: number;
+  id: string;
   name: string;
 }
 
 const projects: MockProject[] = [
   {
-    id: 1,
+    id: "1",
     name: "Fake Project",
     tasks: [
       {
-        id: 1,
+        id: "1",
         name: "Try to",
       },
       {
-        id: 2,
+        id: "2",
         name: "Implement this",
       },
       {
-        id: 3,
+        id: "3",
         name: "With the Ontology SDK!",
       },
     ],
   },
   {
-    id: 2,
+    id: "2",
     name: "Yet Another Fake Project",
     tasks: [
       {
-        id: 4,
+        id: "4",
         name: "More tasks here",
       },
     ],
@@ -49,7 +49,12 @@ async function delay(): Promise<void> {
   );
 }
 
-async function getProjects(): Promise<Project[]> {
+// Good enough random id for mocks
+function randomId(): string {
+  return `${Math.floor(Math.random() * 2 ** 31)}`;
+}
+
+async function getProjects(): Promise<TodoProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -57,43 +62,42 @@ async function getProjects(): Promise<Project[]> {
 }
 
 async function createProject({
-  id,
   name,
 }: {
-  id: number;
   name: string;
-}): Promise<void> {
+}): Promise<TodoProject["__primaryKey"]> {
   await delay();
+  const id = randomId();
   projects.push({ id, name, tasks: [] });
+  return id;
 }
 
-async function deleteProject(id: number): Promise<void> {
+async function deleteProject(id: string): Promise<void> {
   await delay();
   const idx = projects.findIndex((p) => p.id === id);
   if (idx !== -1) {
-    console.log(projects);
     projects.splice(idx, 1);
-    console.log(projects);
   }
 }
 
 async function createTask({
-  id,
   name,
   projectId,
 }: {
-  id: number;
   name: string;
-  projectId: number;
-}): Promise<void> {
+  projectId: string;
+}): Promise<TodoTask["__primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
-  if (project != null) {
-    project.tasks.unshift({ id, name });
+  if (project == null) {
+    throw new Error(`Project ${projectId} not found!`);
   }
+  const id = randomId();
+  project.tasks.unshift({ id, name });
+  return id;
 }
 
-async function deleteTask(id: number): Promise<void> {
+async function deleteTask(id: string): Promise<void> {
   await delay();
   for (const project of projects) {
     const idx = project.tasks.findIndex((t) => t.id === id);
@@ -103,14 +107,14 @@ async function deleteTask(id: number): Promise<void> {
   }
 }
 
-function project(mockProject: MockProject): Project {
+function project(mockProject: MockProject): TodoProject {
   return {
-    __apiName: "Project",
+    __apiName: "TodoProject",
     __primaryKey: mockProject.id,
     __rid: `${mockProject.id}`,
     id: mockProject.id,
     name: mockProject.name,
-    task: {
+    todoTasks: {
       all: async () => ({
         type: "ok",
         value: mockProject.tasks.map((mockTask) => task(mockProject, mockTask)),
@@ -136,26 +140,33 @@ function project(mockProject: MockProject): Project {
         },
       }),
     },
+    budget: undefined,
+    description: undefined,
+    document: undefined,
   };
 }
 
-function task(mockProject: MockProject, mockTask: MockTask): Task {
+function task(mockProject: MockProject, mockTask: MockTask): TodoTask {
   return {
-    __apiName: "Task",
+    __apiName: "TodoTask",
     __primaryKey: mockTask.id,
     __rid: `${mockTask.id}`,
     id: mockTask.id,
-    name: mockTask.name,
+    title: mockTask.name,
     startDate: LocalDate.now(),
-    endDate: LocalDate.now().plusWeeks(1),
-    status: "Open",
+    dueDate: LocalDate.now().plusWeeks(1),
+    status: "IN PROGRESS",
     projectId: mockProject.id,
-    project: {
+    todoProject: {
       get: async () => ({
         type: "ok",
         value: project(mockProject),
       }),
     },
+    description: undefined,
+    assignedTo: undefined,
+    createdAt: undefined,
+    createdBy: undefined,
   };
 }
 

@@ -1,10 +1,10 @@
-import { Project } from "@fake/sdk/ontology/objects";
+import { TodoProject } from "@fake/sdk/ontology/objects";
 import css from "./TaskList.module.css";
 import TaskListItem from "./TaskListItem";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
-  project: Project;
+  project: TodoProject;
 }
 
 function TaskList({ project }: TaskListProps) {

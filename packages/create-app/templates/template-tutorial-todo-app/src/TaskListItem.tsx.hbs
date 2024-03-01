@@ -28,7 +28,7 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
         disabled={isDeleting}
       />
       <label className={css.label} htmlFor={`${task.id}`}>
-        {task.name}
+        {task.title}
       </label>
     </li>
   );
