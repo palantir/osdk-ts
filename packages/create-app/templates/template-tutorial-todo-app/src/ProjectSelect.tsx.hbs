@@ -1,10 +1,10 @@
-import { Project } from "{{osdkPackage}}/ontology/objects";
+import { TodoProject } from "{{osdkPackage}}/ontology/objects";
 import { ChangeEvent, useCallback } from "react";
 
 interface ProjectSelectProps {
-  project: Project | undefined;
-  projects: Project[];
-  onSelectProject: (project: Project) => void;
+  project: TodoProject | undefined;
+  projects: TodoProject[];
+  onSelectProject: (project: TodoProject) => void;
 }
 
 function ProjectSelect({

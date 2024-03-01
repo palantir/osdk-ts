@@ -1,18 +1,18 @@
-import { Project } from "{{osdkPackage}}/ontology/objects";
+import { TodoProject } from "{{osdkPackage}}/ontology/objects";
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
 import randomId from "./randomId";
 
 function useProjects() {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<Project[]>(
+  const { data, isLoading, isValidating, error, mutate } = useSWR<TodoProject[]>(
     "projects",
     async () => {
       // Try to implement this with the Ontology SDK!
       return Mocks.getProjects();
       // Solution:
       //
-      // const result = await client.ontology.objects.Project.orderBy((p) =>
+      // const result = await client.ontology.objects.TodoProject.orderBy((p) =>
       //   p.name.asc()
       // ).page({
       //   pageSize: 50,
@@ -24,7 +24,7 @@ function useProjects() {
     },
   );
 
-  const createProject: (name: string) => Promise<Project["__primaryKey"]> =
+  const createProject: (name: string) => Promise<TodoProject["__primaryKey"]> =
     useCallback(
       async (name) => {
         // Try to implement this with the Ontology SDK!
@@ -34,10 +34,10 @@ function useProjects() {
         return id;
         // Solution:
         //
-        // const id = randomId();
-        // await client.ontology.actions.createProject({
-        //   id,
+        //  await client.ontology.actions
+        // .createTodoProjectd1a1a1f7E94f4470B73bEd518e7a8b11({
         //   name,
+        //   budget: 50,
         // });
         // await mutate();
         // return id;
@@ -45,7 +45,7 @@ function useProjects() {
       [mutate],
     );
 
-  const deleteProject: (project: Project) => Promise<void> = useCallback(
+  const deleteProject: (project: TodoProject) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteProject(project.__primaryKey);

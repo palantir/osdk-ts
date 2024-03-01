@@ -1,5 +1,5 @@
 import { LocalDate } from "{{osdkPackage}}";
-import { Project, Task } from "{{osdkPackage}}/ontology/objects";
+import { TodoProject, TodoTask } from "{{osdkPackage}}/ontology/objects";
 
 interface MockProject {
   id: number;
@@ -49,7 +49,7 @@ async function delay(): Promise<void> {
   );
 }
 
-async function getProjects(): Promise<Project[]> {
+async function getProjects(): Promise<TodoProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -103,7 +103,7 @@ async function deleteTask(id: number): Promise<void> {
   }
 }
 
-function project(mockProject: MockProject): Project {
+function project(mockProject: MockProject): TodoProject {
   return {
     __apiName: "Project",
     __primaryKey: mockProject.id,
@@ -139,7 +139,7 @@ function project(mockProject: MockProject): Project {
   };
 }
 
-function task(mockProject: MockProject, mockTask: MockTask): Task {
+function task(mockProject: MockProject, mockTask: MockTask): TodoTask {
   return {
     __apiName: "Task",
     __primaryKey: mockTask.id,
