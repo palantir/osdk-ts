@@ -22,7 +22,7 @@ import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import { fetchPageInternal, type SelectArg } from "../object/fetchPage.js";
 import { fetchSingle } from "../object/fetchSingle.js";
 import { aggregate } from "../object/index.js";
@@ -145,8 +145,14 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       let nextPageToken: string | undefined = undefined;
       do {
         const result = await base.fetchPage({ nextPageToken });
-        await convertWireToOsdkObjectsInPlace(clientCtx, result.data);
-        for (const obj of result.data) {
+
+        for (
+          const obj of await convertWireToOsdkObjects(
+            clientCtx,
+            result.data,
+            undefined,
+          )
+        ) {
           yield obj as Osdk<Q, "$all">;
         }
       } while (nextPageToken != null);

@@ -103,26 +103,36 @@ export function createCache<K, V extends {}>(
  */
 export function createAsyncCache<K, V extends {}>(
   fn: (client: MinimalClient, key: K) => Promise<V>,
+  createCacheLocal: typeof createCache = createCache,
 ): AsyncCache<K, V> {
-  const cache = createCache<K, V>();
-  const inProgress = createCache<K, Promise<V> | V>();
+  const cache = createCacheLocal<K, V>();
+  const inProgress = createCacheLocal<K, Promise<V> | V>();
 
-  function getOrUndefined(client: MinimalClient, key: K) {
-    return cache.get(client, key);
-  }
+  const ret = {
+    getOrUndefined: function getOrUndefined(client: MinimalClient, key: K) {
+      return cache.get(client, key);
+    },
 
-  async function get(client: MinimalClient, key: K) {
-    return cache.get(client, key) ?? inProgress.get(client, key)
-      ?? set(client, key, fn(client, key));
-  }
+    get: async function get(client: MinimalClient, key: K) {
+      return cache.get(client, key) ?? inProgress.get(client, key)
+        ?? ret.set(client, key, fn(client, key));
+    },
 
-  async function set(client: MinimalClient, k: K, v: V | Promise<V>) {
-    return Promise.resolve(inProgress.set(client, k, v)).then((r) => {
-      cache.set(client, k, r);
-      inProgress.remove(client, k);
-      return r;
-    });
-  }
+    set: async function set(client: MinimalClient, k: K, v: V | Promise<V>) {
+      // the `.set` happens first to prevent races.
+      try {
+        const r = await inProgress.set(client, k, v); // returns v
 
-  return { get, set, getOrUndefined };
+        cache.set(client, k, r);
+        inProgress.remove(client, k);
+        return r;
+      } catch (e) {
+        // we don't want to cache failures
+        inProgress.remove(client, k);
+        throw e;
+      }
+    },
+  };
+
+  return ret;
 }

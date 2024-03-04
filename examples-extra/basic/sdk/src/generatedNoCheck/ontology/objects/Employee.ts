@@ -14,6 +14,7 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   properties: {
     id: PropertyDef<'string', 'non-nullable', 'single'>;
     firstName: PropertyDef<'string', 'nullable', 'single'>;
+    email: PropertyDef<'string', 'nullable', 'single'>;
     adUsername: PropertyDef<'string', 'nullable', 'single'>;
     locationName: PropertyDef<'string', 'nullable', 'single'>;
     locationCity: PropertyDef<'string', 'nullable', 'single'>;
@@ -25,8 +26,14 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
     favPlace: PropertyDef<'geopoint', 'nullable', 'single'>;
   };
   spts: {
-    fullName: 'fooSpt';
+    firstName: 'name';
+    email: 'description';
   };
+  inverseSpts: {
+    name: 'firstName';
+    description: 'email';
+  };
+  implements: ['FooInterface'];
 }
 
 export const Employee: Employee = {
@@ -56,6 +63,11 @@ export const Employee: Employee = {
       nullable: false,
     },
     firstName: {
+      multiplicity: false,
+      type: 'string',
+      nullable: true,
+    },
+    email: {
       multiplicity: false,
       type: 'string',
       nullable: true,
@@ -107,6 +119,12 @@ export const Employee: Employee = {
     },
   },
   spts: {
-    fullName: 'fooSpt',
+    firstName: 'name',
+    email: 'description',
   },
+  inverseSpts: {
+    name: 'firstName',
+    description: 'email',
+  },
+  implements: ['FooInterface'],
 };

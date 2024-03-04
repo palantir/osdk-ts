@@ -20,13 +20,29 @@ import {
   getOutgoingLinkTypeV2,
   listOutgoingLinkTypesV2,
 } from "@osdk/gateway/requests";
-import type { DefaultBodyType, MockedRequest, RestHandler } from "msw";
+import type {
+  InterfaceType,
+  ListInterfaceTypesResponse,
+} from "@osdk/gateway/types";
+import { rest } from "msw";
+import type {
+  DefaultBodyType,
+  MockedRequest,
+  PathParams,
+  ResponseComposition,
+  RestHandler,
+  RestRequest,
+} from "msw";
+import type { BaseAPIError } from "../BaseError";
 import {
+  InvalidRequest,
   LinkTypeNotFound,
+  ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
 } from "../errors";
 import { fullOntology } from "../stubs/ontologies";
+import { authHandlerMiddleware } from "./commonHandlers";
 import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
 
 function getOntology(ontologyApiName: string) {
@@ -114,4 +130,87 @@ export const ontologyMetadataEndpoint: RestHandler<
 
     return res(ctx.json({ data: object.linkTypes }));
   }),
+
+  rest.get(
+    `https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/interfaceTypes`,
+    authHandlerMiddleware(
+      async (
+        req: RestRequest<
+          never,
+          PathParams<"ontologyApiName">
+        >,
+        res: ResponseComposition<
+          ListInterfaceTypesResponse | BaseAPIError
+        >,
+        ctx,
+      ) => {
+        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
+          return res(
+            ctx.status(404),
+            ctx.json(
+              OntologyNotFoundError(req.params.ontologyApiName as string),
+            ),
+          );
+        }
+
+        return res(ctx.json({
+          data: Object.values(fullOntology.interfaceTypes),
+        }));
+      },
+    ),
+  ),
+
+  rest.get(
+    `https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/interfaceTypes/:interfaceType`,
+    authHandlerMiddleware(
+      async (
+        req: RestRequest<
+          never,
+          { ontologyApiName: string; interfaceType: string }
+        >,
+        res: ResponseComposition<
+          InterfaceType | BaseAPIError
+        >,
+        ctx,
+      ) => {
+        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
+          return res(
+            ctx.status(404),
+            ctx.json(
+              OntologyNotFoundError(req.params.ontologyApiName as string),
+            ),
+          );
+        }
+
+        const interfaceType = req.params.interfaceType;
+        if (typeof interfaceType !== "string") {
+          return res(
+            ctx.status(400),
+            ctx.json(InvalidRequest("Invalid parameter objectType")),
+          );
+        }
+
+        if (
+          fullOntology.interfaceTypes[req.params.interfaceType]
+            === undefined
+        ) {
+          return res(
+            ctx.status(404),
+            ctx.json(
+              ObjectNotFoundError(
+                req.params.interfaceType as string,
+                "",
+              ),
+            ),
+          );
+        }
+
+        return res(
+          ctx.json(
+            fullOntology.interfaceTypes[req.params.interfaceType],
+          ),
+        );
+      },
+    ),
+  ),
 ];

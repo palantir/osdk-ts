@@ -4,6 +4,7 @@ export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInt
   description: 'Its a Foo.';
   properties: {
     name: PropertyDef<'string', 'nullable', 'single'>;
+    description: PropertyDef<'string', 'nullable', 'single'>;
   };
   links: {};
 }
@@ -16,6 +17,12 @@ export const FooInterface: FooInterface = {
     name: {
       multiplicity: false,
       description: 'Name of Foo',
+      type: 'string',
+      nullable: true,
+    },
+    description: {
+      multiplicity: false,
+      description: 'Description of Description',
       type: 'string',
       nullable: true,
     },

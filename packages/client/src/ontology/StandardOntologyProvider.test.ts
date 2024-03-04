@@ -47,11 +47,13 @@ describe(createStandardOntologyProviderFactory, () => {
     await fetchPage(client, MockOntology.objects.Employee, {});
 
     // first load should lookup employee and its link types
-    expect(loads).toEqual([
-      "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
-    ]);
+    expect(loads).toEqual(
+      [
+        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+        "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/api/v2/ontologies/default-ontology/fullMetadata",
+      ],
+    );
 
     loads = [];
 
@@ -77,22 +79,21 @@ describe(createStandardOntologyProviderFactory, () => {
       loads.push(request.url.pathname);
     });
 
-    await fetchPage(client, MockOntology.objects.Employee, {});
-
-    expect(loads).toEqual([
+    const loadSequenceWithoutCaching = [
       "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
-    ]);
-
-    loads = [];
+      "/api/v2/ontologies/default-ontology/interfaceTypes",
+      "/api/v2/ontologies/default-ontology/fullMetadata",
+      // annoyingly happens once for interface load and once for object type load, but its temporary
+      "/api/v2/ontologies/default-ontology/interfaceTypes",
+      "/api/v2/ontologies/default-ontology/fullMetadata",
+    ];
 
     await fetchPage(client, MockOntology.objects.Employee, {});
+    expect(loads).toEqual(loadSequenceWithoutCaching);
+
     // we expect it to reload ontology info
-    expect(loads).toEqual([
-      "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee",
-      "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
-    ]);
+    loads = [];
+    await fetchPage(client, MockOntology.objects.Employee, {});
+    expect(loads).toEqual(loadSequenceWithoutCaching);
   });
 });

@@ -276,6 +276,11 @@
               "type": "string"
             }
           },
+          "email": {
+            "dataType": {
+              "type": "string"
+            }
+          },
           "adUsername": {
             "dataType": {
               "type": "string"
@@ -353,7 +358,8 @@
       ],
       "implementsInterfaces": ["FooInterface"],
       "sharedPropertyTypeMapping": {
-        "fullName": "fooSpt"
+        "firstName": "name",
+        "email": "description"
       }
     },
     "Venture": {
@@ -761,6 +767,15 @@
           },
           "displayName": "Name",
           "description": "Name of Foo"
+        },
+        "description": {
+          "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+          "apiName": "description",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Description",
+          "description": "Description of Description"
         }
       },
       "status": "ACTIVE"
@@ -775,6 +790,15 @@
       },
       "displayName": "Name",
       "description": "Name of Foo"
+    },
+    "description": {
+      "rid": "ri.ontology.main.shared-property.3ad47761-fd8c-477c-bc96-5721a6ed46d7",
+      "apiName": "description",
+      "dataType": {
+        "type": "string"
+      },
+      "displayName": "Description",
+      "description": "Description of Description"
     }
   }
 }

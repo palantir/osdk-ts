@@ -17,6 +17,7 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import {
   getObjectTypeV2,
+  listInterfaceTypes,
   listOutgoingLinkTypesV2,
 } from "@osdk/gateway/requests";
 import type {
@@ -56,20 +57,33 @@ export async function loadFullObjectMetadata(
 ): Promise<ObjectTypeDefinition<any, any>> {
   const { ontologyApiName } = client.ontology.metadata;
 
-  const [objectType, linkTypes] = await Promise.all([
+  const [objectType, linkTypes, interfaceTypes] = await Promise.all([
     getObjectTypeV2(
       createOpenApiRequest(client.stack, client.fetch),
       ontologyApiName,
       objtype,
     ),
+
     loadAllOutgoingLinkTypes(client, objtype),
+    listInterfaceTypes(
+      createOpenApiRequest(client.stack, client.fetch),
+      ontologyApiName,
+      { pageSize: 200, preview: true },
+    ),
   ]);
 
+  const sharedPropertyTypeMapping = {};
+  for (const interfaceTypeDef of interfaceTypes.data) {
+    Object.assign(sharedPropertyTypeMapping, interfaceTypeDef.properties);
+  }
+
   const full: ObjectTypeFullMetadata = {
-    implementsInterfaces: [], // FIXME
+    implementsInterfaces: interfaceTypes.data.map(i => i.apiName),
     linkTypes,
     objectType,
-    sharedPropertyTypeMapping: {}, // FIXME
+    sharedPropertyTypeMapping,
   };
+
+  // TODO: reuse the loaded interface data!
   return wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
 }
