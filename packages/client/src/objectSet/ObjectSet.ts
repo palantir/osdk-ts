@@ -21,9 +21,9 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   OntologyDefinition,
-  WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import type {
   FetchPageArgs,
@@ -96,7 +96,7 @@ export interface BaseObjectSet<
 > extends ObjectSet<Q> {
   get: Q extends ObjectTypeDefinition<any>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
-      primaryKey: WirePropertyTypes[Q["primaryKeyType"]],
+      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
     ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
     : never;

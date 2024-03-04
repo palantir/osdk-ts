@@ -18,10 +18,10 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
-  WirePropertyTypes,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
@@ -195,16 +195,18 @@ export function createBaseObjectSet<
     get: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
         primaryKey: Q extends ObjectTypeDefinition<any>
-          ? WirePropertyTypes[Q["primaryKeyType"]]
+          ? PropertyValueClientToWire[Q["primaryKeyType"]]
           : never,
         options: A,
       ) => {
         const withPk: WireObjectSet = {
           type: "filter",
           objectSet: objectSet,
-          where: modernToLegacyWhereClause({
-            [objectType.primaryKeyApiName]: primaryKey,
-          }),
+          where: {
+            type: "eq",
+            field: objectType.primaryKeyApiName,
+            value: primaryKey,
+          },
         };
 
         return await fetchSingle(
