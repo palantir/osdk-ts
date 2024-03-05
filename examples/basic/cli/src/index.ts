@@ -187,12 +187,12 @@ async function runTests() {
 
     const testStringClause = await client(BoundariesUsState)
       .where({
-        name: {
-          $startsWith: "New",
+        usState: {
+          $startsWith: "N",
         },
       }).fetchPage();
 
-    console.log(testStringClause.data.map(data => data.name));
+    console.log(testStringClause.data.map(data => data.usState));
 
     const testAggregateCountNoGroup = await client.objects.BoundariesUsState
       .aggregateOrThrow({
