@@ -54,6 +54,11 @@ type DatetimeFilter =
   | BaseFilter<string>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", string>;
 
+type BooleanFilter =
+  | boolean
+  | MakeFilter<"$eq" | "$ne", boolean>
+  | MakeFilter<"$isNull", boolean>;
+
 export const DistanceUnitMapping = {
   "centimeter": "CENTIMETERS",
   "centimeters": "CENTIMETERS",
@@ -111,6 +116,7 @@ type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
   : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
   : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
+  : PD["type"] extends "boolean" ? BooleanFilter
   : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<

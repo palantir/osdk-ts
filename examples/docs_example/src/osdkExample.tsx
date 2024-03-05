@@ -5,6 +5,7 @@ import {
   Ontology,
   promoteEmployee,
   promoteEmployeeObject,
+  Todo,
 } from "./generatedNoCheck";
 
 export const client = createClient(
@@ -38,6 +39,10 @@ export async function osdkObjectSetExample() {
       }],
     }],
   });
+
+  // Where clause boolean
+
+  await client(Todo).where({ isComplete: true });
 
   // Where clause GEOTYPES
 
