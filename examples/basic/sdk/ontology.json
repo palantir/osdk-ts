@@ -156,6 +156,11 @@
               "type": "string"
             }
           },
+          "name": {
+            "dataType": {
+              "type": "string"
+            }
+          },
           "latitude": {
             "dataType": {
               "type": "double"
