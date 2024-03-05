@@ -110,6 +110,7 @@ describe(generateMetadataFile, () => {
               primaryKey: "id",
               rid: "rid.object.foo",
               status: "ACTIVE",
+              titleProperty: "id",
               properties: {
                 id: {
                   dataType: { type: "integer" },

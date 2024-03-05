@@ -26,10 +26,11 @@ export function generateComponents(
   outputDir: string,
   project: Project,
   options: GenerateOptions,
+  addCopyright: (sf: SourceFile) => void,
 ) {
   const directory = project.createDirectory(`${outputDir}/components`);
   components.forEach(component =>
-    generateComponent(component, directory, options)
+    generateComponent(component, directory, options, addCopyright)
   );
 }
 
@@ -37,6 +38,7 @@ export function generateComponent(
   component: Component,
   directory: Directory,
   options: GenerateOptions,
+  addCopyright: (sf: SourceFile) => void,
 ) {
   const sourceFile = directory.createSourceFile(`${component.name}.ts`);
   const referenceSet = new Set<string>();
@@ -80,13 +82,16 @@ export function generateComponent(
   }
 
   sourceFile.addImportDeclarations(
-    Array.from(referenceSet).map(reference => {
+    Array.from(referenceSet).sort().map(reference => {
       return {
         moduleSpecifier: `./${reference}`,
         namedImports: [reference],
+        isTypeOnly: true,
       };
     }),
   );
+
+  addCopyright(sourceFile);
 }
 
 function generateUnionComponent(

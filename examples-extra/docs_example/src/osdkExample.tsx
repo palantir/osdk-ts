@@ -5,6 +5,7 @@ import {
   Ontology,
   promoteEmployee,
   promoteEmployeeObject,
+  Todo,
 } from "./generatedNoCheck";
 
 export const client = createClient(
@@ -32,12 +33,16 @@ export async function osdkObjectSetExample() {
     $or: [{ fullName: { $contains: "Clooney" }, employeeId: { $gt: 10 } }, {
       $and: [{ $not: { fullName: { $contains: "Pitt" } } }, {
         $or: [{ fullName: { $contains: "Downey" } }, {
-          fullName: { $contains: "Hemsworth" },
+          fullName: { $startsWith: "Hemsworth" },
           employeeId: { $gte: 20 },
         }],
       }],
     }],
   });
+
+  // Where clause boolean
+
+  await client(Todo).where({ isComplete: true });
 
   // Where clause GEOTYPES
 

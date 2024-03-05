@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,8 @@
  */
 
 /**
- * The parameter value must have a length within the defined range.
- * *This range is always inclusive.*
+ * The parameter cannot be evaluated because it depends on another parameter or object set that can't be evaluated.
+ * This can happen when a parameter's allowed values are defined by another parameter that is missing or invalid.
  */
-export interface StringLength {
-  /** Less than */
-  lt?: any;
-  /** Less than or equal */
-  lte?: any;
-  /** Greater than */
-  gt?: any;
-  /** Greater than or equal */
-  gte?: any;
+export interface UnevaluableConstraint {
 }

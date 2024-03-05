@@ -52,6 +52,7 @@ export * from "./FunctionExecutionFailed";
 export * from "./FunctionExecutionTimedOut";
 export * from "./FunctionInvalidInput";
 export * from "./InterfaceTypeNotFound";
+export * from "./InvalidAggregationOrdering";
 export * from "./InvalidAggregationRange";
 export * from "./InvalidAggregationRangePropertyType";
 export * from "./InvalidAggregationRangeValue";

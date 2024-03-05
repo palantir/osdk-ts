@@ -78,6 +78,8 @@ describe("actions", () => {
       {
         "addedLinksCount": 0,
         "addedObjectCount": 2,
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
         "edits": [
           {
             "objectType": "Office",

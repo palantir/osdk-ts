@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-/**
- * The parameter value must be the primary key of an object found within an object set.
- */
-export interface ObjectQueryResult {
+import type { AggregationMetricName } from "./AggregationMetricName";
+import type { OrderByDirection } from "./OrderByDirection";
+
+/** Computes the average value for the provided field. */
+export interface AvgAggregationV2 {
+  field: string;
+  name?: AggregationMetricName;
+  direction?: OrderByDirection;
 }

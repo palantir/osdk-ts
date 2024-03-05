@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,5 @@
  * limitations under the License.
  */
 
-/**
- * The parameter value must match a predefined regular expression.
- */
-export interface StringRegexMatch {
-  /** The regular expression configured in the **Ontology Manager**. */
-  regex: string;
-  /**
-   * The message indicating that the regular expression was not matched.
-   * This is configured per parameter in the **Ontology Manager**.
-   */
-  configuredFailureMessage?: string;
-}
+/** A string indicating the API name to use for the interface link. */
+export type InterfaceLinkTypeApiName = string;

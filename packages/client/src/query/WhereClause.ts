@@ -32,7 +32,8 @@ export type PossibleWhereClauseFilters =
   | "$lt"
   | "$lte"
   | "$within"
-  | "$intersects";
+  | "$intersects"
+  | "$startsWith";
 
 // We need to conditional here to force the union to be distributed
 type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
@@ -45,7 +46,7 @@ type BaseFilter<T> =
   | MakeFilter<"$eq" | "$ne" | "$contains", T>
   | MakeFilter<"$isNull", boolean>;
 
-type StringFilter = BaseFilter<string>;
+type StringFilter = BaseFilter<string> | MakeFilter<"$startsWith", string>;
 type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;
@@ -53,6 +54,11 @@ type NumberFilter =
 type DatetimeFilter =
   | BaseFilter<string>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", string>;
+
+type BooleanFilter =
+  | boolean
+  | MakeFilter<"$eq" | "$ne", boolean>
+  | MakeFilter<"$isNull", boolean>;
 
 export const DistanceUnitMapping = {
   "centimeter": "CENTIMETERS",
@@ -111,6 +117,7 @@ type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
   "string" ? StringFilter
   : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
   : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
+  : PD["type"] extends "boolean" ? BooleanFilter
   : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<

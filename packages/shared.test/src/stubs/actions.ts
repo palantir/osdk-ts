@@ -227,6 +227,8 @@ const actionResponseCreateOfficeAndEmployee: SyncApplyActionResponseV2 = {
     addedObjectCount: 2,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
+    deletedLinksCount: 0,
+    deletedObjectsCount: 0,
   },
 };
 
@@ -246,6 +248,8 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
     addedObjectCount: 2,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
+    deletedLinksCount: 0,
+    deletedObjectsCount: 0,
   },
 };
 
@@ -285,6 +289,8 @@ const actionResponseGetResults: SyncApplyActionResponseV2 = {
     addedObjectCount: 2,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
+    deletedLinksCount: 0,
+    deletedObjectsCount: 0,
   },
 };
 
@@ -311,6 +317,8 @@ const actionResponseMoveOfficeBatch: BatchApplyActionResponseV2 = {
     addedObjectCount: 0,
     addedLinksCount: 0,
     modifiedObjectsCount: 2,
+    deletedLinksCount: 0,
+    deletedObjectsCount: 0,
   },
 };
 

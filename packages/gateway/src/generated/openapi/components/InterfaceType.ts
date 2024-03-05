@@ -15,6 +15,8 @@
  */
 
 import type { DisplayName } from "./DisplayName";
+import type { InterfaceLinkType } from "./InterfaceLinkType";
+import type { InterfaceLinkTypeApiName } from "./InterfaceLinkTypeApiName";
 import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
 import type { InterfaceTypeRid } from "./InterfaceTypeRid";
 import type { SharedPropertyType } from "./SharedPropertyType";
@@ -37,4 +39,9 @@ export interface InterfaceType {
    * inherit their properties.
    */
   extendsInterfaces: Array<InterfaceTypeApiName>;
+  /**
+   * A map from an interface link type API name to the corresponding interface link type. The map describes the
+   * set of link types the interface has.
+   */
+  links: Record<InterfaceLinkTypeApiName, InterfaceLinkType>;
 }

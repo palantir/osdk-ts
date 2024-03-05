@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Directory, Project } from "ts-morph";
+import type { Directory, Project, SourceFile } from "ts-morph";
 import { CodeBlockWriter } from "ts-morph";
 import type { Error, ParameterValue } from "../spec";
 import { generateDocumentation } from "./common";
@@ -25,12 +25,17 @@ export function generateErrors(
   errors: Error[],
   outputDir: string,
   project: Project,
+  addCopyright: (sf: SourceFile) => void,
 ) {
   const directory = project.createDirectory(`${outputDir}/errors`);
-  errors.forEach(error => generateError(error, directory));
+  errors.forEach(error => generateError(error, directory, addCopyright));
 }
 
-export function generateError(error: Error, directory: Directory) {
+export function generateError(
+  error: Error,
+  directory: Directory,
+  addCopyright: (sf: SourceFile) => void,
+) {
   const sourceFile = directory.createSourceFile(`${error.name}.ts`);
 
   const referenceSet = new Set<string>();
@@ -65,9 +70,11 @@ export function generateError(error: Error, directory: Directory) {
       return {
         moduleSpecifier: `../components/${reference}`,
         namedImports: [reference],
+        isTypeOnly: true,
       };
     }),
   );
+  addCopyright(sourceFile);
 }
 
 function generateParameterMap(
