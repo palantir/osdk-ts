@@ -20,5 +20,7 @@ export interface ObjectEdits {
   edits: Array<ObjectEdit>;
   addedObjectCount: number;
   modifiedObjectsCount: number;
+  deletedObjectsCount: number;
   addedLinksCount: number;
+  deletedLinksCount: number;
 }

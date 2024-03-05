@@ -19,7 +19,6 @@ OPENAPI_MANIFEST_YML="${SCRIPT_DIR}/../tmp/api-gateway-ir/manifest.yml"
 PACKAGE_PATH="${SCRIPT_DIR}/../packages/gateway"
 OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated/openapi")
 
-rm -rf "$OUT_DIR"
 # Generate the API bindings
 echo "Generating gateway bindings"
 $GATEWAY_GENERATOR generate --inputFile "${OPENAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_DIR}" --generateVisitors false

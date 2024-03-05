@@ -15,8 +15,8 @@
  */
 
 import type {
-  AggregateObjectSetResponseV2,
   AggregateObjectsResponseItemV2,
+  AggregateObjectsResponseV2,
   AggregationMetricResultV2,
 } from "@osdk/gateway/types";
 import { LocalDate, Timestamp } from "../../baseTypes";
@@ -46,7 +46,7 @@ export function convertToAggregationResult<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 >(
-  aggregationResponse: AggregateObjectSetResponseV2,
+  aggregationResponse: AggregateObjectsResponseV2,
   aggregationRequest: InternalAggregationRequest,
 ): AggregationResult<TBucketGroup, TMetrics> {
   if (

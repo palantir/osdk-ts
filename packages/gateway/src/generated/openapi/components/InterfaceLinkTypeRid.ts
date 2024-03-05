@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 /**
- * The parameter value must be the user id of a member belonging to at least one of the groups defined by the constraint.
+ * The unique resource identifier of an interface link type, useful for interacting with other Foundry APIs.
  */
-export interface GroupMember {
-}
+export type InterfaceLinkTypeRid = string;

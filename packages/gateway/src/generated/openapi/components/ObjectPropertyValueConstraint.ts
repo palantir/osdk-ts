@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregateObjectsResponseItemV2 } from "./AggregateObjectsResponseItemV2";
-import type { AggregationAccuracy } from "./AggregationAccuracy";
-
-export interface AggregateObjectsResponseV2 {
-  excludedItems?: number;
-  accuracy?: AggregationAccuracy;
-  data: Array<AggregateObjectsResponseItemV2>;
+/**
+ * The parameter value must be a property value of an object found within an object set.
+ */
+export interface ObjectPropertyValueConstraint {
 }

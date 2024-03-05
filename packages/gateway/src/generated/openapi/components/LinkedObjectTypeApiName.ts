@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-/**
- * The parameter cannot be evaluated because it depends on another parameter or object set that can't be evaluated.
- * This can happen when a parameter's allowed values are defined by another parameter that is missing or invalid.
- */
-export interface Unevaluable {
+import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+
+/** A reference to the linked object type. */
+export interface LinkedObjectTypeApiName {
+  apiName: ObjectTypeApiName;
 }
