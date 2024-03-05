@@ -95,8 +95,8 @@
         ".monorepolint.config.mjs",
         "packages/*/package.json",
         "packages/*/tsconfig.json",
-        "examples/*/*/package.json",
-        "examples/*/*/tsconfig.json",
+        "examples-extra/*/*/package.json",
+        "examples-extra/*/*/tsconfig.json",
         "monorepo/*/*/package.json",
         "monorepo/*/*/tsconfig.json",
         "templates/*"
