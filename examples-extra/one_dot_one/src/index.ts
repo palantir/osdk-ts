@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export {};
+/* eslint-disable import/export */
+export { PublicClientAuth } from "@osdk/legacy-client";
+export * from "./generatedNoCheck/index.js";
