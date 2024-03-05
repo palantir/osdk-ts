@@ -1,8 +1,8 @@
 packages:
   - "packages/*"
-  - "examples/basic/*"
-  - "examples/one_dot_one"
-  - "examples/todoapp"
-  - "examples/docs_example"
+  - "examples-extra/basic/*"
+  - "examples-extra/one_dot_one"
+  - "examples-extra/todoapp"
+  - "examples-extra/docs_example"
   - "monorepo/*"
   - "tests/*"

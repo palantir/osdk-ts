@@ -8,13 +8,13 @@
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish --no-git-tag",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "dev": "turbo run dev --concurrency 22",
-    "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples/basic/*",
+    "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples-extra/basic/*",
     "lint": "turbo run lint",
     "prePublish": "turbo build && turbo lint",
     "prepare": "husky install",
     "test": "FORCE_COLOR=1 turbo run test",
     "test:watch": "FORCE_COLOR=1 turbo run test:watch",
-    "typecheckAll": "tsc --build packages/* examples/basic/*"
+    "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
   "devDependencies": {
     "@babel/core": "^7.23.9",
