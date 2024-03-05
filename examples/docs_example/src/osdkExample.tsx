@@ -33,7 +33,7 @@ export async function osdkObjectSetExample() {
     $or: [{ fullName: { $contains: "Clooney" }, employeeId: { $gt: 10 } }, {
       $and: [{ $not: { fullName: { $contains: "Pitt" } } }, {
         $or: [{ fullName: { $contains: "Downey" } }, {
-          fullName: { $contains: "Hemsworth" },
+          fullName: { $startsWith: "Hemsworth" },
           employeeId: { $gte: 20 },
         }],
       }],

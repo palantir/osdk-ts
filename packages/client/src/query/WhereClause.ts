@@ -32,7 +32,8 @@ export type PossibleWhereClauseFilters =
   | "$lt"
   | "$lte"
   | "$within"
-  | "$intersects";
+  | "$intersects"
+  | "$startsWith";
 
 // We need to conditional here to force the union to be distributed
 type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
@@ -45,7 +46,7 @@ type BaseFilter<T> =
   | MakeFilter<"$eq" | "$ne" | "$contains", T>
   | MakeFilter<"$isNull", boolean>;
 
-type StringFilter = BaseFilter<string>;
+type StringFilter = BaseFilter<string> | MakeFilter<"$startsWith", string>;
 type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;

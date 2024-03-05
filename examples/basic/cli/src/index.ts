@@ -185,6 +185,15 @@ async function runTests() {
 
     await checkLinksAndActionsForVentures();
 
+    const testStringClause = await client(BoundariesUsState)
+      .where({
+        usState: {
+          $startsWith: "N",
+        },
+      }).fetchPage();
+
+    console.log(testStringClause.data.map(data => data.usState));
+
     const testAggregateCountNoGroup = await client.objects.BoundariesUsState
       .aggregateOrThrow({
         select: { $count: true, latitude: ["min", "max", "avg"] },
