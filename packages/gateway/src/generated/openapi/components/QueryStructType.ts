@@ -17,5 +17,5 @@
 import type { QueryStructField } from "./QueryStructField";
 
 export interface QueryStructType {
-  fields: Array<QueryStructField>;
+  fields: ReadonlyArray<QueryStructField>;
 }

@@ -27,7 +27,7 @@ export interface ParametersNotFound {
   errorInstanceId: string;
   parameters: {
     actionType: ActionTypeApiName;
-    unknownParameterIds: Array<ParameterId>;
-    configuredParameterIds: Array<ParameterId>;
+    unknownParameterIds: ReadonlyArray<ParameterId>;
+    configuredParameterIds: ReadonlyArray<ParameterId>;
   };
 }

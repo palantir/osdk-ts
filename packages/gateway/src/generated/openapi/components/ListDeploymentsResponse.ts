@@ -17,5 +17,5 @@
 import type { DeploymentListing } from "./DeploymentListing";
 
 export interface ListDeploymentsResponse {
-  deployments: Array<DeploymentListing>;
+  deployments: ReadonlyArray<DeploymentListing>;
 }

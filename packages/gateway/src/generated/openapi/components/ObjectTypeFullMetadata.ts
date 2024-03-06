@@ -22,9 +22,9 @@ import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
 
 export interface ObjectTypeFullMetadata {
   objectType: ObjectTypeV2;
-  linkTypes: Array<LinkTypeSideV2>;
+  linkTypes: ReadonlyArray<LinkTypeSideV2>;
   /** A list of interfaces that this object type implements. */
-  implementsInterfaces: Array<InterfaceTypeApiName>;
+  implementsInterfaces: ReadonlyArray<InterfaceTypeApiName>;
   /**
    * A map from shared property type API name to backing local property API name for the shared property types
    * present on this object type.

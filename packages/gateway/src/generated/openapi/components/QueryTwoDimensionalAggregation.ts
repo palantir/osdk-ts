@@ -17,5 +17,5 @@
 import type { QueryAggregation } from "./QueryAggregation";
 
 export interface QueryTwoDimensionalAggregation {
-  groups: Array<QueryAggregation>;
+  groups: ReadonlyArray<QueryAggregation>;
 }

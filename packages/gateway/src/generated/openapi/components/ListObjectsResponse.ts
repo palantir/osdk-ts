@@ -20,5 +20,5 @@ import type { PageToken } from "./PageToken";
 export interface ListObjectsResponse {
   nextPageToken?: PageToken;
   /** The list of objects in the current page. */
-  data: Array<OntologyObject>;
+  data: ReadonlyArray<OntologyObject>;
 }

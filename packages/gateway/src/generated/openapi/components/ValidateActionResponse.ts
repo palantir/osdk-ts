@@ -21,6 +21,6 @@ import type { ValidationResult } from "./ValidationResult";
 
 export interface ValidateActionResponse {
   result: ValidationResult;
-  submissionCriteria: Array<SubmissionCriteriaEvaluation>;
+  submissionCriteria: ReadonlyArray<SubmissionCriteriaEvaluation>;
   parameters: Record<ParameterId, ParameterEvaluationResult>;
 }

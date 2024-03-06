@@ -18,6 +18,6 @@ import type { BBox } from "./BBox";
 import type { Position } from "./Position";
 
 export interface MultiPoint {
-  coordinates: Array<Position>;
+  coordinates: ReadonlyArray<Position>;
   bbox?: BBox;
 }

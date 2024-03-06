@@ -31,7 +31,10 @@ export interface SearchObjectsForInterfaceRequest {
    * object’s object type is a key in the map, then we augment the response for that object type with the list
    * of properties specified in the value.
    */
-  augmentedProperties: Record<ObjectTypeApiName, Array<PropertyApiName>>;
+  augmentedProperties: Record<
+    ObjectTypeApiName,
+    ReadonlyArray<PropertyApiName>
+  >;
   /**
    * A map from interface type API name to a list of shared property type API names. For each returned object, if
    * the object implements an interface that is a key in the map, then we augment the response for that object
@@ -39,24 +42,24 @@ export interface SearchObjectsForInterfaceRequest {
    */
   augmentedSharedPropertyTypes: Record<
     InterfaceTypeApiName,
-    Array<SharedPropertyTypeApiName>
+    ReadonlyArray<SharedPropertyTypeApiName>
   >;
   /**
    * A list of shared property type API names of the interface type that should be included in the response.
    * Omit this parameter to include all properties of the interface type in the response.
    */
-  selectedSharedPropertyTypes: Array<SharedPropertyTypeApiName>;
+  selectedSharedPropertyTypes: ReadonlyArray<SharedPropertyTypeApiName>;
   /**
    * A list of object type API names that should be included in the response. If non-empty, object types that are
    * not mentioned will not be included in the response even if they implement the specified interface. Omit the
    * parameter to include all object types.
    */
-  selectedObjectTypes: Array<ObjectTypeApiName>;
+  selectedObjectTypes: ReadonlyArray<ObjectTypeApiName>;
   /**
    * A list of interface type API names. Object types must implement all the mentioned interfaces in order to be
    * included in the response.
    */
-  otherInterfaceTypes: Array<InterfaceTypeApiName>;
+  otherInterfaceTypes: ReadonlyArray<InterfaceTypeApiName>;
   pageSize?: PageSize;
   pageToken?: PageToken;
 }

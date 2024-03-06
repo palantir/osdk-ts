@@ -26,6 +26,6 @@ export interface PropertiesNotFilterable {
   errorName: "PropertiesNotFilterable";
   errorInstanceId: string;
   parameters: {
-    properties: Array<PropertyApiName>;
+    properties: ReadonlyArray<PropertyApiName>;
   };
 }

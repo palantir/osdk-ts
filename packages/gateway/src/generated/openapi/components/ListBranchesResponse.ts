@@ -20,5 +20,5 @@ import type { PageToken } from "./PageToken";
 export interface ListBranchesResponse {
   nextPageToken?: PageToken;
   /** The list of branches in the current page. */
-  data: Array<Branch>;
+  data: ReadonlyArray<Branch>;
 }

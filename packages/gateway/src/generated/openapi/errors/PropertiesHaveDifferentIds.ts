@@ -24,6 +24,6 @@ export interface PropertiesHaveDifferentIds {
   errorName: "PropertiesHaveDifferentIds";
   errorInstanceId: string;
   parameters: {
-    properties: Array<SharedPropertyTypeApiName>;
+    properties: ReadonlyArray<SharedPropertyTypeApiName>;
   };
 }

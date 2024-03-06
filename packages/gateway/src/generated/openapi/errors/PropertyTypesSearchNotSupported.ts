@@ -26,6 +26,6 @@ export interface PropertyTypesSearchNotSupported {
   errorName: "PropertyTypesSearchNotSupported";
   errorInstanceId: string;
   parameters: {
-    parameters: Record<PropertyFilter, Array<PropertyApiName>>;
+    parameters: Record<PropertyFilter, ReadonlyArray<PropertyApiName>>;
   };
 }

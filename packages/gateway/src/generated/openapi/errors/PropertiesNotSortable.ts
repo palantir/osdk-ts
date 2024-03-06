@@ -26,6 +26,6 @@ export interface PropertiesNotSortable {
   errorName: "PropertiesNotSortable";
   errorInstanceId: string;
   parameters: {
-    properties: Array<PropertyApiName>;
+    properties: ReadonlyArray<PropertyApiName>;
   };
 }

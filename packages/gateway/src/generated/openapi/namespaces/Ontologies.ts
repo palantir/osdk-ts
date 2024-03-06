@@ -455,7 +455,7 @@ export function listObjects<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    properties: Array<SelectedPropertyApiName>;
+    properties: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
   },
 ): Promise<TResponse> {
@@ -479,7 +479,7 @@ export function getObject<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   queryParameters: {
-    properties: Array<SelectedPropertyApiName>;
+    properties: ReadonlyArray<SelectedPropertyApiName>;
   },
 ): Promise<TResponse> {
   return _request(
@@ -520,7 +520,7 @@ export function listLinkedObjects<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    properties: Array<SelectedPropertyApiName>;
+    properties: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
   },
 ): Promise<TResponse> {
@@ -547,7 +547,7 @@ export function getLinkedObject<TResponse>(
   linkType: LinkTypeApiName,
   linkedObjectPrimaryKey: PropertyValueEscapedString,
   queryParameters: {
-    properties: Array<SelectedPropertyApiName>;
+    properties: ReadonlyArray<SelectedPropertyApiName>;
   },
 ): Promise<TResponse> {
   return _request(

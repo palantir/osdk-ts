@@ -22,6 +22,6 @@ export interface DuplicateOrderBy {
   errorName: "DuplicateOrderBy";
   errorInstanceId: string;
   parameters: {
-    properties: Array<PropertyApiName>;
+    properties: ReadonlyArray<PropertyApiName>;
   };
 }

@@ -17,5 +17,5 @@
 import type { OntologyStructField } from "./OntologyStructField";
 
 export interface OntologyStructType {
-  fields: Array<OntologyStructField>;
+  fields: ReadonlyArray<OntologyStructField>;
 }

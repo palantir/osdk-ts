@@ -29,4 +29,4 @@ import type { Position } from "./Position";
  * it bounds, i.e., exterior rings are counterclockwise, and holes are
  * clockwise.
  */
-export type LinearRing = Array<Position>;
+export type LinearRing = ReadonlyArray<Position>;

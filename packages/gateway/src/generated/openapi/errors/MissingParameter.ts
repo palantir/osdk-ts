@@ -25,6 +25,6 @@ export interface MissingParameter {
   errorName: "MissingParameter";
   errorInstanceId: string;
   parameters: {
-    parameters: Array<ParameterId>;
+    parameters: ReadonlyArray<ParameterId>;
   };
 }

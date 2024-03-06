@@ -18,5 +18,5 @@ import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 
 /** Returns objects where at least 1 query is satisfied. */
 export interface OrQueryV2 {
-  value: Array<SearchJsonQueryV2>;
+  value: ReadonlyArray<SearchJsonQueryV2>;
 }

@@ -28,7 +28,7 @@ export interface SearchObjectsRequestV2 {
   /**
    * The API names of the object type properties to include in the response.
    */
-  select: Array<PropertyApiName>;
+  select: ReadonlyArray<PropertyApiName>;
   /**
    * A flag to exclude the retrieval of the `__rid` property.
    * Setting this to true may improve performance of this endpoint for object types in OSV2.
