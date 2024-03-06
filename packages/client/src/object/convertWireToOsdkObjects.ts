@@ -117,7 +117,7 @@ const isAfterFeb2024OrNewApis = false;
  */
 export async function convertWireToOsdkObjectsInPlace(
   client: MinimalClient,
-  objs: OntologyObjectV2[],
+  objs: readonly OntologyObjectV2[],
 ) {
   // Fix properties
   for (const obj of objs) {

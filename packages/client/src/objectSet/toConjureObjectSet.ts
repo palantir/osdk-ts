@@ -41,7 +41,7 @@ export function toConjureObjectSet<
       return {
         type: "static",
         static: {
-          objectRids: objectSet.objects,
+          objectRids: objectSet.objects as string[],
           provenance: undefined,
         },
       };

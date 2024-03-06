@@ -75,7 +75,7 @@ export function generateType(
     },
     list(type: ListType): string {
       const subType = generateType(type.list.subType, referenceSet);
-      return `Array<${subType}>`;
+      return `ReadonlyArray<${subType}>`;
     },
     optional(type: OptionalType): string {
       const subType = generateType(type.optional.subType, referenceSet);

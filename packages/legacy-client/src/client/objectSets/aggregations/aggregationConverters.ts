@@ -97,7 +97,7 @@ export function convertToAggregationResult<
 }
 
 function getMetricObject<TMetrics extends Metrics | MetricValue>(
-  metrics: AggregationMetricResultV2[],
+  metrics: readonly AggregationMetricResultV2[],
   mappedAggregationTypes: { [metricName: string]: MetricValueType },
 ) {
   const metricGroup: { [key in keyof TMetrics]: TMetrics[key] } = {} as any;
