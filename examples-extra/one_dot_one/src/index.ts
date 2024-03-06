@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export {};
+export { FoundryClient, PublicClientAuth } from "./generatedNoCheck/index.js";
