@@ -1,11 +1,7 @@
 packages:
   - "packages/*"
-  - "examples/example-next-static-export"
-  - "examples/example-react"
-  - "examples/example-vue"
+  - "examples/*"
+  - "examples-extra/*"
   - "examples-extra/basic/*"
-  - "examples-extra/one_dot_one"
-  - "examples-extra/todoapp"
-  - "examples-extra/docs_example"
   - "monorepo/*"
   - "tests/*"
