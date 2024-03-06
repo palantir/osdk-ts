@@ -34,6 +34,8 @@ import { createOpenApiRequest } from "@osdk/shared.net";
 import deepEqual from "fast-deep-equal";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncCache } from "../object/Cache.js";
+import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
+import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
 import type { OntologyProviderFactory } from "./OntologyProvider.js";
 
 export interface OntologyCachingOptions {
@@ -56,7 +58,7 @@ async function fullOntologyLoad(client: MinimalClient) {
     ),
   ]);
 }
-
+export const USE_FULL_ONTOLOGY = true;
 export const createStandardOntologyProviderFactory: (
   opts: OntologyCachingOptions,
 ) => OntologyProviderFactory = (client) => {
@@ -84,15 +86,19 @@ export const createStandardOntologyProviderFactory: (
       key: string,
       skipCache = false,
     ) {
-      const fullCacheLocal = await initLocalCache(client, skipCache);
+      if (USE_FULL_ONTOLOGY) {
+        const fullCacheLocal = await initLocalCache(client, skipCache);
 
-      return {
-        ...wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-          fullCacheLocal[1].objectTypes[key],
-          true,
-        ),
-        implements: fullCacheLocal[0].data.map((i) => i.apiName),
-      } as ObjectTypeDefinition<any, any>;
+        return {
+          ...wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+            fullCacheLocal[1].objectTypes[key],
+            true,
+          ),
+          implements: fullCacheLocal[0].data.map((i) => i.apiName),
+        } as ObjectTypeDefinition<any, any>;
+      } else {
+        return await loadFullObjectMetadata(client, key);
+      }
     }
 
     async function loadInterface(
@@ -100,12 +106,16 @@ export const createStandardOntologyProviderFactory: (
       key: string,
       skipCache = false,
     ) {
-      const fullCacheLocal = await initLocalCache(client, skipCache);
+      if (USE_FULL_ONTOLOGY) {
+        const fullCacheLocal = await initLocalCache(client, skipCache);
 
-      return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        fullCacheLocal[1].interfaceTypes[key],
-        true,
-      );
+        return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+          fullCacheLocal[1].interfaceTypes[key],
+          true,
+        );
+      } else {
+        return loadInterfaceDefinition(client, key);
+      }
     }
 
     function makeGetter<N extends ObjectOrInterfaceDefinition>(

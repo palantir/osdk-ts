@@ -19,7 +19,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { fetchPage } from "../object/fetchPage.js";
-import { createStandardOntologyProviderFactory } from "./StandardOntologyProvider.js";
+import {
+  createStandardOntologyProviderFactory,
+  USE_FULL_ONTOLOGY,
+} from "./StandardOntologyProvider.js";
 
 describe(createStandardOntologyProviderFactory, () => {
   beforeAll(async () => {
@@ -48,11 +51,19 @@ describe(createStandardOntologyProviderFactory, () => {
 
     // first load should lookup employee and its link types
     expect(loads).toEqual(
-      [
-        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-        "/api/v2/ontologies/default-ontology/interfaceTypes",
-        "/api/v2/ontologies/default-ontology/fullMetadata",
-      ],
+      USE_FULL_ONTOLOGY
+        ? [
+          "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+          "/api/v2/ontologies/default-ontology/interfaceTypes",
+          "/api/v2/ontologies/default-ontology/fullMetadata",
+        ]
+        : [
+          "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+          "/api/v2/ontologies/default-ontology/objectTypes/Employee",
+          "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
+          "/api/v2/ontologies/default-ontology/interfaceTypes",
+          "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
+        ],
     );
 
     loads = [];
@@ -79,14 +90,22 @@ describe(createStandardOntologyProviderFactory, () => {
       loads.push(request.url.pathname);
     });
 
-    const loadSequenceWithoutCaching = [
-      "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-      "/api/v2/ontologies/default-ontology/interfaceTypes",
-      "/api/v2/ontologies/default-ontology/fullMetadata",
-      // annoyingly happens once for interface load and once for object type load, but its temporary
-      "/api/v2/ontologies/default-ontology/interfaceTypes",
-      "/api/v2/ontologies/default-ontology/fullMetadata",
-    ];
+    const loadSequenceWithoutCaching = USE_FULL_ONTOLOGY
+      ? [
+        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+        "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/api/v2/ontologies/default-ontology/fullMetadata",
+        // annoyingly happens once for interface load and once for object type load, but its temporary
+        "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/api/v2/ontologies/default-ontology/fullMetadata",
+      ]
+      : [
+        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+        "/api/v2/ontologies/default-ontology/objectTypes/Employee",
+        "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
+        "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
+      ];
 
     await fetchPage(client, MockOntology.objects.Employee, {});
     expect(loads).toEqual(loadSequenceWithoutCaching);

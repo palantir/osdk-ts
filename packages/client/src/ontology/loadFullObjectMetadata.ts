@@ -73,9 +73,7 @@ export async function loadFullObjectMetadata(
   ]);
 
   const sharedPropertyTypeMapping = {};
-  for (const interfaceTypeDef of interfaceTypes.data) {
-    Object.assign(sharedPropertyTypeMapping, interfaceTypeDef.properties);
-  }
+  throw new Error("We don't know enough to fill out spt mapping");
 
   const full: ObjectTypeFullMetadata = {
     implementsInterfaces: interfaceTypes.data.map(i => i.apiName),
