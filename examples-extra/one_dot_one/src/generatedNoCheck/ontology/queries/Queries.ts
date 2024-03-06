@@ -18,7 +18,7 @@ export interface Queries {
    * @param {number} params.double - a double parameter
    * @param {number} params.float
    * @param {number} params.integer
-   * @param {number} params.long
+   * @param {string|number} params.long
    * @param {Attachment} params.attachment
    * @param {boolean} params.boolean
    * @param {LocalDate} params.date
@@ -39,7 +39,7 @@ export interface Queries {
     double: number;
     float: number;
     integer: number;
-    long: number;
+    long: string | number;
     attachment: Attachment;
     boolean: boolean;
     date: LocalDate;
