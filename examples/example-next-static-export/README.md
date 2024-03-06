@@ -1,8 +1,8 @@
 # example-next-static-export
 
-This project was generated with `@osdk/create-app` from the `next-static-export` template. It has been modified to build against a locally generated SDK for demonstration purposes.
+This project was generated with `@osdk/create-app` from the `next-static-export` template. It is built against a locally generated SDK and a non-existent Foundry stack so is intended for reference purposes only.
 
-To quickly create your own project run the following command and answer the prompts based on your Developer Console application:
+To quickly create your own version of this template run the following command and answer the prompts based on your Developer Console application:
 
 ```
 npm create @osdk/app@latest -- --template next-static-export
