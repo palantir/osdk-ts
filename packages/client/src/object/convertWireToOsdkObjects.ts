@@ -202,7 +202,7 @@ const isAfterFeb2024OrNewApis = false;
  * May mutate in place for performance reasons. If you need a clean copy,
  * keep it first.
  *
- * However, you must use the return value regardless.
+ * However, you must use the returned value, which will be whatever is correct.
  *
  * @param interfaceApiName - if undefined
  */
@@ -213,6 +213,19 @@ export async function convertWireToOsdkObjects(
 ): Promise<Osdk<ObjectOrInterfaceDefinition>[]> {
   fixObjectPropertiesInline(objects);
 
+  /*
+    We need to create a local cache for the life of this function.
+    Because the user may have their global cache set to "alwaysRevalidate",
+    we want to be able to avoid making N calls to load object/interface information.
+
+    Our local cache will delegate to the global one but since it also caches,
+    we can short circuit the `alwaysRevalidate` logic.
+
+    This tradeoff is slightly less accurate than `alwaysRevalidate` but is close
+    enough given we got back objects at T-3 and if the types are inconsistent for
+    T-2 and T-1, then they are guarenteed wrong for T-3. No matter what
+    the user will get a failure case here. So we avoid the extra work.
+   */
   const localObjectCache = createLocalObjectCacheAndInitiatePreseed(
     objects,
     client,
@@ -257,15 +270,19 @@ function createLocalObjectCacheAndInitiatePreseed(
   objects: OntologyObjectV2[],
   client: MinimalClient,
 ) {
+  // local cache delegates to the global one
   const localInterfaceCache = createAsyncCache((client, apiName: string) =>
     client.ontology.provider.getInterfaceDefinition(apiName)
   );
 
   const localObjectCache = createAsyncCache(async (client, apiName: string) => {
+    // first delegate to the global cache
     const objectDef = await client.ontology.provider.getObjectDefinition(
       apiName,
     ) as AugmentedObjectTypeDefinition<any>;
 
+    // augment results with interface data if its not already there
+    // we need this later for $as
     if (objectDef[InterfaceDefinitions] == null) {
       const interfaceDefs = await Promise.all(
         objectDef.implements?.map(i => localInterfaceCache.get(client, i))
@@ -293,6 +310,7 @@ function createLocalObjectCacheAndInitiatePreseed(
       a.implements?.map(i => localInterfaceCache.get(client, i))
     )
   );
+
   return localObjectCache;
 }
 

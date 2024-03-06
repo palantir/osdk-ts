@@ -179,6 +179,7 @@ async function fetchInterfacePage<
   return result as any;
 }
 
+/** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
