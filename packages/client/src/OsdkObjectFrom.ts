@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectTypeDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 
 export type OsdkObjectPrimaryKeyType<
   O extends ObjectTypeDefinition<any>,
-> = WirePropertyTypes[O["primaryKeyType"]];
+> = PropertyValueWireToClient[O["primaryKeyType"]];
+
 export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends keyof Q["properties"] | "$all" = "$all",

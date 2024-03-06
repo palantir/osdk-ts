@@ -20,14 +20,13 @@ import type {
   ObjectActionDataType,
   ObjectSetActionDataType,
   OntologyDefinition,
-  WirePropertyTypes,
 } from "@osdk/api";
 import type {
   ActionResults,
   ValidateActionResponseV2,
 } from "@osdk/gateway/types";
 import type { ObjectSet } from "../index.js";
-import type { Attachment } from "../object/Attachment.js";
+import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
@@ -41,19 +40,14 @@ export type ApplyActionOptions =
     returnEdits?: false;
   };
 
-// we have to override the @osdk/api WirePropertyTypes to specify how we handle the Attachment types
-interface OverrideWirePropertyTypes extends WirePropertyTypes {
-  attachment: Attachment;
-}
-
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
       | Osdk<TTargetType>
       | OsdkObjectPrimaryKeyType<TTargetType>
     : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
       ? ObjectSet<TTargetType>
-    : APD["type"] extends keyof OverrideWirePropertyTypes
-      ? OverrideWirePropertyTypes[APD["type"]]
+    : APD["type"] extends keyof DataValueClientToWire
+      ? DataValueClientToWire[APD["type"]]
     : never;
 
 type MaybeArrayType<APD extends ActionParameterDefinition<any, any>> =
