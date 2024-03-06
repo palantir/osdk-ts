@@ -17,7 +17,7 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createBaseObjectSet } from "../objectSet/createObjectSet.js";
+import { createObjectSet } from "../objectSet/createObjectSet.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
 import { createAsyncCache, createCache } from "./Cache.js";
@@ -43,7 +43,7 @@ function createPrototype<Q extends ObjectTypeDefinition<any, any>>(
             return;
           }
 
-          const objectSet = createBaseObjectSet(objDef, client).where({
+          const objectSet = createObjectSet(objDef, client).where({
             [objDef.primaryKeyApiName]: primaryKey,
           } as WhereClause<Q>).pivotTo(p);
 

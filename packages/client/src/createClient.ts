@@ -33,10 +33,7 @@ import type {
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
-import {
-  createBaseObjectSet,
-  createObjectSet,
-} from "./objectSet/createObjectSet.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
 import { createObjectSetCreator } from "./ObjectSetCreator.js";
 import type { OntologyCachingOptions } from "./ontology/providers/StandardOntologyProvider.js";
@@ -64,7 +61,7 @@ function createFutureClientPlus(
   {
     if (o.type === "object" || o.type === "interface") {
       clientCtx.ontology.provider.maybeSeed(o);
-      return createBaseObjectSet(o, clientCtx) as any;
+      return createObjectSet(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontology.provider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
@@ -114,7 +111,7 @@ export function createClient<O extends OntologyDefinition<any>>(
   const objectSetFactory: ObjectSetFactory<O> = <
     K extends ObjectOrInterfaceKeysFrom<O>,
   >(type: K) =>
-    createBaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
+    createObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
       (ontology["objects"][type]
         ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
           O,
