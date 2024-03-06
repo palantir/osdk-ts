@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-/* eslint-disable import/export */
-export { PublicClientAuth } from "@osdk/legacy-client";
-export * from "./generatedNoCheck/index.js";
+export { FoundryClient, PublicClientAuth } from "./generatedNoCheck/index.js";
