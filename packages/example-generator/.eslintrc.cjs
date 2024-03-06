@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli.js";
-export { run } from "./run.js";
-export { TEMPLATES } from "./templates.js";
-export type { Template } from "./templates.js";
+module.exports = {
+  extends: ["sane/library"],
+  root: true,
+};
