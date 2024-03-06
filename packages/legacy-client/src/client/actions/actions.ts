@@ -39,7 +39,7 @@ export interface ValidLegacyActionParameterTypes {
   boolean: boolean;
   string: string;
   integer: number;
-  long: number;
+  long: number | string;
   double: number;
   datetime: LocalDate;
   timestamp: Timestamp;
