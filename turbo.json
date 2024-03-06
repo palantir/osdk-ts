@@ -74,6 +74,11 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    "@osdk/examples.next-static-export#build": {
+      "dependsOn": ["transpile", "typecheck"],
+      "inputs": ["../../google-font-mocked-response.js"]
+    },
+
     "transpile": {
       "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
