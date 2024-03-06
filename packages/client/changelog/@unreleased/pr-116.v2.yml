@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Remove v2's BaseObjectSet and always have .get() on every ObjectSet
+  links:
+  - https://github.com/palantir/osdk-ts/pull/116
