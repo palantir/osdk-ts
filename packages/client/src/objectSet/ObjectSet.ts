@@ -81,25 +81,16 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
     ...objectSets: ReadonlyArray<ObjectSet<Q>>
   ) => ObjectSet<Q>;
 
-  pivotTo: <L extends LinkNames<Q>>(type: L) => BaseObjectSet<LinkedType<Q, L>>;
+  pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
-  subscribe: (listener: ObjectSetListener<Q>) => () => void;
-}
-
-declare const InvalidSelection: unique symbol;
-interface InvalidSelectionError<T extends string> {
-  [InvalidSelection]: T;
-}
-
-export interface BaseObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
-> extends ObjectSet<Q> {
   get: Q extends ObjectTypeDefinition<any>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
     ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
     : never;
+
+  subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <

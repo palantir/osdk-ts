@@ -32,7 +32,7 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
-import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
+import type { ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
@@ -113,7 +113,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
     pivotTo: function<L extends LinkNames<Q>>(
       type: L,
-    ): BaseObjectSet<LinkedType<Q, L>> {
+    ): ObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
     },
 
@@ -153,44 +153,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         }
       } while (nextPageToken != null);
     },
-  };
-
-  function createSearchAround<L extends LinkNames<Q>>(link: L) {
-    return () => {
-      return createBaseObjectSet(
-        objectType,
-        clientCtx,
-        {
-          type: "searchAround",
-          objectSet,
-          link,
-        },
-      );
-    };
-  }
-
-  return new Proxy(base as ObjectSet<Q>, {
-    get(target, p, receiver) {
-      if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
-        return createSearchAround(p.substring(searchAroundPrefix.length));
-      }
-      return (target as any)[p as any] as any;
-    },
-  });
-}
-
-export function createBaseObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
->(
-  objectType: Q,
-  clientCtx: MinimalClient,
-  objectSet: WireObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
-): BaseObjectSet<Q> {
-  return {
-    ...createObjectSet(objectType, clientCtx, objectSet),
 
     get: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
@@ -216,6 +178,29 @@ export function createBaseObjectSet<
           withPk,
         ) as Osdk<Q>;
       }
-      : undefined) as BaseObjectSet<Q>["get"],
+      : undefined) as ObjectSet<Q>["get"],
   };
+
+  function createSearchAround<L extends LinkNames<Q>>(link: L) {
+    return () => {
+      return createObjectSet(
+        objectType,
+        clientCtx,
+        {
+          type: "searchAround",
+          objectSet,
+          link,
+        },
+      );
+    };
+  }
+
+  return new Proxy(base as ObjectSet<Q>, {
+    get(target, p, receiver) {
+      if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
+        return createSearchAround(p.substring(searchAroundPrefix.length));
+      }
+      return (target as any)[p as any] as any;
+    },
+  });
 }

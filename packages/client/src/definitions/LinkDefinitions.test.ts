@@ -17,7 +17,7 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 import type { SelectArg } from "../object/fetchPage.js";
-import type { BaseObjectSet } from "../objectSet/ObjectSet.js";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { MockOntology } from "../util/test/mockOntology.js";
 import type {
@@ -44,7 +44,7 @@ describe("LinkDefinitions", () => {
       expectTypeOf<OsdkObjectLinksObject<TaskDef>>()
         .toEqualTypeOf<
           {
-            Todos: BaseObjectSet<TodoDef>;
+            Todos: ObjectSet<TodoDef>;
             RP: SingleLinkAccessor<PersonDef>;
           }
         >();
