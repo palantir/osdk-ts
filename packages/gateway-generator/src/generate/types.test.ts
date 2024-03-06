@@ -247,7 +247,7 @@ describe("generateTypes", () => {
       },
     };
 
-    expect(generateType(dataType, referenceSet)).toBe("Array<string>");
+    expect(generateType(dataType, referenceSet)).toBe("ReadonlyArray<string>");
   });
 
   it("should generate a type reference for a reference type", () => {

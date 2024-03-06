@@ -20,5 +20,5 @@ import type { PageToken } from "./PageToken";
 export interface AggregateObjectsResponse {
   excludedItems?: number;
   nextPageToken?: PageToken;
-  data: Array<AggregateObjectsResponseItem>;
+  data: ReadonlyArray<AggregateObjectsResponseItem>;
 }

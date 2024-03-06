@@ -30,5 +30,5 @@ export interface ActionTypeV2 {
   status: ReleaseStatus;
   parameters: Record<ParameterId, ActionParameterV2>;
   rid: ActionTypeRid;
-  operations: Array<LogicRule>;
+  operations: ReadonlyArray<LogicRule>;
 }

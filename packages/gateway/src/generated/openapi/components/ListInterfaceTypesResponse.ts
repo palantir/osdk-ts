@@ -19,5 +19,5 @@ import type { PageToken } from "./PageToken";
 
 export interface ListInterfaceTypesResponse {
   nextPageToken?: PageToken;
-  data: Array<InterfaceType>;
+  data: ReadonlyArray<InterfaceType>;
 }

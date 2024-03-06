@@ -18,5 +18,5 @@ import type { QueryAggregation } from "./QueryAggregation";
 
 export interface NestedQueryAggregation {
   key: any;
-  groups: Array<QueryAggregation>;
+  groups: ReadonlyArray<QueryAggregation>;
 }

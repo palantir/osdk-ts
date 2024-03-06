@@ -20,8 +20,8 @@ import type { AggregationV2 } from "./AggregationV2";
 import type { ObjectSet } from "./ObjectSet";
 
 export interface AggregateObjectSetRequestV2 {
-  aggregation: Array<AggregationV2>;
+  aggregation: ReadonlyArray<AggregationV2>;
   objectSet: ObjectSet;
-  groupBy: Array<AggregationGroupByV2>;
+  groupBy: ReadonlyArray<AggregationGroupByV2>;
   accuracy?: AggregationAccuracyRequest;
 }

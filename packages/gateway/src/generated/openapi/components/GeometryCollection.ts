@@ -26,6 +26,6 @@ import type { Geometry } from "./Geometry";
  * be used instead.
  */
 export interface GeometryCollection {
-  geometries: Array<Geometry>;
+  geometries: ReadonlyArray<Geometry>;
   bbox?: BBox;
 }

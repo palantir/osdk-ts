@@ -20,8 +20,8 @@ import type { AggregationV2 } from "./AggregationV2";
 import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
 
 export interface AggregateObjectsRequestV2 {
-  aggregation: Array<AggregationV2>;
+  aggregation: ReadonlyArray<AggregationV2>;
   where?: SearchJsonQueryV2;
-  groupBy: Array<AggregationGroupByV2>;
+  groupBy: ReadonlyArray<AggregationGroupByV2>;
   accuracy?: AggregationAccuracyRequest;
 }

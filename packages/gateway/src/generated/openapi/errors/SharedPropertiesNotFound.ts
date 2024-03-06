@@ -23,7 +23,7 @@ export interface SharedPropertiesNotFound {
   errorName: "SharedPropertiesNotFound";
   errorInstanceId: string;
   parameters: {
-    objectType: Array<ObjectTypeApiName>;
-    missingSharedProperties: Array<SharedPropertyTypeApiName>;
+    objectType: ReadonlyArray<ObjectTypeApiName>;
+    missingSharedProperties: ReadonlyArray<SharedPropertyTypeApiName>;
   };
 }

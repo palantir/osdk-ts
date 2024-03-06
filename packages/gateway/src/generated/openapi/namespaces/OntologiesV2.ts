@@ -285,7 +285,7 @@ export function listObjectsV2<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
@@ -312,7 +312,7 @@ export function getObjectV2<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   queryParameters: {
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
     excludeRid?: boolean;
@@ -614,7 +614,7 @@ export function listLinkedObjectsV2<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
@@ -645,7 +645,7 @@ export function getLinkedObjectV2<TResponse>(
   linkType: LinkTypeApiName,
   linkedObjectPrimaryKey: PropertyValueEscapedString,
   queryParameters: {
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
     excludeRid?: boolean;

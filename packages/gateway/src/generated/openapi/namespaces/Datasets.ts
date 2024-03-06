@@ -85,7 +85,7 @@ export function readTable<TResponse>(
     startTransactionRid?: TransactionRid;
     endTransactionRid?: TransactionRid;
     format: TableExportFormat;
-    columns: Array<string>;
+    columns: ReadonlyArray<string>;
     rowLimit?: number;
   },
 ): Promise<TResponse> {

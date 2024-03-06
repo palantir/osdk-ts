@@ -18,6 +18,6 @@ import type { BBox } from "./BBox";
 import type { LineStringCoordinates } from "./LineStringCoordinates";
 
 export interface MultiLineString {
-  coordinates: Array<LineStringCoordinates>;
+  coordinates: ReadonlyArray<LineStringCoordinates>;
   bbox?: BBox;
 }

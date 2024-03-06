@@ -17,5 +17,5 @@
 import type { ObjectSet } from "./ObjectSet";
 
 export interface ObjectSetIntersectionType {
-  objectSets: Array<ObjectSet>;
+  objectSets: ReadonlyArray<ObjectSet>;
 }

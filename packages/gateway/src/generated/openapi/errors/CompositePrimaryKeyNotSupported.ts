@@ -27,6 +27,6 @@ export interface CompositePrimaryKeyNotSupported {
   errorInstanceId: string;
   parameters: {
     objectType: ObjectTypeApiName;
-    primaryKey: Array<PropertyApiName>;
+    primaryKey: ReadonlyArray<PropertyApiName>;
   };
 }

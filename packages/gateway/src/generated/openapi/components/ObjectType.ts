@@ -31,7 +31,7 @@ export interface ObjectType {
   description?: string;
   visibility?: ObjectTypeVisibility;
   /** The primary key of the object. This is a list of properties that can be used to uniquely identify the object. */
-  primaryKey: Array<PropertyApiName>;
+  primaryKey: ReadonlyArray<PropertyApiName>;
   /** A map of the properties of the object type. */
   properties: Record<PropertyApiName, Property>;
   rid: ObjectTypeRid;

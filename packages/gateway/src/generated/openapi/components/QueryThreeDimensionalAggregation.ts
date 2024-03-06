@@ -17,5 +17,5 @@
 import type { NestedQueryAggregation } from "./NestedQueryAggregation";
 
 export interface QueryThreeDimensionalAggregation {
-  groups: Array<NestedQueryAggregation>;
+  groups: ReadonlyArray<NestedQueryAggregation>;
 }

@@ -25,6 +25,6 @@ export interface OntologySyncingObjectTypes {
   errorName: "OntologySyncingObjectTypes";
   errorInstanceId: string;
   parameters: {
-    objectTypes: Array<ObjectTypeApiName>;
+    objectTypes: ReadonlyArray<ObjectTypeApiName>;
   };
 }

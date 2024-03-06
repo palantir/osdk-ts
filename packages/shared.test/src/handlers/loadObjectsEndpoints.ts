@@ -367,7 +367,7 @@ export const loadObjectsEndpoints: RestHandler<
         }
 
         if (linkTypesResponseMap[objectTypeApiName]) {
-          const linkTypes: Array<{
+          const linkTypes: ReadonlyArray<{
             apiName: string;
             status: string;
             objectTypeApiName: string;

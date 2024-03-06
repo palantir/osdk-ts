@@ -18,6 +18,6 @@ import type { OntologyObject } from "./OntologyObject";
 import type { PageToken } from "./PageToken";
 
 export interface SearchObjectsResponse {
-  data: Array<OntologyObject>;
+  data: ReadonlyArray<OntologyObject>;
   nextPageToken?: PageToken;
 }
