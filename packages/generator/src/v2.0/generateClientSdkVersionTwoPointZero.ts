@@ -148,6 +148,7 @@ export async function generateClientSdkVersionTwoPointZero(
         `export * from "./objects/${apiName}${importExt}";`
       ).join("\n")
     }
+    ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}
     `),
   );
 }

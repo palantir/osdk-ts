@@ -177,6 +177,7 @@ export async function generatePerActionDataFiles(
       )
         .join("\n")
     }
+    ${Object.keys(ontology.actionTypes).length === 0 ? "export {};" : ""}
       `),
   );
 }
