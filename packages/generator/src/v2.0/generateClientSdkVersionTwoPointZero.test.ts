@@ -15,7 +15,7 @@
  */
 
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, it, test, vi } from "vitest";
 import { compileThis } from "../util/test/compileThis";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
 import { TodoWireOntology } from "../util/test/TodoWireOntology";
@@ -69,6 +69,21 @@ describe("generator", () => {
         BASE_PATH,
       )).rejects.toThrow();
     });
+  });
+
+  it("guards against empty objects", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo";
+    await generateClientSdkVersionTwoPointZero(
+      { ...TodoWireOntology, objectTypes: {} },
+      "",
+      helper.minimalFiles,
+      BASE_PATH,
+    );
+
+    expect(helper.getFiles()[`${BASE_PATH}/ontology/objects.ts`]).toEqual(
+      "export {};\n",
+    );
   });
 
   test.skip("runs generator locally", async () => {
