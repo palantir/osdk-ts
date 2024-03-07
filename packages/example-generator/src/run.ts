@@ -146,6 +146,7 @@ export async function run({ outputDirectory, check }: RunArgs) {
     }
   } else {
     consola.info("Copying generated packages to output directory");
+    fs.rmSync(outputPath, { recursive: true });
     fs.mkdirSync(outputPath, { recursive: true });
     fs.cpSync(tmpDir.name, outputPath, { recursive: true });
     consola.success("Done");
