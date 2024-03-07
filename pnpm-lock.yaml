@@ -79,7 +79,7 @@ importers:
         specifier: ^1.10.13
         version: 1.10.13
       typescript:
-        specifier: ^5.3.2
+        specifier: ^5.4.2
         version: 5.4.2
       vitest:
         specifier: ^1.2.2
