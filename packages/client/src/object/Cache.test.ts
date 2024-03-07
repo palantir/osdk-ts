@@ -146,11 +146,9 @@ describe("AsyncCache", () => {
             expectedAsyncSets++;
           }
         }
-        // if (expextedPending[key] == null)
 
         // check before and after make sense so that `expectSaneCalls` can work
         const before = await getStats();
-        // const beforeCount = asyncCacheSpies.get.mock.calls.length;
         getPromises.push(asyncCache.get(fauxClient, key));
         expect(await getStats()).toStrictEqual({
           ...before,

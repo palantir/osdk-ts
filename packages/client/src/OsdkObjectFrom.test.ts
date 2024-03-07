@@ -39,7 +39,7 @@ describe("ConvertProps", () => {
           .toEqualTypeOf<"fooSpt">();
       });
 
-      it("resolves to never for unused ", () => {
+      it("resolves to never for unused", () => {
         expectTypeOf<ConvertProps<Employee, FooInterface, "peeps">>()
           .toEqualTypeOf<never>();
       });

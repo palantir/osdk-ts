@@ -49,7 +49,6 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
       value: $as,
       writable: false,
       configurable: false,
-      enumerable: false,
     },
   });
 
@@ -99,7 +98,7 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
       if (newDef === objDef.apiName) {
         return this[UnderlyingObject];
       }
-      const def = objDef[InterfaceDefinitions].find(i => i.apiName === newDef);
+      const def = objDef[InterfaceDefinitions][newDef];
       if (!def) {
         throw new Error(`Object does not implement interface '${newDef}'.`);
       }
@@ -139,7 +138,6 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
 
   Object.defineProperty(objectProto, "$as", {
     value: $as,
-    enumerable: false,
     configurable: false,
   });
 
@@ -204,6 +202,7 @@ const isAfterFeb2024OrNewApis = false;
  *
  * However, you must use the returned value, which will be whatever is correct.
  *
+ * @internal
  * @param interfaceApiName - if undefined
  */
 export async function convertWireToOsdkObjects(
@@ -247,10 +246,12 @@ export async function convertWireToOsdkObjects(
       for (
         const [sptProp, regularProp] of Object.entries(objectDef.spts!)
       ) {
-        const value = obj[sptProp];
-        delete obj[sptProp];
-        if (value !== undefined) {
-          obj[regularProp] = value;
+        if (sptProp in obj) {
+          const value = obj[sptProp];
+          delete obj[sptProp];
+          if (value !== undefined) {
+            obj[regularProp] = value;
+          }
         }
       }
     }
@@ -284,10 +285,10 @@ function createLocalObjectCacheAndInitiatePreseed(
     // augment results with interface data if its not already there
     // we need this later for $as
     if (objectDef[InterfaceDefinitions] == null) {
-      const interfaceDefs = await Promise.all(
+      const interfaceDefs = Object.fromEntries((await Promise.all(
         objectDef.implements?.map(i => localInterfaceCache.get(client, i))
           ?? [],
-      );
+      )).map(i => [i.apiName, i]));
 
       Object.defineProperty(objectDef, InterfaceDefinitions, {
         value: interfaceDefs,
@@ -353,7 +354,7 @@ function fixObjectPropertiesInline(objs: OntologyObjectV2[]) {
 interface AugmentedObjectTypeDefinition<K extends string, N = unknown>
   extends ObjectTypeDefinition<K, N>
 {
-  [InterfaceDefinitions]: InterfaceDefinition<any>[];
+  [InterfaceDefinitions]: { [key: string]: InterfaceDefinition<any> };
 }
 
 function internalConvertObjectInPlace(

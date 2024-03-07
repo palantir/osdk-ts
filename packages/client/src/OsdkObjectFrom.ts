@@ -28,7 +28,7 @@ export type OsdkObjectPrimaryKeyType<
 > = PropertyValueWireToClient[O["primaryKeyType"]];
 
 /**
- * @internal
+ * DO NOT EXPORT FROM PACKAGE
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
  * @param P - the property(s) to convert
@@ -49,7 +49,7 @@ export type ConvertProps<
     : never
   : never;
 
-/* @internal Exported for test only */
+/** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
   InterfaceDefinition<any, any>
   ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
