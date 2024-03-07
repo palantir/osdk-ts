@@ -12,7 +12,7 @@ function Home() {
       <h1>@osdk/examples.one.dot.one</h1>
       <p>
         Welcome to your Ontology SDK! Try using any of the following methods
-        now.
+        now. Something changed!
       </p>
       <div className={css.methods}>
         <div>
