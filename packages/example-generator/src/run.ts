@@ -126,7 +126,6 @@ export async function run({ outputDirectory, check }: RunArgs) {
       consola.info(`Checking contents of ${exampleId}`);
       const pathLeft = fs.realpathSync(path.join(outputPath, exampleId));
       const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
-      consola.info(pathRight);
       const compareResult = compareSync(
         pathLeft,
         pathRight,
