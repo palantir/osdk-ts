@@ -44,20 +44,19 @@ export type BaseQueryDataTypeDefinition<T extends string> = {
   type: T;
 };
 
-export interface WireQueryDataTypes {
-  double: number;
-  float: number;
-  integer: number;
-  long: number;
-  boolean: boolean;
-  string: string;
-  date: Date;
-  timestamp: Date;
-  attachment: any; // TODO surely we can be more strict here
-}
+export type WireQueryDataTypes =
+  | "double"
+  | "float"
+  | "integer"
+  | "long"
+  | "boolean"
+  | "string"
+  | "date"
+  | "timestamp"
+  | "attachment";
 
 export type PrimitiveDataType<
-  Q extends keyof WireQueryDataTypes = keyof WireQueryDataTypes,
+  Q extends WireQueryDataTypes = WireQueryDataTypes,
 > = BaseQueryDataTypeDefinition<Q>;
 
 export interface ObjectQueryDataType<K extends string>

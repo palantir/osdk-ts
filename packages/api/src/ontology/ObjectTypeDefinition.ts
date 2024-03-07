@@ -64,7 +64,7 @@ export interface ObjectTypeDefinition<
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
-  primaryKeyType: keyof WirePropertyTypes;
+  primaryKeyType: WirePropertyTypes;
 }
 
 export type ObjectTypeLinkKeysFrom<
@@ -101,13 +101,13 @@ export interface ObjectTypePropertyDefinition {
   readonly?: boolean;
   displayName?: string;
   description?: string;
-  type: keyof WirePropertyTypes;
+  type: WirePropertyTypes;
   multiplicity?: boolean;
   nullable?: boolean;
 }
 
 export type PropertyDef<
-  T extends keyof WirePropertyTypes,
+  T extends WirePropertyTypes,
   N extends "nullable" | "non-nullable" = "nullable",
   M extends "array" | "single" = "single",
   E extends Record<string, any> = {},

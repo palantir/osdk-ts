@@ -65,7 +65,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): keyof WirePropertyTypes {
+): WirePropertyTypes {
   switch (propertyType.type) {
     case "integer":
     case "string":

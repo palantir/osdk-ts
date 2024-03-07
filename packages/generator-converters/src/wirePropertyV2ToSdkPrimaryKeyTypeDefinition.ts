@@ -19,7 +19,7 @@ import type { PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,
-): keyof WirePropertyTypes {
+): WirePropertyTypes {
   switch (input.dataType.type) {
     case "integer":
     case "double":

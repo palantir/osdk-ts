@@ -103,7 +103,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "date":
       return "LocalDate";
     case "decimal":
-      return "number";
+      return "string";
     case "double":
       return "number";
     case "float":
@@ -113,7 +113,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "geoshape":
       return "GeoShape";
     case "long":
-      return "number";
+      return "string";
     case "short":
       return "number";
     case "timestamp":
