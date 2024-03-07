@@ -37,12 +37,12 @@
   },
   "devDependencies": {
     "ts-expect": "^1.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "files": [
     "build/types",
     "build/js",

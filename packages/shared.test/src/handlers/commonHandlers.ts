@@ -22,7 +22,9 @@ import type {
   RestRequest,
 } from "msw";
 
-type MiddlewareHandler<TReqBody extends DefaultBodyType = DefaultBodyType> = (
+export type MiddlewareHandler<
+  TReqBody extends DefaultBodyType = DefaultBodyType,
+> = (
   req: RestRequest<TReqBody>,
   res: ResponseComposition,
   ctx: RestContext,

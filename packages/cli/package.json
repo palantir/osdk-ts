@@ -52,7 +52,7 @@
     "@types/semver": "^7.5.7",
     "@types/yargs": "^17.0.29",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
@@ -60,7 +60,7 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },
