@@ -17,6 +17,7 @@
 import type {
   DefaultBodyType,
   MockedResponse,
+  PathParams,
   ResponseComposition,
   RestContext,
   RestRequest,
@@ -24,17 +25,19 @@ import type {
 
 export type MiddlewareHandler<
   TReqBody extends DefaultBodyType = DefaultBodyType,
+  TPathParams extends PathParams<string> = PathParams<string>,
 > = (
-  req: RestRequest<TReqBody>,
+  req: RestRequest<TReqBody, TPathParams>,
   res: ResponseComposition,
   ctx: RestContext,
 ) => Promise<MockedResponse<any>>;
 
 export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,
+  TPathParams extends PathParams<string> = PathParams<string>,
 >(
-  handler: MiddlewareHandler<TReqBody>,
-): MiddlewareHandler<TReqBody> {
+  handler: MiddlewareHandler<TReqBody, TPathParams>,
+): MiddlewareHandler<TReqBody, TPathParams> {
   return async (req, res, ctx) => {
     const authHeader = req.headers.get("authorization");
 

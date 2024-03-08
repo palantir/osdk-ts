@@ -30,7 +30,7 @@ import type {
   FetchPageResult,
   SelectArg,
 } from "../object/fetchPage.js";
-import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
@@ -98,7 +98,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
-    ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
+    ) => Promise<Osdk<Q, L>>
     : never;
 
   subscribe: (listener: ObjectSetListener<Q>) => () => void;

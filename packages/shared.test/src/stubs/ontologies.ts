@@ -28,6 +28,15 @@ export const defaultOntology: Ontology = {
   rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
 };
 
+export const defaultOntologyForConjure = {
+  apiName: defaultOntology.apiName,
+  displayName: defaultOntology.displayName,
+  description: defaultOntology.description,
+  currentOntologyVersion: "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
+  defaultBranchRid:
+    "ri.ontology.main.branch.99999999-8888-7777-6666-555555555555",
+};
+
 export const fullOntology: OntologyFullMetadata = {
   ontology: defaultOntology,
   objectTypes: objectTypesWithLinkTypes,

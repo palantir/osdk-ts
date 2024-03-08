@@ -39,10 +39,7 @@ import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import {
-  convertWireToOsdkInterfaceInPlace,
-  convertWireToOsdkObjectsInPlace,
-} from "./convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -104,11 +101,18 @@ export type FetchPageResult<
 > = Promise<
   PageResult<
     ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
-        DefaultToFalse<R> extends false ? Osdk<Q, "$all">
-          : Osdk<Q, "$all", true>
+        DefaultToFalse<R> extends false ? Osdk<Q>
+          : Osdk<
+            Q,
+            "$all",
+            true,
+            Q extends InterfaceDefinition<any> ? "$all" : L
+          >
       )
       : (
-        DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L, true>
+        DefaultToFalse<R> extends false
+          ? Osdk<Q, L, false, Q extends InterfaceDefinition<any> ? never : L>
+          : Osdk<Q, L, true, Q extends InterfaceDefinition<any> ? never : L>
       )
   >
 >;
@@ -162,12 +166,12 @@ async function fetchInterfacePage<
       augmentedSharedPropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
-      selectedSharedPropertyTypes: [],
+      selectedSharedPropertyTypes: args.select as undefined | string[] ?? [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     }),
     { preview: true },
   );
-  await convertWireToOsdkInterfaceInPlace(
+  result.data = await convertWireToOsdkObjects(
     client,
     result.data as OntologyObjectV2[], // drop readonly
     interfaceType.apiName,
@@ -175,6 +179,7 @@ async function fetchInterfacePage<
   return result as any;
 }
 
+/** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -262,9 +267,12 @@ export async function fetchObjectPage<
     }),
   );
 
-  await convertWireToOsdkObjectsInPlace(client, r.data as OntologyObjectV2[]);
-
-  // any is okay here because we have properly converted the wire objects via prototypes
-  // which don't type out correctly.
-  return r as any;
+  return Promise.resolve({
+    data: await convertWireToOsdkObjects(
+      client,
+      r.data as OntologyObjectV2[],
+      undefined,
+    ),
+    nextPageToken: r.nextPageToken,
+  }) as FetchPageResult<Q, L, R>;
 }

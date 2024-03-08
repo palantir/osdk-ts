@@ -42,7 +42,7 @@ import {
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
@@ -467,9 +467,10 @@ async function convertFoundryToOsdkObjects<
     }),
   );
 
-  await convertWireToOsdkObjectsInPlace(client, osdkObjects);
-
-  return osdkObjects as Osdk<O["objects"][K]>[];
+  // doesnt care about interfaces
+  return await convertWireToOsdkObjects(client, osdkObjects, undefined) as Osdk<
+    O["objects"][K]
+  >[];
 }
 
 export type ObjectPropertyMapping = {

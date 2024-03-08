@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceObjectSet, Osdk, PageResult } from "@osdk/client";
+import type { Osdk, PageResult } from "@osdk/client";
 import { createClient, createMinimalClient } from "@osdk/client";
 import { fetchPage } from "@osdk/client/objects";
 import {
@@ -54,13 +54,24 @@ invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
  * do and thus is the suggested starting point.
  */
 export const client = createClient(
-  Ontology,
+  {
+    ...Ontology,
+    metadata: {
+      ...Ontology.metadata,
+      ontologyRid:
+        "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+    },
+  } as typeof Ontology,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
 export const clientCtx = createMinimalClient(
-  Ontology.metadata,
+  {
+    ...Ontology.metadata,
+    ontologyRid:
+      "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
+  },
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
   {},
@@ -82,13 +93,27 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
+    // const { data: boundaries } = await client(BoundariesUsState).fetchPage();
+    // let didThrow = false;
+    // try {
+    //   boundaries[0].$as(FooInterface);
+    // } catch (e) {
+    //   console.log("Yay! Cant convert between mixed types");
+    //   didThrow = true;
+    // }
+
+    // if (!didThrow) {
+    //   throw new Error("Should not be allowed to convert between mixed types");
+    // }
+
     try {
       const r = true
         ? await client(FooInterface)
           .where({ name: { $ne: "Patti" } })
           .where({ name: { $ne: "Roth" } })
-          .fetchPage({ pageSize: 5 })
+          .fetchPage({ pageSize: 1, select: ["name"] })
         : await fetchPage(clientCtx, FooInterface, {
+          select: ["name", "description"],
           pageSize: 5,
         });
 
@@ -96,14 +121,38 @@ async function runTests() {
         true,
       );
 
-      const q = client(FooInterface)
-        .where({ name: { $ne: "Patti" } });
-      expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
+      // const q = client(FooInterface)
+      //   .where({ name: { $ne: "Patti" } });
+      // expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
 
       for (const int of r.data) {
-        console.log(int.$apiName);
-        console.log(int.name);
-        console.log(int);
+        console.log("int:", int.name, int);
+        invariant(int.name);
+        invariant(!(int as any).firstName);
+
+        const employee = int.$as(Employee);
+        expectType<TypeOf<Osdk<Employee, "$all">, typeof employee>>(false);
+        expectType<TypeOf<Osdk<Employee, "firstName">, typeof employee>>(true);
+
+        console.log("employee:", employee.firstName, employee);
+        invariant(employee.firstName);
+        invariant(!(employee as any).name);
+
+        const int2 = employee.$as(FooInterface);
+        expectType<TypeOf<Osdk<FooInterface, "$all">, typeof int2>>(false);
+        expectType<TypeOf<Osdk<FooInterface, "name">, typeof int2>>(true);
+
+        console.log("int2:", int2.name, int2);
+        invariant(int2.name);
+        invariant(!(int as any).firstName);
+
+        const employee2 = int2.$as(Employee);
+        console.log("employee2:", employee2.firstName, employee2);
+        invariant(employee2.firstName);
+        invariant(!(employee2 as any).name);
+
+        // underlyings are ref equal!
+        console.log("employee === employee2", employee === employee2);
       }
     } catch (e: any) {
       console.log(e);
@@ -119,7 +168,7 @@ async function runTests() {
           of: [0, 0],
         },
       },
-    }).fetchPageOrThrow();
+    }).fetchPage();
 
     console.log(result.data[0].geohash);
 
