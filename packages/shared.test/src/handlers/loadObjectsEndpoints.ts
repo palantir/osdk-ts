@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { executeQueryV2 } from "@osdk/gateway/requests";
 import type {
   Attachment,
   AttachmentV2,
-  ExecuteQueryResponse,
   LinkTypeSide,
   ListLinkedObjectsResponse,
   ListObjectsResponseV2,
@@ -82,6 +82,7 @@ import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils";
+import { handleOpenApiCall } from "./util/handleOpenApiCall";
 
 export const loadObjectsEndpoints: RestHandler<
   MockedRequest<DefaultBodyType>
@@ -620,49 +621,44 @@ export const loadObjectsEndpoints: RestHandler<
   /**
    * Execute Queries
    */
-  rest.post(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/queries/:queryApiName/execute",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ExecuteQueryResponse | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
-        const body = await req.text();
-        const parsedBody = JSON.parse(body);
-        const queryApiName = req.params.queryApiName;
+  handleOpenApiCall(
+    executeQueryV2,
+    ["ontologyApiName", "queryApiName"],
+    async (req, res, ctx) => {
+      if (!req || !res) {
+        return res(ctx.status(500, "Request or response not found"));
+      }
+      const body = await req.text();
+      const parsedBody = JSON.parse(body);
+      const queryApiName = req.params.queryApiName;
 
-        if (typeof queryApiName !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters queryApiName")),
-          );
-        }
-
-        const queryResponses = queryRequestHandlers[queryApiName];
-        if (!queryResponses) {
-          return res(
-            ctx.status(404),
-            ctx.json(QueryNotFoundError(queryApiName)),
-          );
-        }
-
-        const queryResponse = queryResponses[JSON.stringify(parsedBody)];
-        if (
-          req.params.ontologyApiName === defaultOntology.apiName
-          && queryResponse
-        ) {
-          return res(ctx.json(queryResponse));
-        }
+      if (typeof queryApiName !== "string") {
         return res(
           ctx.status(400),
-          ctx.json(InvalidRequest("Invalid Query Request")),
+          ctx.json(InvalidRequest("Invalid parameters queryApiName")),
         );
-      },
-    ),
+      }
+
+      const queryResponses = queryRequestHandlers[queryApiName];
+      if (!queryResponses) {
+        return res(
+          ctx.status(404),
+          ctx.json(QueryNotFoundError(queryApiName)),
+        );
+      }
+
+      const queryResponse = queryResponses[JSON.stringify(parsedBody)];
+      if (
+        req.params.ontologyApiName === defaultOntology.apiName
+        && queryResponse
+      ) {
+        return res(ctx.json(queryResponse));
+      }
+      return res(
+        ctx.status(400),
+        ctx.json(InvalidRequest("Invalid Query Request")),
+      );
+    },
   ),
 
   /**

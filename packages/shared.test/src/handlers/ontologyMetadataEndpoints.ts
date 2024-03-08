@@ -14,28 +14,55 @@
  * limitations under the License.
  */
 
-import type {
-  ListOutgoingLinkTypesResponseV2,
-  ObjectTypeV2,
-  OntologyFullMetadata,
-} from "@osdk/gateway/types";
-import type {
-  DefaultBodyType,
-  MockedRequest,
-  PathParams,
-  ResponseComposition,
-  RestHandler,
-  RestRequest,
-} from "msw";
-import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError";
 import {
-  InvalidRequest,
-  ObjectNotFoundError,
+  getObjectTypeV2,
+  getOntologyFullMetadata,
+  getOutgoingLinkTypeV2,
+  listOutgoingLinkTypesV2,
+} from "@osdk/gateway/requests";
+import type { DefaultBodyType, MockedRequest, RestHandler } from "msw";
+import {
+  LinkTypeNotFound,
+  ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
 } from "../errors";
 import { fullOntology } from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
+import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+
+function getOntology(ontologyApiName: string) {
+  if (ontologyApiName !== fullOntology.ontology.apiName) {
+    throw new OpenApiCallError(404, OntologyNotFoundError(ontologyApiName));
+  }
+  return fullOntology;
+}
+
+function getObjectDef(ontologyApiName: string, objectTypeApiName: string) {
+  const ontology = getOntology(ontologyApiName);
+  const objectType = ontology.objectTypes[objectTypeApiName];
+  if (objectType === undefined) {
+    throw new OpenApiCallError(
+      404,
+      ObjectTypeDoesNotExistError(objectTypeApiName),
+    );
+  }
+  return objectType;
+}
+
+function getLinkType(
+  ontologyApiName: string,
+  objectTypeApiName: string,
+  linkTypeName: string,
+) {
+  const objectType = getObjectDef(ontologyApiName, objectTypeApiName);
+  const linkType = objectType.linkTypes.find((a) => a.apiName === linkTypeName);
+  if (linkType === undefined) {
+    throw new OpenApiCallError(
+      404,
+      LinkTypeNotFound(objectTypeApiName, linkTypeName),
+    );
+  }
+  return linkType;
+}
 
 export const ontologyMetadataEndpoint: RestHandler<
   MockedRequest<DefaultBodyType>
@@ -43,124 +70,48 @@ export const ontologyMetadataEndpoint: RestHandler<
   /**
    * Load ObjectSet Objects
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/fullMetadata",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<OntologyFullMetadata | BaseAPIError>,
-        ctx,
-      ) => {
-        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(OntologyNotFoundError(req.params.ontologyRid as string)),
-          );
-        }
-
-        return res(ctx.json(fullOntology));
-      },
-    ),
+  handleOpenApiCall(
+    getOntologyFullMetadata,
+    ["ontologyApiName"],
+    async (req, res, ctx) => {
+      const ontology = getOntology(req.params.ontologyApiName);
+      return res(ctx.json(ontology));
+    },
   ),
 
-  rest.get(
-    `https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectTypes/:objectTypeApiName`,
-    authHandlerMiddleware(
-      async (
-        req: RestRequest<
-          never,
-          PathParams<"ontologyApiName" | "objectTypeApiName">
-        >,
-        res: ResponseComposition<ObjectTypeV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+  handleOpenApiCall(
+    getObjectTypeV2,
+    ["ontologyApiName", "objectTypeApiName"],
+    (req, res, ctx) => {
+      const object = getObjectDef(
+        req.params.ontologyApiName,
+        req.params.objectTypeApiName,
+      );
 
-        if (
-          fullOntology.objectTypes[req.params.objectTypeApiName as string]
-            === undefined
-        ) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              ObjectNotFoundError(
-                req.params.objectTypeApiName as string,
-                "",
-              ),
-            ),
-          );
-        }
-
-        return res(
-          ctx.json(
-            fullOntology.objectTypes[req.params.objectTypeApiName as string]
-              .objectType,
-          ),
-        );
-      },
-    ),
+      return res(ctx.json(object.objectType));
+    },
   ),
 
-  rest.get(
-    `https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectTypes/:objectTypeApiName/outgoingLinkTypes`,
-    authHandlerMiddleware(
-      async (
-        req: RestRequest<
-          never,
-          PathParams<"ontologyApiName" | "objectTypeApiName">
-        >,
-        res: ResponseComposition<
-          ListOutgoingLinkTypesResponseV2 | BaseAPIError
-        >,
-        ctx,
-      ) => {
-        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+  handleOpenApiCall(getOutgoingLinkTypeV2, [
+    "ontology",
+    "objectType",
+    "linkType",
+  ], async ({ params }, res, ctx) => {
+    const linkType = getLinkType(
+      params.ontology,
+      params.objectType,
+      params.linkType,
+    );
 
-        const objectType = req.params.objectTypeApiName;
-        if (typeof objectType !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameter objectType")),
-          );
-        }
+    return res(ctx.json(linkType));
+  }),
 
-        if (
-          fullOntology.objectTypes[req.params.objectTypeApiName as string]
-            === undefined
-        ) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              ObjectNotFoundError(
-                req.params.objectTypeApiName as string,
-                "",
-              ),
-            ),
-          );
-        }
+  handleOpenApiCall(listOutgoingLinkTypesV2, [
+    "ontology",
+    "objectType",
+  ], async ({ params }, res, ctx) => {
+    const object = getObjectDef(params.ontology, params.objectType);
 
-        return res(
-          ctx.json({
-            data:
-              fullOntology.objectTypes[req.params.objectTypeApiName as string]
-                .linkTypes,
-          }),
-        );
-      },
-    ),
-  ),
+    return res(ctx.json({ data: object.linkTypes }));
+  }),
 ];
