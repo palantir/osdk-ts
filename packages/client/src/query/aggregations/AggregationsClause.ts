@@ -26,6 +26,12 @@ type NumericAggregateOption =
   | "avg"
   | "approximateDistinct";
 
+type DateAggregateOption =
+  | "min"
+  | "max"
+  | "avg"
+  | "approximateDistinct";
+
 type totalCountOption = { $count?: true };
 
 export type AggregationClause<
@@ -35,6 +41,8 @@ export type AggregationClause<
   & {
     [P in K]?: Q["properties"][P]["type"] extends "string"
       ? StringAggregateOption | StringAggregateOption[]
+      : Q["properties"][P]["type"] extends "date" | "timestamp"
+        ? DateAggregateOption | DateAggregateOption[]
       : Q["properties"][P]["type"] extends
         "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
         ? NumericAggregateOption | NumericAggregateOption[]
