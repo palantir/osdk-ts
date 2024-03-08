@@ -9,8 +9,8 @@ const _Ontology = {
     Todo: Objects.Todo,
   },
   actions: {
-    createTodo: Actions.createTodo,
     completeTodo: Actions.completeTodo,
+    createTodo: Actions.createTodo,
   },
   queries: {
     // TODO

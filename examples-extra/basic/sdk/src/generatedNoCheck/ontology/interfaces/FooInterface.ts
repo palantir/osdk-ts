@@ -2,17 +2,17 @@ import type { InterfaceDefinition, PropertyDef } from '@osdk/api';
 
 export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInterface> {
   description: 'Its a Foo.';
-  properties: {
-    name: PropertyDef<'string', 'nullable', 'single'>;
-    description: PropertyDef<'string', 'nullable', 'single'>;
-  };
   links: {};
+  properties: {
+    description: PropertyDef<'string', 'nullable', 'single'>;
+    name: PropertyDef<'string', 'nullable', 'single'>;
+  };
 }
 
 export const FooInterface: FooInterface = {
-  type: 'interface',
   apiName: 'FooInterface',
   description: 'Its a Foo.',
+  links: {},
   properties: {
     name: {
       multiplicity: false,
@@ -27,5 +27,5 @@ export const FooInterface: FooInterface = {
       nullable: true,
     },
   },
-  links: {},
+  type: 'interface',
 };

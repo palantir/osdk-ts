@@ -17,10 +17,10 @@ export interface createTodo {
 
 // Represents the definition of the action
 export interface ActionDef$createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo> {
-  type: 'action';
   apiName: 'createTodo';
   description: 'Creates a new Todo';
   modifiedEntities: { Todo: { created: true; modified: false } };
+  type: 'action';
   parameters: ActionDef$createTodo$Params;
 }
 

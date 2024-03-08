@@ -6,18 +6,18 @@ import type { Employee } from '../objects';
 export type ActionDef$promoteEmployeeObject$Params = {
   employee: {
     multiplicity: false;
+    nullable: false;
     type: ObjectActionDataType<'Employee', Employee>;
-    nullable: false;
-  };
-  newTitle: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
   };
   newCompensation: {
     multiplicity: false;
-    type: 'double';
     nullable: false;
+    type: 'double';
+  };
+  newTitle: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
   };
 };
 
@@ -38,10 +38,10 @@ export interface promoteEmployeeObject {
 // Represents the definition of the action
 export interface ActionDef$promoteEmployeeObject
   extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject> {
-  type: 'action';
   apiName: 'promoteEmployeeObject';
   description: "Update an employee's title and compensation";
   modifiedEntities: { Employee: { created: false; modified: true } };
+  type: 'action';
   parameters: ActionDef$promoteEmployeeObject$Params;
 }
 

@@ -5,18 +5,18 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionPa
 export type ActionDef$promoteEmployee$Params = {
   employeeId: {
     multiplicity: false;
+    nullable: false;
     type: 'integer';
-    nullable: false;
-  };
-  newTitle: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
   };
   newCompensation: {
     multiplicity: false;
-    type: 'double';
     nullable: false;
+    type: 'double';
+  };
+  newTitle: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
   };
 };
 
@@ -33,10 +33,10 @@ export interface promoteEmployee {
 
 // Represents the definition of the action
 export interface ActionDef$promoteEmployee extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee> {
-  type: 'action';
   apiName: 'promoteEmployee';
   description: "Update an employee's title and compensation";
   modifiedEntities: { Employee: { created: false; modified: true } };
+  type: 'action';
   parameters: ActionDef$promoteEmployee$Params;
 }
 

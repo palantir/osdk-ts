@@ -3,28 +3,28 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionPa
 
 // Represents the definition of the parameters for the action
 export type ActionDef$createOffice$Params = {
-  officeId: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
-  };
   address: {
-    multiplicity: false;
-    type: 'string';
-    nullable: true;
     description: "The office's physical address (not necessarily shipping address)";
+    multiplicity: false;
+    nullable: true;
+    type: 'string';
   };
   capacity: {
-    multiplicity: false;
-    type: 'integer';
-    nullable: true;
     description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)';
+    multiplicity: false;
+    nullable: true;
+    type: 'integer';
+  };
+  officeId: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
   };
   officeNames: {
-    multiplicity: true;
-    type: 'string';
-    nullable: true;
     description: 'A list of all office names';
+    multiplicity: true;
+    nullable: true;
+    type: 'string';
   };
 };
 
@@ -41,10 +41,10 @@ export interface createOffice {
 
 // Represents the definition of the action
 export interface ActionDef$createOffice extends ActionDefinition<'createOffice', 'Office', createOffice> {
-  type: 'action';
   apiName: 'createOffice';
   description: "Create an office's";
   modifiedEntities: { Office: { created: true; modified: false } };
+  type: 'action';
   parameters: ActionDef$createOffice$Params;
 }
 

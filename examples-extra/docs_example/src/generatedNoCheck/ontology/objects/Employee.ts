@@ -2,28 +2,25 @@ import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from
 
 export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'A full-time or part-time employee of our firm';
-  primaryKeyApiName: 'employeeId';
-  primaryKeyType: 'integer';
   links: {
     lead: ObjectTypeLinkDefinition<Employee, false>;
     peeps: ObjectTypeLinkDefinition<Employee, true>;
   };
+  primaryKeyApiName: 'employeeId';
+  primaryKeyType: 'integer';
   properties: {
-    employeeId: PropertyDef<'integer', 'non-nullable', 'single'>;
     class: PropertyDef<'string', 'nullable', 'single'>;
+    employeeId: PropertyDef<'integer', 'non-nullable', 'single'>;
+    employeeStatus: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
     fullName: PropertyDef<'string', 'nullable', 'single'>;
     office: PropertyDef<'integer', 'nullable', 'single'>;
     startDate: PropertyDef<'datetime', 'nullable', 'single'>;
-    employeeStatus: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
   };
 }
 
 export const Employee: Employee = {
-  type: 'object',
   apiName: 'Employee',
   description: 'A full-time or part-time employee of our firm',
-  primaryKeyApiName: 'employeeId',
-  primaryKeyType: 'integer',
   links: {
     lead: {
       multiplicity: false,
@@ -34,6 +31,8 @@ export const Employee: Employee = {
       targetType: 'Employee',
     },
   },
+  primaryKeyApiName: 'employeeId',
+  primaryKeyType: 'integer',
   properties: {
     employeeId: {
       multiplicity: false,
@@ -69,4 +68,5 @@ export const Employee: Employee = {
       nullable: true,
     },
   },
+  type: 'object',
 };
