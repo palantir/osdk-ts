@@ -25,11 +25,52 @@ export type GroupByClause<
 };
 export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
-export type GroupByRange = [number, number];
+export type GroupByRange<T> = [T, T];
+export type DurationGroupBy = [number, keyof typeof TimeUnitMapping];
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
-} | { ranges: GroupByRange[] };
+} | { ranges: GroupByRange<number>[] };
+
+export type TimestampGroupByValue =
+  | "exact"
+  | { ranges: GroupByRange<string>[] }
+  | { duration: DurationGroupBy };
+
+export type TimeUnit =
+  | "SECONDS"
+  | "MINUTES"
+  | "HOURS"
+  | "DAYS"
+  | "WEEKS"
+  | "MONTHS"
+  | "YEARS"
+  | "QUARTERS";
+
+export const TimeUnitMapping = {
+  "sec": "SECONDS",
+  "seconds": "SECONDS",
+  "min": "MINUTES",
+  "minute": "MINUTES",
+  "minutes": "MINUTES",
+  "hr": "HOURS",
+  "hrs": "HOURS",
+  "hour": "HOURS",
+  "hours": "HOURS",
+  "day": "DAYS",
+  "days": "DAYS",
+  "wk": "WEEKS",
+  "week": "WEEKS",
+  "weeks": "WEEKS",
+  "mos": "MONTHS",
+  "month": "MONTHS",
+  "months": "MONTHS",
+  "yr": "YEARS",
+  "year": "YEARS",
+  "years": "YEARS",
+  "quarter": "QUARTERS",
+  "quarters": "QUARTERS",
+} satisfies Record<string, TimeUnit>;
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition<any, any>,

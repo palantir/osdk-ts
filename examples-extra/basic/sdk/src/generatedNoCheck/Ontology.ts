@@ -9,6 +9,7 @@ const _Ontology = {
   objects: {
     WeatherStation: Objects.WeatherStation,
     BoundariesUsState: Objects.BoundariesUsState,
+    BuilderDeploymentState: Objects.BuilderDeploymentState,
     Todo: Objects.Todo,
     Person: Objects.Person,
     Employee: Objects.Employee,
@@ -27,7 +28,14 @@ const _Ontology = {
     SimpleInterface: Interfaces.SimpleInterface,
   },
 } satisfies OntologyDefinition<
-  'WeatherStation' | 'BoundariesUsState' | 'Todo' | 'Person' | 'Employee' | 'Venture' | 'ObjectTypeWithAllPropertyTypes'
+  | 'WeatherStation'
+  | 'BoundariesUsState'
+  | 'BuilderDeploymentState'
+  | 'Todo'
+  | 'Person'
+  | 'Employee'
+  | 'Venture'
+  | 'ObjectTypeWithAllPropertyTypes'
 >;
 
 type _Ontology = typeof _Ontology;

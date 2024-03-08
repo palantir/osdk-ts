@@ -18,6 +18,7 @@ import { createClient, createMinimalClient } from "@osdk/client";
 import {
   assignEmployee1,
   BoundariesUsState,
+  BuilderDeploymentState,
   Employee,
   Ontology,
   Venture,
@@ -250,6 +251,8 @@ async function runTests() {
       testAggregateCountWithGroups[0].latitude.min,
     );
 
+    await testGroupbysDates();
+
     console.log(testAggregateCountWithGroups[0].$group.longitude);
     console.log(
       "Limit worked:",
@@ -307,4 +310,50 @@ async function checkLinksAndActionsForVentures() {
       break;
     }
   }
+}
+
+async function testGroupbysDates() {
+  const groupedTimestamps = await client(BuilderDeploymentState).aggregate({
+    select: { $count: true },
+    groupBy: { currentTimestamp: { duration: [10, "seconds"] } },
+  });
+
+  const groupedDates = await client(BuilderDeploymentState).aggregate({
+    select: { $count: true },
+    groupBy: { date: { duration: [10, "days"] } },
+  });
+
+  const rangedDates = await client(BuilderDeploymentState).aggregate({
+    select: { $count: true },
+    groupBy: {
+      date: {
+        ranges: [["2008-03-01", "2009-11-05"], ["2015-10-01", "2018-11-05"]],
+      },
+    },
+  });
+
+  const rangedTimestamps = await client(BuilderDeploymentState).aggregate({
+    select: { $count: true },
+    groupBy: {
+      currentTimestamp: {
+        ranges: [["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"], [
+          "2023-04-05T17:28:00Z",
+          "2023-04-06T11:28:00Z",
+        ]],
+      },
+    },
+  });
+
+  console.log(groupedTimestamps[0].$group.currentTimestamp);
+  console.log(groupedDates[0].$group.date);
+  console.log(
+    rangedTimestamps[0].$group.currentTimestamp.startValue,
+    rangedTimestamps[0].$group.currentTimestamp.endValue,
+    rangedTimestamps[0].$count,
+  );
+  console.log(
+    rangedDates[0].$group.date.startValue,
+    rangedDates[0].$group.date.endValue,
+    rangedDates[0].$count,
+  );
 }

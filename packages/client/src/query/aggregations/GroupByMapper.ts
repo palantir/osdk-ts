@@ -17,6 +17,7 @@
 import type {
   NumericGroupByValue,
   StringGroupByValue,
+  TimestampGroupByValue,
 } from "./GroupByClause.js";
 
 export interface GroupByMapper {
@@ -27,4 +28,6 @@ export interface GroupByMapper {
   byte: NumericGroupByValue;
   double: NumericGroupByValue;
   integer: NumericGroupByValue;
+  timestamp: TimestampGroupByValue;
+  datetime: TimestampGroupByValue;
 }

@@ -54,6 +54,12 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
     priority: {
       type: "double";
     };
+    date: {
+      type: "datetime";
+    };
+    timestamp: {
+      type: "timestamp";
+    };
     other: {
       type: "string";
     };
@@ -90,6 +96,12 @@ const Todo: TodoDef = {
     },
     decimalProp: {
       type: "decimal",
+    },
+    date: {
+      type: "datetime",
+    },
+    timestamp: {
+      type: "timestamp",
     },
     other: {
       type: "string",
@@ -209,6 +221,8 @@ describe("aggregate", () => {
             ranges: [[2, 3], [4, 5]],
           },
           floatProp: { fixedWidth: 10 },
+          timestamp: { duration: [10, "minutes"] },
+          date: { ranges: [["2024-01-02", "2024-01-09"]] },
         },
       },
     );
@@ -224,6 +238,10 @@ describe("aggregate", () => {
       grouped[0].$group.shortProp,
     );
     expectType<number>(grouped[0].$group.floatProp);
+    expectType<string>(grouped[0].$group.timestamp);
+    expectType<{ startValue: string; endValue: string }>(
+      grouped[0].$group.date,
+    );
   });
 
   it("works with where: todo", async () => {
