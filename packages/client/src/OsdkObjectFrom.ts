@@ -40,7 +40,13 @@ export type ConvertProps<
 > = TO extends ObjectTypeDefinition<any> ? (
     (NonNullable<
       TO["inverseSpts"]
-    >[P extends "$all" ? keyof FROM["properties"] : P])
+    >[
+      P extends "$all"
+        ? keyof FROM["properties"] extends keyof TO["inverseSpts"]
+          ? keyof FROM["properties"]
+        : never
+        : P
+    ])
   )
   : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
     : FROM extends ObjectTypeDefinition<any>

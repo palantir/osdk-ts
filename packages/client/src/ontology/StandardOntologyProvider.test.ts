@@ -62,6 +62,8 @@ describe(createStandardOntologyProviderFactory, () => {
           "/api/v2/ontologies/default-ontology/objectTypes/Employee",
           "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
           "/api/v2/ontologies/default-ontology/interfaceTypes",
+          "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
+          "/ontology-metadata/api/ontology/ontology/loadEntities",
           "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
         ],
     );
@@ -104,6 +106,8 @@ describe(createStandardOntologyProviderFactory, () => {
         "/api/v2/ontologies/default-ontology/objectTypes/Employee",
         "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
         "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
+        "/ontology-metadata/api/ontology/ontology/loadEntities",
         "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
       ];
 

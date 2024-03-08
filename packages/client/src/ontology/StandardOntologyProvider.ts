@@ -58,7 +58,7 @@ async function fullOntologyLoad(client: MinimalClient) {
     ),
   ]);
 }
-export const USE_FULL_ONTOLOGY = true;
+export const USE_FULL_ONTOLOGY = false;
 export const createStandardOntologyProviderFactory: (
   opts: OntologyCachingOptions,
 ) => OntologyProviderFactory = (client) => {
