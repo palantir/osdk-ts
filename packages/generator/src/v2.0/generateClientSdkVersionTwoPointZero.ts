@@ -38,12 +38,18 @@ export async function generateClientSdkVersionTwoPointZero(
 
   const sanitizedOntology = sanitizeMetadata(ontology);
 
-  const objectNames = Object.keys(sanitizedOntology.objectTypes);
-  const actionNames = Object.keys(sanitizedOntology.actionTypes);
-  const queryNames = Object.keys(sanitizedOntology.queryTypes);
+  const objectNames = Object.keys(sanitizedOntology.objectTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const actionNames = Object.keys(sanitizedOntology.actionTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const queryNames = Object.keys(sanitizedOntology.queryTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
   const interfaceNames = Object.keys(
     sanitizedOntology.interfaceTypes ?? {},
-  );
+  ).sort((a, b) => a.localeCompare(b));
 
   const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
@@ -146,8 +152,8 @@ export async function generateClientSdkVersionTwoPointZero(
     path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
     ${
-      Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./objects/${apiName}${importExt}";`
+      Object.keys(ontology.objectTypes).sort((a, b) => a.localeCompare(b)).map(
+        apiName => `export * from "./objects/${apiName}${importExt}";`,
       ).join("\n")
     }
     ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}

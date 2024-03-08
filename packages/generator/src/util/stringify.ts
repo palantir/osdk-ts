@@ -53,7 +53,10 @@ export function stringify<T extends Record<string, any>>(
   const defaultKeyFormatter = (key: string) => `${JSON.stringify(key)}`;
   const entries: Array<string> = [];
 
-  for (const [key, value] of Object.entries(obj)) {
+  const sortedKeys = Object.keys(obj).sort((a, b) => a.localeCompare(b));
+
+  for (const key of sortedKeys) {
+    const value = obj[key];
     const res =
       (customizer[key as keyof T] ?? customizer["*"] ?? defaultCustomizer)(
         value,

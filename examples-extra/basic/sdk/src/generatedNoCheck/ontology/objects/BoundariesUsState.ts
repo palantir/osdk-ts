@@ -2,24 +2,23 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface BoundariesUsState extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState> {
   description: 'Boundaries US State';
+  links: {};
   primaryKeyApiName: 'usState';
   primaryKeyType: 'string';
-  links: {};
   properties: {
-    usState: PropertyDef<'string', 'non-nullable', 'single'>;
+    geometry10M: PropertyDef<'geoshape', 'nullable', 'single'>;
     latitude: PropertyDef<'double', 'nullable', 'single'>;
     longitude: PropertyDef<'double', 'nullable', 'single'>;
-    geometry10M: PropertyDef<'geoshape', 'nullable', 'single'>;
+    usState: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
 
 export const BoundariesUsState: BoundariesUsState = {
-  type: 'object',
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',
+  links: {},
   primaryKeyApiName: 'usState',
   primaryKeyType: 'string',
-  links: {},
   properties: {
     usState: {
       multiplicity: false,
@@ -43,4 +42,5 @@ export const BoundariesUsState: BoundariesUsState = {
       nullable: true,
     },
   },
+  type: 'object',
 };

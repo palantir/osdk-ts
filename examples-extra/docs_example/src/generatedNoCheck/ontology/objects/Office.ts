@@ -2,24 +2,23 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface Office extends ObjectTypeDefinition<'Office', Office> {
   description: 'A office in our Company';
+  links: {};
   primaryKeyApiName: 'officeId';
   primaryKeyType: 'string';
-  links: {};
   properties: {
-    officeId: PropertyDef<'string', 'non-nullable', 'single'>;
     entrance: PropertyDef<'geopoint', 'nullable', 'single'>;
-    occupiedArea: PropertyDef<'geoshape', 'nullable', 'single'>;
     name: PropertyDef<'string', 'nullable', 'single'>;
+    occupiedArea: PropertyDef<'geoshape', 'nullable', 'single'>;
+    officeId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
 
 export const Office: Office = {
-  type: 'object',
   apiName: 'Office',
   description: 'A office in our Company',
+  links: {},
   primaryKeyApiName: 'officeId',
   primaryKeyType: 'string',
-  links: {},
   properties: {
     officeId: {
       multiplicity: false,
@@ -44,4 +43,5 @@ export const Office: Office = {
       nullable: true,
     },
   },
+  type: 'object',
 };

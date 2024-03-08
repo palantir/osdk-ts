@@ -4,36 +4,36 @@ import type { Person, Todo } from '../objects.js';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$actionTakesAllParameterTypes$Params = {
-  objectSet: {
-    multiplicity: false;
-    type: ObjectSetActionDataType<'Todo', Todo>;
+  attachmentArray: {
+    multiplicity: true;
     nullable: false;
-  };
-  object: {
-    multiplicity: false;
-    type: ObjectActionDataType<'Person', Person>;
-    nullable: true;
-    description: 'A person Object';
-  };
-  string: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
-  };
-  'time-stamp': {
-    multiplicity: false;
-    type: 'timestamp';
-    nullable: false;
+    type: 'attachment';
   };
   dateArray: {
     multiplicity: true;
-    type: 'datetime';
     nullable: true;
+    type: 'datetime';
   };
-  attachmentArray: {
-    multiplicity: true;
-    type: 'attachment';
+  object: {
+    description: 'A person Object';
+    multiplicity: false;
+    nullable: true;
+    type: ObjectActionDataType<'Person', Person>;
+  };
+  objectSet: {
+    multiplicity: false;
     nullable: false;
+    type: ObjectSetActionDataType<'Todo', Todo>;
+  };
+  string: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
+  };
+  'time-stamp': {
+    multiplicity: false;
+    nullable: false;
+    type: 'timestamp';
   };
 };
 
@@ -60,13 +60,13 @@ export interface ActionDef$actionTakesAllParameterTypes
     'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
     actionTakesAllParameterTypes
   > {
-  type: 'action';
   apiName: 'actionTakesAllParameterTypes';
   description: 'An action which takes different types of parameters';
   modifiedEntities: {
     Todo: { created: true; modified: true };
     ObjectTypeWithAllPropertyTypes: { created: false; modified: true };
   };
+  type: 'action';
   parameters: ActionDef$actionTakesAllParameterTypes$Params;
 }
 

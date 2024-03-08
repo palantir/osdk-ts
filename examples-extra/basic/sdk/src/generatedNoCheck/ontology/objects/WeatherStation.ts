@@ -2,22 +2,21 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation> {
   description: 'Weather Station';
+  links: {};
   primaryKeyApiName: 'stationId';
   primaryKeyType: 'string';
-  links: {};
   properties: {
-    stationId: PropertyDef<'string', 'non-nullable', 'single'>;
     geohash: PropertyDef<'geopoint', 'nullable', 'single'>;
+    stationId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
 
 export const WeatherStation: WeatherStation = {
-  type: 'object',
   apiName: 'WeatherStation',
   description: 'Weather Station',
+  links: {},
   primaryKeyApiName: 'stationId',
   primaryKeyType: 'string',
-  links: {},
   properties: {
     stationId: {
       multiplicity: false,
@@ -31,4 +30,5 @@ export const WeatherStation: WeatherStation = {
       nullable: true,
     },
   },
+  type: 'object',
 };
