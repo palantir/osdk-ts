@@ -4,23 +4,20 @@ import type { Todo } from './Todo.js';
 
 export interface Person extends ObjectTypeDefinition<'Person', Person> {
   description: 'A person';
+  links: {
+    Friends: ObjectTypeLinkDefinition<Person, true>;
+    Todos: ObjectTypeLinkDefinition<Todo, true>;
+  };
   primaryKeyApiName: 'email';
   primaryKeyType: 'string';
-  links: {
-    Todos: ObjectTypeLinkDefinition<Todo, true>;
-    Friends: ObjectTypeLinkDefinition<Person, true>;
-  };
   properties: {
     email: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
 
 export const Person: Person = {
-  type: 'object',
   apiName: 'Person',
   description: 'A person',
-  primaryKeyApiName: 'email',
-  primaryKeyType: 'string',
   links: {
     Todos: {
       multiplicity: true,
@@ -31,6 +28,8 @@ export const Person: Person = {
       targetType: 'Person',
     },
   },
+  primaryKeyApiName: 'email',
+  primaryKeyType: 'string',
   properties: {
     email: {
       multiplicity: false,
@@ -38,4 +37,5 @@ export const Person: Person = {
       nullable: false,
     },
   },
+  type: 'object',
 };

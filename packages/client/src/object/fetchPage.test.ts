@@ -15,12 +15,18 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { describe, expectTypeOf, it } from "vitest";
+import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
+import { describe, expect, expectTypeOf, it } from "vitest";
+import { createMinimalClient } from "../createMinimalClient.js";
 import type { FetchPageArgs, SelectArgToKeys } from "../object/fetchPage.js";
-import { fetchPage } from "../object/fetchPage.js";
+import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "../objectSet/createObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
-import type { MockOntology } from "../util/test/mockOntology.js";
+import { MockOntology } from "../util/test/mockOntology.js";
 
 describe(fetchPage, () => {
   type Objects = typeof MockOntology["objects"];
@@ -67,5 +73,78 @@ describe(fetchPage, () => {
       >
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "text">>>();
+  });
+
+  it("converts interface objectsets to search properly", () => {
+    expect(objectSetToSearchJsonV2(
+      {
+        type: "filter",
+        objectSet: {
+          type: "filter",
+          objectSet: {
+            type: "base",
+            objectType: "Todo",
+          },
+          where: {
+            type: "eq",
+            field: "text",
+            value: "hello",
+          },
+        },
+
+        where: {
+          type: "gt",
+          field: "id",
+          value: 2,
+        },
+      },
+      "Todo",
+      undefined,
+    )).toEqual(
+      {
+        type: "and",
+        value: [
+          {
+            type: "gt",
+            field: "id",
+            value: 2,
+          },
+          {
+            type: "eq",
+            field: "text",
+            value: "hello",
+          },
+        ],
+      } satisfies SearchJsonQueryV2,
+    );
+  });
+
+  it("converts interface objectsets to search properly part 2", () => {
+    const client = createMinimalClient(MockOntology.metadata, "foo", () => "");
+    const objectSet = createObjectSet(MockOntology.objects.Todo, client).where({
+      text: "hello",
+    }).where({
+      id: { $gt: 2 },
+    });
+
+    const wireObjectSet = getWireObjectSet(objectSet);
+
+    expect(objectSetToSearchJsonV2(wireObjectSet, "Todo", undefined)).toEqual(
+      {
+        type: "and",
+        value: [
+          {
+            type: "gt",
+            field: "id",
+            value: 2,
+          },
+          {
+            type: "eq",
+            field: "text",
+            value: "hello",
+          },
+        ],
+      } satisfies SearchJsonQueryV2,
+    );
   });
 });

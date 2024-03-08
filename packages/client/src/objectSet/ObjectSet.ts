@@ -15,6 +15,7 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
@@ -22,7 +23,6 @@ import type {
   ObjectTypeDefinition,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import type {
@@ -30,23 +30,13 @@ import type {
   FetchPageResult,
   SelectArg,
 } from "../object/fetchPage.js";
-import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
-  definition: WireObjectSet;
-
-  /** @deprecated */
-  fetchPageOrThrow: <
-    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-    R extends boolean,
-  >(
-    args?: FetchPageArgs<Q, L, R>,
-  ) => FetchPageResult<Q, L, R>;
-
+export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
   fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
@@ -54,7 +44,28 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
     args?: FetchPageArgs<Q, L, R>,
   ) => FetchPageResult<Q, L, R>;
 
+  where: (
+    clause: WhereClause<Q>,
+  ) => MinimalObjectSet<Q>;
+
   asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+}
+
+export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
+  extends MinimalObjectSet<Q>
+{
+}
+
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends MinimalObjectSet<Q>
+{
+  /** @deprecated */
+  fetchPageOrThrow: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+  >(
+    args?: FetchPageArgs<Q, L, R>,
+  ) => FetchPageResult<Q, L, R>;
 
   /** @deprecated use `aggregate` */
   aggregateOrThrow: <AO extends AggregateOpts<Q>>(
@@ -87,7 +98,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
-    ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
+    ) => Promise<Osdk<Q, L>>
     : never;
 
   subscribe: (listener: ObjectSetListener<Q>) => () => void;

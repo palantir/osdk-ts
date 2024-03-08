@@ -18,7 +18,9 @@ import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
-import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst";
+import {
+  wireObjectTypeV2ToSdkObjectConst,
+} from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import { verifyOutdir } from "../util/verifyOutdir";
 import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
@@ -36,12 +38,18 @@ export async function generateClientSdkVersionTwoPointZero(
 
   const sanitizedOntology = sanitizeMetadata(ontology);
 
-  const objectNames = Object.keys(sanitizedOntology.objectTypes);
-  const actionNames = Object.keys(sanitizedOntology.actionTypes);
-  const queryNames = Object.keys(sanitizedOntology.queryTypes);
+  const objectNames = Object.keys(sanitizedOntology.objectTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const actionNames = Object.keys(sanitizedOntology.actionTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
+  const queryNames = Object.keys(sanitizedOntology.queryTypes).sort((a, b) =>
+    a.localeCompare(b)
+  );
   const interfaceNames = Object.keys(
     sanitizedOntology.interfaceTypes ?? {},
-  );
+  ).sort((a, b) => a.localeCompare(b));
 
   const importExt = packageType === "module" ? ".js" : "";
   await fs.mkdir(outDir, { recursive: true });
@@ -144,10 +152,11 @@ export async function generateClientSdkVersionTwoPointZero(
     path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
     ${
-      Object.keys(ontology.objectTypes).map(apiName =>
-        `export * from "./objects/${apiName}${importExt}";`
+      Object.keys(ontology.objectTypes).sort((a, b) => a.localeCompare(b)).map(
+        apiName => `export * from "./objects/${apiName}${importExt}";`,
       ).join("\n")
     }
+    ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}
     `),
   );
 }
@@ -172,6 +181,7 @@ async function generateOntologyInterfaces(
   await fs.mkdir(interfacesDir, {
     recursive: true,
   });
+
   for (const name of interfaceNames) {
     const obj = ontology.interfaceTypes![name];
 
@@ -179,7 +189,7 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${name}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition } from "@osdk/api";
+      import type { InterfaceDefinition, PropertyDef } from "@osdk/api";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
     `),

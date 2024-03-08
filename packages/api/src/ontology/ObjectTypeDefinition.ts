@@ -65,6 +65,10 @@ export interface ObjectTypeDefinition<
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   primaryKeyType: WirePropertyTypes;
+
+  implements?: string[];
+  spts?: Record<string, string>;
+  inverseSpts?: Record<string, string>;
 }
 
 export type ObjectTypeLinkKeysFrom<

@@ -14,20 +14,36 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition, ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  ActionDefinition,
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export interface OntologyProvider {
   /**
-   * Returns the current known definition for the object or interface.
+   * Returns the current known definition for the object.
    *
-   * May result in mulitiple network calls. May cache results. May invalidate results
+   * May result in multiple network calls. May cache results. May invalidate results
    * @param apiName
    * @returns
    */
-  getObjectOrInterfaceDefinition: (
+  getObjectDefinition: (
     apiName: string,
-  ) => Promise<ObjectOrInterfaceDefinition>;
+  ) => Promise<ObjectTypeDefinition<any>>;
+
+  /**
+   * Returns the current known definition for the interface.
+   *
+   * May result in multiple network calls. May cache results. May invalidate results
+   * @param apiName
+   * @returns
+   */
+  getInterfaceDefinition: (
+    apiName: string,
+  ) => Promise<InterfaceDefinition<any, any>>;
 
   /**
    * If the OntologyProvider supports seeding, this method will seed the provider with the given definition.

@@ -50,12 +50,11 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
 
 export interface ObjectTypeWithAllPropertyTypesDef
   extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
-  type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
   description: 'A type with all property types';
+  links: {};
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
-  links: {};
   properties: {
     id: {
       multiplicity: false;
@@ -213,15 +212,15 @@ export interface ObjectTypeWithAllPropertyTypesDef
       nullable: true;
     };
   };
+  type: 'object';
 }
 
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef = {
-  type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  links: {},
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
-  links: {},
   properties: {
     id: {
       multiplicity: false,
@@ -379,4 +378,5 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
       nullable: true,
     },
   },
+  type: 'object',
 };

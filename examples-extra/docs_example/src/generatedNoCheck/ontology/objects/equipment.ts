@@ -1,9 +1,9 @@
 import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface equipment extends ObjectTypeDefinition<'equipment', equipment> {
+  links: {};
   primaryKeyApiName: 'equipmentId';
   primaryKeyType: 'string';
-  links: {};
   properties: {
     equipmentId: PropertyDef<'string', 'non-nullable', 'single'>;
     type: PropertyDef<'string', 'nullable', 'single'>;
@@ -11,11 +11,10 @@ export interface equipment extends ObjectTypeDefinition<'equipment', equipment> 
 }
 
 export const equipment: equipment = {
-  type: 'object',
   apiName: 'equipment',
+  links: {},
   primaryKeyApiName: 'equipmentId',
   primaryKeyType: 'string',
-  links: {},
   properties: {
     equipmentId: {
       multiplicity: false,
@@ -29,4 +28,5 @@ export const equipment: equipment = {
       nullable: true,
     },
   },
+  type: 'object',
 };

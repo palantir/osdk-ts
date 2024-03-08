@@ -38,4 +38,17 @@ describe(generatePerActionDataFiles, () => {
       [`${BASE_PATH}/index.ts`]: expect.anything(),
     });
   });
+
+  it("guards against empty actions", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo/actions";
+    await generatePerActionDataFiles(
+      { ...TodoWireOntology, actionTypes: {} },
+      helper.minimalFiles,
+      BASE_PATH,
+      "",
+      true,
+    );
+    expect(helper.getFiles()[`${BASE_PATH}/index.ts`]).toEqual("export {};\n");
+  });
 });

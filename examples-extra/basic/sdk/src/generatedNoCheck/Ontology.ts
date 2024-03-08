@@ -7,35 +7,35 @@ import * as Objects from './ontology/objects.js';
 const _Ontology = {
   metadata: OntologyMetadata,
   objects: {
-    WeatherStation: Objects.WeatherStation,
     BoundariesUsState: Objects.BoundariesUsState,
     BuilderDeploymentState: Objects.BuilderDeploymentState,
-    Todo: Objects.Todo,
-    Person: Objects.Person,
     Employee: Objects.Employee,
-    Venture: Objects.Venture,
     ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes,
+    Person: Objects.Person,
+    Todo: Objects.Todo,
+    Venture: Objects.Venture,
+    WeatherStation: Objects.WeatherStation,
   },
   actions: {
     actionTakesAllParameterTypes: Actions.actionTakesAllParameterTypes,
-    createTodo: Actions.createTodo,
     assignEmployee1: Actions.assignEmployee1,
+    createTodo: Actions.createTodo,
   },
   queries: {
     // TODO
   },
   interfaces: {
-    SimpleInterface: Interfaces.SimpleInterface,
+    FooInterface: Interfaces.FooInterface,
   },
 } satisfies OntologyDefinition<
-  | 'WeatherStation'
   | 'BoundariesUsState'
   | 'BuilderDeploymentState'
-  | 'Todo'
-  | 'Person'
   | 'Employee'
-  | 'Venture'
   | 'ObjectTypeWithAllPropertyTypes'
+  | 'Person'
+  | 'Todo'
+  | 'Venture'
+  | 'WeatherStation'
 >;
 
 type _Ontology = typeof _Ontology;

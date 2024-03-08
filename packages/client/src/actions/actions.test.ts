@@ -54,13 +54,13 @@ describe("actions", () => {
     it("has an enumerable list of actions", () => {
       expect(Object.getOwnPropertyNames(client.actions)).toMatchInlineSnapshot(`
         [
-          "promoteEmployee",
-          "promoteEmployeeObject",
+          "actionTakesAttachment",
+          "actionTakesObjectSet",
           "createOffice",
           "createOfficeAndEmployee",
           "moveOffice",
-          "actionTakesObjectSet",
-          "actionTakesAttachment",
+          "promoteEmployee",
+          "promoteEmployeeObject",
         ]
       `);
     });

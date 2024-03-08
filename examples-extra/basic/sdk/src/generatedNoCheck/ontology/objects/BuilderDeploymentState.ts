@@ -2,23 +2,22 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 
 export interface BuilderDeploymentState extends ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState> {
   description: 'Builder Deployment State';
+  links: {};
   primaryKeyApiName: 'skuId';
   primaryKeyType: 'string';
-  links: {};
   properties: {
-    skuId: PropertyDef<'string', 'non-nullable', 'single'>;
-    date: PropertyDef<'datetime', 'nullable', 'single'>;
     currentTimestamp: PropertyDef<'timestamp', 'nullable', 'single'>;
+    date: PropertyDef<'datetime', 'nullable', 'single'>;
+    skuId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
 
 export const BuilderDeploymentState: BuilderDeploymentState = {
-  type: 'object',
   apiName: 'BuilderDeploymentState',
   description: 'Builder Deployment State',
+  links: {},
   primaryKeyApiName: 'skuId',
   primaryKeyType: 'string',
-  links: {},
   properties: {
     skuId: {
       multiplicity: false,
@@ -36,4 +35,5 @@ export const BuilderDeploymentState: BuilderDeploymentState = {
       nullable: true,
     },
   },
+  type: 'object',
 };

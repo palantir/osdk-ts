@@ -12,21 +12,5 @@
   "exclude": [
     "**/__snapshots__"
   ],
-  "references": [
-    {
-      "path": "../../packages/api"
-    },
-    {
-      "path": "../../packages/cli"
-    },
-    {
-      "path": "../../packages/generator"
-    },
-    {
-      "path": "../../packages/legacy-client"
-    },
-    {
-      "path": "../../packages/cli"
-    }
-  ]
+  "references": []
 }

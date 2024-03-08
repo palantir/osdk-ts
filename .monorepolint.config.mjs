@@ -58,12 +58,16 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
 
 /**
  * @param {string} baseTsconfigPath
- * @param {{customTsconfigExcludes?: string[]}} opts
+ * @param {{
+ *   customTsconfigExcludes?: string[]
+ *   skipTsconfigReferences?: boolean
+ * }} opts
  * @returns
  */
 function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
     file: "tsconfig.json",
+    excludedReferences: opts.skipTsconfigReferences ? ["**/*"] : undefined,
     template: {
       extends: baseTsconfigPath,
 
@@ -108,7 +112,8 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.2.2"|"^4.9.0",
+ *  tsVersion?: "^5.4.2"|"^4.9.0",
+ *  skipTsconfigReferences?: boolean
  * }} options
  */
 function standardPackageRules(shared, options) {
@@ -119,7 +124,7 @@ function standardPackageRules(shared, options) {
         `${
           "../".repeat(options.packageDepth)
         }monorepo/tsconfig/tsconfig.base.json`,
-        { customTsconfigExcludes: options.customTsconfigExcludes },
+        options,
       ),
     }),
     ...(options.tsVersion
@@ -263,7 +268,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
     }),
 
     ...standardPackageRules({
@@ -272,7 +277,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
         "./src/generatedNoCheck/**/*",
@@ -286,7 +291,7 @@ export default {
       legacy: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
     }),
 
     ...standardPackageRules({
@@ -307,6 +312,7 @@ export default {
       packageDepth: 2,
       type: "example",
       tsVersion: "^4.9.0",
+      skipTsconfigReferences: true,
     }),
 
     packageEntry({
