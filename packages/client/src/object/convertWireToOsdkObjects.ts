@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createObjectSet } from "../objectSet/createObjectSet.js";
+import {
+  createObjectSet,
+  getWireObjectSet,
+} from "../objectSet/createObjectSet.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
 import { createAsyncCache, createCache } from "./Cache.js";
@@ -54,7 +60,7 @@ function createPrototype<Q extends ObjectTypeDefinition<any, any>>(
                   client,
                   objDef,
                   options ?? {},
-                  objectSet.definition,
+                  getWireObjectSet(objectSet),
                 ),
             };
           } else {
@@ -112,14 +118,55 @@ const protoConverterCache = createCache(
 
 const isAfterFeb2024OrNewApis = false;
 
-/**
- * @param objs the objects to be converted, the contents of this array will be mutated
+/*
+ * Currently loses all information about the interface. Future PRs will improve
+ * FIXME
  */
-export async function convertWireToOsdkObjectsInPlace(
+export async function convertWireToOsdkInterfaceInPlace(
   client: MinimalClient,
-  objs: readonly OntologyObjectV2[],
+  objects: OntologyObjectV2[],
+  interfaceApiName: string,
 ) {
-  // Fix properties
+  fixObjectPropertiesInline(objects);
+
+  const localObjectCache = createAsyncCache((client, apiName: string) =>
+    client.ontology.provider.getObjectDefinition(apiName)
+  );
+
+  const uniqueApiNames = new Set<string>();
+  for (const { $apiName } of objects) {
+    uniqueApiNames.add($apiName);
+  }
+
+  // preseed the cache without blocking
+  Array.from(uniqueApiNames).map(n => localObjectCache.get(client, n));
+
+  for (const int of objects) {
+    const objectDef = await localObjectCache.get(client, int.$apiName);
+
+    if (objectDef == null) {
+      throw new Error(
+        `Failed to find ontology definition for '${int.$apiName}'`,
+      );
+    }
+    const { proto, converter } = protoConverterCache.get(client, objectDef);
+
+    Object.setPrototypeOf(int, proto);
+
+    Object.defineProperty(int, OriginClient, {
+      value: client,
+      enumerable: false,
+      configurable: false,
+      writable: false,
+    });
+
+    if (converter) {
+      converter(int);
+    }
+  }
+}
+
+function fixObjectPropertiesInline(objs: OntologyObjectV2[]) {
   for (const obj of objs) {
     if (obj.__rid) {
       obj.$rid = obj.__rid;
@@ -153,10 +200,20 @@ export async function convertWireToOsdkObjectsInPlace(
       });
     }
   }
+}
+
+/**
+ * @param objs the objects to be converted, the contents of this array will be mutated
+ */
+export async function convertWireToOsdkObjectsInPlace(
+  client: MinimalClient,
+  objs: OntologyObjectV2[],
+) {
+  fixObjectPropertiesInline(objs);
 
   // We dont want to refetch for each object type in this conversion
   const localObjectCache = createAsyncCache((client, apiName: string) =>
-    client.ontology.provider.getObjectOrInterfaceDefinition(apiName)
+    client.ontology.provider.getObjectDefinition(apiName)
   );
 
   const uniqueApiNames = new Set<string>(objs.map(o => o.$apiName));
@@ -165,14 +222,15 @@ export async function convertWireToOsdkObjectsInPlace(
   );
 
   for (const obj of objs) {
-    const objectDef = await localObjectCache.get(client, obj.$apiName);
+    const objectDef: ObjectOrInterfaceDefinition = await localObjectCache.get(
+      client,
+      obj.$apiName,
+    );
 
     if (objectDef == null) {
       throw new Error(
         `Failed to find ontology definition for '${obj.$apiName}'`,
       );
-    } else if (objectDef.type === "interface") {
-      throw new Error("Interface objects are not supported currently");
     }
 
     const { proto, converter } = protoConverterCache.get(client, objectDef);

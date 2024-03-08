@@ -13,6 +13,7 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   };
   properties: {
     id: PropertyDef<'string', 'non-nullable', 'single'>;
+    firstName: PropertyDef<'string', 'nullable', 'single'>;
     adUsername: PropertyDef<'string', 'nullable', 'single'>;
     locationName: PropertyDef<'string', 'nullable', 'single'>;
     locationCity: PropertyDef<'string', 'nullable', 'single'>;
@@ -22,6 +23,9 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
     jobProfile: PropertyDef<'string', 'nullable', 'single'>;
     locationType: PropertyDef<'string', 'nullable', 'single'>;
     favPlace: PropertyDef<'geopoint', 'nullable', 'single'>;
+  };
+  spts: {
+    fullName: 'fooSpt';
   };
 }
 
@@ -50,6 +54,11 @@ export const Employee: Employee = {
       multiplicity: false,
       type: 'string',
       nullable: false,
+    },
+    firstName: {
+      multiplicity: false,
+      type: 'string',
+      nullable: true,
     },
     adUsername: {
       multiplicity: false,
@@ -96,5 +105,8 @@ export const Employee: Employee = {
       type: 'geopoint',
       nullable: true,
     },
+  },
+  spts: {
+    fullName: 'fooSpt',
   },
 };

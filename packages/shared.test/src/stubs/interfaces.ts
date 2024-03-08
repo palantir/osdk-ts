@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
-export { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition";
-export { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition";
-export { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+import { fooSpt } from "./spts";
+
+export const FooInterface = {
+  apiName: "FooInterface",
+  displayName: "Foo Interface",
+  rid: "ri.interface.main.interface.1",
+  extendsInterfaces: [],
+  properties: {
+    fooSpt,
+  },
+  links: {},
+};

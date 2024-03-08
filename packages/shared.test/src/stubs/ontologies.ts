@@ -16,8 +16,10 @@
 
 import type { Ontology, OntologyFullMetadata } from "@osdk/gateway/types";
 import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes";
+import { FooInterface } from "./interfaces";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes";
 import { queryTypes } from "./queryTypes";
+import { fooSpt } from "./spts";
 
 export const defaultOntology: Ontology = {
   apiName: "default-ontology",
@@ -36,6 +38,10 @@ export const fullOntology: OntologyFullMetadata = {
   queryTypes: Object.fromEntries(
     queryTypes.map(queryType => [queryType.apiName, queryType]),
   ),
-  interfaceTypes: {},
-  sharedPropertyTypes: {},
+  interfaceTypes: {
+    FooInterface,
+  },
+  sharedPropertyTypes: {
+    fooSpt,
+  },
 };

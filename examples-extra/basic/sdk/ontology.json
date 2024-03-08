@@ -271,6 +271,11 @@
               "type": "string"
             }
           },
+          "firstName": {
+            "dataType": {
+              "type": "string"
+            }
+          },
           "adUsername": {
             "dataType": {
               "type": "string"
@@ -345,7 +350,11 @@
           "objectTypeApiName": "Venture",
           "foreignKeyPropertyApiName": "ventureId"
         }
-      ]
+      ],
+      "implementsInterfaces": ["FooInterface"],
+      "sharedPropertyTypeMapping": {
+        "fullName": "fooSpt"
+      }
     },
     "Venture": {
       "objectType": {
@@ -739,36 +748,33 @@
     }
   },
   "interfaceTypes": {
-    "SimpleInterface": {
-      "apiName": "SimpleInterface",
-      "displayName": "AwesomeTodoDisplayname",
-      "description": "Its a todo item.",
+    "FooInterface": {
+      "apiName": "FooInterface",
+      "displayName": "Foo interface",
+      "description": "Its a Foo.",
       "properties": {
-        "body": {
+        "name": {
+          "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+          "apiName": "name",
           "dataType": {
             "type": "string"
           },
-          "description": "The text of the todo",
-          "displayName": "Body"
-        },
-        "text": {
-          "dataType": {
-            "type": "string"
-          },
-          "displayName": "Text"
-        },
-        "priority": {
-          "dataType": {
-            "type": "integer"
-          }
-        },
-        "complete": {
-          "dataType": {
-            "type": "boolean"
-          }
+          "displayName": "Name",
+          "description": "Name of Foo"
         }
       },
       "status": "ACTIVE"
+    }
+  },
+  "sharedPropertyTypes": {
+    "name": {
+      "rid": "ri.ontology.main.shared-property.6618a6fc-5f14-4899-9540-615c9364c5d6",
+      "apiName": "name",
+      "dataType": {
+        "type": "string"
+      },
+      "displayName": "Name",
+      "description": "Name of Foo"
     }
   }
 }

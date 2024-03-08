@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import type { InterfaceObjectSet, Osdk, PageResult } from "@osdk/client";
 import { createClient, createMinimalClient } from "@osdk/client";
+import { fetchPage } from "@osdk/client/objects";
 import {
   assignEmployee1,
   BoundariesUsState,
   Employee,
+  FooInterface,
   Ontology,
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
+import type { TypeOf } from "ts-expect";
+import { expectType } from "ts-expect";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
 import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin.js";
@@ -58,6 +63,7 @@ export const clientCtx = createMinimalClient(
   Ontology.metadata,
   process.env.FOUNDRY_STACK,
   () => process.env.FOUNDRY_USER_TOKEN!,
+  {},
 );
 
 const runOld = false;
@@ -74,13 +80,35 @@ async function runTests() {
 
       await fetchAggregationForEmployeesGroupedThin(clientCtx);
       await fetchEmployeeLead(client, "bob");
+    }
 
-      const interfaceImplementationComplete = false;
-      if (interfaceImplementationComplete) {
-        const interfaceResults = await client.objects.SimpleInterface
-          .fetchPageOrThrow();
-        interfaceResults.data[0].body;
+    try {
+      const r = true
+        ? await client(FooInterface)
+          .where({ name: { $ne: "Patti" } })
+          .where({ name: { $ne: "Roth" } })
+          .fetchPage({ pageSize: 5 })
+        : await fetchPage(clientCtx, FooInterface, {
+          pageSize: 5,
+        });
+
+      expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
+        true,
+      );
+
+      const q = client(FooInterface)
+        .where({ name: { $ne: "Patti" } });
+      expectType<TypeOf<typeof q, InterfaceObjectSet<FooInterface>>>(true);
+
+      for (const int of r.data) {
+        console.log(int.$apiName);
+        console.log(int.name);
+        console.log(int);
       }
+    } catch (e: any) {
+      console.log(e);
+      console.log(e.cause);
+      throw e;
     }
 
     // only works in default ontology

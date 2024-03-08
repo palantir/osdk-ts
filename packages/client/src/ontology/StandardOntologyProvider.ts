@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import deepEqual from "fast-deep-equal";
-import { createAsyncCache } from "../../object/Cache.js";
-import { loadFullObjectMetadata } from "../loadFullObjectMetadata.js";
-import type { OntologyProviderFactory } from "../OntologyProvider.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import type { AsyncCache } from "../object/Cache.js";
+import { createAsyncCache } from "../object/Cache.js";
+import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
+import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
+import type { OntologyProviderFactory } from "./OntologyProvider.js";
 
 export interface OntologyCachingOptions {
   alwaysRevalidate?: boolean; // defaults to false
@@ -32,23 +36,39 @@ export const createStandardOntologyProviderFactory: (
 
   return (client) => {
     const objectCache = createAsyncCache(loadFullObjectMetadata);
-    return {
-      getObjectOrInterfaceDefinition: async (apiName: string) => {
+    const interfaceCache = createAsyncCache(loadInterfaceDefinition);
+
+    function makeGetter<N extends ObjectOrInterfaceDefinition>(
+      fn: (
+        client: MinimalClient,
+        key: string,
+      ) => Promise<N>,
+      cacheToUse: AsyncCache<string, N>,
+    ) {
+      return async (apiName: string) => {
         const n = alwaysRevalidate
-          ? await loadFullObjectMetadata(client, apiName)
-          : await objectCache.get(client, apiName);
+          ? await fn(client, apiName)
+          : await cacheToUse.get(client, apiName);
 
         if (alwaysRevalidate) {
-          const og = objectCache.getOrUndefined(client, apiName);
+          const og = cacheToUse.getOrUndefined(client, apiName);
           if (deepEqual(og, n)) {
             return og!; // ! because we can be sure `n` would throw if it were undefined
           } else {
-            return objectCache.set(client, apiName, n);
+            return cacheToUse.set(client, apiName, n);
           }
         }
 
         return n;
-      },
+      };
+    }
+
+    return {
+      getObjectDefinition: makeGetter(loadFullObjectMetadata, objectCache),
+      getInterfaceDefinition: makeGetter(
+        loadInterfaceDefinition,
+        interfaceCache,
+      ),
       maybeSeed(definition) {
         // not using this for now
       },

@@ -39,7 +39,9 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
   "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
-      "implementsInterfaces": [],
+      "implementsInterfaces": [
+        "FooInterface",
+      ],
       "linkTypes": [
         {
           "apiName": "peeps",
@@ -100,7 +102,9 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "status": "ACTIVE",
         "titleProperty": "fullName",
       },
-      "sharedPropertyTypeMapping": {},
+      "sharedPropertyTypeMapping": {
+        "fullName": "fooSpt",
+      },
     },
     "Office": {
       "implementsInterfaces": [],
@@ -190,7 +194,9 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
   "interfaceTypes": {},
   "objectTypes": {
     "Employee": {
-      "implementsInterfaces": [],
+      "implementsInterfaces": [
+        "FooInterface",
+      ],
       "linkTypes": [],
       "objectType": {
         "apiName": "Employee",
@@ -236,7 +242,9 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "status": "ACTIVE",
         "titleProperty": "fullName",
       },
-      "sharedPropertyTypeMapping": {},
+      "sharedPropertyTypeMapping": {
+        "fullName": "fooSpt",
+      },
     },
   },
   "ontology": {

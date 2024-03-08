@@ -24,7 +24,7 @@ const _Ontology = {
     // TODO
   },
   interfaces: {
-    SimpleInterface: Interfaces.SimpleInterface,
+    FooInterface: Interfaces.FooInterface,
   },
 } satisfies OntologyDefinition<
   'WeatherStation' | 'BoundariesUsState' | 'Todo' | 'Person' | 'Employee' | 'Venture' | 'ObjectTypeWithAllPropertyTypes'

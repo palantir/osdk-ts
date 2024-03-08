@@ -57,5 +57,6 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         ),
       ]),
     ),
+    spts: objectTypeWithLink.sharedPropertyTypeMapping,
   };
 }

@@ -16,23 +16,20 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import { convertWireToOsdkObjectsInPlace } from "../object/convertWireToOsdkObjects.js";
-import type { FetchPageArgs, SelectArg } from "../object/fetchPage.js";
+import { fetchPageInternal, type SelectArg } from "../object/fetchPage.js";
 import { fetchSingle } from "../object/fetchSingle.js";
-import { aggregate, fetchPage } from "../object/index.js";
+import { aggregate } from "../object/index.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults } from "../query/index.js";
+import { isWireObjectSet } from "../util/WireObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
-import type { ObjectSet } from "./ObjectSet.js";
+import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
@@ -41,7 +38,23 @@ function isObjectTypeDefinition(
   return def.type === "object";
 }
 
-const searchAroundPrefix = "searchAround_";
+export function isObjectSet(o: any): o is ObjectSet<any> {
+  return o != null && typeof o === "object"
+    && isWireObjectSet(objectSetDefinitions.get(o));
+}
+
+/** @internal */
+export function getWireObjectSet(
+  objectSet: ObjectSet<any> | MinimalObjectSet<any>,
+): WireObjectSet {
+  return objectSetDefinitions.get(objectSet)!;
+}
+
+const objectSetDefinitions = new WeakMap<
+  any,
+  WireObjectSet
+>();
+
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,
@@ -51,57 +64,33 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   },
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
-    definition: objectSet,
+    aggregate: (aggregate<Q, any>).bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ),
 
-    aggregate: (<AO extends AggregateOpts<Q>>(
-      req: AggregateOptsThatErrors<Q, AO>,
-    ): Promise<AggregationsResults<Q, AO>> => {
-      return aggregate<Q, AO>(
-        clientCtx,
-        objectType,
-        objectSet,
-        req,
-      );
-    }),
+    aggregateOrThrow: (aggregate<Q, any>).bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ),
 
-    aggregateOrThrow: (<AO extends AggregateOpts<Q>>(
-      req: AggregateOptsThatErrors<Q, AO>,
-    ): Promise<AggregationsResults<Q, AO>> => {
-      return aggregate<Q, AO>(
-        clientCtx,
-        objectType,
-        objectSet,
-        req,
-      );
-    }),
+    fetchPage: fetchPageInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPage"],
 
-    fetchPage: async <
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-      R extends boolean,
-    >(
-      args?: FetchPageArgs<Q, L, R>,
-    ) => {
-      return fetchPage(
-        clientCtx,
-        objectType,
-        args ?? {},
-        objectSet,
-      );
-    },
-
-    fetchPageOrThrow: async <
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-      R extends boolean,
-    >(
-      args?: FetchPageArgs<Q, L, R>,
-    ) => {
-      return fetchPage(
-        clientCtx,
-        objectType,
-        args ?? {},
-        objectSet,
-      );
-    },
+    fetchPageOrThrow: fetchPageInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPage"],
 
     where: (clause) => {
       return createObjectSet(objectType, clientCtx, {
@@ -120,21 +109,30 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     union: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "union",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
     intersect: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "intersect",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
     subtract: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "subtract",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
@@ -195,12 +193,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     };
   }
 
-  return new Proxy(base as ObjectSet<Q>, {
-    get(target, p, receiver) {
-      if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
-        return createSearchAround(p.substring(searchAroundPrefix.length));
-      }
-      return (target as any)[p as any] as any;
-    },
-  });
+  objectSetDefinitions.set(base, objectSet);
+
+  return base;
 }

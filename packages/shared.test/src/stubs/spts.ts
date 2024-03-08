@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
-export { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "./__UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition";
-export { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "./wireObjectTypeFullMetadataToSdkObjectTypeDefinition";
-export { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+import type { SharedPropertyType } from "@osdk/gateway/types";
+
+export const fooSpt = {
+  rid: "ri.sharedPropertyType.main.sharedPropertyType.1",
+  apiName: "fooSpt",
+  dataType: {
+    type: "string",
+  },
+  displayName: "Foo",
+  description: "A foo",
+} satisfies SharedPropertyType;
