@@ -371,6 +371,12 @@ describe("aggregate", () => {
       // @ts-expect-error
       date: { duration: [10, "years"] },
     });
+
+    expectType<GroupByClause<TodoDef>>({
+      // @ts-expect-error
+      timestamp: { duration: [1, "nonexistentTimeUnit"] },
+      date: { duration: [1, "years"] },
+    });
   });
 
   it("works with where: todo", async () => {
