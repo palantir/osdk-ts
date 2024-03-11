@@ -26,8 +26,14 @@ export type GroupByClause<
 export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
 export type GroupByRange<T> = [T, T];
-export type DurationGroupBy = [number, keyof typeof TimeUnitMapping];
-export type ExtendedDurationGroupBy = [1, keyof typeof ExtendedTimeUnitMapping];
+
+export type DurationGroupByValue<K extends TimeUnit | ExtendedTimeUnit> = [
+  TimeValueMapping[K],
+  MapValue<
+    K,
+    typeof DurationMapping
+  >[keyof typeof DurationMapping],
+];
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
@@ -36,12 +42,17 @@ export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
 export type TimestampGroupByValue =
   | "exact"
   | { ranges: GroupByRange<string>[] }
-  | { duration: DurationGroupBy | ExtendedDurationGroupBy };
+  | { duration: DurationGroupByValue<TimestampTimeUnits> };
 
 export type DateGroupByValue =
   | "exact"
   | { ranges: GroupByRange<string>[] }
-  | { duration: ExtendedDurationGroupBy | [number, "day" | "days"] };
+  | {
+    duration: DurationGroupByValue<DateTimeUnits> | [
+      number,
+      MapValue<"DAYS", typeof DurationMapping>[keyof typeof DurationMapping],
+    ];
+  };
 
 export type TimeUnit =
   | "SECONDS"
@@ -55,7 +66,10 @@ export type ExtendedTimeUnit =
   | "YEARS"
   | "QUARTERS";
 
-export const TimeUnitMapping = {
+type TimestampTimeUnits = TimeUnit | ExtendedTimeUnit;
+type DateTimeUnits = ExtendedTimeUnit;
+
+export const DurationMapping = {
   "sec": "SECONDS",
   "seconds": "SECONDS",
   "min": "MINUTES",
@@ -67,9 +81,6 @@ export const TimeUnitMapping = {
   "hours": "HOURS",
   "day": "DAYS",
   "days": "DAYS",
-} satisfies Record<string, TimeUnit>;
-
-export const ExtendedTimeUnitMapping = {
   "wk": "WEEKS",
   "week": "WEEKS",
   "weeks": "WEEKS",
@@ -81,12 +92,25 @@ export const ExtendedTimeUnitMapping = {
   "years": "YEARS",
   "quarter": "QUARTERS",
   "quarters": "QUARTERS",
-} satisfies Record<string, ExtendedTimeUnit>;
+} satisfies Record<string, TimeUnit | ExtendedTimeUnit>;
 
-export const CombinedTimeUnitMapping = {
-  ...TimeUnitMapping,
-  ...ExtendedTimeUnitMapping,
+type MapValue<
+  V extends string,
+  M extends Record<string, TimeUnit | ExtendedTimeUnit>,
+> = {
+  [K in keyof M]: M[K] extends V ? K : never;
 };
+
+interface TimeValueMapping {
+  SECONDS: number;
+  MINUTES: number;
+  HOURS: number;
+  DAYS: number;
+  WEEKS: 1;
+  MONTHS: 1;
+  YEARS: 1;
+  QUARTERS: 1;
+}
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition<any, any>,
