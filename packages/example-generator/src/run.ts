@@ -124,6 +124,7 @@ export async function run({ outputDirectory, check }: RunArgs) {
     for (const template of TEMPLATES) {
       const exampleId = templateExampleId(template);
       consola.info(`Checking contents of ${exampleId}`);
+      // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
       const pathLeft = fs.realpathSync(path.join(outputPath, exampleId));
       const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
       const compareResult = compareSync(
@@ -146,9 +147,14 @@ export async function run({ outputDirectory, check }: RunArgs) {
     }
   } else {
     consola.info("Copying generated packages to output directory");
-    fs.rmSync(outputPath, { recursive: true });
-    fs.mkdirSync(outputPath, { recursive: true });
-    fs.cpSync(tmpDir.name, outputPath, { recursive: true });
+    for (const template of TEMPLATES) {
+      const exampleId = templateExampleId(template);
+      const exampleOutputPath = path.join(outputPath, exampleId);
+      const exampleTmpPath = path.join(tmpDir.name, exampleId);
+      fs.rmSync(exampleOutputPath, { recursive: true, force: true });
+      fs.mkdirSync(exampleOutputPath, { recursive: true });
+      fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
+    }
     consola.success("Done");
   }
 }
