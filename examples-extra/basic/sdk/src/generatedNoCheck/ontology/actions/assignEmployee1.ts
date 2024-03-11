@@ -6,13 +6,13 @@ import type { Employee, Venture } from '../objects.js';
 export type ActionDef$assignEmployee1$Params = {
   'employee-1': {
     multiplicity: false;
-    type: ObjectActionDataType<'Employee', Employee>;
     nullable: false;
+    type: ObjectActionDataType<'Employee', Employee>;
   };
   'venture-1': {
     multiplicity: false;
-    type: ObjectActionDataType<'Venture', Venture>;
     nullable: false;
+    type: ObjectActionDataType<'Venture', Venture>;
   };
 };
 
@@ -30,10 +30,10 @@ export interface assignEmployee1 {
 // Represents the definition of the action
 export interface ActionDef$assignEmployee1
   extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1> {
-  type: 'action';
   apiName: 'assignEmployee1';
   description: 'Assigns an employee to a venture';
   modifiedEntities: { Employee: { created: false; modified: true } };
+  type: 'action';
   parameters: ActionDef$assignEmployee1$Params;
 }
 

@@ -6,25 +6,25 @@ import * as Objects from './ontology/objects';
 const _Ontology = {
   metadata: OntologyMetadata,
   objects: {
-    Todo: Objects.Todo,
     Employee: Objects.Employee,
-    Office: Objects.Office,
     equipment: Objects.equipment,
+    Office: Objects.Office,
+    Todo: Objects.Todo,
   },
   actions: {
-    createTodo: Actions.createTodo,
     completeTodo: Actions.completeTodo,
-    promoteEmployee: Actions.promoteEmployee,
-    promoteEmployeeObject: Actions.promoteEmployeeObject,
     createOffice: Actions.createOffice,
     createOfficeAndEmployee: Actions.createOfficeAndEmployee,
+    createTodo: Actions.createTodo,
     moveOffice: Actions.moveOffice,
+    promoteEmployee: Actions.promoteEmployee,
+    promoteEmployeeObject: Actions.promoteEmployeeObject,
   },
   queries: {
     // TODO
   },
   interfaces: {},
-} satisfies OntologyDefinition<'Todo' | 'Employee' | 'Office' | 'equipment'>;
+} satisfies OntologyDefinition<'Employee' | 'equipment' | 'Office' | 'Todo'>;
 
 type _Ontology = typeof _Ontology;
 export interface Ontology extends _Ontology {}

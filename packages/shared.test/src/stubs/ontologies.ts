@@ -16,14 +16,25 @@
 
 import type { Ontology, OntologyFullMetadata } from "@osdk/gateway/types";
 import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes";
+import { FooInterface } from "./interfaces";
 import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes";
 import { queryTypes } from "./queryTypes";
+import { fooSpt } from "./spts";
 
 export const defaultOntology: Ontology = {
   apiName: "default-ontology",
   displayName: "Ontology",
   description: "The default ontology",
   rid: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+};
+
+export const defaultOntologyForConjure = {
+  apiName: defaultOntology.apiName,
+  displayName: defaultOntology.displayName,
+  description: defaultOntology.description,
+  currentOntologyVersion: "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
+  defaultBranchRid:
+    "ri.ontology.main.branch.99999999-8888-7777-6666-555555555555",
 };
 
 export const fullOntology: OntologyFullMetadata = {
@@ -36,6 +47,10 @@ export const fullOntology: OntologyFullMetadata = {
   queryTypes: Object.fromEntries(
     queryTypes.map(queryType => [queryType.apiName, queryType]),
   ),
-  interfaceTypes: {},
-  sharedPropertyTypes: {},
+  interfaceTypes: {
+    FooInterface,
+  },
+  sharedPropertyTypes: {
+    fooSpt,
+  },
 };

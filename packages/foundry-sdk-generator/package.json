@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "0.207.0",
+  "version": "0.208.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -49,7 +49,7 @@
     "@osdk/shared.test": "workspace:*",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"

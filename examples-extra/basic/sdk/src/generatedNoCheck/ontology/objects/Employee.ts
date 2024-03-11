@@ -4,33 +4,46 @@ import type { Venture } from './Venture.js';
 
 export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'An employee';
-  primaryKeyApiName: 'id';
-  primaryKeyType: 'string';
+  implements: ['FooInterface'];
+  inverseSpts: {
+    name: 'firstName';
+    description: 'email';
+  };
   links: {
     lead: ObjectTypeLinkDefinition<Employee, false>;
     peeps: ObjectTypeLinkDefinition<Employee, true>;
     ventures: ObjectTypeLinkDefinition<Venture, true>;
   };
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
   properties: {
-    id: PropertyDef<'string', 'non-nullable', 'single'>;
     adUsername: PropertyDef<'string', 'nullable', 'single'>;
-    locationName: PropertyDef<'string', 'nullable', 'single'>;
-    locationCity: PropertyDef<'string', 'nullable', 'single'>;
-    firstFullTimeStartDate: PropertyDef<'datetime', 'nullable', 'single'>;
     businessTitle: PropertyDef<'string', 'nullable', 'single'>;
+    email: PropertyDef<'string', 'nullable', 'single'>;
     employeeNumber: PropertyDef<'double', 'nullable', 'single'>;
-    jobProfile: PropertyDef<'string', 'nullable', 'single'>;
-    locationType: PropertyDef<'string', 'nullable', 'single'>;
     favPlace: PropertyDef<'geopoint', 'nullable', 'single'>;
+    firstFullTimeStartDate: PropertyDef<'datetime', 'nullable', 'single'>;
+    firstName: PropertyDef<'string', 'nullable', 'single'>;
+    id: PropertyDef<'string', 'non-nullable', 'single'>;
+    jobProfile: PropertyDef<'string', 'nullable', 'single'>;
+    locationCity: PropertyDef<'string', 'nullable', 'single'>;
+    locationName: PropertyDef<'string', 'nullable', 'single'>;
+    locationType: PropertyDef<'string', 'nullable', 'single'>;
+  };
+  spts: {
+    firstName: 'name';
+    email: 'description';
   };
 }
 
 export const Employee: Employee = {
-  type: 'object',
   apiName: 'Employee',
   description: 'An employee',
-  primaryKeyApiName: 'id',
-  primaryKeyType: 'string',
+  implements: ['FooInterface'],
+  inverseSpts: {
+    name: 'firstName',
+    description: 'email',
+  },
   links: {
     lead: {
       multiplicity: false,
@@ -45,11 +58,23 @@ export const Employee: Employee = {
       targetType: 'Venture',
     },
   },
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'string',
   properties: {
     id: {
       multiplicity: false,
       type: 'string',
       nullable: false,
+    },
+    firstName: {
+      multiplicity: false,
+      type: 'string',
+      nullable: true,
+    },
+    email: {
+      multiplicity: false,
+      type: 'string',
+      nullable: true,
     },
     adUsername: {
       multiplicity: false,
@@ -97,4 +122,9 @@ export const Employee: Employee = {
       nullable: true,
     },
   },
+  spts: {
+    firstName: 'name',
+    email: 'description',
+  },
+  type: 'object',
 };

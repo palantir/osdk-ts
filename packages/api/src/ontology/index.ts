@@ -69,6 +69,4 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  WireQueryDataTypes,
 } from "./QueryDefinition";
-export type { WirePropertyTypes } from "./WirePropertyTypes";

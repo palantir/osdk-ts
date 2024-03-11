@@ -3,51 +3,50 @@ import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
 export interface ObjectTypeWithAllPropertyTypes
   extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
   description: 'A type with all property types';
+  links: {};
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
-  links: {};
   properties: {
-    id: PropertyDef<'integer', 'non-nullable', 'single'>;
-    string: PropertyDef<'string', 'nullable', 'single'>;
-    boolean: PropertyDef<'boolean', 'nullable', 'single'>;
-    date: PropertyDef<'datetime', 'nullable', 'single'>;
-    dateTime: PropertyDef<'timestamp', 'nullable', 'single'>;
-    decimal: PropertyDef<'decimal', 'nullable', 'single'>;
-    integer: PropertyDef<'integer', 'nullable', 'single'>;
-    long: PropertyDef<'long', 'nullable', 'single'>;
-    short: PropertyDef<'short', 'nullable', 'single'>;
-    float: PropertyDef<'float', 'nullable', 'single'>;
-    double: PropertyDef<'double', 'nullable', 'single'>;
-    byte: PropertyDef<'byte', 'nullable', 'single'>;
     attachment: PropertyDef<'attachment', 'nullable', 'single'>;
-    geoPoint: PropertyDef<'geopoint', 'nullable', 'single'>;
-    geoShape: PropertyDef<'geoshape', 'nullable', 'single'>;
-    stringArray: PropertyDef<'string', 'nullable', 'array'>;
-    booleanArray: PropertyDef<'boolean', 'nullable', 'array'>;
-    dateArray: PropertyDef<'datetime', 'nullable', 'array'>;
-    dateTimeArray: PropertyDef<'timestamp', 'nullable', 'array'>;
-    decimalArray: PropertyDef<'decimal', 'nullable', 'array'>;
-    integerArray: PropertyDef<'integer', 'nullable', 'array'>;
-    longArray: PropertyDef<'long', 'nullable', 'array'>;
-    shortArray: PropertyDef<'short', 'nullable', 'array'>;
-    floatArray: PropertyDef<'float', 'nullable', 'array'>;
-    doubleArray: PropertyDef<'double', 'nullable', 'array'>;
-    byteArray: PropertyDef<'byte', 'nullable', 'array'>;
     attachmentArray: PropertyDef<'attachment', 'nullable', 'array'>;
+    boolean: PropertyDef<'boolean', 'nullable', 'single'>;
+    booleanArray: PropertyDef<'boolean', 'nullable', 'array'>;
+    byte: PropertyDef<'byte', 'nullable', 'single'>;
+    byteArray: PropertyDef<'byte', 'nullable', 'array'>;
+    date: PropertyDef<'datetime', 'nullable', 'single'>;
+    dateArray: PropertyDef<'datetime', 'nullable', 'array'>;
+    dateTime: PropertyDef<'timestamp', 'nullable', 'single'>;
+    dateTimeArray: PropertyDef<'timestamp', 'nullable', 'array'>;
+    decimal: PropertyDef<'decimal', 'nullable', 'single'>;
+    decimalArray: PropertyDef<'decimal', 'nullable', 'array'>;
+    double: PropertyDef<'double', 'nullable', 'single'>;
+    doubleArray: PropertyDef<'double', 'nullable', 'array'>;
+    float: PropertyDef<'float', 'nullable', 'single'>;
+    floatArray: PropertyDef<'float', 'nullable', 'array'>;
+    geoPoint: PropertyDef<'geopoint', 'nullable', 'single'>;
     geoPointArray: PropertyDef<'geopoint', 'nullable', 'array'>;
+    geoShape: PropertyDef<'geoshape', 'nullable', 'single'>;
     geoShapeArray: PropertyDef<'geoshape', 'nullable', 'array'>;
+    id: PropertyDef<'integer', 'non-nullable', 'single'>;
+    integer: PropertyDef<'integer', 'nullable', 'single'>;
+    integerArray: PropertyDef<'integer', 'nullable', 'array'>;
+    long: PropertyDef<'long', 'nullable', 'single'>;
+    longArray: PropertyDef<'long', 'nullable', 'array'>;
     numericTimeseries: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+    short: PropertyDef<'short', 'nullable', 'single'>;
+    shortArray: PropertyDef<'short', 'nullable', 'array'>;
+    string: PropertyDef<'string', 'nullable', 'single'>;
+    stringArray: PropertyDef<'string', 'nullable', 'array'>;
     stringTimeseries: PropertyDef<'stringTimeseries', 'nullable', 'single'>;
   };
 }
 
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
-  type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  links: {},
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
-  links: {},
   properties: {
     id: {
       multiplicity: false,
@@ -205,4 +204,5 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
       nullable: true,
     },
   },
+  type: 'object',
 };

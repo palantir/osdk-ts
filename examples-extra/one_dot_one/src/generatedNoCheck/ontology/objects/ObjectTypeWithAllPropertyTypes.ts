@@ -25,8 +25,8 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly dateArray: LocalDate[] | undefined;
   readonly dateTime: Timestamp | undefined;
   readonly dateTimeArray: Timestamp[] | undefined;
-  readonly decimal: number | undefined;
-  readonly decimalArray: number[] | undefined;
+  readonly decimal: string | undefined;
+  readonly decimalArray: string[] | undefined;
   readonly double: number | undefined;
   readonly doubleArray: number[] | undefined;
   readonly float: number | undefined;
@@ -38,8 +38,8 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly id: number | undefined;
   readonly integer: number | undefined;
   readonly integerArray: number[] | undefined;
-  readonly long: number | undefined;
-  readonly longArray: number[] | undefined;
+  readonly long: string | undefined;
+  readonly longArray: string[] | undefined;
   readonly numericTimeseries: TimeSeries<number> | undefined;
   readonly short: number | undefined;
   readonly shortArray: number[] | undefined;
@@ -50,12 +50,11 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
 
 export interface ObjectTypeWithAllPropertyTypesDef
   extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
-  type: 'object';
   apiName: 'ObjectTypeWithAllPropertyTypes';
   description: 'A type with all property types';
+  links: {};
   primaryKeyApiName: 'id';
   primaryKeyType: 'integer';
-  links: {};
   properties: {
     id: {
       multiplicity: false;
@@ -213,15 +212,15 @@ export interface ObjectTypeWithAllPropertyTypesDef
       nullable: true;
     };
   };
+  type: 'object';
 }
 
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef = {
-  type: 'object',
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
+  links: {},
   primaryKeyApiName: 'id',
   primaryKeyType: 'integer',
-  links: {},
   properties: {
     id: {
       multiplicity: false,
@@ -379,4 +378,5 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
       nullable: true,
     },
   },
+  type: 'object',
 };

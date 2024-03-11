@@ -3,28 +3,28 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionPa
 
 // Represents the definition of the parameters for the action
 export type ActionDef$moveOffice$Params = {
-  officeId: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
-  };
   newAddress: {
-    multiplicity: false;
-    type: 'string';
-    nullable: true;
     description: "The office's new physical address (not necessarily shipping address)";
+    multiplicity: false;
+    nullable: true;
+    type: 'string';
   };
   newCapacity: {
-    multiplicity: false;
-    type: 'integer';
-    nullable: true;
     description: 'The maximum seated-at-desk capacity of the new office (maximum fire-safe capacity may be higher)';
+    multiplicity: false;
+    nullable: true;
+    type: 'integer';
+  };
+  officeId: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
   };
   officeNames: {
-    multiplicity: true;
-    type: 'integer';
-    nullable: true;
     description: 'A list of all office names';
+    multiplicity: true;
+    nullable: true;
+    type: 'integer';
   };
 };
 
@@ -41,10 +41,10 @@ export interface moveOffice {
 
 // Represents the definition of the action
 export interface ActionDef$moveOffice extends ActionDefinition<'moveOffice', 'Office', moveOffice> {
-  type: 'action';
   apiName: 'moveOffice';
   description: "Update an office's physical location";
   modifiedEntities: { Office: { created: false; modified: true } };
+  type: 'action';
   parameters: ActionDef$moveOffice$Params;
 }
 

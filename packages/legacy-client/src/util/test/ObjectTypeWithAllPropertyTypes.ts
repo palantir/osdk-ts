@@ -31,9 +31,9 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly boolean: boolean | undefined;
   readonly date: LocalDate | undefined;
   readonly dateTime: Timestamp | undefined;
-  readonly decimal: number | undefined;
+  readonly decimal: string | undefined;
   readonly integer: number | undefined;
-  readonly long: number | undefined;
+  readonly long: string | undefined;
   readonly short: number | undefined;
   readonly float: number | undefined;
   readonly double: number | undefined;

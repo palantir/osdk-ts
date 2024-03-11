@@ -18,9 +18,10 @@ import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/gateway/types";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { describe, it, type Mock, vi } from "vitest";
+import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { AggregateOptsThatErrors } from "./aggregate.js";
 import { aggregate } from "./aggregate.js";
 
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
@@ -224,6 +225,122 @@ describe("aggregate", () => {
       grouped[0].$group.shortProp,
     );
     expectType<number>(grouped[0].$group.floatProp);
+
+    expectType<
+      AggregateOptsThatErrors<TodoDef, {
+        select: {
+          id: "approximateDistinct";
+          $count: true;
+        };
+        groupBy: {
+          text: "exact";
+          priority: { exactWithLimit: 10 };
+          intProp: { ranges: [[1, 2]] };
+          shortProp: {
+            ranges: [[2, 3], [4, 5]];
+          };
+          floatProp: { fixedWidth: 10 };
+        };
+      }>
+    >({
+      select: {
+        id: "approximateDistinct",
+        $count: true,
+      },
+      groupBy: {
+        text: "exact",
+        priority: { exactWithLimit: 10 },
+        intProp: { ranges: [[1, 2]] },
+        shortProp: {
+          ranges: [[2, 3], [4, 5]],
+        },
+        floatProp: { fixedWidth: 10 },
+      },
+    });
+
+    expectType<
+      AggregateOptsThatErrors<TodoDef, {
+        select: {
+          id: "approximateDistinct";
+          wrongSelectKey: "don't work";
+          $count: true;
+        };
+        groupBy: {
+          wrongKey: "don't work";
+          text: "exact";
+          priority: { exactWithLimit: 10 };
+          intProp: { ranges: [[1, 2]] };
+          shortProp: {
+            ranges: [[2, 3], [4, 5]];
+          };
+          floatProp: { fixedWidth: 10 };
+        };
+      }>
+    >({
+      select: {
+        id: "approximateDistinct",
+        // @ts-expect-error
+        wrongSelectKey: "don't work",
+        $count: true,
+      },
+      groupBy: {
+        // @ts-expect-error
+        wrongKey: "don't work",
+        text: "exact",
+        priority: { exactWithLimit: 10 },
+        intProp: { ranges: [[1, 2]] },
+        shortProp: {
+          ranges: [[2, 3], [4, 5]],
+        },
+        floatProp: { fixedWidth: 10 },
+      },
+    });
+
+    expectTypeOf<
+      typeof aggregate<TodoDef, {
+        select: {
+          id: "approximateDistinct";
+          wrongSelectKey: "wrongKey";
+          $count: true;
+        };
+        groupBy: {
+          text: "exact";
+          wrongKey: "wrongKey";
+          priority: { exactWithLimit: 10 };
+          intProp: { ranges: [[1, 2]] };
+          shortProp: {
+            ranges: [[2, 3], [4, 5]];
+          };
+          floatProp: { fixedWidth: 10 };
+        };
+      }>
+    >().toBeCallableWith(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        select: {
+          id: "approximateDistinct",
+          // @ts-expect-error
+          wrongSelectKey: "wrongKey",
+          $count: true,
+        },
+        groupBy: {
+          text: "exact",
+          // @ts-expect-error
+          wrongKey: "wrongKey",
+          priority: { exactWithLimit: 10 },
+          intProp: { ranges: [[1, 2]] },
+          shortProp: {
+            ranges: [[2, 3], [4, 5]],
+          },
+          floatProp: { fixedWidth: 10 },
+        },
+      },
+    );
   });
 
   it("works with where: todo", async () => {

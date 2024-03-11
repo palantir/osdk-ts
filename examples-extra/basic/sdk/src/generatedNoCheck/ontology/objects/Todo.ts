@@ -4,32 +4,31 @@ import type { Person } from './Person.js';
 
 export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
   description: 'Its a todo item.';
-  primaryKeyApiName: 'id';
-  primaryKeyType: 'integer';
   links: {
     Assignee: ObjectTypeLinkDefinition<Person, false>;
   };
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
   properties: {
-    id: PropertyDef<'integer', 'non-nullable', 'single'>;
     body: PropertyDef<'string', 'nullable', 'single'>;
-    text: PropertyDef<'string', 'nullable', 'single'>;
-    priority: PropertyDef<'integer', 'nullable', 'single'>;
     complete: PropertyDef<'boolean', 'nullable', 'single'>;
+    id: PropertyDef<'integer', 'non-nullable', 'single'>;
+    priority: PropertyDef<'integer', 'nullable', 'single'>;
+    text: PropertyDef<'string', 'nullable', 'single'>;
   };
 }
 
 export const Todo: Todo = {
-  type: 'object',
   apiName: 'Todo',
   description: 'Its a todo item.',
-  primaryKeyApiName: 'id',
-  primaryKeyType: 'integer',
   links: {
     Assignee: {
       multiplicity: false,
       targetType: 'Person',
     },
   },
+  primaryKeyApiName: 'id',
+  primaryKeyType: 'integer',
   properties: {
     id: {
       multiplicity: false,
@@ -58,4 +57,5 @@ export const Todo: Todo = {
       nullable: true,
     },
   },
+  type: 'object',
 };

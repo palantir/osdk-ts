@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -143,7 +144,9 @@ describe("ObjectSet", () => {
     const employee = await client.objects.Employee.get(
       stubData.employee1.employeeId,
     );
-    expectTypeOf<typeof employee>().toEqualTypeOf<Osdk<Employee>>;
+    expectTypeOf<typeof employee>().toMatchTypeOf<
+      Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>
+    >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 

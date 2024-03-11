@@ -22,7 +22,7 @@ import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { Attachment } from "./Attachment.js";
-import { convertWireToOsdkObjectsInPlace } from "./convertWireToOsdkObjects.js";
+import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
   let client: Client<typeof MockOntology>;
@@ -83,13 +83,17 @@ describe("convertWireToOsdkObjects", () => {
       "userAgent",
     );
 
-    const object = {
+    let object = {
       __apiName: "Employee",
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
-    await convertWireToOsdkObjectsInPlace(clientCtx, [object]);
-    const prototypeAfter = Object.getPrototypeOf(object);
+    let object2 = await convertWireToOsdkObjects(
+      clientCtx,
+      [object],
+      undefined,
+    );
+    const prototypeAfter = Object.getPrototypeOf(object2);
 
     expect(prototypeBefore).not.toBe(prototypeAfter);
   });

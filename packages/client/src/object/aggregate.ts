@@ -34,6 +34,7 @@ import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type {
   AggregationResultsWithGroups,
   AggregationsResults,
+  GroupByClause,
 } from "../query/index.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
@@ -52,7 +53,20 @@ export type AggregateOptsThatErrors<
         Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
         never
       >;
-  };
+  }
+  & (unknown extends AO["groupBy"] ? {}
+    : Exclude<AO["groupBy"], undefined> extends never ? {}
+    : {
+      groupBy:
+        & Pick<
+          AO["groupBy"],
+          keyof GroupByClause<Q> & keyof AO["groupBy"]
+        >
+        & Record<
+          Exclude<keyof AO["groupBy"], keyof GroupByClause<Q>>,
+          never
+        >;
+    });
 
 /** @deprecated use `aggregate` */
 export async function aggregateOrThrow<

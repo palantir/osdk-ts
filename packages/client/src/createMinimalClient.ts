@@ -22,7 +22,7 @@ import type {
 import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
-} from "./ontology/providers/StandardOntologyProvider.js";
+} from "./ontology/StandardOntologyProvider.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 export function createMinimalClient(

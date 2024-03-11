@@ -72,6 +72,5 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  WireQueryDataTypes,
 } from "./ontology/QueryDefinition";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";

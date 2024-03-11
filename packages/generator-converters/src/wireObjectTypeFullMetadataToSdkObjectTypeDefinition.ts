@@ -57,5 +57,14 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
         ),
       ]),
     ),
+    spts: objectTypeWithLink.sharedPropertyTypeMapping,
+    inverseSpts: objectTypeWithLink.sharedPropertyTypeMapping
+      ? Object.fromEntries(
+        Object.entries(objectTypeWithLink.sharedPropertyTypeMapping).map((
+          [k, v],
+        ) => [v, k]),
+      )
+      : undefined,
+    implements: objectTypeWithLink.implementsInterfaces as string[],
   };
 }

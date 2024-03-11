@@ -3,15 +3,15 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionPa
 
 // Represents the definition of the parameters for the action
 export type ActionDef$createTodo$Params = {
-  Todo: {
-    multiplicity: false;
-    type: 'string';
-    nullable: false;
-  };
   is_complete: {
     multiplicity: false;
-    type: 'boolean';
     nullable: false;
+    type: 'boolean';
+  };
+  Todo: {
+    multiplicity: false;
+    nullable: false;
+    type: 'string';
   };
 };
 
@@ -28,10 +28,10 @@ export interface createTodo {
 
 // Represents the definition of the action
 export interface ActionDef$createTodo extends ActionDefinition<'createTodo', 'Todo', createTodo> {
-  type: 'action';
   apiName: 'createTodo';
   description: 'Creates Todo';
   modifiedEntities: { Todo: { created: true; modified: false } };
+  type: 'action';
   parameters: ActionDef$createTodo$Params;
 }
 

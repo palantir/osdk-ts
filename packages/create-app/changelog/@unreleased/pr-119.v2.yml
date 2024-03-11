@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Refactor method to run create-app programatically without CLI
-  links:
-  - https://github.com/palantir/osdk-ts/pull/119

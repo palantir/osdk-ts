@@ -4,16 +4,16 @@ import type { Todo } from '../objects';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$completeTodo$Params = {
-  Todo: {
-    multiplicity: false;
-    type: ObjectActionDataType<'Todo', Todo>;
-    nullable: false;
-    description: 'A todo Object';
-  };
   is_complete: {
     multiplicity: false;
-    type: 'boolean';
     nullable: false;
+    type: 'boolean';
+  };
+  Todo: {
+    description: 'A todo Object';
+    multiplicity: false;
+    nullable: false;
+    type: ObjectActionDataType<'Todo', Todo>;
   };
 };
 
@@ -30,10 +30,10 @@ export interface completeTodo {
 
 // Represents the definition of the action
 export interface ActionDef$completeTodo extends ActionDefinition<'completeTodo', 'Todo', completeTodo> {
-  type: 'action';
   apiName: 'completeTodo';
   description: 'Completes Todo';
   modifiedEntities: { Todo: { created: false; modified: true } };
+  type: 'action';
   parameters: ActionDef$completeTodo$Params;
 }
 

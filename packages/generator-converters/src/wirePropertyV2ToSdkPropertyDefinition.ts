@@ -18,10 +18,14 @@ import type {
   ObjectTypePropertyDefinition,
   WirePropertyTypes,
 } from "@osdk/api";
-import type { ObjectPropertyType, PropertyV2 } from "@osdk/gateway/types";
+import type {
+  ObjectPropertyType,
+  PropertyV2,
+  SharedPropertyType,
+} from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
-  input: PropertyV2,
+  input: PropertyV2 | SharedPropertyType,
   isNullable: boolean = true,
 ): ObjectTypePropertyDefinition {
   switch (input.dataType.type) {
@@ -65,7 +69,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
 
 function objectPropertyTypeToSdkPropertyDefinition(
   propertyType: ObjectPropertyType,
-): keyof WirePropertyTypes {
+): WirePropertyTypes {
   switch (propertyType.type) {
     case "integer":
     case "string":
