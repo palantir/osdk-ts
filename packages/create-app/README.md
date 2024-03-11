@@ -15,6 +15,8 @@ cd packages/create-app
 ./bin/createOsdkApp.mjs
 ```
 
+Changes to templates require updating `examples/` which can be done with the `@osdk/example-generator` package.
+
 ## Options
 
 The CLI can be run without any arguments and the user will be guided with interactive prompts to fill in required information. The prompts may be skipped by providing the relevant information in through arguments instead.
