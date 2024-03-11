@@ -33,23 +33,6 @@ interface RunArgs {
   check: boolean;
 }
 
-interface Mutator {
-  filePattern: string;
-  mutate: (
-    template: Template,
-    existingContent: string,
-  ) => ModifyFile | DeleteFile;
-}
-
-interface ModifyFile {
-  type: "modify";
-  newContent: string;
-}
-
-interface DeleteFile {
-  type: "delete";
-}
-
 export async function run({ outputDirectory, check }: RunArgs) {
   const outputPath = path.resolve(outputDirectory);
   const tmpDir = tmp.dirSync({ unsafeCleanup: true });
@@ -157,6 +140,23 @@ export async function run({ outputDirectory, check }: RunArgs) {
     }
     consola.success("Done");
   }
+}
+
+interface Mutator {
+  filePattern: string;
+  mutate: (
+    template: Template,
+    existingContent: string,
+  ) => ModifyFile | DeleteFile;
+}
+
+interface ModifyFile {
+  type: "modify";
+  newContent: string;
+}
+
+interface DeleteFile {
+  type: "delete";
 }
 
 const DELETE_NPM_RC: Mutator = {
