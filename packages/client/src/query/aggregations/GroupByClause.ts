@@ -27,6 +27,7 @@ export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
 export type GroupByRange<T> = [T, T];
 export type DurationGroupBy = [number, keyof typeof TimeUnitMapping];
+export type ExtendedDurationGroupBy = [1, keyof typeof ExtendedTimeUnitMapping];
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
@@ -35,13 +36,15 @@ export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
 export type TimestampGroupByValue =
   | "exact"
   | { ranges: GroupByRange<string>[] }
-  | { duration: DurationGroupBy };
+  | { duration: DurationGroupBy | ExtendedDurationGroupBy };
 
 export type TimeUnit =
   | "SECONDS"
   | "MINUTES"
   | "HOURS"
-  | "DAYS"
+  | "DAYS";
+
+export type ExtendedTimeUnit =
   | "WEEKS"
   | "MONTHS"
   | "YEARS"
@@ -59,6 +62,9 @@ export const TimeUnitMapping = {
   "hours": "HOURS",
   "day": "DAYS",
   "days": "DAYS",
+} satisfies Record<string, TimeUnit>;
+
+export const ExtendedTimeUnitMapping = {
   "wk": "WEEKS",
   "week": "WEEKS",
   "weeks": "WEEKS",
@@ -70,7 +76,12 @@ export const TimeUnitMapping = {
   "years": "YEARS",
   "quarter": "QUARTERS",
   "quarters": "QUARTERS",
-} satisfies Record<string, TimeUnit>;
+} satisfies Record<string, ExtendedTimeUnit>;
+
+export const CombinedTimeUnitMapping = {
+  ...TimeUnitMapping,
+  ...ExtendedTimeUnitMapping,
+};
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition<any, any>,

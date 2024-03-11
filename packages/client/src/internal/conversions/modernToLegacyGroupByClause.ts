@@ -19,8 +19,8 @@ import type {
   AggregationRangeV2,
 } from "@osdk/gateway/types";
 import {
+  CombinedTimeUnitMapping,
   type GroupByRange,
-  TimeUnitMapping,
 } from "../../query/aggregations/GroupByClause.js";
 import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
@@ -61,7 +61,7 @@ export function modernToLegacyGroupByClause(
         type: "duration",
         field,
         value: type.duration[0],
-        unit: TimeUnitMapping[type.duration[1]],
+        unit: CombinedTimeUnitMapping[type.duration[1]],
       }];
     } else return [];
   });

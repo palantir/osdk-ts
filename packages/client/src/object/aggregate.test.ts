@@ -21,6 +21,7 @@ import { expectType } from "ts-expect";
 import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import type { GroupByClause } from "../query/index.js";
 import type { AggregateOptsThatErrors } from "./aggregate.js";
 import { aggregate } from "./aggregate.js";
 
@@ -222,7 +223,7 @@ describe("aggregate", () => {
             ranges: [[2, 3], [4, 5]],
           },
           floatProp: { fixedWidth: 10 },
-          timestamp: { duration: [10, "minutes"] },
+          timestamp: { duration: [10, "seconds"] },
           date: { ranges: [["2024-01-02", "2024-01-09"]] },
         },
       },
@@ -359,6 +360,17 @@ describe("aggregate", () => {
         },
       },
     );
+
+    expectType<GroupByClause<TodoDef>>({
+      timestamp: { duration: [10, "seconds"] },
+      date: { duration: [1, "years"] },
+    });
+
+    expectType<GroupByClause<TodoDef>>({
+      timestamp: { duration: [1, "seconds"] },
+      // @ts-expect-error
+      date: { duration: [10, "years"] },
+    });
   });
 
   it("works with where: todo", async () => {
