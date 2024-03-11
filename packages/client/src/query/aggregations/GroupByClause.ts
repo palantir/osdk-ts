@@ -29,10 +29,7 @@ export type GroupByRange<T> = [T, T];
 
 export type DurationGroupByValue<K extends TimeUnit | ExtendedTimeUnit> = [
   TimeValueMapping[K],
-  MapValue<
-    K,
-    typeof DurationMapping
-  >[keyof typeof DurationMapping],
+  AllowedTimeUnitKeys<K>,
 ];
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
@@ -50,7 +47,7 @@ export type DateGroupByValue =
   | {
     duration: DurationGroupByValue<DateTimeUnits> | [
       number,
-      MapValue<"DAYS", typeof DurationMapping>[keyof typeof DurationMapping],
+      AllowedTimeUnitKeys<"DAYS">,
     ];
   };
 
@@ -100,6 +97,11 @@ type MapValue<
 > = {
   [K in keyof M]: M[K] extends V ? K : never;
 };
+
+type AllowedTimeUnitKeys<K extends string> = MapValue<
+  K,
+  typeof DurationMapping
+>[keyof typeof DurationMapping];
 
 interface TimeValueMapping {
   SECONDS: number;
