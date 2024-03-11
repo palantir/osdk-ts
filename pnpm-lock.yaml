@@ -653,8 +653,8 @@ importers:
         specifier: ^17.0.29
         version: 17.0.29
       typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
+        specifier: ^5.4.2
+        version: 5.4.2
 
   packages/foundry-sdk-generator:
     dependencies:
