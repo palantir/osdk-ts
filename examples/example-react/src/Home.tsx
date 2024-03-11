@@ -9,7 +9,7 @@ function Home() {
 
   return (
     <Layout>
-      <h1>@fake/sdk</h1>
+      <h1>@osdk/examples.one.dot.one</h1>
       <p>
         Welcome to your Ontology SDK! Try using any of the following methods
         now.
