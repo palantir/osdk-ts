@@ -15,13 +15,6 @@ cd packages/create-app
 ./bin/createOsdkApp.mjs
 ```
 
-Templates are tested against snapshots which can be recreated with:
-
-```sh
-cd packages/create-app
-pnpm update-snapshots
-```
-
 ## Options
 
 The CLI can be run without any arguments and the user will be guided with interactive prompts to fill in required information. The prompts may be skipped by providing the relevant information in through arguments instead.

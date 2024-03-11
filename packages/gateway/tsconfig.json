@@ -9,8 +9,5 @@
     "./src/**/*",
     ".eslintrc.cjs"
   ],
-  "exclude": [
-    "**/__snapshots__"
-  ],
   "references": []
 }
