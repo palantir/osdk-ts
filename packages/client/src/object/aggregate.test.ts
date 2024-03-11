@@ -366,16 +366,25 @@ describe("aggregate", () => {
       date: { duration: [1, "years"] },
     });
 
+    // Can't use value greater than 1 for years
     expectType<GroupByClause<TodoDef>>({
       timestamp: { duration: [1, "seconds"] },
       // @ts-expect-error
       date: { duration: [10, "years"] },
     });
 
+    // Can't use arbitrary string for time unit
     expectType<GroupByClause<TodoDef>>({
       // @ts-expect-error
       timestamp: { duration: [1, "nonexistentTimeUnit"] },
-      date: { duration: [1, "years"] },
+      date: { duration: [10, "days"] },
+    });
+
+    // Can't use time unit smaller than days for date type
+    expectType<GroupByClause<TodoDef>>({
+      timestamp: { duration: [10, "seconds"] },
+      // @ts-expect-error
+      date: { duration: [1, "seconds"] },
     });
   });
 

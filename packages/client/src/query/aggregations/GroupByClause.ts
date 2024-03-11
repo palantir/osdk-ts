@@ -38,6 +38,11 @@ export type TimestampGroupByValue =
   | { ranges: GroupByRange<string>[] }
   | { duration: DurationGroupBy | ExtendedDurationGroupBy };
 
+export type DateGroupByValue =
+  | "exact"
+  | { ranges: GroupByRange<string>[] }
+  | { duration: ExtendedDurationGroupBy | [number, "day" | "days"] };
+
 export type TimeUnit =
   | "SECONDS"
   | "MINUTES"

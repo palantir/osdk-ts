@@ -15,6 +15,7 @@
  */
 
 import type {
+  DateGroupByValue,
   NumericGroupByValue,
   StringGroupByValue,
   TimestampGroupByValue,
@@ -29,5 +30,5 @@ export interface GroupByMapper {
   double: NumericGroupByValue;
   integer: NumericGroupByValue;
   timestamp: TimestampGroupByValue;
-  datetime: TimestampGroupByValue;
+  datetime: DateGroupByValue;
 }
