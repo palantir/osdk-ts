@@ -77,7 +77,6 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
         composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: ["**/__snapshots__"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),

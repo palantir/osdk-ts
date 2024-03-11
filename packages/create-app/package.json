@@ -29,8 +29,7 @@
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build",
-    "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
+    "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
     "consola": "^3.2.3",
@@ -42,7 +41,6 @@
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "dir-compare": "^4.2.0",
     "tmp": "^0.2.1",
     "typescript": "^5.4.2"
   },

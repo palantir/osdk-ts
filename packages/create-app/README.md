@@ -15,12 +15,7 @@ cd packages/create-app
 ./bin/createOsdkApp.mjs
 ```
 
-Templates are tested against snapshots which can be recreated with:
-
-```sh
-cd packages/create-app
-pnpm update-snapshots
-```
+Changes to templates require updating `examples/` which can be done with the `@osdk/example-generator` package.
 
 ## Options
 
