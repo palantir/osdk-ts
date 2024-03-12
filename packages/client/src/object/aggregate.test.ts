@@ -65,6 +65,9 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
     other: {
       type: "string";
     };
+    boolean: {
+      type: "boolean";
+    };
   };
 }
 
@@ -107,6 +110,9 @@ const Todo: TodoDef = {
     },
     other: {
       type: "string",
+    },
+    boolean: {
+      type: "boolean",
     },
   },
 };
@@ -225,6 +231,7 @@ describe("aggregate", () => {
           floatProp: { fixedWidth: 10 },
           timestamp: { duration: [10, "seconds"] },
           date: { ranges: [["2024-01-02", "2024-01-09"]] },
+          boolean: "exact",
         },
       },
     );
@@ -244,6 +251,7 @@ describe("aggregate", () => {
     expectType<{ startValue: string; endValue: string }>(
       grouped[0].$group.date,
     );
+    expectType<boolean>(grouped[0].$group.boolean);
 
     expectType<
       AggregateOptsThatErrors<TodoDef, {

@@ -15,6 +15,7 @@
  */
 
 import type {
+  BooleanGroupByValue,
   DateGroupByValue,
   NumericGroupByValue,
   StringGroupByValue,
@@ -31,4 +32,5 @@ export interface GroupByMapper {
   integer: NumericGroupByValue;
   timestamp: TimestampGroupByValue;
   datetime: DateGroupByValue;
+  boolean: BooleanGroupByValue;
 }
