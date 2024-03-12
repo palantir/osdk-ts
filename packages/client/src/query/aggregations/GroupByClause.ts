@@ -27,11 +27,6 @@ export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
 export type GroupByRange<T> = [T, T];
 
-export type DurationGroupByValue<K extends TimeUnit | ExtendedTimeUnit> = [
-  TimeValueMapping[K],
-  AllowedTimeUnitKeys<K>,
-];
-
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
 } | { ranges: GroupByRange<number>[] };
@@ -39,32 +34,20 @@ export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
 export type TimestampGroupByValue =
   | "exact"
   | { ranges: GroupByRange<string>[] }
-  | { duration: DurationGroupByValue<TimestampTimeUnits> };
+  | { duration: TimestampDurationGroupBy };
 
 export type DateGroupByValue =
   | "exact"
   | { ranges: GroupByRange<string>[] }
-  | {
-    duration: DurationGroupByValue<DateTimeUnits> | [
-      number,
-      AllowedTimeUnitKeys<"DAYS">,
-    ];
-  };
+  | { duration: DatetimeDurationGroupBy };
 
-export type TimeUnit =
+export type TimestampTimeUnits =
+  | DateTimeUnits
   | "SECONDS"
   | "MINUTES"
-  | "HOURS"
-  | "DAYS";
+  | "HOURS";
 
-export type ExtendedTimeUnit =
-  | "WEEKS"
-  | "MONTHS"
-  | "YEARS"
-  | "QUARTERS";
-
-type TimestampTimeUnits = TimeUnit | ExtendedTimeUnit;
-type DateTimeUnits = ExtendedTimeUnit;
+export type DateTimeUnits = "DAYS" | "WEEKS" | "MONTHS" | "YEARS" | "QUARTERS";
 
 export const DurationMapping = {
   "sec": "SECONDS",
@@ -89,19 +72,7 @@ export const DurationMapping = {
   "years": "YEARS",
   "quarter": "QUARTERS",
   "quarters": "QUARTERS",
-} satisfies Record<string, TimeUnit | ExtendedTimeUnit>;
-
-type MapValue<
-  V extends string,
-  M extends Record<string, TimeUnit | ExtendedTimeUnit>,
-> = {
-  [K in keyof M]: M[K] extends V ? K : never;
-};
-
-type AllowedTimeUnitKeys<K extends string> = MapValue<
-  K,
-  typeof DurationMapping
->[keyof typeof DurationMapping];
+} satisfies Record<string, DateTimeUnits | TimestampTimeUnits>;
 
 interface TimeValueMapping {
   SECONDS: number;
@@ -113,6 +84,15 @@ interface TimeValueMapping {
   YEARS: 1;
   QUARTERS: 1;
 }
+
+type DurationGroupBy<A> = {
+  [K in keyof typeof DurationMapping]: typeof DurationMapping[K] extends A
+    ? [TimeValueMapping[typeof DurationMapping[K]], K]
+    : never;
+}[keyof typeof DurationMapping];
+
+type TimestampDurationGroupBy = DurationGroupBy<TimestampTimeUnits>;
+type DatetimeDurationGroupBy = DurationGroupBy<DateTimeUnits>;
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition<any, any>,
