@@ -34,12 +34,25 @@ interface RunArgs {
 }
 
 export async function run({ outputDirectory, check }: RunArgs) {
-  const outputPath = path.resolve(outputDirectory);
+  const resolvedOutput = path.resolve(outputDirectory);
+  const tmpDir = createTmpDir();
+  await generateExamples(tmpDir);
+  await fixMonorepolint(tmpDir);
+  if (check) {
+    await checkExamples(resolvedOutput, tmpDir);
+  } else {
+    await copyExamples(resolvedOutput, tmpDir);
+  }
+}
+
+function createTmpDir(): tmp.DirResult {
   const tmpDir = tmp.dirSync({ unsafeCleanup: true });
   tmp.setGracefulCleanup();
-  process.chdir(tmpDir.name);
+  return tmpDir;
+}
 
-  // Run @osdk/create-app and mutators
+async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
+  process.chdir(tmpDir.name);
   for (const template of TEMPLATES) {
     const exampleId = templateExampleId(template);
     consola.info(`Generating example ${exampleId}`);
@@ -82,8 +95,9 @@ export async function run({ outputDirectory, check }: RunArgs) {
       }
     }
   }
+}
 
-  // Run monorepolint formatting
+async function fixMonorepolint(tmpDir: tmp.DirResult): Promise<void> {
   const mrlConfig = await findUp(
     ".monorepolint.config.mjs",
     { cwd: path.dirname(fileURLToPath(import.meta.url)) },
@@ -101,45 +115,52 @@ export async function run({ outputDirectory, check }: RunArgs) {
   );
   consola.log(mrlStdout);
   consola.log(mrlStderr);
+}
 
-  // Check or copy files
-  if (check) {
-    for (const template of TEMPLATES) {
-      const exampleId = templateExampleId(template);
-      consola.info(`Checking contents of ${exampleId}`);
-      // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
-      const pathLeft = fs.realpathSync(path.join(outputPath, exampleId));
-      const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
-      const compareResult = compareSync(
-        pathLeft,
-        pathRight,
-        {
-          compareContent: true,
-          filterHandler: gitIgnoreFilter(pathLeft, pathRight),
-          excludeFilter: "/.turbo",
-        },
+async function checkExamples(
+  resolvedOutput: string,
+  tmpDir: tmp.DirResult,
+): Promise<void> {
+  for (const template of TEMPLATES) {
+    const exampleId = templateExampleId(template);
+    consola.info(`Checking contents of ${exampleId}`);
+    // realpath because globby in .gitignore filter requires symlinks in tmp directory to be resolved
+    const pathLeft = fs.realpathSync(path.join(resolvedOutput, exampleId));
+    const pathRight = fs.realpathSync(path.join(tmpDir.name, exampleId));
+    const compareResult = compareSync(
+      pathLeft,
+      pathRight,
+      {
+        compareContent: true,
+        filterHandler: gitIgnoreFilter(pathLeft, pathRight),
+        excludeFilter: "/.turbo",
+      },
+    );
+    if (!compareResult.same) {
+      consola.error(
+        `Found ${compareResult.differences} differences in ${exampleId} please generate examples again.`,
       );
-      if (!compareResult.same) {
-        consola.error(
-          `Found ${compareResult.differences} differences in ${exampleId} please generate examples again.`,
-        );
-        consola.error(compareResult.diffSet?.filter(d => d.state !== "equal"));
-        process.exit(1);
-      }
-      consola.success(`Contents equal`);
+      consola.error(compareResult.diffSet?.filter(d => d.state !== "equal"));
+      process.exit(1);
     }
-  } else {
-    consola.info("Copying generated packages to output directory");
-    for (const template of TEMPLATES) {
-      const exampleId = templateExampleId(template);
-      const exampleOutputPath = path.join(outputPath, exampleId);
-      const exampleTmpPath = path.join(tmpDir.name, exampleId);
-      fs.rmSync(exampleOutputPath, { recursive: true, force: true });
-      fs.mkdirSync(exampleOutputPath, { recursive: true });
-      fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
-    }
-    consola.success("Done");
+    consola.success(`Contents equal`);
   }
+}
+
+async function copyExamples(
+  resolvedOutput: string,
+  tmpDir: tmp.DirResult,
+): Promise<void> {
+  consola.info("Copying generated packages to output directory");
+  for (const template of TEMPLATES) {
+    const exampleId = templateExampleId(template);
+    const exampleOutputPath = path.join(resolvedOutput, exampleId);
+    const exampleTmpPath = path.join(tmpDir.name, exampleId);
+    fs.rmSync(exampleOutputPath, { recursive: true, force: true });
+    fs.mkdirSync(exampleOutputPath, { recursive: true });
+    fs.cpSync(exampleTmpPath, exampleOutputPath, { recursive: true });
+  }
+  consola.success("Done");
 }
 
 interface Mutator {
