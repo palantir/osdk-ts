@@ -33,7 +33,10 @@ export type PossibleWhereClauseFilters =
   | "$lte"
   | "$within"
   | "$intersects"
-  | "$startsWith";
+  | "$startsWith"
+  | "$containsAllTermsInOrder"
+  | "$containsAnyTerm"
+  | "$containsAllTerms";
 
 // We need to conditional here to force the union to be distributed
 type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
@@ -43,10 +46,18 @@ type MakeFilter<K extends PossibleWhereClauseFilters, V> = K extends string ? {
 
 type BaseFilter<T> =
   | T
-  | MakeFilter<"$eq" | "$ne" | "$contains", T>
+  | MakeFilter<"$eq" | "$ne", T>
   | MakeFilter<"$isNull", boolean>;
 
-type StringFilter = BaseFilter<string> | MakeFilter<"$startsWith", string>;
+type StringFilter =
+  | BaseFilter<string>
+  | MakeFilter<
+    | "$startsWith"
+    | "$containsAllTermsInOrder"
+    | "$containsAnyTerm"
+    | "$containsAllTerms",
+    string
+  >;
 type NumberFilter =
   | BaseFilter<number>
   | MakeFilter<"$gt" | "$gte" | "$lt" | "$lte", number>;
@@ -58,6 +69,10 @@ type DatetimeFilter =
 type BooleanFilter =
   | boolean
   | MakeFilter<"$eq" | "$ne", boolean>
+  | MakeFilter<"$isNull", boolean>;
+
+type ArrayFilter<T> =
+  | MakeFilter<"$contains", T>
   | MakeFilter<"$isNull", boolean>;
 
 export const DistanceUnitMapping = {
@@ -113,12 +128,18 @@ export type GeoFilter_Intersects = {
 
 export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 
-type FilterFor<PD extends ObjectTypePropertyDefinition> = PD["type"] extends
-  "string" ? StringFilter
-  : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
-  : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
-  : PD["type"] extends "boolean" ? BooleanFilter
-  : NumberFilter; // FIXME we need to represent all types
+type FilterFor<PD extends ObjectTypePropertyDefinition> =
+  PD["multiplicity"] extends true
+    ? PD["type"] extends
+      "string" | "geopoint" | "geoshape" | "datetime" | "timestamp"
+      ? ArrayFilter<string>
+    : PD["type"] extends boolean ? ArrayFilter<boolean>
+    : ArrayFilter<number>
+    : PD["type"] extends "string" ? StringFilter
+    : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
+    : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
+    : PD["type"] extends "boolean" ? BooleanFilter
+    : NumberFilter; // FIXME we need to represent all types
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,

@@ -378,6 +378,24 @@
             "dataType": {
               "type": "string"
             }
+          },
+          "meetingRooms": {
+            "description": "The Names of meetings rooms in the fofice",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "string"
+              }
+            }
+          },
+          "meetingRoomCapacities": {
+            "description": "The individual capacities of meetings rooms in the fofice",
+            "dataType": {
+              "type": "array",
+              "subType": {
+                "type": "integer"
+              }
+            }
           }
         },
         "rid": "ri.ontology.main.object-type.404ac022-89eb-4591-8b7e-1a912b9efb45",
