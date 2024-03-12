@@ -380,7 +380,7 @@
             }
           },
           "meetingRooms": {
-            "description": "The Names of meetings rooms in the fofice",
+            "description": "The Names of meetings rooms in the office",
             "dataType": {
               "type": "array",
               "subType": {
@@ -389,7 +389,7 @@
             }
           },
           "meetingRoomCapacities": {
-            "description": "The individual capacities of meetings rooms in the fofice",
+            "description": "The individual capacities of meetings rooms in the office",
             "dataType": {
               "type": "array",
               "subType": {

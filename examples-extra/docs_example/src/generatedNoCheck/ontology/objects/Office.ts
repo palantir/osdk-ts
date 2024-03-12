@@ -46,13 +46,13 @@ export const Office: Office = {
     },
     meetingRooms: {
       multiplicity: true,
-      description: 'The Names of meetings rooms in the fofice',
+      description: 'The Names of meetings rooms in the office',
       type: 'string',
       nullable: true,
     },
     meetingRoomCapacities: {
       multiplicity: true,
-      description: 'The individual capacities of meetings rooms in the fofice',
+      description: 'The individual capacities of meetings rooms in the office',
       type: 'integer',
       nullable: true,
     },
