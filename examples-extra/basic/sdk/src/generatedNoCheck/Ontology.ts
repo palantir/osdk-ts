@@ -8,6 +8,7 @@ const _Ontology = {
   metadata: OntologyMetadata,
   objects: {
     BoundariesUsState: Objects.BoundariesUsState,
+    BuilderDeploymentState: Objects.BuilderDeploymentState,
     Employee: Objects.Employee,
     ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes,
     Person: Objects.Person,
@@ -27,7 +28,14 @@ const _Ontology = {
     FooInterface: Interfaces.FooInterface,
   },
 } satisfies OntologyDefinition<
-  'BoundariesUsState' | 'Employee' | 'ObjectTypeWithAllPropertyTypes' | 'Person' | 'Todo' | 'Venture' | 'WeatherStation'
+  | 'BoundariesUsState'
+  | 'BuilderDeploymentState'
+  | 'Employee'
+  | 'ObjectTypeWithAllPropertyTypes'
+  | 'Person'
+  | 'Todo'
+  | 'Venture'
+  | 'WeatherStation'
 >;
 
 type _Ontology = typeof _Ontology;

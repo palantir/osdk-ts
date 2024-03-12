@@ -179,6 +179,34 @@
       },
       "linkTypes": []
     },
+    "BuilderDeploymentState": {
+      "objectType": {
+        "apiName": "BuilderDeploymentState",
+        "primaryKey": "skuId",
+        "displayName": "BuilderDeploymentState",
+        "description": "Builder Deployment State",
+        "properties": {
+          "skuId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "date": {
+            "dataType": {
+              "type": "date"
+            }
+          },
+          "currentTimestamp": {
+            "dataType": {
+              "type": "timestamp"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridforbuilderdeployment"
+      },
+      "linkTypes": []
+    },
     "Todo": {
       "objectType": {
         "apiName": "Todo",

@@ -25,11 +25,74 @@ export type GroupByClause<
 };
 export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
-export type GroupByRange = [number, number];
+export type GroupByRange<T> = [T, T];
 
 export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
   fixedWidth: number;
-} | { ranges: GroupByRange[] };
+} | { ranges: GroupByRange<number>[] };
+
+export type TimestampGroupByValue =
+  | "exact"
+  | { ranges: GroupByRange<string>[] }
+  | { duration: TimestampDurationGroupBy };
+
+export type DateGroupByValue =
+  | "exact"
+  | { ranges: GroupByRange<string>[] }
+  | { duration: DatetimeDurationGroupBy };
+
+export type TimestampTimeUnits =
+  | DateTimeUnits
+  | "SECONDS"
+  | "MINUTES"
+  | "HOURS";
+
+export type DateTimeUnits = "DAYS" | "WEEKS" | "MONTHS" | "YEARS" | "QUARTERS";
+
+export const DurationMapping = {
+  "sec": "SECONDS",
+  "seconds": "SECONDS",
+  "min": "MINUTES",
+  "minute": "MINUTES",
+  "minutes": "MINUTES",
+  "hr": "HOURS",
+  "hrs": "HOURS",
+  "hour": "HOURS",
+  "hours": "HOURS",
+  "day": "DAYS",
+  "days": "DAYS",
+  "wk": "WEEKS",
+  "week": "WEEKS",
+  "weeks": "WEEKS",
+  "mos": "MONTHS",
+  "month": "MONTHS",
+  "months": "MONTHS",
+  "yr": "YEARS",
+  "year": "YEARS",
+  "years": "YEARS",
+  "quarter": "QUARTERS",
+  "quarters": "QUARTERS",
+} satisfies Record<string, DateTimeUnits | TimestampTimeUnits>;
+
+interface TimeValueMapping {
+  SECONDS: number;
+  MINUTES: number;
+  HOURS: number;
+  DAYS: number;
+  WEEKS: 1;
+  MONTHS: 1;
+  YEARS: 1;
+  QUARTERS: 1;
+}
+
+type DurationGroupBy<A> = {
+  [K in keyof typeof DurationMapping]: typeof DurationMapping[K] extends A
+    ? [TimeValueMapping[typeof DurationMapping[K]], K]
+    : never;
+}[keyof typeof DurationMapping];
+
+type TimestampDurationGroupBy = DurationGroupBy<TimestampTimeUnits>;
+type DatetimeDurationGroupBy = DurationGroupBy<DateTimeUnits>;
 
 type GroupByEntry<
   Q extends ObjectOrInterfaceDefinition<any, any>,

@@ -18,7 +18,10 @@ import type {
   AggregationGroupByV2,
   AggregationRangeV2,
 } from "@osdk/gateway/types";
-import type { GroupByRange } from "../../query/aggregations/GroupByClause.js";
+import {
+  DurationMapping,
+  type GroupByRange,
+} from "../../query/aggregations/GroupByClause.js";
 import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
 export function modernToLegacyGroupByClause(
@@ -53,10 +56,19 @@ export function modernToLegacyGroupByClause(
         field,
         ranges: type.ranges.map(range => convertRange(range)),
       }];
+    } else if ("duration" in type) {
+      return [{
+        type: "duration",
+        field,
+        value: type.duration[0],
+        unit: DurationMapping[type.duration[1]],
+      }];
     } else return [];
   });
 }
 
-function convertRange(range: GroupByRange): AggregationRangeV2 {
+function convertRange(
+  range: GroupByRange<number | string>,
+): AggregationRangeV2 {
   return { startValue: range[0], endValue: range[1] };
 }
