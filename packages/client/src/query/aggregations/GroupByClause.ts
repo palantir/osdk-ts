@@ -23,23 +23,27 @@ export type GroupByClause<
 > = {
   [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };
-export type StringGroupByValue = "exact" | { exactWithLimit: number };
 
+type BaseGroupByValue = "exact" | { exactWithLimit: number };
 export type GroupByRange<T> = [T, T];
 
-export type NumericGroupByValue = "exact" | { exactWithLimit: number } | {
+export type StringGroupByValue = BaseGroupByValue;
+
+export type NumericGroupByValue = BaseGroupByValue | {
   fixedWidth: number;
 } | { ranges: GroupByRange<number>[] };
 
 export type TimestampGroupByValue =
-  | "exact"
+  | BaseGroupByValue
   | { ranges: GroupByRange<string>[] }
   | { duration: TimestampDurationGroupBy };
 
 export type DateGroupByValue =
-  | "exact"
+  | BaseGroupByValue
   | { ranges: GroupByRange<string>[] }
   | { duration: DatetimeDurationGroupBy };
+
+export type BooleanGroupByValue = BaseGroupByValue;
 
 export type TimestampTimeUnits =
   | DateTimeUnits
