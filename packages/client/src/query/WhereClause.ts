@@ -130,16 +130,16 @@ export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 
 type FilterFor<PD extends ObjectTypePropertyDefinition> =
   PD["multiplicity"] extends true
-    ? PD["type"] extends
+    ? (PD["type"] extends
       "string" | "geopoint" | "geoshape" | "datetime" | "timestamp"
       ? ArrayFilter<string>
-    : PD["type"] extends boolean ? ArrayFilter<boolean>
-    : ArrayFilter<number>
-    : PD["type"] extends "string" ? StringFilter
-    : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
-    : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
-    : PD["type"] extends "boolean" ? BooleanFilter
-    : NumberFilter; // FIXME we need to represent all types
+      : (PD["type"] extends boolean ? ArrayFilter<boolean>
+        : ArrayFilter<number>))
+    : (PD["type"] extends "string" ? StringFilter
+      : PD["type"] extends "geopoint" | "geoshape" ? GeoFilter
+      : PD["type"] extends "datetime" | "timestamp" ? DatetimeFilter
+      : PD["type"] extends "boolean" ? BooleanFilter
+      : NumberFilter); // FIXME we need to represent all types
 
 export interface AndWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,
