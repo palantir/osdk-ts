@@ -49,7 +49,7 @@ export type ObjectTypePropertyDefinitionFrom2<
 
 export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   type: "object" | "interface";
-  apiName: K & { __OsdkType?: N };
+  apiName: BrandedApiName<K, N>;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<
@@ -100,6 +100,16 @@ export type ObjectTypeLinkTargetTypeFrom<
   K extends ObjectTypeKeysFrom<O>,
   L extends ObjectTypeLinkKeysFrom<O, K>,
 > = ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"];
+
+export type BrandedApiName<
+  K extends string,
+  N,
+> =
+  & K
+  & {
+    __OsdkType?: N;
+    __Unbranded?: K;
+  };
 
 export interface ObjectTypePropertyDefinition {
   readonly?: boolean;

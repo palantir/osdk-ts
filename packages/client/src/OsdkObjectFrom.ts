@@ -39,10 +39,10 @@ export type ConvertProps<
   P extends string = "$all",
 > = TO extends ObjectTypeDefinition<any> ? (
     (NonNullable<
-      TO["inverseSpts"]
+      TO["spts"]
     >[
       P extends "$all"
-        ? keyof FROM["properties"] extends keyof TO["inverseSpts"]
+        ? keyof FROM["properties"] extends keyof TO["spts"]
           ? keyof FROM["properties"]
         : never
         : P
@@ -50,7 +50,8 @@ export type ConvertProps<
   )
   : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
     : FROM extends ObjectTypeDefinition<any>
-      ? P extends keyof FROM["spts"] ? NonNullable<FROM["spts"]>[P]
+      ? P extends keyof FROM["inverseSpts"]
+        ? NonNullable<FROM["inverseSpts"]>[P]
       : never
     : never
   : never;
@@ -73,6 +74,8 @@ type UnderlyingProps<
   : Z
   : Z;
 
+type IsNever<T> = [T] extends [never] ? true : false;
+
 export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends string = "$all",
@@ -81,12 +84,17 @@ export type Osdk<
 > =
   & {
     [
-      PP in keyof Q["properties"] as (P extends "$all" ? PP
-        : PP extends P ? PP
-        : never)
-    ]: OsdkObjectPropertyType<
-      Q["properties"][PP]
-    >;
+      PP in keyof Q["properties"] as (
+        // when we don't know what properties, we will show all but ensure they are `| undefined`
+        IsNever<P> extends true ? PP
+          : P extends "$all" ? PP
+          : PP extends P ? PP
+          : never
+      )
+    ]: IsNever<P> extends true
+      // when we don't know what properties, we will show all but ensure they are `| undefined`
+      ? OsdkObjectPropertyType<Q["properties"][PP]> | undefined
+      : OsdkObjectPropertyType<Q["properties"][PP]>;
   }
   & {
     /** @deprecated use $apiName */
@@ -95,6 +103,8 @@ export type Osdk<
     $apiName: Q["apiName"] & {
       __OsdkType?: Q["apiName"];
     };
+
+    $objectType: string;
 
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
@@ -109,7 +119,7 @@ export type Osdk<
     $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
       : never;
 
-    $as: <NEWQ extends ValidToFrom<Q>>(type: NEWQ) => Osdk<
+    $as: <NEWQ extends ValidToFrom<Q>>(type: NEWQ | string) => Osdk<
       NEWQ,
       ConvertProps<Q, NEWQ, P>,
       R,

@@ -147,7 +147,7 @@ export interface ObjectTypeWithAllPropertyTypesDef
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
   {
     type: "object",
-    apiName: "ObjectTypeWithAllPropertyTypes",
+    apiName: "ObjectTypeWithAllPropertyTypes" as const,
     primaryKeyApiName: "id" as const,
     primaryKeyType: "integer",
     links: {},

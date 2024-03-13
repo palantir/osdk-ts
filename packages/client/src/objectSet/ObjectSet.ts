@@ -26,6 +26,7 @@ import type {
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import type {
+  Augments,
   FetchPageArgs,
   FetchPageResult,
   SelectArg,
@@ -40,8 +41,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
   fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
+    const A extends Augments,
   >(
-    args?: FetchPageArgs<Q, L, R>,
+    args?: FetchPageArgs<Q, L, R, A>,
   ) => FetchPageResult<Q, L, R>;
 
   where: (

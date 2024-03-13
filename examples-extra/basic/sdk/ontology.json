@@ -386,8 +386,8 @@
       ],
       "implementsInterfaces": ["FooInterface"],
       "sharedPropertyTypeMapping": {
-        "firstName": "name",
-        "email": "description"
+        "name": "firstName",
+        "description": "email"
       }
     },
     "Venture": {

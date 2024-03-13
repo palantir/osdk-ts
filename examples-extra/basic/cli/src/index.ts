@@ -107,6 +107,22 @@ async function runTests() {
     //   throw new Error("Should not be allowed to convert between mixed types");
     // }
 
+    // {
+    //   const { data } = await client(Employee).fetchPage();
+    //   console.log(data[0].$link);
+    //   console.log("link keys", Object.keys(data[0].$link));
+    //   console.log(data[0].$link.lead);
+    //   console.log(data[0].$link.peeps);
+    //   console.log((data[0].$link as any).comments);
+    // }
+
+    // this has the nice effect of faking a 'race' with the below code
+    (async () => {
+      const { data } = await client(FooInterface).fetchPage();
+      const first = data[0];
+      const e = first.$as(Employee);
+    })();
+
     try {
       const r = true
         ? await client(FooInterface)

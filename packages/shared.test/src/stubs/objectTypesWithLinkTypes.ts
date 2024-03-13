@@ -34,7 +34,7 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
   linkTypes: [peepsLinkType, leadLinkType, officeLinkType],
   implementsInterfaces: ["FooInterface"],
   sharedPropertyTypeMapping: {
-    fullName: "fooSpt",
+    fooSpt: "fullName",
   },
 };
 

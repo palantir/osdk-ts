@@ -6,6 +6,7 @@
     "moduleResolution": "nodenext",
 
     "emitDeclarationOnly": true,
+    "declarationMap": true,
     "declaration": true,
 
     "isolatedModules": true,

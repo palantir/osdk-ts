@@ -39,6 +39,7 @@ export type {
   ObjectOrInterfacePropertyKeysFrom2,
 } from "./ontology/ObjectOrInterface";
 export type {
+  BrandedApiName,
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,

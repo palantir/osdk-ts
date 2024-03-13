@@ -91,6 +91,12 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       createOpenApiRequest(foundryUrl, fetch),
     );
 
+    if (args.ontologyRid) {
+      ontologies.data = ontologies.data.filter(
+        (o) => o.rid === args.ontologyRid,
+      );
+    }
+
     if (ontologies.data.length !== 1) {
       consola.error(
         `Could not look up ontology with these credentials. Found ${ontologies.data.length} ontologies.`,

@@ -20,7 +20,10 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import {
+  Employee,
+  Ontology as MockOntology,
+} from "../generatedNoCheck/index.js";
 import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
@@ -38,6 +41,29 @@ describe("convertWireToOsdkObjects", () => {
 
   afterAll(() => {
     apiServer.close();
+  });
+
+  it("configures properties correctly", async () => {
+    const { data: [employee] } = await client(Employee).fetchPage();
+
+    expect(Object.keys(employee)).toEqual([
+      "employeeId",
+      "fullName",
+      "office",
+      "class",
+      "startDate",
+      "employeeStatus",
+      "$apiName",
+      "$objectType",
+      "$primaryKey",
+    ]);
+
+    expect(Object.keys(employee.$as)).toEqual([]);
+    expect(Object.keys(employee.$link)).toEqual([
+      "peeps",
+      "lead",
+      "officeLink",
+    ]);
   });
 
   it("reuses the object prototype across objects", async () => {
