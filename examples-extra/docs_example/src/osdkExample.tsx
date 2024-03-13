@@ -24,16 +24,16 @@ export async function osdkObjectSetExample() {
   // Simple where clause
   // This defaults to AND together all the parameters
   const simpleFilteredEmployeeObjectSet = await client(Employee).where({
-    fullName: { $contains: "Clooney" },
+    fullName: { $startsWith: "Clooney" },
     employeeId: { $eq: 12 },
   });
 
   // Where clause with ors, ands, nots
   const complexFilteredEmployeeObjectSet = await client(Employee).where({
-    $or: [{ fullName: { $contains: "Clooney" }, employeeId: { $gt: 10 } }, {
-      $and: [{ $not: { fullName: { $contains: "Pitt" } } }, {
-        $or: [{ fullName: { $contains: "Downey" } }, {
-          fullName: { $startsWith: "Hemsworth" },
+    $or: [{ fullName: { $startsWith: "Clooney" }, employeeId: { $gt: 10 } }, {
+      $and: [{ $not: { fullName: { $containsAllTerms: "Pitt Redford" } } }, {
+        $or: [{ fullName: { $containsAnyTerm: "Downey Evans Scott" } }, {
+          fullName: { $containsAllTermsInOrder: "Hemsworth Pratt Tucker" },
           employeeId: { $gte: 20 },
         }],
       }],
@@ -43,6 +43,13 @@ export async function osdkObjectSetExample() {
   // Where clause boolean
 
   await client(Todo).where({ isComplete: true });
+
+  // Where clause arrays
+
+  await client(Office).where({
+    meetingRooms: { $contains: "Grand Central" },
+    meetingRoomCapacities: { $contains: 30 },
+  });
 
   // Where clause GEOTYPES
 

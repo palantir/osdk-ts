@@ -7,6 +7,8 @@ export interface Office extends ObjectTypeDefinition<'Office', Office> {
   primaryKeyType: 'string';
   properties: {
     entrance: PropertyDef<'geopoint', 'nullable', 'single'>;
+    meetingRoomCapacities: PropertyDef<'integer', 'nullable', 'array'>;
+    meetingRooms: PropertyDef<'string', 'nullable', 'array'>;
     name: PropertyDef<'string', 'nullable', 'single'>;
     occupiedArea: PropertyDef<'geoshape', 'nullable', 'single'>;
     officeId: PropertyDef<'string', 'non-nullable', 'single'>;
@@ -40,6 +42,18 @@ export const Office: Office = {
       multiplicity: false,
       description: 'The Name of the Office',
       type: 'string',
+      nullable: true,
+    },
+    meetingRooms: {
+      multiplicity: true,
+      description: 'The Names of meetings rooms in the office',
+      type: 'string',
+      nullable: true,
+    },
+    meetingRoomCapacities: {
+      multiplicity: true,
+      description: 'The individual capacities of meetings rooms in the office',
+      type: 'integer',
       nullable: true,
     },
   },
