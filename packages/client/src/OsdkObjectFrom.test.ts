@@ -65,11 +65,10 @@ describe("Osdk", () => {
   class OsdkAsHelperClass<
     FROM extends ObjectOrInterfaceDefinition,
     P extends string,
-    R extends boolean,
     Z extends string,
     TO extends ValidToFrom<FROM>,
   > {
-    constructor(private osdkObj: Osdk<FROM, P, R, Z>) {}
+    constructor(private osdkObj: Osdk<FROM, P, Z>) {}
 
     public as(to: TO) {
       return this.osdkObj.$as(to);
@@ -78,13 +77,12 @@ describe("Osdk", () => {
   type OsdkAsHelper<
     FROM extends ObjectOrInterfaceDefinition,
     P extends string,
-    R extends boolean,
     Z extends string,
     TO extends ValidToFrom<FROM>,
-  > = ReturnType<OsdkAsHelperClass<FROM, P, R, Z, TO>["as"]>;
+  > = ReturnType<OsdkAsHelperClass<FROM, P, Z, TO>["as"]>;
 
-  type GetUnderlyingProps<O extends Osdk<any, any, boolean, string>> = O extends
-    Osdk<any, any, any, infer Z> ? Z : never;
+  type GetUnderlyingProps<O extends Osdk<any, any, any>> = O extends
+    Osdk<any, any, infer Z> ? Z : never;
 
   describe("the reason for this weird test", () => {
     it("can't properly compare the retained types without it", () => {
@@ -93,31 +91,36 @@ describe("Osdk", () => {
       // This should fail but it doesnt. We dont actively capture Z
       // (and we cant)
       expectTypeOf<
-        OsdkAsHelper<Employee, "fullName", false, "fullName", FooInterface>
+        OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
       >().toEqualTypeOf<
-        Osdk<FooInterface, "fooSpt", false, InvalidPropertyName>
+        Osdk<FooInterface, "fooSpt", InvalidPropertyName>
       >();
 
       // See, when we dig via infer we find it doesnt match
       expectTypeOf<
         GetUnderlyingProps<
-          OsdkAsHelper<Employee, "fullName", false, "fullName", FooInterface>
+          OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
         >
       >().not.toEqualTypeOf<InvalidPropertyName>();
 
       // and that it can match correctly
       expectTypeOf<
         GetUnderlyingProps<
-          OsdkAsHelper<Employee, "fullName", false, "fullName", FooInterface>
+          OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
         >
       >().toEqualTypeOf<"fullName">();
+
+      // converting to self preserves the original props
+      expectTypeOf<
+        OsdkAsHelper<FooInterface, "fooSpt", "fullName", FooInterface>
+      >().toEqualTypeOf<Osdk<FooInterface, "fooSpt", "fullName">>();
     });
   });
 
   it("Converts into self properly", () => {
     expectTypeOf<
       GetUnderlyingProps<
-        OsdkAsHelper<FooInterface, "fooSpt", false, "fullName", FooInterface>
+        OsdkAsHelper<FooInterface, "fooSpt", "fullName", FooInterface>
       >
     >().toEqualTypeOf<"fullName">();
 
@@ -129,7 +132,7 @@ describe("Osdk", () => {
   it("retains original props if set", () => {
     expectTypeOf<
       GetUnderlyingProps<
-        OsdkAsHelper<Employee, "fullName", false, "fullName", FooInterface>
+        OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
       >
     >().toEqualTypeOf<"fullName">();
   });

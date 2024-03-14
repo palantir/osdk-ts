@@ -35,8 +35,8 @@ export async function fetchSingle<
 ): Promise<
   Osdk<
     Q,
-    SelectArgToKeys<Q, A>,
-    A["includeRid"] extends true ? true : false
+    A["includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+      : SelectArgToKeys<Q, A>
   >
 > {
   const result = await fetchPage(

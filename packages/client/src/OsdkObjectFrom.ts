@@ -27,6 +27,8 @@ export type OsdkObjectPrimaryKeyType<
   O extends ObjectTypeDefinition<any>,
 > = PropertyValueWireToClient[O["primaryKeyType"]];
 
+type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
+
 /**
  * DO NOT EXPORT FROM PACKAGE
  * @param FROM - the interface or object type to convert from
@@ -37,21 +39,22 @@ export type ConvertProps<
   FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   TO extends ValidToFrom<FROM>,
   P extends string = "$all",
-> = TO extends ObjectTypeDefinition<any> ? (
-    (NonNullable<
-      TO["spts"]
-    >[
-      P extends "$all"
-        ? keyof FROM["properties"] extends keyof TO["spts"]
-          ? keyof FROM["properties"]
-        : never
-        : P
-    ])
-  )
+> = TO extends FROM ? P
+  : TO extends ObjectTypeDefinition<any> ? (
+      (NonNullable<
+        TO["spts"]
+      >[
+        P extends "$all"
+          ? keyof FROM["properties"] extends keyof TO["spts"]
+            ? keyof FROM["properties"]
+          : never
+          : DropRidAndAll<P>
+      ])
+    )
   : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
     : FROM extends ObjectTypeDefinition<any>
-      ? P extends keyof FROM["inverseSpts"]
-        ? NonNullable<FROM["inverseSpts"]>[P]
+      ? DropRidAndAll<P> extends keyof FROM["inverseSpts"]
+        ? NonNullable<FROM["inverseSpts"]>[DropRidAndAll<P>]
       : never
     : never
   : never;
@@ -79,8 +82,7 @@ type IsNever<T> = [T] extends [never] ? true : false;
 export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends string = "$all",
-  R extends boolean = false,
-  Z extends string = P, // this is the underlying's props
+  Z extends string = never, // this is the underlying's props
 > =
   & {
     [
@@ -122,15 +124,15 @@ export type Osdk<
     $as: <NEWQ extends ValidToFrom<Q>>(type: NEWQ | string) => Osdk<
       NEWQ,
       ConvertProps<Q, NEWQ, P>,
-      R,
       UnderlyingProps<Q, P, Z, NEWQ>
     >;
   }
   // We are hiding the $rid field if it wasnt requested as we want to discourage its use
-  & (R extends true ? { $rid: string } : {});
+  & (IsNever<P> extends true ? {}
+    : P extends "$rid" ? { $rid: string }
+    : {});
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends string = "$all",
-  R extends boolean = false,
-> = Osdk<Q, P, R>;
+> = Osdk<Q, P>;
