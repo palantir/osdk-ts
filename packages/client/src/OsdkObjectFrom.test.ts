@@ -133,4 +133,21 @@ describe("Osdk", () => {
       >
     >().toEqualTypeOf<"fullName">();
   });
+
+  it("falls back to all props as undefined when never", () => {
+    expectTypeOf<
+      Omit<
+        Osdk<FooInterface, never>,
+        | "$as"
+        | "$apiName"
+        | "__apiName"
+        | "$link"
+        | "__primaryKey"
+        | "$objectType"
+        | "$primaryKey"
+      >
+    >().toEqualTypeOf<
+      { fooSpt: string | undefined }
+    >();
+  });
 });

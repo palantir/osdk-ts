@@ -55,6 +55,11 @@ export const command: CommandModule<
             conflicts: "ontologyPath",
             implies: "foundryUrl",
           },
+          ontologyRid: {
+            description: "Limit requests to this ontology rid only",
+            type: "string",
+            demandOption: false,
+          },
           ontologyWritePath: {
             description: "Path to write the ontology wire json",
             type: "string",

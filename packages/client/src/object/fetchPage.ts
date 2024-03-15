@@ -15,6 +15,7 @@
  */
 
 import type {
+  BrandedApiName,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
@@ -73,13 +74,34 @@ export interface FetchPageArgs<
   K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
+  A extends Augments = {},
 > extends
   SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
   nextPageToken?: string;
   pageSize?: number;
+  augment?: A;
 }
+
+export function augment<
+  X extends ObjectOrInterfaceDefinition,
+  T extends keyof X["properties"] & string,
+>(
+  type: X,
+  ...properties: T[]
+): Augment<X, T> {
+  return { [type.apiName]: properties } as any;
+}
+
+export type Augment<
+  X extends ObjectOrInterfaceDefinition,
+  T extends string,
+> = X extends ObjectOrInterfaceDefinition<infer Z>
+  ? Z extends BrandedApiName<infer ZZ, any> ? { [K in Z]: T[] } : never
+  : never;
+
+export type Augments = Record<string, string[]>;
 
 export interface FetchInterfacePageArgs<
   Q extends InterfaceDefinition<any, any>,
@@ -92,6 +114,7 @@ export interface FetchInterfacePageArgs<
 {
   nextPageToken?: string;
   pageSize?: number;
+  augment?: Augments;
 }
 
 export type FetchPageResult<
@@ -162,7 +185,7 @@ async function fetchInterfacePage<
     client.ontology.metadata.ontologyApiName,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-      augmentedProperties: {},
+      augmentedProperties: args.augment ?? {},
       augmentedSharedPropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
@@ -175,6 +198,7 @@ async function fetchInterfacePage<
     client,
     result.data as OntologyObjectV2[], // drop readonly
     interfaceType.apiName,
+    !args.includeRid,
   );
   return result as any;
 }
@@ -184,11 +208,12 @@ export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
+  A extends Augments,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R> = {},
+  args: FetchPageArgs<Q, L, R, A> = {},
 ): FetchPageResult<Q, L, R> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme

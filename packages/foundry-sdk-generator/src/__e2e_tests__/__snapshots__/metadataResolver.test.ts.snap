@@ -103,7 +103,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
         "titleProperty": "fullName",
       },
       "sharedPropertyTypeMapping": {
-        "fullName": "fooSpt",
+        "fooSpt": "fullName",
       },
     },
     "Office": {
@@ -243,7 +243,7 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
         "titleProperty": "fullName",
       },
       "sharedPropertyTypeMapping": {
-        "fullName": "fooSpt",
+        "fooSpt": "fullName",
       },
     },
   },

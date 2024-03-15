@@ -6,8 +6,8 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
   description: 'An employee';
   implements: ['FooInterface'];
   inverseSpts: {
-    name: 'firstName';
-    description: 'email';
+    firstName: 'name';
+    email: 'description';
   };
   links: {
     lead: ObjectTypeLinkDefinition<Employee, false>;
@@ -31,8 +31,8 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
     locationType: PropertyDef<'string', 'nullable', 'single'>;
   };
   spts: {
-    firstName: 'name';
-    email: 'description';
+    name: 'firstName';
+    description: 'email';
   };
 }
 
@@ -41,8 +41,8 @@ export const Employee: Employee = {
   description: 'An employee',
   implements: ['FooInterface'],
   inverseSpts: {
-    name: 'firstName',
-    description: 'email',
+    firstName: 'name',
+    email: 'description',
   },
   links: {
     lead: {
@@ -123,8 +123,8 @@ export const Employee: Employee = {
     },
   },
   spts: {
-    firstName: 'name',
-    email: 'description',
+    name: 'firstName',
+    description: 'email',
   },
   type: 'object',
 };

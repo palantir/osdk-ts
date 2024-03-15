@@ -44,3 +44,5 @@ export type { NOOP } from "./util/NOOP.js";
 
 export { createMinimalClient } from "./createMinimalClient.js";
 export type { MinimalClient } from "./MinimalClientContext.js";
+
+export { augment } from "./object/fetchPage.js";

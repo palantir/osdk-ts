@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type OsdkObject<N extends string> = { $apiName: N };
+export type OsdkObject<N extends string> = { $apiName: N; $objectType: string };

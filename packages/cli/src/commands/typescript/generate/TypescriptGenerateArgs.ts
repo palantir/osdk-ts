@@ -23,4 +23,5 @@ export interface TypescriptGenerateArgs {
   beta?: boolean;
   packageType: "commonjs" | "module";
   version: string;
+  ontologyRid?: string;
 }
