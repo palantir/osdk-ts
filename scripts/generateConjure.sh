@@ -30,7 +30,6 @@ function generateConjure() {
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
 
-generateConjure "com.palantir.artifacts" "artifacts-admin-api" "${SCRIPT_DIR}/../packages/cli"
 generateConjure "com.palantir.artifacts" "artifacts-sites-api" "${SCRIPT_DIR}/../packages/cli"
 
 generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client"
