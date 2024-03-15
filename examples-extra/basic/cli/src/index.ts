@@ -107,15 +107,6 @@ async function runTests() {
     //   throw new Error("Should not be allowed to convert between mixed types");
     // }
 
-    // {
-    //   const { data } = await client(Employee).fetchPage();
-    //   console.log(data[0].$link);
-    //   console.log("link keys", Object.keys(data[0].$link));
-    //   console.log(data[0].$link.lead);
-    //   console.log(data[0].$link.peeps);
-    //   console.log((data[0].$link as any).comments);
-    // }
-
     // this has the nice effect of faking a 'race' with the below code
     (async () => {
       const { data } = await client(FooInterface).fetchPage();
@@ -130,10 +121,11 @@ async function runTests() {
           .where({ name: { $ne: "Roth" } })
           .fetchPage({ pageSize: 1, select: ["name"] })
         : await fetchPage(clientCtx, FooInterface, {
-          select: ["name", "description"],
+          select: ["name"],
           pageSize: 5,
         });
 
+      // This technically matches because the types are `| undefined`
       expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
         true,
       );

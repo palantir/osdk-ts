@@ -123,20 +123,9 @@ export type FetchPageResult<
   R extends boolean,
 > = Promise<
   PageResult<
-    ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
-        DefaultToFalse<R> extends false ? Osdk<Q>
-          : Osdk<
-            Q,
-            "$all",
-            true,
-            Q extends InterfaceDefinition<any> ? "$all" : L
-          >
-      )
-      : (
-        DefaultToFalse<R> extends false
-          ? Osdk<Q, L, false, Q extends InterfaceDefinition<any> ? never : L>
-          : Osdk<Q, L, true, Q extends InterfaceDefinition<any> ? never : L>
-      )
+    ObjectOrInterfacePropertyKeysFrom2<Q> extends L
+      ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
+      : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
   >
 >;
 
