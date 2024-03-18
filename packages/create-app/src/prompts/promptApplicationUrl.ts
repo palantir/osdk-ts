@@ -33,8 +33,12 @@ export async function promptApplicationUrl(
       {
         type: "select",
         options: [
-          { label: "Yes, prefill it for me", value: "yes" },
-          { label: "No, I will fill it in myself later", value: "no" },
+          { label: "Yes, let me fill it here", value: "yes" },
+          {
+            label:
+              "No, I will fill it in later following the instructions in the generated README",
+            value: "no",
+          },
         ],
       },
       // Types for "select" are wrong the value is returned rather than the option object
