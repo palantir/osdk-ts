@@ -14,140 +14,217 @@
  * limitations under the License.
  */
 
-import { describe, expect, it } from "vitest";
-import { createInterface } from "./createInterface";
-import { createLink } from "./createLink";
-import { createObject } from "./createObject";
-import { createOntology } from "./createOntology";
-import { createSpt } from "./createSpt";
+import { beforeEach, describe, expect, it } from "vitest";
+import { defineInterface } from "./defineInterface";
+import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology";
+import { defineSharedPropertyType } from "./defineSpt";
 
-describe("Test", () => {
-  it("things", () => {
-    const result = createOntology("myns", () => {
-      const fooSpt = createSpt(
-        "fooSpt",
-        {
-          type: "string",
-        },
+describe("Ontology Defining", () => {
+  beforeEach(() => {
+    defineOntology("myns", () => {});
+  });
+
+  describe("Interfaces", () => {
+    it("doesnt let you define the same interface twice", () => {
+      defineInterface("Foo", {});
+      expect(() => {
+        defineInterface("Foo", {});
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Interface Foo already exists]`,
       );
-
-      const FooInterface = createInterface(
-        "FooInterface",
-        "Foo Interface",
-      );
-
-      const Employee = createObject(
-        "Employee",
-        {
-          displayName: "Employee",
-          primaryKey: {
-            apiName: "email",
-            type: "string",
-          },
-          properties: {
-            email: "string",
-            username: {
-              type: "string",
-              nullable: false,
-            },
-          },
-        },
-      );
-
-      const Shoutout = createObject(
-        "Shoutout",
-        {
-          primaryKey: {
-            apiName: "id",
-            type: "long",
-          },
-        },
-      );
-
-      createLink(Employee, {
-        many: "peeps",
-        to: Employee,
-        reverse: {
-          one: "lead",
-        },
-      });
-
-      createLink("1:n", Employee, "lead", Employee, "peeps", {});
-
-      createLink(Employee, "lead", "1:n", "peeps", Employee, {
-        lead: "Reports To",
-        peeps: "Manager of",
-      });
-
-      Employee.createLink("many", { peeps: Employee }, "one", "lead");
-
-      Employee.linkTo(Employee, {
-        from: {
-          many: "peeps",
-          display: "Manager of",
-        },
-        to: {
-          one: "lead",
-          display: "Reports to",
-        },
-      });
-
-      const link = Employee.createLink({ many: "peeps" }, Employee, {
-        one: "lead",
-      });
-      link.outgoing.displayName = "Manager of";
-      link.incoming.displayName = "Reports to";
-
-      createLink(Employee, "shoutoutsRecieved", Shoutout, "recipient");
-      createLink(Employee, "shoutoutsGiven", Shoutout, "giver");
     });
 
-    expect(result).toMatchInlineSnapshot(`
+    it("defaults displayName to apiName", () => {
+      const result = defineInterface("Foo", {});
+      expect(result.displayName).toBe("Foo");
+    });
+
+    it("defaults description to displayName", () => {
+      const result = defineInterface("Foo", { displayName: "d" });
+      expect(result.description).toBe("d");
+    });
+
+    it("defaults description to displayName to apiName", () => {
+      const result = defineInterface("Foo", {});
+      expect(result.description).toBe("Foo");
+    });
+
+    describe("auto spts", () => {
+      it("auto creates spts", () => {
+        defineInterface("Foo", {
+          properties: {
+            foo: "string",
+          },
+        });
+
+        expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+          {
+            "actionTypes": {},
+            "interfaceTypes": {
+              "Foo": {
+                "apiName": "Foo",
+                "description": "Foo",
+                "displayName": "Foo",
+                "extendsInterfaces": [],
+                "links": {},
+                "properties": {
+                  "foo": {
+                    "apiName": "foo",
+                    "dataType": {
+                      "type": "string",
+                    },
+                    "description": undefined,
+                    "displayName": "foo",
+                    "rid": "IDK",
+                  },
+                },
+                "rid": "IDK",
+              },
+            },
+            "objectTypes": {},
+            "ontology": {
+              "apiName": "IDK",
+              "description": "IDK",
+              "displayName": "IDK",
+              "rid": "IDK",
+            },
+            "queryTypes": {},
+            "sharedPropertyTypes": {
+              "foo": {
+                "apiName": "foo",
+                "dataType": {
+                  "type": "string",
+                },
+                "description": undefined,
+                "displayName": "foo",
+                "rid": "IDK",
+              },
+            },
+          }
+        `);
+      });
+
+      it("does not let you conflict spts", () => {
+        defineSharedPropertyType("foo", {
+          type: "string",
+        });
+
+        expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+          {
+            "actionTypes": {},
+            "interfaceTypes": {},
+            "objectTypes": {},
+            "ontology": {
+              "apiName": "IDK",
+              "description": "IDK",
+              "displayName": "IDK",
+              "rid": "IDK",
+            },
+            "queryTypes": {},
+            "sharedPropertyTypes": {
+              "foo": {
+                "apiName": "foo",
+                "dataType": {
+                  "type": "string",
+                },
+                "description": undefined,
+                "displayName": "foo",
+                "rid": "IDK",
+              },
+            },
+          }
+        `);
+
+        expect(() => {
+          defineInterface("Foo", {
+            properties: {
+              foo: "string",
+            },
+          });
+        }).toThrowErrorMatchingInlineSnapshot(
+          `[Error: Invariant failed: Shared property type foo already exists]`,
+        );
+      });
+    });
+  });
+
+  describe("SPTs", () => {
+    it("doesn't let you create the same spt twice", () => {
+      defineSharedPropertyType("foo", {
+        type: "string",
+      });
+
+      expect(() => {
+        defineSharedPropertyType("foo", {
+          type: "string",
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: Shared property type foo already exists]`,
+      );
+    });
+  });
+
+  it("things", () => {
+    const fooSpt = defineSharedPropertyType(
+      "fooSpt",
+      {
+        type: "string",
+      },
+    );
+
+    const FooInterface = defineInterface(
+      "FooInterface",
+      {
+        displayName: "Foo Interface",
+        properties: {
+          fooSpt,
+        },
+      },
+    );
+
+    expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
       {
         "actionTypes": {},
-        "interfaceTypes": {},
-        "objectTypes": {
-          "Employee": {
-            "implementsInterfaces": [],
-            "linkTypes": [],
-            "objectType": {
-              "apiName": "Employee",
-              "primaryKey": "email",
-              "properties": {
-                "email": {
-                  "dataType": {
-                    "type": "string",
-                  },
+        "interfaceTypes": {
+          "FooInterface": {
+            "apiName": "FooInterface",
+            "description": "Foo Interface",
+            "displayName": "Foo Interface",
+            "extendsInterfaces": [],
+            "links": {},
+            "properties": {
+              "fooSpt": {
+                "apiName": "fooSpt",
+                "dataType": {
+                  "type": "string",
                 },
+                "description": undefined,
+                "displayName": "fooSpt",
+                "rid": "IDK",
               },
-              "rid": "PLACEHOLDER",
-              "status": "ACTIVE",
-              "titleProperty": "email",
             },
-            "sharedPropertyTypeMapping": {},
-          },
-          "Shoutout": {
-            "implementsInterfaces": [],
-            "linkTypes": [],
-            "objectType": {
-              "apiName": "Shoutout",
-              "primaryKey": "id",
-              "properties": {
-                "id": {
-                  "dataType": {
-                    "type": "long",
-                  },
-                },
-              },
-              "rid": "PLACEHOLDER",
-              "status": "ACTIVE",
-              "titleProperty": "id",
-            },
-            "sharedPropertyTypeMapping": {},
+            "rid": "IDK",
           },
         },
+        "objectTypes": {},
+        "ontology": {
+          "apiName": "IDK",
+          "description": "IDK",
+          "displayName": "IDK",
+          "rid": "IDK",
+        },
         "queryTypes": {},
-        "sharedPropertyTypes": {},
+        "sharedPropertyTypes": {
+          "fooSpt": {
+            "apiName": "fooSpt",
+            "dataType": {
+              "type": "string",
+            },
+            "description": undefined,
+            "displayName": "fooSpt",
+            "rid": "IDK",
+          },
+        },
       }
     `);
   });

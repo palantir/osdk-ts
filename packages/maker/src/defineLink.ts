@@ -15,7 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
-import type { ObjectType } from "./createObject";
+import type { ObjectType } from "./defineObject";
 // {
 //   many: "peeps",
 //   to: Employee,
@@ -23,7 +23,7 @@ import type { ObjectType } from "./createObject";
 //     one: "lead",
 //   },
 
-export function createLink(
+export function defineLink(
   from: ObjectType,
   opts: {
     many: string;
@@ -31,7 +31,7 @@ export function createLink(
     reverse: { one: string };
   },
 ): unknown;
-export function createLink(
+export function defineLink(
   from: ObjectType,
   opts: {
     one: string;
@@ -39,41 +39,45 @@ export function createLink(
     reverse: { one: string } | { many: string };
   },
 ): unknown;
-export function createLink(
+export function defineLink(
   from: ObjectType,
   opts: {
+    one?: never;
     many: string;
     to: ObjectType;
     reverse: { one: string };
   } | {
     one: string;
+    many?: never;
     to: ObjectType;
-    reverse: { one: string } | { many: string };
+    reverse: { one: string } | { many: string; one?: never };
   },
 ) {
-  console.log(from.linkTypes);
+  const apiName = opts.one ?? opts.many;
+  const toApiName = opts.reverse.one ?? opts.reverse.many;
+  const to = opts.to;
+
   invariant(
-    from.linkTypes.find(l => l.apiName === apiName) == null,
-    `Link with apiName ${apiName} already exists on ${from.objectType.apiName}`,
+    from.linkTypes[apiName] == null,
+    `Link with apiName ${apiName} already exists on ${from.data.objectType.apiName}`,
   );
   invariant(
-    from.linkTypes.find(l => l.apiName === toApiName) == null,
-    `Link with apiName ${toApiName} already exists on ${to.objectType.apiName}`,
+    from.linkTypes[toApiName] == null,
+    `Link with apiName ${toApiName} already exists on ${to.data.objectType.apiName}`,
   );
 
-  from.linkTypes.push({
-    apiName,
+  from.linkTypes[apiName] = {
     cardinality: "ONE",
     displayName: apiName,
-    objectTypeApiName: to.objectType.apiName,
+    objectTypeApiName: to.data.objectType.apiName,
     status: "ACTIVE",
-  });
+  };
 
-  to.linkTypes.push({
+  to.linkTypes[toApiName] = {
     apiName: toApiName,
     cardinality: "ONE",
     displayName: apiName,
-    objectTypeApiName: from.objectType.apiName,
+    objectTypeApiName: from.data.objectType.apiName,
     status: "ACTIVE",
-  });
+  };
 }

@@ -17,20 +17,20 @@
 import type * as api from "@osdk/api";
 import type { ObjectTypeFullMetadata, PropertyV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./createOntology";
+import { ontologyDefinition } from "./defineOntology";
 
 type Writeable<T> = {
   -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer Q> ? Array<Q>
-    : T[P];
+    : Writeable<T[P]>;
 };
 
 export interface ObjectType {
-  data: Writeable<ObjectTypeFullMetadata>;
-  links: {
+  data: ObjectTypeFullMetadata;
+  linkTypes: Record<string, {
     // hasMany: (apiName: string, t: ObjectType, {
     //   reverse: {}
     // })
-  };
+  }>;
 }
 
 export function createObject(
@@ -66,7 +66,10 @@ export function createObject(
   };
 
   // FIXME: dont return the raw value
-  return ontologyDefinition.objectTypes[apiName];
+  return {
+    data: ontologyDefinition.objectTypes[apiName],
+    linkTypes: {},
+  };
 }
 
 function convertType(

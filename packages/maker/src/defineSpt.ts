@@ -14,5 +14,26 @@
  * limitations under the License.
  */
 
-export function createInterface(apiName: string, displayName: string) {
+import invariant from "tiny-invariant";
+import { ontologyDefinition } from "./defineOntology";
+import type { PropertyTypeType, SharedPropertyType } from "./types";
+
+export function defineSharedPropertyType(
+  apiName: string,
+  opts: {
+    type: PropertyTypeType;
+    array?: boolean;
+    description?: string;
+    displayName?: string;
+  },
+): SharedPropertyType {
+  invariant(
+    ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
+    `Shared property type ${apiName} already exists`,
+  );
+
+  return ontologyDefinition.sharedPropertyTypes[apiName] = {
+    apiName,
+    ...opts,
+  };
 }
