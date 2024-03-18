@@ -35,7 +35,8 @@ export async function promptApplicationUrl(
         options: [
           { label: "Yes, let me fill it here", value: "yes" },
           {
-            label: "No, I will set `VITE_FOUNDRY_REDIRECT_URL` variable later",
+            label:
+              "No, I will set it up later based on the instructions in the README",
             value: "no",
           },
         ],
