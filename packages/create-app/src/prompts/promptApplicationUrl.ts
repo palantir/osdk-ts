@@ -36,7 +36,7 @@ export async function promptApplicationUrl(
           { label: "Yes, let me fill it here", value: "yes" },
           {
             label:
-              "No, I will set it up later based on the instructions in the README",
+              "No, I will fill it in later following the instructions in the generated README",
             value: "no",
           },
         ],
