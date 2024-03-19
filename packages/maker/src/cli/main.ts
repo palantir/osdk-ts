@@ -16,7 +16,7 @@
 
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
-import { join } from "node:path";
+import * as path from "node:path";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
@@ -41,29 +41,30 @@ export default async function main(args: string[] = process.argv) {
         describe: "Input file",
         type: "string",
         default: ".ontology/ontology.ts",
+        coerce: path.resolve,
       },
       output: {
         alias: "o",
         describe: "Output file",
         type: "string",
         default: "ontology.json",
+        coerce: path.resolve,
       },
       snapshotDir: {
         alias: "s",
         describe: "Snapshot directory",
         type: "string",
         default: "snapshots",
+        coerce: path.resolve,
       },
-    }).parseAsync();
+    })
+    .parseAsync();
 
-  const fullInputPath = join(process.cwd(), commandLineOpts.input);
-  const fullOutputPath = join(process.cwd(), commandLineOpts.output);
-  consola.info(`Loading ontology from ${fullInputPath}`);
+  consola.info(`Loading ontology from ${commandLineOpts.input}`);
+  const ontology = await loadOntology(commandLineOpts.input);
 
-  const ontology = await loadOntology(fullInputPath);
-
-  consola.info(`Saving ontology to ${fullOutputPath}`);
-  fs.writeFile(fullOutputPath, JSON.stringify(ontology, null, 2));
+  consola.info(`Saving ontology to ${commandLineOpts.output}`);
+  fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
 }
 
 async function loadOntologyViaJiti(input: string) {
