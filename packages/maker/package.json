@@ -6,7 +6,6 @@
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
   },
-  "bin": "bin/maker.mjs",
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
@@ -19,7 +18,6 @@
       "require": "./build/js/public/*.cjs"
     }
   },
-  "type": "module",
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "dev:transpile": "tsup --watch",
@@ -30,12 +28,12 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "consola": "^3.2.3",
-    "ts-node": "^10.9.2",
-    "yargs" :"^17.7.2",
     "@osdk/gateway": "workspace:*",
+    "consola": "^3.2.3",
+    "jiti": "^1.21.0",
     "tiny-invariant": "^1.3.3",
-    "jiti": "^1.21.0"
+    "ts-node": "^10.9.2",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.32",
@@ -45,6 +43,7 @@
   "publishConfig": {
     "access": "public"
   },
+  "bin": "bin/maker.mjs",
   "files": [
     "build/types",
     "build/js",
@@ -56,5 +55,6 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }
