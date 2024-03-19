@@ -104,9 +104,7 @@ async function loadOntologyViaTsNode(input: string) {
 
   tsNodeService.enabled(true);
 
-  const fullPath = join(process.cwd(), input);
-
-  const q = await import(fullPath);
+  const q = await import(input);
   return q;
 }
 

@@ -47,21 +47,21 @@ export async function defineOntology(
     throw e;
   }
 
-  return ontologyDefinition;
+  return convertToWireOntology(ontologyDefinition);
 }
 
-export function dumpOntologyFullMetadata(): Gateway.OntologyFullMetadata {
+function convertToWireOntology(ontology: Ontology) {
   return {
     ontology: {
       apiName: "IDK",
       description: "IDK",
       displayName: "IDK",
-      rid: "IDK",
+      rid: "ri.ontology.main.generated-object.foo",
     },
-    ...ontologyDefinition,
+    ...ontology,
     sharedPropertyTypes: Object.fromEntries(
       Object.entries(
-        ontologyDefinition.sharedPropertyTypes,
+        ontology.sharedPropertyTypes,
       )
         .map<[string, Gateway.SharedPropertyType]>((
           [apiName, spt],
@@ -69,12 +69,12 @@ export function dumpOntologyFullMetadata(): Gateway.OntologyFullMetadata {
     ),
     interfaceTypes: Object.fromEntries(
       Object.entries(
-        ontologyDefinition.interfaceTypes,
+        ontology.interfaceTypes,
       )
         .map<[string, Gateway.InterfaceType]>(
           ([apiName, { displayName, description, properties }]) => {
             return [apiName, {
-              rid: "IDK",
+              rid: "ri.ontology.main.generated-object.foo",
               apiName,
               displayName: displayName ?? apiName,
               description,
@@ -92,11 +92,16 @@ export function dumpOntologyFullMetadata(): Gateway.OntologyFullMetadata {
     ),
   };
 }
+
+export function dumpOntologyFullMetadata(): Gateway.OntologyFullMetadata {
+  return convertToWireOntology(ontologyDefinition);
+}
+
 function convertSpt(
   { type, array, description, apiName, displayName }: SharedPropertyType,
 ): Gateway.SharedPropertyType {
   return {
-    rid: "IDK",
+    rid: "ri.ontology.main.generated-object.foo",
     apiName,
     displayName: displayName ?? apiName,
     description,
