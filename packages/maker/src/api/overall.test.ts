@@ -15,9 +15,9 @@
  */
 
 import { beforeEach, describe, expect, it } from "vitest";
-import { defineInterface } from "./defineInterface";
-import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology";
-import { defineSharedPropertyType } from "./defineSpt";
+import { defineInterface } from "./defineInterface.js";
+import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology.js";
+import { defineSharedPropertyType } from "./defineSpt.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {

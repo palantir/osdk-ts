@@ -15,8 +15,8 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology";
-import type { PropertyTypeType, SharedPropertyType } from "./types";
+import { ontologyDefinition } from "./defineOntology.js";
+import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
 export function defineSharedPropertyType(
   apiName: string,

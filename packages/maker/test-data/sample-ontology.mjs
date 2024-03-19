@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-export { default as default } from "./cli/main.js";
+// @ts-check
 
-export { defineInterface } from "./api/defineInterface.js";
-export { defineSharedPropertyType } from "./api/defineSpt.js";
+import { defineInterface, defineSharedPropertyType } from "@osdk/maker";
+
+const fooSpt = defineSharedPropertyType(
+  "fooSpt",
+  {
+    type: "string",
+  },
+);
+
+const FooInterface = defineInterface(
+  "FooInterface",
+  {
+    displayName: "Foo Interface",
+    properties: {
+      fooSpt,
+    },
+  },
+);

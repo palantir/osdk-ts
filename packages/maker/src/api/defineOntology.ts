@@ -15,7 +15,7 @@
  */
 
 import type * as Gateway from "@osdk/gateway/types";
-import type { Ontology, SharedPropertyType } from "./types";
+import type { Ontology, SharedPropertyType } from "./types.js";
 
 /** @internal */
 export let ontologyDefinition: Ontology;
@@ -23,7 +23,10 @@ export let ontologyDefinition: Ontology;
 /** @internal */
 export let namespace: string;
 
-export function defineOntology(ns: string, body: () => void) {
+export async function defineOntology(
+  ns: string,
+  body: () => void | Promise<void>,
+) {
   namespace = ns;
   ontologyDefinition = {
     actionTypes: {},
@@ -34,7 +37,7 @@ export function defineOntology(ns: string, body: () => void) {
   };
 
   try {
-    body();
+    await body();
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(

@@ -15,13 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
-import type { ObjectType } from "./defineObject";
-// {
-//   many: "peeps",
-//   to: Employee,
-//   reverse: {
-//     one: "lead",
-//   },
+import type { ObjectType } from "./defineObject.js";
 
 export function defineLink(
   from: ObjectType,

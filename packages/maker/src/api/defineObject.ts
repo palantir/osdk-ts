@@ -17,7 +17,7 @@
 import type * as api from "@osdk/api";
 import type { ObjectTypeFullMetadata, PropertyV2 } from "@osdk/gateway/types";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology";
+import { ontologyDefinition } from "./defineOntology.js";
 
 type Writeable<T> = {
   -readonly [P in keyof T]: T[P] extends ReadonlyArray<infer Q> ? Array<Q>
@@ -33,7 +33,7 @@ export interface ObjectType {
   }>;
 }
 
-export function createObject(
+export function defineObject(
   apiName: string,
   opts: {
     displayName?: string;
