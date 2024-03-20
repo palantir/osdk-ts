@@ -39,9 +39,9 @@
         "Todo": {
           "description": "A todo Object",
           "dataType": {
-            "type": "object",
-            "objectApiName": "Todo",
-            "objectTypeApiName": "Todo"
+            "type": "array",
+
+            "subType": { "type": "object", "objectApiName": "Todo", "objectTypeApiName": "Todo" }
           },
           "required": true
         },

@@ -11,7 +11,7 @@ export type ActionDef$completeTodo$Params = {
   };
   Todo: {
     description: 'A todo Object';
-    multiplicity: false;
+    multiplicity: true;
     nullable: false;
     type: ObjectActionDataType<'Todo', Todo>;
   };
@@ -42,7 +42,7 @@ export const completeTodo: ActionDef$completeTodo = {
   apiName: 'completeTodo',
   parameters: {
     Todo: {
-      multiplicity: false,
+      multiplicity: true,
       type: {
         type: 'object',
         object: 'Todo',
