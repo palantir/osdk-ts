@@ -147,6 +147,18 @@ export async function generatePerActionDataFiles(
             getObjectDefIdentifier(p.dataType.objectTypeApiName!, v2),
           );
         }
+        if (
+          p.dataType.type === "array"
+          && (p.dataType.subType.type === "object"
+            || p.dataType.subType.type === "objectSet")
+        ) {
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.subType.objectApiName!, v2),
+          );
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.subType.objectTypeApiName!, v2),
+          );
+        }
       }
 
       const importObjects = referencedObjectDefs.size > 0

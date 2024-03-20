@@ -53,6 +53,17 @@ describe(generateActions, () => {
             },
             options?: O,
           ): Promise<Result<ActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
+
+          /**
+           * An action which takes in an array of objects
+           * @param {Array<Todo | Todo["__primaryKey"]>} params.object
+           */
+          deleteTodos<O extends ActionExecutionOptions>(
+            params: {
+              object?: Array<Todo | Todo['__primaryKey']>;
+            },
+            options?: O,
+          ): Promise<Result<ActionResponseFromOptions<O, Edits<void, void>>, ActionError>>;
         }
         "
       `);
