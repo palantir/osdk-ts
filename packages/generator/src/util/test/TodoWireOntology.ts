@@ -45,6 +45,31 @@ export const TodoWireOntology = {
       }],
       status: "ACTIVE",
     },
+    "deleteTodos": {
+      apiName: "deleteTodos",
+      description: "An action which takes in an array of objects",
+      parameters: {
+        object: {
+          description: "Todo(s) to be deleted",
+          "dataType": {
+            "type": "array",
+
+            "subType": {
+              "type": "object",
+              "objectApiName": "Todo",
+              "objectTypeApiName": "Todo",
+            },
+          },
+          required: false,
+        },
+      },
+      rid: "ri.ontology.main.action-type.8f94017d-cf17-4fa8-84c3-8e01e5d594f2",
+      operations: [{
+        type: "deleteObject",
+        objectTypeApiName: "Todo",
+      }],
+      status: "ACTIVE",
+    },
   },
   objectTypes: {
     Todo: {

@@ -51,4 +51,21 @@ describe(generatePerActionDataFiles, () => {
     );
     expect(helper.getFiles()[`${BASE_PATH}/index.ts`]).toEqual("export {};\n");
   });
+
+  it("imports object types correctly with array params in actions", async () => {
+    const helper = createMockMinimalFiles();
+    const BASE_PATH = "/foo/actions";
+    await generatePerActionDataFiles(
+      TodoWireOntology,
+      helper.minimalFiles,
+      BASE_PATH,
+      "",
+      true,
+    );
+    console.error("OH NO");
+    console.error(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]);
+    expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(
+      "import type { Todo } from '../objects';\n",
+    );
+  });
 });
