@@ -64,5 +64,18 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         options,
       );
     },
+    fetchPageWithErrors(
+      options?:
+        | { pageSize?: number | undefined; pageToken?: string | undefined }
+        | undefined,
+    ): Promise<Result<Page<T>, ListLinkedObjectsError>> {
+      return pageLinkedObjects(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
+        options,
+      );
+    },
   };
 }

@@ -215,7 +215,8 @@ describe("SearchObjects", () => {
 
   it("filters objects using the equality operator, and returns all results", async () => {
     const result: Result<Page<Employee>, LoadObjectSetError> = await client
-      .ontology.objects.Employee.where(emp => emp.employeeId.eq(50030)).page();
+      .ontology.objects.Employee.where(emp => emp.employeeId.eq(50030))
+      .fetchPageWithErrors();
 
     const employees = assertOkOrThrow(result);
     expect(employees).toMatchInlineSnapshot(`
@@ -263,7 +264,7 @@ describe("SearchObjects", () => {
       emp.employeeId.eq(50030)
     )
       .select(["fullName"])
-      .page();
+      .fetchPageWithErrors();
 
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(1);
@@ -281,7 +282,7 @@ describe("SearchObjects", () => {
     )
       .orderBy(emp => emp.employeeId.asc())
       .select(["fullName"])
-      .page();
+      .fetchPageWithErrors();
 
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(1);
@@ -297,7 +298,7 @@ describe("SearchObjects", () => {
     const result: Result<Page<Employee>, LoadObjectSetError> = await client
       .ontology.objects.Employee.where(emp =>
         Op.and(emp.employeeId.gt(50030), emp.employeeId.lt(50032))
-      ).page();
+      ).fetchPageWithErrors();
 
     expect(result).toMatchInlineSnapshot(`
       {
@@ -352,7 +353,7 @@ describe("SearchObjects", () => {
             longitude: 1.9,
           }),
         })
-      ).page();
+      ).fetchPageWithErrors();
 
     const offices = assertOkOrThrow(result);
     expect(offices.data).toHaveLength(1);
@@ -365,7 +366,7 @@ describe("SearchObjects", () => {
           GeoPoint.fromCoordinates({ latitude: 1.1, longitude: 0.9 }),
           100,
         )
-      ).page();
+      ).fetchPageWithErrors();
 
     const offices = assertOkOrThrow(result);
     expect(offices.data).toHaveLength(1);
@@ -386,7 +387,7 @@ describe("SearchObjects", () => {
 
     const result: Result<Page<Office>, LoadObjectSetError> = await client
       .ontology.objects.Office.where(o => o.entrance.withinPolygon(geoShape))
-      .page();
+      .fetchPageWithErrors();
 
     const offices = assertOkOrThrow(result);
     expect(offices.data).toHaveLength(1);
@@ -408,7 +409,7 @@ describe("SearchObjects", () => {
     const result: Result<Page<Office>, LoadObjectSetError> = await client
       .ontology.objects.Office.where(o =>
         o.occupiedArea.intersectsPolygon(geoShape)
-      ).page();
+      ).fetchPageWithErrors();
 
     const offices = assertOkOrThrow(result);
     expect(offices.data).toHaveLength(1);
@@ -424,7 +425,7 @@ describe("SearchObjects", () => {
             longitude: 1.9,
           }),
         })
-      ).page();
+      ).fetchPageWithErrors();
 
     const offices = assertOkOrThrow(result);
     expect(offices.data).toHaveLength(1);
