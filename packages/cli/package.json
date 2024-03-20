@@ -32,6 +32,7 @@
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
+    "@arethetypeswrong/cli": "^0.15.2",
     "@osdk/api": "workspace:*",
     "@osdk/gateway": "workspace:*",
     "@osdk/generator": "workspace:*",
@@ -43,6 +44,7 @@
     "find-up": "^7.0.0",
     "open": "^9.1.0",
     "semver": "^7.6.0",
+    "tslib": "^2.6.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

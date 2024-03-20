@@ -64,7 +64,7 @@ export default async function main(args: string[] = process.argv) {
   const ontology = await loadOntology(commandLineOpts.input);
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
-  fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
+  await fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
 }
 
 async function loadOntologyViaJiti(input: string) {
