@@ -31,6 +31,7 @@ describe(generateBulkActions, () => {
     );
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
+
     expect(helper.getFiles()[`${BASE_PATH}/BulkActions.ts`])
       .toMatchInlineSnapshot(`
       "import type {
