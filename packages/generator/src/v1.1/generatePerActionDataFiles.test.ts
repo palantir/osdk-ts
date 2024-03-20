@@ -62,8 +62,7 @@ describe(generatePerActionDataFiles, () => {
       "",
       true,
     );
-    console.error("OH NO");
-    console.error(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]);
+
     expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(
       "import type { Todo } from '../objects';\n",
     );
