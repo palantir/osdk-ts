@@ -1,13 +1,17 @@
 {
   "extends": "../../monorepo/tsconfig/tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src",
+    "rootDirs": [
+      "src",
+      "."
+    ],
     "outDir": "build/types",
     "composite": true
   },
   "include": [
     "./src/**/*",
-    ".eslintrc.cjs"
+    ".eslintrc.cjs",
+    "package.json"
   ],
   "exclude": [
     "./src/__e2e_tests__/**/**.test.ts",

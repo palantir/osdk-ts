@@ -72,11 +72,11 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
       extends: baseTsconfigPath,
 
       compilerOptions: {
-        rootDir: "src",
+        rootDirs: ["src", "."],
         outDir: "build/types",
         composite: true,
       },
-      include: ["./src/**/*", ".eslintrc.cjs"],
+      include: ["./src/**/*", ".eslintrc.cjs", "package.json"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),
@@ -91,7 +91,7 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
       extends: baseTsconfigPath,
 
       compilerOptions: {
-        rootDir: "src",
+        rootDirs: ["src", "."],
         outDir: "build/types",
         composite: true,
       },
