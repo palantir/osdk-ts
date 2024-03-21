@@ -23,7 +23,10 @@ import type { Task } from "./TaskObject";
 export interface Todo extends OntologyObject {
   readonly __apiName: "Todo";
   readonly __primaryKey: string;
+  readonly $apiName: "Todo";
+  readonly $primaryKey: string;
   readonly id: string | undefined;
+  readonly $rid: string | undefined;
   /**
    * The text of the todo
    */

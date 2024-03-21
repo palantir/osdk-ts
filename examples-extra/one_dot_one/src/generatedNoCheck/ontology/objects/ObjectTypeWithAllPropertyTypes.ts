@@ -15,6 +15,8 @@ import type {
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly __apiName: 'ObjectTypeWithAllPropertyTypes';
   readonly __primaryKey: number;
+  readonly $apiName: 'ObjectTypeWithAllPropertyTypes';
+  readonly $primaryKey: number;
   readonly attachment: Attachment | undefined;
   readonly attachmentArray: Attachment[] | undefined;
   readonly boolean: boolean | undefined;

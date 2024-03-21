@@ -25,7 +25,12 @@ export type FilteredPropertiesTerminalOperations<
 > = {
   all(): Promise<
     Result<
-      Array<Pick<T, V[number] | "__apiName" | "__primaryKey">>,
+      Array<
+        Pick<
+          T,
+          V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+        >
+      >,
       LoadObjectSetError
     >
   >;
@@ -34,7 +39,12 @@ export type FilteredPropertiesTerminalOperations<
     pageToken?: string;
   }): Promise<
     Result<
-      Page<Pick<T, V[number] | "__apiName" | "__primaryKey">>,
+      Page<
+        Pick<
+          T,
+          V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+        >
+      >,
       LoadObjectSetError
     >
   >;
@@ -45,8 +55,14 @@ export type FilteredPropertiesTerminalOperationsWithGet<
   V extends Array<keyof T>,
 > = FilteredPropertiesTerminalOperations<T, V> & {
   get(
-    primaryKey: T["__primaryKey"],
+    primaryKey: T["$primaryKey"],
   ): Promise<
-    Result<Pick<T, V[number] | "__apiName" | "__primaryKey">, GetObjectError>
+    Result<
+      Pick<
+        T,
+        V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+      >,
+      GetObjectError
+    >
   >;
 };

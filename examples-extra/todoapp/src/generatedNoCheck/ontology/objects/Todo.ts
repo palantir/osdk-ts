@@ -7,6 +7,8 @@ import type { OntologyObject } from '@osdk/legacy-client';
 export interface Todo extends OntologyObject {
   readonly __apiName: 'Todo';
   readonly __primaryKey: string;
+  readonly $apiName: 'Todo';
+  readonly $primaryKey: string;
   readonly id: string | undefined;
   readonly isComplete: boolean | undefined;
   /**

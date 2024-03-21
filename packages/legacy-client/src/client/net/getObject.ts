@@ -27,9 +27,9 @@ import { wrapResult } from "./util/wrapResult";
 import type { WireOntologyObjectV2 } from "./WireOntologyObjectV2";
 
 export async function getObject<T extends OntologyObject>(
-  client: ClientContext<OntologyDefinition<T["__apiName"]>>,
+  client: ClientContext<OntologyDefinition<T["$apiName"]>>,
   objectApiName: string,
-  primaryKey: T["__primaryKey"],
+  primaryKey: T["$primaryKey"],
   selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T, GetObjectError>> {
   return wrapResult(async () => {
@@ -41,7 +41,7 @@ export async function getObject<T extends OntologyObject>(
       {
         select: selectedProperties.map(x => x.toString()),
       },
-    ) as WireOntologyObjectV2<T["__apiName"]>;
+    ) as WireOntologyObjectV2<T["$apiName"]>;
 
     return convertWireToOsdkObject(
       client,

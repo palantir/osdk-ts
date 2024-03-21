@@ -45,6 +45,13 @@ ${
         .properties[objectTypeWithLinks.objectType.primaryKey].dataType,
     )
   };
+  readonly \$apiName: "${objectTypeWithLinks.objectType.apiName}";
+  readonly \$primaryKey: ${
+    wirePropertyTypeV2ToTypeScriptType(
+      objectTypeWithLinks.objectType
+        .properties[objectTypeWithLinks.objectType.primaryKey].dataType,
+    )
+  };
 ${
     Object.entries(objectTypeWithLinks.objectType.properties).sort((a, b) =>
       a[0].localeCompare(b[0])

@@ -36,6 +36,8 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       export interface Todo extends OntologyObject {
         readonly __apiName: 'Todo';
         readonly __primaryKey: number;
+        readonly $apiName: 'Todo';
+        readonly $primaryKey: number;
         /**
          * The text of the todo
          */
@@ -80,6 +82,8 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       export interface Todo extends OntologyObject {
         readonly __apiName: 'Todo';
         readonly __primaryKey: number;
+        readonly $apiName: 'Todo';
+        readonly $primaryKey: number;
         readonly break: number | undefined;
         /** @deprecated please migrate to 'break' instead */
         readonly break_: number | undefined;

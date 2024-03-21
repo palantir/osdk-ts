@@ -8,6 +8,8 @@ import type { Person } from './Person';
 export interface Todo extends OntologyObject {
   readonly __apiName: 'Todo';
   readonly __primaryKey: number;
+  readonly $apiName: 'Todo';
+  readonly $primaryKey: number;
   /**
    * The text of the todo
    */

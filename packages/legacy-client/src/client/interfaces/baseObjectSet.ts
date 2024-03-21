@@ -29,13 +29,13 @@ export type BaseObjectSet<O extends OntologyObject> =
   & ObjectSet<O>;
 
 export type BaseObjectSetOperations<O extends OntologyObject> = {
-  apiName: O["__apiName"];
+  apiName: O["$apiName"];
 
   description: string;
 
   properties: Properties<O>;
 
-  get(primaryKey: O["__primaryKey"]): Promise<Result<O, GetObjectError>>;
+  get(primaryKey: O["$primaryKey"]): Promise<Result<O, GetObjectError>>;
 
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
