@@ -1,10 +1,7 @@
 {
   "extends": "../../../monorepo/tsconfig/tsconfig.base.json",
   "compilerOptions": {
-    "rootDirs": [
-      "src",
-      "."
-    ],
+    "rootDir": ".",
     "outDir": "build/types",
     "composite": true
   },

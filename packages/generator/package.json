@@ -10,7 +10,7 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
+      "types": "./build/types/src/index.d.ts",
       "import": "./build/js/index.mjs",
       "require": "./build/js/index.cjs"
     },
@@ -49,7 +49,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "files": [
     "build/types",
     "build/js",
@@ -61,5 +61,5 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/src/index.d.ts"
 }
