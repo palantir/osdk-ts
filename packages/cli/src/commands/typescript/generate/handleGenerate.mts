@@ -230,10 +230,8 @@ function getTsCompilerOptions(packageType: "commonjs" | "module") {
   return compilerOptions;
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-type OurPackageJsonShape = typeof import("../../../../package.json");
-
-async function getPackageJsonContents(
+/** @internal */
+export async function getPackageJsonContents(
   name: string,
   version: string,
   sdkVersion: 1 | 2,
@@ -242,7 +240,7 @@ async function getPackageJsonContents(
 
   const ourPackageJson = JSON.parse(
     await fs.promises.readFile(ourPackageJsonPath, "utf-8"),
-  ) as OurPackageJsonShape;
+  );
 
   const esmPrefix = "./dist/module";
   const commonjsPrefix = "./dist/commonjs";
