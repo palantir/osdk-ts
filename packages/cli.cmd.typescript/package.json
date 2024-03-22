@@ -1,5 +1,6 @@
 {
   "name": "@osdk/cli.cmd.typescript",
+  "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
@@ -44,6 +45,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "bin": {
+    "osdk-unstable-typescript": "./bin/osdk-unstable-typescript.mjs"
   },
   "files": [
     "build/types",

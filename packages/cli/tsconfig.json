@@ -14,12 +14,6 @@
       "path": "../api"
     },
     {
-      "path": "../cli.cmd.typescript"
-    },
-    {
-      "path": "../cli.common"
-    },
-    {
       "path": "../gateway"
     },
     {
@@ -27,6 +21,12 @@
     },
     {
       "path": "../shared.net"
+    },
+    {
+      "path": "../cli.cmd.typescript"
+    },
+    {
+      "path": "../cli.common"
     }
   ]
 }

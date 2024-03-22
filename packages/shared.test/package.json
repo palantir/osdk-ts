@@ -31,7 +31,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/cli": "workspace:*",
     "@osdk/gateway": "workspace:*",
     "fetch-retry": "^5.0.6",
     "json-stable-stringify": "^1.1.0",

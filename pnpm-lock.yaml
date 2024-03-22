@@ -119,9 +119,9 @@ importers:
         specifier: workspace:*
         version: link:../../../packages/client
     devDependencies:
-      '@osdk/cli':
+      '@osdk/cli.cmd.typescript':
         specifier: workspace:*
-        version: link:../../../packages/cli
+        version: link:../../../packages/cli.cmd.typescript
       typescript:
         specifier: ^5.2.2
         version: 5.2.2
@@ -147,9 +147,9 @@ importers:
         specifier: ^2.2.4
         version: 2.2.4(react@18.2.0)
     devDependencies:
-      '@osdk/cli':
+      '@osdk/cli.cmd.typescript':
         specifier: workspace:*
-        version: link:../../packages/cli
+        version: link:../../packages/cli.cmd.typescript
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.37
@@ -198,9 +198,6 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@osdk/cli':
-        specifier: workspace:*
-        version: link:../../packages/cli
       '@osdk/generator':
         specifier: workspace:*
         version: link:../../packages/generator
@@ -208,6 +205,9 @@ importers:
         specifier: workspace:*
         version: link:../../packages/legacy-client
     devDependencies:
+      '@osdk/cli.cmd.typescript':
+        specifier: workspace:*
+        version: link:../../packages/cli.cmd.typescript
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -236,9 +236,9 @@ importers:
         specifier: ^2.2.4
         version: 2.2.4(react@18.2.0)
     devDependencies:
-      '@osdk/cli':
+      '@osdk/cli.cmd.typescript':
         specifier: workspace:*
-        version: link:../../packages/cli
+        version: link:../../packages/cli.cmd.typescript
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.37
@@ -474,12 +474,6 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
-      '@osdk/cli.cmd.typescript':
-        specifier: workspace:*
-        version: link:../cli.cmd.typescript
-      '@osdk/cli.common':
-        specifier: workspace:*
-        version: link:../cli.common
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
@@ -517,6 +511,12 @@ importers:
         specifier: ^17.7.2
         version: 17.7.2
     devDependencies:
+      '@osdk/cli.cmd.typescript':
+        specifier: workspace:*
+        version: link:../cli.cmd.typescript
+      '@osdk/cli.common':
+        specifier: workspace:*
+        version: link:../cli.common
       '@types/archiver':
         specifier: ^6.0.0
         version: 6.0.0
@@ -980,9 +980,6 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
-      '@osdk/cli':
-        specifier: workspace:*
-        version: link:../cli
       '@osdk/gateway':
         specifier: workspace:*
         version: link:../gateway
