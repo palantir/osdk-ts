@@ -18,14 +18,18 @@ import {
   getOntologyFullMetadata,
   listOntologiesV2,
 } from "@osdk/gateway/requests";
-import type { WireOntologyDefinition } from "@osdk/generator";
+import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
   generateClientSdkVersionOneDotOne,
   generateClientSdkVersionTwoPointZero,
 } from "@osdk/generator";
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
+import { findUp } from "find-up";
 import * as fs from "node:fs";
+import { mkdir, readdir } from "node:fs/promises";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { ExitProcessError } from "../../../ExitProcessError.js";
 import { YargsCheckError } from "../../../YargsCheckError.js";
 import invokeLoginFlow from "../../auth/login/loginFlow.js";
@@ -124,34 +128,68 @@ async function generateClientSdk(
   ontology: WireOntologyDefinition,
   args: TypescriptGenerateArgs,
 ) {
-  const minimalFs = {
-    writeFile: (path: string, contents: string) => {
-      return fs.promises.writeFile(path, contents, "utf-8");
-    },
-    mkdir: async (path: string, options?: { recursive: boolean }) => {
-      await fs.promises.mkdir(path, options);
-    },
-    readdir: async (path: string) => fs.promises.readdir(path),
-  };
-
+  const minimalFs = createNormalFs();
   try {
-    if (args.beta) {
-      await generateClientSdkVersionTwoPointZero(
+    if (args.clean) {
+      consola.info("Cleaning output directory", args.outDir);
+      await fs.promises.rm(args.outDir, { recursive: true, force: true });
+    }
+
+    if (!args.asPackage) {
+      await generateSourceFiles(args, ontology, createNormalFs());
+      return true;
+    }
+
+    const packageName = args.packageName;
+    if (!packageName) throw new Error("Package name is require");
+    const version = args.version;
+
+    for (const packageType of ["module", "commonjs"] as const) {
+      const outDir = path.join(args.outDir, "dist", packageType);
+
+      // source files per type
+      await generateSourceFiles(
+        {
+          ...args,
+          outDir,
+          packageType,
+        },
         ontology,
-        getUserAgent(args.version),
         minimalFs,
-        args.outDir,
-        args.packageType,
       );
-    } else {
-      await generateClientSdkVersionOneDotOne(
-        ontology,
-        getUserAgent(args.version),
-        minimalFs,
-        args.outDir,
-        args.packageType,
+
+      await fs.promises.mkdir(outDir, { recursive: true });
+      await writeJson(
+        path.join(outDir, "package.json"),
+        { type: packageType },
+      );
+
+      await writeJson(
+        path.join(outDir, `tsconfig.json`),
+        {
+          compilerOptions: getTsCompilerOptions(packageType),
+        },
       );
     }
+
+    await writeJson(
+      path.join(args.outDir, "package.json"),
+      await getPackageJsonContents(packageName, version, args.beta ? 2 : 1),
+    );
+
+    // we need to shim for the node10 resolver
+    await fs.promises.mkdir(path.join(args.outDir, "ontology"), {
+      recursive: true,
+    });
+    await fs.promises.writeFile(
+      path.join(args.outDir, "ontology/objects.js"),
+      `module.exports = require("../../dist/module/ontology/objects")`,
+    );
+    await fs.promises.writeFile(
+      path.join(args.outDir, "ontology/objects.d.ts"),
+      `export * from "../dist/module/ontology/objects"`,
+    );
+    return true;
   } catch (e) {
     consola.error(
       "OSDK generation failed",
@@ -161,7 +199,139 @@ async function generateClientSdk(
 
     return false;
   }
-  return true;
+} //
+
+function getTsCompilerOptions(packageType: "commonjs" | "module") {
+  const commonTsconfig = {
+    importHelpers: true,
+
+    declaration: true,
+
+    isolatedModules: true,
+    esModuleInterop: true,
+
+    forceConsistentCasingInFileNames: true,
+    strict: true,
+
+    skipLibCheck: true,
+  };
+
+  const compilerOptions = packageType === "commonjs"
+    ? {
+      ...commonTsconfig,
+      module: "commonjs",
+      target: "es2018",
+    }
+    : {
+      ...commonTsconfig,
+      module: "NodeNext",
+      target: "ES2020",
+    };
+  return compilerOptions;
+}
+
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+type OurPackageJsonShape = typeof import("../../../../package.json");
+
+async function getPackageJsonContents(
+  name: string,
+  version: string,
+  sdkVersion: 1 | 2,
+) {
+  const ourPackageJsonPath = await getOurPackageJsonPath();
+
+  const ourPackageJson = JSON.parse(
+    await fs.promises.readFile(ourPackageJsonPath, "utf-8"),
+  ) as OurPackageJsonShape;
+
+  const esmPrefix = "./dist/module";
+  const commonjsPrefix = "./dist/commonjs";
+
+  return {
+    name,
+    version,
+    main: `${commonjsPrefix}/index.js`,
+    module: `${esmPrefix}/index.js`,
+    exports: {
+      ".": {
+        import: `${esmPrefix}/index.js`,
+        require: `${commonjsPrefix}/index.js`,
+      },
+      "./ontology/objects": {
+        import: `${esmPrefix}/ontology/objects${
+          sdkVersion === 2 ? "" : "/index"
+        }.js`,
+        require: `${commonjsPrefix}/ontology/objects${
+          sdkVersion === 2 ? "" : "/index"
+        }.js`,
+      },
+    },
+    scripts: {
+      prepack:
+        `tsc -p ${esmPrefix}/tsconfig.json && tsc -p ${commonjsPrefix}/tsconfig.json`,
+      check: "npm exec attw $(npm pack)",
+    },
+    devDependencies: {
+      "typescript": ourPackageJson.devDependencies.typescript,
+      "tslib": ourPackageJson.dependencies.tslib,
+      "@arethetypeswrong/cli":
+        ourPackageJson.dependencies["@arethetypeswrong/cli"],
+      "@osdk/api": `^${process.env.PACKAGE_API_VERSION}`,
+      ...(sdkVersion === 2
+        ? {
+          "@osdk/client": `^${process.env.PACKAGE_CLIENT_VERSION}`,
+        }
+        : {
+          "@osdk/legacy-client":
+            `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`,
+        }),
+    },
+    peerDependencies: {
+      "@osdk/api": `^${process.env.PACKAGE_API_VERSION}`,
+      ...(sdkVersion === 2
+        ? {
+          "@osdk/client": `^${process.env.PACKAGE_CLIENT_VERSION}`,
+        }
+        : {
+          "@osdk/legacy-client":
+            `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`,
+        }),
+    },
+    files: [
+      "**/*.js",
+      "**/*.d.ts",
+      "dist/**/package.json",
+    ],
+  };
+}
+
+let cachedOurPackageJsonPath: string;
+async function getOurPackageJsonPath() {
+  if (cachedOurPackageJsonPath) return cachedOurPackageJsonPath;
+
+  const __dir = path.dirname(fileURLToPath(import.meta.url));
+  // todo replace with find package json alt from sid
+  const ourPackageJsonPath = await findUp("package.json", { cwd: __dir });
+  if (!ourPackageJsonPath) {
+    throw new Error("Could not find our package.json");
+  }
+  return cachedOurPackageJsonPath = ourPackageJsonPath;
+}
+
+async function generateSourceFiles(
+  args: TypescriptGenerateArgs,
+  ontology: WireOntologyDefinition,
+  fs: MinimalFs,
+) {
+  await (args.beta
+    ? generateClientSdkVersionTwoPointZero
+    : generateClientSdkVersionOneDotOne)(
+      ontology,
+      getUserAgent(args.version),
+      fs,
+      args.outDir,
+      args.packageType,
+    );
 }
 
 // If the user passed us `dev` as our version, we use that for both our generated package version AND the cli version.
@@ -172,4 +342,38 @@ function getUserAgent(version: string) {
   } else {
     return `typescript-sdk/${version} ${USER_AGENT}`;
   }
+}
+
+function createInMemoryFs(): [{ [fileName: string]: string }, MinimalFs] {
+  const files: { [fileName: string]: string } = {};
+  return [files, {
+    writeFile: async (path, contents) => {
+      files[path.normalize(path)] = contents;
+    },
+    mkdir: async (path, _options?: { recursive: boolean }) => {
+      await mkdir(path.normalize(path), { recursive: true });
+    },
+    readdir: async (path) => await readdir(path),
+  }];
+}
+
+function createNormalFs(): MinimalFs {
+  return {
+    writeFile: (path: string, contents: string) => {
+      return fs.promises.writeFile(path, contents, "utf-8");
+    },
+    mkdir: async (path: string, options?: { recursive: boolean }) => {
+      await fs.promises.mkdir(path, options);
+    },
+    readdir: async (path: string) => fs.promises.readdir(path),
+  };
+}
+
+async function writeJson(filePath: string, body: unknown) {
+  consola.info(`Writing ${filePath}`);
+  consola.debug(`Writing ${filePath} with body`, body);
+  return await fs.promises.writeFile(
+    filePath,
+    JSON.stringify(body, undefined, 2) + "\n",
+  );
 }

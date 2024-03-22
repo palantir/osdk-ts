@@ -29,7 +29,7 @@ export const command: CommandModule<
     return argv
       .options(
         {
-          "outDir": {
+          outDir: {
             type: "string",
             description: "Where to place the generated files",
             demandOption: true,
@@ -80,6 +80,18 @@ export const command: CommandModule<
             description: "Version of the generated code, or 'dev'",
             demandOption: true,
           },
+          packageName: {
+            type: "string",
+            description: "Name of the package to generate",
+          },
+          asPackage: {
+            type: "boolean",
+            description: "Generate as a package (makes a package.json and co)",
+          },
+          clean: {
+            type: "boolean",
+            description: "Clean the output directory before generating",
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],
@@ -87,7 +99,7 @@ export const command: CommandModule<
       ).group(
         ["foundryUrl", "clientId", "outDir", "ontologyWritePath", "version"],
         "OR Generate from Foundry",
-      )
+      ).group(["packageName", "as"], "Package generation options")
       .check(
         (args) => {
           if (!args.ontologyPath && !args.foundryUrl) {
@@ -99,6 +111,18 @@ export const command: CommandModule<
           if (args.version !== "dev" && !isValidSemver(args.version)) {
             throw new YargsCheckError(
               "Version must be 'dev' or a valid semver version",
+            );
+          }
+
+          if (args.asPackage && !args.packageName) {
+            throw new YargsCheckError(
+              "Must specify packageName when generating as a package",
+            );
+          }
+
+          if (args.asPackage && !args.version) {
+            throw new YargsCheckError(
+              "Must specify version when generating as a package",
             );
           }
 

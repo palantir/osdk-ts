@@ -60,8 +60,8 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
           oneOf: [
             {
               properties: {
-                "type": { const: "git-describe", type: "string" },
-                "tagPrefix": { type: "string", nullable: true },
+                type: { const: "git-describe", type: "string" },
+                tagPrefix: { type: "string", nullable: true },
               },
             },
           ],
