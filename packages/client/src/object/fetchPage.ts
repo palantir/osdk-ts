@@ -220,30 +220,7 @@ async function fetchInterfacePageWithErrorsInternal<
   objectSet: ObjectSet,
 ): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
   return wrapResult(
-    async () => {
-      const result = await searchObjectsForInterface(
-        createOpenApiRequest(client.stack, client.fetch as typeof fetch),
-        client.ontology.metadata.ontologyApiName,
-        interfaceType.apiName,
-        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-          augmentedProperties: args.augment ?? {},
-          augmentedSharedPropertyTypes: {},
-          otherInterfaceTypes: [],
-          selectedObjectTypes: [],
-          selectedSharedPropertyTypes: args.select as undefined | string[]
-            ?? [],
-          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-        }),
-        { preview: true },
-      );
-      result.data = await convertWireToOsdkObjects(
-        client,
-        result.data as OntologyObjectV2[], // drop readonly
-        interfaceType.apiName,
-        !args.includeRid,
-      );
-      return result as any;
-    }, // FIXME: not for interfaces
+    async () => fetchInterfacePage(client, interfaceType, args, objectSet), // FIXME: not for interfaces
     e =>
       handleLoadObjectSetError(
         new LoadObjectSetErrorHandler(),
@@ -266,7 +243,12 @@ export async function fetchPageInternal<
   args: FetchPageArgs<Q, L, R, A> = {},
 ): FetchPageResult<Q, L, R> {
   if (objectType.type === "interface") {
-    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
+    return await fetchInterfacePageWithErrorsInternal(
+      client,
+      objectType,
+      args,
+      objectSet,
+    ) as any; // fixme
   } else {
     return await fetchObjectPage(client, objectType, args, objectSet) as any; // fixme
   }
@@ -403,30 +385,7 @@ export async function fetchObjectPageWithErrors<
   objectSet: ObjectSet,
 ): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
   return wrapResult(
-    async () => {
-      const r = await loadObjectSetV2(
-        createOpenApiRequest(
-          client.stack,
-          client.fetch as typeof fetch,
-        ),
-        client.ontology.metadata.ontologyApiName,
-        applyFetchArgs<LoadObjectSetRequestV2>(args, {
-          objectSet,
-          // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-          select: ((args?.select as string[] | undefined) ?? []), // FIXME?
-          excludeRid: !args?.includeRid,
-        }),
-      );
-
-      return Promise.resolve({
-        data: await convertWireToOsdkObjects(
-          client,
-          r.data as OntologyObjectV2[],
-          undefined,
-        ),
-        nextPageToken: r.nextPageToken,
-      }) as FetchPageResult<Q, L, R>;
-    },
+    async () => fetchObjectPage(client, objectType, args, objectSet),
     e =>
       handleLoadObjectSetError(
         new LoadObjectSetErrorHandler(),
