@@ -10,15 +10,10 @@
     "dev": {
       "cache": false,
       "persistent": true,
-      "dependsOn": ["//#dev:typecheck", "dev:transpile", "codegen"]
+      "dependsOn": ["//#dev:watch"]
     },
 
-    "dev:transpile": {
-      "cache": false,
-      "dependsOn": ["codegen"]
-    },
-
-    "//#dev:typecheck": {
+    "//#dev:watch": {
       "cache": false
     },
 
@@ -87,7 +82,7 @@
 
     "test": {
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["build"]
+      "dependsOn": ["transpile", "typecheck"]
     },
     "test:watch": {
       "env": ["FORCE_COLOR"],
@@ -111,7 +106,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
+      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
     }
   },
 

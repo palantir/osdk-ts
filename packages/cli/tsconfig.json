@@ -2,31 +2,11 @@
   "extends": "../../monorepo/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build/types",
-    "composite": true
+    "outDir": "build/types"
   },
   "include": [
     "./src/**/*",
     ".eslintrc.cjs"
   ],
-  "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../gateway"
-    },
-    {
-      "path": "../generator"
-    },
-    {
-      "path": "../shared.net"
-    },
-    {
-      "path": "../cli.cmd.typescript"
-    },
-    {
-      "path": "../cli.common"
-    }
-  ]
+  "references": []
 }
