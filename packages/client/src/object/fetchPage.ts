@@ -41,6 +41,13 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { LoadObjectSetError } from "./errors/ApiErrors.js";
+import {
+  handleLoadObjectSetError,
+  LoadObjectSetErrorHandler,
+} from "./errors/index.js";
+import type { Result } from "./Result.js";
+import { wrapResult } from "./wrapResult.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -129,6 +136,16 @@ export type FetchPageResult<
   >
 >;
 
+export type FetchPageResultWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+> = PageResult<
+  ObjectOrInterfacePropertyKeysFrom2<Q> extends L
+    ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
+    : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
+>;
+
 /** @internal */
 export function objectSetToSearchJsonV2(
   objectSet: ObjectSet,
@@ -192,6 +209,50 @@ async function fetchInterfacePage<
   return result as any;
 }
 
+async function fetchInterfacePageWithErrorsInternal<
+  Q extends InterfaceDefinition<any, any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  interfaceType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet,
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+  return wrapResult(
+    async () => {
+      const result = await searchObjectsForInterface(
+        createOpenApiRequest(client.stack, client.fetch as typeof fetch),
+        client.ontology.metadata.ontologyApiName,
+        interfaceType.apiName,
+        applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+          augmentedProperties: args.augment ?? {},
+          augmentedSharedPropertyTypes: {},
+          otherInterfaceTypes: [],
+          selectedObjectTypes: [],
+          selectedSharedPropertyTypes: args.select as undefined | string[]
+            ?? [],
+          where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+        }),
+        { preview: true },
+      );
+      result.data = await convertWireToOsdkObjects(
+        client,
+        result.data as OntologyObjectV2[], // drop readonly
+        interfaceType.apiName,
+        !args.includeRid,
+      );
+      return result as any;
+    }, // FIXME: not for interfaces
+    e =>
+      handleLoadObjectSetError(
+        new LoadObjectSetErrorHandler(),
+        e,
+        e.parameters,
+      ),
+  );
+}
+
 /** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
@@ -211,6 +272,30 @@ export async function fetchPageInternal<
   }
 }
 
+/** @internal */
+export async function fetchPageWithErrorsInternal<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+  A extends Augments,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  objectSet: ObjectSet,
+  args: FetchPageArgs<Q, L, R, A> = {},
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+  if (objectType.type === "interface") {
+    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
+  } else {
+    return await fetchObjectPageWithErrors(
+      client,
+      objectType,
+      args,
+      objectSet,
+    ) as any; // fixme
+  }
+}
+
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -225,6 +310,22 @@ export async function fetchPage<
   },
 ): FetchPageResult<Q, L, R> {
   return fetchPageInternal(client, objectType, objectSet, args);
+}
+
+export async function fetchPageWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
 function applyFetchArgs<
@@ -289,4 +390,48 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
   }) as FetchPageResult<Q, L, R>;
+}
+
+export async function fetchObjectPageWithErrors<
+  Q extends ObjectTypeDefinition<any>,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet,
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+  return wrapResult(
+    async () => {
+      const r = await loadObjectSetV2(
+        createOpenApiRequest(
+          client.stack,
+          client.fetch as typeof fetch,
+        ),
+        client.ontology.metadata.ontologyApiName,
+        applyFetchArgs<LoadObjectSetRequestV2>(args, {
+          objectSet,
+          // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
+          select: ((args?.select as string[] | undefined) ?? []), // FIXME?
+          excludeRid: !args?.includeRid,
+        }),
+      );
+
+      return Promise.resolve({
+        data: await convertWireToOsdkObjects(
+          client,
+          r.data as OntologyObjectV2[],
+          undefined,
+        ),
+        nextPageToken: r.nextPageToken,
+      }) as FetchPageResult<Q, L, R>;
+    },
+    e =>
+      handleLoadObjectSetError(
+        new LoadObjectSetErrorHandler(),
+        e,
+        e.parameters,
+      ),
+  );
 }
