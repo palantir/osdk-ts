@@ -119,7 +119,9 @@ export class OntologyMetadataResolver {
       ]);
     }
 
-    const ontologyFullMetadata = await namespaces.getOntologyFullMetadata(
+    const ontologyFullMetadata = await namespaces.getOntologyFullMetadata<
+      components.OntologyFullMetadata
+    >(
       this.getRequestFunction(),
       ontology.apiName,
     );
