@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
   PalantirApiError,
 } from "@osdk/shared.net";
 import { consola } from "consola";
-import { ExitProcessError } from "../ExitProcessError.js";
 import { USER_AGENT } from "./UserAgent.js";
 
 export function createFetch(

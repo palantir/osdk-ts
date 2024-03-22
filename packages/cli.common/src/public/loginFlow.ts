@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export {};
+export { invokeLoginFlow as default } from "../commands/auth/login/loginFlow.js";

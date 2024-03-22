@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,5 @@
  * limitations under the License.
  */
 
-import type * as yargs from "yargs";
-import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import generate from "./generate/generate.js";
-
-const site: yargs.CommandModule<CliCommonArgs, CliCommonArgs> = {
-  command: "typescript",
-  describe: "Manage code",
-  builder: (argv) => {
-    return argv
-      .command(generate)
-      .demandCommand();
-  },
-  handler: async (args) => {
-  },
-};
-
-export default site;
+export type { TypescriptGenerateArgs } from "./generate/TypescriptGenerateArgs.js";
+export { typescriptCommand as default } from "./typescriptCommand.js";

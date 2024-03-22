@@ -34,6 +34,8 @@
   "dependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
     "@osdk/api": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/cli.common": "workspace:*",
     "@osdk/gateway": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/shared.net": "workspace:*",

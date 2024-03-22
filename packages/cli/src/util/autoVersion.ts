@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
+import { ExitProcessError, isValidSemver } from "@osdk/cli.common";
 import { exec } from "node:child_process";
 import { promisify } from "node:util";
-import { ExitProcessError } from "../ExitProcessError.js";
-import { isValidSemver } from "./isValidSemver.js";
 
 /**
  * Gets the version string using git describe. If the @param tagPrefix is empty, git describe will return the

@@ -16,19 +16,19 @@
 
 // eslint-disable-next-line import/no-named-as-default
 import consola from "consola";
-import { getRandomValues, subtle } from "crypto";
-import { createServer } from "http";
+import { getRandomValues, subtle } from "node:crypto";
+import { createServer } from "node:http";
+import { join } from "node:path/posix";
+import { exit } from "node:process";
+import { parse } from "node:url";
 import open from "open";
-import { join } from "path/posix";
-import { exit } from "process";
-import { parse } from "url";
 import type { LoginArgs } from "./LoginArgs.js";
 import type { TokenResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
 
 const BROWSER_PROMPT_TIME_MS = 60 * 1000;
 
-export default async function invokeLoginFlow(args: LoginArgs) {
+export async function invokeLoginFlow(args: LoginArgs) {
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
-import { ExitProcessError } from "../ExitProcessError.js";
 
 export interface GitDescribeAutoVersionConfig {
   type: "git-describe";

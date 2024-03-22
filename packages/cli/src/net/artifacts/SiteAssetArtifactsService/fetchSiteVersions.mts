@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "../../../ExitProcessError.js";
+import { ExitProcessError } from "@osdk/cli.common";
 import { createFetch } from "../../createFetch.mjs";
 import type { InternalClientContext } from "../../internalClientContext.mjs";
 import { fetchWebsiteRepositoryRid } from "../../third-party-application-service/fetchWebsiteRepositoryRid.mjs";

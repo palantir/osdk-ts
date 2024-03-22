@@ -9,5 +9,18 @@
     "./src/**/*",
     ".eslintrc.cjs"
   ],
-  "references": []
+  "references": [
+    {
+      "path": "../cli.common"
+    },
+    {
+      "path": "../gateway"
+    },
+    {
+      "path": "../generator"
+    },
+    {
+      "path": "../shared.net"
+    }
+  ]
 }
