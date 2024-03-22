@@ -10,12 +10,12 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/src/index.d.ts",
+      "types": "./build/types/index.d.ts",
       "import": "./build/js/index.mjs",
       "require": "./build/js/index.js"
     },
     "./*": {
-      "types": "./build/types/src/public/*.d.ts",
+      "types": "./build/types/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
       "require": "./build/js/public/*.js"
     }
@@ -52,7 +52,7 @@
   ],
   "main": "./build/js/index.js",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/src/index.d.ts",
+  "types": "./build/types/index.d.ts",
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
