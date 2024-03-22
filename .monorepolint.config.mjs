@@ -72,34 +72,14 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
       extends: baseTsconfigPath,
 
       compilerOptions: {
-        rootDir: "src",
+        rootDir: ".",
         outDir: "build/types",
         composite: true,
       },
-      include: ["./src/**/*", ".eslintrc.cjs"],
+      include: ["./src/**/*", ".eslintrc.cjs", "package.json"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),
-    },
-  };
-}
-
-function getTsconfigOptionsE2E(baseTsconfigPath) {
-  return {
-    file: "tsconfig.json",
-    template: {
-      extends: baseTsconfigPath,
-
-      compilerOptions: {
-        rootDir: "src",
-        outDir: "build/types",
-        composite: true,
-      },
-      include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: [
-        "./src/__e2e_tests__/**/**.test.ts",
-        "./src/generatedNoCheck/**/*",
-      ],
     },
   };
 }
@@ -157,12 +137,12 @@ function standardPackageRules(shared, options) {
         entries: {
           exports: {
             ".": {
-              types: "./build/types/index.d.ts",
+              types: "./build/types/src/index.d.ts",
               import: "./build/js/index.mjs",
               require: `./build/js/index.${options.legacy ? "" : "c"}js`,
             },
             "./*": {
-              types: "./build/types/public/*.d.ts",
+              types: "./build/types/src/public/*.d.ts",
               import: "./build/js/public/*.mjs",
               require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
             },
@@ -184,7 +164,7 @@ function standardPackageRules(shared, options) {
 
           main: `./build/js/index.${options.legacy ? "" : "c"}js`,
           module: "./build/js/index.mjs",
-          types: "./build/types/index.d.ts",
+          types: "./build/types/src/index.d.ts",
         },
       },
     }),

@@ -10,12 +10,12 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
+      "types": "./build/types/src/index.d.ts",
       "import": "./build/js/index.mjs",
       "require": "./build/js/index.cjs"
     },
     "./*": {
-      "types": "./build/types/public/*.d.ts",
+      "types": "./build/types/src/public/*.d.ts",
       "import": "./build/js/public/*.mjs",
       "require": "./build/js/public/*.cjs"
     }
@@ -61,6 +61,6 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
+  "types": "./build/types/src/index.d.ts",
   "type": "module"
 }
