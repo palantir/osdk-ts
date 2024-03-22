@@ -142,7 +142,7 @@ function standardPackageRules(shared, options) {
               require: `./build/js/index.${options.legacy ? "" : "c"}js`,
             },
             "./*": {
-              types: "./build/types/public/*.d.ts",
+              types: "./build/types/src/public/*.d.ts",
               import: "./build/js/public/*.mjs",
               require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
             },
