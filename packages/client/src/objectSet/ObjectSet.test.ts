@@ -28,6 +28,7 @@ import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
 import { Employee } from "../generatedNoCheck/ontology/objects.js";
 import { createClient, isOk } from "../index.js";
 import type { Client, Osdk } from "../index.js";
+import { isErr, visitError } from "../object/Result.js";
 
 describe("ObjectSet", () => {
   let client: Client<typeof MockOntology>;
@@ -186,6 +187,14 @@ describe("ObjectSet", () => {
         iter += 1;
       }
       expect(iter).toEqual(2);
+    }
+
+    // remove, just adding right now to show what usage looks like
+    if (isErr(result)) {
+      visitError(result.error, {
+        default: () => {
+        },
+      });
     }
   });
 });
