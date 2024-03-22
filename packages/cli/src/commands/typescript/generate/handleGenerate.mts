@@ -230,7 +230,8 @@ function getTsCompilerOptions(packageType: "commonjs" | "module") {
   return compilerOptions;
 }
 
-async function getPackageJsonContents(
+/** @internal */
+export async function getPackageJsonContents(
   name: string,
   version: string,
   sdkVersion: 1 | 2,
