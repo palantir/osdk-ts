@@ -209,7 +209,7 @@ async function fetchInterfacePage<
   return result as any;
 }
 
-async function fetchInterfacePageWithErrorsInternal<
+async function fetchInterfacePageWithErrors<
   Q extends InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
@@ -243,7 +243,7 @@ export async function fetchPageInternal<
   args: FetchPageArgs<Q, L, R, A> = {},
 ): FetchPageResult<Q, L, R> {
   if (objectType.type === "interface") {
-    return await fetchInterfacePageWithErrorsInternal(
+    return await fetchInterfacePage(
       client,
       objectType,
       args,
@@ -267,7 +267,12 @@ export async function fetchPageWithErrorsInternal<
   args: FetchPageArgs<Q, L, R, A> = {},
 ): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
   if (objectType.type === "interface") {
-    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
+    return await fetchInterfacePageWithErrors(
+      client,
+      objectType,
+      args,
+      objectSet,
+    ) as any; // fixme
   } else {
     return await fetchObjectPageWithErrors(
       client,
