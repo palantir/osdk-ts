@@ -26,7 +26,7 @@ export interface Todo extends OntologyObject {
   readonly $apiName: "Todo";
   readonly $primaryKey: string;
   readonly id: string | undefined;
-  readonly $rid: string | undefined;
+  readonly $rid: string;
   /**
    * The text of the todo
    */

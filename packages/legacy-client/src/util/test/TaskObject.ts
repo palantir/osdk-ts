@@ -23,6 +23,6 @@ export interface Task extends OntologyObject {
   readonly $apiName: "Task";
   readonly $primaryKey: number;
   readonly id: number | undefined;
-  readonly $rid: string | undefined;
+  readonly $rid: string;
   readonly linkedTodos: MultiLink<Todo>;
 }

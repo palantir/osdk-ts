@@ -26,7 +26,7 @@ export interface OntologyObject<
   __apiName: T;
   /** @deprecated use $primaryKey */
   __primaryKey: P;
-  $rid: string | undefined;
+  $rid: string;
   $apiName: T;
   $primaryKey: P;
 }
