@@ -125,14 +125,10 @@ export type FetchPageResult<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
 > = Promise<
-  PageResult<
-    ObjectOrInterfacePropertyKeysFrom2<Q> extends L
-      ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
-      : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
-  >
+  FetchPageWithErrorsResult<Q, L, R>
 >;
 
-export type FetchPageResultWithErrors<
+export type FetchPageWithErrorsResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
@@ -214,7 +210,7 @@ async function fetchInterfacePageWithErrors<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
   return wrapResult(
     async () => fetchInterfacePage(client, interfaceType, args, objectSet), // FIXME: not for interfaces
   );
@@ -255,7 +251,7 @@ export async function fetchPageWithErrorsInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePageWithErrors(
       client,
@@ -301,7 +297,7 @@ export async function fetchPageWithErrors<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -378,7 +374,7 @@ export async function fetchObjectPageWithErrors<
   objectType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
   return wrapResult(
     async () => fetchObjectPage(client, objectType, args, objectSet),
   );

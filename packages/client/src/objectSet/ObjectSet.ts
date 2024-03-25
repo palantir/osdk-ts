@@ -29,7 +29,7 @@ import type {
   Augments,
   FetchPageArgs,
   FetchPageResult,
-  FetchPageResultWithErrors,
+  FetchPageWithErrorsResult,
   SelectArg,
 } from "../object/fetchPage.js";
 import type { Result } from "../object/Result.js";
@@ -54,7 +54,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
     const A extends Augments,
   >(
     args?: FetchPageArgs<Q, L, R, A>,
-  ) => Promise<Result<FetchPageResultWithErrors<Q, L, R>>>;
+  ) => Promise<Result<FetchPageWithErrorsResult<Q, L, R>>>;
 
   where: (
     clause: WhereClause<Q>,
