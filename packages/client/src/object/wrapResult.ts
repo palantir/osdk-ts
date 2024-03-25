@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-import type { ErrorResult, OkResult, Result } from "./Result.js";
-
-export function createOkResponse<V>(value: V): OkResult<V> {
-  return { value };
-}
-
-export function createErrorResponse(error: Error): ErrorResult {
-  return { error };
-}
+import type { Result } from "./Result.js";
 
 export async function wrapResult<T>(
   apiCall: () => Promise<T>,
 ): Promise<Result<T>> {
   try {
     const result = await apiCall();
-    return createOkResponse(result);
+    return { value: result };
   } catch (e) {
     if (e instanceof Error) {
-      return createErrorResponse(e);
+      return { error: e };
     }
-    return createErrorResponse(e as Error);
+    return { error: e as Error };
   }
 }
