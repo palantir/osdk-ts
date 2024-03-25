@@ -25,7 +25,6 @@ import type {
 } from "@osdk/api";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { AggregateOptsThatErrors } from "../object/aggregate.js";
-import type { LoadObjectSetError } from "../object/errors/ApiErrors.js";
 import type {
   Augments,
   FetchPageArgs,
@@ -55,7 +54,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
     const A extends Augments,
   >(
     args?: FetchPageArgs<Q, L, R, A>,
-  ) => Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>>;
+  ) => Promise<Result<FetchPageResultWithErrors<Q, L, R>>>;
 
   where: (
     clause: WhereClause<Q>,

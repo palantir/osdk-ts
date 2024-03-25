@@ -14,43 +14,14 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError } from "./errors/ApiErrors.js";
+export type ErrorResult = { error: Error; value?: never };
+export type OkResult<V> = { value: V; error?: never };
+export type Result<V> = OkResult<V> | ErrorResult;
 
-export interface Ok<V> {
-  type: "ok";
-  value: V;
-}
-export interface Err<E> {
-  type: "error";
-  error: E;
-}
-export type Result<V, E = FoundryApiError> = Ok<V> | Err<E>;
-export function isOk<V, E>(result: Result<V, E>): result is Ok<V> {
-  return result.type === "ok";
+export function isOk<X>(a: Result<X>): a is OkResult<X> {
+  return ("value" in a);
 }
 
-export function isErr<V, E>(result: Result<V, E>): result is Err<E> {
-  return result.type === "error";
+export function isError<X>(a: Result<X>): a is ErrorResult {
+  return ("error" in a);
 }
-
-export type ErrorVisitor<E extends FoundryApiError, R> = {
-  [K in E["errorName"] | "default"]?: (
-    error: Extract<E, K extends "default" ? E : { errorName: K }>,
-  ) => R;
-};
-
-export function visitError<
-  E extends FoundryApiError,
-  R,
->(
-  error: E,
-  visitor: ErrorVisitor<E, R>,
-): R {
-  const handler = (visitor as any)[error.name] || visitor.default;
-  return handler(error);
-}
-
-export type ExtractKeysWithType<T, K extends keyof T> = T extends {
-  [P in K]: infer U;
-} ? U extends keyof any ? U : never
-  : never;

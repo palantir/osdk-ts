@@ -14,32 +14,26 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError } from "./errors/ApiErrors.js";
-import type { PalantirApiError } from "./errors/Errors.js";
-import { isPalantirApiError } from "./errors/Errors.js";
-import type { Err, Ok, Result } from "./Result.js";
+import type { ErrorResult, OkResult, Result } from "./Result.js";
 
-export function createOkResponse<V>(value: V): Ok<V> {
-  return { type: "ok", value };
+export function createOkResponse<V>(value: V): OkResult<V> {
+  return { value };
 }
 
-export function createErrorResponse<E>(error: E): Err<E> {
-  return { type: "error", error };
+export function createErrorResponse(error: Error): ErrorResult {
+  return { error };
 }
 
-export async function wrapResult<T, E extends FoundryApiError>(
+export async function wrapResult<T>(
   apiCall: () => Promise<T>,
-  errorHandler: (palantirApiError: PalantirApiError) => E,
-): Promise<Result<T, E>> {
+): Promise<Result<T>> {
   try {
     const result = await apiCall();
     return createOkResponse(result);
   } catch (e) {
-    if (isPalantirApiError(e)) {
-      return createErrorResponse(errorHandler(e));
-    } else {
-      // TODO this unknown used to be an UnknownError but it had casting problems
-      return createErrorResponse(e as unknown as E);
+    if (e instanceof Error) {
+      return createErrorResponse(e);
     }
+    return createErrorResponse(e as Error);
   }
 }

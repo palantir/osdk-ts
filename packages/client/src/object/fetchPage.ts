@@ -41,11 +41,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { LoadObjectSetError } from "./errors/ApiErrors.js";
-import {
-  handleLoadObjectSetError,
-  LoadObjectSetErrorHandler,
-} from "./errors/index.js";
+
 import type { Result } from "./Result.js";
 import { wrapResult } from "./wrapResult.js";
 
@@ -218,15 +214,9 @@ async function fetchInterfacePageWithErrors<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
   return wrapResult(
     async () => fetchInterfacePage(client, interfaceType, args, objectSet), // FIXME: not for interfaces
-    e =>
-      handleLoadObjectSetError(
-        new LoadObjectSetErrorHandler(),
-        e,
-        e.parameters,
-      ),
   );
 }
 
@@ -265,7 +255,7 @@ export async function fetchPageWithErrorsInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePageWithErrors(
       client,
@@ -311,7 +301,7 @@ export async function fetchPageWithErrors<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -388,14 +378,8 @@ export async function fetchObjectPageWithErrors<
   objectType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): Promise<Result<FetchPageResultWithErrors<Q, L, R>, LoadObjectSetError>> {
+): Promise<Result<FetchPageResultWithErrors<Q, L, R>>> {
   return wrapResult(
     async () => fetchObjectPage(client, objectType, args, objectSet),
-    e =>
-      handleLoadObjectSetError(
-        new LoadObjectSetErrorHandler(),
-        e,
-        e.parameters,
-      ),
   );
 }
