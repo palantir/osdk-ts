@@ -38,7 +38,9 @@ ${
 
   ${getDescriptionIfPresent(objectTypeWithLinks.objectType.description)}
   export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
+  /** \@deprecated please migrate to \$apiName instead */
   readonly __apiName: "${objectTypeWithLinks.objectType.apiName}";
+  /** \@deprecated please migrate to \$primaryKey instead */
   readonly __primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(
       objectTypeWithLinks.objectType
