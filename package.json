@@ -7,8 +7,8 @@
     "check-mrl": "mrl check --verbose",
     "ci:publish": "pnpm run prePublish && pnpm exec changeset publish --no-git-tag",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
-    "dev": "turbo run dev --concurrency 26",
-    "dev:typecheck": "tsc --build --watch --preserveWatchOutput packages/* examples-extra/basic/*",
+    "dev": "npx tsx packages/watch/src/watch.mts",
+    "dev:typecheck": "npx tsx packages/watch/src/watch.mts",
     "lint": "turbo run lint",
     "prePublish": "turbo build && turbo lint",
     "prepare": "husky install",
@@ -39,10 +39,16 @@
     "tsconfig": "workspace:*",
     "tsup": "^7.2.0",
     "turbo": "^1.10.13",
+    "turbotree": "^1.0.1",
     "typescript": "^5.4.2",
     "vitest": "^1.2.2"
   },
   "dependencies": {
     "eslint-plugin-unused-imports": "^3.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "turbotree@1.0.1": "patches/turbotree@1.0.1.patch"
+    }
   }
 }

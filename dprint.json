@@ -4,7 +4,9 @@
     "conditionalExpression.operatorPosition": "nextLine",
     "quoteProps": "preserve"
   },
-  "json": {},
+  "json": {
+    "indentWidth": 2
+  },
   "markdown": {},
   "toml": {},
   "excludes": [
@@ -13,7 +15,6 @@
     "**/.turbo",
     "**/src/generatedNoCheck/",
     "**/src/generatedNoCheck2/",
-    "**/package.json",
     "pnpm-lock.yaml",
     ".vscode/settings.json"
   ],

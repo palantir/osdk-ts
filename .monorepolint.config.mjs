@@ -62,19 +62,19 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
  *   customTsconfigExcludes?: string[]
  *   skipTsconfigReferences?: boolean
  * }} opts
- * @returns
+ * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
 function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
     file: "tsconfig.json",
-    excludedReferences: opts.skipTsconfigReferences ? ["**/*"] : undefined,
+
+    excludedReferences: ["**/*"],
     template: {
       extends: baseTsconfigPath,
 
       compilerOptions: {
         rootDir: "src",
         outDir: "build/types",
-        composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
       ...(opts.customTsconfigExcludes
@@ -99,6 +99,7 @@ function standardPackageRules(shared, options) {
   return [
     standardTsconfig({
       ...shared,
+
       options: getTsconfigOptions(
         `${
           "../".repeat(options.packageDepth)
@@ -120,14 +121,14 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": "tsup --watch",
+          "dev:transpile": DELETE_SCRIPT_ENTRTY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
-          typecheck: "tsc-absolute --build",
+          typecheck: "tsc-absolute",
         },
       },
     }),

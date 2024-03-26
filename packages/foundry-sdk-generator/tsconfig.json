@@ -2,8 +2,7 @@
   "extends": "../../monorepo/tsconfig/tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "build/types",
-    "composite": true
+    "outDir": "build/types"
   },
   "include": [
     "./src/**/*",
@@ -13,21 +12,5 @@
     "./src/__e2e_tests__/**/**.test.ts",
     "./src/generatedNoCheck/**/*"
   ],
-  "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../gateway"
-    },
-    {
-      "path": "../generator"
-    },
-    {
-      "path": "../legacy-client"
-    },
-    {
-      "path": "../shared.test"
-    }
-  ]
+  "references": []
 }
