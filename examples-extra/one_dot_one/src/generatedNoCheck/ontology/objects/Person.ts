@@ -6,8 +6,12 @@ import type { Todo } from './Todo';
  * A person
  */
 export interface Person extends OntologyObject {
+  /** @deprecated please migrate to $apiName instead */
   readonly __apiName: 'Person';
+  /** @deprecated please migrate to $primaryKey instead */
   readonly __primaryKey: string;
+  readonly $apiName: 'Person';
+  readonly $primaryKey: string;
   readonly email: string | undefined;
   readonly Todos: MultiLink<Todo>;
   readonly Friends: MultiLink<Person>;

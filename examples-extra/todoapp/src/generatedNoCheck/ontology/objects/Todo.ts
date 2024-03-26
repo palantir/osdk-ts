@@ -5,8 +5,12 @@ import type { OntologyObject } from '@osdk/legacy-client';
  * Its a todo item.
  */
 export interface Todo extends OntologyObject {
+  /** @deprecated please migrate to $apiName instead */
   readonly __apiName: 'Todo';
+  /** @deprecated please migrate to $primaryKey instead */
   readonly __primaryKey: string;
+  readonly $apiName: 'Todo';
+  readonly $primaryKey: string;
   readonly id: string | undefined;
   readonly isComplete: boolean | undefined;
   /**

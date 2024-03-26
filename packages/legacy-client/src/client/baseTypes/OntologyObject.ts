@@ -20,12 +20,19 @@ export interface OntologyObject<
   T extends string = string,
   P extends NonNullable<ParameterValue> = NonNullable<ParameterValue>,
 > {
+  /** @deprecated use $rid */
   __rid: string;
+  /** @deprecated use $apiName */
   __apiName: T;
+  /** @deprecated use $primaryKey */
   __primaryKey: P;
+  $rid: string;
+  $apiName: T;
+  $primaryKey: P;
 }
 
 export function isOntologyObject(obj: any): obj is OntologyObject {
-  return obj && typeof obj === "object" && typeof obj.__apiName === "string"
-    && "__primaryKey" in obj;
+  return obj && typeof obj === "object" && ((typeof obj.__apiName === "string"
+    && "__primaryKey" in obj) || (typeof obj.$apiName === "string"
+      && "$primaryKey" in obj));
 }

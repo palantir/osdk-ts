@@ -1,9 +1,9 @@
+import { ActionValidationError } from "@osdk/client";
 import { useCallback, useEffect } from "react";
 import useSWR from "swr";
 import { foundryClient, foundryClient2 } from "./foundryClient";
-import { isOk, ReturnEditsMode, type Result } from "./generatedNoCheck";
+import { isOk, type Result, ReturnEditsMode } from "./generatedNoCheck";
 import type { Todo } from "./generatedNoCheck/ontology/objects";
-import { ActionValidationError } from "@osdk/client";
 import * as MyOsdk from "./generatedNoCheck2";
 
 function orThrow<T, E>(result: Result<T, E>) {
@@ -18,7 +18,7 @@ export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
     "/todos",
     async () => orThrow(await foundryClient.ontology.objects.Todo.all()),
-    { keepPreviousData: true, revalidateOnFocus: false }
+    { keepPreviousData: true, revalidateOnFocus: false },
   );
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export function useTodos() {
           } else {
             byApiNameByPK.set(
               object.$apiName,
-              new Map([[object.$primaryKey, object]])
+              new Map([[object.$primaryKey, object]]),
             );
           }
         }
@@ -44,7 +44,7 @@ export function useTodos() {
         // get the new version of an object that has changed, removing it from the list of updates
         const getUpdate = (
           apiName: (typeof objects)[0]["$apiName"],
-          primaryKey: (typeof objects)[0]["$primaryKey"]
+          primaryKey: (typeof objects)[0]["$primaryKey"],
         ) => {
           const byPk = byApiNameByPK.get(apiName);
           if (byPk) {
@@ -58,14 +58,13 @@ export function useTodos() {
 
         mutate((data) => {
           // update any Todos that we got a new version for
-          const updated =
-            data?.map((object) => {
-              const updateObject = getUpdate(
-                object.__apiName,
-                object.__primaryKey
-              );
-              return updateObject ?? object;
-            }) ?? [];
+          const updated = data?.map((object) => {
+            const updateObject = getUpdate(
+              object.__apiName,
+              object.__primaryKey,
+            );
+            return updateObject ?? object;
+          }) ?? [];
 
           // add any new Todos to the bottom
           for (const byPk of byApiNameByPK.values()) {
@@ -91,7 +90,7 @@ export function useTodos() {
   }, [mutate]);
 
   const toggleComplete = useCallback(
-    async function (todo: Todo) {
+    async function(todo: Todo) {
       const b = !todo.isComplete;
       await mutate(
         async () => {
@@ -111,8 +110,8 @@ export function useTodos() {
                   is_complete: b,
                   Todo: todo,
                 },
-                { returnEdits: ReturnEditsMode.ALL }
-              )
+                { returnEdits: ReturnEditsMode.ALL },
+              ),
             );
           }
 
@@ -121,10 +120,10 @@ export function useTodos() {
         {
           optimisticData: updateTodo.bind(undefined, todo.id!, b),
           rollbackOnError: true,
-        }
+        },
       );
     },
-    [mutate]
+    [mutate],
   );
 
   const createTodoMutator = useCallback(
@@ -151,7 +150,7 @@ export function useTodos() {
                     if (constraint.type === "stringLength") {
                       if (constraint.gte != null && constraint.lte != null) {
                         setError?.(
-                          `Todo must be between ${constraint.gte}-${constraint.lte} characters`
+                          `Todo must be between ${constraint.gte}-${constraint.lte} characters`,
                         );
                       }
                     }
@@ -169,11 +168,11 @@ export function useTodos() {
           optimisticData: (todos = []) => [...todos, createFauxTodo(title)],
           rollbackOnError: true,
           throwOnError: true,
-        }
+        },
       );
       return undefined;
     },
-    [mutate]
+    [mutate],
   );
 
   return {
@@ -194,13 +193,16 @@ function createFauxTodo(title: string): Todo {
     __primaryKey: title,
     __apiName: "Todo",
     __rid: "",
+    $primaryKey: title,
+    $apiName: "Todo",
+    $rid: "",
   };
 }
 
 function updateTodo(
   id: string,
   isComplete: boolean,
-  todos: Todo[] | undefined
+  todos: Todo[] | undefined,
 ) {
   return updateOne(todos, id, (todo) => ({ ...todo, isComplete })) ?? [];
 }
@@ -208,7 +210,7 @@ function updateTodo(
 function updateOne<T extends { __primaryKey: Q }, Q>(
   things: T[] | undefined,
   primaryKey: Q,
-  update: (thing: T) => T
+  update: (thing: T) => T,
 ) {
   return things?.map((thing) => {
     if (thing.__primaryKey === primaryKey) {
