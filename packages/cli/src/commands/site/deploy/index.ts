@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
 import type {
   AutoVersionConfigType,
@@ -21,8 +22,6 @@ import type {
   SiteConfig,
 } from "../../../util/config.js";
 import configLoader from "../../../util/configLoader.js";
-import { isValidSemver } from "../../../util/isValidSemver.js";
-import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { CommonSiteArgs } from "../CommonSiteArgs.js";
 import { logDeployCommandConfigFileOverride } from "./logDeployCommandConfigFileOverride.js";
 import type { SiteDeployArgs } from "./SiteDeployArgs.js";

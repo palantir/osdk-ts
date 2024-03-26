@@ -22,7 +22,7 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev",
     "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -32,12 +32,11 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/cli": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/legacy-client": "workspace:*"
   },
   "devDependencies": {
-    "@osdk/cli": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
     "@types/node": "^18.0.0",
     "typescript": "^4.9.0"
   },

@@ -27,3 +27,4 @@ tsconfig.tsbuildinfo
 packages/client/src/generatedNoCheck
 packages/legacy-client/src/generatedNoCheck
 
+.log

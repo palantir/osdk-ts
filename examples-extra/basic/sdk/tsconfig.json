@@ -17,7 +17,7 @@
       "path": "../../../packages/client"
     },
     {
-      "path": "../../../packages/cli"
+      "path": "../../../packages/cli.cmd.typescript"
     }
   ]
 }

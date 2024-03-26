@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import type * as yargs from "yargs";
-import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import generate from "./generate/generate.js";
+import { consola } from "consola";
+import type { CliCommonArgs } from "../CliCommonArgs.js";
 
-const site: yargs.CommandModule<CliCommonArgs, CliCommonArgs> = {
-  command: "typescript",
-  describe: "Manage code",
-  builder: (argv) => {
-    return argv
-      .command(generate)
-      .demandCommand();
-  },
-  handler: async (args) => {
-  },
-};
+let firstTime = true;
+export async function logLevelMiddleware(args: CliCommonArgs) {
+  if (firstTime) {
+    firstTime = false;
 
-export default site;
+    consola.level = 3 + args.verbose; // so 1 -v is debug logs and -vv is trace
+    if (consola.level > 3) {
+      consola.debug(
+        `Verbose logging enabled (${
+          consola.level === 4 ? "debug" : "trace"
+        })\n`,
+      );
+    }
+  }
+}

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import { isValidSemver, YargsCheckError } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
-import { isValidSemver } from "../../../util/isValidSemver.js";
-import { YargsCheckError } from "../../../YargsCheckError.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
-export const command: CommandModule<
+export const generateCommand: CommandModule<
   {},
   TypescriptGenerateArgs
 > = {
@@ -132,8 +131,6 @@ export const command: CommandModule<
   },
   handler: async (args) => {
     const command = await import("./handleGenerate.mjs");
-    await command.default(args);
+    await command.handleGenerate(args);
   },
 };
-
-export default command;

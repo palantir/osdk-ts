@@ -9,12 +9,5 @@
     "./src/**/*",
     ".eslintrc.cjs"
   ],
-  "references": [
-    {
-      "path": "../api"
-    },
-    {
-      "path": "../gateway"
-    }
-  ]
+  "references": []
 }

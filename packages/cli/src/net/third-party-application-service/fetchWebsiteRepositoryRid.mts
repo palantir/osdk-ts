@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import { consola } from "consola";
-import { ExitProcessError } from "../../ExitProcessError.js";
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { RepositoryRid } from "../RepositoryRid.js";

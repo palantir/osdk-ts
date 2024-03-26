@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "@osdk/cli.common";
-import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
-
-export interface CommonSiteArgs extends CliCommonArgs {
-  application: ThirdPartyAppRid;
-  foundryUrl: string;
-  token?: string;
-  tokenFile?: string;
-}
+export type { CliCommonArgs } from "./CliCommonArgs.js";
+export type { CommonAuthArgs } from "./commands/auth/CommonAuthArgs.js";
+export type { LoginArgs } from "./commands/auth/login/LoginArgs.js";
+export { ExitProcessError } from "./ExitProcessError.js";
+export { getYargsBase } from "./getYargsBase.js";
+export { isValidSemver } from "./util/isValidSemver.js";
+export { YargsCheckError } from "./YargsCheckError.js";

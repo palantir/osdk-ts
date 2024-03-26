@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "@osdk/cli.common";
-import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
-
-export interface CommonSiteArgs extends CliCommonArgs {
-  application: ThirdPartyAppRid;
-  foundryUrl: string;
-  token?: string;
-  tokenFile?: string;
-}
+module.exports = {
+  extends: ["sane/library"],
+  root: true,
+};

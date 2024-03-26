@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import type { CommonAuthArgs, LoginArgs } from "@osdk/cli.common";
 import type { CommandModule } from "yargs";
-import type { CommonAuthArgs } from "../CommonAuthArgs.js";
-import type { LoginArgs } from "./LoginArgs.js";
 
 export const command: CommandModule<
   CommonAuthArgs,
@@ -34,7 +33,7 @@ export const command: CommandModule<
       });
   },
   handler: async (args) => {
-    const command = await import("./loginFlow.js");
+    const command = await import("@osdk/cli.common/loginFlow");
     await command.default(args);
   },
 };

@@ -48,6 +48,8 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/cli.common": "workspace:*",
     "@types/archiver": "^6.0.0",
     "@types/ngeohash": "^0.6.4",
     "@types/node": "^18.0.0",

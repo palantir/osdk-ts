@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "@osdk/cli.common";
-import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
+import type { CliCommonArgs } from "../../CliCommonArgs.js";
 
-export interface CommonSiteArgs extends CliCommonArgs {
-  application: ThirdPartyAppRid;
+export interface CommonAuthArgs extends CliCommonArgs {
   foundryUrl: string;
-  token?: string;
-  tokenFile?: string;
 }

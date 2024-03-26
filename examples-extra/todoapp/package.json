@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "codegen": "rm -rf src/generatedNoCheck/* src/generatedNoCheck2/* && osdk unstable typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev && osdk unstable typescript generate --outDir src/generatedNoCheck2 --beta --ontologyPath ontology.json --version dev",
+    "codegen": "rm -rf src/generatedNoCheck/* src/generatedNoCheck2/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev && osdk-unstable-typescript generate --outDir src/generatedNoCheck2 --beta --ontologyPath ontology.json --version dev",
     "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
@@ -23,7 +23,7 @@
     "swr": "^2.2.4"
   },
   "devDependencies": {
-    "@osdk/cli": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:*",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",

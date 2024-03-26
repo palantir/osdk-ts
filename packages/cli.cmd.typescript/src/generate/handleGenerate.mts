@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
+import invokeLoginFlow from "@osdk/cli.common/loginFlow";
 import {
   getOntologyFullMetadata,
   listOntologiesV2,
@@ -30,14 +32,11 @@ import * as fs from "node:fs";
 import { mkdir, readdir } from "node:fs/promises";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { ExitProcessError } from "../../../ExitProcessError.js";
-import { YargsCheckError } from "../../../YargsCheckError.js";
-import invokeLoginFlow from "../../auth/login/loginFlow.js";
 import type { TypescriptGenerateArgs } from "./TypescriptGenerateArgs.js";
 
 const USER_AGENT = `osdk-cli/${process.env.PACKAGE_VERSION}`;
 
-export default async function handleGenerate(args: TypescriptGenerateArgs) {
+export async function handleGenerate(args: TypescriptGenerateArgs) {
   let success = false;
   if (args.ontologyPath) {
     success = await generateFromLocalFile(args);

@@ -1,8 +1,7 @@
 {
-  "name": "@osdk/shared.test",
-  "version": "1.2.0",
-  "description": "",
-  "access": "private",
+  "name": "@osdk/cli.common",
+  "private": true,
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,26 +25,23 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
-    "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute --build"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
-    "fetch-retry": "^5.0.6",
-    "json-stable-stringify": "^1.1.0",
-    "msw": "^1.2.4",
-    "tiny-invariant": "^1.3.3"
+    "consola": "^3.2.3",
+    "open": "^9.1.0",
+    "semver": "^7.6.0",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/json-stable-stringify": "^1.0.36",
-    "ts-expect": "^1.3.0",
+    "@types/node": "^18.0.0",
+    "@types/semver": "^7.5.7",
+    "@types/yargs": "^17.0.29",
     "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
   "files": [
     "build/types",
     "build/js",
@@ -57,5 +53,6 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "types": "./build/types/index.d.ts",
+  "type": "module"
 }

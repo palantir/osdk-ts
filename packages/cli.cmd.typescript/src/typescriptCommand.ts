@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs, CommonAuthArgs } from "@osdk/cli.common";
+import type { CliCommonArgs } from "@osdk/cli.common";
 import type * as yargs from "yargs";
-import login from "./login/index.js";
+import { generateCommand } from "./generate/generate.js";
 
-const auth: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
-  command: "auth",
-  describe: "Manage your session",
+export const typescriptCommand: yargs.CommandModule<
+  CliCommonArgs,
+  CliCommonArgs
+> = {
+  command: "typescript",
+  describe: "Manage code",
   builder: (argv) => {
     return argv
-      .options({
-        foundryUrl: {
-          type: "string",
-          demandOption: true,
-          alias: "baseUrl", // for backwards compatibility
-          describe: "URL for the Foundry stack",
-        },
-      })
-      .command(login)
+      .command(generateCommand)
       .demandCommand();
   },
   handler: async (args) => {
   },
 };
-
-export default auth;
