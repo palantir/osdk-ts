@@ -22,8 +22,11 @@ import type {
   ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinition,
   ObjectTypeKeysFrom,
+  OmniResource,
+  OmniResourceMethods,
   OntologyDefinition,
 } from "@osdk/api";
+import { createOpenApiRequest } from "@osdk/shared.net";
 import type { OntologyMetadata } from "../../api/build/types/ontology/OntologyMetadata.js";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import {
@@ -63,10 +66,14 @@ function createFutureClientPlus(
   );
 
   function clientFn<
-    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+    T extends
+      | ObjectOrInterfaceDefinition
+      | ActionDefinition<any, any, any>
+      | OmniResource<any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : T extends OmniResource<any> ? OmniResourceMethods<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -76,11 +83,71 @@ function createFutureClientPlus(
       clientCtx.ontology.provider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
     } else {
+      return createOmniApiInvoker(clientCtx, o) as OmniResourceMethods<any>;
       throw new Error("Unknown definition: " + JSON.stringify(o));
     }
   }
 
-  return [clientCtx, clientFn];
+  return [clientCtx, clientFn as any];
+}
+
+function createOmniApiInvoker(
+  clientCtx: MinimalClient,
+  o: OmniResource<any>,
+) {
+  return Object.defineProperties(
+    {},
+    Object.fromEntries(
+      Object.entries(o.methods).map<[string, PropertyDescriptor]>(
+        (
+          [
+            methodName,
+            [
+              httpMethodNum,
+              origPath,
+              hasBody,
+              contentType,
+              responseContentType,
+            ],
+          ],
+        ) => {
+          return [methodName, {
+            value: async (...args: any[]) => {
+              const path = origPath.replace(
+                /\{([^}]+)\}/g,
+                () => args.shift(),
+              );
+
+              const body = hasBody === 1 ? args.shift() : undefined;
+              const queryArgs = args.shift();
+              const openApiReq = createOpenApiRequest(
+                clientCtx.stack,
+                clientCtx.fetch,
+              );
+
+              const method = [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+              ][httpMethodNum];
+
+              return await openApiReq(
+                method,
+                path,
+                body,
+                queryArgs,
+                undefined,
+                contentType,
+                responseContentType,
+              );
+            },
+          }];
+        },
+      ),
+    ),
+  );
 }
 
 // Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `createClient`.

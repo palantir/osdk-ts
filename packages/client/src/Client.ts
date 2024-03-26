@@ -22,6 +22,8 @@ import type {
   ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinition,
   ObjectTypeKeysFrom,
+  OmniResource,
+  OmniResourceMethods,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
@@ -51,11 +53,15 @@ export interface Client<O extends OntologyDefinition<any>>
 // Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `Client`.
 export interface FutureClient {
   <
-    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+    Q extends
+      | ObjectOrInterfaceDefinition
+      | ActionDefinition<any, any, any>
+      | OmniResource<any>,
   >(
     o: Q,
   ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
     : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
     : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
+    : Q extends OmniResource<any> ? OmniResourceMethods<Q>
     : never;
 }
