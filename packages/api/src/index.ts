@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export type { OmniResource, OmniResourceMethods } from "./omniapi";
 export type {
   ActionDefinition,
   ActionModifiedEntity,
