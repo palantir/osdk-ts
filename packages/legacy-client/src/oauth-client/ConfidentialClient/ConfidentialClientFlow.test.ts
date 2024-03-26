@@ -57,6 +57,7 @@ describe("ConfidentialClientFlow", () => {
       {
         body:
           "grant_type=client_credentials&client_id=testClientId&client_secret=testClientSecret&scopes=offline_access+api%3Aread+api%3Awrite",
+        cache: "no-cache",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
@@ -97,6 +98,7 @@ describe("ConfidentialClientFlow", () => {
       {
         body:
           "client_id=testClientId&client_secret=testClientSecret&token=testAccessToken",
+        cache: "no-cache",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
