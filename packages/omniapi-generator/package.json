@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/examples.basic.cli",
+  "name": "@osdk/omniapi-generator",
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
@@ -24,20 +24,20 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
-    "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/examples.basic.sdk": "workspace:*",
-    "@osdk/omniapi": "workspace:*",
-    "tiny-invariant": "^1.3.1"
+    "find-up": "^7.0.0",
+    "prettier": "^3.2.5",
+    "tiny-invariant": "^1.3.3",
+    "yaml": "^2.3.4",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/cli": "workspace:*",
-    "@types/node": "^18.0.0",
-    "ts-expect": "^1.3.0"
+    "@types/node": "^20.11.30",
+    "@types/prettier": "^3.0.0",
+    "@types/yargs": "^17.0.29",
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
@@ -53,6 +53,5 @@
   ],
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
-  "type": "module"
+  "types": "./build/types/index.d.ts"
 }
