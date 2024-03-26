@@ -45,7 +45,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "files": [
     "build/types",
     "build/js",
