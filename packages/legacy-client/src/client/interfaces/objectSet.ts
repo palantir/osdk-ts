@@ -82,8 +82,14 @@ export type ObjectSetOrderByStep<O extends OntologyObject> = {
 export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
    * Get a page of objects of this type.
+   * @deprecated use fetchPageWithErrors instead
    */
   page(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Result<Page<O>, ListObjectsError>>;
+
+  fetchPageWithErrors(options?: {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;

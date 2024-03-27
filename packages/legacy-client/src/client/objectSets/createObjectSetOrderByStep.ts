@@ -39,7 +39,7 @@ export function createObjectSetBaseOrderByStepMethod<
   orderByClauses: OrderByClause[] = [],
 ): Omit<
   ObjectSetOrderByStep<OsdkLegacyObjectFrom<O, K>>,
-  "all" | "page" | "select"
+  "all" | "page" | "select" | "fetchPageWithErrors"
 > {
   return {
     orderBy(predicate) {
