@@ -119,6 +119,7 @@ const Todo: TodoDef = {
 
 const mockOntology = {
   metadata: {
+    expectsClientVersion: "0.0.0",
     ontologyRid: "ri.a.b.c.d",
     ontologyApiName: "apiName",
     userAgent: "",

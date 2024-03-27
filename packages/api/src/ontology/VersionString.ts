@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import type { VersionString } from "./VersionString";
-
-export interface OntologyMetadata<
-  V extends VersionString<any, any, any> = never,
-> {
-  expectsClientVersion?: V;
-  ontologyRid: string;
-  ontologyApiName: string;
-  userAgent: string;
-}
+export type VersionString<
+  Major extends number,
+  Minor extends number,
+  Patch extends number,
+> = `${Major}.${Minor}.${Patch}`;

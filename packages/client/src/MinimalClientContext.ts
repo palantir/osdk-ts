@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { OntologyMetadata } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
+import type { VersionString } from "./SatisfiesSemver.js";
 
 /*
  * We don't yet know exactly what the client context will look like,
@@ -24,13 +26,18 @@ import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 export interface MinimalClient extends ClientContext<MinimalClientParams> {}
 
 export type MinimalClientParams = {
-  metadata: {
-    userAgent: string;
-    ontologyApiName: string;
-
-    /** @deprecated this is only for transitional code. Do not rely on this for production */
-    ontologyRid: string;
-  };
+  metadata: MinimalClientMetadata<any>;
 
   provider: OntologyProvider;
 };
+
+export interface MinimalClientMetadata<V extends VersionString<any, any, any>>
+  extends OntologyMetadata<V>
+{
+  expectsClientVersion: V;
+  userAgent: string;
+  ontologyApiName: string;
+
+  /** @deprecated this is only for transitional code. Do not rely on this for production */
+  ontologyRid: string;
+}
