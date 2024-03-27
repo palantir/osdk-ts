@@ -15,10 +15,14 @@
  */
 
 import type { WireOntologyDefinition } from "@osdk/generator";
-import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
+import {
+  generateClientSdkVersionOneDotOne,
+  sanitizeMetadata,
+} from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent";
+import { osdkTypes } from "../commandUtils";
 import { generateBundles } from "../generateBundles";
 import { bundleDependencies } from "./bundleDependencies";
 import { compileInMemory } from "./compileInMemory";
@@ -127,6 +131,28 @@ export async function generatePackage(
     await generateBundles(absolutePackagePath, options.packageName);
   } catch (e) {
     consola.error(e);
+  }
+
+  // Check if anything generated clashes with names of our own types
+
+  const sanitizedOntology = sanitizeMetadata(ontology);
+  let clashCount = 0;
+  for (
+    const type of [
+      ...Object.keys(sanitizedOntology.actionTypes),
+      ...Object.keys(sanitizedOntology.interfaceTypes),
+      ...Object.keys(sanitizedOntology.objectTypes),
+      ...Object.keys(sanitizedOntology.queryTypes),
+      ...Object.keys(sanitizedOntology.sharedPropertyTypes),
+    ]
+  ) {
+    if (osdkTypes.has(type)) {
+      clashCount++;
+    }
+  }
+
+  if (clashCount > 0) {
+    consola.log("API names clashed: ", clashCount);
   }
 }
 
