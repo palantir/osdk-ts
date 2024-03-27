@@ -29,11 +29,18 @@ export async function generateOntologyMetadataFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `
-      export const OntologyMetadata = {
+      import {OntologyMetadata as OM} from "@osdk/api";
+
+      export interface OntologyMetadata extends OM<"${process.env.PACKAGE_CLIENT_VERSION}"> {
+        expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",
+      };
+
+      export const OntologyMetadata: OntologyMetadata = {
+        expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",
         ontologyRid: "${ontology.ontology.rid}",
         ontologyApiName: "${ontology.ontology.apiName}",
         userAgent: "${userAgent}",
-      }
+      };
       `,
     ),
   );

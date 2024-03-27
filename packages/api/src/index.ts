@@ -56,6 +56,7 @@ export type {
   PropertyDef,
 } from "./ontology/ObjectTypeDefinition";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition";
+export type { OntologyMetadata } from "./ontology/OntologyMetadata";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,

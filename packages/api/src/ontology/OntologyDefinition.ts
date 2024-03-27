@@ -26,7 +26,7 @@ export interface OntologyDefinition<
   Q extends string = any,
   I extends string = any,
 > {
-  metadata: OntologyMetadata;
+  metadata: OntologyMetadata<any>;
   objects: {
     [KK in K]: ObjectTypeDefinition<KK>;
   };

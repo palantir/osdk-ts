@@ -7,16 +7,6 @@
       "dependsOn": ["^transpile", "^typecheck"]
     },
 
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "dependsOn": ["//#dev:watch"]
-    },
-
-    "//#dev:watch": {
-      "cache": false
-    },
-
     "fix-lint": {
       "cache": false
     },
