@@ -26,7 +26,10 @@ import type { PalantirApiError } from "../errors/Errors";
 import type { Page } from "../Page";
 import type { Result } from "../Result";
 import { getLinkedObjectsPage } from "./getLinkedObjectsPage";
-import { createPageIterator } from "./util/createPageIterator";
+import {
+  createPageIterator,
+  createPageIteratorOrThrow,
+} from "./util/createPageIterator";
 import { iterateLinkedObjects } from "./util/iterateLinkedObjects";
 
 export async function pageLinkedObjects<T extends OntologyObject>(
@@ -64,6 +67,38 @@ export async function pageLinkedObjects<T extends OntologyObject>(
         palantirApiError.parameters,
       );
     },
+  );
+  return response;
+}
+
+export async function pageLinkedObjectsOrThrow<T extends OntologyObject>(
+  client: ClientContext<OntologyDefinition<any>>,
+  sourceApiName: string,
+  primaryKey: any,
+  linkTypeApiName: string,
+  options?: {
+    pageSize?: number;
+    pageToken?: string;
+  },
+): Promise<Page<T>> {
+  const response = createPageIteratorOrThrow<T>(
+    async () => {
+      return getLinkedObjectsPage<T>(
+        client,
+        sourceApiName,
+        primaryKey,
+        linkTypeApiName,
+        options,
+      );
+    },
+    () =>
+      iterateLinkedObjects(
+        client,
+        sourceApiName,
+        primaryKey,
+        linkTypeApiName,
+        options,
+      ),
   );
   return response;
 }

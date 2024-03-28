@@ -319,6 +319,24 @@ describe("OsdkObjectSet", () => {
     expect(page.type).toEqual("ok");
   });
 
+  it("loads a page without result wrapper", async () => {
+    const os = createBaseTodoObjectSet(client);
+    mockObjectPage([getMockTodoObject()]);
+    const page = await os.fetchPage({ pageSize: 1 });
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: [],
+        pageSize: 1,
+      }),
+    );
+    expect(page.data).toBeDefined;
+  });
+
   it("handles multiple clients correctly", async () => {
     const fetch1: MockedFunction<typeof globalThis.fetch> = vi.fn();
     const client1 = createClientContext(

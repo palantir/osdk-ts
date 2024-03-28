@@ -19,7 +19,10 @@ import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
 import { getLinkedObject } from "../net/getLinkedObject";
 import { listLinkedObjects } from "../net/listLinkedObjects";
-import { pageLinkedObjects } from "../net/pageLinkedObjects";
+import {
+  pageLinkedObjects,
+  pageLinkedObjectsOrThrow,
+} from "../net/pageLinkedObjects";
 import type { Page } from "../Page";
 import type { Result } from "../Result";
 
@@ -57,6 +60,20 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         | undefined,
     ): Promise<Result<Page<T>, ListLinkedObjectsError>> {
       return pageLinkedObjects(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
+        options,
+      );
+    },
+
+    fetchPage(
+      options?:
+        | { pageSize?: number | undefined; pageToken?: string | undefined }
+        | undefined,
+    ): Promise<Page<T>> {
+      return pageLinkedObjectsOrThrow(
         client,
         sourceApiName,
         sourcePrimaryKey,

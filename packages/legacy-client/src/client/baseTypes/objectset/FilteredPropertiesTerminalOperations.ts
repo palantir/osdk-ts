@@ -48,6 +48,18 @@ export type FilteredPropertiesTerminalOperations<
       LoadObjectSetError
     >
   >;
+
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<
+    Page<
+      Pick<
+        T,
+        V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+      >
+    >
+  >;
 };
 
 export type FilteredPropertiesTerminalOperationsWithGet<

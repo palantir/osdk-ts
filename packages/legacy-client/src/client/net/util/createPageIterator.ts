@@ -31,3 +31,14 @@ export async function createPageIterator<T, E extends FoundryApiError>(
     [Symbol.asyncIterator]: () => iterator,
   });
 }
+
+export async function createPageIteratorOrThrow<T>(
+  apiCall: () => Promise<Page<T>>,
+  generator: () => AsyncGenerator<T, any, unknown>,
+) {
+  const page = await apiCall();
+
+  return Object.assign(page, {
+    [Symbol.asyncIterator]: generator,
+  });
+}

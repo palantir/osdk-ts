@@ -44,4 +44,12 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<T>, ListLinkedObjectsError>>;
+
+  /**
+   * Pages through linked objects, without a result wrapper
+   */
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Page<T>>;
 }

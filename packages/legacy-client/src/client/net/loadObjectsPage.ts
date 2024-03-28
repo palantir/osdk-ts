@@ -44,29 +44,14 @@ export async function loadObjectsPage<
 ): Promise<Result<Page<T>, LoadObjectSetError>> {
   return wrapResult(
     async () => {
-      const page = await loadObjectSetV2(
-        createOpenApiRequest(client.stack, client.fetch),
-        client.ontology.metadata.ontologyApiName,
-        mapObjectSetBody(
-          objectSetDefinition,
-          orderByClauses,
-          selectedProperties,
-          options,
-        ),
-      ) as {
-        data: WireOntologyObjectV2<T["__apiName"]>[];
-        nextPageToken?: string;
-      };
-
-      return {
-        data: page.data.map(object =>
-          convertWireToOsdkObject(
-            client,
-            object,
-          ) as unknown as T
-        ),
-        nextPageToken: page.nextPageToken,
-      };
+      return loadObjectsPageOrThrows(
+        client,
+        objectApiName,
+        objectSetDefinition,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
     },
     e =>
       handleLoadObjectSetError(
@@ -75,6 +60,43 @@ export async function loadObjectsPage<
         e.parameters,
       ),
   );
+}
+
+export async function loadObjectsPageOrThrows<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+  T extends OsdkLegacyObjectFrom<O, K>,
+>(
+  client: ClientContext<O>,
+  objectApiName: K,
+  objectSetDefinition: ObjectSetDefinition,
+  orderByClauses: OrderByClause[],
+  selectedProperties: ReadonlyArray<keyof T> = [],
+  options?: { pageSize?: number; pageToken?: string },
+): Promise<Page<T>> {
+  const page = await loadObjectSetV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    mapObjectSetBody(
+      objectSetDefinition,
+      orderByClauses,
+      selectedProperties,
+      options,
+    ),
+  ) as {
+    data: WireOntologyObjectV2<T["__apiName"]>[];
+    nextPageToken?: string;
+  };
+
+  return {
+    data: page.data.map(object =>
+      convertWireToOsdkObject(
+        client,
+        object,
+      ) as unknown as T
+    ),
+    nextPageToken: page.nextPageToken,
+  };
 }
 
 function mapObjectSetBody(
