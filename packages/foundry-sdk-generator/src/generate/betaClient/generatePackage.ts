@@ -15,10 +15,14 @@
  */
 
 import type { WireOntologyDefinition } from "@osdk/generator";
-import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
+import {
+  generateClientSdkVersionOneDotOne,
+  sanitizeMetadata,
+} from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent";
+import { osdkTypes } from "../commandUtils";
 import { generateBundles } from "../generateBundles";
 import { bundleDependencies } from "./bundleDependencies";
 import { compileInMemory } from "./compileInMemory";
@@ -128,6 +132,28 @@ export async function generatePackage(
   } catch (e) {
     consola.error(e);
   }
+
+  // Check if anything generated clashes with names of our own types
+
+  const sanitizedOntology = sanitizeMetadata(ontology);
+
+  const clashCount = countClashes(sanitizedOntology.actionTypes)
+    + countClashes(sanitizedOntology.interfaceTypes)
+    + countClashes(sanitizedOntology.objectTypes)
+    + countClashes(sanitizedOntology.queryTypes)
+    + countClashes(sanitizedOntology.sharedPropertyTypes);
+
+  if (clashCount > 0) {
+    consola.log("API names clashed: ", clashCount);
+  }
+}
+
+function countClashes(x: Record<string, any>): number {
+  let clashCount = 0;
+  for (const type of Object.keys(x)) {
+    if (osdkTypes.has(type)) clashCount++;
+  }
+  return clashCount;
 }
 
 async function getDependencyVersion(dependency: string): Promise<string> {
