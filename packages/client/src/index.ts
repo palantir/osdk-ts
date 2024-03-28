@@ -25,6 +25,8 @@ export * as Objects from "./object/index.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 
+export type { WhereClause } from "./query/WhereClause.js";
+
 export { createClientContext } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
