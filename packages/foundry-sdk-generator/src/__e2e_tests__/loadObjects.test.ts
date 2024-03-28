@@ -94,6 +94,8 @@ describe("LoadObjects", () => {
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
 
     expect(emp.fullName).toEqual("John Doe");
@@ -369,6 +371,8 @@ describe("LoadObjects", () => {
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 
@@ -381,6 +385,8 @@ describe("LoadObjects", () => {
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 });
