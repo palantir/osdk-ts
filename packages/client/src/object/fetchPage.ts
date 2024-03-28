@@ -43,7 +43,6 @@ import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 import type { Result } from "./Result.js";
-import { wrapResult } from "./wrapResult.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -201,21 +200,6 @@ async function fetchInterfacePage<
   return result as any;
 }
 
-async function fetchInterfacePageWithErrors<
-  Q extends InterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean,
->(
-  client: MinimalClient,
-  interfaceType: Q,
-  args: FetchPageArgs<Q, L, R>,
-  objectSet: ObjectSet,
-): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
-  return wrapResult(
-    async () => fetchInterfacePage(client, interfaceType, args, objectSet), // FIXME: not for interfaces
-  );
-}
-
 /** @internal */
 export async function fetchPageInternal<
   Q extends ObjectOrInterfaceDefinition,
@@ -229,12 +213,7 @@ export async function fetchPageInternal<
   args: FetchPageArgs<Q, L, R, A> = {},
 ): FetchPageResult<Q, L, R> {
   if (objectType.type === "interface") {
-    return await fetchInterfacePage(
-      client,
-      objectType,
-      args,
-      objectSet,
-    ) as any; // fixme
+    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
   } else {
     return await fetchObjectPage(client, objectType, args, objectSet) as any; // fixme
   }
@@ -252,20 +231,14 @@ export async function fetchPageWithErrorsInternal<
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
 ): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
-  if (objectType.type === "interface") {
-    return await fetchInterfacePageWithErrors(
-      client,
-      objectType,
-      args,
-      objectSet,
-    ) as any; // fixme
-  } else {
-    return await fetchObjectPageWithErrors(
-      client,
-      objectType,
-      args,
-      objectSet,
-    ) as any; // fixme
+  try {
+    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    return { value: result };
+  } catch (e) {
+    if (e instanceof Error) {
+      return { error: e };
+    }
+    return { error: e as Error };
   }
 }
 
@@ -363,19 +336,4 @@ export async function fetchObjectPage<
     ),
     nextPageToken: r.nextPageToken,
   }) as FetchPageResult<Q, L, R>;
-}
-
-export async function fetchObjectPageWithErrors<
-  Q extends ObjectTypeDefinition<any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean,
->(
-  client: MinimalClient,
-  objectType: Q,
-  args: FetchPageArgs<Q, L, R>,
-  objectSet: ObjectSet,
-): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
-  return wrapResult(
-    async () => fetchObjectPage(client, objectType, args, objectSet),
-  );
 }
