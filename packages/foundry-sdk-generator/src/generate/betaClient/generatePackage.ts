@@ -136,24 +136,24 @@ export async function generatePackage(
   // Check if anything generated clashes with names of our own types
 
   const sanitizedOntology = sanitizeMetadata(ontology);
-  let clashCount = 0;
-  for (
-    const type of [
-      ...Object.keys(sanitizedOntology.actionTypes),
-      ...Object.keys(sanitizedOntology.interfaceTypes),
-      ...Object.keys(sanitizedOntology.objectTypes),
-      ...Object.keys(sanitizedOntology.queryTypes),
-      ...Object.keys(sanitizedOntology.sharedPropertyTypes),
-    ]
-  ) {
-    if (osdkTypes.has(type)) {
-      clashCount++;
-    }
-  }
+
+  const clashCount = countClashes(sanitizedOntology.actionTypes)
+    + countClashes(sanitizedOntology.interfaceTypes)
+    + countClashes(sanitizedOntology.objectTypes)
+    + countClashes(sanitizedOntology.queryTypes)
+    + countClashes(sanitizedOntology.sharedPropertyTypes);
 
   if (clashCount > 0) {
     consola.log("API names clashed: ", clashCount);
   }
+}
+
+function countClashes(x: Record<string, any>): number {
+  let clashCount = 0;
+  for (const type of Object.keys(x)) {
+    if (osdkTypes.has(type)) clashCount++;
+  }
+  return clashCount;
 }
 
 async function getDependencyVersion(dependency: string): Promise<string> {
