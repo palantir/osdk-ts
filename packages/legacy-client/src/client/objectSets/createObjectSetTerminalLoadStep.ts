@@ -19,7 +19,10 @@ import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import { loadAllObjects } from "../net/loadObjects";
-import { loadObjectsPage } from "../net/loadObjectsPage";
+import {
+  loadObjectsPage,
+  loadObjectsPageOrThrows,
+} from "../net/loadObjectsPage";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { OrderByClause } from "./filters";
 
@@ -36,6 +39,16 @@ export function createObjectSetTerminalLoadStep<
   return {
     async page(options) {
       return loadObjectsPage<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
+    },
+    async fetchPage(options) {
+      return loadObjectsPageOrThrows<O, K, OsdkLegacyObjectFrom<O, K>>(
         client,
         apiName,
         objectSet,
