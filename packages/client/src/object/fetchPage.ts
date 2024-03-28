@@ -123,14 +123,6 @@ export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
-> = Promise<
-  FetchPageWithErrorsResult<Q, L, R>
->;
-
-export type FetchPageWithErrorsResult<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean,
 > = PageResult<
   ObjectOrInterfacePropertyKeysFrom2<Q> extends L
     ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
@@ -176,7 +168,7 @@ async function fetchInterfacePage<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   const result = await searchObjectsForInterface(
     createOpenApiRequest(client.stack, client.fetch as typeof fetch),
     client.ontology.metadata.ontologyApiName,
@@ -211,7 +203,7 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
   } else {
@@ -230,7 +222,7 @@ export async function fetchPageWithErrorsInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
-): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
+): Promise<Result<FetchPageResult<Q, L, R>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -254,7 +246,7 @@ export async function fetchPage<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -270,7 +262,7 @@ export async function fetchPageWithErrors<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
+): Promise<Result<FetchPageResult<Q, L, R>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -313,7 +305,7 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   const r = await loadObjectSetV2(
     createOpenApiRequest(
       client.stack,
@@ -335,5 +327,5 @@ export async function fetchObjectPage<
       undefined,
     ),
     nextPageToken: r.nextPageToken,
-  }) as FetchPageResult<Q, L, R>;
+  }) as Promise<FetchPageResult<Q, L, R>>;
 }

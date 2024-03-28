@@ -126,7 +126,9 @@ describe("Osdk", () => {
 
     type z = Osdk<FooInterface, "fooSpt">;
     type FM<T extends any[]> = T extends (infer P)[] ? P : never;
-    type zz = Awaited<FetchPageResult<FooInterface, "fooSpt", false>>["data"];
+    type zz = Awaited<
+      Promise<FetchPageResult<FooInterface, "fooSpt", false>>
+    >["data"];
   });
 
   it("retains original props if set", () => {
