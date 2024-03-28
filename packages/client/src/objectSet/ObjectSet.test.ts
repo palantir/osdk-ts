@@ -25,9 +25,10 @@ import {
   it,
 } from "vitest";
 import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import type { Employee } from "../generatedNoCheck/ontology/objects.js";
+import { Employee } from "../generatedNoCheck/ontology/objects.js";
 import { createClient } from "../index.js";
 import type { Client, Osdk } from "../index.js";
+import { isOk } from "../object/Result.js";
 
 describe("ObjectSet", () => {
   let client: Client<typeof MockOntology>;
@@ -172,5 +173,20 @@ describe("ObjectSet", () => {
       .pivotTo("peeps").get(stubData.employee1.employeeId);
 
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it(" object set union works with fetchPageWithErrors", async () => {
+    const objectSet = client(Employee);
+    const unionedObjectSet = objectSet.union(objectSet);
+    let iter = 0;
+    const result = await unionedObjectSet.fetchPageWithErrors();
+    if (isOk(result)) {
+      const employees = result.value.data;
+      for (const emp of employees) {
+        expect(emp.employeeId).toEqual(50030 + iter);
+        iter += 1;
+      }
+      expect(iter).toEqual(2);
+    }
   });
 });

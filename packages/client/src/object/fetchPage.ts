@@ -42,6 +42,8 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
+import type { Result } from "./Result.js";
+
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
@@ -122,11 +124,17 @@ export type FetchPageResult<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
 > = Promise<
-  PageResult<
-    ObjectOrInterfacePropertyKeysFrom2<Q> extends L
-      ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
-      : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
-  >
+  FetchPageWithErrorsResult<Q, L, R>
+>;
+
+export type FetchPageWithErrorsResult<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+> = PageResult<
+  ObjectOrInterfacePropertyKeysFrom2<Q> extends L
+    ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
+    : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
 >;
 
 /** @internal */
@@ -211,6 +219,29 @@ export async function fetchPageInternal<
   }
 }
 
+/** @internal */
+export async function fetchPageWithErrorsInternal<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+  A extends Augments,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  objectSet: ObjectSet,
+  args: FetchPageArgs<Q, L, R, A> = {},
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
+  try {
+    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    return { value: result };
+  } catch (e) {
+    if (e instanceof Error) {
+      return { error: e };
+    }
+    return { error: e as Error };
+  }
+}
+
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -225,6 +256,22 @@ export async function fetchPage<
   },
 ): FetchPageResult<Q, L, R> {
   return fetchPageInternal(client, objectType, objectSet, args);
+}
+
+export async function fetchPageWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+): Promise<Result<FetchPageWithErrorsResult<Q, L, R>>> {
+  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
 function applyFetchArgs<
