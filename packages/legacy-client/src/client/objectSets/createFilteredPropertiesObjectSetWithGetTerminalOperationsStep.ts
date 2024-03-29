@@ -61,6 +61,26 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         options,
       );
     },
+    async *asyncIter() {
+      let pageToken: string | undefined = undefined;
+      do {
+        const result = await loadObjectsPage(
+          client,
+          apiName,
+          objectSetDefinition,
+          orderByClause,
+          properties,
+          { pageToken },
+        );
+        if (result.type === "ok") {
+          for (
+            const obj of result.value.data
+          ) {
+            yield obj;
+          }
+        }
+      } while (pageToken != null);
+    },
     get(primaryKey) {
       return getObject(client, apiName as string, primaryKey, properties);
     },

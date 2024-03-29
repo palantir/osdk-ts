@@ -48,6 +48,13 @@ export type FilteredPropertiesTerminalOperations<
       LoadObjectSetError
     >
   >;
+
+  asyncIter(): AsyncIterableIterator<
+    Pick<
+      T,
+      V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+    >
+  >;
 };
 
 export type FilteredPropertiesTerminalOperationsWithGet<

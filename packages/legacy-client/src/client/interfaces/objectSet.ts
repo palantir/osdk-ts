@@ -92,4 +92,9 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
    * Get all objects of this type.
    */
   all(): Promise<Result<O[], ListObjectsError>>;
+
+  /**
+   * Iterate through all objects
+   */
+  asyncIter(): AsyncIterableIterator<O>;
 };

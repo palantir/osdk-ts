@@ -37,6 +37,11 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
    * Gets all the linked objects
    */
   all(): Promise<Result<T[], ListLinkedObjectsError>>;
+
+  /**
+   * Gets all the linked objects
+   */
+  asyncIter(): AsyncIterableIterator<T>;
   /**
    * Pages through the linked objects
    */

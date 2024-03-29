@@ -53,5 +53,26 @@ export function createObjectSetTerminalLoadStep<
         selectedProperties,
       );
     },
+
+    async *asyncIter() {
+      let pageToken: string | undefined = undefined;
+      do {
+        const result = await loadObjectsPage(
+          client,
+          apiName,
+          objectSet,
+          orderByClauses,
+          selectedProperties,
+          { pageToken },
+        );
+        if (result.type === "ok") {
+          for (
+            const obj of result.value.data
+          ) {
+            yield obj;
+          }
+        }
+      } while (pageToken != null);
+    },
   };
 }
