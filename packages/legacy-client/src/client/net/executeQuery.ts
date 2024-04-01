@@ -280,7 +280,7 @@ async function remapQueryResponseType<
             client,
             definition.objectSet,
             responseValue as ObjectSetDefinition,
-          ) as ParameterValue;
+          );
 
         case "union":
           throw new Error("Union type is not supported in response");

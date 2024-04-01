@@ -149,7 +149,6 @@ export function createOsdkObjectSet<
   return {
     definition: objectSetDefinition,
     ...objectSet,
-
     ...createObjectSetSearchAround(
       client,
       apiName,

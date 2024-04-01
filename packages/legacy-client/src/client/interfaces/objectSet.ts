@@ -16,10 +16,8 @@
 
 import type {
   FilteredPropertiesTerminalOperations,
-  MultiLink,
   ObjectSetDefinition,
   OntologyObject,
-  SingleLink,
 } from "../baseTypes";
 import type { ListObjectsError } from "../errors";
 import type { AggregatableObjectSetStep } from "../objectSets/aggregations";
@@ -32,15 +30,11 @@ import type {
 } from "./aggregations";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
-import type { SearchAround } from "./searchAround";
+import type { InferLinkType, SearchAround } from "./searchAround";
 import type {
   LinksProperties,
   SelectableProperties,
 } from "./utils/OmitProperties";
-
-export type InferLinkType<T> = T extends SingleLink<infer V> ? V
-  : T extends MultiLink<infer V> ? V
-  : never;
 
 export type ObjectSet<O extends OntologyObject> =
   & {
