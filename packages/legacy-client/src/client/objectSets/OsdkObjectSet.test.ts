@@ -85,7 +85,15 @@ describe("OsdkObjectSet", () => {
   it("creates a searchAround on an ObjectSet", () => {
     const os = createBaseTodoObjectSet(client);
     const searchAroundObjectSet = os.searchAroundLinkedTask();
-
+    expect(searchAroundObjectSet.definition).toEqual({
+      type: "searchAround",
+      objectSet: baseObjectSet,
+      link: "linkedTask",
+    });
+  });
+  it("pivot creates a searchAround on an ObjectSet", () => {
+    const os = createBaseTodoObjectSet(client);
+    const searchAroundObjectSet = os.pivotTo("linkedTask");
     expect(searchAroundObjectSet.definition).toEqual({
       type: "searchAround",
       objectSet: baseObjectSet,

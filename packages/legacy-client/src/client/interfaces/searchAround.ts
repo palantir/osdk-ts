@@ -22,10 +22,38 @@ type InferLinkType<T> = T extends SingleLink<infer V> ? V
   : T extends MultiLink<infer V> ? V
   : never;
 
+/** @deprecated  */
 export type SearchAround<T extends OntologyObject> = {
   [
+    /**@deprecated */
+
     K in Extract<keyof T, string> as IsLink<T[K]> extends true
       ? `searchAround${Capitalize<K>}`
       : never
   ]: () => ObjectSet<InferLinkType<T[K]>>;
 };
+
+// export type pivotTo<
+// O extends OntologyDefinition<any>,
+// T extends OsdkLegacyObjectFrom<O,K>,
+//   X extends K in Extract<keyof T, string> as IsLink<T[K]>,
+// > = (linkType: X) => ObjectSet<InferLinkType<T>>;
+
+// export type pivotTo<T extends OntologyObject> = {
+//   pivotTo(
+//     linkType: keyof LinksFrom<T> & string,
+//   ): ObjectSet<InferLinkType<T[typeof linkType as any]>>;
+// };
+
+// type LinksFrom<T extends OntologyObject> = {
+//   [K in Extract<keyof T, string> as IsLink<T[K]> extends true ? K : never]: K;
+// };
+
+// export type pivotTo<
+//   T extends OntologyObject,
+//   K extends Extract<keyof T, string>,
+// > = {
+//   pivotTo(
+//     linkType: IsLink<T[K]> extends true ? K & string : never,
+//   ): ObjectSet<InferLinkType<T[K]>>;
+// };

@@ -161,10 +161,43 @@ describe("Object Sets", () => {
     expect(iter).toEqual(1);
   });
 
+  it("objects set searchAroundOffice with pivot", async () => {
+    const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
+    const searchAroundObjectSet: ObjectSet<Office> = objectSet
+      .pivotTo("officeLink");
+    const result: Result<Page<Office>, LoadObjectSetError> =
+      await searchAroundObjectSet.page();
+    const officePage = assertOkOrThrow(result);
+    const offices = officePage.data;
+    let iter = 0;
+    for (const off of offices) {
+      expect(off.officeId).toEqual("NYC");
+      iter += 1;
+    }
+    expect(iter).toEqual(1);
+  });
+
   it("objects set filtered searchAroundOffice", async () => {
     const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
     const officeObjectSet: ObjectSet<Office> = objectSet
       .searchAroundOfficeLink()
+      .where(off => off.officeId.eq("NYC"));
+    const result: Result<Page<Office>, LoadObjectSetError> =
+      await officeObjectSet.page();
+    const officePage = assertOkOrThrow(result);
+    const offices = officePage.data;
+    let iter = 0;
+    for (const off of offices) {
+      expect(off.officeId).toEqual("NYC");
+      iter += 1;
+    }
+    expect(iter).toEqual(1);
+  });
+
+  it("objects set filtered searchAroundOffice with pivot", async () => {
+    const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
+    const officeObjectSet: ObjectSet<Office> = objectSet
+      .pivotTo("officeLink")
       .where(off => off.officeId.eq("NYC"));
     const result: Result<Page<Office>, LoadObjectSetError> =
       await officeObjectSet.page();
