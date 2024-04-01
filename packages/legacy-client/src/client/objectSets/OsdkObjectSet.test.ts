@@ -240,10 +240,11 @@ describe("OsdkObjectSet", () => {
   it("supports select methods - page", async () => {
     const os = createBaseTodoObjectSet(client);
     mockObjectPage([getMockTodoObject()]);
-    const result = await os.select(["id", "body", "complete"]).page({
-      pageSize: 5,
-      pageToken: "fakePageToken",
-    });
+    const result = await os.select(["id", "body", "complete"])
+      .fetchPageWithErrors({
+        pageSize: 5,
+        pageToken: "fakePageToken",
+      });
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
       ...expectedJestResponse("Ontology/objectSets/loadObjects", {
@@ -304,7 +305,7 @@ describe("OsdkObjectSet", () => {
   it("loads a page", async () => {
     const os = createBaseTodoObjectSet(client);
     mockObjectPage([getMockTodoObject()]);
-    const page = await os.page({ pageSize: 1 });
+    const page = await os.fetchPageWithErrors({ pageSize: 1 });
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
       ...expectedJestResponse("Ontology/objectSets/loadObjects", {
