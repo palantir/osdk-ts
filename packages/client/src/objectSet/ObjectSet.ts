@@ -31,6 +31,7 @@ import type {
   FetchPageResult,
   SelectArg,
 } from "../object/fetchPage.js";
+import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
@@ -44,7 +45,15 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
     const A extends Augments,
   >(
     args?: FetchPageArgs<Q, L, R, A>,
-  ) => FetchPageResult<Q, L, R>;
+  ) => Promise<FetchPageResult<Q, L, R>>;
+
+  fetchPageWithErrors: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+    const A extends Augments,
+  >(
+    args?: FetchPageArgs<Q, L, R, A>,
+  ) => Promise<Result<FetchPageResult<Q, L, R>>>;
 
   where: (
     clause: WhereClause<Q>,
@@ -67,7 +76,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
     R extends boolean,
   >(
     args?: FetchPageArgs<Q, L, R>,
-  ) => FetchPageResult<Q, L, R>;
+  ) => Promise<FetchPageResult<Q, L, R>>;
 
   /** @deprecated use `aggregate` */
   aggregateOrThrow: <AO extends AggregateOpts<Q>>(

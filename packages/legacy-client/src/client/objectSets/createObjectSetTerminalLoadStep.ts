@@ -57,6 +57,16 @@ export function createObjectSetTerminalLoadStep<
         options,
       );
     },
+    async fetchPageWithErrors(options) {
+      return loadObjectsPage<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
+    },
     async all() {
       return loadAllObjects<O, K, OsdkLegacyObjectFrom<O, K>>(
         client,

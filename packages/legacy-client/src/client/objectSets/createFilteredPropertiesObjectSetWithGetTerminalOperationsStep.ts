@@ -74,6 +74,16 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         options,
       );
     },
+    fetchPageWithErrors(options) {
+      return loadObjectsPage(
+        client,
+        apiName,
+        objectSetDefinition,
+        orderByClause,
+        properties,
+        options,
+      );
+    },
     get(primaryKey) {
       return getObject(client, apiName as string, primaryKey, properties);
     },

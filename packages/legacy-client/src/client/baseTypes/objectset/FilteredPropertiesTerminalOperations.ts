@@ -34,6 +34,9 @@ export type FilteredPropertiesTerminalOperations<
       LoadObjectSetError
     >
   >;
+  /**
+   * @deprecated use fetchPageWithErrors instead
+   */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
@@ -58,6 +61,15 @@ export type FilteredPropertiesTerminalOperations<
         T,
         V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
       >
+    >
+  >;
+  fetchPageWithErrors(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<
+    Result<
+      Page<Pick<T, V[number] | "__apiName" | "__primaryKey">>,
+      LoadObjectSetError
     >
   >;
 };

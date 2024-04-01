@@ -94,6 +94,8 @@ describe("LoadObjects", () => {
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
 
     expect(emp.fullName).toEqual("John Doe");
@@ -158,16 +160,19 @@ describe("LoadObjects", () => {
   });
 
   it("Pages through Objects with small PageSize", async () => {
-    const result = await client.ontology.objects.Employee.page({ pageSize: 2 });
+    const result = await client.ontology.objects.Employee.fetchPageWithErrors({
+      pageSize: 2,
+    });
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(2);
     expect(employees.data[0].employeeId).toEqual(50030);
     expect(employees.data[1].employeeId).toEqual(50031);
     expect(employees.nextPageToken).toBeDefined();
-    const secondResult = await client.ontology.objects.Employee.page({
-      pageSize: 2,
-      pageToken: employees.nextPageToken,
-    });
+    const secondResult = await client.ontology.objects.Employee
+      .fetchPageWithErrors({
+        pageSize: 2,
+        pageToken: employees.nextPageToken,
+      });
     const secondEmployeesPage = assertOkOrThrow(secondResult);
     expect(secondEmployeesPage.data.length).toEqual(1);
     expect(secondEmployeesPage.data[0].employeeId).toEqual(50032);
@@ -241,7 +246,7 @@ describe("LoadObjects", () => {
     const peeps: Result<Employee[], ListLinkedObjectsError> = await emp.peeps
       .all();
     const peepsPageResult: Result<Page<Employee>, ListLinkedObjectsError> =
-      await emp.peeps.page();
+      await emp.peeps.fetchPageWithErrors();
     const peepsAll = assertOkOrThrow(peeps);
     expect(peepsAll.length).toEqual(2);
     expect(peepsAll[0].employeeId).toEqual(50030);
@@ -369,18 +374,22 @@ describe("LoadObjects", () => {
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 
   it("Loads specified properties when loading page", async () => {
     const result = await client.ontology.objects.Employee.select(["fullName"])
-      .page({ pageSize: 2 });
+      .fetchPageWithErrors({ pageSize: 2 });
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(2);
     expectTypeOf(employees.data[0]).toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 });
