@@ -15,8 +15,7 @@
  */
 
 import type { Osdk, PageResult } from "@osdk/client";
-import { createClient, createMinimalClient } from "@osdk/client";
-import { fetchPage } from "@osdk/client/objects";
+import { createClient } from "@osdk/client";
 import {
   assignEmployee1,
   BoundariesUsState,
@@ -32,12 +31,10 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
-import { fetchAggregationForEmployeesGroupedThin } from "./examples/fetchAggregationForEmployeesGroupedThin.js";
 import { fetchEmployeeLead } from "./examples/fetchEmployeeLead.js";
 import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
 import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
-import { fetchEmployeePageThin } from "./examples/fetchEmployeePageThin.js";
 import { typeChecks } from "./typeChecks.js";
 
 invariant(process.env.FOUNDRY_STACK !== undefined);
@@ -67,17 +64,6 @@ export const client = createClient(
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
-export const clientCtx = createMinimalClient(
-  {
-    ...Ontology.metadata,
-    ontologyRid:
-      "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-  },
-  process.env.FOUNDRY_STACK,
-  () => process.env.FOUNDRY_USER_TOKEN!,
-  {},
-);
-
 const runOld = false;
 
 async function runTests() {
@@ -88,9 +74,6 @@ async function runTests() {
       await fetchEmployeePageByAdUsernameAndLimit(client, "fish");
       await fetchAggregationForEmployees(client);
       await fetchAggregationForEmployeesGrouped(client);
-      await fetchEmployeePageThin(clientCtx);
-
-      await fetchAggregationForEmployeesGroupedThin(clientCtx);
       await fetchEmployeeLead(client, "bob");
     }
 
@@ -115,15 +98,10 @@ async function runTests() {
     })();
 
     try {
-      const r = true
-        ? await client(FooInterface)
-          .where({ name: { $ne: "Patti" } })
-          .where({ name: { $ne: "Roth" } })
-          .fetchPage({ pageSize: 1, select: ["name"] })
-        : await fetchPage(clientCtx, FooInterface, {
-          select: ["name"],
-          pageSize: 5,
-        });
+      const r = await client(FooInterface)
+        .where({ name: { $ne: "Patti" } })
+        .where({ name: { $ne: "Roth" } })
+        .fetchPage({ pageSize: 1, select: ["name"] });
 
       // This technically matches because the types are `| undefined`
       expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
