@@ -23,7 +23,10 @@ import type {
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import { loadAllObjects } from "../net/loadObjects";
-import { loadObjectsPage } from "../net/loadObjectsPage";
+import {
+  loadObjectsPage,
+  loadObjectsPageOrThrows,
+} from "../net/loadObjectsPage";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { OrderByClause } from "./filters";
 
@@ -80,6 +83,27 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
           }
         }
       } while (pageToken != null);
+    },
+
+    fetchPage(options) {
+      return loadObjectsPageOrThrows(
+        client,
+        apiName,
+        objectSetDefinition,
+        orderByClause,
+        properties,
+        options,
+      );
+    },
+    fetchPageWithErrors(options) {
+      return loadObjectsPage(
+        client,
+        apiName,
+        objectSetDefinition,
+        orderByClause,
+        properties,
+        options,
+      );
     },
     get(primaryKey) {
       return getObject(client, apiName as string, primaryKey, properties);
