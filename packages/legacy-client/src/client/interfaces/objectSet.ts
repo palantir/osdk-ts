@@ -95,6 +95,14 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   }): Promise<Result<Page<O>, ListObjectsError>>;
 
   /**
+   * Get a page of objects of this type, without a result wrapper
+   */
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Page<O>>;
+
+  /**
    * Get all objects of this type.
    */
   all(): Promise<Result<O[], ListObjectsError>>;
