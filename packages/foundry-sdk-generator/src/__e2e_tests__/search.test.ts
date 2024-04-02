@@ -63,6 +63,114 @@ describe("SearchObjects", () => {
     apiServer.close();
   });
 
+  it("orders objects in ascending order without a filter, and returns all results with async iter", async () => {
+    const result = await client.ontology
+      .objects.Employee.orderBy(emp => emp.employeeId.asc()).asyncIter();
+
+    const employees: Employee[] = [];
+    for await (const i of result) {
+      employees.push(i);
+    }
+
+    expect(employees).toMatchInlineSnapshot(`
+      [
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50030,
+          "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "class": "Red",
+          "employeeId": 50030,
+          "employeeStatus": {
+            "getFirstPoint": [Function],
+            "getLastPoint": [Function],
+            "points": {
+              "all": [Function],
+              "fromDaysAgo": [Function],
+              "fromHoursAgo": [Function],
+              "fromMillisecondsAgo": [Function],
+              "fromMinutesAgo": [Function],
+              "fromMonthsAgo": [Function],
+              "fromSecondsAgo": [Function],
+              "fromWeeksAgo": [Function],
+              "fromYearsAgo": [Function],
+              "iterate": [Function],
+              "range": [Function],
+            },
+            "type": "TimeSeries",
+          },
+          "fullName": "John Doe",
+          "office": "NYC",
+          "startDate": _LocalDate {
+            "dateTime": "2019-01-01T00:00:00.000Z",
+            "type": "LocalDate",
+          },
+        },
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50031,
+          "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+          "class": "Blue",
+          "employeeId": 50031,
+          "employeeStatus": {
+            "getFirstPoint": [Function],
+            "getLastPoint": [Function],
+            "points": {
+              "all": [Function],
+              "fromDaysAgo": [Function],
+              "fromHoursAgo": [Function],
+              "fromMillisecondsAgo": [Function],
+              "fromMinutesAgo": [Function],
+              "fromMonthsAgo": [Function],
+              "fromSecondsAgo": [Function],
+              "fromWeeksAgo": [Function],
+              "fromYearsAgo": [Function],
+              "iterate": [Function],
+              "range": [Function],
+            },
+            "type": "TimeSeries",
+          },
+          "fullName": "Jane Doe",
+          "office": "SEA",
+          "startDate": _LocalDate {
+            "dateTime": "2012-02-12T00:00:00.000Z",
+            "type": "LocalDate",
+          },
+        },
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50032,
+          "__rid": "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+          "class": "Red",
+          "employeeId": 50032,
+          "employeeStatus": {
+            "getFirstPoint": [Function],
+            "getLastPoint": [Function],
+            "points": {
+              "all": [Function],
+              "fromDaysAgo": [Function],
+              "fromHoursAgo": [Function],
+              "fromMillisecondsAgo": [Function],
+              "fromMinutesAgo": [Function],
+              "fromMonthsAgo": [Function],
+              "fromSecondsAgo": [Function],
+              "fromWeeksAgo": [Function],
+              "fromYearsAgo": [Function],
+              "iterate": [Function],
+              "range": [Function],
+            },
+            "type": "TimeSeries",
+          },
+          "fullName": "Jack Smith",
+          "office": "LON",
+          "startDate": _LocalDate {
+            "dateTime": "2015-05-15T00:00:00.000Z",
+            "type": "LocalDate",
+          },
+        },
+      ]
+    `);
+  });
+
   it("orders objects in ascending order without a filter, and returns all results", async () => {
     const result: Result<Employee[], SearchObjectsError> = await client.ontology
       .objects.Employee.orderBy(emp => emp.employeeId.asc()).all();
@@ -210,6 +318,61 @@ describe("SearchObjects", () => {
           },
         ],
       }
+    `);
+  });
+
+  it("orders objects in ascending order with a filter, and returns all results", async () => {
+    // const result: Employee[] = await loadAll(
+    //   client.ontology
+    //     .objects.Employee.where(emp => emp.employeeId.eq(50030))
+    //     .orderBy(emp => emp.employeeId.asc())
+    //     .asyncIter(),
+    // );
+
+    const employees = await client.ontology
+      .objects.Employee.where(emp => emp.employeeId.eq(50030))
+      .orderBy(emp => emp.employeeId.asc())
+      .asyncIter();
+
+    const result: Employee[] = [];
+    for await (const i of employees) {
+      result.push(i);
+    }
+
+    expect(result).toMatchInlineSnapshot(`
+      [
+        {
+          "__apiName": "Employee",
+          "__primaryKey": 50030,
+          "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "class": "Red",
+          "employeeId": 50030,
+          "employeeStatus": {
+            "getFirstPoint": [Function],
+            "getLastPoint": [Function],
+            "points": {
+              "all": [Function],
+              "fromDaysAgo": [Function],
+              "fromHoursAgo": [Function],
+              "fromMillisecondsAgo": [Function],
+              "fromMinutesAgo": [Function],
+              "fromMonthsAgo": [Function],
+              "fromSecondsAgo": [Function],
+              "fromWeeksAgo": [Function],
+              "fromYearsAgo": [Function],
+              "iterate": [Function],
+              "range": [Function],
+            },
+            "type": "TimeSeries",
+          },
+          "fullName": "John Doe",
+          "office": "NYC",
+          "startDate": _LocalDate {
+            "dateTime": "2019-01-01T00:00:00.000Z",
+            "type": "LocalDate",
+          },
+        },
+      ]
     `);
   });
 
