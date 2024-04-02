@@ -40,7 +40,7 @@ import type {
   Result,
 } from "../generatedNoCheck/@test-app/osdk";
 
-import { apiServer, stubData } from "@osdk/shared.test";
+import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -444,13 +444,3 @@ describe("LoadObjects", () => {
     }>();
   });
 });
-
-export async function loadAll<T>(
-  iterator: AsyncIterableIterator<T>,
-): Promise<T[]> {
-  const arr: T[] = [];
-  for await (const i of iterator) {
-    arr.push(i);
-  }
-  return arr;
-}

@@ -25,6 +25,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import {
   getMockTaskObject,
   getMockTodoObject,
+  loadAll,
   mockFetchResponse,
   MockOntology,
 } from "@osdk/shared.test";
@@ -40,14 +41,6 @@ import { USER_AGENT } from "../../USER_AGENT";
 import type { ObjectSetDefinition } from "../baseTypes";
 import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
 import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
-
-export async function loadAll<T>(iterator: AsyncIterableIterator<T>) {
-  const arr: T[] = [];
-  for await (const i of iterator) {
-    arr.push(i);
-  }
-  return arr;
-}
 
 describe("OsdkObjectSet", () => {
   const origin = "https://mock.com";
