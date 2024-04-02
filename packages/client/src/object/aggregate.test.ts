@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
-import type { AggregateObjectsResponseV2 } from "@osdk/gateway/types";
+import type { AggregateObjectsResponseV2 } from "@osdk/omniapi";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, expectTypeOf, it, type Mock, vi } from "vitest";

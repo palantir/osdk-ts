@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.net": "workspace:*",
     "conjure-lite": "^0.3.3",
@@ -44,6 +43,7 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
+    "@osdk/omniapi": "workspace:*",
     "@osdk/generator": "workspace:*",
     "@osdk/shared.test": "workspace:*",
     "@types/geojson": "^7946.0.14",

@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./components.js";
-export * as Datasets from "./Datasets/index.js";
-export * as Models from "./Models/index.js";
+export * from "../generated/components.js";

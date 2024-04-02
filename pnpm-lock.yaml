@@ -623,9 +623,6 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
-      '@osdk/gateway':
-        specifier: workspace:*
-        version: link:../gateway
       '@osdk/generator-converters':
         specifier: workspace:*
         version: link:../generator-converters
@@ -654,6 +651,9 @@ importers:
       '@osdk/generator':
         specifier: workspace:*
         version: link:../generator
+      '@osdk/omniapi':
+        specifier: workspace:*
+        version: link:../omniapi
       '@osdk/shared.test':
         specifier: workspace:*
         version: link:../shared.test
@@ -978,6 +978,9 @@ importers:
       '@osdk/api':
         specifier: workspace:*
         version: link:../api
+      '@osdk/shared.net':
+        specifier: workspace:*
+        version: link:../shared.net
     devDependencies:
       typescript:
         specifier: ^5.4.2
@@ -2904,7 +2907,6 @@ packages:
     resolution: {integrity: sha512-Kza43ewS3xoLgCEpQrsT+xRo/EJej1y0kVYGiLFE1NEODXGzTfwiC6tXTLMQskn1X4/Rjlh0MQUvx9W+L9long==}
     dependencies:
       undici-types: 5.26.5
-    dev: true
 
   /@types/node@20.11.30:
     resolution: {integrity: sha512-dHM6ZxwlmuZaRmUPfv1p+KrdD1Dci04FbdEm/9wEMouFqxYoFl5aMkt0VMAUtYRQDyYvD41WJLukhq/ha3YuTw==}

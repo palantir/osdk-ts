@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Aggregation } from "@osdk/gateway/types";
+import type { Aggregation } from "@osdk/omniapi";
 import type { AggregationClause } from "../../query/index.js";
 
 export function modernToLegacyAggregationClause<

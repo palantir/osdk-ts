@@ -19,9 +19,8 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { getObjectTypeV2 } from "@osdk/gateway/requests";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+import { getObjectTypeV2 } from "@osdk/omniapi/OntologiesV2_ObjectTypeV2";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/omniapi/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
@@ -142,7 +141,7 @@ export class ObjectSetListenerWebsocket {
         // TODO ???
         getObjectSetBaseType(objectSet).then(baseType =>
           getObjectTypeV2(
-            createOpenApiRequest(this.#client.stack, this.#client.fetch),
+            this.#client,
             this.#client.ontology.metadata.ontologyApiName,
             baseType,
           )
@@ -500,7 +499,7 @@ async function getOntologyPropertyMappingForApiName(
   }
 
   const wireObjectType = await getObjectTypeV2(
-    createOpenApiRequest(client.stack, client.fetch),
+    client,
     client.ontology.metadata.ontologyApiName,
     objectApiName,
   );

@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet } from "@osdk/gateway/types";
+import type { ObjectSet } from "@osdk/omniapi/types";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
 import type { Osdk } from "../index.js";
 import {

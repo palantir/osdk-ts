@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./generated/index.js";
+export type * from "./generated/components.js";
+export {};

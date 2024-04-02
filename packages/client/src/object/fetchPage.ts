@@ -21,10 +21,6 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import {
-  loadObjectSetV2,
-  searchObjectsForInterface,
-} from "@osdk/gateway/requests";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -34,8 +30,11 @@ import type {
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderBy,
-} from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+} from "@osdk/omniapi";
+import { loadObjectSetV2 } from "@osdk/omniapi/OntologiesV2_OntologyObjectSet";
+import {
+  searchObjectsForInterface,
+} from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
@@ -170,7 +169,7 @@ async function fetchInterfacePage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
   const result = await searchObjectsForInterface(
-    createOpenApiRequest(client.stack, client.fetch as typeof fetch),
+    client,
     client.ontology.metadata.ontologyApiName,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
@@ -307,10 +306,7 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
   const r = await loadObjectSetV2(
-    createOpenApiRequest(
-      client.stack,
-      client.fetch as typeof fetch,
-    ),
+    client,
     client.ontology.metadata.ontologyApiName,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,

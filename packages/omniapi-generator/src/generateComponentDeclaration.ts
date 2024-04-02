@@ -64,8 +64,15 @@ export function generateComponentDeclaration(component: Component) {
     case "union":
       let q = component.type.union.discriminator;
       out += Object.entries(component.type.union.subTypes).map(([n, type]) =>
-        `{ ${q}: "${n}", "${n}": ${type}}`
+        `{ ${q}: "${n}" } & ${type}`
       ).join("|");
+      break;
+
+    case "map":
+      let { keyType, valueType } = component.type.map;
+      out += `Record<${convertIrDataTypeToTsTypeReference(keyType)}, ${
+        convertIrDataTypeToTsTypeReference(valueType)
+      } >`;
       break;
 
     default:

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import * as path from "node:path";
 import invariant from "tiny-invariant";
 import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference";
 import { copyright } from "./copyright";
@@ -34,46 +33,86 @@ type Params = Array<
 >;
 
 export async function generateResource(resource: Resource, nsPath: string) {
-  const filePath = path.join(
-    nsPath,
-    `${resource.component}.ts`,
-  );
+  const filePath = nsPath
+    + `_${resource.component}.ts`;
 
   await writeCode(
     filePath,
     `${copyright}\n\n
-        import type {OmniResource} from "@osdk/api";
-        import type * as $C from "../components.js";
+        import type { OmniResource } from "@osdk/api";
+        import type { ClientContext as $ClientContext, OmniMethod as $OmniMethod } from "@osdk/shared.net";
+        import { omniFetch as $omniFetch } from "@osdk/shared.net";
+        import type * as $C from "../generated/components.js";
         
-        ${generateResourceType(resource)}
-        ${generateRuntimeConst(resource)}
+        ${generateMethods(resource)}
         `,
   );
 }
 
-function generateMethodSignature(method: StaticOperation) {
+function generateMethods(resource: Resource) {
+  let out = "";
+
+  for (const method of resource.staticOperations) {
+    const methodName = method.name; // method.verb ?? method.name;
+    const returnType = `Promise<${
+      getResponseInfo(method.response).componentType
+    }>`;
+
+    out += `
+     const _${methodName}: $OmniMethod<(${
+      generateMethodParameters(method)
+    }) => ${returnType}> = ${generateOperationArray(method)};
+    
+
+
+    ${generateMethodJsdoc(method)}
+    export function ${methodName}(
+      $ctx: $ClientContext<any>,
+      ...args: [${generateMethodParameters(method)}]
+    ): Promise<${
+      getResponseInfo(method.response).componentType
+    }>{ return $omniFetch($ctx, _${methodName}, ...args); }
+
+    `;
+  }
+  return out;
+}
+
+function generateMethodJsdoc(method: StaticOperation) {
+  return `/**
+  * ${getCleanedUpJsdoc(method.documentation)}
+  * 
+  * Required Scopes: [${method.auth.scopes.join(", ")}]
+  * ${true ? `URL: ${method.path}` : ``}
+  */`;
+}
+
+function generateMethodParameters(method: StaticOperation) {
   // Remove resource name from the function name if it ends with it
-  const methodName = method.verb ?? method.name;
   const requestType = method.requestBody?.body.requestType;
   const bodyInfo = getReqBodyInfo(requestType);
   const paramInfo = getParamInfo(method.parameters);
-  const respInfo = getResponseInfo(method.response);
 
   const bodyArg = bodyInfo.componentType != null
     ? `$body: ${bodyInfo.componentType},`
     : "";
 
   return `
-    /**
-     * ${getCleanedUpJsdoc(method.documentation)}
-     * 
-     * Required Scopes: [${method.auth.scopes.join(", ")}]
-     * ${true ? `URL: ${method.path}` : ``}
-     */
+    ${getParamsAsSyntaxListString(paramInfo.PATH)}
+    ${bodyArg}
+    ${getParamsAsQuerySyntaxListString(paramInfo.QUERY)}
+    ${getParamsAsHeaderSyntaxListString(paramInfo.HEADER)}`;
+}
+
+function generateMethodSignature(method: StaticOperation) {
+  // Remove resource name from the function name if it ends with it
+  const methodName = method.name; // method.verb ?? method.name;
+  const respInfo = getResponseInfo(method.response);
+
+  return `
+    ${generateMethodJsdoc(method)}
     "${methodName}": (
-      ${getParamsAsSyntaxListString(paramInfo.PATH)}
-      ${bodyArg}
-      ${getParamsAsQuerySyntaxListString(paramInfo.QUERY)}
+      ${generateMethodParameters(method)}
     )=> Promise<${respInfo.componentType}>;\n`;
 }
 
@@ -89,30 +128,52 @@ function generateResourceType(resource: Resource) {
   return typeOutput;
 }
 
+function generateOperationArray(method: StaticOperation) {
+  // Remove resource name from the function name if it ends with it
+  const requestType = method.requestBody?.body.requestType;
+  const bodyInfo = getReqBodyInfo(requestType);
+  const respInfo = getResponseInfo(method.response);
+
+  let count = 0;
+  const constParts = [
+    HTTP_VERB_MAP[method.httpMethod],
+    `"${method.path.replace(/{.*?}/g, () => `{${count++}}`)}"`,
+    bodyInfo.componentType != null ? 1 : "",
+    bodyInfo.mimeType,
+    respInfo.mimeType,
+  ];
+
+  while (constParts.at(-1) === "") {
+    constParts.pop();
+  }
+
+  return `[${constParts.join(",")}]`;
+}
+
 export function generateRuntimeConst(resource: Resource) {
   let ret = "";
 
   for (const method of resource.staticOperations) {
     // Remove resource name from the function name if it ends with it
-    const methodName = method.verb ?? method.name;
-    const requestType = method.requestBody?.body.requestType;
-    const bodyInfo = getReqBodyInfo(requestType);
-    const respInfo = getResponseInfo(method.response);
+    const methodName = method.name; // method.verb ?? method.name;
+    // const requestType = method.requestBody?.body.requestType;
+    // const bodyInfo = getReqBodyInfo(requestType);
+    // const respInfo = getResponseInfo(method.response);
 
-    let count = 0;
-    const constParts = [
-      HTTP_VERB_MAP[method.httpMethod],
-      `"${method.path.replace(/{.*?}/g, () => `{${count++}}`)}"`,
-      bodyInfo.componentType != null ? 1 : "",
-      bodyInfo.mimeType,
-      respInfo.mimeType,
-    ];
+    // let count = 0;
+    // const constParts = [
+    //   HTTP_VERB_MAP[method.httpMethod],
+    //   `"${method.path.replace(/{.*?}/g, () => `{${count++}}`)}"`,
+    //   bodyInfo.componentType != null ? 1 : "",
+    //   bodyInfo.mimeType,
+    //   respInfo.mimeType,
+    // ];
 
-    while (constParts.at(-1) === "") {
-      constParts.pop();
-    }
+    // while (constParts.at(-1) === "") {
+    //   constParts.pop();
+    // }
 
-    ret += `${methodName}: [${constParts.join(",")}],`;
+    ret += `${methodName}: ${generateOperationArray(method)},`;
   }
 
   return `export const ${resource.component}: OmniResource<${resource.component}> = {
@@ -143,15 +204,16 @@ function getCleanedUpJsdoc(doc?: Documentation) {
 }
 
 function getParamInfo(irParams: Parameter[]) {
-  const ret: Record<"PATH" | "QUERY", Params> = {
+  const ret: Record<"PATH" | "QUERY" | "HEADER", Params> = {
     PATH: [],
     QUERY: [],
+    HEADER: [],
   };
 
   for (const { name, type: { type: dataType }, inputType } of irParams) {
     invariant(
-      inputType === "PATH" || inputType === "QUERY",
-      "Only PATH and QUERY params are supported",
+      inputType === "PATH" || inputType === "QUERY" || inputType === "HEADER",
+      `Only PATH and QUERY params are supported, not ${inputType}`,
     );
 
     ret[inputType].push({
@@ -190,11 +252,26 @@ function getParamsAsSyntaxListString(p: Params) {
     .join("");
 }
 
+function getParamsAsSyntaxListStringQuoted(p: Params) {
+  return p.map((z) =>
+    `"${z.name}"${z.optional ? "?" : ""}: ${z.typeReference},`
+  )
+    .join("");
+}
+
 function getParamsAsQuerySyntaxListString(params: Params) {
   if (params.length === 0) return "";
   const opt = params.every(p => p.optional);
   return `$queryParams${opt ? "?" : ""}: { ${
-    getParamsAsSyntaxListString(params)
+    getParamsAsSyntaxListStringQuoted(params)
+  } },`;
+}
+
+function getParamsAsHeaderSyntaxListString(params: Params) {
+  if (params.length === 0) return "";
+  const opt = params.every(p => p.optional);
+  return `$headerParams${opt ? "?" : ""}: { ${
+    getParamsAsSyntaxListStringQuoted(params)
   } },`;
 }
 

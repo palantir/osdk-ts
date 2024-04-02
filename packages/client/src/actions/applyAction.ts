@@ -15,9 +15,8 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import { applyActionV2 } from "@osdk/gateway/requests";
-import type { DataValue } from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+import type { DataValue } from "@osdk/omniapi";
+import { applyActionV2 } from "@osdk/omniapi/OntologiesV2_Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { toDataValue } from "../util/toDataValue.js";
 import type {
@@ -45,7 +44,7 @@ export async function applyAction<
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
-    createOpenApiRequest(client.stack, client.fetch),
+    client,
     client.ontology.metadata.ontologyApiName,
     action.apiName,
     {
@@ -70,9 +69,7 @@ export async function applyAction<
     : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
-function remapActionParams<
-  AD extends ActionDefinition<any, any>,
->(
+function remapActionParams<AD extends ActionDefinition<any, any>>(
   params: OsdkActionParameters<AD["parameters"]> | undefined,
 ): Record<string, DataValue> {
   if (params == null) {

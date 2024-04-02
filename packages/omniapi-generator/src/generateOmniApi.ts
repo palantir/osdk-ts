@@ -20,39 +20,41 @@ import { copyright } from "./copyright";
 import { generateComponents } from "./generateComponents";
 import { generateResource } from "./generateResource";
 import type { ApiSpec } from "./ir";
+import { isIgnoredNamespace } from "./isIgnoredNamespace";
 import { writeCode } from "./writeCode";
 
 export async function generateOmniApi(ir: ApiSpec, outputDir: string) {
   let rootOut = `${copyright}
   `;
+
+  await fs.mkdir(path.join(outputDir, "public"), { recursive: true });
+
   for (const ns of ir.namespaces) {
-    switch (ns.name) {
-      case "Ontologies":
-      case "OntologiesV2":
-      case "Operations":
-        continue;
+    if (isIgnoredNamespace(ns.name) || ns.name === "Ontologies") {
+      continue;
     }
 
-    rootOut += `export * as ${ns.name} from "./${ns.name}/index.js";\n`;
     let nsRootOut = `${copyright}
     `;
 
-    const nsPath = path.join(outputDir, ns.name);
+    const nsPath = path.join(outputDir, "public", ns.name);
     await fs.mkdir(nsPath, { recursive: true });
+
     for (const resource of ns.resources) {
       await generateResource(resource, nsPath);
-      nsRootOut +=
-        `export {${resource.component}} from "./${resource.component}.js";\n`;
     }
-
-    await writeCode(
-      path.join(nsPath, "index.ts"),
-      nsRootOut,
-    );
   }
 
-  await generateComponents(ir, outputDir);
-  rootOut += `export * from "./components.js";\n`;
+  await generateComponents(ir, path.join(outputDir, "generated"));
+
+  await writeCode(
+    path.join(outputDir, "public", `types.ts`),
+    `${copyright}
+      export * from "../generated/components.js";\n`,
+  );
+
+  rootOut += `export type * from "./generated/components.js";\n`;
+  rootOut += "export {};";
 
   await writeCode(
     path.join(outputDir, "index.ts"),

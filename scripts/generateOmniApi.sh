@@ -17,7 +17,7 @@ OPENAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/openapi-ir.json"
 OPENAPI_MANIFEST_YML="${SCRIPT_DIR}/../tmp/api-gateway-ir/manifest.yml"
 
 PACKAGE_PATH="${SCRIPT_DIR}/../packages/omniapi"
-OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated")
+OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src")
 
 # Generate the API bindings
 echo "Generating bindings"

@@ -21,10 +21,7 @@ import type {
   ObjectSetActionDataType,
   OntologyDefinition,
 } from "@osdk/api";
-import type {
-  ActionResults,
-  ValidateActionResponseV2,
-} from "@osdk/gateway/types";
+import type { ActionResults, ValidateActionResponseV2 } from "@osdk/omniapi";
 import type { ObjectSet } from "../index.js";
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";

@@ -23,7 +23,6 @@ import type {
   ObjectTypeDefinition,
   ObjectTypeKeysFrom,
   OmniResource,
-  OmniResourceMethods,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
@@ -62,6 +61,7 @@ export interface FutureClient {
   ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
     : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
     : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
-    : Q extends OmniResource<any> ? OmniResourceMethods<Q>
     : never;
+
+  ctx: unknown;
 }

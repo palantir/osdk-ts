@@ -27,7 +27,7 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
-import * as OmniApi from "@osdk/omniapi";
+import * as LanguageModel from "@osdk/omniapi/Models_LanguageModel";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -95,7 +95,7 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const foo = await client(OmniApi.Models.LanguageModel).iterator();
+    const foo = await LanguageModel.listLanguageModels(client.ctx as any);
     console.log(foo.data);
 
     // const { data: boundaries } = await client(BoundariesUsState).fetchPage();

@@ -15,18 +15,17 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
 import {
   getObjectTypeV2,
-  listInterfaceTypes,
   listOutgoingLinkTypesV2,
-} from "@osdk/gateway/requests";
+} from "@osdk/omniapi/OntologiesV2_ObjectTypeV2";
+import { listInterfaceTypes } from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
 import type {
   LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
   ObjectTypeFullMetadata,
-} from "@osdk/gateway/types";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import { createOpenApiRequest } from "@osdk/shared.net";
+} from "@osdk/omniapi/types";
 import type { ConjureContext } from "conjure-lite";
 import invariant from "tiny-invariant";
 import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
@@ -44,7 +43,7 @@ async function loadAllOutgoingLinkTypes(
   do {
     const result: ListOutgoingLinkTypesResponseV2 =
       await listOutgoingLinkTypesV2(
-        createOpenApiRequest(client.stack, client.fetch),
+        client,
         client.ontology.metadata.ontologyApiName,
         objtype,
         { pageToken },
@@ -83,14 +82,14 @@ export async function loadFullObjectMetadata(
 
   const [objectType, linkTypes, interfaceTypes, metadata] = await Promise.all([
     getObjectTypeV2(
-      createOpenApiRequest(client.stack, client.fetch),
+      client,
       ontologyApiName,
       objtype,
     ),
 
     loadAllOutgoingLinkTypes(client, objtype),
     listInterfaceTypes(
-      createOpenApiRequest(client.stack, client.fetch),
+      client,
       ontologyApiName,
       { pageSize: 200, preview: true },
     ),

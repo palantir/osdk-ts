@@ -18,7 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
+import type { ObjectSet as WireObjectSet } from "@osdk/omniapi";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";

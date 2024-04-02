@@ -19,18 +19,15 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import {
-  getOntologyFullMetadata,
-  listInterfaceTypes,
-} from "@osdk/gateway/requests";
-import type {
-  ListInterfaceTypesResponse,
-  OntologyFullMetadata,
-} from "@osdk/gateway/types";
-import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
   wireObjectTypeFullMetadataToSdkObjectTypeDefinition,
 } from "@osdk/generator-converters";
-import { createOpenApiRequest } from "@osdk/shared.net";
+import { listInterfaceTypes } from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
+import { getOntologyFullMetadata } from "@osdk/omniapi/OntologiesV2_OntologyV2";
+import type {
+  ListInterfaceTypesResponse,
+  OntologyFullMetadata,
+} from "@osdk/omniapi/types";
 import deepEqual from "fast-deep-equal";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncCache } from "../object/Cache.js";
@@ -48,12 +45,12 @@ const alwaysRevalidateDefault = false;
 async function fullOntologyLoad(client: MinimalClient) {
   return await Promise.all([
     listInterfaceTypes(
-      createOpenApiRequest(client.stack, client.fetch),
+      client,
       client.ontology.metadata.ontologyApiName,
       { pageSize: 200, preview: true },
     ),
     getOntologyFullMetadata(
-      createOpenApiRequest(client.stack, client.fetch),
+      client,
       client.ontology.metadata.ontologyApiName,
     ),
   ]);
