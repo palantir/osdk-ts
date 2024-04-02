@@ -1,0 +1,6 @@
+type: fix
+fix:
+  description: Rename to _gitignore inside templates to ensure .gitignore files are
+    included
+  links:
+  - https://github.com/palantir/osdk-ts/pull/160
