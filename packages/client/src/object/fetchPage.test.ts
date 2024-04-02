@@ -125,7 +125,11 @@ describe(fetchPage, () => {
   });
 
   it("converts interface objectsets to search properly part 2", () => {
-    const client = createMinimalClient(MockOntology.metadata, "foo", () => "");
+    const client = createMinimalClient(
+      MockOntology.metadata,
+      "https://foo",
+      () => "",
+    );
     const objectSet = createObjectSet(MockOntology.objects.Todo, client).where({
       text: "hello",
     }).where({

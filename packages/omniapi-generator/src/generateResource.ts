@@ -39,7 +39,6 @@ export async function generateResource(resource: Resource, nsPath: string) {
   await writeCode(
     filePath,
     `${copyright}\n\n
-        import type { OmniResource } from "@osdk/api";
         import type { ClientContext as $ClientContext, OmniMethod as $OmniMethod } from "@osdk/shared.net";
         import { omniFetch as $omniFetch } from "@osdk/shared.net";
         import type * as $C from "../generated/components.js";

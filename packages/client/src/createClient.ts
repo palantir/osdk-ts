@@ -22,7 +22,6 @@ import type {
   ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinition,
   ObjectTypeKeysFrom,
-  OmniResource,
   OntologyDefinition,
 } from "@osdk/api";
 import type { OntologyMetadata } from "../../api/build/types/ontology/OntologyMetadata.js";
@@ -66,8 +65,7 @@ function createFutureClientPlus(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>
-      | OmniResource<any>,
+      | ActionDefinition<any, any, any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>

@@ -35,6 +35,16 @@ export function createMinimalClient(
     init?: RequestInit | undefined,
   ) => Promise<Response> = global.fetch,
 ) {
+  if (process?.env?.NODE_ENV !== "production") {
+    try {
+      new URL(stack);
+    } catch (e) {
+      const hint = !stack.startsWith("http://") || !stack.startsWith("https://")
+        ? ". Did you forget to add 'http://' or 'https://'?"
+        : "";
+      throw new Error(`Invalid stack URL: ${stack}${hint}`);
+    }
+  }
   const clientCtx: MinimalClient = createClientContext(
     {
       metadata,

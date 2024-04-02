@@ -173,7 +173,7 @@ describe("aggregate", () => {
 
     const clientCtx = createMinimalClient(
       mockOntology.metadata,
-      "host.com",
+      "https://host.com",
       () => "",
       {},
       mockFetch,

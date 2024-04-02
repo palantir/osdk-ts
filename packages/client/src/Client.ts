@@ -22,7 +22,6 @@ import type {
   ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinition,
   ObjectTypeKeysFrom,
-  OmniResource,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
@@ -54,8 +53,7 @@ export interface FutureClient {
   <
     Q extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>
-      | OmniResource<any>,
+      | ActionDefinition<any, any, any>,
   >(
     o: Q,
   ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
