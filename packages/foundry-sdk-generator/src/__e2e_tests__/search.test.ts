@@ -36,7 +36,7 @@ import type {
   SearchObjectsError,
 } from "../generatedNoCheck/@test-app/osdk";
 
-import { apiServer } from "@osdk/shared.test";
+import { apiServer, loadAll } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -64,13 +64,10 @@ describe("SearchObjects", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results with async iter", async () => {
-    const result = await client.ontology
-      .objects.Employee.orderBy(emp => emp.employeeId.asc()).asyncIter();
-
-    const employees: Employee[] = [];
-    for await (const i of result) {
-      employees.push(i);
-    }
+    const employees = await loadAll(
+      client.ontology
+        .objects.Employee.orderBy(emp => emp.employeeId.asc()).asyncIter(),
+    );
 
     expect(employees).toMatchInlineSnapshot(`
       [
@@ -322,22 +319,12 @@ describe("SearchObjects", () => {
   });
 
   it("orders objects in ascending order with a filter, and returns all results", async () => {
-    // const result: Employee[] = await loadAll(
-    //   client.ontology
-    //     .objects.Employee.where(emp => emp.employeeId.eq(50030))
-    //     .orderBy(emp => emp.employeeId.asc())
-    //     .asyncIter(),
-    // );
-
-    const employees = await client.ontology
-      .objects.Employee.where(emp => emp.employeeId.eq(50030))
-      .orderBy(emp => emp.employeeId.asc())
-      .asyncIter();
-
-    const result: Employee[] = [];
-    for await (const i of employees) {
-      result.push(i);
-    }
+    const result: Employee[] = await loadAll(
+      client.ontology
+        .objects.Employee.where(emp => emp.employeeId.eq(50030))
+        .orderBy(emp => emp.employeeId.asc())
+        .asyncIter(),
+    );
 
     expect(result).toMatchInlineSnapshot(`
       [
