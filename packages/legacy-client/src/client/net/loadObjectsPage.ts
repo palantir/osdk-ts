@@ -99,6 +99,37 @@ export async function loadObjectsPageOrThrows<
   };
 }
 
+export async function* loadObjectsIterator<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+  T extends OsdkLegacyObjectFrom<O, K>,
+>(
+  client: ClientContext<O>,
+  objectApiName: K,
+  objectSetDefinition: ObjectSetDefinition,
+  orderByClauses: OrderByClause[],
+  selectedProperties: ReadonlyArray<keyof T> = [],
+): AsyncIterableIterator<T> {
+  let pageToken: string | undefined = undefined;
+  do {
+    const result = await loadObjectsPage(
+      client,
+      objectApiName,
+      objectSetDefinition,
+      orderByClauses,
+      selectedProperties,
+      { pageToken },
+    );
+    if (result.type === "ok") {
+      for (
+        const obj of result.value.data
+      ) {
+        yield obj;
+      }
+    }
+  } while (pageToken != null);
+}
+
 function mapObjectSetBody(
   objectSetDefinition: ObjectSetDefinition,
   orderByClauses: OrderByClause[],

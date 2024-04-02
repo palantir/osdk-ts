@@ -24,6 +24,7 @@ import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import { loadAllObjects } from "../net/loadObjects";
 import {
+  loadObjectsIterator,
   loadObjectsPage,
   loadObjectsPageOrThrows,
 } from "../net/loadObjectsPage";
@@ -64,25 +65,14 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         options,
       );
     },
-    async *asyncIter() {
-      let pageToken: string | undefined = undefined;
-      do {
-        const result = await loadObjectsPage(
-          client,
-          apiName,
-          objectSetDefinition,
-          orderByClause,
-          properties,
-          { pageToken },
-        );
-        if (result.type === "ok") {
-          for (
-            const obj of result.value.data
-          ) {
-            yield obj;
-          }
-        }
-      } while (pageToken != null);
+    asyncIter() {
+      return loadObjectsIterator(
+        client,
+        apiName,
+        objectSetDefinition,
+        orderByClause,
+        properties,
+      );
     },
 
     fetchPage(options) {

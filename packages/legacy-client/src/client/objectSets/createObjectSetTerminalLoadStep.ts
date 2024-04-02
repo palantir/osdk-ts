@@ -20,6 +20,7 @@ import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import { loadAllObjects } from "../net/loadObjects";
 import {
+  loadObjectsIterator,
   loadObjectsPage,
   loadObjectsPageOrThrows,
 } from "../net/loadObjectsPage";
@@ -77,25 +78,13 @@ export function createObjectSetTerminalLoadStep<
       );
     },
 
-    async *asyncIter() {
-      let pageToken: string | undefined = undefined;
-      do {
-        const result = await loadObjectsPage(
-          client,
-          apiName,
-          objectSet,
-          orderByClauses,
-          selectedProperties,
-          { pageToken },
-        );
-        if (result.type === "ok") {
-          for (
-            const obj of result.value.data
-          ) {
-            yield obj;
-          }
-        }
-      } while (pageToken != null);
+    asyncIter() {
+      return loadObjectsIterator<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+      );
     },
   };
 }
