@@ -322,7 +322,7 @@ describe("OsdkObjectSet", () => {
     expect(linkedTodosResponse.value.length).toEqual(1);
   });
 
-  it("supports round-trip of circular links", async () => {
+  it("supports round-trip of circular links with asynciter", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockFetchResponse(fetch, getMockTodoObject());
     const todoResponse = await os.get("1");
