@@ -68,7 +68,12 @@ export type FilteredPropertiesTerminalOperations<
     pageToken?: string;
   }): Promise<
     Result<
-      Page<Pick<T, V[number] | "__apiName" | "__primaryKey">>,
+      Page<
+        Pick<
+          T,
+          V[number] | "__apiName" | "__primaryKey" | "$apiName" | "$primaryKey"
+        >
+      >,
       LoadObjectSetError
     >
   >;
