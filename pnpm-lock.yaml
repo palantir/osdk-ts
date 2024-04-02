@@ -231,9 +231,12 @@ importers:
       '@osdk/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@osdk/legacy-client':
+      '@osdk/oauth':
         specifier: workspace:*
-        version: link:../../packages/legacy-client
+        version: link:../../packages/oauth
+      core-js:
+        specifier: ^3.36.1
+        version: 3.36.1
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -243,10 +246,16 @@ importers:
       swr:
         specifier: ^2.2.4
         version: 2.2.4(react@18.2.0)
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
     devDependencies:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:*
         version: link:../../packages/cli.cmd.typescript
+      '@types/core-js':
+        specifier: ^2.5.8
+        version: 2.5.8
       '@types/react':
         specifier: ^18.2.37
         version: 18.2.37
@@ -969,6 +978,34 @@ importers:
       vitest:
         specifier: ^1.3.1
         version: 1.3.1(@types/node@20.11.24)
+
+  packages/oauth:
+    dependencies:
+      delay:
+        specifier: ^6.0.0
+        version: 6.0.0
+      oauth4webapi:
+        specifier: ^2.10.3
+        version: 2.10.3
+      tiny-invariant:
+        specifier: ^1.3.1
+        version: 1.3.3
+      typescript-event-target:
+        specifier: ^1.1.0
+        version: 1.1.0
+    devDependencies:
+      jest-extended:
+        specifier: ^4.0.2
+        version: 4.0.2
+      ts-expect:
+        specifier: ^1.3.0
+        version: 1.3.0
+      type-fest:
+        specifier: ^4.14.0
+        version: 4.14.0
+      typescript:
+        specifier: ^5.4.2
+        version: 5.4.2
 
   packages/shared.net:
     dependencies:
@@ -2782,6 +2819,10 @@ packages:
     resolution: {integrity: sha512-XW/Aa8APYr6jSVVA1y/DEIZX0/GMKLEVekNG727R8cs56ahETkRAy/3DR7+fJyh7oUgGwNQaRfXCun0+KbWY7Q==}
     dev: false
 
+  /@types/core-js@2.5.8:
+    resolution: {integrity: sha512-VgnAj6tIAhJhZdJ8/IpxdatM8G4OD3VWGlp6xIxUGENZlpbob9Ty4VVdC1FIEp0aK6DBscDDjyzy5FB60TuNqg==}
+    dev: true
+
   /@types/debug@4.1.12:
     resolution: {integrity: sha512-vIChWdVG3LG1SMxEvI/AK+FWJthlrqlTu7fbrlywTkkaONwk/UAGaULXRlf8vkzFBLVm0zkMdCquhL5aOjhXPQ==}
     dependencies:
@@ -4168,6 +4209,11 @@ packages:
     engines: {node: '>= 0.6'}
     dev: false
 
+  /core-js@3.36.1:
+    resolution: {integrity: sha512-BTvUrwxVBezj5SZ3f10ImnX2oRByMxql3EimVqMysepbC9EeMUOpLwdy6Eoili2x6E4kf+ZUB5k/+Jv55alPfA==}
+    requiresBuild: true
+    dev: false
+
   /core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
     dev: false
@@ -4378,6 +4424,11 @@ packages:
       has-property-descriptors: 1.0.2
       object-keys: 1.1.1
     dev: true
+
+  /delay@6.0.0:
+    resolution: {integrity: sha512-2NJozoOHQ4NuZuVIr5CWd0iiLVIRSDepakaovIN+9eIDHEhdCAEvSy2cuf1DCrPPQLvHmbqTHODlhHg8UCy4zw==}
+    engines: {node: '>=16'}
+    dev: false
 
   /dequal@2.0.3:
     resolution: {integrity: sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==}
@@ -6961,6 +7012,10 @@ packages:
     dependencies:
       path-key: 4.0.0
 
+  /oauth4webapi@2.10.3:
+    resolution: {integrity: sha512-9FkXEXfzVKzH63GUOZz1zMr3wBaICSzk6DLXx+CGdrQ10ItNk2ePWzYYc1fdmKq1ayGFb2aX97sRCoZ2s0mkDw==}
+    dev: false
+
   /object-assign@4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
@@ -8928,6 +8983,10 @@ packages:
     dependencies:
       is-typedarray: 1.0.0
     dev: true
+
+  /typescript-event-target@1.1.0:
+    resolution: {integrity: sha512-PMrzUVryhnUq2n8M7tjNHNRuIHlUqly5RfGltBTpPCdVpbytgALTRDegF/t6+mFmmtBVhOqEYlbjVNBxwabIug==}
+    dev: false
 
   /typescript@4.9.5:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}

@@ -1,13 +1,13 @@
-import { Todo } from "./generatedNoCheck/ontology/objects";
 import { useState } from "react";
+import { SimpleTodo } from "./useTodos";
 
 export function TodoView({
   todo,
   toggleComplete,
   loading,
 }: {
-  todo: Todo;
-  toggleComplete: (todo: Todo) => void;
+  todo: SimpleTodo;
+  toggleComplete: (todo: SimpleTodo) => void;
   loading: boolean;
 }) {
   const [isPending, setIsPending] = useState<boolean>(false);
