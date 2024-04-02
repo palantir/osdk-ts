@@ -23,6 +23,9 @@ export type FilteredPropertiesTerminalOperations<
   T extends OntologyObject,
   V extends Array<keyof T>,
 > = {
+  /**
+   * @deprecated use asyncIter instead
+   */
   all(): Promise<
     Result<
       Array<

@@ -104,6 +104,7 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
 
   /**
    * Get all objects of this type.
+   * @deprecated use asyncIter instead
    */
   all(): Promise<Result<O[], ListObjectsError>>;
 
