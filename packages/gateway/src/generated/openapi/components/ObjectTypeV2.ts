@@ -33,5 +33,6 @@ export interface ObjectTypeV2 {
   /** A map of the properties of the object type. */
   properties: Record<PropertyApiName, PropertyV2>;
   rid: ObjectTypeRid;
+  titleProperty: PropertyApiName;
   visibility?: ObjectTypeVisibility;
 }

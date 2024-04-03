@@ -15,7 +15,7 @@
  */
 
 import type {
-  AggregateObjectSetResponseV2,
+  AggregateObjectsResponseV2,
   LoadObjectSetRequestV2,
   LoadObjectSetResponseV2,
 } from "@osdk/gateway/types";
@@ -66,7 +66,9 @@ export const objectSetHandlers: RestHandler<
         if (
           req.params.ontologyApiName === defaultOntology.apiName && response
         ) {
-          return res(ctx.json(filterObjectsProperties(response, selected)));
+          return res(
+            ctx.json(filterObjectsProperties(response, [...selected])),
+          );
         }
 
         return res(
@@ -89,7 +91,7 @@ export const objectSetHandlers: RestHandler<
     authHandlerMiddleware(
       async (
         req,
-        res: ResponseComposition<AggregateObjectSetResponseV2 | BaseAPIError>,
+        res: ResponseComposition<AggregateObjectsResponseV2 | BaseAPIError>,
         ctx,
       ) => {
         if (!req || !res) {

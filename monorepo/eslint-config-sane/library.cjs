@@ -21,7 +21,6 @@ module.exports = {
     "build/",
     "src/generatedNoCheck/",
     "templates/",
-    "__snapshots__/",
   ],
   rules: {
     "@typescript-eslint/consistent-type-imports": "error",

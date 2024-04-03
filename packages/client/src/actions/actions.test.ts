@@ -32,7 +32,7 @@ import type {
   ActionValidationResponse,
 } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-import { createActionInvoker } from "./createActionInvoker.js";
+import { createOldActionInvoker } from "./createActionInvoker.js";
 
 describe("actions", () => {
   let client: Client<typeof MockOntology>;
@@ -50,17 +50,17 @@ describe("actions", () => {
     apiServer.close();
   });
 
-  describe(createActionInvoker, () => {
+  describe(createOldActionInvoker, () => {
     it("has an enumerable list of actions", () => {
       expect(Object.getOwnPropertyNames(client.actions)).toMatchInlineSnapshot(`
         [
-          "promoteEmployee",
-          "promoteEmployeeObject",
+          "actionTakesAttachment",
+          "actionTakesObjectSet",
           "createOffice",
           "createOfficeAndEmployee",
           "moveOffice",
-          "actionTakesObjectSet",
-          "actionTakesAttachment",
+          "promoteEmployee",
+          "promoteEmployeeObject",
         ]
       `);
     });
@@ -78,6 +78,8 @@ describe("actions", () => {
       {
         "addedLinksCount": 0,
         "addedObjectCount": 2,
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
         "edits": [
           {
             "objectType": "Office",

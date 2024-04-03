@@ -15,10 +15,12 @@ export default {
   "monorepo/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
   ],
-  "{packages,examples/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": (files) => {
+  "{packages,examples-extra/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
+    files,
+  ) => {
     const match = micromatch.not(
       files,
-      ["**/__snapshots__/**/*", "**/templates/**/*"],
+      ["**/templates/**/*"],
     );
     return [
       `dprint fmt ${match.join(" ")}`,

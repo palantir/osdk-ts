@@ -17,5 +17,5 @@
 import type { ObjectRid } from "./ObjectRid";
 
 export interface ObjectSetStaticType {
-  objects: Array<ObjectRid>;
+  objects: ReadonlyArray<ObjectRid>;
 }

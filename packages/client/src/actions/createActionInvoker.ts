@@ -14,33 +14,41 @@
  * limitations under the License.
  */
 
-import type { OntologyDefinition } from "@osdk/api";
-import type { ClientContext } from "@osdk/shared.net";
-import type { Actions } from "./Actions.js";
+import type { ActionDefinition, OntologyDefinition } from "@osdk/api";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import type { Actions, ActionSignature } from "./Actions.js";
 import { applyAction } from "./applyAction.js";
 
-export function createActionInvoker<
-  T extends ClientContext<OntologyDefinition<any>>,
->(client: T) {
+export function createActionInvoker<A extends ActionDefinition<any, any>>(
+  client: MinimalClient,
+  action: A,
+): ActionSignature<A["parameters"]> {
+  return function(...args: any[]) {
+    return applyAction(client, action, ...args);
+  };
+}
+
+export function createOldActionInvoker(
+  client: MinimalClient,
+  ontology: OntologyDefinition<any>,
+) {
   const proxy: Actions<any> = new Proxy(
     {},
     {
       get: (_target, p, _receiver) => {
         if (typeof p === "string") {
-          return function(...args: any[]) {
-            return applyAction(client, client.ontology.actions[p], ...args);
-          };
+          return createActionInvoker(client, ontology.actions[p]);
         }
 
         return undefined;
       },
       ownKeys(_target) {
-        return Object.keys(client.ontology.actions);
+        return Object.keys(ontology.actions);
       },
       getOwnPropertyDescriptor(_target, p) {
         if (typeof p === "string") {
           return {
-            enumerable: client.ontology.actions[p] != null,
+            enumerable: ontology.actions[p] != null,
             configurable: true,
             value: proxy[p],
           };

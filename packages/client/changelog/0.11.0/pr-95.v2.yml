@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Fix datetime where clause
+  links:
+  - https://github.com/palantir/osdk-ts/pull/95

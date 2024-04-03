@@ -8,6 +8,9 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
+    "@osdk/examples.next-static-export",
+    "@osdk/examples.react",
+    "@osdk/examples.vue",
     "@osdk/examples.basic.cli",
     "@osdk/examples.basic.sdk",
     "@osdk/examples.one.dot.one",

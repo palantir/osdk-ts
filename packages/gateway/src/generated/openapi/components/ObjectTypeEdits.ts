@@ -17,5 +17,5 @@
 import type { ObjectTypeApiName } from "./ObjectTypeApiName";
 
 export interface ObjectTypeEdits {
-  editedObjectTypes: Array<ObjectTypeApiName>;
+  editedObjectTypes: ReadonlyArray<ObjectTypeApiName>;
 }

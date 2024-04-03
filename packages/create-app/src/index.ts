@@ -15,3 +15,6 @@
  */
 
 export { cli } from "./cli.js";
+export { run } from "./run.js";
+export { TEMPLATES } from "./templates.js";
+export type { Template } from "./templates.js";

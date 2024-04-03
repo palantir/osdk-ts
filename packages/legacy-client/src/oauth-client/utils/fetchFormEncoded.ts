@@ -25,6 +25,7 @@ export async function fetchFormEncoded(
       "Content-Type": "application/x-www-form-urlencoded",
     },
     method: "POST",
+    cache: "no-cache",
   });
 
   return response;

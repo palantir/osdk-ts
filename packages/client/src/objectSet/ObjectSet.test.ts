@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -24,9 +25,10 @@ import {
   it,
 } from "vitest";
 import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import type { Employee } from "../generatedNoCheck/ontology/objects.js";
+import { Employee } from "../generatedNoCheck/ontology/objects.js";
 import { createClient } from "../index.js";
 import type { Client, Osdk } from "../index.js";
+import { isOk } from "../object/Result.js";
 
 describe("ObjectSet", () => {
   let client: Client<typeof MockOntology>;
@@ -62,7 +64,7 @@ describe("ObjectSet", () => {
     const objectSet = client.objects.Employee;
     const unionedObjectSet = objectSet.union(objectSet);
     let iter = 0;
-    const { data: employees } = await unionedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await unionedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50030 + iter);
       iter += 1;
@@ -75,7 +77,7 @@ describe("ObjectSet", () => {
     const objectSet2 = client.objects.Employee.where({ employeeId: 50030 });
     const subtractedObjectSet = objectSet.subtract(objectSet2);
     let iter = 0;
-    const { data: employees } = await subtractedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await subtractedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50031 + iter);
       iter += 1;
@@ -87,7 +89,7 @@ describe("ObjectSet", () => {
     const objectSet = client.objects.Employee;
     const intersectedObjectSet = objectSet.intersect(objectSet);
     let iter = 0;
-    const { data: employees } = await intersectedObjectSet.fetchPageOrThrow();
+    const { data: employees } = await intersectedObjectSet.fetchPage();
     for (const emp of employees) {
       expect(emp.employeeId).toEqual(50032);
       iter += 1;
@@ -96,7 +98,7 @@ describe("ObjectSet", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
-    const { data: employees } = await client.objects.Employee.fetchPageOrThrow({
+    const { data: employees } = await client.objects.Employee.fetchPage({
       orderBy: { "employeeId": "asc" },
     });
 
@@ -143,7 +145,9 @@ describe("ObjectSet", () => {
     const employee = await client.objects.Employee.get(
       stubData.employee1.employeeId,
     );
-    expectTypeOf<typeof employee>().toEqualTypeOf<Osdk<Employee>>;
+    expectTypeOf<typeof employee>().toMatchTypeOf<
+      Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>
+    >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
@@ -169,5 +173,20 @@ describe("ObjectSet", () => {
       .pivotTo("peeps").get(stubData.employee1.employeeId);
 
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it(" object set union works with fetchPageWithErrors", async () => {
+    const objectSet = client(Employee);
+    const unionedObjectSet = objectSet.union(objectSet);
+    let iter = 0;
+    const result = await unionedObjectSet.fetchPageWithErrors();
+    if (isOk(result)) {
+      const employees = result.value.data;
+      for (const emp of employees) {
+        expect(emp.employeeId).toEqual(50030 + iter);
+        iter += 1;
+      }
+      expect(iter).toEqual(2);
+    }
   });
 });

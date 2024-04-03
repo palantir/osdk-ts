@@ -20,5 +20,5 @@ import type { AggregationMetricResult } from "./AggregationMetricResult";
 
 export interface AggregateObjectsResponseItem {
   group: Record<AggregationGroupKey, AggregationGroupValue>;
-  metrics: Array<AggregationMetricResult>;
+  metrics: ReadonlyArray<AggregationMetricResult>;
 }

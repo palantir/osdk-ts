@@ -19,5 +19,5 @@ import type { BatchApplyActionRequestOptions } from "./BatchApplyActionRequestOp
 
 export interface BatchApplyActionRequestV2 {
   options?: BatchApplyActionRequestOptions;
-  requests: Array<BatchApplyActionRequestItem>;
+  requests: ReadonlyArray<BatchApplyActionRequestItem>;
 }

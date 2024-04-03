@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypePropertyDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
-import type { Attachment } from "./object/Attachment.js";
+import type { ObjectTypePropertyDefinition } from "@osdk/api";
+import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
   T["multiplicity"] extends true ? Array<U> : U;
@@ -30,12 +27,11 @@ type MaybeNullable<T extends ObjectTypePropertyDefinition, U> =
 type Raw<T> = T extends Array<any> ? T[0] : T;
 type Converted<T> = T extends Array<any> ? T[1] : T;
 
-// certain data types must be converted at hydration time
-type HydrationConversions<T extends ObjectTypePropertyDefinition> =
-  T["type"] extends "attachment" ? Attachment : WirePropertyTypes[T["type"]];
-
 export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Converted<HydrationConversions<T>>>>;
+  MaybeNullable<
+    T,
+    MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>
+  >;
 
 export type OsdkObjectRawPropertyType<T extends ObjectTypePropertyDefinition> =
-  MaybeNullable<T, MaybeArray<T, Raw<WirePropertyTypes[T["type"]]>>>;
+  MaybeNullable<T, MaybeArray<T, Raw<PropertyValueWireToClient[T["type"]]>>>;

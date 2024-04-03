@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Fix maker paths
+  links:
+  - https://github.com/palantir/osdk-ts/pull/137

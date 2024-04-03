@@ -55,6 +55,8 @@ export async function generatePerActionDataFiles(
 
       function createParamsDef() {
         const entries = Object.entries(parameters);
+        entries.sort((a, b) => a[0].localeCompare(b[0]));
+
         if (entries.length === 0) {
           return `// Represents the definition of the parameters for the action
           export type ${paramsDefIdentifier} = Record<string, never>;`;
@@ -63,30 +65,29 @@ export async function generatePerActionDataFiles(
         return `// Represents the definition of the parameters for the action
         export type ${paramsDefIdentifier} = {
           ${
-          Object.entries(parameters)
-            .map(([key, value]) => {
-              return `"${key}": {
+          entries.map(([key, value]) => {
+            return `"${key}": {
                 ${
-                stringify(value, {
-                  description: (value, d) => value ? d(value) : undefined, // trick to remove undefineds
-                  type: (type) => {
-                    if (typeof type === "string") {
-                      return JSON.stringify(type);
-                    } else if (type.type === "object") {
-                      return `ObjectActionDataType<"${type.object}", ${
-                        getObjectDefIdentifier(type.object, v2)
-                      }>`;
-                    } else if (type.type === "objectSet") {
-                      return `ObjectSetActionDataType<"${type.objectSet}", ${
-                        getObjectDefIdentifier(type.objectSet, v2)
-                      }>`;
-                    }
-                    return undefined;
-                  },
-                })
-              }
+              stringify(value, {
+                description: (value, d) => value ? d(value) : undefined, // trick to remove undefineds
+                type: (type) => {
+                  if (typeof type === "string") {
+                    return JSON.stringify(type);
+                  } else if (type.type === "object") {
+                    return `ObjectActionDataType<"${type.object}", ${
+                      getObjectDefIdentifier(type.object, v2)
+                    }>`;
+                  } else if (type.type === "objectSet") {
+                    return `ObjectSetActionDataType<"${type.objectSet}", ${
+                      getObjectDefIdentifier(type.objectSet, v2)
+                    }>`;
+                  }
+                  return undefined;
+                },
+              })
+            }
             }`;
-            })
+          })
             .join(";\n")
         }
         }`;
@@ -114,7 +115,9 @@ export async function generatePerActionDataFiles(
           // Represents the definition of the action
           export interface ${actionDefIdentifier} extends ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}, ${action.apiName}>{
           ${
-          Object.entries(actionDefSansParameters).map(([key, value]) => {
+          Object.entries(actionDefSansParameters).sort((a, b) =>
+            a[0].localeCompare(b[0])
+          ).map(([key, value]) => {
             return `${key}: ${JSON.stringify(value)};`;
           }).join("\n")
         }
@@ -142,6 +145,18 @@ export async function generatePerActionDataFiles(
           );
           referencedObjectDefs.add(
             getObjectDefIdentifier(p.dataType.objectTypeApiName!, v2),
+          );
+        }
+        if (
+          p.dataType.type === "array"
+          && (p.dataType.subType.type === "object"
+            || p.dataType.subType.type === "objectSet")
+        ) {
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.subType.objectApiName!, v2),
+          );
+          referencedObjectDefs.add(
+            getObjectDefIdentifier(p.dataType.subType.objectTypeApiName!, v2),
           );
         }
       }
@@ -177,6 +192,7 @@ export async function generatePerActionDataFiles(
       )
         .join("\n")
     }
+    ${Object.keys(ontology.actionTypes).length === 0 ? "export {};" : ""}
       `),
   );
 }

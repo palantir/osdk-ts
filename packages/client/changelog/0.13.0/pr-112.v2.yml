@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Improve groupby key verification
+  links:
+  - https://github.com/palantir/osdk-ts/pull/112

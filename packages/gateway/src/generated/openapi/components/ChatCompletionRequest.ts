@@ -19,7 +19,7 @@ import type { ParameterKey } from "./ParameterKey";
 import type { ParameterValue } from "./ParameterValue";
 
 export interface ChatCompletionRequest {
-  messages: Array<ChatMessage>;
+  messages: ReadonlyArray<ChatMessage>;
   /**
    * Any additional model-specific parameters:
    * - for global models, the keys can be one of the following

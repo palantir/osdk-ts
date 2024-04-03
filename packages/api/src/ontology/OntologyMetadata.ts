@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-export interface OntologyMetadata {
+import type { VersionString } from "./VersionString";
+
+export interface OntologyMetadata<
+  V extends VersionString<any, any, any> = never,
+> {
+  expectsClientVersion?: V;
   ontologyRid: string;
   ontologyApiName: string;
   userAgent: string;

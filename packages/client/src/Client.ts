@@ -16,27 +16,25 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
+  ObjectTypeDefinition,
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
 import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
-import type { BaseObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetCreator } from "./ObjectSetCreator.js";
 
-export interface Client<O extends OntologyDefinition<any>> {
-  <
-    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
-  >(o: Q): Q extends ObjectOrInterfaceDefinition ? ObjectSet<Q>
-    : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
-    : never;
-
+export interface Client<O extends OntologyDefinition<any>>
+  extends FutureClient
+{
   /** @deprecated use client(MyType) */
   objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
     type: K,
-  ) => BaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
+  ) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
 
   /** @deprecated use client(MyType) */
   objects: ObjectSetCreator<O>;
@@ -48,4 +46,16 @@ export interface Client<O extends OntologyDefinition<any>> {
     type: K,
     rid: string,
   ): ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
+}
+
+// Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `Client`.
+export interface FutureClient {
+  <
+    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+  >(
+    o: Q,
+  ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
+    : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
+    : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
+    : never;
 }

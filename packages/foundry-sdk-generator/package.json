@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "0.205.0",
+  "version": "0.209.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,14 +22,13 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build"
+    "typecheck": "tsc-absolute"
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
@@ -49,12 +48,12 @@
     "@osdk/shared.test": "workspace:*",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "foundry-sdk-generator": "./bin/foundry-sdk-generator"
   },

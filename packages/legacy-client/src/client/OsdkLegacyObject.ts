@@ -45,9 +45,9 @@ export interface ValidLegacyPropertyTypes {
   integer: number;
   timestamp: Timestamp;
   short: number;
-  long: number;
+  long: string;
   float: number;
-  decimal: number;
+  decimal: string;
   byte: number;
   marking: string;
 

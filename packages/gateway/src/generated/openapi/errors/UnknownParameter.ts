@@ -25,7 +25,7 @@ export interface UnknownParameter {
   errorName: "UnknownParameter";
   errorInstanceId: string;
   parameters: {
-    unknownParameters: Array<ParameterId>;
-    expectedParameters: Array<ParameterId>;
+    unknownParameters: ReadonlyArray<ParameterId>;
+    expectedParameters: ReadonlyArray<ParameterId>;
   };
 }

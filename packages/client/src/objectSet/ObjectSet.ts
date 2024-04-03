@@ -15,72 +15,77 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfaceDefinitionFrom,
   ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
   OntologyDefinition,
-  WirePropertyTypes,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type { AggregateOptsThatErrors } from "../object/aggregate.js";
 import type {
-  FetchPageOrThrowArgs,
+  Augments,
+  FetchPageArgs,
+  FetchPageResult,
   SelectArg,
-} from "../object/fetchPageOrThrow.js";
-import type { Osdk, OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
-import type { PageResult } from "../PageResult.js";
+} from "../object/fetchPage.js";
+import type { Result } from "../object/Result.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults, WhereClause } from "../query/index.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
-  definition: WireObjectSet;
+export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
+  fetchPage: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+    const A extends Augments,
+  >(
+    args?: FetchPageArgs<Q, L, R, A>,
+  ) => Promise<FetchPageResult<Q, L, R>>;
 
+  fetchPageWithErrors: <
+    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+    R extends boolean,
+    const A extends Augments,
+  >(
+    args?: FetchPageArgs<Q, L, R, A>,
+  ) => Promise<Result<FetchPageResult<Q, L, R>>>;
+
+  where: (
+    clause: WhereClause<Q>,
+  ) => MinimalObjectSet<Q>;
+
+  asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+}
+
+export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
+  extends MinimalObjectSet<Q>
+{
+}
+
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends MinimalObjectSet<Q>
+{
+  /** @deprecated */
   fetchPageOrThrow: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
   >(
-    args?: FetchPageOrThrowArgs<Q, L, R>,
-  ) => Promise<
-    PageResult<
-      ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
-          DefaultToFalse<R> extends false ? Osdk<Q, "$all">
-            : Osdk<Q, "$all", true>
-        )
-        : (
-          DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L, true>
-        )
-    >
-  >;
+    args?: FetchPageArgs<Q, L, R>,
+  ) => Promise<FetchPageResult<Q, L, R>>;
 
-  // qq: <Q extends K>(foo: Q) => ObjectTypePropertyKeysFrom<O, K>;
-
-  // @alpha
-  // fetchPage: <L extends PropertyKeysFrom<O, K>>(
-  //   args?: FetchPageOrThrowArgs<O, K, L>,
-  // ) => Promise<ResultOrError<PageResult<Osdk<K, O, L>>>>;
-
-  // @alpha
-  // asyncIter: () => AsyncIterableIterator<
-  //   Osdk<K, O, PropertyKeysFrom<O, K>>
-  // >;
-
-  // @alpha
-  // [Symbol.asyncIterator](): AsyncIterableIterator<
-  //   Osdk<K, O, PropertyKeysFrom<O, K>>
-  // >;
-
-  aggregateOrThrow: <const AO extends AggregateOpts<Q, any>>(
-    req: AO,
+  /** @deprecated use `aggregate` */
+  aggregateOrThrow: <AO extends AggregateOpts<Q>>(
+    req: AggregateOptsThatErrors<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
-  // @alpha
-  // aggregate: <const AO extends AggregateOpts<O, K, any>>(
-  //   req: AO,
-  // ) => Promise<ResultOrError<AggregationsResults<O, K, typeof req>>>;
+  aggregate: <AO extends AggregateOpts<Q>>(
+    req: AggregateOptsThatErrors<Q, AO>,
+  ) => Promise<AggregationsResults<Q, AO>>;
 
   where: (
     clause: WhereClause<Q>,
@@ -98,20 +103,16 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> {
     ...objectSets: ReadonlyArray<ObjectSet<Q>>
   ) => ObjectSet<Q>;
 
-  pivotTo: <L extends LinkNames<Q>>(type: L) => BaseObjectSet<LinkedType<Q, L>>;
+  pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
-  subscribe: (listener: ObjectSetListener<Q>) => () => void;
-}
-
-export interface BaseObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
-> extends ObjectSet<Q> {
   get: Q extends ObjectTypeDefinition<any>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
-      primaryKey: WirePropertyTypes[Q["primaryKeyType"]],
+      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
-    ) => Promise<OsdkObjectOrInterfaceFrom<Q, L>>
+    ) => Promise<Osdk<Q, L>>
     : never;
+
+  subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
 
 export type ObjectSetFactory<O extends OntologyDefinition<any>> = <

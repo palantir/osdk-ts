@@ -14,57 +14,63 @@
  * limitations under the License.
  */
 
-import type { ArraySize } from "./ArraySize";
-import type { GroupMember } from "./GroupMember";
-import type { ObjectPropertyValue } from "./ObjectPropertyValue";
-import type { ObjectQueryResult } from "./ObjectQueryResult";
-import type { OneOf } from "./OneOf";
-import type { Range } from "./Range";
-import type { StringLength } from "./StringLength";
-import type { StringRegexMatch } from "./StringRegexMatch";
-import type { Unevaluable } from "./Unevaluable";
+import type { ArraySizeConstraint } from "./ArraySizeConstraint";
+import type { GroupMemberConstraint } from "./GroupMemberConstraint";
+import type { ObjectPropertyValueConstraint } from "./ObjectPropertyValueConstraint";
+import type { ObjectQueryResultConstraint } from "./ObjectQueryResultConstraint";
+import type { OneOfConstraint } from "./OneOfConstraint";
+import type { RangeConstraint } from "./RangeConstraint";
+import type { StringLengthConstraint } from "./StringLengthConstraint";
+import type { StringRegexMatchConstraint } from "./StringRegexMatchConstraint";
+import type { UnevaluableConstraint } from "./UnevaluableConstraint";
 
-export interface ParameterEvaluatedConstraint_ArraySize extends ArraySize {
+export interface ParameterEvaluatedConstraint_ArraySize
+  extends ArraySizeConstraint
+{
   type: "arraySize";
 }
 
-export interface ParameterEvaluatedConstraint_GroupMember extends GroupMember {
+export interface ParameterEvaluatedConstraint_GroupMember
+  extends GroupMemberConstraint
+{
   type: "groupMember";
 }
 
 export interface ParameterEvaluatedConstraint_ObjectPropertyValue
-  extends ObjectPropertyValue
+  extends ObjectPropertyValueConstraint
 {
   type: "objectPropertyValue";
 }
 
 export interface ParameterEvaluatedConstraint_ObjectQueryResult
-  extends ObjectQueryResult
+  extends ObjectQueryResultConstraint
 {
   type: "objectQueryResult";
 }
 
-export interface ParameterEvaluatedConstraint_OneOf extends OneOf {
+export interface ParameterEvaluatedConstraint_OneOf extends OneOfConstraint {
   type: "oneOf";
 }
 
-export interface ParameterEvaluatedConstraint_Range extends Range {
+export interface ParameterEvaluatedConstraint_Range extends RangeConstraint {
   type: "range";
 }
 
 export interface ParameterEvaluatedConstraint_StringLength
-  extends StringLength
+  extends StringLengthConstraint
 {
   type: "stringLength";
 }
 
 export interface ParameterEvaluatedConstraint_StringRegexMatch
-  extends StringRegexMatch
+  extends StringRegexMatchConstraint
 {
   type: "stringRegexMatch";
 }
 
-export interface ParameterEvaluatedConstraint_Unevaluable extends Unevaluable {
+export interface ParameterEvaluatedConstraint_Unevaluable
+  extends UnevaluableConstraint
+{
   type: "unevaluable";
 }
 

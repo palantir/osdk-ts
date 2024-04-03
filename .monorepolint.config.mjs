@@ -58,45 +58,28 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
 
 /**
  * @param {string} baseTsconfigPath
- * @param {{customTsconfigExcludes?: string[]}} opts
- * @returns
+ * @param {{
+ *   customTsconfigExcludes?: string[]
+ *   skipTsconfigReferences?: boolean
+ * }} opts
+ * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
 function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
     file: "tsconfig.json",
+
+    excludedReferences: ["**/*"],
     template: {
       extends: baseTsconfigPath,
 
       compilerOptions: {
         rootDir: "src",
         outDir: "build/types",
-        composite: true,
       },
       include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: ["**/__snapshots__"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),
-    },
-  };
-}
-
-function getTsconfigOptionsE2E(baseTsconfigPath) {
-  return {
-    file: "tsconfig.json",
-    template: {
-      extends: baseTsconfigPath,
-
-      compilerOptions: {
-        rootDir: "src",
-        outDir: "build/types",
-        composite: true,
-      },
-      include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: [
-        "./src/__e2e_tests__/**/**.test.ts",
-        "./src/generatedNoCheck/**/*",
-      ],
     },
   };
 }
@@ -108,18 +91,20 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.2.2"|"^4.9.0",
+ *  tsVersion?: "^5.4.2"|"^4.9.0",
+ *  skipTsconfigReferences?: boolean
  * }} options
  */
 function standardPackageRules(shared, options) {
   return [
     standardTsconfig({
       ...shared,
+
       options: getTsconfigOptions(
         `${
           "../".repeat(options.packageDepth)
         }monorepo/tsconfig/tsconfig.base.json`,
-        { customTsconfigExcludes: options.customTsconfigExcludes },
+        options,
       ),
     }),
     ...(options.tsVersion
@@ -136,14 +121,14 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": "tsup --watch",
+          "dev:transpile": DELETE_SCRIPT_ENTRTY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
-          typecheck: "tsc-absolute --build",
+          typecheck: "tsc-absolute",
         },
       },
     }),
@@ -263,7 +248,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
     }),
 
     ...standardPackageRules({
@@ -272,7 +257,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
         "./src/generatedNoCheck/**/*",
@@ -286,7 +271,7 @@ export default {
       legacy: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.2",
     }),
 
     ...standardPackageRules({
@@ -307,6 +292,7 @@ export default {
       packageDepth: 2,
       type: "example",
       tsVersion: "^4.9.0",
+      skipTsconfigReferences: true,
     }),
 
     packageEntry({

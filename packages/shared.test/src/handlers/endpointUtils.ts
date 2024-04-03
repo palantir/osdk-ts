@@ -18,7 +18,7 @@ import stableStringify from "json-stable-stringify";
 
 export type PagedBodyResponse<T> = {
   nextPageToken?: string;
-  data: T[];
+  data: readonly T[];
 };
 
 export type PagedRequest = {
@@ -73,7 +73,7 @@ export function pageThroughResponse<
 }
 
 export function pageThroughResponseSearchParams<TData>(
-  handlers: { [key: string]: TData[] },
+  handlers: { [key: string]: readonly TData[] },
   handlerKey: string,
   pageSize: number = 1000,
   pageToken?: string,

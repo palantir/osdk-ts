@@ -24,6 +24,6 @@ export interface PropertiesNotFound {
   errorInstanceId: string;
   parameters: {
     objectType: ObjectTypeApiName;
-    properties: Array<PropertyApiName>;
+    properties: ReadonlyArray<PropertyApiName>;
   };
 }

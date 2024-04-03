@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { CliCommonArgs } from "../../CliCommonArgs.js";
+import type { CliCommonArgs } from "@osdk/cli.common";
 import type { ThirdPartyAppRid } from "../../net/ThirdPartyAppRid.js";
 
 export interface CommonSiteArgs extends CliCommonArgs {

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import type { CliCommonArgs, CommonAuthArgs } from "@osdk/cli.common";
 import type * as yargs from "yargs";
-import type { CliCommonArgs } from "../../CliCommonArgs.js";
-import type { CommonAuthArgs } from "./CommonAuthArgs.js";
 import login from "./login/index.js";
 
-const site: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
+const auth: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
   command: "auth",
   describe: "Manage your session",
   builder: (argv) => {
@@ -39,4 +38,4 @@ const site: yargs.CommandModule<CliCommonArgs, CommonAuthArgs> = {
   },
 };
 
-export default site;
+export default auth;

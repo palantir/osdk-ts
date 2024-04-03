@@ -1,6 +1,6 @@
 {
   "name": "@osdk/gateway",
-  "version": "1.2.0",
+  "version": "2.1.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,12 +22,11 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build"
+    "typecheck": "tsc-absolute"
   },
   "dependencies": {
     "fetch-retry": "^5.0.6",
@@ -35,12 +34,12 @@
   },
   "devDependencies": {
     "ts-expect": "^1.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.2"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "files": [
     "build/types",
     "build/js",
@@ -56,7 +55,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.763.0",
+        "minVersion": "1.785.0",
         "maxVersion": "1.x.x"
       }
     }

@@ -20,6 +20,7 @@ export const employeeObjectType: ObjectTypeV2 = {
   apiName: "Employee",
   description: "A full-time or part-time \n\n employee of our firm",
   primaryKey: "employeeId",
+  titleProperty: "fullName",
   properties: {
     employeeId: {
       dataType: {
@@ -63,6 +64,7 @@ export const officeObjectType: ObjectTypeV2 = {
   apiName: "Office",
   description: "A office in our Company",
   primaryKey: "officeId",
+  titleProperty: "officeId",
   properties: {
     officeId: {
       dataType: {
@@ -94,6 +96,7 @@ export const officeObjectType: ObjectTypeV2 = {
 export const equipmentObjectType: ObjectTypeV2 = {
   apiName: "equipment",
   primaryKey: "equipmentId",
+  titleProperty: "type",
   properties: {
     equipmentId: {
       description: "The id of an equipment",
@@ -115,6 +118,7 @@ export const objectTypeWithTimestampPrimaryKey: ObjectTypeV2 = {
   apiName: "ObjectWithTimestampPrimaryKey",
   description: "Object Type With Timestamp Primary Key",
   primaryKey: "timestamp",
+  titleProperty: "value",
   properties: {
     timestamp: {
       dataType: {
@@ -135,6 +139,7 @@ export const objectTypeWithAllPropertyTypes: ObjectTypeV2 = {
   apiName: "objectTypeWithAllPropertyTypes",
   description: "An object type with all property types",
   primaryKey: "id",
+  titleProperty: "string",
   properties: {
     id: {
       dataType: {

@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-import { findUpSync } from "find-up";
-import Handlebars from "handlebars";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type { Argv } from "yargs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { consola } from "./consola.js";
-import {
-  generateEnvDevelopment,
-  generateEnvProduction,
-} from "./generate/generateEnv.js";
-import { generateFoundryConfigJson } from "./generate/generateFoundryConfigJson.js";
-import { generateNpmRc } from "./generate/generateNpmRc.js";
-import { green } from "./highlight.js";
+
 import { promptApplicationRid } from "./prompts/promptApplicationRid.js";
 import { promptApplicationUrl } from "./prompts/promptApplicationUrl.js";
 import { promptClientId } from "./prompts/promptClientId.js";
@@ -40,7 +28,8 @@ import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
-import type { Template, TemplateContext } from "./templates.js";
+import { run } from "./run.js";
+import type { Template } from "./templates.js";
 
 interface CliArgs {
   project?: string;
@@ -128,103 +117,16 @@ export async function cli(args: string[] = process.argv) {
   const osdkRegistryUrl: string = await promptOsdkRegistryUrl(parsed);
   const corsProxy: boolean = await promptCorsProxy(parsed);
 
-  consola.log("");
-  consola.start(
-    `Creating project ${green(project)} using template ${green(template.id)}`,
-  );
-
-  const cwd = process.cwd();
-  const root = path.join(cwd, project);
-
-  if (fs.existsSync(root)) {
-    if (overwrite) {
-      consola.info(`Overwriting existing project directory`);
-      fs.rmSync(root, { recursive: true, force: true });
-      fs.mkdirSync(root, { recursive: true });
-    } else {
-      consola.info(`Reusing existing project directory`);
-    }
-  } else {
-    consola.info(`Creating project directory`);
-    fs.mkdirSync(root, { recursive: true });
-  }
-
-  consola.info(`Copying files into project directory`);
-
-  const templatesDir = findUpSync("templates", {
-    cwd: path.dirname(fileURLToPath(import.meta.url)),
-    type: "directory",
-  });
-  if (templatesDir == null) {
-    throw new Error(`Could not find templates directory`);
-  }
-  const templateDir = path.resolve(templatesDir, template.id);
-
-  fs.cpSync(templateDir, root, { recursive: true });
-
-  const templateContext: TemplateContext = {
+  await run({
     project,
-    foundryUrl,
-    osdkPackage,
-    corsProxy,
-  };
-  const templateHbs = function(dir: string) {
-    fs.readdirSync(dir).forEach(function(file) {
-      file = dir + "/" + file;
-      const stat = fs.statSync(file);
-      if (stat.isDirectory()) {
-        templateHbs(file);
-        return;
-      }
-      if (!file.endsWith(".hbs")) {
-        return;
-      }
-      const templated = Handlebars.compile(fs.readFileSync(file, "utf-8"))(
-        templateContext,
-      );
-      fs.writeFileSync(file.replace(/.hbs$/, ""), templated);
-      fs.rmSync(file);
-    });
-  };
-  templateHbs(root);
-
-  const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
-  fs.writeFileSync(path.join(root, ".npmrc"), npmRc);
-  const envDevelopment = generateEnvDevelopment({
-    envPrefix: template.envPrefix,
-    foundryUrl,
-    clientId,
-    corsProxy,
-  });
-  fs.writeFileSync(path.join(root, ".env.development"), envDevelopment);
-  const envProduction = generateEnvProduction({
-    envPrefix: template.envPrefix,
+    overwrite,
+    template,
     foundryUrl,
     applicationUrl,
-    clientId,
-  });
-  fs.writeFileSync(path.join(root, ".env.production"), envProduction);
-  const foundryConfigJson = generateFoundryConfigJson({
-    foundryUrl,
     application,
-    directory: template.buildDirectory,
-  });
-  fs.writeFileSync(path.join(root, "foundry.config.json"), foundryConfigJson);
-
-  consola.success("Success");
-
-  const cdRelative = path.relative(cwd, root);
-  consola.box({
-    message: `Done! Run the following commands to get started:\n`
-      + `\n`
-      + `  \`cd ${cdRelative}\`\n`
-      + `  \`export FOUNDRY_TOKEN=<token>\`\n`
-      + `  \`npm install\`\n`
-      + `  \`npm run dev\``,
-    style: {
-      padding: 2,
-      borderColor: "green",
-      borderStyle: "rounded",
-    },
+    clientId,
+    osdkPackage,
+    osdkRegistryUrl,
+    corsProxy,
   });
 }

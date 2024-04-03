@@ -20,6 +20,9 @@ import type { Todo } from "./TodoObject";
 export interface Task extends OntologyObject {
   readonly __apiName: "Task";
   readonly __primaryKey: number;
+  readonly $apiName: "Task";
+  readonly $primaryKey: number;
   readonly id: number | undefined;
+  readonly $rid: string;
   readonly linkedTodos: MultiLink<Todo>;
 }

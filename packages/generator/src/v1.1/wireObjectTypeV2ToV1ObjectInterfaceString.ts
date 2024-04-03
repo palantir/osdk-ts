@@ -38,8 +38,17 @@ ${
 
   ${getDescriptionIfPresent(objectTypeWithLinks.objectType.description)}
   export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
+  /** \@deprecated please migrate to \$apiName instead */
   readonly __apiName: "${objectTypeWithLinks.objectType.apiName}";
+  /** \@deprecated please migrate to \$primaryKey instead */
   readonly __primaryKey: ${
+    wirePropertyTypeV2ToTypeScriptType(
+      objectTypeWithLinks.objectType
+        .properties[objectTypeWithLinks.objectType.primaryKey].dataType,
+    )
+  };
+  readonly \$apiName: "${objectTypeWithLinks.objectType.apiName}";
+  readonly \$primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(
       objectTypeWithLinks.objectType
         .properties[objectTypeWithLinks.objectType.primaryKey].dataType,
@@ -103,7 +112,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "date":
       return "LocalDate";
     case "decimal":
-      return "number";
+      return "string";
     case "double":
       return "number";
     case "float":
@@ -113,7 +122,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "geoshape":
       return "GeoShape";
     case "long":
-      return "number";
+      return "string";
     case "short":
       return "number";
     case "timestamp":

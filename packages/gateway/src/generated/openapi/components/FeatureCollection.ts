@@ -19,6 +19,6 @@ import type { FeatureCollectionTypes } from "./FeatureCollectionTypes";
 
 /** GeoJSon 'FeatureCollection' object */
 export interface FeatureCollection {
-  features: Array<FeatureCollectionTypes>;
+  features: ReadonlyArray<FeatureCollectionTypes>;
   bbox?: BBox;
 }

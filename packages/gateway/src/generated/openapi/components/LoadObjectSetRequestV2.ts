@@ -24,7 +24,7 @@ import type { SelectedPropertyApiName } from "./SelectedPropertyApiName";
 export interface LoadObjectSetRequestV2 {
   objectSet: ObjectSet;
   orderBy?: SearchOrderBy;
-  select: Array<SelectedPropertyApiName>;
+  select: ReadonlyArray<SelectedPropertyApiName>;
   pageToken?: PageToken;
   pageSize?: PageSize;
   /**

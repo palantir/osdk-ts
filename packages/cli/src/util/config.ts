@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import type { JSONSchemaType } from "ajv";
 import { promises as fsPromises } from "node:fs";
 import { extname } from "node:path";
-import { ExitProcessError } from "../ExitProcessError.js";
 
 export interface GitDescribeAutoVersionConfig {
   type: "git-describe";
@@ -60,8 +60,8 @@ const CONFIG_FILE_SCHEMA: JSONSchemaType<FoundryConfig> = {
           oneOf: [
             {
               properties: {
-                "type": { const: "git-describe", type: "string" },
-                "tagPrefix": { type: "string", nullable: true },
+                type: { const: "git-describe", type: "string" },
+                tagPrefix: { type: "string", nullable: true },
               },
             },
           ],

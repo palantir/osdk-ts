@@ -24,12 +24,12 @@ import {
   createInternalClientContext,
   thirdPartyApplicationService,
 } from "#net";
+import { ExitProcessError } from "@osdk/cli.common";
 import archiver from "archiver";
 import { colorize } from "consola/utils";
 import * as fs from "node:fs";
 import path from "node:path";
 import { Readable } from "node:stream";
-import { ExitProcessError } from "../../../ExitProcessError.js";
 import { autoVersion as findAutoVersion } from "../../../util/autoVersion.js";
 import type { AutoVersionConfig } from "../../../util/config.js";
 import { loadToken } from "../../../util/token.js";

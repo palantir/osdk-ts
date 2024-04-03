@@ -17,7 +17,17 @@
 import type { IsLink } from "./IsLink";
 
 export declare type OmitMetadataProperties<T> = {
-  [K in keyof Omit<T, "__apiName" | "__rid" | "__primaryKey">]: T[K];
+  [
+    K in keyof Omit<
+      T,
+      | "__apiName"
+      | "__rid"
+      | "__primaryKey"
+      | "$apiName"
+      | "$rid"
+      | "$primaryKey"
+    >
+  ]: T[K];
 };
 
 export declare type OmitLinksProperties<T> = {

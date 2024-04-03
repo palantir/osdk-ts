@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import { consola } from "consola";
 import { promises as fsPromises } from "node:fs";
 import path from "node:path";
-import { ExitProcessError } from "../ExitProcessError.js";
 
 const TOKEN_ENV_VARS = ["FOUNDRY_TOKEN", "FOUNDRY_SDK_AUTH_TOKEN"] as const;
 

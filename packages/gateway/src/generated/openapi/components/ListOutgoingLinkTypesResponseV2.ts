@@ -20,5 +20,5 @@ import type { PageToken } from "./PageToken";
 export interface ListOutgoingLinkTypesResponseV2 {
   nextPageToken?: PageToken;
   /** The list of link type sides in the current page. */
-  data: Array<LinkTypeSideV2>;
+  data: ReadonlyArray<LinkTypeSideV2>;
 }

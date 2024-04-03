@@ -17,22 +17,26 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 
-type StringAggregateOption = "approximateDistinct" | "count";
+type StringAggregateOption = "approximateDistinct";
 type NumericAggregateOption =
-  | "count"
   | "min"
   | "max"
   | "sum"
   | "avg"
   | "approximateDistinct";
 
+type totalCountOption = { $count?: true };
+
 export type AggregationClause<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-> = {
-  [P in AggregatableKeys<Q>]?: Q["properties"][P]["type"] extends "string"
-    ? StringAggregateOption | StringAggregateOption[]
-    : Q["properties"][P]["type"] extends
-      "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
-      ? NumericAggregateOption | NumericAggregateOption[]
-    : never;
-};
+  Q extends ObjectOrInterfaceDefinition,
+  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
+> =
+  & {
+    [P in K]?: Q["properties"][P]["type"] extends "string"
+      ? StringAggregateOption | StringAggregateOption[]
+      : Q["properties"][P]["type"] extends
+        "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
+        ? NumericAggregateOption | NumericAggregateOption[]
+      : never;
+  }
+  & totalCountOption;

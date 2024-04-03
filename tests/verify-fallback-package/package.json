@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
     "@osdk/legacy-client": "workspace:*"
   }
 }

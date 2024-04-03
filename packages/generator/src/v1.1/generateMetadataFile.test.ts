@@ -40,6 +40,7 @@ describe(generateMetadataFile, () => {
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
       import type { BulkActions } from './ontology/actions/BulkActions';
+      import { deleteTodos } from './ontology/actions/deleteTodos';
       import { markTodoCompleted } from './ontology/actions/markTodoCompleted';
       import type { Objects } from './ontology/objects/Objects';
       import { Person } from './ontology/objects/Person';
@@ -59,6 +60,7 @@ describe(generateMetadataFile, () => {
         };
         actions: {
           markTodoCompleted: typeof markTodoCompleted;
+          deleteTodos: typeof deleteTodos;
         };
         queries: {
           getCount: typeof getCount;
@@ -75,11 +77,12 @@ describe(generateMetadataFile, () => {
         },
         actions: {
           markTodoCompleted,
+          deleteTodos,
         },
         queries: {
           getCount,
         },
-      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted', 'getCount'>;
+      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted' | 'deleteTodos', 'getCount'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
@@ -110,6 +113,7 @@ describe(generateMetadataFile, () => {
               primaryKey: "id",
               rid: "rid.object.foo",
               status: "ACTIVE",
+              titleProperty: "id",
               properties: {
                 id: {
                   dataType: { type: "integer" },

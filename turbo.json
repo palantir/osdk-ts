@@ -7,21 +7,6 @@
       "dependsOn": ["^transpile", "^typecheck"]
     },
 
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "dependsOn": ["//#dev:typecheck", "dev:transpile", "codegen"]
-    },
-
-    "dev:transpile": {
-      "cache": false,
-      "dependsOn": ["codegen"]
-    },
-
-    "//#dev:typecheck": {
-      "cache": false
-    },
-
     "fix-lint": {
       "cache": false
     },
@@ -74,6 +59,11 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    "@osdk/examples.next-static-export#build": {
+      "dependsOn": ["transpile", "typecheck"],
+      "inputs": ["../../google-font-mocked-response.js"]
+    },
+
     "transpile": {
       "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
@@ -82,7 +72,7 @@
 
     "test": {
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["build"]
+      "dependsOn": ["transpile", "typecheck"]
     },
     "test:watch": {
       "env": ["FORCE_COLOR"],
@@ -97,6 +87,8 @@
         "packages/*/tsconfig.json",
         "examples/*/*/package.json",
         "examples/*/*/tsconfig.json",
+        "examples-extra/*/*/package.json",
+        "examples-extra/*/*/tsconfig.json",
         "monorepo/*/*/package.json",
         "monorepo/*/*/tsconfig.json",
         "templates/*"
@@ -104,7 +96,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
+      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
     }
   },
 

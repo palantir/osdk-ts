@@ -17,5 +17,5 @@
 import type { TimeSeriesPoint } from "./TimeSeriesPoint";
 
 export interface StreamTimeSeriesPointsResponse {
-  data: Array<TimeSeriesPoint>;
+  data: ReadonlyArray<TimeSeriesPoint>;
 }

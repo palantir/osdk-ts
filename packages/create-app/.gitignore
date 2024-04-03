@@ -1,3 +1,0 @@
-# Override root lib/ ignore
-!templates/**/src/lib/
-!**/__snapshots__/**/src/lib/

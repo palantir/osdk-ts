@@ -20,7 +20,7 @@ export interface InvalidParameterCombination {
   errorName: "InvalidParameterCombination";
   errorInstanceId: string;
   parameters: {
-    validCombinations: Array<Array<string>>;
-    providedParameters: Array<string>;
+    validCombinations: ReadonlyArray<ReadonlyArray<string>>;
+    providedParameters: ReadonlyArray<string>;
   };
 }

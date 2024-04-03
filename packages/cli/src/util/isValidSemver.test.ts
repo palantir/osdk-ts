@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { isValidSemver } from "@osdk/cli.common";
 import { describe, expect, it } from "vitest";
-import { isValidSemver } from "./isValidSemver.js";
 
 describe("isValidSemver", () => {
   it("should return true for a valid SemVer version", () => {

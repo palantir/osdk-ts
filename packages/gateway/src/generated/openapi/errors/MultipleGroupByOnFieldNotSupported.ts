@@ -22,6 +22,6 @@ export interface MultipleGroupByOnFieldNotSupported {
   errorName: "MultipleGroupByOnFieldNotSupported";
   errorInstanceId: string;
   parameters: {
-    duplicateFields: Array<string>;
+    duplicateFields: ReadonlyArray<string>;
   };
 }
