@@ -14,26 +14,22 @@
  * limitations under the License.
  */
 
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { getPackageJsonContents } from "./handleGenerate.mjs";
+import { describe, expect, test } from "vitest";
+import { getPackageJsonContents } from "./generateClientSdkPackage";
 
-describe("handleGenerate", () => {
-  beforeEach(() => {
-    process.env.PACKAGE_API_VERSION = "99.9.9";
-    process.env.PACKAGE_CLIENT_VERSION = "88.8.8";
-    process.env.PACKAGE_LEGACY_CLIENT_VERSION = "77.7.7";
-  });
-
-  afterEach(() => {
-    delete process.env.PACKAGE_API_VERSION;
-    delete process.env.PACKAGE_CLIENT_VERSION;
-    delete process.env.PACKAGE_LEGACY_CLIENT_VERSION;
-  });
-
+describe("generateClientSdkPackage", () => {
   describe(getPackageJsonContents, () => {
+    const versions = {
+      osdkApiVersion: "^99.9.9",
+      osdkClientVersion: "^88.8.8",
+      osdkLegacyClientVersion: "^77.7.7",
+      areTheTypesWrongVersion: "^0.15.2",
+      tslibVersion: "^2.6.2",
+      typescriptVersion: "^5.4.2",
+    } as const;
     describe("v1", () => {
       test("returns the package.json contents", async () => {
-        expect(await getPackageJsonContents("foo", "1.1.1", 1))
+        expect(getPackageJsonContents("foo", "1.1.1", "1.1", versions))
           .toMatchInlineSnapshot(`
             {
               "devDependencies": {
@@ -77,7 +73,7 @@ describe("handleGenerate", () => {
 
     describe("v2", () => {
       test("returns the package.json contents", async () => {
-        expect(await getPackageJsonContents("foo", "1.2.3", 2))
+        expect(getPackageJsonContents("foo", "1.2.3", "2.0", versions))
           .toMatchInlineSnapshot(`
             {
               "devDependencies": {
