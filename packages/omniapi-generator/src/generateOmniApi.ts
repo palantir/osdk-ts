@@ -16,12 +16,12 @@
 
 import fs from "node:fs/promises";
 import * as path from "node:path";
-import { copyright } from "./copyright";
-import { generateComponents } from "./generateComponents";
-import { generateResource } from "./generateResource";
-import type { ApiSpec } from "./ir";
-import { isIgnoredNamespace } from "./isIgnoredNamespace";
-import { writeCode } from "./writeCode";
+import { copyright } from "./copyright.js";
+import { generateComponents } from "./generateComponents.js";
+import { generateResource } from "./generateResource.js";
+import type { ApiSpec } from "./ir/index.js";
+import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
+import { writeCode } from "./writeCode.js";
 
 export async function generateOmniApi(ir: ApiSpec, outputDir: string) {
   let rootOut = `${copyright}

@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-export { cli } from "./cli";
-// const WebsiteVersion = ["/v2/thirdPartyApplications/{0}/websiteVersions", [
-//     1,
-//     2,
-//     4,
-//   ], {
-//     upload: ["POST", "/upload", "application/octet-stream"],
-//   }] as const;
+export { cli } from "./cli.js";

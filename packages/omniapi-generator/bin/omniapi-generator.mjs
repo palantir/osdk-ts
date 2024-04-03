@@ -17,5 +17,5 @@
  */
 
 // eslint-disable-next-line header/header
-import { cli } from "../build/js/index.cjs";
+import { cli } from "../build/js/index.mjs";
 cli();

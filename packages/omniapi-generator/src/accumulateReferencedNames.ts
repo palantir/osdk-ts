@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataType } from "./ir";
+import type { DataType } from "./ir/index.js";
 
 export function accumulateReferencedNames(accum: Set<string>, type: DataType) {
   switch (type.type) {

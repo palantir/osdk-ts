@@ -29,7 +29,7 @@ import type {
   PageToken,
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
-  SearchOrderBy,
+  SearchOrderByV2,
 } from "@osdk/omniapi";
 import { loadObjectSetV2 } from "@osdk/omniapi/OntologiesV2_OntologyObjectSet";
 import {
@@ -267,7 +267,7 @@ export async function fetchPageWithErrors<
 
 function applyFetchArgs<
   X extends {
-    orderBy?: SearchOrderBy;
+    orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
   },

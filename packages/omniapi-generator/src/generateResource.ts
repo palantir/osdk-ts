@@ -15,9 +15,9 @@
  */
 
 import invariant from "tiny-invariant";
-import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference";
-import { copyright } from "./copyright";
-import { HTTP_VERB_MAP } from "./HTTP_VERB_MAP";
+import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference.js";
+import { copyright } from "./copyright.js";
+import { HTTP_VERB_MAP } from "./HTTP_VERB_MAP.js";
 import type {
   Documentation,
   Parameter,
@@ -25,8 +25,8 @@ import type {
   Resource,
   Response,
   StaticOperation,
-} from "./ir";
-import { writeCode } from "./writeCode";
+} from "./ir/index.js";
+import { writeCode } from "./writeCode.js";
 
 type Params = Array<
   { name: string; typeReference: string; optional?: boolean }

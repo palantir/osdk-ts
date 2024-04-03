@@ -16,12 +16,12 @@
 
 import fs from "node:fs/promises";
 import * as path from "node:path";
-import { accumulateReferencedNames } from "./accumulateReferencedNames";
-import { copyright } from "./copyright";
-import { generateComponentDeclaration } from "./generateComponentDeclaration";
-import type { ApiSpec } from "./ir";
-import { isIgnoredType } from "./isIgnoredType";
-import { writeCode } from "./writeCode";
+import { accumulateReferencedNames } from "./accumulateReferencedNames.js";
+import { copyright } from "./copyright.js";
+import { generateComponentDeclaration } from "./generateComponentDeclaration.js";
+import type { ApiSpec } from "./ir/index.js";
+import { isIgnoredType } from "./isIgnoredType.js";
+import { writeCode } from "./writeCode.js";
 
 export async function generateComponents(
   ir: ApiSpec,
@@ -44,7 +44,7 @@ export async function generateComponents(
     }
   }
 
-  for (const componentName of componentsToEmit) {
+  for (const componentName of [...componentsToEmit].sort()) {
     out += componentsCode.get(componentName);
   }
 

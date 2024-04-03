@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { convertIrPrimitiveTypeToTsTypeReference } from "./convertIrPrimitiveTypeToTsTypeReference";
-import type { DataType } from "./ir";
+import { convertIrPrimitiveTypeToTsTypeReference } from "./convertIrPrimitiveTypeToTsTypeReference.js";
+import type { DataType } from "./ir/index.js";
 
 export function convertIrDataTypeToTsTypeReference(
   dataType: DataType,

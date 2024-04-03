@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { Aggregation } from "@osdk/omniapi";
+import type { AggregationV2 } from "@osdk/omniapi";
 import type { AggregationClause } from "../../query/index.js";
 
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,
 >(select: AC) {
-  return Object.entries(select).flatMap<Aggregation>(([k, v]) => {
+  return Object.entries(select).flatMap<AggregationV2>(([k, v]) => {
     if (k === "$count") {
       if (v) return { type: "count", name: "count" };
       return [];

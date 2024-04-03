@@ -24,3 +24,4 @@ echo "Generating bindings"
 $CODE_GENERATOR generate --inputFile "${OPENAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_DIR}"
 
 formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
+formatTypescript "$OUT_DIR" "${SCRIPT_DIR}/../packages/client"

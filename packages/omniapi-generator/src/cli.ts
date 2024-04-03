@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
+import { findUp } from "find-up";
 import fs from "node:fs/promises";
+import * as path from "node:path";
 import * as process from "node:process";
 import { parse } from "yaml";
 import yargs from "yargs";
 import type { Arguments, Argv, CommandModule } from "yargs";
 import { hideBin } from "yargs/helpers";
-import { generateOmniApi } from "./generateOmniApi";
-import type { ApiSpec } from "./ir";
+import { generateOmniApi } from "./generateOmniApi.js";
+import type { ApiSpec } from "./ir/index.js";
+import { updateSls } from "./updateSls.js";
 
 export async function cli(args: string[] = process.argv) {
   const base = yargs(hideBin(args))
@@ -84,6 +87,17 @@ export class GenerateCommand implements CommandModule<{}, Options> {
 
     await generateOmniApi(irSpec, output);
 
-    // await updateSls(manifest, output);
+    // this updates the omniapi package.json with the correct versions
+    await updateSls(manifest, output);
+
+    // but right now we arent using that we are bundling it into client so we need to
+    // manually update client too
+    const pnpmWorkspaceFile = await findUp("pnpm-workspace.yaml", {
+      cwd: output,
+    });
+    await updateSls(
+      manifest,
+      path.join(path.dirname(pnpmWorkspaceFile!), "packages", "client", "src"),
+    );
   };
 }

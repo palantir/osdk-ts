@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Component } from "./ir";
-import { isIgnoredNamespace } from "./isIgnoredNamespace";
+import type { Component } from "./ir/index.js";
+import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
 
 export function isIgnoredType(component: Component) {
   return isIgnoredNamespace(component.namespace);

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference";
-import { convertIrPrimitiveTypeToTsTypeReference } from "./convertIrPrimitiveTypeToTsTypeReference";
-import type { Component } from "./ir";
+import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference.js";
+import { convertIrPrimitiveTypeToTsTypeReference } from "./convertIrPrimitiveTypeToTsTypeReference.js";
+import type { Component } from "./ir/index.js";
 
 export function generateComponentDeclaration(component: Component) {
   const isAlias = component.type.type !== "object";

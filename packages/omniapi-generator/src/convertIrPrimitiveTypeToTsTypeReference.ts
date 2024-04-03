@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PrimitiveType } from "./ir";
+import type { PrimitiveType } from "./ir/index.js";
 
 export function convertIrPrimitiveTypeToTsTypeReference(
   builtin: PrimitiveType,
