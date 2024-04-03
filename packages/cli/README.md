@@ -20,7 +20,7 @@ cd packages/cli
 The site subcommand allows users to manage their Foundry site
 
 ```
-npx @osdk/cli unstable site [subcommand]
+npx @osdk/cli site [subcommand]
 ```
 
 Common options
@@ -43,7 +43,7 @@ The `site` subcommand is not runnable without passing a specific subcommand i.e 
 The deploy subcommand allows users to upload new versions of their site and set it as deployed
 
 ```
-npx @osdk/cli unstable site deploy
+npx @osdk/cli site deploy
 ```
 
 Deploy options
@@ -96,7 +96,7 @@ The version subcommand is not runnable without passing a specific subcommand i.e
 The list subcommand allows users to list their site versions
 
 ```
-npx @osdk/cli unstable site version list
+npx @osdk/cli site version list
 ```
 
 #### `get` subcommand
@@ -104,7 +104,7 @@ npx @osdk/cli unstable site version list
 The list subcommand allows users to get their site live version
 
 ```
-npx @osdk/cli unstable site version get
+npx @osdk/cli site version get
 ```
 
 #### `set <version>` subcommand
@@ -112,7 +112,7 @@ npx @osdk/cli unstable site version get
 The list subcommand allows users to set their site live version
 
 ```
-npx @osdk/cli unstable site version set 0.1.0
+npx @osdk/cli site version set 0.1.0
 ```
 
 #### `unset` subcommand
@@ -120,7 +120,7 @@ npx @osdk/cli unstable site version set 0.1.0
 The list subcommand allows users to clear their site live version
 
 ```
-npx @osdk/cli unstable site version unset
+npx @osdk/cli site version unset
 ```
 
 #### `delete <version>` subcommand
@@ -128,7 +128,7 @@ npx @osdk/cli unstable site version unset
 The list subcommand allows users to delete a site version
 
 ```
-npx @osdk/cli unstable site version delete 0.1.0
+npx @osdk/cli site version delete 0.1.0
 ```
 
 ## `typescript` subcommand
@@ -140,11 +140,11 @@ npx @osdk/cli unstable site version delete 0.1.0
 To see all supported commands and their expected arguments, run your command with the --help flag
 
 ```
-npx @osdk/cli unstable site version --help
+npx @osdk/cli site version --help
 ```
 
 And for additional information for debugging, you can use the --verbose flag
 
 ```
-npx @osdk/cli unstable site version --verbose
+npx @osdk/cli site version --verbose
 ```
