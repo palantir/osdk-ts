@@ -22,7 +22,7 @@ import {
 } from "@osdk/gateway/requests";
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
-  __UNSTALE_generateClientSdkPackage,
+  __UNSTABLE_generateClientSdkPackage,
   generateClientSdkVersionOneDotOne,
   generateClientSdkVersionTwoPointZero,
 } from "@osdk/generator";
@@ -141,7 +141,7 @@ async function generateClientSdk(
       return true;
     }
 
-    await __UNSTALE_generateClientSdkPackage(
+    await __UNSTABLE_generateClientSdkPackage(
       args.packageName!,
       args.version,
       args.beta ? "2.0" : "1.1",
