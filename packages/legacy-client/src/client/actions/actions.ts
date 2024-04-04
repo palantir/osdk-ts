@@ -26,6 +26,7 @@ import type {
   Timestamp,
 } from "../..";
 import type {
+  BatchActionExecutionOptions,
   BulkActionExecutionOptions,
   BulkActionResponseFromOptions,
 } from "../baseTypes";
@@ -140,18 +141,34 @@ export type WrappedActionReturnType<
   >
 >;
 
-export type WrappedBulkActionReturnType<
+export type WrappedBatchActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-  Op extends BulkActionExecutionOptions,
+  Op extends BatchActionExecutionOptions,
 > = Promise<
   Result<
-    BulkActionReturnType<O, A, Op>,
+    BatchActionReturnType<O, A, Op>,
     ActionError
   >
 >;
 
+export type WrappedBulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = WrappedBatchActionReturnType<O, A, Op>;
+
 export type BulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = BatchActionReturnType<
+  O,
+  A,
+  Op
+>;
+
+export type BatchActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends BulkActionExecutionOptions,
@@ -183,7 +200,7 @@ export type Actions<
       ) => WrappedActionReturnType<O, A, Op>;
 };
 
-export type BulkActions<O extends OntologyDefinition<any>> = {
+export type BatchActions<O extends OntologyDefinition<any>> = {
   [A in keyof O["actions"]]:
     IsEmptyRecord<O["actions"][A]["parameters"]> extends true
       ? <Op extends BulkActionExecutionOptions>(
@@ -195,3 +212,5 @@ export type BulkActions<O extends OntologyDefinition<any>> = {
         options?: Op,
       ) => WrappedBulkActionReturnType<O, A, Op>;
 };
+
+export type BulkActions<O extends OntologyDefinition<any>> = BatchActions<O>;

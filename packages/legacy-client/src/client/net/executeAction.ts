@@ -29,7 +29,7 @@ import type {
 import {
   ActionExecutionMode,
   ActionResponse,
-  BulkActionResponse,
+  BatchActionResponse,
   ReturnEditsMode,
 } from "../baseTypes";
 import type {
@@ -100,7 +100,7 @@ export async function executeBatchAction<
           options: options ? remapBulkOptions(options) : {},
         },
       );
-      return BulkActionResponse.of(client, response) as BulkActionReturnType<
+      return BatchActionResponse.of(client, response) as BulkActionReturnType<
         O,
         A,
         Op
