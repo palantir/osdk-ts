@@ -50,6 +50,8 @@ import {
 } from "../../util/test/expectUtils";
 import { unwrapResultOrThrow } from "../../util/test/resultUtils";
 import type {
+  BatchActionExecutionOptions,
+  BatchActionResponseFromOptions,
   BulkActionExecutionOptions,
   BulkActionResponseFromOptions,
 } from "../baseTypes";
@@ -116,6 +118,16 @@ describe("Actions", () => {
           ]
         >();
 
+      expectTypeOf<Parameters<typeof bulkActions.createTask>>()
+        .toEqualTypeOf<
+          [
+            {
+              id?: number;
+            }[],
+            BatchActionExecutionOptions?,
+          ]
+        >();
+
       expectTypeOf<typeof actions.createTask>()
         // @ts-expect-error
         .toBeCallableWith([{ id: 1 }]);
@@ -151,6 +163,18 @@ describe("Actions", () => {
           >
         >
       >();
+
+      expectTypeOf<ReturnType<typeof bulkActions.createTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            BatchActionResponseFromOptions<
+              BatchActionExecutionOptions,
+              Edits<OsdkLegacyObjectFrom<typeof MockOntology, "Task">, void>
+            >,
+            ActionError
+          >
+        >
+      >();
     });
 
     it("skips empty parameters", () => {
@@ -164,6 +188,13 @@ describe("Actions", () => {
         [
           Record<string, never>[],
           BulkActionExecutionOptions?,
+        ]
+      >();
+
+      expectTypeOf<Parameters<typeof bulkActions.createTodo>>().toEqualTypeOf<
+        [
+          Record<string, never>[],
+          BatchActionExecutionOptions?,
         ]
       >();
     });
@@ -217,6 +248,21 @@ describe("Actions", () => {
           Result<
             BulkActionResponseFromOptions<
               BulkActionExecutionOptions,
+              Edits<
+                void,
+                OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              >
+            >,
+            ActionError
+          >
+        >
+      >();
+
+      expectTypeOf<ReturnType<typeof bulkActions.updateTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            BatchActionResponseFromOptions<
+              BatchActionExecutionOptions,
               Edits<
                 void,
                 OsdkLegacyObjectFrom<typeof MockOntology, "Task">
