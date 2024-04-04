@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+import { FoundryClient } from "./generatedNoCheck/FoundryClient.js";
+
 export { FoundryClient, PublicClientAuth } from "./generatedNoCheck/index.js";
+
+const client = new FoundryClient(undefined as any);

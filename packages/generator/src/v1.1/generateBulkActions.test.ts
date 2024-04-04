@@ -32,38 +32,38 @@ describe(generateBulkActions, () => {
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
 
-    expect(helper.getFiles()[`${BASE_PATH}/BulkActions.ts`])
+    expect(helper.getFiles()[`${BASE_PATH}/BatchActions.ts`])
       .toMatchInlineSnapshot(`
       "import type {
         ActionError,
-        BulkActionExecutionOptions,
-        BulkActionResponseFromOptions,
+        BatchActionExecutionOptions,
+        BatchActionResponseFromOptions,
         Edits,
         Result,
       } from '@osdk/legacy-client';
       import type { Todo } from '../objects/Todo';
-      export interface BulkActions {
+      export interface BatchActions {
         /**
          * An action which takes different types of parameters
          * @param {Todo | Todo["__primaryKey"]} params.object
          */
-        markTodoCompleted<O extends BulkActionExecutionOptions>(
+        markTodoCompleted<O extends BatchActionExecutionOptions>(
           params: {
             object?: Todo | Todo['__primaryKey'];
           }[],
           options?: O,
-        ): Promise<Result<BulkActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
+        ): Promise<Result<BatchActionResponseFromOptions<O, Edits<void, Todo>>, ActionError>>;
 
         /**
          * An action which takes in an array of objects
          * @param {Array<Todo | Todo["__primaryKey"]>} params.object
          */
-        deleteTodos<O extends BulkActionExecutionOptions>(
+        deleteTodos<O extends BatchActionExecutionOptions>(
           params: {
             object?: Array<Todo | Todo['__primaryKey']>;
           }[],
           options?: O,
-        ): Promise<Result<BulkActionResponseFromOptions<O, Edits<void, void>>, ActionError>>;
+        ): Promise<Result<BatchActionResponseFromOptions<O, Edits<void, void>>, ActionError>>;
       }
       "
       `);

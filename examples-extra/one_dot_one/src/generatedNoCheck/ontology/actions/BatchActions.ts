@@ -1,8 +1,8 @@
 import type {
   ActionError,
   Attachment,
-  BulkActionExecutionOptions,
-  BulkActionResponseFromOptions,
+  BatchActionExecutionOptions,
+  BatchActionResponseFromOptions,
   Edits,
   LocalDate,
   ObjectSet,
@@ -12,7 +12,7 @@ import type {
 import type { ObjectTypeWithAllPropertyTypes } from '../objects/ObjectTypeWithAllPropertyTypes';
 import type { Person } from '../objects/Person';
 import type { Todo } from '../objects/Todo';
-export interface BulkActions {
+export interface BatchActions {
   /**
    * An action which takes different types of parameters
    * @param {ObjectSet<Todo>} params.objectSet
@@ -22,7 +22,7 @@ export interface BulkActions {
    * @param {Array<LocalDate>} params.dateArray
    * @param {Array<Attachment>} params.attachmentArray
    */
-  actionTakesAllParameterTypes<O extends BulkActionExecutionOptions>(
+  actionTakesAllParameterTypes<O extends BatchActionExecutionOptions>(
     params: {
       objectSet: ObjectSet<Todo>;
       object?: Person | Person['__primaryKey'];
@@ -32,13 +32,15 @@ export interface BulkActions {
       attachmentArray: Array<Attachment>;
     }[],
     options?: O,
-  ): Promise<Result<BulkActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>>;
+  ): Promise<
+    Result<BatchActionResponseFromOptions<O, Edits<Todo, Todo | ObjectTypeWithAllPropertyTypes>>, ActionError>
+  >;
 
   /**
    * Creates a new Todo
    */
-  createTodo<O extends BulkActionExecutionOptions>(
+  createTodo<O extends BatchActionExecutionOptions>(
     params: Record<string, never>[],
     options?: O,
-  ): Promise<Result<BulkActionResponseFromOptions<O, Edits<Todo, void>>, ActionError>>;
+  ): Promise<Result<BatchActionResponseFromOptions<O, Edits<Todo, void>>, ActionError>>;
 }

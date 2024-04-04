@@ -70,8 +70,8 @@ export async function generateBulkActions(
     actionSignatures.push(
       `
       ${jsDocBlock.join("\n")}
-      ${action.apiName}<O extends BulkActionExecutionOptions>(${parameterBlock}options?: O): 
-        Promise<Result<BulkActionResponseFromOptions<O, Edits<${
+      ${action.apiName}<O extends BatchActionExecutionOptions>(${parameterBlock}options?: O): 
+        Promise<Result<BatchActionResponseFromOptions<O, Edits<${
         addedObjects.length > 0
           ? addedObjects.join(" | ")
           : "void"
@@ -86,15 +86,15 @@ export async function generateBulkActions(
 
   await fs.mkdir(outDir, { recursive: true });
   await fs.writeFile(
-    path.join(outDir, "BulkActions.ts"),
+    path.join(outDir, "BatchActions.ts"),
     await formatTs(`
-    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, BulkActionExecutionOptions, ActionError, Result, ActionResponseFromOptions, BulkActionResponseFromOptions } from "@osdk/legacy-client";
+    import type { ObjectSet, LocalDate, Timestamp, Attachment, Edits, ActionExecutionOptions, BatchActionExecutionOptions, ActionError, Result, ActionResponseFromOptions, BatchActionResponseFromOptions } from "@osdk/legacy-client";
     ${
       Array.from(importedObjects).map(importedObject =>
         `import type { ${importedObject} } from "../objects/${importedObject}${importExt}";`
       ).join("\n")
     }
-    export interface BulkActions {
+    export interface BatchActions {
     ${actionSignatures.join("\n")}
     }
   `),
