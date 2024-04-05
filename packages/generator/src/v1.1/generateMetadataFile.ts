@@ -71,6 +71,7 @@ export async function generateMetadataFile(
   import type { Actions } from "./ontology/actions/Actions${importExt}";
   import type { Queries } from "./ontology/queries/Queries${importExt}";
   import type { BatchActions } from "./ontology/actions/BatchActions${importExt}";
+  import type { BulkActions } from "./ontology/actions/BulkActions${importExt}";
   ${
       objectNames.map((name) =>
         `import {${name}} from "./ontology/objects/${name}${importExt}";`
@@ -143,6 +144,8 @@ export async function generateMetadataFile(
 export interface Ontology extends ClientOntology<typeof Ontology> {
     objects: Objects;
     actions: Actions;
+    /** @deprecated use batchActions */
+    bulkActions: BulkActions;
     batchActions: BatchActions;
     queries: Queries;
 }`),
