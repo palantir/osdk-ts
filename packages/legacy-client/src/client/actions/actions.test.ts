@@ -57,8 +57,12 @@ import type {
 } from "../baseTypes";
 import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import type { Actions, BulkActions } from "./actions";
-import { createActionProxy, createBulkActionProxy } from "./createActionProxy";
+import type { Actions, BatchActions, BulkActions } from "./actions";
+import {
+  createActionProxy,
+  createBatchActionProxy,
+  createBulkActionProxy,
+} from "./createActionProxy";
 
 describe("Actions", () => {
   let client: ClientContext<typeof MockOntology>;
@@ -68,6 +72,7 @@ describe("Actions", () => {
     typeof MockOntology
   >;
   let bulkActions: BulkActions<typeof MockOntology>;
+  let batchActions: BatchActions<typeof MockOntology>;
   let sharedBulkActions: BulkActions<typeof MockOntologyGenerated>;
 
   beforeAll(async () => {
@@ -95,6 +100,7 @@ describe("Actions", () => {
     );
     actions = createActionProxy<typeof MockOntology>(client);
     bulkActions = createBulkActionProxy<typeof MockOntology>(client);
+    batchActions = createBatchActionProxy<typeof MockOntology>(client);
   });
 
   describe("type tests", () => {
@@ -128,11 +134,29 @@ describe("Actions", () => {
           ]
         >();
 
+      expectTypeOf<Parameters<typeof batchActions.createTask>>()
+        .toEqualTypeOf<
+          [
+            {
+              id?: number;
+            }[],
+            BatchActionExecutionOptions?,
+          ]
+        >();
+
       expectTypeOf<typeof actions.createTask>()
         // @ts-expect-error
         .toBeCallableWith([{ id: 1 }]);
 
       expectTypeOf<typeof bulkActions.createTask>().toBeCallableWith([{
+        id: 1,
+      }], {
+        // @ts-expect-error
+        mode: ActionExecutionMode.VALIDATE_AND_EXECUTE,
+        returnEdits: ReturnEditsMode.ALL,
+      });
+
+      expectTypeOf<typeof batchActions.createTask>().toBeCallableWith([{
         id: 1,
       }], {
         // @ts-expect-error
@@ -175,6 +199,18 @@ describe("Actions", () => {
           >
         >
       >();
+
+      expectTypeOf<ReturnType<typeof batchActions.createTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            BatchActionResponseFromOptions<
+              BatchActionExecutionOptions,
+              Edits<OsdkLegacyObjectFrom<typeof MockOntology, "Task">, void>
+            >,
+            ActionError
+          >
+        >
+      >();
     });
 
     it("skips empty parameters", () => {
@@ -197,6 +233,13 @@ describe("Actions", () => {
           BatchActionExecutionOptions?,
         ]
       >();
+
+      expectTypeOf<Parameters<typeof batchActions.createTodo>>().toEqualTypeOf<
+        [
+          Record<string, never>[],
+          BatchActionExecutionOptions?,
+        ]
+      >();
     });
 
     it("maps Object types correctly", () => {
@@ -214,7 +257,7 @@ describe("Actions", () => {
         ]
       >();
 
-      expectTypeOf<Parameters<typeof bulkActions.updateTask>>().toMatchTypeOf<
+      expectTypeOf<Parameters<typeof batchActions.updateTask>>().toMatchTypeOf<
         [
           {
             task?:
@@ -259,6 +302,21 @@ describe("Actions", () => {
       >();
 
       expectTypeOf<ReturnType<typeof bulkActions.updateTask>>().toMatchTypeOf<
+        Promise<
+          Result<
+            BatchActionResponseFromOptions<
+              BatchActionExecutionOptions,
+              Edits<
+                void,
+                OsdkLegacyObjectFrom<typeof MockOntology, "Task">
+              >
+            >,
+            ActionError
+          >
+        >
+      >();
+
+      expectTypeOf<ReturnType<typeof batchActions.updateTask>>().toMatchTypeOf<
         Promise<
           Result<
             BatchActionResponseFromOptions<
