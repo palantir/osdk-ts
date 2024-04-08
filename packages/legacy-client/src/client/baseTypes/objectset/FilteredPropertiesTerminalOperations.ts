@@ -23,6 +23,9 @@ export type FilteredPropertiesTerminalOperations<
   T extends OntologyObject,
   V extends Array<keyof T>,
 > = {
+  /**
+   * @deprecated use asyncIter instead
+   */
   all(): Promise<
     Result<
       Array<
@@ -49,6 +52,13 @@ export type FilteredPropertiesTerminalOperations<
         >
       >,
       LoadObjectSetError
+    >
+  >;
+
+  asyncIter(): AsyncIterableIterator<
+    Pick<
+      T,
+      V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
     >
   >;
 

@@ -25,6 +25,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import {
   getMockTaskObject,
   getMockTodoObject,
+  loadAll,
   mockFetchResponse,
   MockOntology,
 } from "@osdk/shared.test";
@@ -238,6 +239,24 @@ describe("OsdkObjectSet", () => {
     expect(result.type).toEqual("ok");
   });
 
+  it("supports select methods - asyncIter", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockObjectPage([getMockTodoObject()]);
+    const result = await loadAll(
+      os.select(["id", "body", "complete"]).asyncIter(),
+    );
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/loadObjects", {
+        objectSet: {
+          type: "base",
+          objectType: "Todo",
+        },
+        select: ["id", "body", "complete"],
+      }),
+    );
+  });
+
   it("supports select methods - page", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockObjectPage([getMockTodoObject()]);
@@ -301,6 +320,30 @@ describe("OsdkObjectSet", () => {
     }
 
     expect(linkedTodosResponse.value.length).toEqual(1);
+  });
+
+  it("supports round-trip of circular links with asynciter", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockFetchResponse(fetch, getMockTodoObject());
+    const todoResponse = await os.get("1");
+
+    if (!isOk(todoResponse)) {
+      expect.fail("todo response was not ok");
+    }
+
+    mockObjectPage([getMockTaskObject()]);
+    const taskResponse = await todoResponse.value.linkedTask.get();
+
+    if (!isOk(taskResponse)) {
+      expect.fail("task response was not ok");
+    }
+
+    mockObjectPage([getMockTodoObject()]);
+    const linkedTodosResponse = await loadAll(
+      taskResponse.value.linkedTodos.asyncIter(),
+    );
+
+    expect(linkedTodosResponse.length).toEqual(1);
   });
 
   it("loads a page", async () => {

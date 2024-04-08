@@ -40,7 +40,7 @@ import type {
   Result,
 } from "../generatedNoCheck/@test-app/osdk";
 
-import { apiServer, stubData } from "@osdk/shared.test";
+import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -190,6 +190,19 @@ describe("LoadObjects", () => {
     expect(iter).toEqual(3);
   });
 
+  it("Gets All Objects with async iter", async () => {
+    let iter = 0;
+    const employees: Employee[] = await loadAll(
+      client.ontology
+        .objects.Employee.asyncIter(),
+    );
+    for (const emp of employees) {
+      expect(emp.employeeId).toEqual(50030 + iter);
+      iter += 1;
+    }
+    expect(iter).toEqual(3);
+  });
+
   it("Links with a cardinality of ONE are loaded properly", async () => {
     const result: Result<Employee, GetObjectError> = await client.ontology
       .objects.Employee.get(
@@ -248,6 +261,29 @@ describe("LoadObjects", () => {
     const peepsPageResult: Result<Page<Employee>, ListLinkedObjectsError> =
       await emp.peeps.fetchPageWithErrors();
     const peepsAll = assertOkOrThrow(peeps);
+    expect(peepsAll.length).toEqual(2);
+    expect(peepsAll[0].employeeId).toEqual(50030);
+    expect(peepsAll[1].employeeId).toEqual(50032);
+
+    const peepsPage = assertOkOrThrow(peepsPageResult);
+    expect(peepsPage.data.length).toEqual(2);
+    expect(peepsPage.data[0].employeeId).toEqual(50030);
+    expect(peepsPage.data[1].employeeId).toEqual(50032);
+  });
+
+  it("Links with a cardinality of MANY are loaded properly with async iter", async () => {
+    const result: Result<Employee, GetObjectError> = await client.ontology
+      .objects.Employee.get(
+        stubData.employee2.__primaryKey,
+      );
+
+    const emp = assertOkOrThrow(result);
+    const peepsAll: Employee[] = await loadAll(
+      await emp.peeps
+        .asyncIter(),
+    );
+    const peepsPageResult: Result<Page<Employee>, ListLinkedObjectsError> =
+      await emp.peeps.fetchPageWithErrors();
     expect(peepsAll.length).toEqual(2);
     expect(peepsAll[0].employeeId).toEqual(50030);
     expect(peepsAll[1].employeeId).toEqual(50032);
@@ -369,6 +405,21 @@ describe("LoadObjects", () => {
     const result = await client.ontology.objects.Employee.select(["fullName"])
       .all();
     const employees = assertOkOrThrow(result);
+    expect(employees.length).toEqual(3);
+    expectTypeOf(employees[0]).toEqualTypeOf<{
+      readonly fullName: string | undefined;
+      readonly __primaryKey: number;
+      readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
+    }>();
+  });
+
+  it("Loads specified properties when loading all with async iter", async () => {
+    const employees = await loadAll(
+      client.ontology.objects.Employee.select(["fullName"])
+        .asyncIter(),
+    );
     expect(employees.length).toEqual(3);
     expectTypeOf(employees[0]).toEqualTypeOf<{
       readonly fullName: string | undefined;

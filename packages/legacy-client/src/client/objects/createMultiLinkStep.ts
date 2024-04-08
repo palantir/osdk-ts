@@ -18,7 +18,7 @@ import type { ClientContext } from "@osdk/shared.net";
 import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
 import { getLinkedObject } from "../net/getLinkedObject";
-import { listLinkedObjects } from "../net/listLinkedObjects";
+import { listLinkedObjects, loadLinkedObjects } from "../net/listLinkedObjects";
 import {
   pageLinkedObjects,
   pageLinkedObjectsOrThrow,
@@ -92,6 +92,14 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         sourcePrimaryKey,
         targetApiName,
         options,
+      );
+    },
+    asyncIter(): AsyncIterableIterator<T> {
+      return loadLinkedObjects(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
       );
     },
   };

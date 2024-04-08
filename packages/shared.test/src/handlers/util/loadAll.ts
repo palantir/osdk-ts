@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-export * as handlers from "./handlers";
-export { loadAll } from "./handlers/util/loadAll";
-export * from "./mock-ontology";
-export { apiServer } from "./setupServers";
-export * as stubData from "./stubs";
-export { withoutRid } from "./withoutRid";
+export async function loadAll<T>(
+  iterator: AsyncIterableIterator<T>,
+): Promise<T[]> {
+  const arr: T[] = [];
+  for await (const i of iterator) {
+    arr.push(i);
+  }
+  return arr;
+}

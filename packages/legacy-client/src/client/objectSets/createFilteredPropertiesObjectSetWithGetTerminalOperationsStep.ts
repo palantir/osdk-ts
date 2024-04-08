@@ -24,6 +24,7 @@ import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import { loadAllObjects } from "../net/loadObjects";
 import {
+  loadObjectsIterator,
   loadObjectsPage,
   loadObjectsPageOrThrows,
 } from "../net/loadObjectsPage";
@@ -64,6 +65,16 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
         options,
       );
     },
+    asyncIter() {
+      return loadObjectsIterator(
+        client,
+        apiName,
+        objectSetDefinition,
+        orderByClause,
+        properties,
+      );
+    },
+
     fetchPage(options) {
       return loadObjectsPageOrThrows(
         client,

@@ -20,6 +20,7 @@ import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import { loadAllObjects } from "../net/loadObjects";
 import {
+  loadObjectsIterator,
   loadObjectsPage,
   loadObjectsPageOrThrows,
 } from "../net/loadObjectsPage";
@@ -74,6 +75,15 @@ export function createObjectSetTerminalLoadStep<
         objectSet,
         orderByClauses,
         selectedProperties,
+      );
+    },
+
+    asyncIter() {
+      return loadObjectsIterator<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
       );
     },
   };
