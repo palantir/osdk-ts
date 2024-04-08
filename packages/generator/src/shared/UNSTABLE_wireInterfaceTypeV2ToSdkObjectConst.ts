@@ -40,7 +40,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `
-  export interface ${objectDefIdentifier} extends InterfaceDefinition<"${interfaceDef.apiName}", ${interfaceDef.apiName}> {
+  export interface ${objectDefIdentifier} extends InterfaceDefinition<"${interfaceDef.apiName}", ${interfaceDef.apiName}>, VersionBound<"${process.env.PACKAGE_CLIENT_VERSION}"> {
     ${
       stringify(definition, {
         type: () => undefined,

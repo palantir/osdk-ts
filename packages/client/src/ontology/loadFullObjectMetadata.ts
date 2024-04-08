@@ -44,7 +44,7 @@ async function loadAllOutgoingLinkTypes(
     const result: ListOutgoingLinkTypesResponseV2 =
       await listOutgoingLinkTypesV2(
         client,
-        client.ontology.metadata.ontologyApiName,
+        client.ontologyRid,
         objtype,
         { pageToken },
       );
@@ -72,21 +72,19 @@ export async function loadFullObjectMetadata(
   client: MinimalClient,
   objtype: string,
 ): Promise<ObjectTypeDefinition<any, any>> {
-  const { ontologyApiName } = client.ontology.metadata;
-
   const conjureCtx = makeConjureContext(client, "/ontology-metadata/api");
 
   const [objectType, linkTypes, interfaceTypes, metadata] = await Promise.all([
     getObjectTypeV2(
       client,
-      ontologyApiName,
+      client.ontologyRid,
       objtype,
     ),
 
     loadAllOutgoingLinkTypes(client, objtype),
     listInterfaceTypes(
       client,
-      ontologyApiName,
+      client.ontologyRid,
       { pageSize: 200, preview: true },
     ),
     await loadAllOntologies(conjureCtx, {}),
@@ -95,7 +93,7 @@ export async function loadFullObjectMetadata(
   const sharedPropertyTypeMapping = await loadSptMap(
     conjureCtx,
     metadata,
-    client.ontology.metadata.ontologyRid,
+    client.ontologyRid,
     objectType.rid,
   );
 

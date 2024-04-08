@@ -114,18 +114,18 @@ export async function osdkObjectSetExample() {
   );
 
   // Pivots and links
-  const getPeeps = await client(Employee).pivotTo("peeps").fetchPageOrThrow();
+  const getPeeps = await client(Employee).pivotTo("peeps").fetchPage();
   console.log(getPeeps.data);
 
   const filteredEmployees = await simpleFilteredEmployeeObjectSet
-    .fetchPageOrThrow();
+    .fetchPage();
   const employeeLead = await filteredEmployees
     .data[0].$link
     .lead.get();
   console.log(employeeLead.fullName);
 
   // When fetching a page of employees, you can down select properties you want, and also order the results
-  const orderedEmployees = complexFilteredEmployeeObjectSet.fetchPageOrThrow({
+  const orderedEmployees = complexFilteredEmployeeObjectSet.fetchPage({
     select: ["employeeId", "fullName", "startDate"],
     orderBy: { "startDate": "asc" },
     pageSize: 10,

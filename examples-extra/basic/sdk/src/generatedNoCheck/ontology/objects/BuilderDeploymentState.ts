@@ -1,6 +1,8 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
-export interface BuilderDeploymentState extends ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState> {
+export interface BuilderDeploymentState
+  extends ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState>,
+    VersionBound<'0.15.0'> {
   description: 'Builder Deployment State';
   links: {};
   primaryKeyApiName: 'skuId';

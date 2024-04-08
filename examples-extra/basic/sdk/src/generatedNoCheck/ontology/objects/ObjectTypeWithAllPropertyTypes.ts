@@ -1,7 +1,8 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
 export interface ObjectTypeWithAllPropertyTypes
-  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
+  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
+    VersionBound<'0.15.0'> {
   description: 'A type with all property types';
   links: {};
   primaryKeyApiName: 'id';

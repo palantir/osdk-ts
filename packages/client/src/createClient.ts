@@ -18,47 +18,31 @@ import type {
   ActionDefinition,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
   ObjectTypeDefinition,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
 } from "@osdk/api";
-import type { OntologyMetadata } from "../../api/build/types/ontology/OntologyMetadata.js";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
-import {
-  createActionInvoker,
-  createOldActionInvoker,
-} from "./actions/createActionInvoker.js";
-import type { Client, FutureClient } from "./Client.js";
+import { createActionInvoker } from "./actions/createActionInvoker.js";
+import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
-import type {
-  MinimalClient,
-  MinimalClientMetadata,
-  MinimalClientParams,
-} from "./MinimalClientContext.js";
+import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
-import type {
-  MinimalObjectSet,
-  ObjectSet,
-  ObjectSetFactory,
-} from "./objectSet/ObjectSet.js";
-import { createObjectSetCreator } from "./ObjectSetCreator.js";
-import type { OntologyCachingOptions } from "./ontology/StandardOntologyProvider.js";
-import type { SatisfiesSemver, VersionString } from "./SatisfiesSemver.js";
+import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 
-function createFutureClientPlus(
-  metadata: MinimalClientParams["metadata"],
+export function createClient(
   stack: string,
+  ontologyRid: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyCachingOptions: OntologyCachingOptions = {},
+  HOLD: {} = {},
   fetchFn: typeof globalThis.fetch = fetch,
-): [MinimalClient, FutureClient] {
+): Client {
   const clientCtx: MinimalClient = createMinimalClient(
-    metadata,
+    {
+      userAgent: `@osdk/client/${process.env.PACKAGE_CLIENT_VERSION ?? "dev"}`,
+      ontologyRid,
+    },
     stack,
     tokenProvider,
-    ontologyCachingOptions,
+    {},
     fetchFn,
   );
 
@@ -72,133 +56,34 @@ function createFutureClientPlus(
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      clientCtx.ontology.provider.maybeSeed(o);
+      clientCtx.ontologyProvider.maybeSeed(o);
       return createObjectSet(o, clientCtx) as any;
     } else if (o.type === "action") {
-      clientCtx.ontology.provider.maybeSeed(o);
+      clientCtx.ontologyProvider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
     } else {
       throw new Error("not implemented");
     }
   }
 
-  return [clientCtx, clientFn as any];
-}
-
-// Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `createClient`.
-// For now, its a way to use JUST the new client
-export function createFutureClient<V extends VersionString<any, any, any>>(
-  metadata: SatisfiesSemver<V, MaxOsdkVersion> extends true
-    ? MinimalClientMetadata<V>
-    : MinimalClientMetadata<MaxOsdkVersion> & {
-      [ErrorMessage]:
-        `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-    },
-  stack: string,
-  tokenProvider: () => Promise<string> | string,
-  ontologyCachingOptions: OntologyCachingOptions = {},
-  fetchFn: typeof globalThis.fetch = fetch,
-): SatisfiesSemver<V, MaxOsdkVersion> extends true ? FutureClient
-  : never
-{
-  // When `createFutureClient` gets renamed to `createClient`, we
-  // should inline this call as its no longer needed to be separate.
-  return createFutureClientPlus(
-    metadata as MinimalClientMetadata<V>,
-    stack,
-    tokenProvider,
-    ontologyCachingOptions,
-    fetchFn,
-  )[1] as any;
-}
-
-function isOntologyMetadata(
-  ontology: OntologyDefinition<any> | OntologyMetadata<any>,
-): ontology is MinimalClientMetadata<any> {
-  return "ontologyRid" in ontology || "ontologyApiName" in ontology;
-}
-
-const MaxOsdkVersion = "0.14.0";
-export type MaxOsdkVersion = typeof MaxOsdkVersion;
-const ErrorMessage = Symbol("ErrorMessage");
-
-export function createClient<
-  O extends OntologyDefinition<any>,
-  V extends VersionString<any, any, any>,
->(
-  ontology:
-    | (SatisfiesSemver<V, MaxOsdkVersion> extends true
-      ? MinimalClientMetadata<V>
-      : MinimalClientMetadata<MaxOsdkVersion> & {
-        [ErrorMessage]:
-          `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-      })
-    | O,
-  stack: string,
-  tokenProvider: () => Promise<string> | string,
-  ontologyCachingOptions: OntologyCachingOptions = {},
-  fetchFn: typeof globalThis.fetch = fetch,
-): VersionString<any, any, any> extends V ? Client<O>
-  : SatisfiesSemver<V, MaxOsdkVersion> extends true ? FutureClient
-  : never
-{
-  if (isOntologyMetadata(ontology)) {
-    // typescript cant figure out the return types when you have a conditional type
-    return createFutureClient(
-      ontology as MinimalClientMetadata<MaxOsdkVersion>,
-      stack,
-      tokenProvider,
-      ontologyCachingOptions,
-      fetchFn,
-    ) as any;
-  }
-
-  const [clientCtx, clientFn] = createFutureClientPlus(
-    ontology.metadata as MinimalClientMetadata<MaxOsdkVersion>,
-    stack,
-    tokenProvider,
-    ontologyCachingOptions,
-    fetchFn,
-  );
-
-  const objectSetFactory: ObjectSetFactory<O> = <
-    K extends ObjectOrInterfaceKeysFrom<O>,
-  >(type: K) =>
-    createObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
-      (ontology["objects"][type]
-        ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
-          O,
-          K
-        >,
-      clientCtx,
-    );
-
-  const oldActionInvoker = createOldActionInvoker(clientCtx, ontology);
-
-  const client: Client<O> = Object.defineProperties(
-    clientFn as Client<O>,
+  const client: Client = Object.defineProperties<Client>(
+    clientFn as Client,
     {
-      objectSet: { get: () => objectSetFactory },
-      objects: { get: () => createObjectSetCreator(client, ontology) },
-      actions: {
-        get: () => oldActionInvoker,
-      },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>
-        <const K extends ObjectTypeKeysFrom<O>>(
-          objectType: K,
+        <T extends ObjectOrInterfaceDefinition>(
+          definition: T,
           rid: string,
         ) => {
           return createObjectSet(
-            ontology["interfaces"]?.[objectType]
-              ?? ontology["objects"][objectType],
+            definition,
             clientCtx,
             {
               type: "intersect",
               objectSets: [
                 {
                   type: "base",
-                  objectType: objectType as K & string,
+                  objectType: definition.apiName,
                 },
                 {
                   type: "reference",
@@ -212,9 +97,12 @@ export function createClient<
       ctx: {
         value: clientCtx,
       },
-    } satisfies Record<keyof Client<any>, PropertyDescriptor>,
+    } satisfies Record<keyof Client, PropertyDescriptor>,
   );
 
-  // typescript cant figure out the return types when you have a conditional type
-  return client as any;
+  return client;
 }
+
+const MaxOsdkVersion = "0.15.0";
+export type MaxOsdkVersion = typeof MaxOsdkVersion;
+const ErrorMessage = Symbol("ErrorMessage");

@@ -15,29 +15,19 @@
  */
 
 import { MOCK_ORIGIN } from "@osdk/shared.test";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe } from "vitest";
 import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 import { MockOntology } from "./util/test/mockOntology.js";
 
 describe("Enumerable Objects", () => {
-  let client: Client<typeof MockOntology>;
+  let client: Client;
 
   beforeAll(async () => {
     client = createClient(
-      MockOntology,
       MOCK_ORIGIN,
+      MockOntology.metadata.ontologyRid,
       () => "myAccessToken",
     );
-  });
-
-  it("has an enumerable list of object types", () => {
-    expect(Object.keys(client.objects)).toMatchInlineSnapshot(`
-      [
-        "Task",
-        "Todo",
-        "Person",
-      ]
-    `);
   });
 });

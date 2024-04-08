@@ -1,6 +1,8 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
-export interface BoundariesUsState extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState> {
+export interface BoundariesUsState
+  extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState>,
+    VersionBound<'0.15.0'> {
   description: 'Boundaries US State';
   links: {};
   primaryKeyApiName: 'usState';

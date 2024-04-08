@@ -45,7 +45,7 @@ export async function applyAction<
 ): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
     client,
-    client.ontology.metadata.ontologyApiName,
+    client.ontologyRid,
     action.apiName,
     {
       parameters: remapActionParams(parameters),

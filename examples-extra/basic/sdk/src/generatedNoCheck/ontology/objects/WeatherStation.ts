@@ -1,6 +1,6 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
-export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation> {
+export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation>, VersionBound<'0.15.0'> {
   description: 'Weather Station';
   links: {};
   primaryKeyApiName: 'stationId';

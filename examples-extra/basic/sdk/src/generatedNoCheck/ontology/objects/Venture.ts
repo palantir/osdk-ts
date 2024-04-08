@@ -1,8 +1,8 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
 import type { Employee } from './Employee.js';
 
-export interface Venture extends ObjectTypeDefinition<'Venture', Venture> {
+export interface Venture extends ObjectTypeDefinition<'Venture', Venture>, VersionBound<'0.15.0'> {
   description: 'A venture';
   links: {
     employees: ObjectTypeLinkDefinition<Employee, true>;

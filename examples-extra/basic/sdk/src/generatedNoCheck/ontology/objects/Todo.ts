@@ -1,8 +1,8 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
 import type { Person } from './Person.js';
 
-export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
+export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<'0.15.0'> {
   description: 'Its a todo item.';
   links: {
     Assignee: ObjectTypeLinkDefinition<Person, false>;

@@ -29,7 +29,9 @@ export async function generateOntologyMetadataFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `
-      import {OntologyMetadata as OM} from "@osdk/api";
+      import { OntologyMetadata as OM } from "@osdk/api";
+
+      export const expectedClientVersion = "${process.env.PACKAGE_CLIENT_VERSION}";
 
       export interface OntologyMetadata extends OM<"${process.env.PACKAGE_CLIENT_VERSION}"> {
         expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",

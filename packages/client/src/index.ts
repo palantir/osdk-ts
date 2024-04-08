@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-export { createClientContext } from "@osdk/shared.net";
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
-export type { ClientContext } from "@osdk/shared.net";
 export type {
   ActionEditResponse,
   ActionValidationResponse,
@@ -28,8 +26,6 @@ export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
-export { createMinimalClient } from "./createMinimalClient.js";
-export type { MinimalClient } from "./MinimalClientContext.js";
 export { augment } from "./object/fetchPage.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";

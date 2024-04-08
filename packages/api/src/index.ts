@@ -54,6 +54,7 @@ export type {
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
   PropertyDef,
+  VersionBound,
 } from "./ontology/ObjectTypeDefinition";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type { OntologyMetadata } from "./ontology/OntologyMetadata";

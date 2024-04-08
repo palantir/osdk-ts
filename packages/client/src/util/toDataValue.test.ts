@@ -23,13 +23,13 @@ import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
-  let client: Client<typeof MockOntology>;
+  let client: Client;
 
   beforeAll(async () => {
     apiServer.listen();
     client = createClient(
-      MockOntology,
       "https://stack.palantir.com",
+      MockOntology.metadata.ontologyRid,
       () => "myAccessToken",
     );
   });
@@ -84,7 +84,7 @@ describe(toDataValue, () => {
   });
 
   it("passes through object set definitions", () => {
-    const clientObjectSet = client.objects.Task.where({ id: 0 });
+    const clientObjectSet = client(MockOntology.objects.Task).where({ id: 0 });
     const definition = getWireObjectSet(clientObjectSet);
 
     const expected = `

@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectTypeDefinition,
+  OntologyMetadata,
+  VersionBound,
+} from "@osdk/api";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import type { OntologyMetadata } from "../../api/build/types/ontology/OntologyMetadata.js";
-import type { Client, FutureClient } from "./Client.js";
-import { createClient, createFutureClient } from "./createClient.js";
-import { Ontology } from "./generatedNoCheck/Ontology.js";
+import { describe, expect, it, vi } from "vitest";
+import { createClient } from "./createClient.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 describe(createClient, () => {
@@ -32,8 +34,8 @@ describe(createClient, () => {
     const fetchFunction: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
     const client = createClient(
-      MockOntology,
       "https://mock.com",
+      MockOntology.metadata.ontologyRid,
       () => "Token",
       {},
       fetchFunction,
@@ -41,7 +43,7 @@ describe(createClient, () => {
 
     mockFetchResponse(fetchFunction, { data: [] });
 
-    await client.objects.Task.fetchPage();
+    await client(MockOntology.objects.Task).fetchPage();
     expect(fetchFunction).toHaveBeenCalledTimes(1);
 
     const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers).get(
@@ -62,33 +64,19 @@ describe(createClient, () => {
       ontologyRid: "",
       userAgent: "",
     };
-    const stack = "https://foo.bar";
+    const stack = "https://https://foo.bar";
     const tokenProvider = () => "";
 
     it("does not error on older builds before this check", () => {
       // passing a simple ontology
-      createClient(
-        {
-          actions: {},
-          metadata: baseMetadata,
-          objects: {},
-          interfaces: {},
-          queries: {},
-        },
+      const client = createClient(
         stack,
+        baseMetadata.ontologyRid,
         tokenProvider,
       );
-    });
 
-    it("always works with 0.0.0", () => {
-      const client = createClient(
-        {
-          expectsClientVersion: "0.0.0",
-          ...baseMetadata,
-        },
-        "https://foo.bar",
-        () => "",
-      );
+      client(MockOntology.objects.Task as ObjectTypeDefinition<"Task">)
+        .fetchPage();
     });
 
     it("works with 'older versions'", () => {
@@ -97,13 +85,16 @@ describe(createClient, () => {
       // We will need to update these assumptions when we break major
 
       const client = createClient(
-        {
-          expectsClientVersion: validOlderVersion,
-          ...baseMetadata,
-        },
-        "https://foo.bar",
-        () => "",
+        stack,
+        baseMetadata.ontologyRid,
+        tokenProvider,
       );
+      client(
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<"Task">
+          & VersionBound<typeof validOlderVersion>,
+      )
+        .fetchPage();
     });
 
     it("works with 'current versions'", () => {
@@ -112,51 +103,39 @@ describe(createClient, () => {
       // We will need to update these assumptions when we break major
 
       const client = createClient(
-        {
-          expectsClientVersion: validCurrentVersion,
-          ...baseMetadata,
-        },
-        "https://foo.bar",
-        () => "",
+        stack,
+        baseMetadata.ontologyRid,
+        tokenProvider,
       );
 
-      expectTypeOf(client).toEqualTypeOf<FutureClient>();
+      client(
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<
+            "Task",
+            any
+          >
+          & VersionBound<typeof validCurrentVersion>,
+      )
+        .fetchPage();
     });
 
     it("doesnt work with a far future version", () => {
-      const metadata = {
-        expectsClientVersion: invalidFutureVersion,
-        ...baseMetadata,
-      };
-
-      {
-        const client = createFutureClient(
-          // @ts-expect-error
-          metadata,
-          "https://foo.bar",
-          () => "",
-        );
-        expectTypeOf(client).toEqualTypeOf<never>();
-      }
-
-      {
-        const client = createClient(
-          // @ts-expect-error
-          metadata,
-          "https://foo.bar",
-          () => "",
-        );
-        expectTypeOf(client).toEqualTypeOf<never>();
-      }
-    });
-
-    it("still works when you pass a whole ontology object", () => {
       const client = createClient(
-        Ontology,
-        "https://foo.bar",
-        () => "",
+        stack,
+        baseMetadata.ontologyRid,
+        tokenProvider,
       );
-      expectTypeOf(client).toEqualTypeOf<Client<Ontology>>();
+
+      client(
+        // @ts-expect-error
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<
+            "Task",
+            any
+          >
+          & VersionBound<typeof invalidFutureVersion>,
+      )
+        .fetchPage();
     });
   });
 });

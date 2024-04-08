@@ -1,8 +1,8 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
 import type { Venture } from './Venture.js';
 
-export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
+export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, VersionBound<'0.15.0'> {
   description: 'An employee';
   implements: ['FooInterface'];
   inverseSpts: {

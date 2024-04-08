@@ -17,6 +17,7 @@
 import type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
 
 export interface ClientContext<O extends { metadata: { userAgent: string } }> {
+  /** @deprecated */
   ontology: O;
   stack: string;
   /**

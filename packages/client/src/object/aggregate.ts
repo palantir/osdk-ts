@@ -111,7 +111,7 @@ export async function aggregate<
   }
   const result = await aggregateObjectSetV2(
     clientCtx,
-    clientCtx.ontology.metadata.ontologyApiName,
+    clientCtx.ontologyRid,
     {
       objectSet,
       groupBy: body.groupBy,

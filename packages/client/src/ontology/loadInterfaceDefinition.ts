@@ -23,11 +23,9 @@ export async function loadInterfaceDefinition(
   client: MinimalClient,
   objtype: string,
 ): Promise<InterfaceDefinition<any, any>> {
-  const { ontologyApiName } = client.ontology.metadata;
-
   const r = await getInterfaceType(
     client,
-    ontologyApiName,
+    client.ontologyRid,
     objtype,
     { preview: true },
   );

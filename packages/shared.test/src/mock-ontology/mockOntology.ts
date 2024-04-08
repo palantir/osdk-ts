@@ -19,11 +19,12 @@ import type {
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   OntologyDefinition,
+  VersionBound,
 } from "@osdk/api";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
 
-const Task: TaskDef = {
+const Task: Task = {
   type: "object",
   apiName: "Task",
   primaryKeyApiName: "id",
@@ -39,7 +40,7 @@ const Task: TaskDef = {
   },
 };
 
-const Todo: TodoDef = {
+const Todo: Todo = {
   type: "object",
   apiName: "Todo",
   primaryKeyApiName: "id",
@@ -61,9 +62,9 @@ const Todo: TodoDef = {
   },
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo"> {
-  type: "object";
-  apiName: "Todo";
+interface Todo
+  extends ObjectTypeDefinition<"Todo", Todo>, VersionBound<"0.15.0">
+{
   primaryKeyApiName: "id";
   primaryKeyType: "string";
   description: "A todo object";
@@ -76,20 +77,20 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
     points: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
+    linkedTask: ObjectTypeLinkDefinition<Task, false>;
   };
 }
 
-interface TaskDef extends ObjectTypeDefinition<"Task"> {
-  type: "object";
-  apiName: "Task";
+interface Task
+  extends ObjectTypeDefinition<"Task", Task>, VersionBound<"0.15.0">
+{
   primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
+    linkedTodos: ObjectTypeLinkDefinition<Todo, true>;
   };
 }
 
@@ -377,7 +378,9 @@ export const MockOntology = {
   | "Todo"
   | "ObjectTypeWithAllPropertyTypes"
   | "ObjectTypeWithReservedNames",
-  "createTask" | "updateTask" | "createTodo"
+  "createTask" | "updateTask" | "createTodo",
+  any,
+  any
 >;
 type capture = typeof MockOntology;
 export interface MockOntology extends capture {

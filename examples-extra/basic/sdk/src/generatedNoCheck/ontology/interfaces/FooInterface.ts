@@ -1,6 +1,6 @@
-import type { InterfaceDefinition, PropertyDef } from '@osdk/api';
+import type { InterfaceDefinition, PropertyDef, VersionBound } from '@osdk/api';
 
-export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInterface> {
+export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInterface>, VersionBound<'0.15.0'> {
   description: 'Its a Foo.';
   links: {};
   properties: {

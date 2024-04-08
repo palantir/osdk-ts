@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "..";
 import type { OntologyDefinition } from "./OntologyDefinition";
+import type { VersionString } from "./VersionString";
 import type { WirePropertyTypes } from "./WirePropertyTypes";
 
 export type ObjectTypeDefinitionFrom<
@@ -56,6 +57,10 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
     string,
     ObjectTypeLinkDefinition<any, any>
   >;
+}
+
+export interface VersionBound<V extends VersionString<any, any, any>> {
+  expectedClientVersion?: V;
 }
 
 export interface ObjectTypeDefinition<

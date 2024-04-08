@@ -122,7 +122,7 @@ export async function generateClientSdkVersionTwoPointZero(
     await fs.writeFile(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
-        import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
+        import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
         import { Osdk } from "@osdk/client";
 
         ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
@@ -189,7 +189,7 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${name}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition, PropertyDef } from "@osdk/api";
+      import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
     `),

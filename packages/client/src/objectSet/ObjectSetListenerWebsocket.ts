@@ -142,7 +142,7 @@ export class ObjectSetListenerWebsocket {
         getObjectSetBaseType(objectSet).then(baseType =>
           getObjectTypeV2(
             this.#client,
-            this.#client.ontology.metadata.ontologyApiName,
+            this.#client.ontologyRid,
             baseType,
           )
         ).then(
@@ -441,7 +441,7 @@ async function convertFoundryToOsdkObjects<
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
         ctx,
-        client.ontology.metadata.ontologyRid,
+        client.ontologyRid,
         object.type,
       );
       const convertedObject: OntologyObjectV2 = Object.fromEntries([
@@ -500,13 +500,13 @@ async function getOntologyPropertyMappingForApiName(
 
   const wireObjectType = await getObjectTypeV2(
     client,
-    client.ontology.metadata.ontologyApiName,
+    client.ontologyRid,
     objectApiName,
   );
 
   return getOntologyPropertyMappingForRid(
     ctx,
-    client.ontology.metadata.ontologyRid,
+    client.ontologyRid,
     wireObjectType.rid,
   );
 }
