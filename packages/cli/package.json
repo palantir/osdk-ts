@@ -63,7 +63,7 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },

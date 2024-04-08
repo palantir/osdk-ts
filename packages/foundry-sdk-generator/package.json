@@ -53,7 +53,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "foundry-sdk-generator": "./bin/foundry-sdk-generator"
   },
