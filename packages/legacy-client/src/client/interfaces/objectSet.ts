@@ -91,14 +91,34 @@ export type ObjectSetOrderByStep<O extends OntologyObject> = {
 export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
    * Get a page of objects of this type.
+   * @deprecated use fetchPageWithErrors instead
    */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
 
+  fetchPageWithErrors(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Result<Page<O>, ListObjectsError>>;
+
+  /**
+   * Get a page of objects of this type, without a result wrapper
+   */
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Page<O>>;
+
   /**
    * Get all objects of this type.
+   * @deprecated use asyncIter instead
    */
   all(): Promise<Result<O[], ListObjectsError>>;
+
+  /**
+   * Iterate through all objects
+   */
+  asyncIter(): AsyncIterableIterator<O>;
 };

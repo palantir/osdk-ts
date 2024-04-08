@@ -19,7 +19,11 @@ import type { ClientContext } from "@osdk/shared.net";
 import type { ObjectSetDefinition } from "../baseTypes";
 import type { ObjectSetTerminalLoadStep } from "../interfaces";
 import { loadAllObjects } from "../net/loadObjects";
-import { loadObjectsPage } from "../net/loadObjectsPage";
+import {
+  loadObjectsIterator,
+  loadObjectsPage,
+  loadObjectsPageOrThrows,
+} from "../net/loadObjectsPage";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import type { OrderByClause } from "./filters";
 
@@ -44,6 +48,26 @@ export function createObjectSetTerminalLoadStep<
         options,
       );
     },
+    async fetchPage(options) {
+      return loadObjectsPageOrThrows<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
+    },
+    async fetchPageWithErrors(options) {
+      return loadObjectsPage<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
+        selectedProperties,
+        options,
+      );
+    },
     async all() {
       return loadAllObjects<O, K, OsdkLegacyObjectFrom<O, K>>(
         client,
@@ -51,6 +75,15 @@ export function createObjectSetTerminalLoadStep<
         objectSet,
         orderByClauses,
         selectedProperties,
+      );
+    },
+
+    asyncIter() {
+      return loadObjectsIterator<O, K, OsdkLegacyObjectFrom<O, K>>(
+        client,
+        apiName,
+        objectSet,
+        orderByClauses,
       );
     },
   };

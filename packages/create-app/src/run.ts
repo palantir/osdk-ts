@@ -96,14 +96,20 @@ export async function run(
     osdkPackage,
     corsProxy,
   };
-  const templateHbs = function(dir: string) {
+  const processFiles = function(dir: string) {
     fs.readdirSync(dir).forEach(function(file) {
       file = dir + "/" + file;
       const stat = fs.statSync(file);
       if (stat.isDirectory()) {
-        templateHbs(file);
+        processFiles(file);
         return;
       }
+
+      if (file.endsWith("/_gitignore")) {
+        fs.renameSync(file, file.replace(/\/_gitignore$/, "/.gitignore"));
+        return;
+      }
+
       if (!file.endsWith(".hbs")) {
         return;
       }
@@ -114,7 +120,7 @@ export async function run(
       fs.rmSync(file);
     });
   };
-  templateHbs(root);
+  processFiles(root);
 
   const npmRc = generateNpmRc({ osdkPackage, osdkRegistryUrl });
   fs.writeFileSync(path.join(root, ".npmrc"), npmRc);

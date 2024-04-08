@@ -18,10 +18,13 @@ export default {
   "{packages,examples-extra/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
     files,
   ) => {
+    console.error(files);
     const match = micromatch.not(
       files,
-      ["**/templates/**/*"],
+      ["**/templates/**/*", "**/generatedNoCheck/**/*"],
     );
+    console.error(match.join(" "));
+    if (match.length === 0) return [];
     return [
       `dprint fmt ${match.join(" ")}`,
       `eslint --fix  ${match.join(" ")}`,

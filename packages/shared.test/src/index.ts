@@ -15,6 +15,7 @@
  */
 
 export * as handlers from "./handlers";
+export { loadAll } from "./handlers/util/loadAll";
 export * from "./mock-ontology";
 export { apiServer } from "./setupServers";
 export * as stubData from "./stubs";
