@@ -30,7 +30,10 @@ import type {
   BulkActionResponseFromOptions,
 } from "../baseTypes";
 import type { ObjectSet } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type {
+  OsdkLegacyObjectFrom,
+  OsdkLegacyObjectFromNoSearchArounds,
+} from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
 import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
 import type { ValuesOfMap } from "../utils/ValuesOfMap";
@@ -100,7 +103,7 @@ export type ModifiedObjects<
       "modifiedEntities"
     ] as O["actions"][A]["modifiedEntities"][K] extends { modified: true } ? K
       : never
-  ]: OsdkLegacyObjectFrom<O, K>;
+  ]: OsdkLegacyObjectFromNoSearchArounds<O, K>;
 };
 
 export type CreatedObjects<
@@ -112,7 +115,7 @@ export type CreatedObjects<
       "modifiedEntities"
     ] as O["actions"][A]["modifiedEntities"][K] extends { created: true } ? K
       : never
-  ]: OsdkLegacyObjectFrom<O, K>;
+  ]: OsdkLegacyObjectFromNoSearchArounds<O, K>;
 };
 
 export type CreatedObjectOrVoid<

@@ -34,9 +34,11 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
        * Its a todo item.
        */
       export interface Todo extends OntologyObject {
-        /** @deprecated please migrate to \$apiName instead */
-        readonly __apiName: 'Todo';
-        /** @deprecated please migrate to \$primaryKey instead */
+        /** @deprecated please migrate to $apiName instead */
+        readonly __apiName: 'Todo' & {
+          /** @deprecated please migrate to pivotTo(Assignee) instead */ searchAroundAssignee?: never;
+        };
+        /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
         readonly $apiName: 'Todo';
         readonly $primaryKey: number;
@@ -78,13 +80,14 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         sharedPropertyTypeMapping: {},
       },
     );
+    console.info(await formatTs(objectInterface));
     expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`
       "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
 
       export interface Todo extends OntologyObject {
-        /** @deprecated please migrate to \$apiName instead */
-        readonly __apiName: 'Todo';
-        /** @deprecated please migrate to \$primaryKey instead */
+        /** @deprecated please migrate to $apiName instead */
+        readonly __apiName: 'Todo' & { /** @deprecated please migrate to pivotTo(this) instead */ searchAroundThis?: never };
+        /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
         readonly $apiName: 'Todo';
         readonly $primaryKey: number;

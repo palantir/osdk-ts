@@ -113,7 +113,17 @@ export type OsdkLegacyPrimaryKeyType<
 export type OsdkLegacyOntologyObject<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
-> = K extends string ? OntologyObject<K, OsdkLegacyPrimaryKeyType<O, K>>
+> = K extends string ? OntologyObject<
+    & K
+    & {
+      [
+        L in ObjectTypeLinkKeysFrom<O, K> as `searchAround${Capitalize<
+          L & string
+        >}`
+      ]?: never;
+    },
+    OsdkLegacyPrimaryKeyType<O, K>
+  >
   : never;
 
 export type OsdkLegacyObjectFrom<
@@ -123,4 +133,29 @@ export type OsdkLegacyObjectFrom<
     & OsdkLegacyPropertiesFrom<O, K>
     & OsdkLegacyLinksFrom<O, K>
     & OsdkLegacyOntologyObject<O, K>
+  : never;
+
+export type OsdkLegacyObjectFromNoSearchArounds<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+> = K extends string ?
+    & OsdkLegacyPropertiesFrom<O, K>
+    & OsdkLegacyLinksFrom<O, K>
+    & OsdkLegacyOntologyObjectNoSearchArounds<O, K>
+  : never;
+
+export type OsdkLegacyOntologyObjectNoSearchArounds<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+> = K extends string ? OntologyObject<
+    K,
+    // & {
+    //   [
+    //     L in ObjectTypeLinkKeysFrom<O, K> as `searchAround${Capitalize<
+    //       L & string
+    //     >}`
+    //   ]?: never;
+    // },
+    OsdkLegacyPrimaryKeyType<O, K>
+  >
   : never;

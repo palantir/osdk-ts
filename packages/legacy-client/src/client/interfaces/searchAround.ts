@@ -14,21 +14,102 @@
  * limitations under the License.
  */
 
+import type {
+  ObjectTypeKeysFrom,
+  ObjectTypeLinkKeysFrom,
+  OntologyDefinition,
+} from "@osdk/api";
+import type { ObjectSet, OsdkLegacyPrimaryKeyType } from "..";
 import type { MultiLink, OntologyObject, SingleLink } from "../baseTypes";
-import type { ObjectSet } from ".";
-import type { IsLink } from "./utils/IsLink";
 
 export type InferLinkType<T> = T extends SingleLink<infer V> ? V
   : T extends MultiLink<infer V> ? V
   : never;
 
-/** @deprecated  */
+// /** @deprecated  */
+// export type SearchAround<T extends OntologyObject> = {
+//   [
+//     /**@deprecated */
+
+//     K in Extract<keyof T, string> as IsLink<T[K]> extends true
+//       ? `searchAround${Capitalize<K>}`
+//       : never
+//   ]: () => ObjectSet<InferLinkType<T[K]>>;
+// };
+
+export type SearchAroundKeys<T extends { __apiName: {} }> = keyof {
+  [
+    K in keyof T["__apiName"] as K extends `searchAround${string}`
+      ? (K & string)
+      : never
+  ]: string;
+};
+
+export type SearchAroundOnly<
+  T extends { __apiName: Partial<Record<SearchAroundKeys<T>, any>> },
+> = Required<Pick<T["__apiName"], SearchAroundKeys<T>>>;
+
+export type AugmentedLegacyOntologyObject<
+  O extends OntologyDefinition<any>,
+  K extends ObjectTypeKeysFrom<O>,
+> = K extends string ? OntologyObject<
+    & K
+    & {
+      [
+        L in ObjectTypeLinkKeysFrom<O, K> as `searchAround${Capitalize<
+          L & string
+        >}`
+      ]?: never;
+    },
+    OsdkLegacyPrimaryKeyType<O, K>
+  >
+  : never;
+
 export type SearchAround<T extends OntologyObject> = {
   [
-    /**@deprecated */
-
-    K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<K>}`
-      : never
-  ]: () => ObjectSet<InferLinkType<T[K]>>;
+    K
+      in keyof (T extends
+        { __apiName: Partial<Record<SearchAroundKeys<T>, any>> }
+        ? Required<Pick<T["__apiName"], SearchAroundKeys<T>>>
+        : never)
+  ]: K extends `searchAround${infer Z}`
+    ? Uncapitalize<Z> extends keyof T
+      ? (() => ObjectSet<InferLinkType<T[Uncapitalize<Z>]>>)
+    : Z extends keyof T ? (() => ObjectSet<InferLinkType<T[Z]>>)
+    : (numbers: keyof T) => {}
+    : () => {};
 };
+// export type SearchAround1<
+//   O extends OntologyDefinition<any>,
+//   X extends ObjectTypeKeysFrom<O>,
+// > = {
+//   [
+//     K in keyof (AugmentedLegacyOntologyObject<O, X> extends {
+//       __apiName: Partial<
+//         Record<SearchAroundKeys<AugmentedLegacyOntologyObject<O, K>>, any>
+//       >;
+//     } ? Required<
+//         Pick<
+//           AugmentedLegacyOntologyObject<O, X>["__apiName"] & string,
+//           SearchAroundKeys<AugmentedLegacyOntologyObject<O, X>>
+//         >
+//       >
+//       : never)
+//   ]: K extends `searchAround${infer Z}`
+//     ? Uncapitalize<Z> extends keyof AugmentedLegacyOntologyObject<O, X>
+//       ? (() => ObjectSet<
+//         InferLinkType<AugmentedLegacyOntologyObject<O, X>[Uncapitalize<Z>]>
+//       >)
+//     : Z extends keyof AugmentedLegacyOntologyObject<O, X>
+//       ? (() => ObjectSet<InferLinkType<AugmentedLegacyOntologyObject<O, X>[Z]>>)
+//     : (numbers: keyof AugmentedLegacyOntologyObject<O, X>) => {}
+//     : () => {};
+// };
+
+// export type SearchAround<T extends OntologyObject> = {
+//   [
+//     K in keyof SearchAroundInterim<T> as SearchAroundInterim<T>[K] extends never
+//       ? never
+//       : K
+//   ]: (SearchAroundInterim<T>[K]);
+// };
