@@ -13,11 +13,6 @@
       "dependsOn": ["^transpile", "^typecheck"]
     },
 
-    "@osdk/example-generator#check": {
-      "inputs": ["../../examples"],
-      "dependsOn": ["^transpile", "^typecheck"]
-    },
-
     "fix-lint": {
       "cache": false
     },
@@ -108,6 +103,11 @@
 
     "check": {
       "env": ["FORCE_COLOR"],
+      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
+    },
+
+    "@osdk/example-generator#check": {
+      "inputs": ["../../examples"],
       "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
     }
   },
