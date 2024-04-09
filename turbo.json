@@ -7,6 +7,17 @@
       "dependsOn": ["^transpile", "^typecheck"]
     },
 
+    "@osdk/create-app#codegen": {
+      "inputs": ["scripts/codegen.mjs", "../../examples/*/package.json"],
+      "outputs": ["templates/*/package.json.hbs"],
+      "dependsOn": ["^transpile", "^typecheck"]
+    },
+
+    "@osdk/example-generator#check": {
+      "inputs": ["../../examples"],
+      "dependsOn": ["^transpile", "^typecheck"]
+    },
+
     "fix-lint": {
       "cache": false
     },
@@ -96,6 +107,7 @@
     },
 
     "check": {
+      "env": ["FORCE_COLOR"],
       "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
     }
   },

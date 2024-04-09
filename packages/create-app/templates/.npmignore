@@ -1,0 +1,2 @@
+# we need this file so that npm doesn't use the .gitignore to exclude
+# the package.json.hbs files.
