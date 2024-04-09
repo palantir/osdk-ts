@@ -32,7 +32,7 @@ const _listFiles: $OmniMethod<
       pageToken?: $C.PageToken;
     },
   ) => Promise<$C.ListFilesResponse>
-> = [0, "/v1/datasets/{0}/files"];
+> = [0, "/v1/datasets/{0}/files", 2];
 
 /**
  * Lists Files contained in a Dataset. By default files are listed on the latest view of the default
@@ -92,7 +92,7 @@ const _uploadFile: $OmniMethod<
       transactionRid?: $C.TransactionRid;
     },
   ) => Promise<$C.File>
-> = [1, "/v1/datasets/{0}/files:upload", , "*/*"];
+> = [1, "/v1/datasets/{0}/files:upload", 2, "*/*"];
 
 /**
  * Uploads a File to an existing Dataset.
@@ -145,7 +145,7 @@ const _getFileMetadata: $OmniMethod<
       endTransactionRid?: $C.TransactionRid;
     },
   ) => Promise<$C.File>
-> = [0, "/v1/datasets/{0}/files/{1}"];
+> = [0, "/v1/datasets/{0}/files/{1}", 2];
 
 /**
  * Gets metadata about a File contained in a Dataset. By default this retrieves the file's metadata from the latest
@@ -201,7 +201,7 @@ const _deleteFile: $OmniMethod<
       transactionRid?: $C.TransactionRid;
     },
   ) => Promise<void>
-> = [3, "/v1/datasets/{0}/files/{1}"];
+> = [3, "/v1/datasets/{0}/files/{1}", 2];
 
 /**
  * Deletes a File from a Dataset. By default the file is deleted in a new transaction on the default
@@ -249,7 +249,7 @@ const _getFileContent: $OmniMethod<
       endTransactionRid?: $C.TransactionRid;
     },
   ) => Promise<unknown>
-> = [0, "/v1/datasets/{0}/files/{1}/content", , , "*/*"];
+> = [0, "/v1/datasets/{0}/files/{1}/content", 2, , "*/*"];
 
 /**
  * Gets the content of a File contained in a Dataset. By default this retrieves the file's content from the latest

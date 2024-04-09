@@ -26,7 +26,7 @@ const _listQueryTypesV2: $OmniMethod<
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ) => Promise<$C.ListQueryTypesResponseV2>
-> = [0, "/v2/ontologies/{0}/queryTypes"];
+> = [0, "/v2/ontologies/{0}/queryTypes", 2];
 
 /**
  * Lists the query types for the given Ontology.
@@ -82,7 +82,7 @@ const _executeQueryV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.ExecuteQueryResponse>
-> = [1, "/v2/ontologies/{0}/queries/{1}/execute", 1];
+> = [1, "/v2/ontologies/{0}/queries/{1}/execute", 3];
 
 /**
  * Executes a Query using the given parameters.

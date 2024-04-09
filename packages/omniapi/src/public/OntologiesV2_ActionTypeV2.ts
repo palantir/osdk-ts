@@ -26,7 +26,7 @@ const _listActionTypesV2: $OmniMethod<
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ) => Promise<$C.ListActionTypesResponseV2>
-> = [0, "/v2/ontologies/{0}/actionTypes"];
+> = [0, "/v2/ontologies/{0}/actionTypes", 2];
 
 /**
  * Lists the action types for the given Ontology.

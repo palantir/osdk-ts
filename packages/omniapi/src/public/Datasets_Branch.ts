@@ -26,7 +26,7 @@ const _listBranches: $OmniMethod<
     datasetRid: $C.DatasetRid,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ) => Promise<$C.ListBranchesResponse>
-> = [0, "/v1/datasets/{0}/branches"];
+> = [0, "/v1/datasets/{0}/branches", 2];
 
 /**
  * Lists the Branches of a Dataset.

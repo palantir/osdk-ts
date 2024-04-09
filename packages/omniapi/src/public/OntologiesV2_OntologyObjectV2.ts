@@ -35,7 +35,7 @@ const _listObjectsV2: $OmniMethod<
       excludeRid?: boolean;
     },
   ) => Promise<$C.ListObjectsResponseV2>
-> = [0, "/v2/ontologies/{0}/objects/{1}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}", 2];
 
 /**
  * Lists the objects for the given Ontology and object type.
@@ -89,7 +89,7 @@ const _getObjectV2: $OmniMethod<
       excludeRid?: boolean;
     },
   ) => Promise<$C.OntologyObjectV2>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}", 2];
 
 /**
  * Gets a specific object with the given primary key.
@@ -126,7 +126,7 @@ const _countObjects: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.CountObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/objects/{1}/count"];
+> = [1, "/v2/ontologies/{0}/objects/{1}/count", 2];
 
 /**
  * Returns a count of the objects of the given object type.
@@ -161,7 +161,7 @@ const _searchObjectsV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.SearchObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/objects/{1}/search", 1];
+> = [1, "/v2/ontologies/{0}/objects/{1}/search", 3];
 
 /**
  * Search for objects in the specified ontology and object type. The request body is used
@@ -216,7 +216,7 @@ const _aggregateObjectsV2: $OmniMethod<
       preview?: $C.PreviewMode;
     },
   ) => Promise<$C.AggregateObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/objects/{1}/aggregate", 1];
+> = [1, "/v2/ontologies/{0}/objects/{1}/aggregate", 3];
 
 /**
  * Perform functions on object fields in the specified ontology and object type.
@@ -251,7 +251,7 @@ const _listInterfaceTypes: $OmniMethod<
       preview?: $C.PreviewMode;
     },
   ) => Promise<$C.ListInterfaceTypesResponse>
-> = [0, "/v2/ontologies/{0}/interfaceTypes"];
+> = [0, "/v2/ontologies/{0}/interfaceTypes", 2];
 
 /**
  * :::callout{theme=warning title=Warning}
@@ -290,7 +290,7 @@ const _getInterfaceType: $OmniMethod<
     interfaceType: $C.InterfaceTypeApiName,
     $queryParams?: { preview?: $C.PreviewMode },
   ) => Promise<$C.InterfaceType>
-> = [0, "/v2/ontologies/{0}/interfaceTypes/{1}"];
+> = [0, "/v2/ontologies/{0}/interfaceTypes/{1}", 2];
 
 /**
  * :::callout{theme=warning title=Warning}
@@ -324,7 +324,7 @@ const _searchObjectsForInterface: $OmniMethod<
     $body: $C.SearchObjectsForInterfaceRequest,
     $queryParams?: { preview?: $C.PreviewMode },
   ) => Promise<$C.SearchObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/interfaces/{1}/search", 1];
+> = [1, "/v2/ontologies/{0}/interfaces/{1}/search", 3];
 
 /**
  * :::callout{theme=warning title=Warning}
@@ -379,7 +379,7 @@ const _aggregateObjectsForInterface: $OmniMethod<
     $body: $C.AggregateObjectsRequestV2,
     $queryParams?: { preview?: $C.PreviewMode },
   ) => Promise<$C.AggregateObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/interfaces/{1}/aggregate", 1];
+> = [1, "/v2/ontologies/{0}/interfaces/{1}/aggregate", 3];
 
 /**
  * :::callout{theme=warning title=Warning}
@@ -423,7 +423,7 @@ const _listLinkedObjectsV2: $OmniMethod<
       excludeRid?: boolean;
     },
   ) => Promise<$C.ListLinkedObjectsResponseV2>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}", 2];
 
 /**
  * Lists the linked objects for a specific object and the given link type.
@@ -481,7 +481,7 @@ const _getLinkedObjectV2: $OmniMethod<
       excludeRid?: boolean;
     },
   ) => Promise<$C.OntologyObjectV2>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}/{4}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/links/{3}/{4}", 2];
 
 /**
  * Get a specific linked object that originates from another object.
@@ -524,7 +524,7 @@ const _getAttachmentsV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.AttachmentMetadataResponse>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}", 2];
 
 /**
  * Get the metadata of attachments parented to the given object.
@@ -564,7 +564,7 @@ const _getAttachmentByRidV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.AttachmentV2>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/{4}"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/{4}", 2];
 
 /**
  * Get the metadata of a particular attachment in an attachment list.
@@ -607,7 +607,7 @@ const _getAttachmentContentV2: $OmniMethod<
 > = [
   0,
   "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/content",
-  ,
+  2,
   ,
   "*/*",
 ];
@@ -653,7 +653,7 @@ const _getAttachmentContentByRidV2: $OmniMethod<
 > = [
   0,
   "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/{4}/content",
-  ,
+  2,
   ,
   "*/*",
 ];
@@ -698,7 +698,7 @@ const _getFirstPoint: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.TimeSeriesPoint | undefined>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/firstPoint"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/firstPoint", 2];
 
 /**
  * Get the first point of a time series property.
@@ -737,7 +737,7 @@ const _getLastPoint: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.TimeSeriesPoint | undefined>
-> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/lastPoint"];
+> = [0, "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/lastPoint", 2];
 
 /**
  * Get the last point of a time series property.
@@ -780,7 +780,7 @@ const _streamPoints: $OmniMethod<
 > = [
   1,
   "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/streamPoints",
-  1,
+  3,
   ,
   "*/*",
 ];

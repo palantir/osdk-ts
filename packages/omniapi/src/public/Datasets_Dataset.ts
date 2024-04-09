@@ -71,7 +71,7 @@ const _readTable: $OmniMethod<
       rowLimit?: number;
     },
   ) => Promise<unknown>
-> = [0, "/v1/datasets/{0}/readTable", , , "*/*"];
+> = [0, "/v1/datasets/{0}/readTable", 2, , "*/*"];
 
 /**
  * Gets the content of a dataset as a table in the specified format.
@@ -110,7 +110,7 @@ const _getSchema: $OmniMethod<
       preview?: $C.PreviewMode;
     },
   ) => Promise<any | undefined>
-> = [0, "/v1/datasets/{0}/schema"];
+> = [0, "/v1/datasets/{0}/schema", 2];
 
 /**
  * Retrieves the Schema for a Dataset and Branch, if it exists.
@@ -139,7 +139,7 @@ const _putSchema: $OmniMethod<
     $body: any,
     $queryParams?: { branchId?: $C.BranchId; preview?: $C.PreviewMode },
   ) => Promise<void>
-> = [2, "/v1/datasets/{0}/schema", 1];
+> = [2, "/v1/datasets/{0}/schema", 3];
 
 /**
  * Puts a Schema on an existing Dataset and Branch.
@@ -167,7 +167,7 @@ const _deleteSchema: $OmniMethod<
       preview?: $C.PreviewMode;
     },
   ) => Promise<void>
-> = [3, "/v1/datasets/{0}/schema"];
+> = [3, "/v1/datasets/{0}/schema", 2];
 
 /**
  * Deletes the Schema from a Dataset and Branch.
