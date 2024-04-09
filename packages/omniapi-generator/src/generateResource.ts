@@ -133,7 +133,6 @@ function generateOperationArray(method: StaticOperation) {
   const bodyInfo = getReqBodyInfo(requestType);
   const respInfo = getResponseInfo(method.response);
   const paramInfo = getParamInfo(method.parameters);
-  paramInfo.QUERY.length;
 
   const flag = (bodyInfo.componentType != null ? 1 : 0)
     + (paramInfo.QUERY.length > 0 ? 2 : 0)
