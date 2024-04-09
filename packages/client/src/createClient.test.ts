@@ -78,17 +78,20 @@ describe(createClient, () => {
       ontologyRid: "",
       userAgent: "",
     };
-    const stack = "https://https://foo.bar";
+    const stack = "https://foo.bar";
     const tokenProvider = () => "";
 
-    it("does not error on older builds before this check", () => {
-      // passing a simple ontology
-      const client = createClient(
+    let client: Client;
+    beforeEach(() => {
+      client = createClient(
         stack,
         baseMetadata.ontologyRid,
         tokenProvider,
       );
+    });
 
+    it("does not error on older builds before this check", () => {
+      // this cast simulates older definitions as they wont have the BoundVersion type
       client(MockOntology.objects.Task as ObjectTypeDefinition<"Task">)
         .fetchPage();
     });
@@ -97,12 +100,6 @@ describe(createClient, () => {
       // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
       // meaning this version of the code should work with 0.13.0 and 0.14.0.
       // We will need to update these assumptions when we break major
-
-      const client = createClient(
-        stack,
-        baseMetadata.ontologyRid,
-        tokenProvider,
-      );
       client(
         MockOntology.objects.Task as
           & ObjectTypeDefinition<"Task">
@@ -115,13 +112,6 @@ describe(createClient, () => {
       // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
       // meaning this version of the code should work with 0.13.0 and 0.14.0.
       // We will need to update these assumptions when we break major
-
-      const client = createClient(
-        stack,
-        baseMetadata.ontologyRid,
-        tokenProvider,
-      );
-
       client(
         MockOntology.objects.Task as
           & ObjectTypeDefinition<
@@ -134,12 +124,6 @@ describe(createClient, () => {
     });
 
     it("doesnt work with a far future version", () => {
-      const client = createClient(
-        stack,
-        baseMetadata.ontologyRid,
-        tokenProvider,
-      );
-
       client(
         // @ts-expect-error
         MockOntology.objects.Task as
