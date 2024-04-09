@@ -153,24 +153,7 @@ export function generateRuntimeConst(resource: Resource) {
   let ret = "";
 
   for (const method of resource.staticOperations) {
-    // Remove resource name from the function name if it ends with it
     const methodName = method.name; // method.verb ?? method.name;
-    // const requestType = method.requestBody?.body.requestType;
-    // const bodyInfo = getReqBodyInfo(requestType);
-    // const respInfo = getResponseInfo(method.response);
-
-    // let count = 0;
-    // const constParts = [
-    //   HTTP_VERB_MAP[method.httpMethod],
-    //   `"${method.path.replace(/{.*?}/g, () => `{${count++}}`)}"`,
-    //   bodyInfo.componentType != null ? 1 : "",
-    //   bodyInfo.mimeType,
-    //   respInfo.mimeType,
-    // ];
-
-    // while (constParts.at(-1) === "") {
-    //   constParts.pop();
-    // }
 
     ret += `${methodName}: ${generateOperationArray(method)},`;
   }

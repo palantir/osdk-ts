@@ -51,9 +51,7 @@ export interface Client<O extends OntologyDefinition<any>>
 // Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `Client`.
 export interface FutureClient {
   <
-    Q extends
-      | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>,
+    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
   >(
     o: Q,
   ): Q extends ObjectTypeDefinition<any> ? ObjectSet<Q>
