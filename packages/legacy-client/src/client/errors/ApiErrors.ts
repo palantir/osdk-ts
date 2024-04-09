@@ -66,6 +66,7 @@ export type LoadObjectSetError =
   | ObjectsExceededLimit
   | ObjectTypeNotFound
   | ObjectTypeNotSynced
+  | PropertiesNotFound
   | PropertiesNotSearchable
   | PropertyTypesSearchNotSupported
   | PropertiesNotFilterable
