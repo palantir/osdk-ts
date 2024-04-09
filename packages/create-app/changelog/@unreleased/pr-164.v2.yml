@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Update vite dependency
+  links:
+  - https://github.com/palantir/osdk-ts/pull/164
