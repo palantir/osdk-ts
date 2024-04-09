@@ -58,4 +58,6 @@ export interface FutureClient {
     : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
     : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
     : never;
+
+  ctx: unknown;
 }

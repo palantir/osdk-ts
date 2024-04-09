@@ -19,7 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { OntologyObjectV2 } from "@osdk/omniapi";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {

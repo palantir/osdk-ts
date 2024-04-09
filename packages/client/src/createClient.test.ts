@@ -62,7 +62,7 @@ describe(createClient, () => {
       ontologyRid: "",
       userAgent: "",
     };
-    const stack = "foo.bar";
+    const stack = "https://foo.bar";
     const tokenProvider = () => "";
 
     it("does not error on older builds before this check", () => {
@@ -86,7 +86,7 @@ describe(createClient, () => {
           expectsClientVersion: "0.0.0",
           ...baseMetadata,
         },
-        "foo.bar",
+        "https://foo.bar",
         () => "",
       );
     });
@@ -101,7 +101,7 @@ describe(createClient, () => {
           expectsClientVersion: validOlderVersion,
           ...baseMetadata,
         },
-        "foo.bar",
+        "https://foo.bar",
         () => "",
       );
     });
@@ -116,7 +116,7 @@ describe(createClient, () => {
           expectsClientVersion: validCurrentVersion,
           ...baseMetadata,
         },
-        "foo.bar",
+        "https://foo.bar",
         () => "",
       );
 
@@ -133,7 +133,7 @@ describe(createClient, () => {
         const client = createFutureClient(
           // @ts-expect-error
           metadata,
-          "foo.bar",
+          "https://foo.bar",
           () => "",
         );
         expectTypeOf(client).toEqualTypeOf<never>();
@@ -143,7 +143,7 @@ describe(createClient, () => {
         const client = createClient(
           // @ts-expect-error
           metadata,
-          "foo.bar",
+          "https://foo.bar",
           () => "",
         );
         expectTypeOf(client).toEqualTypeOf<never>();
@@ -153,7 +153,7 @@ describe(createClient, () => {
     it("still works when you pass a whole ontology object", () => {
       const client = createClient(
         Ontology,
-        "foo.bar",
+        "https://foo.bar",
         () => "",
       );
       expectTypeOf(client).toEqualTypeOf<Client<Ontology>>();

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  AggregationGroupByV2,
-  AggregationRangeV2,
-} from "@osdk/gateway/types";
+import type { AggregationGroupByV2, AggregationRangeV2 } from "@osdk/omniapi";
 import {
   DurationMapping,
   type GroupByRange,

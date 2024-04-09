@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
     "@osdk/generator-converters": "workspace:*",
     "@osdk/shared.net": "workspace:*",
     "conjure-lite": "^0.3.3",
@@ -45,6 +44,7 @@
   },
   "devDependencies": {
     "@osdk/generator": "workspace:*",
+    "@osdk/omniapi": "workspace:*",
     "@osdk/shared.test": "workspace:*",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
@@ -71,5 +71,13 @@
   "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
+  "sls": {
+    "dependencies": {
+      "com.palantir.foundry.api:api-gateway": {
+        "minVersion": "1.804.0",
+        "maxVersion": "1.x.x"
+      }
+    }
+  },
   "type": "module"
 }

@@ -63,7 +63,9 @@ function createFutureClientPlus(
   );
 
   function clientFn<
-    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
+    T extends
+      | ObjectOrInterfaceDefinition
+      | ActionDefinition<any, any, any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
@@ -76,11 +78,11 @@ function createFutureClientPlus(
       clientCtx.ontology.provider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
     } else {
-      throw new Error("Unknown definition: " + JSON.stringify(o));
+      throw new Error("not implemented");
     }
   }
 
-  return [clientCtx, clientFn];
+  return [clientCtx, clientFn as any];
 }
 
 // Once we migrate everyone off of using the deprecated parts of `Client` we can rename this to `createClient`.
@@ -206,6 +208,9 @@ export function createClient<
             },
           );
         },
+      },
+      ctx: {
+        value: clientCtx,
       },
     } satisfies Record<keyof Client<any>, PropertyDescriptor>,
   );
