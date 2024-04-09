@@ -75,7 +75,7 @@ function handleFetchError(e: unknown): Promise<Response> {
     message = "The site version could not be found";
   }
 
-  throw new ExitProcessError(1, message, tip);
+  throw new ExitProcessError(1, message, tip, e);
 }
 
 function createRequestLoggingFetch(
