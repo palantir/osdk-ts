@@ -60,12 +60,8 @@ function makeConjureContext(
   client: MinimalClient,
   servicePath: string,
 ): ConjureContext {
-  const baseUrl = client.stack.startsWith("https://")
-    ? client.stack
-    : `https://${client.stack}`;
-
   return {
-    baseUrl,
+    baseUrl: client.stack,
     servicePath,
     fetchFn: client.fetch,
     tokenProvider: async () => await client.tokenProvider(),
