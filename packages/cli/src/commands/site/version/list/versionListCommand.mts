@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  artifacts,
-  ArtifactsSitesAdminV2Service,
-  createConjureContext,
-  createInternalClientContext,
-  thirdPartyApplicationService,
-} from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
 import { loadToken } from "../../../../util/token.js";
@@ -34,20 +28,12 @@ export default async function versionListCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions & deployed version");
 
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(clientCtx, application);
-
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
-
-  const [versions, deployedVersion] = await Promise.all([
-    artifacts.SiteAssetArtifactsService.fetchSiteVersions(
-      clientCtx,
-      application,
-    ),
-    ArtifactsSitesAdminV2Service.getDeployedVersion(ctx, repositoryRid),
+  const [versions, deployment] = await Promise.all([
+    thirdPartyApplications.listWebsiteVersions(clientCtx, application),
+    thirdPartyApplications.getWebsiteDeployment(clientCtx, application),
   ]);
 
-  if (versions.length === 0) {
+  if (versions.data.length === 0) {
     consola.info("No site versions found");
     return;
   }
@@ -55,12 +41,14 @@ export default async function versionListCommand(
   consola.success("Found versions:");
 
   const semver = await import("semver");
-  const sortedVersions = semver.rsort(versions.filter(v => semver.valid(v)));
+  const sortedVersions = semver.rsort(
+    versions.data.map(v => v.version).filter(v => semver.valid(v)),
+  );
   for (const version of sortedVersions) {
     consola.log(
       `    - ${version}${
-        deployedVersion
-          && version === deployedVersion.version
+        deployment
+          && version === deployment.version
           ? colorize("green", ` (deployed)`)
           : ""
       }`,

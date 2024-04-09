@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { ContentSecurityPolicyAdditions } from "../ContentSecurityPolicyAdditions.js";
-
-/**
- * Get the CSP additions configured for a repository.
- *
- * artifacts:sites:read-deployment-info permission is needed on the repository rid to call this endpoint.
- */
-export async function getContentSecurityPolicyAdditions(
-  ctx: ConjureContext,
-  repositoryRid: string,
-): Promise<ContentSecurityPolicyAdditions> {
-  return conjureFetch(
-    ctx,
-    `/sites/v2/admin/repository/${repositoryRid}/csp/additions`,
-    "GET",
-  );
+export interface WebsiteVersion {
+  version: string;
 }

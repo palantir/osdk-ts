@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  ArtifactsSitesAdminV2Service,
-  createConjureContext,
-  createInternalClientContext,
-  thirdPartyApplicationService,
-} from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionGetArgs } from "./VersionGetArgs.js";
@@ -32,19 +27,14 @@ export default async function versionGetCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Getting live version");
 
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(clientCtx, application);
-
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
-
-  const deployedVersion = await ArtifactsSitesAdminV2Service.getDeployedVersion(
-    ctx,
-    repositoryRid,
+  const deployment = await thirdPartyApplications.getWebsiteDeployment(
+    clientCtx,
+    application,
   );
 
-  if (!deployedVersion) {
+  if (!deployment) {
     consola.info("No live site version set");
   } else {
-    consola.success(`Live site version is ${deployedVersion.version}`);
+    consola.success(`Live site version is ${deployment.version}`);
   }
 }
