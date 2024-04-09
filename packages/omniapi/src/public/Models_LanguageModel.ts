@@ -66,7 +66,7 @@ const _listLanguageModels: $OmniMethod<
   ($queryParams?: {
     source?: $C.LanguageModelSource;
   }) => Promise<$C.ListLanguageModelsResponse>
-> = [0, "/v1/models/languageModels"];
+> = [0, "/v1/models/languageModels", 2];
 
 /**
  * Lists the language models available. Can be filtered by source.

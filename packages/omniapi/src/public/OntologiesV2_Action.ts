@@ -31,7 +31,7 @@ const _applyActionV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.SyncApplyActionResponseV2>
-> = [1, "/v2/ontologies/{0}/actions/{1}/apply", 1];
+> = [1, "/v2/ontologies/{0}/actions/{1}/apply", 3];
 
 /**
  * Applies an action using the given parameters.
@@ -72,7 +72,7 @@ const _applyActionBatchV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.BatchApplyActionResponseV2>
-> = [1, "/v2/ontologies/{0}/actions/{1}/applyBatch", 1];
+> = [1, "/v2/ontologies/{0}/actions/{1}/applyBatch", 3];
 
 /**
  * Applies multiple actions (of the same Action Type) using the given parameters.
@@ -112,7 +112,7 @@ const _applyActionAsyncV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.AsyncApplyActionResponseV2>
-> = [1, "/v2/ontologies/{0}/actions/{1}/applyAsync", 1];
+> = [1, "/v2/ontologies/{0}/actions/{1}/applyAsync", 3];
 
 /**
  * Applies an action using the given parameters.

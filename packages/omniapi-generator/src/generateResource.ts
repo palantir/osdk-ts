@@ -132,12 +132,18 @@ function generateOperationArray(method: StaticOperation) {
   const requestType = method.requestBody?.body.requestType;
   const bodyInfo = getReqBodyInfo(requestType);
   const respInfo = getResponseInfo(method.response);
+  const paramInfo = getParamInfo(method.parameters);
+  paramInfo.QUERY.length;
+
+  const flag = (bodyInfo.componentType != null ? 1 : 0)
+    + (paramInfo.QUERY.length > 0 ? 2 : 0)
+    + (paramInfo.HEADER.length > 0 ? 4 : 0);
 
   let count = 0;
   const constParts = [
     HTTP_VERB_MAP[method.httpMethod],
     `"${method.path.replace(/{.*?}/g, () => `{${count++}}`)}"`,
-    bodyInfo.componentType != null ? 1 : "",
+    flag > 0 ? flag : "",
     bodyInfo.mimeType,
     respInfo.mimeType,
   ];

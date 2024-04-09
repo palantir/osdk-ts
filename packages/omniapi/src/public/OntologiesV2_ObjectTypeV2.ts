@@ -26,7 +26,7 @@ const _listObjectTypesV2: $OmniMethod<
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ) => Promise<$C.ListObjectTypesV2Response>
-> = [0, "/v2/ontologies/{0}/objectTypes"];
+> = [0, "/v2/ontologies/{0}/objectTypes", 2];
 
 /**
  * Lists the object types for the given Ontology.
@@ -79,7 +79,7 @@ const _listOutgoingLinkTypesV2: $OmniMethod<
     objectType: $C.ObjectTypeApiName,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ) => Promise<$C.ListOutgoingLinkTypesResponseV2>
-> = [0, "/v2/ontologies/{0}/objectTypes/{1}/outgoingLinkTypes"];
+> = [0, "/v2/ontologies/{0}/objectTypes/{1}/outgoingLinkTypes", 2];
 
 /**
  * List the outgoing links for an object type.

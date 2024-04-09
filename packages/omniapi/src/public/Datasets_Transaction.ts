@@ -27,7 +27,7 @@ const _createTransaction: $OmniMethod<
     $body: $C.CreateTransactionRequest,
     $queryParams?: { branchId?: $C.BranchId },
   ) => Promise<$C.Transaction>
-> = [1, "/v1/datasets/{0}/transactions", 1];
+> = [1, "/v1/datasets/{0}/transactions", 3];
 
 /**
  * Creates a Transaction on a Branch of a Dataset.

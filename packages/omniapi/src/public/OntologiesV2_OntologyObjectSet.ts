@@ -52,7 +52,7 @@ const _loadObjectSetV2: $OmniMethod<
       packageName?: $C.SdkPackageName;
     },
   ) => Promise<$C.LoadObjectSetResponseV2>
-> = [1, "/v2/ontologies/{0}/objectSets/loadObjects", 1];
+> = [1, "/v2/ontologies/{0}/objectSets/loadObjects", 3];
 
 /**
  * Load the ontology objects present in the `ObjectSet` from the provided object set definition.
@@ -91,7 +91,7 @@ const _aggregateObjectSetV2: $OmniMethod<
       preview?: $C.PreviewMode;
     },
   ) => Promise<$C.AggregateObjectsResponseV2>
-> = [1, "/v2/ontologies/{0}/objectSets/aggregate", 1];
+> = [1, "/v2/ontologies/{0}/objectSets/aggregate", 3];
 
 /**
  * Aggregates the ontology objects present in the `ObjectSet` from the provided object set definition.
