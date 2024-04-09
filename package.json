@@ -17,8 +17,8 @@
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
-    "@babel/preset-typescript": "^7.23.3",
+    "@babel/core": "^7.24.4",
+    "@babel/preset-typescript": "^7.24.1",
     "@changesets/cli": "^2.26.2",
     "@monorepolint/cli": "0.5.0-alpha.108",
     "@monorepolint/config": "0.5.0-alpha.108",
