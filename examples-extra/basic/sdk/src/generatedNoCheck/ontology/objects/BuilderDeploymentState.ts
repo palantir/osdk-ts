@@ -1,8 +1,10 @@
 import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export interface BuilderDeploymentState
   extends ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState>,
     VersionBound<'0.15.0'> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Builder Deployment State';
   links: {};
   primaryKeyApiName: 'skuId';
@@ -15,6 +17,7 @@ export interface BuilderDeploymentState
 }
 
 export const BuilderDeploymentState: BuilderDeploymentState = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'BuilderDeploymentState',
   description: 'Builder Deployment State',
   links: {},

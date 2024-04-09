@@ -25,7 +25,12 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import {
+  actionTakesAttachment,
+  createOffice,
+  moveOffice,
+  Ontology as MockOntology,
+} from "../generatedNoCheck/index.js";
 import { Attachment } from "../object/Attachment.js";
 import type {
   ActionEditResponse,
@@ -50,7 +55,7 @@ describe("actions", () => {
   });
 
   it("conditionally returns the edits", async () => {
-    const result = await client(MockOntology.actions.createOffice)({
+    const result = await client(createOffice)({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -75,7 +80,7 @@ describe("actions", () => {
       }
     `);
 
-    const undefinedResult = await client(MockOntology.actions.createOffice)({
+    const undefinedResult = await client(createOffice)({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -86,7 +91,7 @@ describe("actions", () => {
   });
 
   it("returns validation directly on validateOnly mode", async () => {
-    const result = await client(MockOntology.actions.moveOffice)({
+    const result = await client(moveOffice)({
       officeId: "SEA",
       newAddress: "456 Pike Place",
       newCapacity: 40,
@@ -106,7 +111,7 @@ describe("actions", () => {
 
   it("throws on validation errors", async () => {
     try {
-      const result = await client(MockOntology.actions.moveOffice)({
+      const result = await client(moveOffice)({
         officeId: "SEA",
         newAddress: "456 Pike Place",
         newCapacity: 40,
@@ -128,13 +133,13 @@ describe("actions", () => {
 
   it("Accepts attachments", async () => {
     const clientBoundActionTakesAttachment = client(
-      MockOntology.actions.actionTakesAttachment,
+      actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<{ attachment: Attachment }>();
 
     const attachment = new Attachment("attachment.rid");
-    const result = await client(MockOntology.actions.actionTakesAttachment)({
+    const result = await client(actionTakesAttachment)({
       attachment,
     });
 

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
-
 export interface ClientContext<O extends { metadata: { userAgent: string } }> {
   /** @deprecated */
   ontology: O;
@@ -26,8 +24,6 @@ export interface ClientContext<O extends { metadata: { userAgent: string } }> {
    * TODO: Document what is needed to get retry logic
    */
   fetch: typeof globalThis.fetch;
-
-  fetchJson: FetchAsJsonFn;
 
   tokenProvider: () => Promise<string> | string;
 }

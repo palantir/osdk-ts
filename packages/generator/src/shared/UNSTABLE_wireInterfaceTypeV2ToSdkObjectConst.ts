@@ -41,8 +41,10 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   function getV2Types() {
     return `
   export interface ${objectDefIdentifier} extends InterfaceDefinition<"${interfaceDef.apiName}", ${interfaceDef.apiName}>, VersionBound<"${process.env.PACKAGE_CLIENT_VERSION}"> {
+    osdkMetadata: typeof $osdkMetadata;
     ${
       stringify(definition, {
+        osdkMetadata: () => undefined,
         type: () => undefined,
         apiName: () => undefined,
         links: (_value) =>
@@ -82,6 +84,12 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     ${v2 ? getV2Types() : ""}
 
     export const ${definition.apiName}: ${objectDefIdentifier} = {
-      ${stringify(definition)}
+      osdkMetadata: $osdkMetadata,
+      ${
+    stringify(definition, {
+      osdkMetadata: () => undefined,
+    })
+  }
+      
     };`;
 }

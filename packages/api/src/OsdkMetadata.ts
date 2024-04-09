@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,6 @@
  * limitations under the License.
  */
 
-import { MOCK_ORIGIN } from "@osdk/shared.test";
-import { beforeAll, describe } from "vitest";
-import type { Client } from "./Client.js";
-import { createClient } from "./createClient.js";
-import { MockOntology } from "./util/test/mockOntology.js";
-
-describe("Enumerable Objects", () => {
-  let client: Client;
-
-  beforeAll(async () => {
-    client = createClient(
-      MOCK_ORIGIN,
-      MockOntology.metadata.ontologyRid,
-      () => "myAccessToken",
-    );
-  });
-});
+export interface OsdkMetadata {
+  extraUserAgent: string;
+}

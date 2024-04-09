@@ -37,8 +37,8 @@ export function createClient(
 ): Client {
   const clientCtx: MinimalClient = createMinimalClient(
     {
-      userAgent: `@osdk/client/${process.env.PACKAGE_CLIENT_VERSION ?? "dev"}`,
       ontologyRid,
+      userAgent: "", // ontology specific user agent injected elsewhere
     },
     stack,
     tokenProvider,

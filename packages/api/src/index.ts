@@ -77,3 +77,4 @@ export type {
   UnionQueryDataType,
 } from "./ontology/QueryDefinition";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";
+export type { OsdkMetadata } from "./OsdkMetadata";

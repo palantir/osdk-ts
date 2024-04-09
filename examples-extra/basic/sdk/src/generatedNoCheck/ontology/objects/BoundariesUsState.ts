@@ -1,8 +1,10 @@
 import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export interface BoundariesUsState
   extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState>,
     VersionBound<'0.15.0'> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Boundaries US State';
   links: {};
   primaryKeyApiName: 'usState';
@@ -16,6 +18,7 @@ export interface BoundariesUsState
 }
 
 export const BoundariesUsState: BoundariesUsState = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',
   links: {},

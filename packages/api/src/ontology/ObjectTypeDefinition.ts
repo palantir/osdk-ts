@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "..";
+import type { OsdkMetadata } from "../OsdkMetadata";
 import type { OntologyDefinition } from "./OntologyDefinition";
 import type { VersionString } from "./VersionString";
 import type { WirePropertyTypes } from "./WirePropertyTypes";
@@ -57,10 +58,11 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
     string,
     ObjectTypeLinkDefinition<any, any>
   >;
+  osdkMetadata?: OsdkMetadata;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
-  expectedClientVersion?: V;
+  __expectedClientVersion?: V;
 }
 
 export interface ObjectTypeDefinition<

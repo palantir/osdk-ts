@@ -21,7 +21,8 @@ import type {
 } from "@osdk/api";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
@@ -30,32 +31,45 @@ describe(createClient, () => {
   const validCurrentVersion = "0.14.0" as const;
   const invalidFutureVersion = "100.100.100" as const;
 
-  it("Passes the expected userAgent string", async () => {
-    const fetchFunction: MockedFunction<typeof globalThis.fetch> = vi.fn();
+  describe("user agent passing", () => {
+    let fetchFunction: MockedFunction<typeof globalThis.fetch>;
+    let client: Client;
 
-    const client = createClient(
-      "https://mock.com",
-      MockOntology.metadata.ontologyRid,
-      () => "Token",
-      {},
-      fetchFunction,
-    );
+    beforeEach(() => {
+      fetchFunction = vi.fn();
 
-    mockFetchResponse(fetchFunction, { data: [] });
+      client = createClient(
+        "https://mock.com",
+        MockOntology.metadata.ontologyRid,
+        () => "Token",
+        {},
+        fetchFunction,
+      );
 
-    await client(MockOntology.objects.Task).fetchPage();
-    expect(fetchFunction).toHaveBeenCalledTimes(1);
+      mockFetchResponse(fetchFunction, { data: [] });
+    });
 
-    const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers).get(
-      "Fetch-User-Agent",
-    );
-    const parts = userAgent?.split(" ") ?? [];
-    const [packageUA, generatorUA] = MockOntology.metadata.userAgent
-      .split(" ");
-    expect(parts).toHaveLength(3);
-    expect(parts[0]).toEqual(packageUA);
-    expect(parts[1]).toEqual(generatorUA);
-    expect(parts[2]).toEqual(USER_AGENT); // the client USER_AGENT has an undefined version during vitest runs
+    function getUserAgentPartsFromMockedFetch() {
+      const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
+        .get(
+          "Fetch-User-Agent",
+        );
+      const parts = userAgent?.split(" ") ?? [];
+      return parts;
+    }
+
+    it("works for objects", async () => {
+      await client(MockOntology.objects.Task).fetchPage();
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+
+      const parts = getUserAgentPartsFromMockedFetch();
+      expect(parts).toEqual([
+        ...MockOntology.objects.Task.osdkMetadata!
+          .extraUserAgent
+          .split(" "),
+        USER_AGENT,
+      ]);
+    });
   });
 
   describe("Version compatibility checks", () => {

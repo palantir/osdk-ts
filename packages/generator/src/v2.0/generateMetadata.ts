@@ -32,6 +32,7 @@ export async function generateOntologyMetadataFile(
       import { OntologyMetadata as OM } from "@osdk/api";
 
       export const expectedClientVersion = "${process.env.PACKAGE_CLIENT_VERSION}";
+      export const $osdkMetadata = { extraUserAgent: "${userAgent}" };
 
       export interface OntologyMetadata extends OM<"${process.env.PACKAGE_CLIENT_VERSION}"> {
         expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",

@@ -24,7 +24,11 @@ import type {
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
 
-const Task: Task = {
+const osdkMetadata = {
+  extraUserAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+};
+
+const Task: TaskDef = {
   type: "object",
   apiName: "Task",
   primaryKeyApiName: "id",
@@ -38,9 +42,10 @@ const Task: Task = {
       targetType: "Todo",
     },
   },
+  osdkMetadata,
 };
 
-const Todo: Todo = {
+const Todo: TodoDef = {
   type: "object",
   apiName: "Todo",
   primaryKeyApiName: "id",
@@ -60,11 +65,12 @@ const Todo: Todo = {
       targetType: "Task",
     },
   },
+  osdkMetadata,
 };
 
-interface Todo
-  extends ObjectTypeDefinition<"Todo", Todo>, VersionBound<"0.15.0">
-{
+interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
+  type: "object";
+  apiName: "Todo";
   primaryKeyApiName: "id";
   primaryKeyType: "string";
   description: "A todo object";
@@ -77,20 +83,20 @@ interface Todo
     points: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTask: ObjectTypeLinkDefinition<Task, false>;
+    linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
   };
 }
 
-interface Task
-  extends ObjectTypeDefinition<"Task", Task>, VersionBound<"0.15.0">
-{
+interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
+  type: "object";
+  apiName: "Task";
   primaryKeyApiName: "id";
   primaryKeyType: "integer";
   properties: {
     id: { type: "integer"; nullable: true };
   };
   links: {
-    linkedTodos: ObjectTypeLinkDefinition<Todo, true>;
+    linkedTodos: ObjectTypeLinkDefinition<TodoDef, true>;
   };
 }
 
