@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { DomainName } from "./DomainName.js";
-export interface UnregisterDomainRequest {
-  siteDomain: DomainName;
+export interface UpdateWebsiteDeploymentRequest {
+  version: string;
 }

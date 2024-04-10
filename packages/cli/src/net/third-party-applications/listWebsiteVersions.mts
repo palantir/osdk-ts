@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,19 @@
  * limitations under the License.
  */
 
-import { ExitProcessError } from "@osdk/cli.common";
-import { consola } from "consola";
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
-import type { RepositoryRid } from "../RepositoryRid.js";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
+import type { ListWebsiteVersionsResponse } from "./ListWebsiteVersionsResponse.mjs";
 
-export async function fetchWebsiteRepositoryRid(
+export async function listWebsiteVersions(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-): Promise<RepositoryRid> {
+): Promise<ListWebsiteVersionsResponse> {
   const fetch = createFetch(ctx.tokenProvider);
-  const url = `
-    ${ctx.foundryUrl}/third-party-application-service/api/application-websites/${thirdPartyAppRid}`;
+  const url =
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteVersions?preview=true`;
 
   const result = await fetch(url);
-  if (result.status >= 200 && result.status < 300) {
-    const repositoryRid = await result.json();
-    consola.debug(`Repository RID: ${repositoryRid}`);
-    return repositoryRid;
-  }
-  throw new ExitProcessError(
-    result.status,
-    `Unexpected response code ${result.status} (${result.statusText})`,
-  );
+  return result.json();
 }

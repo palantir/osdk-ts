@@ -16,12 +16,7 @@
 
 import { consola } from "consola";
 
-import {
-  ArtifactsSitesAdminV2Service,
-  createConjureContext,
-  createInternalClientContext,
-  thirdPartyApplicationService,
-} from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { loadToken } from "../../../../util/token.js";
 import type { VersionSetArgs } from "./VersionSetArgs.js";
 
@@ -32,15 +27,12 @@ export default async function versionSetCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(clientCtx, application);
 
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
   if (version) {
-    await ArtifactsSitesAdminV2Service.updateDeployedVersion(
-      ctx,
-      repositoryRid,
-      { siteVersion: { version } },
+    await thirdPartyApplications.updateWebsiteDeployment(
+      clientCtx,
+      application,
+      { version },
     );
   }
 

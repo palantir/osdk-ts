@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export type SiteDomainRegistrationRequestRid = string;
+import type { WebsiteVersion } from "./WebsiteVersion.mts";
+
+export interface ListWebsiteVersionsResponse {
+  data: WebsiteVersion[];
+  nextPageToken?: string;
+}

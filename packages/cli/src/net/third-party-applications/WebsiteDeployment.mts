@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { UpdateDeployedVersionRequest } from "../UpdateDeployedVersionRequest.js";
-
-/**
- * Sets the asset version of the siteasset repository that will be served.
- *
- * artifacts:sites:write-deployment-info permission is needed on the repository rid to call this endpoint.
- */
-export async function updateDeployedVersion(
-  ctx: ConjureContext,
-  repositoryRid: string,
-  version: UpdateDeployedVersionRequest,
-): Promise<void> {
-  return conjureFetch(
-    ctx,
-    `/sites/v2/admin/repository/${repositoryRid}/deployed-version`,
-    "PUT",
-    version,
-  );
+export interface WebsiteDeployment {
+  version: string;
+  subdomains: string[];
 }
