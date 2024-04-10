@@ -154,8 +154,7 @@ function standardPackageRules(shared, options) {
           files: [
             "build/types",
             "build/js",
-            "changelog",
-            "CHANGELOG_OLD.md",
+            "CHANGELOG.md",
             "package.json",
             "templates",
 
