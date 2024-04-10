@@ -1,10 +1,11 @@
-name: Release
+name: Snapshot
 
 on:
   push:
     branches:
       - main
       - release/*
+      - next
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -12,9 +13,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -34,12 +32,19 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Create Release Pull Request or Publish to npm
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: pnpm ci:version
-          publish: pnpm ci:publish
+      - name: Build code
+        run: pnpm exec turbo run build
+      
+      - name: Update versions for snapshots
+        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
+      
+      - name: Make sure code is up to date
+        run: pnpm exec turbo run postVersioning
+      
+      - name: Rebuild things
+        run: pnpm exec turbo run build
+      
+      - name: Publish results
+        run: pnpm exec changeset publish --no-git-tag --snapshot ${GITHUB_REF_NAME//\//__}
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

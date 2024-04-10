@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: 
+      - main
+      - release/*
+      - next
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -42,3 +45,7 @@ jobs:
 
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
+
+      - name: Check for changesets
+        if: ${{ github.event_name == 'pull_request' }}
+        run: pnpm exec changeset status --since=main
