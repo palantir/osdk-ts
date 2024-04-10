@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Move site command out of unstable
-  links:
-  - https://github.com/palantir/osdk-ts/pull/187
