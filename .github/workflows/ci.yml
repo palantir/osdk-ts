@@ -22,7 +22,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v3
         with:
@@ -48,4 +48,7 @@ jobs:
 
       - name: Check for changesets
         if: ${{ github.event_name == 'pull_request' }}
-        run: pnpm exec changeset status --since=main
+        run: |
+          git fetch origin main:main
+          pnpm exec changeset status --since=main
+
