@@ -50,5 +50,6 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         run: |
           git fetch origin main:main
+          git checkout ${GITHUB_HEAD_REF}
           pnpm exec changeset status --since=main
 
