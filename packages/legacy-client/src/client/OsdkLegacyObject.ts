@@ -149,13 +149,6 @@ export type OsdkLegacyOntologyObjectNoSearchArounds<
   K extends ObjectTypeKeysFrom<O>,
 > = K extends string ? OntologyObject<
     K,
-    // & {
-    //   [
-    //     L in ObjectTypeLinkKeysFrom<O, K> as `searchAround${Capitalize<
-    //       L & string
-    //     >}`
-    //   ]?: never;
-    // },
     OsdkLegacyPrimaryKeyType<O, K>
   >
   : never;

@@ -80,7 +80,6 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
         sharedPropertyTypeMapping: {},
       },
     );
-    console.info(await formatTs(objectInterface));
     expect(await formatTs(objectInterface)).toMatchInlineSnapshot(`
       "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
 

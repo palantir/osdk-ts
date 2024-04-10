@@ -333,7 +333,6 @@ export type {
   SearchAround,
   SearchAroundKeys,
   SearchAroundObjectSetDefinition,
-  SearchAroundOnly,
   SearchClause,
   SearchObjectsError,
   SelectableProperties,
