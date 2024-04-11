@@ -18,7 +18,7 @@ const auth = createPublicOauthClient(
 );
 
 export const $ = createClient(
-  Ontology,
   "http://localhost:8080",
+  Ontology.metadata.ontologyRid,
   auth,
 );

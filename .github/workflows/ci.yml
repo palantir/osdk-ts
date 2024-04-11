@@ -37,8 +37,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build, lint, and test
+      - name: Transpile, typecheck, Lint and test
         run: pnpm check
+
+      # catches some of the examples that don't have transpile/typecheck tasks
+      - name: Build
+        run: pnpm build
 
       - name: Verify nothing changed
         run: git diff --exit-code
