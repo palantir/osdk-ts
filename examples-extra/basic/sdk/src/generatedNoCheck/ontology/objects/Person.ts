@@ -1,9 +1,10 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type { Todo } from './Todo.js';
 
-export interface Person extends ObjectTypeDefinition<'Person', Person>, VersionBound<'0.15.0'> {
+export interface Person extends ObjectTypeDefinition<'Person', Person>, VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'A person';
   links: {

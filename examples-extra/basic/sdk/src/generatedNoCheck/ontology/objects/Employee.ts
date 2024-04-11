@@ -1,9 +1,10 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type { Venture } from './Venture.js';
 
-export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, VersionBound<'0.15.0'> {
+export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'An employee';
   implements: ['FooInterface'];

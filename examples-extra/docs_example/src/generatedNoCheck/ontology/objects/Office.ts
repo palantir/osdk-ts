@@ -1,7 +1,8 @@
 import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
-export interface Office extends ObjectTypeDefinition<'Office', Office>, VersionBound<'0.15.0'> {
+export interface Office extends ObjectTypeDefinition<'Office', Office>, VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'A office in our Company';
   links: {};

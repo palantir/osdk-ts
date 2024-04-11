@@ -1,7 +1,10 @@
 import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation>, VersionBound<'0.15.0'> {
+export interface WeatherStation
+  extends ObjectTypeDefinition<'WeatherStation', WeatherStation>,
+    VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'Weather Station';
   links: {};
