@@ -122,14 +122,14 @@ export type CreatedObjectOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > = ValuesOfMap<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
-  ? OsdkLegacyObjectFrom<O, K>
+  ? OsdkLegacyObjectFromNoSearchArounds<O, K>
   : void;
 
 export type ModifiedObjectsOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > = ValuesOfMap<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
-  ? OsdkLegacyObjectFrom<O, K>
+  ? OsdkLegacyObjectFromNoSearchArounds<O, K>
   : void;
 
 export type WrappedActionReturnType<

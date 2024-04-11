@@ -73,11 +73,11 @@ export declare type ObjectEdits<T extends OntologyObject> = Array<
 >;
 
 export type CreatedObjectEdits<T extends OntologyObject> = ObjectEdits<
-  any
+  T
 >;
 
 export type ModifiedObjectEdits<T extends OntologyObject> = ObjectEdits<
-  any
+  T
 >;
 /**
  * Represents the edits made to ontology objects.
