@@ -37,7 +37,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Transpile, typechekc, Lint and test
+      - name: Transpile, typecheck, Lint and test
         run: pnpm check
 
       # catches some of the examples that don't have transpile/typecheck tasks
