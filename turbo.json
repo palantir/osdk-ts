@@ -53,10 +53,10 @@
       "inputs": [
         "scripts/postVersioning.mjs",
         "../client/package.json",
-        "../client/src/createClient.ts",
+        "../client/src/Client.ts",
         "../generator/src/v2.0/generateMetadata.ts"
       ],
-      "outputs": ["../client/src/createClient.ts", "../generator/src/v2.0/generateMetadata.ts"]
+      "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
     },
 
     "tsconfig#typecheck": {

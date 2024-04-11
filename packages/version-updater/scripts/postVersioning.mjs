@@ -33,7 +33,7 @@ updateConstVariable(
     "packages",
     "client",
     "src",
-    "createClient.ts",
+    "Client.ts",
   ),
   "MaxOsdkVersion",
   clientPackageVersion,
@@ -75,7 +75,7 @@ function updateConstVariable(filePath, variableName, value) {
 
   const newContents = fileContents.replace(
     regexp,
-    `const ${variableName} = "${clientPackageVersion}";`,
+    `const ${variableName} = "${value}";`,
   );
   if (newContents === fileContents) {
     consola.info(
@@ -86,7 +86,7 @@ function updateConstVariable(filePath, variableName, value) {
     consola.info(
       `Updated ${variableName} in ${
         path.relative(workspaceDirPath, filePath)
-      } to ${clientPackageVersion}`,
+      } to ${value}`,
     );
   }
 }
