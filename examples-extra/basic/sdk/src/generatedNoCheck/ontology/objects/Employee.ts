@@ -1,8 +1,10 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type { Venture } from './Venture.js';
 
-export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
+export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, VersionBound<'0.15.0'> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'An employee';
   implements: ['FooInterface'];
   inverseSpts: {
@@ -37,6 +39,7 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee> {
 }
 
 export const Employee: Employee = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'Employee',
   description: 'An employee',
   implements: ['FooInterface'],

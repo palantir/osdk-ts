@@ -18,6 +18,7 @@ import type { ActionDefinition } from "@osdk/api";
 import type { DataValue } from "@osdk/omniapi";
 import { applyActionV2 } from "@osdk/omniapi/OntologiesV2_Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
 import type {
   ActionEditResponse,
@@ -44,8 +45,8 @@ export async function applyAction<
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
   const response = await applyActionV2(
-    client,
-    client.ontology.metadata.ontologyApiName,
+    addUserAgent(client, action),
+    client.ontologyRid,
     action.apiName,
     {
       parameters: remapActionParams(parameters),

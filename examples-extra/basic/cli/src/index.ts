@@ -22,7 +22,6 @@ import {
   BuilderDeploymentState,
   Employee,
   FooInterface,
-  Ontology,
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
@@ -41,27 +40,9 @@ import { typeChecks } from "./typeChecks.js";
 invariant(process.env.FOUNDRY_STACK !== undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
-/**
- * TLDR: If you're starting out, just use `client` and ignore ` clientCtx`.
- *
- * The client and  clientCtx simply demonstrate two different ways to use the OSDK.
- *
- * The `client`, being concrete, won't tree shake as well. So if you're doing something
- * like really tiny lazily loaded pages, there may be a cost you don't want to pay.
- *
- * That said, the `client` provides entire intellisense/discovery of what you can
- * do and thus is the suggested starting point.
- */
 export const client = createClient(
-  {
-    ...Ontology,
-    metadata: {
-      ...Ontology.metadata,
-      ontologyRid:
-        "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-    },
-  } as typeof Ontology,
   process.env.FOUNDRY_STACK,
+  "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
   () => process.env.FOUNDRY_USER_TOKEN!,
 );
 
@@ -193,7 +174,7 @@ async function runTests() {
           ],
         },
       },
-    }).fetchPageOrThrow();
+    }).fetchPage();
 
     console.log(intersectResult.data.map(data => data.usState));
     console.log(intersectResult.data[0].geometry10M);
@@ -231,7 +212,7 @@ async function runTests() {
             },
           },
         },
-      }).fetchPageOrThrow();
+      }).fetchPage();
 
     // should be every state except NJ,NY,PA
     console.log(intersectResultGeojson.data.map(data => data.usState));
@@ -247,7 +228,7 @@ async function runTests() {
             41.676311210175015,
           ],
         },
-      }).fetchPageOrThrow();
+      }).fetchPage();
 
     console.log(intersectResultbbox.data.map(data => data.usState));
 
@@ -262,8 +243,8 @@ async function runTests() {
 
     console.log(testStringClause.data.map(data => data.usState));
 
-    const testAggregateCountNoGroup = await client.objects.BoundariesUsState
-      .aggregateOrThrow({
+    const testAggregateCountNoGroup = await client(BoundariesUsState)
+      .aggregate({
         select: { $count: true, latitude: ["min", "max", "avg"] },
       });
 
@@ -274,8 +255,8 @@ async function runTests() {
       testAggregateCountNoGroup.latitude.max,
       testAggregateCountNoGroup.latitude.min,
     );
-    const testAggregateCountWithGroups = await client.objects.BoundariesUsState
-      .aggregateOrThrow({
+    const testAggregateCountWithGroups = await client(BoundariesUsState)
+      .aggregate({
         select: { $count: true, latitude: ["min", "max", "avg"] },
         groupBy: {
           usState: "exact",
@@ -285,9 +266,8 @@ async function runTests() {
         },
       });
 
-    const testAggregateCountWithFixedGroups = await client.objects
-      .BoundariesUsState
-      .aggregateOrThrow({
+    const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
+      .aggregate({
         select: { $count: true, latitude: ["min", "max", "avg"] },
         groupBy: {
           longitude: {
@@ -296,9 +276,8 @@ async function runTests() {
         },
       });
 
-    const testAggregateCountWithRangeGroups = await client.objects
-      .BoundariesUsState
-      .aggregateOrThrow({
+    const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
+      .aggregate({
         select: { $count: true },
         groupBy: {
           latitude: {
@@ -348,7 +327,7 @@ async function checkLinksAndActionsForVentures() {
 
     // TODO: when links are objectsets switch to asyncIter
     const { data: ventures } = await emp.$link.ventures
-      .fetchPageOrThrow();
+      .fetchPage();
 
     for (const venture of ventures) {
       console.log(`  - Venture: ${venture.ventureId} ${venture.ventureName}`);
@@ -361,7 +340,7 @@ async function checkLinksAndActionsForVentures() {
         console.log("  - Validating assignEmployee1");
         didValidateOnce = true;
 
-        const { data: [venture] } = await client(Venture).fetchPageOrThrow();
+        const { data: [venture] } = await client(Venture).fetchPage();
 
         const r = await client(assignEmployee1)({
           "employee-1": emp,

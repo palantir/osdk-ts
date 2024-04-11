@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from "@osdk/api";
+import type {
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  VersionBound,
+} from "@osdk/api";
 
-export interface ObjectTypeWithReservedNamesDef
-  extends ObjectTypeDefinition<"ObjectTypeWithReservedNames">
+export interface ObjectTypeWithReservedNamesDef extends
+  ObjectTypeDefinition<
+    "ObjectTypeWithReservedNames"
+  >,
+  VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithReservedNames";

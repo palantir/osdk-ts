@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-export interface ClientContext<O extends { metadata: { userAgent: string } }> {
-  /** @deprecated */
-  ontology: O;
-  stack: string;
-  /**
-   * The fetch function to use for all requests.
-   *
-   * TODO: Document what is needed to get retry logic
-   */
-  fetch: typeof globalThis.fetch;
-
-  tokenProvider: () => Promise<string> | string;
+export interface OsdkMetadata {
+  extraUserAgent: string;
 }

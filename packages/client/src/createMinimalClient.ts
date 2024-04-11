@@ -45,17 +45,18 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${stack}${hint}`);
     }
   }
-  const clientCtx: MinimalClient = createClientContext(
-    {
-      metadata,
-      provider: undefined as any,
-    },
-    stack,
-    tokenProvider,
-    USER_AGENT,
-    fetchFn,
-  );
-  clientCtx.ontology.provider = createStandardOntologyProviderFactory(
+  const clientCtx: MinimalClient = {
+    ...createClientContext(
+      { metadata },
+      stack,
+      tokenProvider,
+      USER_AGENT,
+      fetchFn,
+    ),
+    ontologyRid: metadata.ontologyRid,
+    ontologyProvider: undefined as any,
+  };
+  clientCtx.ontologyProvider = createStandardOntologyProviderFactory(
     ontologyCachingOptions,
   )(clientCtx);
   return clientCtx;

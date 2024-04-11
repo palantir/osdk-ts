@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
-import { getInterfaceType } from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import { createFetchHeaderMutator } from "@osdk/shared.net";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export async function loadInterfaceDefinition(
+export function addUserAgent(
   client: MinimalClient,
-  objtype: string,
-): Promise<InterfaceDefinition<any, any>> {
-  const r = await getInterfaceType(
-    client,
-    client.ontologyRid,
-    objtype,
-    { preview: true },
-  );
-
-  return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(r, true);
+  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
+): MinimalClient {
+  if (withMetadata.osdkMetadata) {
+    return {
+      ...client,
+      fetch: createFetchHeaderMutator(
+        client.fetch,
+        (headers) => {
+          headers.set(
+            "Fetch-User-Agent",
+            withMetadata.osdkMetadata!.extraUserAgent,
+          );
+          return headers;
+        },
+      ),
+    };
+  }
+  return client;
 }

@@ -1,5 +1,6 @@
 import type { ActionDefinition } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$moveOffice$Params = {
@@ -46,11 +47,18 @@ export interface ActionDef$moveOffice extends ActionDefinition<'moveOffice', 'Of
   modifiedEntities: { Office: { created: false; modified: true } };
   type: 'action';
   parameters: ActionDef$moveOffice$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const moveOffice: ActionDef$moveOffice = {
-  type: 'action',
   apiName: 'moveOffice',
+  description: "Update an office's physical location",
+  modifiedEntities: {
+    Office: {
+      created: false,
+      modified: true,
+    },
+  },
   parameters: {
     officeId: {
       multiplicity: false,
@@ -76,11 +84,6 @@ export const moveOffice: ActionDef$moveOffice = {
       description: 'A list of all office names',
     },
   },
-  description: "Update an office's physical location",
-  modifiedEntities: {
-    Office: {
-      created: false,
-      modified: true,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };

@@ -46,12 +46,12 @@ async function fullOntologyLoad(client: MinimalClient) {
   return await Promise.all([
     listInterfaceTypes(
       client,
-      client.ontology.metadata.ontologyApiName,
+      client.ontologyRid,
       { pageSize: 200, preview: true },
     ),
     getOntologyFullMetadata(
       client,
-      client.ontology.metadata.ontologyApiName,
+      client.ontologyRid,
     ),
   ]);
 }

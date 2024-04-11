@@ -1,5 +1,6 @@
 import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata';
 import type { Employee } from '../objects';
 
 // Represents the definition of the parameters for the action
@@ -43,11 +44,18 @@ export interface ActionDef$promoteEmployeeObject
   modifiedEntities: { Employee: { created: false; modified: true } };
   type: 'action';
   parameters: ActionDef$promoteEmployeeObject$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const promoteEmployeeObject: ActionDef$promoteEmployeeObject = {
-  type: 'action',
   apiName: 'promoteEmployeeObject',
+  description: "Update an employee's title and compensation",
+  modifiedEntities: {
+    Employee: {
+      created: false,
+      modified: true,
+    },
+  },
   parameters: {
     employee: {
       multiplicity: false,
@@ -68,11 +76,6 @@ export const promoteEmployeeObject: ActionDef$promoteEmployeeObject = {
       nullable: false,
     },
   },
-  description: "Update an employee's title and compensation",
-  modifiedEntities: {
-    Employee: {
-      created: false,
-      modified: true,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };

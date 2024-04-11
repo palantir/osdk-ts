@@ -1,8 +1,10 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type { Person } from './Person.js';
 
-export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
+export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<'0.15.0'> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Its a todo item.';
   links: {
     Assignee: ObjectTypeLinkDefinition<Person, false>;
@@ -19,6 +21,7 @@ export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
 }
 
 export const Todo: Todo = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'Todo',
   description: 'Its a todo item.',
   links: {

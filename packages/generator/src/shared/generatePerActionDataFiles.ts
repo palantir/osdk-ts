@@ -17,13 +17,13 @@
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
-import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { deleteUndefineds } from "../util/deleteUndefineds";
 import { stringify } from "../util/stringify";
 import { formatTs } from "../util/test/formatTs";
+import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { getDescriptionIfPresent } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
+import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst";
 
 export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,
@@ -121,14 +121,18 @@ export async function generatePerActionDataFiles(
             return `${key}: ${JSON.stringify(value)};`;
           }).join("\n")
         }
-          parameters: ${paramsDefIdentifier}
+          parameters: ${paramsDefIdentifier};
+          osdkMetadata: typeof $osdkMetadata;
         }`;
       }
 
       function createV2Object() {
-        return `  export const ${action.apiName}: ${actionDefIdentifier} = ${
-          JSON.stringify(fullActionDef, null, 2)
-        } `;
+        return `  export const ${action.apiName}: ${actionDefIdentifier} = 
+        {
+          ${stringify(fullActionDef)},
+          osdkMetadata: $osdkMetadata
+        }
+        `;
       }
 
       function createV1Object() {
@@ -172,6 +176,7 @@ export async function generatePerActionDataFiles(
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
           import type { ActionSignature, ApplyActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client';
+          import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${importObjects}
 
         

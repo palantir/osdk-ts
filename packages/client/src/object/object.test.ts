@@ -32,13 +32,13 @@ function asV2Object(o: any, includeRid?: boolean) {
 
 describe("OsdkObject", () => {
   describe("link", () => {
-    let client: Client<typeof MockOntology>;
+    let client: Client;
 
     beforeAll(async () => {
       apiServer.listen();
       client = createClient(
-        MockOntology,
         "https://stack.palantir.com",
+        MockOntology.metadata.ontologyRid,
         () => "myAccessToken",
       );
     });
@@ -48,7 +48,7 @@ describe("OsdkObject", () => {
     });
 
     it("loads an employee", async () => {
-      const result = await client.objects.Employee.where({
+      const result = await client(MockOntology.objects.Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
 
@@ -63,7 +63,7 @@ describe("OsdkObject", () => {
     });
 
     it("traverses the link from an employee to their lead", async () => {
-      const result = await client.objects.Employee.where({
+      const result = await client(MockOntology.objects.Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
       const employee = result.data[0];
@@ -78,7 +78,7 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peeps", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client.objects.Employee.where({
+      const employees = await client(MockOntology.objects.Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
@@ -100,7 +100,7 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peep by primaryKey", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client.objects.Employee.where({
+      const employees = await client(MockOntology.objects.Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },

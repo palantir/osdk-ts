@@ -64,7 +64,9 @@ export const objectSetHandlers: RestHandler<
           );
 
         if (
-          req.params.ontologyApiName === defaultOntology.apiName && response
+          (req.params.ontologyApiName === defaultOntology.apiName
+            || req.params.ontologyApiName === defaultOntology.rid)
+          && response
         ) {
           return res(
             ctx.json(filterObjectsProperties(response, [...selected])),

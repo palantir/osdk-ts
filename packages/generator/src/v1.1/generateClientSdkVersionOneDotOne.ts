@@ -16,6 +16,7 @@
 
 import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { verifyOutdir } from "../util/verifyOutdir";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
@@ -28,7 +29,6 @@ import { generateMetadataFile } from "./generateMetadataFile";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile";
 import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles";
 import { generateOntologyIndexFile } from "./generateOntologyIndexFile";
-import { generatePerActionDataFiles } from "./generatePerActionDataFiles";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles";
 import { generateQueries } from "./generateQueries";

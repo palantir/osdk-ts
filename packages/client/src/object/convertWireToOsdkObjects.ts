@@ -314,12 +314,12 @@ function createLocalObjectCacheAndInitiatePreseed(
 ) {
   // local cache delegates to the global one
   const localInterfaceCache = createAsyncCache((client, apiName: string) =>
-    client.ontology.provider.getInterfaceDefinition(apiName)
+    client.ontologyProvider.getInterfaceDefinition(apiName)
   );
 
   const localObjectCache = createAsyncCache(async (client, apiName: string) => {
     // first delegate to the global cache
-    const objectDef = await client.ontology.provider.getObjectDefinition(
+    const objectDef = await client.ontologyProvider.getObjectDefinition(
       apiName,
     ) as AugmentedObjectTypeDefinition<any>;
 

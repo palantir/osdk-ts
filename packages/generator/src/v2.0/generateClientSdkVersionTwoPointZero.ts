@@ -16,6 +16,7 @@
 
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs";
+import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
 import {
@@ -23,7 +24,6 @@ import {
 } from "../shared/wireObjectTypeV2ToSdkObjectConst";
 import { formatTs } from "../util/test/formatTs";
 import { verifyOutdir } from "../util/verifyOutdir";
-import { generatePerActionDataFiles } from "../v1.1/generatePerActionDataFiles";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateOntologyMetadataFile } from "./generateMetadata";
 
@@ -122,8 +122,9 @@ export async function generateClientSdkVersionTwoPointZero(
     await fs.writeFile(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
-        import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
+        import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
         import { Osdk } from "@osdk/client";
+        import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
 
         ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
       `),
@@ -189,7 +190,8 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${name}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition, PropertyDef } from "@osdk/api";
+      import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
+      import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
     `),

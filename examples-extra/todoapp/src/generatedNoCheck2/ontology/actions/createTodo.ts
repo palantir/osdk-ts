@@ -1,5 +1,6 @@
 import type { ActionDefinition } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$createTodo$Params = {
@@ -33,11 +34,18 @@ export interface ActionDef$createTodo extends ActionDefinition<'createTodo', 'To
   modifiedEntities: { Todo: { created: true; modified: false } };
   type: 'action';
   parameters: ActionDef$createTodo$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createTodo: ActionDef$createTodo = {
-  type: 'action',
   apiName: 'createTodo',
+  description: 'Creates Todo',
+  modifiedEntities: {
+    Todo: {
+      created: true,
+      modified: false,
+    },
+  },
   parameters: {
     Todo: {
       multiplicity: false,
@@ -50,11 +58,6 @@ export const createTodo: ActionDef$createTodo = {
       nullable: false,
     },
   },
-  description: 'Creates Todo',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: false,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };
