@@ -32,7 +32,7 @@ export function createClient(
   stack: string,
   ontologyRid: string,
   tokenProvider: () => Promise<string> | string,
-  HOLD: {} = {},
+  HOLD: undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   const clientCtx: MinimalClient = createMinimalClient(
@@ -102,7 +102,3 @@ export function createClient(
 
   return client;
 }
-
-const MaxOsdkVersion = "0.15.0";
-export type MaxOsdkVersion = typeof MaxOsdkVersion;
-const ErrorMessage = Symbol("ErrorMessage");

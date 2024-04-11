@@ -42,7 +42,7 @@ describe(createClient, () => {
         "https://mock.com",
         MockOntology.metadata.ontologyRid,
         () => "Token",
-        {},
+        undefined,
         fetchFunction,
       );
 
