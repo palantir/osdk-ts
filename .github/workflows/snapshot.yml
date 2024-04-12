@@ -45,6 +45,6 @@ jobs:
         run: pnpm exec turbo run build
       
       - name: Publish results
-        run: pnpm exec changeset publish --no-git-tag --snapshot ${GITHUB_REF_NAME//\//__}
+        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
