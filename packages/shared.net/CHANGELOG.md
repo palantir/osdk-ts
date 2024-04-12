@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 1.9.1
+
+### Patch Changes
+
+- 9906a41e: Omniapi support
+
 ## 1.1.1
 
 ### Patch Changes
