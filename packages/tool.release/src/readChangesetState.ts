@@ -58,7 +58,7 @@ export default async function readChangesetState(
   cwd: string = process.cwd(),
 ): Promise<ChangesetState> {
   let preState = await readPreState(cwd);
-  let changesets = await readChangesets.default(cwd);
+  let changesets = await readChangesets(cwd);
 
   if (preState !== undefined && preState.mode === "pre") {
     let changesetsToFilter = new Set(preState.changesets);

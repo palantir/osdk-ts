@@ -18,8 +18,26 @@ import { getExecOutput } from "@actions/exec";
 import type { Package } from "@manypkg/get-packages";
 import { getPackages } from "@manypkg/get-packages";
 import * as gitUtils from "./gitUtils.js";
-import type { PublishOptions, PublishResult } from "./run.js";
-import { createRelease, setupOctokit } from "./run.js";
+import { createRelease } from "./run.js";
+import { setupOctokit } from "./setupOctokit.js";
+
+export type PublishOptions = {
+  script: string;
+  githubToken: string;
+  createGithubReleases: boolean;
+  cwd?: string;
+};
+
+type PublishedPackage = { name: string; version: string };
+
+export type PublishResult =
+  | {
+    published: true;
+    publishedPackages: PublishedPackage[];
+  }
+  | {
+    published: false;
+  };
 
 export async function runPublish({
   script,

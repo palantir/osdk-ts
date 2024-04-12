@@ -17,10 +17,9 @@
 import * as github from "@actions/github";
 import type { PreState } from "@changesets/types";
 import type { Package } from "@manypkg/get-packages";
-import { Octokit } from "@octokit/core";
-import { throttling } from "@octokit/plugin-throttling";
 import * as fs from "fs-extra";
 import path from "path";
+import type { setupOctokit } from "./setupOctokit.js";
 import { getChangelogEntry } from "./utils.js";
 
 // GitHub Issues/PRs messages have a max size limit on the
@@ -28,38 +27,6 @@ import { getChangelogEntry } from "./utils.js";
 // `body is too long (maximum is 65536 characters)`.
 // To avoid that, we ensure to cap the message to 60k chars.
 export const MAX_CHARACTERS_PER_MESSAGE = 60000;
-
-export const setupOctokit = (githubToken: string) => {
-  const MyOctokit = Octokit.plugin(throttling);
-  type Opts = Parameters<typeof throttling>[1];
-
-  return new MyOctokit({
-    throttle: {
-      onRateLimit: (
-        retryAfter: any,
-        options: any,
-        octokit: any,
-        retryCount: any,
-      ) => {
-        octokit.log.warn(
-          `Request quota exhausted for request ${options.method} ${options.url}`,
-        );
-
-        if (retryCount < 1) {
-          // only retries once
-          octokit.log.info(`Retrying after ${retryAfter} seconds!`);
-          return true;
-        }
-      },
-      onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
-        // does not retry, only logs a warning
-        octokit.log.warn(
-          `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
-        );
-      },
-    },
-  });
-};
 
 export const createRelease = async (
   octokit: ReturnType<typeof setupOctokit>,
@@ -98,24 +65,6 @@ export const createRelease = async (
     }
   }
 };
-
-export type PublishOptions = {
-  script: string;
-  githubToken: string;
-  createGithubReleases: boolean;
-  cwd?: string;
-};
-
-type PublishedPackage = { name: string; version: string };
-
-export type PublishResult =
-  | {
-    published: true;
-    publishedPackages: PublishedPackage[];
-  }
-  | {
-    published: false;
-  };
 
 type GetMessageOptions = {
   hasPublishScript: boolean;

@@ -23,11 +23,8 @@ import resolveFrom from "resolve-from";
 import * as gitUtils from "./gitUtils.js";
 import readChangesetState from "./readChangesetState.js";
 import type { RunVersionResult, VersionOptions } from "./run.js";
-import {
-  getVersionPrBody,
-  MAX_CHARACTERS_PER_MESSAGE,
-  setupOctokit,
-} from "./run.js";
+import { getVersionPrBody, MAX_CHARACTERS_PER_MESSAGE } from "./run.js";
+import { setupOctokit } from "./setupOctokit.js";
 import {
   getChangedPackages,
   getChangelogEntry,
