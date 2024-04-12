@@ -56,6 +56,8 @@ export const switchToMaybeExistingBranch = async (branch: string) => {
   let isCreatingBranch = !stderr
     .toString()
     .includes(`Switched to a new branch '${branch}'`);
+  // eslint-disable-next-line no-console
+  console.log("stderr: " + stderr);
   if (isCreatingBranch) {
     await exec("git", ["checkout", "-b", branch]);
   }
