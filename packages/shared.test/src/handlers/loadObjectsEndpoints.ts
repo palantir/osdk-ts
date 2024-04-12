@@ -45,7 +45,6 @@ import {
   LinkTypeNotFound,
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
-  OntologyNotFoundError,
   QueryNotFoundError,
 } from "../errors";
 import {
@@ -82,6 +81,7 @@ import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils";
+import { getOntology } from "./ontologyMetadataEndpoints";
 import { handleOpenApiCall } from "./util/handleOpenApiCall";
 
 export const loadObjectsEndpoints: RestHandler<
@@ -126,12 +126,7 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListObjectTypesResponse | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyRid !== defaultOntology.rid) {
-          return res(
-            ctx.status(404),
-            ctx.json(OntologyNotFoundError(req.params.ontologyRid as string)),
-          );
-        }
+        getOntology(req.params.ontologyRid as string);
 
         return res(
           ctx.json({
@@ -159,14 +154,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListObjectTypesV2Response | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         return res(
           ctx.json({
@@ -188,14 +177,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<OntologyObjectV2 | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const objectType = req.params.objectType;
         const primaryKey = req.params.primaryKey;
@@ -342,14 +325,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<LinkTypeSide | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyRid !== defaultOntology.rid) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(JSON.stringify(req.params.ontologyRid)),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const objectTypeApiName = req.params.objectType;
         const linkTypeApiName = req.params.linkType;
@@ -401,14 +378,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListOutgoingLinkTypesResponse | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyRid !== defaultOntology.rid) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(JSON.stringify(req.params.ontologyRid)),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const objectType = req.params.objectType;
         if (typeof objectType !== "string") {
@@ -447,14 +418,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListLinkedObjectsResponse | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(JSON.stringify(req.params.ontologyApiName)),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const primaryKey = req.params.primaryKey;
         const linkType = req.params.linkType;
@@ -514,14 +479,8 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListLinkedObjectsResponse | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(JSON.stringify(req.params.ontologyApiName)),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const primaryKey = req.params.primaryKey;
         const linkType = req.params.linkType;
@@ -601,14 +560,9 @@ export const loadObjectsEndpoints: RestHandler<
         res: ResponseComposition<ListQueryTypesResponseV2 | BaseAPIError>,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
+
         return res(
           ctx.json({
             data: queryTypes,

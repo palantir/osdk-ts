@@ -1,6 +1,11 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', WeatherStation> {
+export interface WeatherStation
+  extends ObjectTypeDefinition<'WeatherStation', WeatherStation>,
+    VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Weather Station';
   links: {};
   primaryKeyApiName: 'stationId';
@@ -12,6 +17,7 @@ export interface WeatherStation extends ObjectTypeDefinition<'WeatherStation', W
 }
 
 export const WeatherStation: WeatherStation = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'WeatherStation',
   description: 'Weather Station',
   links: {},

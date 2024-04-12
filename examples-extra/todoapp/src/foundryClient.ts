@@ -1,23 +1,24 @@
 import { createClient } from "@osdk/client";
-import { ConfidentialClientAuth, FoundryClient } from "./generatedNoCheck";
+import { createPublicOauthClient } from "@osdk/oauth";
+import invariant from "tiny-invariant";
 import { Ontology } from "./generatedNoCheck2";
 
-const auth = new ConfidentialClientAuth({
-  clientId: import.meta.env.VITE_FOUNDRY_CLIENT_ID,
-  url: import.meta.env.VITE_FOUNDRY_URL,
-  clientSecret: import.meta.env.VITE_FOUNDRY_CLIENT_SECRET,
-});
+invariant(
+  import.meta.env.VITE_FOUNDRY_CLIENT_ID,
+  "VITE_FOUNDRY_CLIENT_ID is required",
+);
+invariant(import.meta.env.VITE_FOUNDRY_URL, "VITE_FOUNDRY_URL is required");
 
-export const foundryClient = new FoundryClient({
-  url: import.meta.env.VITE_FOUNDRY_URL,
+const auth = createPublicOauthClient(
+  import.meta.env.VITE_FOUNDRY_CLIENT_ID,
+  // import.meta.env.VITE_FOUNDRY_URL,
+  "http://localhost:8080",
+  "http://localhost:8080/auth/callback",
+  true,
+);
+
+export const $ = createClient(
+  "http://localhost:8080",
+  Ontology.metadata.ontologyRid,
   auth,
-});
-
-export const foundryClient2 = createClient(
-  Ontology,
-  import.meta.env.VITE_FOUNDRY_URL,
-  async () => {
-    const token = await auth.getToken();
-    return token.accessToken;
-  },
 );

@@ -50,6 +50,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}> {
         ${
       stringify(definition, {
+        osdkMetadata: () => undefined, // not used in v1
         links: (_value) =>
           `{
           ${
@@ -69,9 +70,11 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}>, VersionBound<$ExpectedClientVersion> {
+        osdkMetadata: typeof $osdkMetadata;
         ${
       stringify(definition, {
+        osdkMetadata: () => undefined, // we are going to reference another object instead
         type: () => undefined,
         apiName: () => undefined,
         links: (_value) =>
@@ -97,6 +100,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
         }`),
       })
     }
+    
       }
 
     `;
@@ -115,6 +119,12 @@ export function wireObjectTypeV2ToSdkObjectConst(
     ${v2 ? getV2Types() : getV1Types()}
 
     export const ${object.objectType.apiName}: ${objectDefIdentifier} = {
-      ${stringify(definition)}
+      ${v2 ? `osdkMetadata: $osdkMetadata,` : ""}
+      ${
+    stringify(definition, {
+      osdkMetadata: (value) => undefined,
+    })
+  }
+    
     };`;
 }

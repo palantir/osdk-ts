@@ -1,6 +1,9 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
-export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
+export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Its a todo item.';
   links: {};
   primaryKeyApiName: 'id';
@@ -13,6 +16,7 @@ export interface Todo extends ObjectTypeDefinition<'Todo', Todo> {
 }
 
 export const Todo: Todo = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'Todo',
   description: 'Its a todo item.',
   links: {},

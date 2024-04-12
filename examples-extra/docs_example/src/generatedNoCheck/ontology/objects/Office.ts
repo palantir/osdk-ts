@@ -1,6 +1,9 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
-export interface Office extends ObjectTypeDefinition<'Office', Office> {
+export interface Office extends ObjectTypeDefinition<'Office', Office>, VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'A office in our Company';
   links: {};
   primaryKeyApiName: 'officeId';
@@ -16,6 +19,7 @@ export interface Office extends ObjectTypeDefinition<'Office', Office> {
 }
 
 export const Office: Office = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'Office',
   description: 'A office in our Company',
   links: {},

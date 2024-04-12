@@ -63,3 +63,26 @@ export function listLinkedObjects<T extends OntologyObject>(
       ),
   );
 }
+
+export async function* loadLinkedObjects<T extends OntologyObject>(
+  client: ClientContext<OntologyDefinition<any>>,
+  sourceApiName: string,
+  primaryKey: any,
+  linkTypeApiName: T["__apiName"],
+): AsyncIterableIterator<T> {
+  let pageToken: string | undefined = undefined;
+  do {
+    const result = await getLinkedObjectsPage<T>(
+      client,
+      sourceApiName,
+      primaryKey,
+      linkTypeApiName,
+      {
+        pageToken,
+      },
+    );
+    for (const object of result.data) {
+      yield object;
+    }
+  } while (pageToken != null);
+}

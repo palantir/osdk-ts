@@ -22,6 +22,7 @@ import type {
   RestContext,
   RestRequest,
 } from "msw";
+import { OpenApiCallError } from "./util/handleOpenApiCall";
 
 export type MiddlewareHandler<
   TReqBody extends DefaultBodyType = DefaultBodyType,
@@ -48,6 +49,13 @@ export function authHandlerMiddleware<
       );
     }
 
-    return handler(req, res, ctx);
+    try {
+      return handler(req as any, res, ctx);
+    } catch (e) {
+      if (e instanceof OpenApiCallError) {
+        return res(ctx.status(e.status), ctx.json(e.json));
+      }
+      throw e;
+    }
   };
 }

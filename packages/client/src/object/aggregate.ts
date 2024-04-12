@@ -15,13 +15,12 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
 import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
   ObjectSet,
-} from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+} from "@osdk/omniapi";
+import { aggregateObjectSetV2 } from "@osdk/omniapi/OntologiesV2_OntologyObjectSet";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
@@ -36,6 +35,7 @@ import type {
   AggregationsResults,
   GroupByClause,
 } from "../query/index.js";
+import { addUserAgent } from "../util/addUserAgent.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
 export type AggregateOptsThatErrors<
@@ -111,11 +111,8 @@ export async function aggregate<
     body.where = modernToLegacyWhereClause(req.where);
   }
   const result = await aggregateObjectSetV2(
-    createOpenApiRequest(
-      clientCtx.stack,
-      clientCtx.fetch,
-    ),
-    clientCtx.ontology.metadata.ontologyApiName,
+    addUserAgent(clientCtx, objectType),
+    clientCtx.ontologyRid,
     {
       objectSet,
       groupBy: body.groupBy,

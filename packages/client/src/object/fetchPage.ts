@@ -21,10 +21,6 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import {
-  loadObjectSetV2,
-  searchObjectsForInterface,
-} from "@osdk/gateway/requests";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -33,14 +29,19 @@ import type {
   PageToken,
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
-  SearchOrderBy,
-} from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+  SearchOrderByV2,
+} from "@osdk/omniapi";
+import { loadObjectSetV2 } from "@osdk/omniapi/OntologiesV2_OntologyObjectSet";
+import {
+  searchObjectsForInterface,
+} from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
+import { addUserAgent } from "../util/addUserAgent.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { Result } from "./Result.js";
 
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -121,12 +122,10 @@ export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
-> = Promise<
-  PageResult<
-    ObjectOrInterfacePropertyKeysFrom2<Q> extends L
-      ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
-      : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
-  >
+> = PageResult<
+  ObjectOrInterfacePropertyKeysFrom2<Q> extends L
+    ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
+    : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
 >;
 
 /** @internal */
@@ -168,10 +167,10 @@ async function fetchInterfacePage<
   interfaceType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   const result = await searchObjectsForInterface(
-    createOpenApiRequest(client.stack, client.fetch as typeof fetch),
-    client.ontology.metadata.ontologyApiName,
+    addUserAgent(client, interfaceType),
+    client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
       augmentedProperties: args.augment ?? {},
@@ -203,11 +202,34 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A> = {},
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
   } else {
     return await fetchObjectPage(client, objectType, args, objectSet) as any; // fixme
+  }
+}
+
+/** @internal */
+export async function fetchPageWithErrorsInternal<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+  A extends Augments,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  objectSet: ObjectSet,
+  args: FetchPageArgs<Q, L, R, A> = {},
+): Promise<Result<FetchPageResult<Q, L, R>>> {
+  try {
+    const result = await fetchPageInternal(client, objectType, objectSet, args);
+    return { value: result };
+  } catch (e) {
+    if (e instanceof Error) {
+      return { error: e };
+    }
+    return { error: e as Error };
   }
 }
 
@@ -223,13 +245,29 @@ export async function fetchPage<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   return fetchPageInternal(client, objectType, objectSet, args);
+}
+
+export async function fetchPageWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+  R extends boolean,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: FetchPageArgs<Q, L, R>,
+  objectSet: ObjectSet = {
+    type: "base",
+    objectType: objectType["apiName"] as string,
+  },
+): Promise<Result<FetchPageResult<Q, L, R>>> {
+  return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
 function applyFetchArgs<
   X extends {
-    orderBy?: SearchOrderBy;
+    orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
   },
@@ -266,13 +304,10 @@ export async function fetchObjectPage<
   objectType: Q,
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
-): FetchPageResult<Q, L, R> {
+): Promise<FetchPageResult<Q, L, R>> {
   const r = await loadObjectSetV2(
-    createOpenApiRequest(
-      client.stack,
-      client.fetch as typeof fetch,
-    ),
-    client.ontology.metadata.ontologyApiName,
+    addUserAgent(client, objectType),
+    client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
@@ -288,5 +323,5 @@ export async function fetchObjectPage<
       undefined,
     ),
     nextPageToken: r.nextPageToken,
-  }) as FetchPageResult<Q, L, R>;
+  }) as Promise<FetchPageResult<Q, L, R>>;
 }

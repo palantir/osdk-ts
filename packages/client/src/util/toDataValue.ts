@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "@osdk/gateway/types";
+import type { DataValue } from "@osdk/omniapi/types";
 import { isAttachment } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";

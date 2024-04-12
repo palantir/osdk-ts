@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { artifacts, createInternalClientContext } from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { consola } from "consola";
 import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
@@ -39,9 +39,10 @@ export default async function versionDeleteCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  await artifacts.SiteAssetArtifactsService.deleteSiteVersion(
+  await thirdPartyApplications.deleteWebsiteVersion(
     clientCtx,
-    { application, version },
+    application,
+    version,
   );
   consola.success(
     `Deleted version ${version}`,

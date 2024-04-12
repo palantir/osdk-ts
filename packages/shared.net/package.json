@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.net",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -45,8 +45,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

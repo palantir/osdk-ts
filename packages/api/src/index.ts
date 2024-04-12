@@ -54,6 +54,7 @@ export type {
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
   PropertyDef,
+  VersionBound,
 } from "./ontology/ObjectTypeDefinition";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition";
 export type { OntologyMetadata } from "./ontology/OntologyMetadata";
@@ -76,3 +77,4 @@ export type {
   UnionQueryDataType,
 } from "./ontology/QueryDefinition";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";
+export type { OsdkMetadata } from "./OsdkMetadata";

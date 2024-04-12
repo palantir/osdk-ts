@@ -50,8 +50,11 @@ import {
 import { authHandlerMiddleware } from "./commonHandlers";
 import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
 
-function getOntology(ontologyApiName: string) {
-  if (ontologyApiName !== fullOntology.ontology.apiName) {
+export function getOntology(ontologyApiName: string) {
+  if (
+    ontologyApiName !== fullOntology.ontology.apiName
+    && ontologyApiName !== fullOntology.ontology.rid
+  ) {
     throw new OpenApiCallError(404, OntologyNotFoundError(ontologyApiName));
   }
   return fullOntology;
@@ -191,14 +194,8 @@ export const ontologyMetadataEndpoint: RestHandler<
         >,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         return res(ctx.json({
           data: Object.values(fullOntology.interfaceTypes),
@@ -220,14 +217,8 @@ export const ontologyMetadataEndpoint: RestHandler<
         >,
         ctx,
       ) => {
-        if (req.params.ontologyApiName !== fullOntology.ontology.apiName) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+        // will throw if bad name
+        getOntology(req.params.ontologyApiName as string);
 
         const interfaceType = req.params.interfaceType;
         if (typeof interfaceType !== "string") {

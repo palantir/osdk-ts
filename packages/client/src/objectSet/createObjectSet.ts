@@ -18,12 +18,16 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
+import type { ObjectSet as WireObjectSet } from "@osdk/omniapi";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import { fetchPageInternal, type SelectArg } from "../object/fetchPage.js";
+import {
+  fetchPageInternal,
+  fetchPageWithErrorsInternal,
+  type SelectArg,
+} from "../object/fetchPage.js";
 import { fetchSingle } from "../object/fetchSingle.js";
 import { aggregate } from "../object/index.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
@@ -84,6 +88,13 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPage"],
+
+    fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPageWithErrors"],
 
     fetchPageOrThrow: fetchPageInternal.bind(
       globalThis,

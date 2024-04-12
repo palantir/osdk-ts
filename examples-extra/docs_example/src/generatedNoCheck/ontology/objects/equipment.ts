@@ -1,6 +1,9 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
-export interface equipment extends ObjectTypeDefinition<'equipment', equipment> {
+export interface equipment extends ObjectTypeDefinition<'equipment', equipment>, VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   links: {};
   primaryKeyApiName: 'equipmentId';
   primaryKeyType: 'string';
@@ -11,6 +14,7 @@ export interface equipment extends ObjectTypeDefinition<'equipment', equipment> 
 }
 
 export const equipment: equipment = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'equipment',
   links: {},
   primaryKeyApiName: 'equipmentId',

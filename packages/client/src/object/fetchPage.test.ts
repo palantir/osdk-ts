@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
+import type { SearchJsonQueryV2 } from "@osdk/omniapi";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { FooInterface } from "../generatedNoCheck/index.js";
@@ -125,7 +125,11 @@ describe(fetchPage, () => {
   });
 
   it("converts interface objectsets to search properly part 2", () => {
-    const client = createMinimalClient(MockOntology.metadata, "foo", () => "");
+    const client = createMinimalClient(
+      MockOntology.metadata,
+      "https://foo",
+      () => "",
+    );
     const objectSet = createObjectSet(MockOntology.objects.Todo, client).where({
       text: "hello",
     }).where({

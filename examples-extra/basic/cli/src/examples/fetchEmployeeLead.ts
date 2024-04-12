@@ -15,19 +15,19 @@
  */
 
 import type { Client } from "@osdk/client";
-import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
+import { Employee } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
 export async function fetchEmployeeLead(
-  client: Client<Ontology>,
+  client: Client,
   adUsername: string,
 ) {
   const result = await client(Employee).where({
     adUsername,
   })
     .pivotTo("lead")
-    .fetchPageOrThrow({
+    .fetchPage({
       select: ["adUsername", "businessTitle", "employeeNumber"],
     });
 
@@ -36,7 +36,7 @@ export async function fetchEmployeeLead(
     includeRid: false,
   });
   const lead2 = await result.data[0].$link.lead.get({});
-  const peeps = await result.data[0].$link.peeps.fetchPageOrThrow({});
+  const peeps = await result.data[0].$link.peeps.fetchPage({});
 
   // const result = await client
   //   .objectSet("Employee", {
@@ -45,7 +45,7 @@ export async function fetchEmployeeLead(
   //   .pivotTo("lead", {
   //     $where: { locationCity: "New York" },
   //   })
-  //   .fetchPageOrThrow({
+  //   .fetchPage({
   //     select: ["adUsername", "businessTitle", "employeeNumber"],
   //   });
 

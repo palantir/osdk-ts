@@ -35,12 +35,35 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
   get(primaryKey: T["__primaryKey"]): Promise<Result<T, GetLinkedObjectError>>;
   /**
    * Gets all the linked objects
+   * @deprecated use asyncIter instead
    */
   all(): Promise<Result<T[], ListLinkedObjectsError>>;
+
+  /**
+   * Gets all the linked objects
+   */
+  asyncIter(): AsyncIterableIterator<T>;
+  /**
+   * Pages through the linked objects
+   * @deprecated use fetchPageWithErrors instead
+   */
+  page(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Result<Page<T>, ListLinkedObjectsError>>;
+
+  /**
+   * Pages through linked objects, without a result wrapper
+   */
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Page<T>>;
+
   /**
    * Pages through the linked objects
    */
-  page(options?: {
+  fetchPageWithErrors(options?: {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<T>, ListLinkedObjectsError>>;

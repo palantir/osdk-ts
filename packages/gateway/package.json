@@ -1,6 +1,6 @@
 {
   "name": "@osdk/gateway",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -43,8 +43,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

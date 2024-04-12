@@ -1,5 +1,6 @@
 import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee, Venture } from '../objects.js';
 
 // Represents the definition of the parameters for the action
@@ -35,11 +36,18 @@ export interface ActionDef$assignEmployee1
   modifiedEntities: { Employee: { created: false; modified: true } };
   type: 'action';
   parameters: ActionDef$assignEmployee1$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const assignEmployee1: ActionDef$assignEmployee1 = {
-  type: 'action',
   apiName: 'assignEmployee1',
+  description: 'Assigns an employee to a venture',
+  modifiedEntities: {
+    Employee: {
+      created: false,
+      modified: true,
+    },
+  },
   parameters: {
     'employee-1': {
       multiplicity: false,
@@ -58,11 +66,6 @@ export const assignEmployee1: ActionDef$assignEmployee1 = {
       nullable: false,
     },
   },
-  description: 'Assigns an employee to a venture',
-  modifiedEntities: {
-    Employee: {
-      created: false,
-      modified: true,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };

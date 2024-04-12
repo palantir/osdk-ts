@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -43,7 +43,7 @@
     "@types/node": "^18.0.0",
     "ts-expect": "^1.3.0",
     "typescript": "^5.4.2",
-    "vitest": "^1.2.2"
+    "vitest": "^1.4.0"
   },
   "publishConfig": {
     "access": "public"
@@ -52,8 +52,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
