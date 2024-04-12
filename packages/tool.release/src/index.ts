@@ -193,7 +193,7 @@ import { runVersion } from "./runVersion.js";
       core.info("All changesets are empty; not creating PR");
       return;
     case hasChangesets:
-      const { pullRequestNumber } = await runVersion({
+      await runVersion({
         script: args.versionCmd,
         githubToken,
         prTitle: args.title,
@@ -201,8 +201,6 @@ import { runVersion } from "./runVersion.js";
         hasPublishScript,
         branch: args.branch,
       });
-
-      core.setOutput("pullRequestNumber", String(pullRequestNumber));
 
       return;
   }

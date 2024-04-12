@@ -22,7 +22,7 @@ import path from "path";
 import resolveFrom from "resolve-from";
 import * as gitUtils from "./gitUtils.js";
 import readChangesetState from "./readChangesetState.js";
-import type { RunVersionResult, VersionOptions } from "./run.js";
+import type { VersionOptions } from "./run.js";
 import { getVersionPrBody, MAX_CHARACTERS_PER_MESSAGE } from "./run.js";
 import { setupOctokit } from "./setupOctokit.js";
 import {
@@ -41,7 +41,7 @@ export async function runVersion({
   hasPublishScript = false,
   prBodyMaxCharacters = MAX_CHARACTERS_PER_MESSAGE,
   branch,
-}: VersionOptions): Promise<RunVersionResult> {
+}: VersionOptions): Promise<void> {
   const octokit = setupOctokit(githubToken);
 
   let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
@@ -117,32 +117,49 @@ export async function runVersion({
 
   if (searchResult.data.items.length === 0) {
     core.info("creating pull request");
-    const { data: newPullRequest } = await octokit.rest.pulls.create(
-      {
-        base: branch,
-        head: versionBranch,
-        title: finalPrTitle,
-        body: prBody,
-        ...github.context.repo,
-      },
-    );
 
-    return {
-      pullRequestNumber: newPullRequest.number,
-    };
+    await exec("gh", [
+      "pr",
+      "create",
+      "--title",
+      finalPrTitle,
+      "--body",
+      prBody,
+      "--base",
+      branch,
+      "--head",
+      versionBranch,
+    ]);
+
+    // const { data: newPullRequest } = await octokit.rest.pulls.create(
+    //   {
+    //     base: branch,
+    //     head: versionBranch,
+    //     title: finalPrTitle,
+    //     body: prBody,
+    //     ...github.context.repo,
+    //   },
+    // );
   } else {
     const [pullRequest] = searchResult.data.items;
 
     core.info(`updating found pull request #${pullRequest.number}`);
-    octokit.rest.pulls.update({
-      pull_number: pullRequest.number,
-      title: finalPrTitle,
-      body: prBody,
-      ...github.context.repo,
-    });
 
-    return {
-      pullRequestNumber: pullRequest.number,
-    };
+    await exec("gh", [
+      "pr",
+      "edit",
+      `${pullRequest.number}`,
+      "--title",
+      finalPrTitle,
+      "--body",
+      prBody,
+    ]);
+
+    // octokit.rest.pulls.update({
+    //   pull_number: pullRequest.number,
+    //   title: finalPrTitle,
+    //   body: prBody,
+    //   ...github.context.repo,
+    // });
   }
 }
