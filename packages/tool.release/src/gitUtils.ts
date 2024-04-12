@@ -55,7 +55,7 @@ export const switchToMaybeExistingBranch = async (branch: string) => {
   });
   let isCreatingBranch =
     !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Swtiched to branch '${branch}'`);
+    && !stderr.includes(`Switched to branch '${branch}'`);
   // eslint-disable-next-line no-console
   console.log("stderr: " + stderr);
   if (isCreatingBranch) {
