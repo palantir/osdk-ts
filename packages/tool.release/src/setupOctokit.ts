@@ -33,6 +33,9 @@ export const setupOctokit = (githubToken: string) => {
           `Request quota exhausted for request ${options.method} ${options.url}`,
         );
 
+        octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+        octokit.log.info(`Retry Count: ${retryCount}`);
+
         if (retryCount < 1) {
           // only retries once
           octokit.log.info(`Retrying after ${retryAfter} seconds!`);
