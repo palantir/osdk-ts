@@ -134,6 +134,8 @@ export type {
   BaseObjectSetOperations,
   BaseObjectType,
   BaseType,
+  BatchActionExecutionOptions,
+  BatchActionResponseFromOptions,
   BoundingBox,
   BoundingBoxFilter,
   BucketGroup,

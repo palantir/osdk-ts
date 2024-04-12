@@ -34,9 +34,11 @@ export type ActionExecutionOptions = {
   returnEdits?: ReturnEditsMode;
 };
 
-export type BulkActionExecutionOptions = {
+export type BatchActionExecutionOptions = {
   returnEdits?: ReturnEditsMode;
 };
+
+export type BulkActionExecutionOptions = BatchActionExecutionOptions;
 
 export enum ActionExecutionMode {
   VALIDATE_ONLY = 0,
@@ -124,7 +126,7 @@ export interface ActionResponse<
   edits: TEdits extends undefined ? never : TEdits | BulkEdits;
 }
 
-export interface BulkActionResponse<
+export interface BatchActionResponse<
   TEdits extends Edits<any, any> | undefined = undefined,
 > {
   edits: TEdits extends undefined ? never : TEdits | BulkEdits;
@@ -138,13 +140,18 @@ export type ActionResponseFromOptions<
 } ? ActionResponse<TEdits>
   : ActionResponse;
 
-export type BulkActionResponseFromOptions<
+export type BatchActionResponseFromOptions<
   TOptions extends BulkActionExecutionOptions | undefined = undefined,
   TEdits extends Edits<any, any> | undefined = undefined,
 > = TOptions extends {
   returnEdits: ReturnEditsMode.ALL;
-} ? BulkActionResponse<TEdits>
-  : BulkActionResponse;
+} ? BatchActionResponse<TEdits>
+  : BatchActionResponse;
+
+export type BulkActionResponseFromOptions<
+  TOptions extends BulkActionExecutionOptions | undefined = undefined,
+  TEdits extends Edits<any, any> | undefined = undefined,
+> = BatchActionResponseFromOptions<TOptions, TEdits>;
 
 export const ActionResponse = {
   of: <
@@ -180,7 +187,7 @@ export const ActionResponse = {
   },
 };
 
-export const BulkActionResponse = {
+export const BatchActionResponse = {
   of: <
     TAddedObjects extends OntologyObject<string, NonNullable<ParameterValue>>,
     TModifiedObjects extends OntologyObject<
@@ -190,9 +197,11 @@ export const BulkActionResponse = {
   >(
     client: ClientContext<OntologyDefinition<any>>,
     response: BatchApplyActionResponseV2,
-  ): BulkActionResponse<Edits<TAddedObjects, TModifiedObjects> | undefined> => {
+  ): BatchActionResponse<
+    Edits<TAddedObjects, TModifiedObjects> | undefined
+  > => {
     if (response.edits?.type === "edits") {
-      return getEdits(response.edits, client) as BulkActionResponse<
+      return getEdits(response.edits, client) as BatchActionResponse<
         Edits<TAddedObjects, TModifiedObjects>
       >;
     }
@@ -203,7 +212,7 @@ export const BulkActionResponse = {
         },
       };
     }
-    return {} as BulkActionResponse;
+    return {} as BatchActionResponse;
   },
 };
 
