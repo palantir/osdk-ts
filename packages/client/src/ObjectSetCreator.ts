@@ -40,7 +40,7 @@ export type ObjectSetCreator<O extends OntologyDefinition<any>> = {
  * @returns A proxy for the object set creator.
  */
 export function createObjectSetCreator<
-  T extends Client<any>,
+  T extends Client,
   D extends OntologyDefinition<any>,
 >(
   client: T,

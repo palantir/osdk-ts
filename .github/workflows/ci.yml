@@ -2,7 +2,10 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: 
+      - main
+      - release/*
+      - next
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -19,7 +22,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - uses: pnpm/action-setup@v3
         with:
@@ -34,11 +37,23 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build, lint, and test
+      - name: Transpile, typecheck, Lint and test
         run: pnpm check
+
+      # catches some of the examples that don't have transpile/typecheck tasks
+      - name: Build
+        run: pnpm build
 
       - name: Verify nothing changed
         run: git diff --exit-code
 
       - name: Verify nothing added
         run: u="$(git ls-files --others --exclude-standard)" && test -z "$u"
+
+      - name: Check for changesets
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          git fetch origin main:main
+          git checkout ${GITHUB_HEAD_REF}
+          pnpm exec changeset status --since=main
+

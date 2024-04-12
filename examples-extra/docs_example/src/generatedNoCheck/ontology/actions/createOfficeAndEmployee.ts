@@ -1,5 +1,6 @@
 import type { ActionDefinition } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$createOfficeAndEmployee$Params = {
@@ -56,11 +57,22 @@ export interface ActionDef$createOfficeAndEmployee
   modifiedEntities: { Office: { created: true; modified: false }; Employee: { created: true; modified: false } };
   type: 'action';
   parameters: ActionDef$createOfficeAndEmployee$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const createOfficeAndEmployee: ActionDef$createOfficeAndEmployee = {
-  type: 'action',
   apiName: 'createOfficeAndEmployee',
+  description: 'Create an office and employee',
+  modifiedEntities: {
+    Office: {
+      created: true,
+      modified: false,
+    },
+    Employee: {
+      created: true,
+      modified: false,
+    },
+  },
   parameters: {
     officeId: {
       multiplicity: false,
@@ -92,15 +104,6 @@ export const createOfficeAndEmployee: ActionDef$createOfficeAndEmployee = {
       description: 'New employee Id',
     },
   },
-  description: 'Create an office and employee',
-  modifiedEntities: {
-    Office: {
-      created: true,
-      modified: false,
-    },
-    Employee: {
-      created: true,
-      modified: false,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };

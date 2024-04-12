@@ -16,12 +16,7 @@
 
 import { consola } from "consola";
 
-import {
-  ArtifactsSitesAdminV2Service,
-  createConjureContext,
-  createInternalClientContext,
-  thirdPartyApplicationService,
-} from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { colorize } from "consola/utils";
 import { handlePromptCancel } from "../../../../consola/handlePromptCancel.js";
 import { loadToken } from "../../../../util/token.js";
@@ -47,9 +42,6 @@ export default async function versionUnsetCommand(
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Clearing live site version");
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(clientCtx, application);
-  const ctx = createConjureContext(foundryUrl, "/artifacts/api", tokenProvider);
-  await ArtifactsSitesAdminV2Service.clearDeployedVersion(ctx, repositoryRid);
+  await thirdPartyApplications.deleteWebsiteDeployment(clientCtx, application);
   consola.success("Cleared live site version");
 }

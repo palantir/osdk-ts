@@ -15,18 +15,18 @@
  */
 
 import type { Client } from "@osdk/client";
-import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
+import { Employee } from "@osdk/examples.basic.sdk";
 
 /**
  * Demonstrates looking up an employee and for fun adds an `AND` and `ne`
  */
 export async function fetchEmployeePageByAdUsername(
-  client: Client<Ontology>,
+  client: Client,
   adUsername: string,
 ) {
   const result = await client(Employee).where({
     $and: [{ adUsername }, { employeeNumber: { $ne: 5 } }],
-  }).fetchPageOrThrow();
+  }).fetchPage();
   // for await (const e of client.objects.Employee.asyncIter()) {
   //   e.$apiName;
   // }

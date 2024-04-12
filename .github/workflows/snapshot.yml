@@ -1,0 +1,50 @@
+name: Snapshot
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+      - next
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8.7.4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build code
+        run: pnpm exec turbo run build
+      
+      - name: Update versions for snapshots
+        run: pnpm exec changeset version --snapshot ${GITHUB_REF_NAME//\//__}
+      
+      - name: Make sure code is up to date
+        run: pnpm exec turbo run postVersioning
+      
+      - name: Rebuild things
+        run: pnpm exec turbo run build
+      
+      - name: Publish results
+        run: pnpm exec changeset publish --no-git-tag --tag next-${GITHUB_REF_NAME//\//__}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

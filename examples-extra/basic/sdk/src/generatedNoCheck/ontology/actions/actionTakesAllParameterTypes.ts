@@ -1,5 +1,6 @@
 import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
 import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person, Todo } from '../objects.js';
 
 // Represents the definition of the parameters for the action
@@ -68,11 +69,22 @@ export interface ActionDef$actionTakesAllParameterTypes
   };
   type: 'action';
   parameters: ActionDef$actionTakesAllParameterTypes$Params;
+  osdkMetadata: typeof $osdkMetadata;
 }
 
 export const actionTakesAllParameterTypes: ActionDef$actionTakesAllParameterTypes = {
-  type: 'action',
   apiName: 'actionTakesAllParameterTypes',
+  description: 'An action which takes different types of parameters',
+  modifiedEntities: {
+    Todo: {
+      created: true,
+      modified: true,
+    },
+    ObjectTypeWithAllPropertyTypes: {
+      created: false,
+      modified: true,
+    },
+  },
   parameters: {
     objectSet: {
       multiplicity: false,
@@ -112,15 +124,6 @@ export const actionTakesAllParameterTypes: ActionDef$actionTakesAllParameterType
       nullable: false,
     },
   },
-  description: 'An action which takes different types of parameters',
-  modifiedEntities: {
-    Todo: {
-      created: true,
-      modified: true,
-    },
-    ObjectTypeWithAllPropertyTypes: {
-      created: false,
-      modified: true,
-    },
-  },
+  type: 'action',
+  osdkMetadata: $osdkMetadata,
 };

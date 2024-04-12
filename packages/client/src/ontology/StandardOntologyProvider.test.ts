@@ -53,18 +53,18 @@ describe(createStandardOntologyProviderFactory, () => {
     expect(loads).toEqual(
       USE_FULL_ONTOLOGY
         ? [
-          "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-          "/api/v2/ontologies/default-ontology/interfaceTypes",
-          "/api/v2/ontologies/default-ontology/fullMetadata",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
         ]
         : [
-          "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-          "/api/v2/ontologies/default-ontology/objectTypes/Employee",
-          "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
-          "/api/v2/ontologies/default-ontology/interfaceTypes",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/outgoingLinkTypes",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
           "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
           "/ontology-metadata/api/ontology/ontology/loadEntities",
-          "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
         ],
     );
 
@@ -73,7 +73,7 @@ describe(createStandardOntologyProviderFactory, () => {
     await fetchPage(client, MockOntology.objects.Employee, {});
     // second load should not need to load ontology info
     expect(loads).toEqual([
-      "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
+      "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
     ]);
   });
 
@@ -94,21 +94,21 @@ describe(createStandardOntologyProviderFactory, () => {
 
     const loadSequenceWithoutCaching = USE_FULL_ONTOLOGY
       ? [
-        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-        "/api/v2/ontologies/default-ontology/interfaceTypes",
-        "/api/v2/ontologies/default-ontology/fullMetadata",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
         // annoyingly happens once for interface load and once for object type load, but its temporary
-        "/api/v2/ontologies/default-ontology/interfaceTypes",
-        "/api/v2/ontologies/default-ontology/fullMetadata",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
       ]
       : [
-        "/api/v2/ontologies/default-ontology/objectSets/loadObjects",
-        "/api/v2/ontologies/default-ontology/objectTypes/Employee",
-        "/api/v2/ontologies/default-ontology/objectTypes/Employee/outgoingLinkTypes",
-        "/api/v2/ontologies/default-ontology/interfaceTypes",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/outgoingLinkTypes",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
         "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
         "/ontology-metadata/api/ontology/ontology/loadEntities",
-        "/api/v2/ontologies/default-ontology/interfaceTypes/FooInterface",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
       ];
 
     await fetchPage(client, MockOntology.objects.Employee, {});

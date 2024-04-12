@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
+import type { SearchJsonQueryV2 } from "@osdk/omniapi";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {

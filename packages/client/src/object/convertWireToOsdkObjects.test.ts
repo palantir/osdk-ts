@@ -28,13 +28,13 @@ import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
-  let client: Client<typeof MockOntology>;
+  let client: Client;
 
   beforeAll(async () => {
     apiServer.listen();
     client = createClient(
-      MockOntology,
       "https://stack.palantir.com",
+      MockOntology.metadata.ontologyRid,
       () => "myAccessToken",
     );
   });
@@ -67,14 +67,16 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reuses the object prototype across objects", async () => {
-    const employees = await client.objects.Employee.fetchPage();
+    const employees = await client(MockOntology.objects.Employee).fetchPage();
     expect(employees.data.length).toBeGreaterThanOrEqual(2);
     const [a, b] = employees.data;
     expect(Object.getPrototypeOf(a)).toBe(Object.getPrototypeOf(b));
   });
 
   it("converts attachments as expected", async () => {
-    const withValues = await client.objects.objectTypeWithAllPropertyTypes
+    const withValues = await client(
+      MockOntology.objects.objectTypeWithAllPropertyTypes,
+    )
       .where({ id: 1 })
       .fetchPage();
     expect(withValues.data.length).toBeGreaterThanOrEqual(1);
@@ -85,8 +87,10 @@ describe("convertWireToOsdkObjects", () => {
     expect(Array.isArray(attachmentArray)).toBeTruthy();
     expect(attachmentArray![0]).toBeInstanceOf(Attachment);
 
-    const withoutValues = await client.objects.objectTypeWithAllPropertyTypes
-      .where({ id: 2 }).fetchPage();
+    const withoutValues = await client(
+      MockOntology.objects.objectTypeWithAllPropertyTypes,
+    ).where({ id: 2 }).fetchPage();
+
     const {
       attachment: emptyAttachment,
       attachmentArray: emptyAttachmentArray,

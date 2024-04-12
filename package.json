@@ -5,8 +5,9 @@
     "build": "turbo run build",
     "check": "turbo check",
     "check-mrl": "mrl check --verbose",
-    "ci:publish": "pnpm run prePublish && pnpm exec changeset publish --no-git-tag",
+    "ci:publish": "pnpm run prePublish && pnpm exec changeset publish",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
+    "ci:version": "pnpm exec changeset version && turbo run postVersioning",
     "dev": "npx tsx packages/watch/src/watch.mts",
     "dev:typecheck": "npx tsx packages/watch/src/watch.mts",
     "lint": "turbo run lint",
@@ -17,7 +18,7 @@
     "typecheckAll": "tsc --build packages/* examples-extra/basic/*"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.9",
+    "@babel/core": "^7.24.4",
     "@babel/preset-typescript": "^7.23.3",
     "@changesets/cli": "^2.26.2",
     "@monorepolint/cli": "0.5.0-alpha.108",
@@ -31,7 +32,7 @@
     "eslint": "^8.54.0",
     "eslint-config-sane": "workspace:*",
     "find-up-cli": "^5.0.0",
-    "husky": "^8.0.3",
+    "husky": "^9.0.11",
     "lint-staged": "^14.0.1",
     "micromatch": "^4.0.5",
     "mytsup": "workspace:*",
@@ -41,7 +42,7 @@
     "turbo": "^1.10.13",
     "turbotree": "^1.0.1",
     "typescript": "^5.4.2",
-    "vitest": "^1.2.2"
+    "vitest": "^1.4.0"
   },
   "dependencies": {
     "eslint-plugin-unused-imports": "^3.0.0"

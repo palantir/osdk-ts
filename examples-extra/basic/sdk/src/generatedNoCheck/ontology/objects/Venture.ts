@@ -1,8 +1,11 @@
-import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 import type { Employee } from './Employee.js';
 
-export interface Venture extends ObjectTypeDefinition<'Venture', Venture> {
+export interface Venture extends ObjectTypeDefinition<'Venture', Venture>, VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'A venture';
   links: {
     employees: ObjectTypeLinkDefinition<Employee, true>;
@@ -17,6 +20,7 @@ export interface Venture extends ObjectTypeDefinition<'Venture', Venture> {
 }
 
 export const Venture: Venture = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'Venture',
   description: 'A venture',
   links: {

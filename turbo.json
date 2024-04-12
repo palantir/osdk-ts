@@ -46,6 +46,19 @@
       "inputs": ["tsup.mjs"]
     },
 
+    "postVersioning": {
+    },
+
+    "@osdk/version-updater#postVersioning": {
+      "inputs": [
+        "scripts/postVersioning.mjs",
+        "../client/package.json",
+        "../client/src/Client.ts",
+        "../generator/src/v2.0/generateMetadata.ts"
+      ],
+      "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
+    },
+
     "tsconfig#typecheck": {
       "inputs": ["tsconfig.base.json"]
     },
@@ -74,6 +87,7 @@
       "env": ["FORCE_COLOR"],
       "dependsOn": ["transpile", "typecheck"]
     },
+
     "test:watch": {
       "env": ["FORCE_COLOR"],
       "cache": false

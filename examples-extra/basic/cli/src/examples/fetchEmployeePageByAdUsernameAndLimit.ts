@@ -15,14 +15,14 @@
  */
 
 import type { Client } from "@osdk/client";
-import { Employee, type Ontology } from "@osdk/examples.basic.sdk";
+import { Employee } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 
 /**
  * Demonstrates looking up an employee and for fun adds an `AND` and `ne`
  */
 export async function fetchEmployeePageByAdUsernameAndLimit(
-  client: Client<Ontology>,
+  client: Client,
   adUsername: string,
 ) {
   const result = await client(Employee).where({
@@ -31,7 +31,7 @@ export async function fetchEmployeePageByAdUsernameAndLimit(
       { employeeNumber: { $ne: 5 } },
       { employeeNumber: { $gte: 5 } },
     ],
-  }).fetchPageOrThrow({
+  }).fetchPage({
     select: ["adUsername", "employeeNumber", "jobProfile"],
   });
 

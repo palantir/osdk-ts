@@ -19,9 +19,8 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { getObjectTypeV2 } from "@osdk/gateway/requests";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+import { getObjectTypeV2 } from "@osdk/omniapi/OntologiesV2_ObjectTypeV2";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/omniapi/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import invariant from "tiny-invariant";
@@ -142,8 +141,8 @@ export class ObjectSetListenerWebsocket {
         // TODO ???
         getObjectSetBaseType(objectSet).then(baseType =>
           getObjectTypeV2(
-            createOpenApiRequest(this.#client.stack, this.#client.fetch),
-            this.#client.ontology.metadata.ontologyApiName,
+            this.#client,
+            this.#client.ontologyRid,
             baseType,
           )
         ).then(
@@ -442,7 +441,7 @@ async function convertFoundryToOsdkObjects<
     objects.map(async object => {
       const propertyMapping = await getOntologyPropertyMappingForRid(
         ctx,
-        client.ontology.metadata.ontologyRid,
+        client.ontologyRid,
         object.type,
       );
       const convertedObject: OntologyObjectV2 = Object.fromEntries([
@@ -500,14 +499,14 @@ async function getOntologyPropertyMappingForApiName(
   }
 
   const wireObjectType = await getObjectTypeV2(
-    createOpenApiRequest(client.stack, client.fetch),
-    client.ontology.metadata.ontologyApiName,
+    client,
+    client.ontologyRid,
     objectApiName,
   );
 
   return getOntologyPropertyMappingForRid(
     ctx,
-    client.ontology.metadata.ontologyRid,
+    client.ontologyRid,
     wireObjectType.rid,
   );
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { listActionTypesV2 } from "@osdk/gateway/requests";
 import type {
   BatchApplyActionResponse,
-  ListActionTypesResponseV2,
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
@@ -31,15 +31,12 @@ import type {
 } from "msw";
 import { rest } from "msw";
 import type { BaseAPIError } from "../BaseError";
-import {
-  ApplyActionFailedError,
-  InvalidRequest,
-  OntologyNotFoundError,
-} from "../errors";
+import { ApplyActionFailedError, InvalidRequest } from "../errors";
 import { actionResponseMap } from "../stubs/actions";
-import { actionTypes } from "../stubs/actionsTypes";
 import { defaultOntology } from "../stubs/ontologies";
 import { authHandlerMiddleware } from "./commonHandlers";
+import { getOntology } from "./ontologyMetadataEndpoints";
+import { handleOpenApiCall } from "./util/handleOpenApiCall";
 
 export const actionHandlers: RestHandler<
   MockedRequest<DefaultBodyType>
@@ -47,30 +44,18 @@ export const actionHandlers: RestHandler<
   /**
    * List ActionTypes
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actionTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListActionTypesResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (req.params.ontologyApiName !== defaultOntology.apiName) {
-          return res(
-            ctx.status(400),
-            ctx.json(
-              OntologyNotFoundError(req.params.ontologyApiName as string),
-            ),
-          );
-        }
+  handleOpenApiCall(
+    listActionTypesV2,
+    ["ontologyApiName"],
+    async (req, res, ctx) => {
+      const ontology = getOntology(req.params.ontologyApiName);
 
-        return res(
-          ctx.json({
-            data: actionTypes,
-          }),
-        );
-      },
-    ),
+      return res(
+        ctx.json({
+          data: Object.values(ontology.actionTypes),
+        }),
+      );
+    },
   ),
 
   /**
@@ -121,7 +106,8 @@ async function handleAction<
     actionResponseMap[actionType][stableStringify(parsedBody)];
 
   if (
-    req.params.ontologyApiName === defaultOntology.apiName
+    (req.params.ontologyApiName === defaultOntology.apiName
+      || req.params.ontologyApiName === defaultOntology.rid)
     && actionResponse
   ) {
     return res(ctx.json(actionResponse));

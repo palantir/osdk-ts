@@ -16,14 +16,7 @@
 
 import { consola } from "consola";
 
-import type { SiteDomainInfo } from "#net";
-import {
-  artifacts,
-  ArtifactsSitesAdminV2Service,
-  createConjureContext,
-  createInternalClientContext,
-  thirdPartyApplicationService,
-} from "#net";
+import { createInternalClientContext, thirdPartyApplications } from "#net";
 import { ExitProcessError } from "@osdk/cli.common";
 import archiver from "archiver";
 import { colorize } from "consola/utils";
@@ -57,11 +50,6 @@ export default async function siteDeployCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  const ctx = createConjureContext(
-    foundryUrl,
-    "/artifacts/api",
-    tokenProvider,
-  );
 
   let siteVersion: string;
   if (typeof selectedVersion === "string") {
@@ -88,34 +76,24 @@ export default async function siteDeployCommand(
 
   consola.start("Uploading site files");
   await Promise.all([
-    artifacts.SiteAssetArtifactsService.uploadZippedSiteAsset(
+    thirdPartyApplications.uploadWebsiteVersion(
       clientCtx,
-      {
-        application,
-        version: siteVersion,
-        zipFile: Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
-      },
+      application,
+      siteVersion,
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
     ),
     archive.finalize(),
   ]);
   consola.success("Upload complete");
 
-  const repositoryRid = await thirdPartyApplicationService
-    .fetchWebsiteRepositoryRid(clientCtx, application);
-  const registeredSiteDomains = await ArtifactsSitesAdminV2Service
-    .getRegisteredSiteDomains(
-      ctx,
-      repositoryRid,
-    );
-  const domain = getFirstSiteDomain(registeredSiteDomains);
-
   if (!uploadOnly) {
-    await ArtifactsSitesAdminV2Service.updateDeployedVersion(
-      ctx,
-      repositoryRid,
-      { siteVersion: { version: siteVersion } },
+    const deployment = await thirdPartyApplications.updateWebsiteDeployment(
+      clientCtx,
+      application,
+      { version: siteVersion },
     );
     consola.success(`Deployed ${siteVersion} successfully`);
+    const domain = deployment.subdomains[0];
     if (domain != null) {
       logSiteLink(
         "View live site:",
@@ -123,6 +101,11 @@ export default async function siteDeployCommand(
       );
     }
   } else {
+    const deployment = await thirdPartyApplications.getWebsiteDeployment(
+      clientCtx,
+      application,
+    );
+    const domain = deployment?.subdomains[0];
     consola.debug("Upload only mode enabled, skipping deployment");
     if (domain != null) {
       logSiteLink(
@@ -157,19 +140,4 @@ function logSiteLink(title: string, link: string): void {
       borderStyle: "rounded",
     },
   });
-}
-
-function getFirstSiteDomain(
-  domains: Array<SiteDomainInfo>,
-): string | undefined {
-  if (domains.length === 0) {
-    consola.warn("No registered domains for site found");
-    return undefined;
-  }
-  switch (domains[0].type) {
-    case "controlPanelManaged":
-      return domains[0].controlPanelManaged.siteDomain.domain;
-    default:
-      const _: never = domains[0].type;
-  }
 }

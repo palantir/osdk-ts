@@ -21,10 +21,6 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import {
-  loadObjectSetV2,
-  searchObjectsForInterface,
-} from "@osdk/gateway/requests";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -33,15 +29,18 @@ import type {
   PageToken,
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
-  SearchOrderBy,
-} from "@osdk/gateway/types";
-import { createOpenApiRequest } from "@osdk/shared.net";
+  SearchOrderByV2,
+} from "@osdk/omniapi";
+import { loadObjectSetV2 } from "@osdk/omniapi/OntologiesV2_OntologyObjectSet";
+import {
+  searchObjectsForInterface,
+} from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
+import { addUserAgent } from "../util/addUserAgent.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-
 import type { Result } from "./Result.js";
 
 export interface SelectArg<
@@ -170,8 +169,8 @@ async function fetchInterfacePage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
   const result = await searchObjectsForInterface(
-    createOpenApiRequest(client.stack, client.fetch as typeof fetch),
-    client.ontology.metadata.ontologyApiName,
+    addUserAgent(client, interfaceType),
+    client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
       augmentedProperties: args.augment ?? {},
@@ -268,7 +267,7 @@ export async function fetchPageWithErrors<
 
 function applyFetchArgs<
   X extends {
-    orderBy?: SearchOrderBy;
+    orderBy?: SearchOrderByV2;
     pageToken?: PageToken;
     pageSize?: PageSize;
   },
@@ -307,11 +306,8 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
   const r = await loadObjectSetV2(
-    createOpenApiRequest(
-      client.stack,
-      client.fetch as typeof fetch,
-    ),
-    client.ontology.metadata.ontologyApiName,
+    addUserAgent(client, objectType),
+    client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isnt readonly

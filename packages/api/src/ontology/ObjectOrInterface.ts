@@ -26,7 +26,6 @@ import type {
   ObjectTypeKeysFrom,
   ObjectTypePropertyKeysFrom,
 } from "./ObjectTypeDefinition";
-
 import type { OntologyDefinition } from "./OntologyDefinition";
 
 export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
