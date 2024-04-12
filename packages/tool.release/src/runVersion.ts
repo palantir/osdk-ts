@@ -117,8 +117,7 @@ export async function runVersion({
 
   if (searchResult.data.items.length === 0) {
     core.info("creating pull request");
-    const { data: newPullRequest } = await octokit.request(
-      "POST /repos/{owner}/{repo}/pulls",
+    const { data: newPullRequest } = await octokit.rest.pulls.create(
       {
         base: branch,
         head: versionBranch,
@@ -135,7 +134,7 @@ export async function runVersion({
     const [pullRequest] = searchResult.data.items;
 
     core.info(`updating found pull request #${pullRequest.number}`);
-    octokit.request("PATCH /repos/{owner}/{repo}/pulls/{pull_number}", {
+    octokit.rest.pulls.update({
       pull_number: pullRequest.number,
       title: finalPrTitle,
       body: prBody,
