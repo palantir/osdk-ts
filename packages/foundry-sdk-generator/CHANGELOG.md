@@ -1,5 +1,22 @@
 # @osdk/foundry-sdk-generator
 
+## 0.210.1
+
+### Patch Changes
+
+- 9906a41e: add asyncIter
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [f7287ae8]
+  - @osdk/legacy-client@2.1.1
+  - @osdk/generator@1.9.1
+  - @osdk/api@1.6.1
+
 ## 0.201.1
 
 ### Patch Changes
