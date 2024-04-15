@@ -112,6 +112,9 @@ export async function runVersion({
     );
   }
 
+  // must happen before push/commit
+  const changedPackagesInfo = await getSortedChangedPackagesInfo(cwd);
+
   const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
 
   // project with `commit: true` setting could have already committed files
@@ -123,8 +126,6 @@ export async function runVersion({
   }
 
   await gitUtils.push(versionBranch, { force: true });
-
-  const changedPackagesInfo = await getSortedChangedPackagesInfo(cwd);
 
   const prBody = await getVersionPrBody({
     hasPublishScript,
@@ -146,6 +147,10 @@ export async function runVersion({
 async function getSortedChangedPackagesInfo(cwd: string) {
   const versionsByDirectory = await getVersionsByDirectory(cwd);
   const changedPackages = await getChangedPackages(cwd, versionsByDirectory);
+  // eslint-disable-next-line no-console
+  console.log(versionsByDirectory);
+  // eslint-disable-next-line no-console
+  console.log(changedPackages);
   const changedPackagesInfo = await Promise.all(
     changedPackages.map(async (pkg) => {
       const changelogContents = await fs.promises.readFile(
