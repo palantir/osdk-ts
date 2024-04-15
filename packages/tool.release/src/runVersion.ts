@@ -101,6 +101,8 @@ export async function runVersion({
   await gitUtils.switchToMaybeExistingBranch(versionBranch);
   await gitUtils.reset(context.sha);
 
+  const originalVersionsByDirectory = await getVersionsByDirectory(cwd);
+
   if (versionCmd) {
     const [versionCommand, ...versionArgs] = versionCmd.split(/\s+/);
     await exec(versionCommand, versionArgs, { cwd });
@@ -112,8 +114,10 @@ export async function runVersion({
     );
   }
 
-  // must happen before push/commit
-  const changedPackagesInfo = await getSortedChangedPackagesInfo(cwd);
+  const changedPackagesInfo = await getSortedChangedPackagesInfo(
+    cwd,
+    originalVersionsByDirectory,
+  );
 
   const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
 
@@ -144,15 +148,17 @@ export async function runVersion({
   );
 }
 
-async function getSortedChangedPackagesInfo(cwd: string) {
-  const versionsByDirectory = await getVersionsByDirectory(cwd);
-  const changedPackages = await getChangedPackages(cwd, versionsByDirectory);
+async function getSortedChangedPackagesInfo(
+  cwd: string,
+  oldVersionsByDirectory: Map<string, string>,
+) {
+  const changedPackages = await getChangedPackages(cwd, oldVersionsByDirectory);
   // eslint-disable-next-line no-console
   console.log("-=-=-==-");
   // eslint-disable-next-line no-console
   console.log(cwd);
   // eslint-disable-next-line no-console
-  console.log(versionsByDirectory);
+  console.log(oldVersionsByDirectory);
   // eslint-disable-next-line no-console
   console.log(changedPackages);
   const changedPackagesInfo = await Promise.all(
