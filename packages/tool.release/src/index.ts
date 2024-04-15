@@ -107,7 +107,7 @@ class FailedWithUserMessage extends Error {
   const context = await getContext(args);
 
   if (args.cwd) {
-    consola.info("changing directory to the one given as the input");
+    consola.info(`Changing directory to ${args.cwd}`);
     process.chdir(args.cwd);
   }
 
