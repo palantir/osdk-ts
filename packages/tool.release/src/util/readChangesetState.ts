@@ -52,7 +52,7 @@ import type { NewChangeset, PreState } from "@changesets/types";
 
 // This is a misbehaving module :(
 const readChangesets =
-  (readChangesetsTemp as any) as typeof readChangesetsTemp.default;
+  (readChangesetsTemp.default as any) as typeof readChangesetsTemp.default;
 
 type ChangesetState = {
   preState: PreState | undefined;
@@ -63,7 +63,7 @@ export default async function readChangesetState(
   cwd: string = process.cwd(),
 ): Promise<ChangesetState> {
   const preState = await readPreState(cwd);
-  const changesets = await readChangesets(cwd);
+  const changesets = await readChangesetsTemp.default(cwd);
 
   if (preState !== undefined && preState.mode === "pre") {
     const changesetsToFilter = new Set(preState.changesets);
