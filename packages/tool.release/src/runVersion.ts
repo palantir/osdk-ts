@@ -148,6 +148,10 @@ async function getSortedChangedPackagesInfo(cwd: string) {
   const versionsByDirectory = await getVersionsByDirectory(cwd);
   const changedPackages = await getChangedPackages(cwd, versionsByDirectory);
   // eslint-disable-next-line no-console
+  console.log("-=-=-==-");
+  // eslint-disable-next-line no-console
+  console.log(cwd);
+  // eslint-disable-next-line no-console
   console.log(versionsByDirectory);
   // eslint-disable-next-line no-console
   console.log(changedPackages);
