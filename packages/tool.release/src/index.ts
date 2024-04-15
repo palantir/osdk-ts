@@ -95,14 +95,51 @@ class FailedWithUserMessage extends Error {
 (async () => {
   const args = await yargs(process.argv.slice(2))
     .options({
-      cwd: { type: "string" },
-      versionCmd: { type: "string" },
-      publishCmd: { type: "string" },
-      title: { type: "string" },
-      commit: { type: "string" },
-      branch: { type: "string" },
-      repo: { type: "string", demandOption: true },
-    }).parseAsync();
+      cwd: { type: "string", description: "Change working directory" },
+      mode: {
+        // type: "string",
+        choices: ["version", "publish"],
+        default: "version",
+      },
+      versionCmd: {
+        type: "string",
+        conflicts: "publishCmd",
+        description: "Custom version command to run in version mode",
+      },
+      publishCmd: {
+        type: "string",
+        conflicts: "versionCmd",
+        description: "Publish command to run in publish mode",
+      },
+      title: { type: "string", description: "Custom pr title" },
+      commitMessage: { type: "string", description: "custom commit message" },
+      branch: {
+        type: "string",
+        description: "Custom branch to use",
+        defaultDescription: "${changeset-release}/${current-branch}",
+      },
+      repo: {
+        type: "string",
+        demandOption: true,
+        description: "Repo to push to (format: org/name)",
+      },
+    })
+    .check((argv) => {
+      if (argv.mode === "publish" && !argv.publishCmd) {
+        throw new Error(
+          "You must provide a publish command when running in publish mode",
+        );
+      }
+
+      if (argv.mode === "version" && argv.publishCmd) {
+        throw new Error(
+          "You cannot provide a publish command when running in version mode",
+        );
+      }
+
+      return true;
+    })
+    .parseAsync();
 
   const context = await getContext(args);
 
@@ -113,89 +150,74 @@ class FailedWithUserMessage extends Error {
 
   const { changesets } = await readChangesetState();
 
-  const publishScript = args.publishCmd;
   const hasChangesets = changesets.length !== 0;
   const hasNonEmptyChangesets = changesets.some(
     (changeset) => changeset.releases.length > 0,
   );
-  const hasPublishScript = !!publishScript;
 
-  switch (true) {
-    case !hasChangesets && !hasPublishScript:
-      consola.info("No changesets found");
-      return;
-
-    case !hasChangesets && hasPublishScript: {
-      consola.info(
-        "No changesets found, attempting to publish any unpublished packages to npm",
-      );
-
-      let userNpmrcPath = `${process.env.HOME}/.npmrc`;
-
-      if (fs.existsSync(userNpmrcPath)) {
-        consola.info("Found existing user .npmrc file");
-        const userNpmrcContent = await fs.promises.readFile(
-          userNpmrcPath,
-          "utf8",
-        );
-        const authLine = userNpmrcContent.split("\n").find((line) => {
-          // check based on https://github.com/npm/cli/blob/8f8f71e4dd5ee66b3b17888faad5a7bf6c657eed/test/lib/adduser.js#L103-L105
-          return /^\s*\/\/registry\.npmjs\.org\/:[_-]authToken=/i.test(line);
-        });
-        if (authLine) {
-          consola.info(
-            "Found existing auth token for the npm registry in the user .npmrc file",
-          );
-        } else {
-          consola.info(
-            "Didn't find existing auth token for the npm registry in the user .npmrc file, creating one",
-          );
-          fs.appendFileSync(
-            userNpmrcPath,
-            `\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
-          );
-        }
-      } else {
-        consola.info("No user .npmrc file found, creating one");
-        fs.writeFileSync(
-          userNpmrcPath,
-          `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
-        );
-      }
-
-      throw "skip publish";
-
-      const result = await runPublish({
-        script: publishScript!,
-        context,
-        createGithubReleases: false,
-      });
-
-      // if (result.published) {
-      //   result;
-      //   core.setOutput("published", "true");
-      //   core.setOutput(
-      //     "publishedPackages",
-      //     JSON.stringify(result.publishedPackages),
-      //   );
-      // }
+  if (args.mode === "version") {
+    if (!hasChangesets) {
+      consola.info("No changesets found; not creating PR");
       return;
     }
-    case hasChangesets && !hasNonEmptyChangesets:
+    if (!hasNonEmptyChangesets) {
       consola.info("All changesets are empty; not creating PR");
       return;
+    }
 
-    case hasChangesets:
-      await runVersion({
-        versionCmd: args.versionCmd,
-        prTitle: args.title,
-        commitMessage: args.commit,
-        hasPublishScript,
-        branch: args.branch,
-        context,
-      });
-
+    await runVersion({
+      versionCmd: args.versionCmd,
+      prTitle: args.title,
+      commitMessage: args.commitMessage,
+      branch: args.branch,
+      context,
+    });
+  } else {
+    if (!hasChangesets) {
+      consola.error("No changesets found.");
       return;
+    }
+
+    throw "skip publish";
+
+    const userNpmrcPath = `${process.env.HOME}/.npmrc`;
+
+    if (fs.existsSync(userNpmrcPath)) {
+      consola.info("Found existing user .npmrc file");
+      const userNpmrcContent = await fs.promises.readFile(
+        userNpmrcPath,
+        "utf8",
+      );
+      const authLine = userNpmrcContent.split("\n").find((line) => {
+        // check based on https://github.com/npm/cli/blob/8f8f71e4dd5ee66b3b17888faad5a7bf6c657eed/test/lib/adduser.js#L103-L105
+        return /^\s*\/\/registry\.npmjs\.org\/:[_-]authToken=/i.test(line);
+      });
+      if (authLine) {
+        consola.info(
+          "Found existing auth token for the npm registry in the user .npmrc file",
+        );
+      } else {
+        consola.info(
+          "Didn't find existing auth token for the npm registry in the user .npmrc file, creating one",
+        );
+        fs.appendFileSync(
+          userNpmrcPath,
+          `\n//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
+        );
+      }
+    } else {
+      consola.info("No user .npmrc file found, creating one");
+      fs.writeFileSync(
+        userNpmrcPath,
+        `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
+      );
+    }
+
+    const result = await runPublish({
+      script: publishScript!,
+      context,
+      createGithubReleases: false,
+    });
   }
 })().catch((err) => {
   if (err instanceof FailedWithUserMessage) {
