@@ -75,12 +75,12 @@ async function getContext(
       repo: parts[1],
     },
     // ref: ,
-    sha: await getStdoutOrThrow("git", ["rev-parse", "HEAD"]),
+    sha: (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
     branch: args.branch
       ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
         "refs/heads/",
         "",
-      ),
+      ).trim(),
     octokit: setupOctokit(await getGithubTokenOrFail()),
   };
 }
