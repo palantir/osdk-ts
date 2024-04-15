@@ -214,7 +214,7 @@ class FailedWithUserMessage extends Error {
     }
 
     const result = await runPublish({
-      script: publishScript!,
+      script: args.publishCmd!,
       context,
       createGithubReleases: false,
     });
