@@ -62,14 +62,12 @@ export function getChangelogEntry(changelog: string, version: string) {
     }
   });
 
-  if (!headingStartInfo) {
-    return undefined;
+  if (headingStartInfo) {
+    ast.children = ast.children.slice(
+      headingStartInfo.index + 1,
+      endIndex,
+    );
   }
-
-  ast.children = ast.children.slice(
-    headingStartInfo.index + 1,
-    endIndex,
-  );
 
   return {
     content: unified().use(remarkStringify).stringify(ast),
