@@ -46,68 +46,50 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { exec, getExecOutput } from "@actions/exec";
+import type { Package } from "@manypkg/get-packages";
+import * as fs from "fs";
+import path from "path";
+import type { GithubContext } from "./runVersion.js";
+import { getChangelogEntry } from "./util/getChangelogEntry.js";
 
-export const setupUser = async () => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
-  await exec("git", [
-    "config",
-    "user.email",
-    `"github-actions[bot]@users.noreply.github.com"`,
-  ]);
-};
-
-export const pullBranch = async (branch: string) => {
-  await exec("git", ["pull", "origin", branch]);
-};
-
-export const push = async (
-  branch: string,
-  { force }: { force?: boolean } = {},
+export const createRelease = async (
+  context: GithubContext,
+  { pkg, tagName }: { pkg: Package; tagName: string },
 ) => {
-  await exec(
-    "git",
-    ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
-      Boolean as any,
-    ),
-  );
-};
+  try {
+    const changelog = await fs.promises.readFile(
+      path.join(pkg.dir, "CHANGELOG.md"),
+      "utf-8",
+    );
 
-export const pushTags = async () => {
-  await exec("git", ["push", "origin", "--tags"]);
-};
+    const changelogEntry = getChangelogEntry(
+      changelog,
+      pkg.packageJson.version,
+    );
+    if (!changelogEntry) {
+      // we can find a changelog but not the entry for this version
+      // if this is true, something has probably gone wrong
+      throw new Error(
+        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`,
+      );
+    }
 
-export const switchToMaybeExistingBranch = async (branch: string) => {
-  let { stderr } = await getExecOutput("git", ["checkout", branch], {
-    ignoreReturnCode: true,
-  });
-  let isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
-  // eslint-disable-next-line no-console
-  console.log("stderr: " + stderr);
-  if (isCreatingBranch) {
-    await exec("git", ["checkout", "-b", branch]);
+    await context.octokit.rest.repos.createRelease({
+      name: tagName,
+      tag_name: tagName,
+      body: changelogEntry.content,
+      prerelease: pkg.packageJson.version.includes("-"),
+      ...context.repo,
+    });
+  } catch (err) {
+    // if we can't find a changelog, the user has probably disabled changelogs
+    if (
+      err
+      && typeof err === "object"
+      && "code" in err
+      && err.code !== "ENOENT"
+    ) {
+      throw err;
+    }
   }
-};
-
-export const reset = async (
-  pathSpec: string,
-  mode: "hard" | "soft" | "mixed" = "hard",
-) => {
-  await exec("git", ["reset", `--${mode}`, pathSpec]);
-};
-
-export const commitAll = async (message: string) => {
-  await exec("git", ["add", "."]);
-  await exec("git", ["commit", "-m", message]);
-};
-
-export const checkIfClean = async (): Promise<boolean> => {
-  const { stdout } = await getExecOutput("git", ["status", "--porcelain"]);
-  return !stdout.length;
 };

@@ -46,68 +46,36 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { exec, getExecOutput } from "@actions/exec";
+import { readPreState } from "@changesets/pre";
+import readChangesetsTemp from "@changesets/read";
+import type { NewChangeset, PreState } from "@changesets/types";
 
-export const setupUser = async () => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
-  await exec("git", [
-    "config",
-    "user.email",
-    `"github-actions[bot]@users.noreply.github.com"`,
-  ]);
+// This is a misbehaving module :(
+const readChangesets =
+  ((readChangesetsTemp as any).default) as typeof readChangesetsTemp;
+
+type ChangesetState = {
+  preState: PreState | undefined;
+  changesets: NewChangeset[];
 };
 
-export const pullBranch = async (branch: string) => {
-  await exec("git", ["pull", "origin", branch]);
-};
+export default async function readChangesetState(
+  cwd: string = process.cwd(),
+): Promise<ChangesetState> {
+  const preState = await readPreState(cwd);
+  const changesets = await readChangesets.default(cwd);
 
-export const push = async (
-  branch: string,
-  { force }: { force?: boolean } = {},
-) => {
-  await exec(
-    "git",
-    ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
-      Boolean as any,
-    ),
-  );
-};
+  if (preState !== undefined && preState.mode === "pre") {
+    const changesetsToFilter = new Set(preState.changesets);
 
-export const pushTags = async () => {
-  await exec("git", ["push", "origin", "--tags"]);
-};
-
-export const switchToMaybeExistingBranch = async (branch: string) => {
-  let { stderr } = await getExecOutput("git", ["checkout", branch], {
-    ignoreReturnCode: true,
-  });
-  let isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
-  // eslint-disable-next-line no-console
-  console.log("stderr: " + stderr);
-  if (isCreatingBranch) {
-    await exec("git", ["checkout", "-b", branch]);
+    return {
+      preState,
+      changesets: changesets.filter((x) => !changesetsToFilter.has(x.id)),
+    };
   }
-};
 
-export const reset = async (
-  pathSpec: string,
-  mode: "hard" | "soft" | "mixed" = "hard",
-) => {
-  await exec("git", ["reset", `--${mode}`, pathSpec]);
-};
-
-export const commitAll = async (message: string) => {
-  await exec("git", ["add", "."]);
-  await exec("git", ["commit", "-m", message]);
-};
-
-export const checkIfClean = async (): Promise<boolean> => {
-  const { stdout } = await getExecOutput("git", ["status", "--porcelain"]);
-  return !stdout.length;
-};
+  return {
+    preState: undefined,
+    changesets,
+  };
+}

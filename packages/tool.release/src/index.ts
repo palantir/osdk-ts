@@ -46,103 +46,94 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import * as core from "@actions/core";
 import { getExecOutput } from "@actions/exec";
-import * as github from "@actions/github";
+import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
-import * as gitUtils from "./gitUtils.js";
-import readChangesetState from "./readChangesetState.js";
 import { runPublish } from "./runPublish.js";
+import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
+import readChangesetState from "./util/readChangesetState.js";
+import { setupOctokit } from "./util/setupOctokit.js";
 
-// const getOptionalInput = (name: string) => core.getInput(name) || undefined;
+async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
+  const { exitCode, stdout, stderr } = await getExecOutput(...args);
+  if (exitCode !== 0) {
+    throw new Error(stderr);
+  }
+  return stdout;
+}
+
+async function getContext(
+  args: { repo: string; branch?: string },
+): Promise<GithubContext> {
+  const parts = args.repo.split("/");
+
+  return {
+    repo: {
+      owner: parts[0],
+      repo: parts[1],
+    },
+    // ref: ,
+    sha: await getStdoutOrThrow("git", ["rev-parse", "HEAD"]),
+    branch: args.branch
+      ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
+        "refs/heads/",
+        "",
+      ),
+    octokit: setupOctokit(await getGithubTokenOrFail()),
+  };
+}
+
+class FailedWithUserMessage extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FailedWithUserMessage";
+  }
+}
 
 (async () => {
-  let githubToken = process.env.GITHUB_TOKEN;
-
-  if (!githubToken) {
-    core.setFailed("Please add the GITHUB_TOKEN to the changesets action");
-    return;
-  }
-
   const args = await yargs(process.argv.slice(2))
     .options({
       cwd: { type: "string" },
       versionCmd: { type: "string" },
       publishCmd: { type: "string" },
-      setupGitUser: { type: "boolean" },
       title: { type: "string" },
       commit: { type: "string" },
       branch: { type: "string" },
       repo: { type: "string", demandOption: true },
     }).parseAsync();
 
-  process.env.GITHUB_REPOSITORY = args.repo;
-  if (!process.env.GITHUB_REF) {
-    const out = await getExecOutput("git", ["symbolic-ref", "HEAD"]);
-    if (out.exitCode) {
-      core.setFailed("Failed to get current branch");
-      return;
-    }
-    // context is intialized before this gets to run so we overwrite it manually
-    github.context.ref = process.env.GITHUB_REF = out.stdout.trim();
-  }
-  if (!process.env.GITHUB_SHA) {
-    const out = await getExecOutput("git", ["rev-parse", "HEAD"]);
-    if (out.exitCode) {
-      core.setFailed("Failed to get current commit SHA");
-      return;
-    }
-    // context is intialized before this gets to run so we overwrite it manually
-    github.context.sha = process.env.GITHUB_SHA = out.stdout.trim();
+  const context = await getContext(args);
+
+  if (args.cwd) {
+    consola.info("changing directory to the one given as the input");
+    process.chdir(args.cwd);
   }
 
-  const inputCwd = args.cwd;
-  if (inputCwd) {
-    core.info("changing directory to the one given as the input");
-    process.chdir(inputCwd);
-  }
+  const { changesets } = await readChangesetState();
 
-  let setupGitUser = args.setupGitUser;
-
-  if (setupGitUser) {
-    core.info("setting git user");
-    await gitUtils.setupUser();
-  }
-
-  core.info("setting GitHub credentials");
-  await fs.promises.writeFile(
-    `${process.env.HOME}/.netrc`,
-    `machine github.com\nlogin github-actions[bot]\npassword ${githubToken}`,
-  );
-
-  let { changesets } = await readChangesetState();
-
-  let publishScript = args.publishCmd; // core.getInput("publish");
-  let hasChangesets = changesets.length !== 0;
+  const publishScript = args.publishCmd;
+  const hasChangesets = changesets.length !== 0;
   const hasNonEmptyChangesets = changesets.some(
     (changeset) => changeset.releases.length > 0,
   );
-  let hasPublishScript = !!publishScript as boolean;
-
-  core.setOutput("published", "false");
-  core.setOutput("publishedPackages", "[]");
-  core.setOutput("hasChangesets", String(hasChangesets));
+  const hasPublishScript = !!publishScript;
 
   switch (true) {
     case !hasChangesets && !hasPublishScript:
-      core.info("No changesets found");
+      consola.info("No changesets found");
       return;
+
     case !hasChangesets && hasPublishScript: {
-      core.info(
+      consola.info(
         "No changesets found, attempting to publish any unpublished packages to npm",
       );
 
       let userNpmrcPath = `${process.env.HOME}/.npmrc`;
 
       if (fs.existsSync(userNpmrcPath)) {
-        core.info("Found existing user .npmrc file");
+        consola.info("Found existing user .npmrc file");
         const userNpmrcContent = await fs.promises.readFile(
           userNpmrcPath,
           "utf8",
@@ -152,11 +143,11 @@ import { runVersion } from "./runVersion.js";
           return /^\s*\/\/registry\.npmjs\.org\/:[_-]authToken=/i.test(line);
         });
         if (authLine) {
-          core.info(
+          consola.info(
             "Found existing auth token for the npm registry in the user .npmrc file",
           );
         } else {
-          core.info(
+          consola.info(
             "Didn't find existing auth token for the npm registry in the user .npmrc file, creating one",
           );
           fs.appendFileSync(
@@ -165,7 +156,7 @@ import { runVersion } from "./runVersion.js";
           );
         }
       } else {
-        core.info("No user .npmrc file found, creating one");
+        consola.info("No user .npmrc file found, creating one");
         fs.writeFileSync(
           userNpmrcPath,
           `//registry.npmjs.org/:_authToken=${process.env.NPM_TOKEN}\n`,
@@ -175,38 +166,56 @@ import { runVersion } from "./runVersion.js";
       throw "skip publish";
 
       const result = await runPublish({
-        script: publishScript,
-        githubToken,
-        createGithubReleases: core.getBooleanInput("createGithubReleases"),
+        script: publishScript!,
+        context,
+        createGithubReleases: false,
       });
 
-      if (result.published) {
-        core.setOutput("published", "true");
-        core.setOutput(
-          "publishedPackages",
-          JSON.stringify(result.publishedPackages),
-        );
-      }
+      // if (result.published) {
+      //   result;
+      //   core.setOutput("published", "true");
+      //   core.setOutput(
+      //     "publishedPackages",
+      //     JSON.stringify(result.publishedPackages),
+      //   );
+      // }
       return;
     }
     case hasChangesets && !hasNonEmptyChangesets:
-      core.info("All changesets are empty; not creating PR");
+      consola.info("All changesets are empty; not creating PR");
       return;
+
     case hasChangesets:
       await runVersion({
-        script: args.versionCmd,
-        githubToken,
+        versionCmd: args.versionCmd,
         prTitle: args.title,
         commitMessage: args.commit,
         hasPublishScript,
         branch: args.branch,
+        context,
       });
 
       return;
   }
 })().catch((err) => {
-  core.error(err);
-  core.setFailed(err.message);
-  // eslint-disable-next-line no-console
-  console.error(err.stack);
+  if (err instanceof FailedWithUserMessage) {
+    consola.error(err);
+  } else if (err instanceof Error) {
+    consola.error(err.message);
+    consola.error(err.stack);
+  } else {
+    consola.error("Unexpected error: ", err);
+  }
+
+  process.exit(1);
 });
+
+function getGithubTokenOrFail() {
+  const githubToken = process.env.GITHUB_TOKEN;
+  if (!githubToken) {
+    throw new FailedWithUserMessage(
+      "Please add the GITHUB_TOKEN to the changesets action",
+    );
+  }
+  return githubToken;
+}

@@ -46,68 +46,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { exec, getExecOutput } from "@actions/exec";
+import { throttling } from "@octokit/plugin-throttling";
+import { Octokit } from "octokit";
 
-export const setupUser = async () => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
-  await exec("git", [
-    "config",
-    "user.email",
-    `"github-actions[bot]@users.noreply.github.com"`,
-  ]);
-};
+export const setupOctokit = (githubToken: string): Octokit => {
+  const Github = Octokit.plugin(throttling);
 
-export const pullBranch = async (branch: string) => {
-  await exec("git", ["pull", "origin", branch]);
-};
+  return new Github(
+    {
+      auth: githubToken,
+      throttle: {
+        onRateLimit: (
+          retryAfter: any,
+          options: any,
+          octokit: any,
+          retryCount: any,
+        ) => {
+          octokit.log.warn(
+            `Request quota exhausted for request ${options.method} ${options.url}`,
+          );
 
-export const push = async (
-  branch: string,
-  { force }: { force?: boolean } = {},
-) => {
-  await exec(
-    "git",
-    ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
-      Boolean as any,
-    ),
+          octokit.log.warn(`Retrying after ${retryAfter} seconds!`);
+          octokit.log.warn(`Retry Count: ${retryCount}`);
+
+          if (retryCount < 1) {
+            // only retries once
+            octokit.log.info(`Retrying after ${retryAfter} seconds!`);
+            return true;
+          }
+        },
+        onSecondaryRateLimit: (retryAfter: any, options: any, octokit: any) => {
+          // does not retry, only logs a warning
+          octokit.log.warn(
+            `SecondaryRateLimit detected for request ${options.method} ${options.url}`,
+          );
+        },
+      },
+    },
   );
-};
-
-export const pushTags = async () => {
-  await exec("git", ["push", "origin", "--tags"]);
-};
-
-export const switchToMaybeExistingBranch = async (branch: string) => {
-  let { stderr } = await getExecOutput("git", ["checkout", branch], {
-    ignoreReturnCode: true,
-  });
-  let isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
-  // eslint-disable-next-line no-console
-  console.log("stderr: " + stderr);
-  if (isCreatingBranch) {
-    await exec("git", ["checkout", "-b", branch]);
-  }
-};
-
-export const reset = async (
-  pathSpec: string,
-  mode: "hard" | "soft" | "mixed" = "hard",
-) => {
-  await exec("git", ["reset", `--${mode}`, pathSpec]);
-};
-
-export const commitAll = async (message: string) => {
-  await exec("git", ["add", "."]);
-  await exec("git", ["commit", "-m", message]);
-};
-
-export const checkIfClean = async (): Promise<boolean> => {
-  const { stdout } = await getExecOutput("git", ["status", "--porcelain"]);
-  return !stdout.length;
 };

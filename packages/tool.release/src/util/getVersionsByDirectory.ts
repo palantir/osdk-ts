@@ -46,68 +46,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { exec, getExecOutput } from "@actions/exec";
+import { getPackages } from "@manypkg/get-packages";
 
-export const setupUser = async () => {
-  await exec("git", [
-    "config",
-    "user.name",
-    `"github-actions[bot]"`,
-  ]);
-  await exec("git", [
-    "config",
-    "user.email",
-    `"github-actions[bot]@users.noreply.github.com"`,
-  ]);
-};
-
-export const pullBranch = async (branch: string) => {
-  await exec("git", ["pull", "origin", branch]);
-};
-
-export const push = async (
-  branch: string,
-  { force }: { force?: boolean } = {},
-) => {
-  await exec(
-    "git",
-    ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
-      Boolean as any,
-    ),
-  );
-};
-
-export const pushTags = async () => {
-  await exec("git", ["push", "origin", "--tags"]);
-};
-
-export const switchToMaybeExistingBranch = async (branch: string) => {
-  let { stderr } = await getExecOutput("git", ["checkout", branch], {
-    ignoreReturnCode: true,
-  });
-  let isCreatingBranch =
-    !stderr.includes(`Switched to a new branch '${branch}'`)
-    && !stderr.includes(`Switched to branch '${branch}'`);
-  // eslint-disable-next-line no-console
-  console.log("stderr: " + stderr);
-  if (isCreatingBranch) {
-    await exec("git", ["checkout", "-b", branch]);
-  }
-};
-
-export const reset = async (
-  pathSpec: string,
-  mode: "hard" | "soft" | "mixed" = "hard",
-) => {
-  await exec("git", ["reset", `--${mode}`, pathSpec]);
-};
-
-export const commitAll = async (message: string) => {
-  await exec("git", ["add", "."]);
-  await exec("git", ["commit", "-m", message]);
-};
-
-export const checkIfClean = async (): Promise<boolean> => {
-  const { stdout } = await getExecOutput("git", ["status", "--porcelain"]);
-  return !stdout.length;
-};
+export async function getVersionsByDirectory(cwd: string) {
+  let { packages } = await getPackages(cwd);
+  return new Map(packages.map((x) => [x.dir, x.packageJson.version]));
+}

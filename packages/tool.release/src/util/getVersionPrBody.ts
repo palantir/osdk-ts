@@ -14,57 +14,39 @@
  * limitations under the License.
  */
 
-import * as github from "@actions/github";
+/*
+ * This code is heavily adapted from https://github.com/changesets/action/ which
+ * is licensed under the MIT License according to its package.json. However, it
+ * does not have a license file in the repository nor any headers on its source.
+ *
+ * Below is a modified version of the MIT license.
+ */
+
+/*
+MIT License
+
+Copyright (c) 2024 authors of https://github.com/changesets/action/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 import type { PreState } from "@changesets/types";
-import type { Package } from "@manypkg/get-packages";
-import * as fs from "fs-extra";
-import path from "path";
-import type { setupOctokit } from "./setupOctokit.js";
-import { getChangelogEntry } from "./utils.js";
-
-// GitHub Issues/PRs messages have a max size limit on the
-// message body payload.
-// `body is too long (maximum is 65536 characters)`.
-// To avoid that, we ensure to cap the message to 60k chars.
-export const MAX_CHARACTERS_PER_MESSAGE = 60000;
-
-export const createRelease = async (
-  octokit: ReturnType<typeof setupOctokit>,
-  { pkg, tagName }: { pkg: Package; tagName: string },
-) => {
-  try {
-    let changelogFileName = path.join(pkg.dir, "CHANGELOG.md");
-
-    let changelog = await fs.readFile(changelogFileName, "utf8");
-
-    let changelogEntry = getChangelogEntry(changelog, pkg.packageJson.version);
-    if (!changelogEntry) {
-      // we can find a changelog but not the entry for this version
-      // if this is true, something has probably gone wrong
-      throw new Error(
-        `Could not find changelog entry for ${pkg.packageJson.name}@${pkg.packageJson.version}`,
-      );
-    }
-
-    await octokit.request("POST /repos/{owner}/{repo}/releases", {
-      name: tagName,
-      tag_name: tagName,
-      body: changelogEntry.content,
-      prerelease: pkg.packageJson.version.includes("-"),
-      ...github.context.repo,
-    });
-  } catch (err) {
-    // if we can't find a changelog, the user has probably disabled changelogs
-    if (
-      err
-      && typeof err === "object"
-      && "code" in err
-      && err.code !== "ENOENT"
-    ) {
-      throw err;
-    }
-  }
-};
 
 type GetMessageOptions = {
   hasPublishScript: boolean;
@@ -87,7 +69,7 @@ export async function getVersionPrBody({
   branch,
 }: GetMessageOptions) {
   let messageHeader =
-    `This PR was opened by the [Changesets release](https://github.com/changesets/action) GitHub action. When you're ready to do a release, you can merge this and ${
+    `This PR was opened by automation. When you're ready to do a release, you can merge this and ${
       hasPublishScript
         ? `the packages will be published to npm automatically`
         : `publish to npm yourself or [setup this action to publish automatically](https://github.com/changesets/action#with-publishing)`
@@ -135,18 +117,3 @@ export async function getVersionPrBody({
 
   return fullMessage;
 }
-
-export type VersionOptions = {
-  script?: string;
-  githubToken: string;
-  cwd?: string;
-  prTitle?: string;
-  commitMessage?: string;
-  hasPublishScript?: boolean;
-  prBodyMaxCharacters?: number;
-  branch?: string;
-};
-
-export type RunVersionResult = {
-  pullRequestNumber: number;
-};

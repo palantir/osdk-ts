@@ -45,33 +45,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-import { readPreState } from "@changesets/pre";
-import readChangesets from "@changesets/read";
-import type { NewChangeset, PreState } from "@changesets/types";
 
-export type ChangesetState = {
-  preState: PreState | undefined;
-  changesets: NewChangeset[];
-};
-
-export default async function readChangesetState(
-  cwd: string = process.cwd(),
-): Promise<ChangesetState> {
-  let preState = await readPreState(cwd);
-  let changesets =
-    await (((readChangesets as any).default) as typeof readChangesets)(cwd);
-
-  if (preState !== undefined && preState.mode === "pre") {
-    let changesetsToFilter = new Set(preState.changesets);
-
-    return {
-      preState,
-      changesets: changesets.filter((x) => !changesetsToFilter.has(x.id)),
-    };
+export function sortByPrivateThenHighestLevel(
+  a: { private: boolean; highestLevel: number },
+  b: { private: boolean; highestLevel: number },
+) {
+  if (a.private === b.private) {
+    return b.highestLevel - a.highestLevel;
   }
-
-  return {
-    preState: undefined,
-    changesets,
-  };
+  if (a.private) {
+    return 1;
+  }
+  return -1;
 }

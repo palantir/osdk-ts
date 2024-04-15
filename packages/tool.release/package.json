@@ -23,6 +23,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run",
     "transpile": "tsup",
     "typecheck": "tsc-absolute"
   },
@@ -37,11 +38,13 @@
     "@octokit/plugin-throttling": "^8.0.0",
     "@octokit/core": "^5.2.0",
     "fs-extra": "^8.1.0",
-    "mdast-util-to-string": "^1.0.6",
+    "mdast-util-to-string": "^4.0.0",
     "remark-parse": "^7.0.1",
     "remark-stringify": "^7.0.3",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.3",
+    "consola": "^3.2.3",
+    "unist-util-visit": "^5.0.0",
     "unified": "^8.3.2",
     "yargs": "^17.7.2"
   },
@@ -50,7 +53,9 @@
     "@types/fs-extra": "^8.0.0",
     "@types/node": "^20.12.7",
     "@types/semver": "^7.5.0",
+    "@types/mdast": "4.0.3",
     "@types/yargs": "^17.0.32",
+    "vitest": "^1.5.0",
     "typescript": "^5.4.2"
   },
   "publishConfig": {

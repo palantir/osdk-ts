@@ -14,79 +14,103 @@
  * limitations under the License.
  */
 
-import * as core from "@actions/core";
+/*
+ * This code is heavily adapted from https://github.com/changesets/action/ which
+ * is licensed under the MIT License according to its package.json. However, it
+ * does not have a license file in the repository nor any headers on its source.
+ *
+ * Below is a modified version of the MIT license.
+ */
+
+/*
+MIT License
+
+Copyright (c) 2024 authors of https://github.com/changesets/action/
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 import { exec } from "@actions/exec";
-import * as github from "@actions/github";
 import * as fs from "node:fs";
-import path from "path";
+import path from "node:path";
+import type { Octokit } from "octokit";
 import resolveFrom from "resolve-from";
+import { createOrUpdatePr } from "./createOrUpdatePr.js";
 import * as gitUtils from "./gitUtils.js";
-import readChangesetState from "./readChangesetState.js";
-import type { VersionOptions } from "./run.js";
-import { getVersionPrBody, MAX_CHARACTERS_PER_MESSAGE } from "./run.js";
-import { setupOctokit } from "./setupOctokit.js";
-import {
-  getChangedPackages,
-  getChangelogEntry,
-  getVersionsByDirectory,
-  sortTheThings,
-} from "./utils.js";
+import { getChangedPackages } from "./util/getChangedPackages.js";
+import { getChangelogEntry } from "./util/getChangelogEntry.js";
+import { getVersionPrBody } from "./util/getVersionPrBody.js";
+import { getVersionsByDirectory } from "./util/getVersionsByDirectory.js";
+import readChangesetState from "./util/readChangesetState.js";
+import { sortByPrivateThenHighestLevel } from "./util/sortByPrivateThenHighestLevel.js";
+
+export interface GithubContext {
+  repo: { owner: string; repo: string };
+  //   ref: string;
+  sha: string;
+  branch: string;
+  octokit: Octokit;
+}
+
+// GitHub Issues/PRs messages have a max size limit on the
+// message body payload.
+// `body is too long (maximum is 65536 characters)`.
+// To avoid that, we ensure to cap the message to 60k chars.
+export const MAX_CHARACTERS_PER_MESSAGE = 60000;
+
+export type VersionOptions = {
+  versionCmd?: string;
+  cwd?: string;
+  prTitle?: string;
+  commitMessage?: string;
+  hasPublishScript?: boolean;
+  prBodyMaxCharacters?: number;
+  branch?: string;
+  context: GithubContext;
+};
 
 export async function runVersion({
-  script,
-  githubToken,
+  versionCmd,
   cwd = process.cwd(),
   prTitle = "Version Packages",
   commitMessage = "Version Packages",
   hasPublishScript = false,
   prBodyMaxCharacters = MAX_CHARACTERS_PER_MESSAGE,
-  branch,
+  context,
 }: VersionOptions): Promise<void> {
-  const octokit = setupOctokit(githubToken);
-
-  let repo = `${github.context.repo.owner}/${github.context.repo.repo}`;
-  branch = branch ?? github.context.ref.replace("refs/heads/", "");
-  let versionBranch = `changeset-release/${branch}`;
-
-  let { preState } = await readChangesetState(cwd);
+  const { branch } = context;
+  const versionBranch = `changeset-release/${branch}`;
+  const { preState } = await readChangesetState(cwd);
 
   await gitUtils.switchToMaybeExistingBranch(versionBranch);
-  await gitUtils.reset(github.context.sha);
+  await gitUtils.reset(context.sha);
 
-  let versionsByDirectory = await getVersionsByDirectory(cwd);
-
-  if (script) {
-    let [versionCommand, ...versionArgs] = script.split(/\s+/);
+  if (versionCmd) {
+    const [versionCommand, ...versionArgs] = versionCmd.split(/\s+/);
     await exec(versionCommand, versionArgs, { cwd });
   } else {
-    let cmd = "version";
-    await exec("node", [resolveFrom(cwd, "@changesets/cli/bin.js"), cmd], {
-      cwd,
-    });
+    await exec(
+      "node",
+      [resolveFrom(cwd, "@changesets/cli/bin.js"), "version"],
+      { cwd },
+    );
   }
-
-  let searchQuery =
-    `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`;
-  let searchResultPromise = octokit.request("GET /search/issues", {
-    q: searchQuery,
-  });
-  let changedPackages = await getChangedPackages(cwd, versionsByDirectory);
-  let changedPackagesInfoPromises = Promise.all(
-    changedPackages.map(async (pkg) => {
-      let changelogContents = await fs.promises.readFile(
-        path.join(pkg.dir, "CHANGELOG.md"),
-        "utf8",
-      );
-
-      let entry = getChangelogEntry(changelogContents, pkg.packageJson.version);
-      return {
-        highestLevel: entry.highestLevel,
-        private: !!pkg.packageJson.private,
-        content: entry.content,
-        header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
-      };
-    }),
-  );
 
   const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
 
@@ -100,14 +124,9 @@ export async function runVersion({
 
   await gitUtils.push(versionBranch, { force: true });
 
-  let searchResult = await searchResultPromise;
-  core.info(JSON.stringify(searchResult.data, null, 2));
+  const changedPackagesInfo = await getSortedChangedPackagesInfo(cwd);
 
-  const changedPackagesInfo = (await changedPackagesInfoPromises)
-    .filter((x) => x)
-    .sort(sortTheThings);
-
-  let prBody = await getVersionPrBody({
+  const prBody = await getVersionPrBody({
     hasPublishScript,
     preState,
     branch,
@@ -115,51 +134,65 @@ export async function runVersion({
     prBodyMaxCharacters,
   });
 
-  if (searchResult.data.items.length === 0) {
-    core.info("creating pull request");
-
-    await exec("gh", [
-      "pr",
-      "create",
-      "--title",
-      finalPrTitle,
-      "--body",
-      prBody,
-      "--base",
-      branch,
-      "--head",
-      versionBranch,
-    ]);
-
-    // const { data: newPullRequest } = await octokit.rest.pulls.create(
-    //   {
-    //     base: branch,
-    //     head: versionBranch,
-    //     title: finalPrTitle,
-    //     body: prBody,
-    //     ...github.context.repo,
-    //   },
-    // );
-  } else {
-    const [pullRequest] = searchResult.data.items;
-
-    core.info(`updating found pull request #${pullRequest.number}`);
-
-    await exec("gh", [
-      "pr",
-      "edit",
-      `${pullRequest.number}`,
-      "--title",
-      finalPrTitle,
-      "--body",
-      prBody,
-    ]);
-
-    // octokit.rest.pulls.update({
-    //   pull_number: pullRequest.number,
-    //   title: finalPrTitle,
-    //   body: prBody,
-    //   ...github.context.repo,
-    // });
-  }
+  await createOrUpdatePr(
+    context,
+    finalPrTitle,
+    prBody,
+    branch,
+    versionBranch,
+  );
 }
+
+async function getSortedChangedPackagesInfo(cwd: string) {
+  const versionsByDirectory = await getVersionsByDirectory(cwd);
+  const changedPackages = await getChangedPackages(cwd, versionsByDirectory);
+  const changedPackagesInfo = await Promise.all(
+    changedPackages.map(async (pkg) => {
+      const changelogContents = await fs.promises.readFile(
+        path.join(pkg.dir, "CHANGELOG.md"),
+        "utf8",
+      );
+
+      const entry = getChangelogEntry(
+        changelogContents,
+        pkg.packageJson.version,
+      );
+      if (!entry) {
+        throw new Error(
+          "Some how we bumped versions without the version matching",
+        );
+      }
+      return {
+        highestLevel: entry.highestLevel,
+        private: !!pkg.packageJson.private,
+        content: entry.content,
+        header: `## ${pkg.packageJson.name}@${pkg.packageJson.version}`,
+      };
+    }),
+  );
+
+  return changedPackagesInfo
+    .filter((x) => x)
+    .sort(sortByPrivateThenHighestLevel);
+}
+
+export async function getExistingPr(
+  repo: string,
+  versionBranch: string,
+  branch: string,
+  octokit: Octokit,
+) {
+  const { data } = await octokit.rest.search.issuesAndPullRequests(
+    {
+      q: `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`,
+    },
+  );
+
+  return data.items[0];
+}
+
+type PullRequestInfo = Awaited<
+  ReturnType<
+    Octokit["rest"]["search"]["issuesAndPullRequests"]
+  >
+>["data"]["items"][0];
