@@ -153,14 +153,6 @@ async function getSortedChangedPackagesInfo(
   oldVersionsByDirectory: Map<string, string>,
 ) {
   const changedPackages = await getChangedPackages(cwd, oldVersionsByDirectory);
-  // eslint-disable-next-line no-console
-  console.log("-=-=-==-");
-  // eslint-disable-next-line no-console
-  console.log(cwd);
-  // eslint-disable-next-line no-console
-  console.log(oldVersionsByDirectory);
-  // eslint-disable-next-line no-console
-  console.log(changedPackages);
   const changedPackagesInfo = await Promise.all(
     changedPackages.map(async (pkg) => {
       const changelogContents = await fs.promises.readFile(
