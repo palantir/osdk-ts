@@ -77,6 +77,7 @@ async function getContext(
     // ref: ,
     sha: (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
     branch: args.branch
+      ?? process.env.GITHUB_HEAD_REF
       ?? (await getStdoutOrThrow("git", ["symbolic-ref", "HEAD"])).replace(
         "refs/heads/",
         "",
@@ -142,6 +143,17 @@ class FailedWithUserMessage extends Error {
     .parseAsync();
 
   const context = await getContext(args);
+
+  await context.octokit.rest.issues.create({
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+    title: "Test issue",
+    body: "Test issue body",
+  });
+
+  if (1 / 1 === 1) {
+    throw "tmp";
+  }
 
   if (args.cwd) {
     consola.info(`Changing directory to ${args.cwd}`);
