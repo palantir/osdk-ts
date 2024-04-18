@@ -47,6 +47,11 @@ SOFTWARE.
 */
 
 import { exec } from "@actions/exec";
+import {
+  getChangelogEntry,
+  readChangesetState,
+  sortChangelogEntries,
+} from "@changesets/release-utils";
 import * as fs from "node:fs";
 import path from "node:path";
 import type { Octokit } from "octokit";
@@ -54,11 +59,8 @@ import resolveFrom from "resolve-from";
 import { createOrUpdatePr } from "./createOrUpdatePr.js";
 import * as gitUtils from "./gitUtils.js";
 import { getChangedPackages } from "./util/getChangedPackages.js";
-import { getChangelogEntry } from "./util/getChangelogEntry.js";
 import { getVersionPrBody } from "./util/getVersionPrBody.js";
 import { getVersionsByDirectory } from "./util/getVersionsByDirectory.js";
-import readChangesetState from "./util/readChangesetState.js";
-import { sortByPrivateThenHighestLevel } from "./util/sortByPrivateThenHighestLevel.js";
 
 export interface GithubContext {
   repo: { owner: string; repo: string };
@@ -180,7 +182,7 @@ async function getSortedChangedPackagesInfo(
 
   return changedPackagesInfo
     .filter((x) => x)
-    .sort(sortByPrivateThenHighestLevel);
+    .sort(sortChangelogEntries);
 }
 
 export async function getExistingPr(
@@ -197,9 +199,3 @@ export async function getExistingPr(
 
   return data.items[0];
 }
-
-type PullRequestInfo = Awaited<
-  ReturnType<
-    Octokit["rest"]["search"]["issuesAndPullRequests"]
-  >
->["data"]["items"][0];

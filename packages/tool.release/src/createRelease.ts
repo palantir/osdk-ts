@@ -46,11 +46,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { getChangelogEntry } from "@changesets/release-utils";
 import type { Package } from "@manypkg/get-packages";
-import * as fs from "fs";
-import path from "path";
+import * as fs from "node:fs";
+import path from "node:path";
 import type { GithubContext } from "./runVersion.js";
-import { getChangelogEntry } from "./util/getChangelogEntry.js";
 
 export const createRelease = async (
   context: GithubContext,

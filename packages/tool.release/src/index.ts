@@ -47,13 +47,14 @@ SOFTWARE.
 */
 
 import { getExecOutput } from "@actions/exec";
+import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
+import { setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
-import readChangesetState from "./util/readChangesetState.js";
 import { setupOctokit } from "./util/setupOctokit.js";
 
 async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
@@ -124,6 +125,11 @@ class FailedWithUserMessage extends Error {
         demandOption: true,
         description: "Repo to push to (format: org/name)",
       },
+      setupGitUser: {
+        type: "boolean",
+        description: "Setup git user",
+        default: false,
+      },
     })
     .check((argv) => {
       if (argv.mode === "publish" && !argv.publishCmd) {
@@ -142,23 +148,17 @@ class FailedWithUserMessage extends Error {
     })
     .parseAsync();
 
-  const context = await getContext(args);
-
-  await context.octokit.rest.issues.create({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    title: "Test issue",
-    body: "Test issue body",
-  });
-
-  if (1 / 1 === 1) {
-    throw "tmp";
-  }
-
   if (args.cwd) {
     consola.info(`Changing directory to ${args.cwd}`);
     process.chdir(args.cwd);
   }
+
+  if (args.setupGitUser) {
+    consola.info("setting git user");
+    await setupUser();
+  }
+
+  const context = await getContext(args);
 
   const { changesets } = await readChangesetState();
 
@@ -244,9 +244,24 @@ class FailedWithUserMessage extends Error {
   process.exit(1);
 });
 
-function getGithubTokenOrFail() {
+async function getGithubTokenOrFail() {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
+    consola.info(
+      "Unable to find GITHUB_TOKEN in environment, trying github cli...",
+    );
+
+    try {
+      return (await getStdoutOrThrow("gh", ["auth", "token"], {
+        silent: true,
+      })).trim();
+    } catch (e) {
+      consola.error(
+        "Unable to find GITHUB_TOKEN in environment or github cli, please add it to the environment",
+      );
+      consola.error("Output from gh auth token: ", e);
+    }
+
     throw new FailedWithUserMessage(
       "Please add the GITHUB_TOKEN to the changesets action",
     );
