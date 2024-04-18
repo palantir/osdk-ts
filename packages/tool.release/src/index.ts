@@ -46,19 +46,18 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { getExecOutput } from "@actions/exec";
+import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
+import { execa } from "execa";
 import * as fs from "node:fs";
 import yargs from "yargs";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
-// import readChangesetState from "./util/readChangesetState.js";
-import { readChangesetState } from "@changesets/release-utils";
 import { setupOctokit } from "./util/setupOctokit.js";
 
-async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
-  const { exitCode, stdout, stderr } = await getExecOutput(...args);
+async function getStdoutOrThrow(f: string, args: string[]) {
+  const { exitCode, stdout, stderr } = await execa(f, args);
   if (exitCode !== 0) {
     throw new Error(stderr);
   }
@@ -144,17 +143,6 @@ class FailedWithUserMessage extends Error {
     .parseAsync();
 
   const context = await getContext(args);
-
-  await context.octokit.rest.issues.create({
-    owner: context.repo.owner,
-    repo: context.repo.repo,
-    title: "Test issue",
-    body: "Test issue body",
-  });
-
-  if (1 / 1 === 1) {
-    throw "tmp";
-  }
 
   if (args.cwd) {
     consola.info(`Changing directory to ${args.cwd}`);
@@ -245,9 +233,22 @@ class FailedWithUserMessage extends Error {
   process.exit(1);
 });
 
-function getGithubTokenOrFail() {
+async function getGithubTokenOrFail() {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
+    consola.info(
+      "Unable to find GITHUB_TOKEN in environment, trying github cli...",
+    );
+
+    try {
+      return (await getStdoutOrThrow("gh", ["auth", "token"])).trim();
+    } catch (e) {
+      consola.error(
+        "Unable to find GITHUB_TOKEN in environment or github cli, please add it to the environment",
+      );
+      consola.error("Output from gh auth token: ", e);
+    }
+
     throw new FailedWithUserMessage(
       "Please add the GITHUB_TOKEN to the changesets action",
     );
