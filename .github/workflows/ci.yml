@@ -14,6 +14,10 @@ jobs:
     name: Build and Test
     timeout-minutes: 15
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
     strategy:
       matrix:
         node: [18, 20, 21]
@@ -39,6 +43,23 @@ jobs:
 
       - name: Transpile, typecheck, Lint and test
         run: pnpm check
+
+      # TEMPOARY
+
+      - name: temporary
+        run: node packages/tool.release/build/js/index.mjs --repo palantir/osdk-ts --mode 'version' --setupGitUser
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Play with publishing
+        run: pnpm publish -r --report-summary --dry-run
+
+      - name: Save publish data
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-packages
+          path: pnpm-publish-summary.json
+      # /TEMPOARY
 
       # catches some of the examples that don't have transpile/typecheck tasks
       - name: Build
