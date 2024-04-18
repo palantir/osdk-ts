@@ -66,3 +66,12 @@ jobs:
           git checkout ${GITHUB_HEAD_REF}
           pnpm exec changeset status --since=main
 
+      - name: Play with publishing
+        run: pnpm publish -r --report-summary --dry-run
+
+      - name: Save publish data
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-packages
+          path: pnpm-publish-summary.json
+

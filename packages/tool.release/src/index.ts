@@ -53,7 +53,8 @@ import yargs from "yargs";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
-import readChangesetState from "./util/readChangesetState.js";
+// import readChangesetState from "./util/readChangesetState.js";
+import { readChangesetState } from "@changesets/release-utils";
 import { setupOctokit } from "./util/setupOctokit.js";
 
 async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
