@@ -46,9 +46,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { getExecOutput } from "@actions/exec";
 import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
-import { execa } from "execa";
 import * as fs from "node:fs";
 import yargs from "yargs";
 import { runPublish } from "./runPublish.js";
@@ -56,8 +56,8 @@ import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
 import { setupOctokit } from "./util/setupOctokit.js";
 
-async function getStdoutOrThrow(f: string, args: string[]) {
-  const { exitCode, stdout, stderr } = await execa(f, args);
+async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
+  const { exitCode, stdout, stderr } = await getExecOutput(...args);
   if (exitCode !== 0) {
     throw new Error(stderr);
   }
@@ -241,7 +241,9 @@ async function getGithubTokenOrFail() {
     );
 
     try {
-      return (await getStdoutOrThrow("gh", ["auth", "token"])).trim();
+      return (await getStdoutOrThrow("gh", ["auth", "token"], {
+        silent: true,
+      })).trim();
     } catch (e) {
       consola.error(
         "Unable to find GITHUB_TOKEN in environment or github cli, please add it to the environment",
