@@ -51,6 +51,7 @@ import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
+import { setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
@@ -124,6 +125,11 @@ class FailedWithUserMessage extends Error {
         demandOption: true,
         description: "Repo to push to (format: org/name)",
       },
+      setupGitUser: {
+        type: "boolean",
+        description: "Setup git user",
+        default: false,
+      },
     })
     .check((argv) => {
       if (argv.mode === "publish" && !argv.publishCmd) {
@@ -142,12 +148,17 @@ class FailedWithUserMessage extends Error {
     })
     .parseAsync();
 
-  const context = await getContext(args);
-
   if (args.cwd) {
     consola.info(`Changing directory to ${args.cwd}`);
     process.chdir(args.cwd);
   }
+
+  if (args.setupGitUser) {
+    consola.info("setting git user");
+    await setupUser();
+  }
+
+  const context = await getContext(args);
 
   const { changesets } = await readChangesetState();
 
