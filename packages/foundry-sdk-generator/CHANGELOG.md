@@ -1,5 +1,27 @@
 # @osdk/foundry-sdk-generator
 
+## 0.211.0
+
+### Minor Changes
+
+- 11434b95: Deprecated bulk actions with renamed batchActions functionality
+
+### Patch Changes
+
+- 9906a41e: add asyncIter
+- Updated dependencies [11434b95]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [9906a41e]
+- Updated dependencies [f7287ae8]
+  - @osdk/legacy-client@2.2.0
+  - @osdk/generator@1.10.0
+  - @osdk/api@1.6.1
+
 ## 0.201.1
 
 ### Patch Changes
