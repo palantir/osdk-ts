@@ -333,6 +333,7 @@ export type {
   reservedKeywordsList,
   Result,
   SearchAround,
+  SearchAroundKeys,
   SearchAroundObjectSetDefinition,
   SearchClause,
   SearchObjectsError,

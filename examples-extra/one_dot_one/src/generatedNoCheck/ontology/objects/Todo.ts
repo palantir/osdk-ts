@@ -7,7 +7,9 @@ import type { Person } from './Person';
  */
 export interface Todo extends OntologyObject {
   /** @deprecated please migrate to $apiName instead */
-  readonly __apiName: 'Todo';
+  readonly __apiName: 'Todo' & {
+    /** @deprecated please migrate to pivotTo(Assignee) instead */ searchAroundAssignee?: never;
+  };
   /** @deprecated please migrate to $primaryKey instead */
   readonly __primaryKey: number;
   readonly $apiName: 'Todo';

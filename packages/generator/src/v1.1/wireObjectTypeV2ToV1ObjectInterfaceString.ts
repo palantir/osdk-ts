@@ -39,7 +39,13 @@ ${
   ${getDescriptionIfPresent(objectTypeWithLinks.objectType.description)}
   export interface ${objectTypeWithLinks.objectType.apiName} extends OntologyObject {
   /** \@deprecated please migrate to \$apiName instead */
-  readonly __apiName: "${objectTypeWithLinks.objectType.apiName}";
+  readonly __apiName: "${objectTypeWithLinks.objectType.apiName}" & {${
+    objectTypeWithLinks.linkTypes.map(linkType => {
+      return `/** \@deprecated please migrate to pivotTo(${linkType.apiName}) instead */ searchAround${
+        linkType.apiName.charAt(0).toUpperCase() + linkType.apiName.slice(1)
+      }?: never`;
+    })
+  }};
   /** \@deprecated please migrate to \$primaryKey instead */
   readonly __primaryKey: ${
     wirePropertyTypeV2ToTypeScriptType(

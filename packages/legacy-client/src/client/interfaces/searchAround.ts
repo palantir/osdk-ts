@@ -14,18 +14,32 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "..";
 import type { MultiLink, OntologyObject, SingleLink } from "../baseTypes";
-import type { ObjectSet } from ".";
-import type { IsLink } from "./utils/IsLink";
 
-type InferLinkType<T> = T extends SingleLink<infer V> ? V
+export type InferLinkType<T> = T extends SingleLink<infer V> ? V
   : T extends MultiLink<infer V> ? V
   : never;
 
+export type SearchAroundKeys<T extends { __apiName: {} }> = keyof {
+  [
+    K in keyof T["__apiName"] as K extends `searchAround${string}`
+      ? (K & string)
+      : never
+  ]: string;
+};
+
 export type SearchAround<T extends OntologyObject> = {
   [
-    K in Extract<keyof T, string> as IsLink<T[K]> extends true
-      ? `searchAround${Capitalize<K>}`
-      : never
-  ]: () => ObjectSet<InferLinkType<T[K]>>;
+    K
+      in keyof (T extends
+        { __apiName: Partial<Record<SearchAroundKeys<T>, any>> }
+        ? Required<Pick<T["__apiName"], SearchAroundKeys<T>>>
+        : never)
+  ]: K extends `searchAround${infer Z}`
+    ? Uncapitalize<Z> extends keyof T
+      ? (() => ObjectSet<InferLinkType<T[Uncapitalize<Z>]>>)
+    : Z extends keyof T ? (() => ObjectSet<InferLinkType<T[Z]>>)
+    : (numbers: keyof T) => {}
+    : () => {};
 };

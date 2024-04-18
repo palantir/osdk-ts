@@ -61,14 +61,14 @@ export interface ValidationResponse {
 }
 
 export declare type ObjectEdit<T extends OntologyObject> = {
-  [K in T["__apiName"]]: {
+  [K in T["$apiName"]]: {
     apiName: K;
     primaryKey: Extract<T, {
       __apiName: K;
     }>["__primaryKey"];
     get: () => Promise<Result<T, GetObjectError>>;
   };
-}[T["__apiName"]];
+}[T["$apiName"]];
 
 export declare type ObjectEdits<T extends OntologyObject> = Array<
   ObjectEdit<T>

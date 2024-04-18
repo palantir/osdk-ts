@@ -18,7 +18,9 @@ import type { MultiLink, OntologyObject } from "../../client/baseTypes";
 import type { Todo } from "./TodoObject";
 
 export interface Task extends OntologyObject {
-  readonly __apiName: "Task";
+  readonly __apiName: "Task" & {
+    /** @deprecated use pivotTo(Todos)*/ searchAroundLinkedTodos?: never;
+  };
   readonly __primaryKey: number;
   readonly $apiName: "Task";
   readonly $primaryKey: number;
