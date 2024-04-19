@@ -75,7 +75,6 @@ async function getContext(
       owner: parts[0],
       repo: parts[1],
     },
-    // ref: ,
     sha: (await getStdoutOrThrow("git", ["rev-parse", "HEAD"])).trim(),
     branch: args.branch
       ?? process.env.GITHUB_HEAD_REF
@@ -99,7 +98,6 @@ class FailedWithUserMessage extends Error {
     .options({
       cwd: { type: "string", description: "Change working directory" },
       mode: {
-        // type: "string",
         choices: ["version", "publish"],
         default: "version",
       },

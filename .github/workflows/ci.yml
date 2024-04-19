@@ -44,17 +44,6 @@ jobs:
       - name: Transpile, typecheck, Lint and test
         run: pnpm check
 
-      # TEMPOARY
-      - name: Play with publishing
-        run: pnpm publish -r --report-summary --dry-run --no-git-checks
-
-      - name: Save publish data
-        uses: actions/upload-artifact@v4
-        with:
-          name: published-packages-${{ matrix.node }}
-          path: pnpm-publish-summary.json
-      # /TEMPOARY
-
       # catches some of the examples that don't have transpile/typecheck tasks
       - name: Build
         run: pnpm build

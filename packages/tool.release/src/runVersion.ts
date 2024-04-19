@@ -64,7 +64,6 @@ import { getVersionsByDirectory } from "./util/getVersionsByDirectory.js";
 
 export interface GithubContext {
   repo: { owner: string; repo: string };
-  //   ref: string;
   sha: string;
   branch: string;
   octokit: Octokit;
