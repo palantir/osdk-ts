@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
-import { defineConfig } from "vitest/config";
+import { defineConfig } from "tsup";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-export default defineConfig({
-  test: {
-    globalSetup: [join(__dirname, "./src/__e2e_tests__/testSetup.ts")],
-    alias: {
-      "consola": join(__dirname, "./src/__e2e_tests__/consola.ts"),
-    },
-    pool: "forks",
-  },
-});
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options)
+);
