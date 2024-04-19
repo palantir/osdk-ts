@@ -1,5 +1,14 @@
 # @osdk/gateway-generator
 
+## 0.2.1
+
+### Patch Changes
+
+- 9906a41e: Tweak openapi gen
+- 9906a41e: Use readonly for arrays in the gateway
+- 9906a41e: Bump TS and make writing test network mocks easier
+- 9906a41e: Improves tsconfig
+
 ## 0.1.1
 
 ### Patch Changes

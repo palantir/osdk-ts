@@ -1,5 +1,12 @@
 # @osdk/api
 
+## 1.6.2
+
+### Patch Changes
+
+- Updated dependencies [9906a41e]
+  - @osdk/shared.net@1.9.1
+
 ## 1.1.1
 
 ### Patch Changes
