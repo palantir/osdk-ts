@@ -352,7 +352,7 @@ importers:
         version: 6.22.2(react-dom@18.2.0)(react@18.2.0)
     devDependencies:
       '@types/react':
-        specifier: ^18.2.79
+        specifier: ^18
         version: 18.2.79
       '@types/react-dom':
         specifier: ^18.2.15
