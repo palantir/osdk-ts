@@ -9,8 +9,8 @@ import {
 } from "./generatedNoCheck";
 
 export const client = createClient(
-  Ontology,
-  "",
+  "https://example.com",
+  Ontology.metadata.ontologyRid,
   async () => {
     return "";
   },

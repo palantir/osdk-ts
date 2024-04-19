@@ -21,7 +21,9 @@ import type { Task } from "./TaskObject";
  * Its a todo item.
  */
 export interface Todo extends OntologyObject {
-  readonly __apiName: "Todo";
+  readonly __apiName: "Todo" & {
+    /** @deprecated use pivotTo(Todos)*/ searchAroundLinkedTask?: never;
+  };
   readonly __primaryKey: string;
   readonly $apiName: "Todo";
   readonly $primaryKey: string;

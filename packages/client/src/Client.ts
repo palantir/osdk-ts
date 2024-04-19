@@ -53,6 +53,8 @@ export interface Client {
   ctx: unknown;
 }
 
+// BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const MaxOsdkVersion = "0.15.0";
+// END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");

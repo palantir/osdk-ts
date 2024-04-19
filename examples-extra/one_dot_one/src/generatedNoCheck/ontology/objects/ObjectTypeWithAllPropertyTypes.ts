@@ -14,7 +14,7 @@ import type {
  */
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   /** @deprecated please migrate to $apiName instead */
-  readonly __apiName: 'ObjectTypeWithAllPropertyTypes';
+  readonly __apiName: 'ObjectTypeWithAllPropertyTypes' & {};
   /** @deprecated please migrate to $primaryKey instead */
   readonly __primaryKey: number;
   readonly $apiName: 'ObjectTypeWithAllPropertyTypes';

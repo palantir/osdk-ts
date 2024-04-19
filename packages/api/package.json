@@ -1,6 +1,6 @@
 {
   "name": "@osdk/api",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -24,7 +24,7 @@
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -48,8 +48,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

@@ -1,7 +1,8 @@
 import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
-export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<'0.15.0'> {
+export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'Its a todo item.';
   links: {};

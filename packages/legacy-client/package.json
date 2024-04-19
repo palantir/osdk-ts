@@ -25,7 +25,7 @@
     "codegen": "node ./generateMockOntology.mjs",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -55,8 +55,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

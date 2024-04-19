@@ -94,6 +94,15 @@ describe("OsdkObjectSet", () => {
       link: "linkedTask",
     });
   });
+  it("pivot creates a searchAround on an ObjectSet", () => {
+    const os = createBaseObjectSet(client, "Todo");
+    const searchAroundObjectSet = os.pivotTo("linkedTask");
+    expect(searchAroundObjectSet.definition).toEqual({
+      type: "searchAround",
+      objectSet: baseObjectSet,
+      link: "linkedTask",
+    });
+  });
 
   it("creates the count aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");

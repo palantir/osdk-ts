@@ -28,3 +28,5 @@ packages/client/src/generatedNoCheck
 packages/legacy-client/src/generatedNoCheck
 
 .log
+pnpm-publish-summary.json
+.npmrc

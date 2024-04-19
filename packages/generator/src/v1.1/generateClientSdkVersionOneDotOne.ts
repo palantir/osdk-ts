@@ -22,6 +22,7 @@ import { verifyOutdir } from "../util/verifyOutdir";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 import { generateActions } from "./generateActions";
 import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports";
+import { generateBatchActions } from "./generateBatchActions";
 import { generateBulkActions } from "./generateBulkActions";
 import { generateFoundryClientFile } from "./generateFoundryClientFile";
 import { generateIndexFile } from "./generateIndexFile";
@@ -80,6 +81,7 @@ export async function generateClientSdkVersionOneDotOne(
     importExt,
   );
   await generateActions(sanitizedOntology, fs, actionsDir, importExt);
+  await generateBatchActions(sanitizedOntology, fs, actionsDir, importExt);
   await generateBulkActions(sanitizedOntology, fs, actionsDir, importExt);
   await generatePerActionDataFiles(
     sanitizedOntology,

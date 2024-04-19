@@ -124,7 +124,8 @@ export async function generateClientSdkVersionTwoPointZero(
       await formatTs(`
         import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
         import { Osdk } from "@osdk/client";
-        import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
+        import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
+        import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
         ${wireObjectTypeV2ToSdkObjectConst(obj, importExt, true)}
       `),
@@ -191,7 +192,8 @@ async function generateOntologyInterfaces(
       await formatTs(`
     
       import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
-      import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
+      import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
+      import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
     `),

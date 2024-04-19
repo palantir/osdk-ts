@@ -70,7 +70,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}>, VersionBound<"${process.env.PACKAGE_CLIENT_VERSION}"> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}>, VersionBound<$ExpectedClientVersion> {
         osdkMetadata: typeof $osdkMetadata;
         ${
       stringify(definition, {

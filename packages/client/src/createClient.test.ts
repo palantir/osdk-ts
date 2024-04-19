@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  OntologyMetadata,
-  VersionBound,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -31,24 +27,24 @@ describe(createClient, () => {
   const validCurrentVersion = "0.14.0" as const;
   const invalidFutureVersion = "100.100.100" as const;
 
+  let fetchFunction: MockedFunction<typeof globalThis.fetch>;
+  let client: Client;
+
+  beforeEach(() => {
+    fetchFunction = vi.fn();
+
+    client = createClient(
+      "https://mock.com",
+      MockOntology.metadata.ontologyRid,
+      () => "Token",
+      undefined,
+      fetchFunction,
+    );
+
+    mockFetchResponse(fetchFunction, { data: [] });
+  });
+
   describe("user agent passing", () => {
-    let fetchFunction: MockedFunction<typeof globalThis.fetch>;
-    let client: Client;
-
-    beforeEach(() => {
-      fetchFunction = vi.fn();
-
-      client = createClient(
-        "https://mock.com",
-        MockOntology.metadata.ontologyRid,
-        () => "Token",
-        undefined,
-        fetchFunction,
-      );
-
-      mockFetchResponse(fetchFunction, { data: [] });
-    });
-
     function getUserAgentPartsFromMockedFetch() {
       const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
         .get(
@@ -73,23 +69,6 @@ describe(createClient, () => {
   });
 
   describe("Version compatibility checks", () => {
-    const baseMetadata: OntologyMetadata = {
-      ontologyApiName: "",
-      ontologyRid: "",
-      userAgent: "",
-    };
-    const stack = "https://foo.bar";
-    const tokenProvider = () => "";
-
-    let client: Client;
-    beforeEach(() => {
-      client = createClient(
-        stack,
-        baseMetadata.ontologyRid,
-        tokenProvider,
-      );
-    });
-
     it("does not error on older builds before this check", () => {
       // this cast simulates older definitions as they wont have the BoundVersion type
       client(MockOntology.objects.Task as ObjectTypeDefinition<"Task">)
