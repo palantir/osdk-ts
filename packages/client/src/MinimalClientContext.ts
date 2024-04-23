@@ -15,6 +15,7 @@
  */
 
 import type { ClientContext } from "@osdk/shared.net";
+import type { Logger } from "pino";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 
 /*
@@ -26,6 +27,7 @@ export interface MinimalClient
 {
   ontologyRid: string;
   ontologyProvider: OntologyProvider;
+  logger?: Logger;
 }
 
 export type MinimalClientParams = {

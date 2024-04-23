@@ -34,7 +34,6 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -148,8 +147,19 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     subscribe(listener) {
-      const instance = ObjectSetListenerWebsocket.getInstance(clientCtx);
-      return instance.subscribe(objectSet, listener);
+      // We are going to lazy load subscriptions to reduce initial
+      // bundle sizes.
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then((
+        mod,
+      ) =>
+        mod.ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
+          objectSet,
+          listener,
+        )
+      );
+      return () => {
+        pendingSubscribe.then((subscribe) => subscribe());
+      };
     },
 
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {

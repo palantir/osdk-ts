@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { Logger } from "pino";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
@@ -32,7 +33,7 @@ export function createClient(
   stack: string,
   ontologyRid: string,
   tokenProvider: () => Promise<string> | string,
-  HOLD: undefined = undefined,
+  options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   const clientCtx: MinimalClient = createMinimalClient(
@@ -42,7 +43,7 @@ export function createClient(
     },
     stack,
     tokenProvider,
-    {},
+    options,
     fetchFn,
   );
 
