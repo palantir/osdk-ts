@@ -51,6 +51,7 @@ import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
+import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import { setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
@@ -84,13 +85,6 @@ async function getContext(
       ).trim(),
     octokit: setupOctokit(await getGithubTokenOrFail()),
   };
-}
-
-class FailedWithUserMessage extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "FailedWithUserMessage";
-  }
 }
 
 (async () => {

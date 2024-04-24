@@ -48,6 +48,7 @@ SOFTWARE.
 
 import { exec } from "@actions/exec";
 import {
+  BumpLevels,
   getChangelogEntry,
   readChangesetState,
   sortChangelogEntries,
@@ -57,6 +58,7 @@ import path from "node:path";
 import type { Octokit } from "octokit";
 import resolveFrom from "resolve-from";
 import { createOrUpdatePr } from "./createOrUpdatePr.js";
+import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 import * as gitUtils from "./gitUtils.js";
 import { getChangedPackages } from "./util/getChangedPackages.js";
 import { getVersionPrBody } from "./util/getVersionPrBody.js";
@@ -96,6 +98,12 @@ export async function runVersion({
   context,
 }: VersionOptions): Promise<void> {
   const { branch } = context;
+
+  if (branch.startsWith("changeset-release/")) {
+    throw new FailedWithUserMessage(
+      "This branch is already a version branch, aborting",
+    );
+  }
   const versionBranch = `changeset-release/${branch}`;
   const { preState } = await readChangesetState(cwd);
 
@@ -119,6 +127,29 @@ export async function runVersion({
     cwd,
     originalVersionsByDirectory,
   );
+
+  if (context.branch === "main" || process.env.PRETEND_BRANCH === "main") {
+    const patchLevelChanges = changedPackagesInfo.filter(p =>
+      p.highestLevel <= BumpLevels.patch
+    );
+    throw new FailedWithUserMessage(
+      `Unable to proceed with release, the following packages have patch level changes: ${
+        patchLevelChanges.map(p => p.header).join(", ")
+      }`,
+    );
+  } else if (
+    context.branch.startsWith("release/")
+    || process.env.PRETEND_BRANCH?.startsWith("release/")
+  ) {
+    const minorLevelChanges = changedPackagesInfo.filter(p =>
+      p.highestLevel > BumpLevels.patch
+    );
+    throw new FailedWithUserMessage(
+      `Unable to proceed with release, the following packages have minor or major level changes: ${
+        minorLevelChanges.map(p => p.header).join(", ")
+      }`,
+    );
+  }
 
   const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
 
