@@ -308,7 +308,7 @@ importers:
   examples/example-next-static-export:
     dependencies:
       '@osdk/examples.one.dot.one':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../examples-extra/one_dot_one
       next:
         specifier: 14.0.4
@@ -342,7 +342,7 @@ importers:
   examples/example-react:
     dependencies:
       '@osdk/examples.one.dot.one':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../examples-extra/one_dot_one
       react:
         specifier: ^18.2.0
@@ -388,7 +388,7 @@ importers:
   examples/example-vue:
     dependencies:
       '@osdk/examples.one.dot.one':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../examples-extra/one_dot_one
       vue:
         specifier: ^3.3.8

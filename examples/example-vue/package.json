@@ -13,7 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/examples.one.dot.one": "workspace:^",
+    "@osdk/examples.one.dot.one": "workspace:*",
     "vue": "^3.3.8",
     "vue-router": "^4.2.5"
   },
