@@ -30,11 +30,11 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
-    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:^",
     "typescript": "^5.2.2"
   },
   "publishConfig": {

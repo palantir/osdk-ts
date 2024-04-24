@@ -15,15 +15,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/legacy-client": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/legacy-client": "workspace:^",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "swr": "^2.2.4"
   },
   "devDependencies": {
-    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:^",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",

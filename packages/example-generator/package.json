@@ -29,7 +29,7 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/create-app": "workspace:*",
+    "@osdk/create-app": "workspace:^",
     "consola": "^3.2.3",
     "dir-compare": "^4.2.0",
     "find-up": "^7.0.0",
