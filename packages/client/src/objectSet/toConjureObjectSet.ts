@@ -189,7 +189,7 @@ function mapWhereClauseToObjectSetFilter(
           propertyId: propertyMapping.propertyApiNameToIdMapping[
             objectSetFilter.field
           ],
-          terms: [],
+          terms: [objectSetFilter.value],
         },
       };
     case "and":

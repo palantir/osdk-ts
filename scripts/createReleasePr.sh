@@ -17,7 +17,7 @@ fi
 if output=$(git status --porcelain) && [ -z "$output" ]; then
   # Working directory clean
   
-  turbo transpile --filter "./packages/tool.release"
+  pnpm exec turbo transpile --filter "./packages/tool.release"
   node ./packages/tool.release/build/js/index.mjs --repo palantir/osdk-ts --versionCmd "pnpm ci:version"
   echo
   echo
