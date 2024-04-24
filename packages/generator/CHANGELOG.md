@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 1.10.0
+
+### Minor Changes
+
+- 11434b95: Deprecated bulk actions with renamed batchActions functionality
+- 11434b95: Add pivot to functionality and deprecate searchAround calls
+- 9906a41e: Extract package generation
+- 9906a41e: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
+- f7287ae8: For 2.0, fixes codegen version matching in snapshot builds
+
+### Patch Changes
+
+- @osdk/api@1.6.2
+- @osdk/generator-converters@0.4.1
+
 ## 1.1.1
 
 ### Patch Changes

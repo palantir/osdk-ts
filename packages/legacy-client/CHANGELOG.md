@@ -1,5 +1,23 @@
 # @osdk/legacy-client
 
+## 2.2.0
+
+### Minor Changes
+
+- 11434b95: Deprecated bulk actions with renamed batchActions functionality
+- 11434b95: Add pivot to functionality and deprecate searchAround calls
+- 9906a41e: Add fetchpagewitherrors
+- 9906a41e: Add fetch page without result wrapper
+- 9906a41e: add asyncIter
+- 9906a41e: FetchPageWithErrors type fix
+- 9906a41e: Add missing error handlers to LoadObjectSetErrorHandler
+
+### Patch Changes
+
+- Updated dependencies [9906a41e]
+  - @osdk/shared.net@1.10.0
+  - @osdk/api@1.6.2
+
 ## 1.1.1
 
 ### Patch Changes

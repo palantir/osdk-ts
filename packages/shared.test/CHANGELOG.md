@@ -1,5 +1,22 @@
 # @osdk/shared.test
 
+## 1.3.0
+
+### Minor Changes
+
+- 9906a41e: Initial Interfaces Support
+- 9906a41e: Tweak openapi gen
+- 9906a41e: Partial interface down selection and conversion to object and back
+- 9906a41e: Use readonly for arrays in the gateway
+- 9906a41e: Bump TS and make writing test network mocks easier
+- 9906a41e: Minor improvements everywhere
+- 9906a41e: Improves tsconfig
+- 9906a41e: add asyncIter
+
+### Patch Changes
+
+- @osdk/api@1.6.2
+
 ## 1.1.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @osdk/client
 
+## 0.16.0
+
+### Minor Changes
+
+- 9906a41e: Omniapi support
+- 9906a41e: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
+
+### Patch Changes
+
+- Updated dependencies [9906a41e]
+  - @osdk/shared.net@1.10.0
+  - @osdk/api@1.6.2
+  - @osdk/generator-converters@0.4.1
+
 ## 0.5.0
 
 ### Minor Changes
