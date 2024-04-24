@@ -70,19 +70,23 @@ function fillOutListener<Q extends ObjectOrInterfaceDefinition>(
   return { onChange, onError, onOutOfDate };
 }
 
-interface Subscription {
+interface Subscription<Q extends ObjectOrInterfaceDefinition> {
   temporaryObjectSetId?: string;
-  listener: Required<ObjectSetListener<any>>;
+  listener: Required<ObjectSetListener<Q>>;
   objectSet: ObjectSet;
   expiry?: ReturnType<typeof setTimeout>;
   subscriptionId: string;
   status: "preparing" | "subscribed" | "done" | "expired" | "error";
 }
 
-function isReady(
-  sub: Subscription,
-): sub is Subscription & { temporaryObjectSetId: string } {
+function isReady<Q extends ObjectOrInterfaceDefinition>(
+  sub: Subscription<Q>,
+): sub is Subscription<Q> & { temporaryObjectSetId: string } {
   return sub.temporaryObjectSetId != null;
+}
+
+function subscriptionIsDone(sub: Subscription<any>) {
+  return sub.status === "done" || sub.status === "error";
 }
 
 export class ObjectSetListenerWebsocket {
@@ -112,7 +116,7 @@ export class ObjectSetListenerWebsocket {
    */
   #pendingSubscriptions = new Map<
     string,
-    Subscription[]
+    Subscription<any>[]
   >();
 
   /**
@@ -121,7 +125,7 @@ export class ObjectSetListenerWebsocket {
    */
   #subscriptions = new Map<
     string,
-    Subscription
+    Subscription<any>
   >();
 
   #oswContext: ConjureContext;
@@ -160,9 +164,11 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q>,
   ): Promise<() => void> {
+    // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
+    // will not be needed after our minimum version is 19 or greater.
     globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
-    const sub: Subscription = {
-      listener: fillOutListener<any>(listener),
+    const sub: Subscription<Q> = {
+      listener: fillOutListener<Q>(listener),
       objectSet,
       status: "preparing",
 
@@ -190,10 +196,12 @@ export class ObjectSetListenerWebsocket {
    *
    * @returns
    */
-  async #initiateSubscribe(sub: Subscription) {
+  async #initiateSubscribe(sub: Subscription<any>) {
     if (sub.expiry) {
       clearTimeout(sub.expiry);
     }
+    // expiry is tied to the temporary object set, which is set to `timeToLive: "ONE_DAY"`
+    // in `#createTemporaryObjectSet`. They should be in sync
     sub.expiry = setTimeout(() => this.#expire(sub), ONE_DAY_MS);
 
     try {
@@ -218,7 +226,7 @@ export class ObjectSetListenerWebsocket {
 
       // the consumer may have already unsubscribed before we are ready to request a subscription
       // so we have to acquire the pendingSubscription after the await.
-      if (sub.status === "done" || sub.status === "error") {
+      if (subscriptionIsDone(sub)) {
         return;
       }
 
@@ -238,12 +246,13 @@ export class ObjectSetListenerWebsocket {
     const readySubs = [...this.#subscriptions.values()].filter(isReady);
     if (readySubs.length === 0) return;
 
+    // Assumes the node 18 crypto fallback to globalThis in `subscribe` has happened.
     const id = crypto.randomUUID();
     // responses come back as an array of subIds, so we need to know the sources
     this.#pendingSubscriptions.set(id, readySubs);
 
     // every subscribe message "overwrites" the previous ones that are not
-    // re-included, we we have to reconsistute the entire list of subscriptions
+    // re-included, so we have to reconstitute the entire list of subscriptions
     const subscribe: ObjectSetSubscribeRequests = {
       id,
       requests: readySubs.map<ObjectSetSubscribeRequest>((
@@ -267,17 +276,25 @@ export class ObjectSetListenerWebsocket {
     this.#ws?.send(JSON.stringify(subscribe));
   }
 
-  #expire(sub: Subscription) {
+  #expire(sub: Subscription<any>) {
     // the temporary ObjectSet has expired, we should re-subscribe which will cause the
     // listener to get an onOutOfDate message when it becomes subscribed again
     sub.status = "expired";
     this.#initiateSubscribe(sub);
   }
 
-  #unsubscribe(sub: Subscription) {
-    sub.status = "done";
+  #unsubscribe<Q extends ObjectOrInterfaceDefinition>(
+    sub: Subscription<Q>,
+    newStatus: "done" | "error" = "done",
+  ) {
+    if (subscriptionIsDone(sub)) {
+      // if we are already done, we don't need to do anything
+      return;
+    }
+
+    sub.status = newStatus;
     // make sure listeners do nothing now
-    sub.listener = fillOutListener<any>({});
+    sub.listener = fillOutListener<Q>({});
     if (sub.expiry) {
       clearTimeout(sub.expiry);
       sub.expiry = undefined;
@@ -290,6 +307,14 @@ export class ObjectSetListenerWebsocket {
     // in the old view and subscribe in the new view. We don't need to re-establish
     // the websocket connection in that case.
     if (this.#maybeDisconnectTimeout) {
+      // We reset the timeout on every unsubscribe so its always at least 15s from
+      // the last time we are empty. E.g.:
+      //   - 0s: Sub(A)
+      //   - 10s: Unsub(A)
+      //   - 11s: Sub(B)
+      //   - 20s: Unsub(B)
+      // If we do not clear out the timeout we would disconnect at 25s but that would only be
+      // 5s after the last subscription was removed instead of at 35s for the desired 15s.
       clearTimeout(this.#maybeDisconnectTimeout);
     }
     this.#maybeDisconnectTimeout = setTimeout(() => {
@@ -420,9 +445,8 @@ export class ObjectSetListenerWebsocket {
       const response = responses[i];
       switch (response.type) {
         case "error":
-          sub.status = "error";
           sub.listener.onError(response.error);
-          this.#unsubscribe(sub);
+          this.#unsubscribe(sub, "error");
           break;
 
         case "qos":
@@ -473,7 +497,7 @@ export class ObjectSetListenerWebsocket {
       this.#ossContext,
       {
         objectSet: toConjureObjectSet(objectSet, mapping!),
-        timeToLive: "ONE_DAY",
+        timeToLive: "ONE_DAY", // MUST keep in sync with the value for expiry in `#initiateSubscribe`.
         objectSetFilterContext: { parameterOverrides: {} },
       },
     );
