@@ -1,5 +1,24 @@
 # @osdk/legacy-client
 
+## 2.2.0
+
+### Minor Changes
+
+- 11434b95: Deprecated bulk actions with renamed batchActions functionality
+- 948c6340: Add pivot to functionality and deprecate searchAround calls
+- 3c51797c: Upgrade luxon to 3.4.4
+
+### Patch Changes
+
+- 9906a41e: Add fetchpagewitherrors
+- 9906a41e: Add fetch page without result wrapper
+- 9906a41e: add asyncIter
+- 9906a41e: FetchPageWithErrors type fix
+- 9906a41e: Add missing error handlers to LoadObjectSetErrorHandler
+- Updated dependencies [9906a41e]
+  - @osdk/shared.net@1.9.1
+  - @osdk/api@1.6.2
+
 ## 1.1.1
 
 ### Patch Changes
