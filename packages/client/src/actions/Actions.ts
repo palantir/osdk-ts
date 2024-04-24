@@ -28,7 +28,10 @@ import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/PartialBy.js";
-import type { ActionReturnTypeForOptions } from "./applyAction.js";
+import type {
+  ActionReturnTypeForOptions,
+  BatchActionReturnTypeForOptions,
+} from "./applyAction.js";
 
 export type ApplyActionOptions =
   | { returnEdits?: true; validateOnly?: false }
@@ -36,6 +39,8 @@ export type ApplyActionOptions =
     validateOnly?: true;
     returnEdits?: false;
   };
+
+export type ApplyBatchActionOptions = { returnEdits?: boolean };
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
@@ -76,12 +81,21 @@ type ActionParametersDefinition = Record<
 
 export type ActionSignature<
   X extends Record<any, ActionParameterDefinition<any, any>>,
-> = <
-  OP extends ApplyActionOptions,
->(
-  args: NOOP<OsdkActionParameters<X>>,
-  options?: OP,
-) => Promise<ActionReturnTypeForOptions<OP>>;
+> =
+  | (<
+    OP extends ApplyActionOptions,
+    A extends NOOP<OsdkActionParameters<X>>,
+  >(
+    args: A,
+    options?: OP,
+  ) => Promise<ActionReturnTypeForOptions<OP>>)
+  | (<
+    OP extends ApplyBatchActionOptions,
+    A extends NOOP<OsdkActionParameters<X>>[],
+  >(
+    args: A,
+    options?: OP,
+  ) => Promise<BatchActionReturnTypeForOptions<OP>>);
 
 export type ActionEditResponse = ActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;

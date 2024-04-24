@@ -16,7 +16,10 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import type { DataValue } from "@osdk/omniapi";
-import { applyActionV2 } from "@osdk/omniapi/OntologiesV2_Action";
+import {
+  applyActionBatchV2,
+  applyActionV2,
+} from "@osdk/omniapi/OntologiesV2_Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
@@ -24,6 +27,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
@@ -34,6 +38,11 @@ export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
   Op extends { validateOnly: true } ? ActionValidationResponse
     : Op extends { returnEdits: true } ? ActionEditResponse
     : undefined;
+
+export type BatchActionReturnTypeForOptions<
+  Op extends ApplyBatchActionOptions,
+> = Op extends { returnEdits: true } ? ActionEditResponse
+  : undefined;
 
 export async function applyAction<
   AD extends ActionDefinition<any, any>,
@@ -70,6 +79,32 @@ export async function applyAction<
     : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
+export async function applyBatchAction<
+  AD extends ActionDefinition<any, any>,
+  Op extends ApplyActionOptions,
+>(
+  client: MinimalClient,
+  action: AD,
+  parameters?: OsdkActionParameters<AD["parameters"]>[],
+  options: Op = {} as Op,
+): Promise<BatchActionReturnTypeForOptions<Op>> {
+  const response = await applyActionBatchV2(
+    addUserAgent(client, action),
+    client.ontologyRid,
+    action.apiName,
+    {
+      requests: parameters ? remapBatchActionParams(parameters) : [],
+      options: {
+        returnEdits: options?.returnEdits ? "ALL" : "NONE",
+      },
+    },
+  );
+
+  return (options?.returnEdits
+    ? response.edits
+    : undefined) as BatchActionReturnTypeForOptions<Op>;
+}
+
 function remapActionParams<AD extends ActionDefinition<any, any>>(
   params: OsdkActionParameters<AD["parameters"]> | undefined,
 ): Record<string, DataValue> {
@@ -82,6 +117,19 @@ function remapActionParams<AD extends ActionDefinition<any, any>>(
     acc[key] = toDataValue(value);
     return acc;
   }, parameterMap);
+
+  return remappedParams;
+}
+
+function remapBatchActionParams<
+  AD extends ActionDefinition<any, any>,
+>(params: OsdkActionParameters<AD["parameters"]>[]) {
+  const remappedParams: { parameters: { [parameterName: string]: any } }[] =
+    params.map(
+      param => {
+        return { parameters: remapActionParams<AD>(param) };
+      },
+    );
 
   return remappedParams;
 }
