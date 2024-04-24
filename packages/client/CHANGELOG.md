@@ -1,5 +1,27 @@
 # @osdk/client
 
+## 0.16.0
+
+### Minor Changes
+
+- 97f627e: Supports more than one concurrent subscription
+
+  Also:
+
+  - Introduced an optional pino logger to the client
+  - Fixes issues with where clauses for equality in subscriptions
+  - Fixes issues with inconsistent idname and apiName's in the mapping data
+
+- 9906a41: Omniapi support
+- 9906a41: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
+
+### Patch Changes
+
+- Updated dependencies [9906a41]
+  - @osdk/shared.net@1.10.0
+  - @osdk/api@1.7.0
+  - @osdk/generator-converters@0.5.0
+
 ## 0.5.0
 
 ### Minor Changes
