@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "turbotree": "^1.0.1",
-    "zx": "^7.2.3"
+    "zx": "^8.0.2"
   },
   "devDependencies": {
     "typescript": "^5.4.2"

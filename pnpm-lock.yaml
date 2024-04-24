@@ -1234,8 +1234,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(patch_hash=qawq6blfzy7id6ldzmk22cl57u)
       zx:
-        specifier: ^7.2.3
-        version: 7.2.3
+        specifier: ^8.0.2
+        version: 8.0.2
     devDependencies:
       typescript:
         specifier: ^5.4.2
@@ -3394,6 +3394,7 @@ packages:
 
   /@types/jsonfile@6.1.4:
     resolution: {integrity: sha512-D5qGUYwjvnNNextdU59/+fI+spnwtTFmyQP0h+PfIOSkNfpU6AOICUOkm4i0OnSk+NyjdPJrxCDro0sJsWlRpQ==}
+    requiresBuild: true
     dependencies:
       '@types/node': 20.12.7
 
@@ -10296,3 +10297,12 @@ packages:
       webpod: 0.0.2
       which: 3.0.1
       yaml: 2.3.4
+
+  /zx@8.0.2:
+    resolution: {integrity: sha512-3g+ePtPYmyrjRuASlJiUhkje1je4a47woML/fzTKBb9PA5BzRQbSswwyJ8nlFWJjA1ORRi6TMyAdhuz/jK+Gaw==}
+    engines: {node: '>= 16.0.0'}
+    hasBin: true
+    optionalDependencies:
+      '@types/fs-extra': 11.0.4
+      '@types/node': 20.12.7
+    dev: false
