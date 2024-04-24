@@ -32,9 +32,9 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/generator-converters": "workspace:*",
-    "@osdk/shared.net": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/generator-converters": "workspace:^",
+    "@osdk/shared.net": "workspace:^",
     "conjure-lite": "^0.3.3",
     "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^5.0.6",
@@ -43,9 +43,9 @@
     "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@osdk/generator": "workspace:*",
-    "@osdk/omniapi": "workspace:*",
-    "@osdk/shared.test": "workspace:*",
+    "@osdk/generator": "workspace:^",
+    "@osdk/omniapi": "workspace:^",
+    "@osdk/shared.test": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
     "jest-extended": "^4.0.2",

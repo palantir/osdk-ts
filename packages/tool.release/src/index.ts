@@ -51,7 +51,8 @@ import { readChangesetState } from "@changesets/release-utils";
 import { consola } from "consola";
 import * as fs from "node:fs";
 import yargs from "yargs";
-import { setupUser } from "./gitUtils.js";
+import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
+import { checkIfClean as isGitClean, setupUser } from "./gitUtils.js";
 import { runPublish } from "./runPublish.js";
 import type { GithubContext } from "./runVersion.js";
 import { runVersion } from "./runVersion.js";
@@ -86,13 +87,6 @@ async function getContext(
   };
 }
 
-class FailedWithUserMessage extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "FailedWithUserMessage";
-  }
-}
-
 (async () => {
   const args = await yargs(process.argv.slice(2))
     .options({
@@ -101,14 +95,8 @@ class FailedWithUserMessage extends Error {
         choices: ["version", "publish"],
         default: "version",
       },
-      versionCmd: {
-        type: "string",
-        conflicts: "publishCmd",
-        description: "Custom version command to run in version mode",
-      },
       publishCmd: {
         type: "string",
-        conflicts: "versionCmd",
         description: "Publish command to run in publish mode",
       },
       title: { type: "string", description: "Custom pr title" },
@@ -156,6 +144,12 @@ class FailedWithUserMessage extends Error {
     await setupUser();
   }
 
+  if (!await isGitClean()) {
+    throw new FailedWithUserMessage(
+      "Your working directory is not clean. We are aborting for your protection.",
+    );
+  }
+
   const context = await getContext(args);
 
   const { changesets } = await readChangesetState();
@@ -176,7 +170,6 @@ class FailedWithUserMessage extends Error {
     }
 
     await runVersion({
-      versionCmd: args.versionCmd,
       prTitle: args.title,
       commitMessage: args.commitMessage,
       branch: args.branch,
