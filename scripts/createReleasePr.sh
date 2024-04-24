@@ -13,20 +13,6 @@ if [[ $(git rev-parse --abbrev-ref HEAD | sed -E 's/^changeset-release\/.*$/ABOR
     exit 1
 fi
 
-
-if output=$(git status --porcelain) && [ -z "$output" ]; then
-  # Working directory clean
-  
-  pnpm exec turbo transpile --filter "./packages/tool.release"
-  node ./packages/tool.release/build/js/index.mjs --repo palantir/osdk-ts --versionCmd "pnpm ci:version"
-  echo
-  echo
-  echo "WARNING: You are on the release branch"
-else
-  # Uncommitted changes
-  echo "===== ABORTING ====="
-  echo ""
-  echo "For your protection, we are aborting the createReleasePr flow as you have"
-  echo "unmerged changes in your tree."
-  exit 1
-fi
+pnpm exec turbo transpile --filter "./packages/tool.release"
+node ./packages/tool.release/build/js/index.mjs --repo palantir/osdk-ts
+echo "WARNING: You are probably on the pr branch"
