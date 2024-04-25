@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-/* eslint-disable max-classes-per-file */
-
 /**
  * Use Result.ok() / Result.err() for constructing
  */

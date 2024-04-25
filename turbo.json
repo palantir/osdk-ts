@@ -13,23 +13,22 @@
 
     "lint": {
       "inputs": [
-        "monorepo/eslint-config-sane/*.cjs",
         "src/**/*.ts",
         "src/**/*.tsx",
         ".eslintrc.cjs",
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["eslint-config-sane#lint", "//#dprint"]
-    },
-
-    "eslint-config-sane#lint": {
-      "inputs": ["library.cjs"]
+      "dependsOn": ["//#global-eslint-config", "//#dprint"]
     },
 
     /* Psuedo task to let us depend on dprint config */
     "//#dprint": {
       "inputs": ["dprint.json"]
+    },
+
+    "//#global-eslint-config": {
+      "inputs": ["eslint.config.mjs"]
     },
 
     "clean": {
