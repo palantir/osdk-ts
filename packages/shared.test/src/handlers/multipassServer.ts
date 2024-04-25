@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-import type { DefaultBodyType, MockedRequest, RestHandler } from "msw";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 
-export const multipassServerHandlers: RestHandler<
-  MockedRequest<DefaultBodyType>
->[] = [
-  rest.post(
+export const multipassServerHandlers = [
+  http.post(
     "https://stack.palantir.com/multipass/api/oauth2/token",
-    async (req, res, ctx) => {
-      const body = await req.text();
+    async (req) => {
+      const body = await req.request.text();
       const parsedBody = new URLSearchParams(body);
       const parsedBodyArray = Array.from(parsedBody.entries());
 
@@ -34,14 +31,12 @@ export const multipassServerHandlers: RestHandler<
         && parsedBody.get("scopes")?.includes("offline_access")
         && parsedBodyArray.length === 4
       ) {
-        return res(
-          ctx.json({
-            access_token: "myAccessToken",
-            token_type: "bearer",
-            refresh_token: "myRefreshToken",
-            expires_in: 3600,
-          }),
-        );
+        return HttpResponse.json({
+          access_token: "myAccessToken",
+          token_type: "bearer",
+          refresh_token: "myRefreshToken",
+          expires_in: 3600,
+        });
       }
 
       if (
@@ -52,14 +47,12 @@ export const multipassServerHandlers: RestHandler<
         && parsedBody.get("code_verifier") === "01020304"
         && parsedBodyArray.length === 5
       ) {
-        return res(
-          ctx.json({
-            access_token: "myAccessToken",
-            token_type: "bearer",
-            refresh_token: "myRefreshToken",
-            expires_in: 3600,
-          }),
-        );
+        return HttpResponse.json({
+          access_token: "myAccessToken",
+          token_type: "bearer",
+          refresh_token: "myRefreshToken",
+          expires_in: 3600,
+        });
       }
 
       if (
@@ -68,27 +61,27 @@ export const multipassServerHandlers: RestHandler<
         && parsedBody.get("refresh_token") === "myRefreshToken"
         && parsedBodyArray.length === 3
       ) {
-        return res(
-          ctx.json({
+        return HttpResponse.json(
+          {
             access_token: "refreshedAccessToken",
             token_type: "bearer",
             refresh_token: "refreshedRefreshToken",
             expires_in: 3600,
-          }),
+          },
         );
       }
 
-      return res(
-        ctx.status(400),
-        ctx.json({ message: "Invalid request body" }),
+      return HttpResponse.json(
+        { message: "Invalid request body" },
+        { status: 400 },
       );
     },
   ),
 
-  rest.post(
+  http.post(
     "https://stack.palantir.com/multipass/api/oauth2/revoke_token",
-    async (req, res, ctx) => {
-      const body = await req.text();
+    async (req) => {
+      const body = await req.request.text();
       const parsedBody = new URLSearchParams(body);
       const parsedBodyArray = Array.from(parsedBody.entries());
       if (
@@ -97,7 +90,7 @@ export const multipassServerHandlers: RestHandler<
         && parsedBody.get("client_secret") === "myClientSecret"
         && parsedBody.get("token") === "myAccessToken"
       ) {
-        return res(ctx.json({}));
+        return HttpResponse.json({});
       }
 
       if (
@@ -105,12 +98,12 @@ export const multipassServerHandlers: RestHandler<
         && parsedBody.get("client_id") === "myClientId"
         && parsedBody.get("token") === "myAccessToken"
       ) {
-        return res(ctx.json({}));
+        return HttpResponse.json({});
       }
 
-      return res(
-        ctx.status(400),
-        ctx.json({ message: "Invalid request body" }),
+      return HttpResponse.json(
+        { message: "Invalid request body" },
+        { status: 400 },
       );
     },
   ),

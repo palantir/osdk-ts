@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-import { executeQueryV2 } from "@osdk/gateway/requests";
-import type {
-  Attachment,
-  AttachmentV2,
-  LinkTypeSide,
-  ListLinkedObjectsResponse,
-  ListObjectsResponseV2,
-  ListObjectTypesResponse,
-  ListObjectTypesV2Response,
-  ListOntologiesResponse,
-  ListOutgoingLinkTypesResponse,
-  ListQueryTypesResponseV2,
-  Ontology,
-  OntologyObjectV2,
-} from "@osdk/gateway/types";
-import type {
-  DefaultBodyType,
-  MockedRequest,
-  ResponseComposition,
-  RestHandler,
-} from "msw";
-import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError";
+import {
+  executeQueryV2,
+  getAttachment,
+  getAttachmentContent,
+  getAttachmentContentV2,
+  getAttachmentsV2,
+  getFirstPoint,
+  getLastPoint,
+  getLinkedObjectV2,
+  getObjectV2,
+  getOntology as getOntologyOpenApiCall,
+  getOutgoingLinkType,
+  listLinkedObjectsV2,
+  listObjectsV2,
+  listObjectTypes,
+  listObjectTypesV2,
+  listOntologies,
+  listOutgoingLinkTypes,
+  listQueryTypesV2,
+  uploadAttachment,
+} from "@osdk/gateway/requests";
+import type { LinkTypeSide } from "@osdk/gateway/types";
 import {
   AttachmentNotFoundError,
   AttachmentSizeExceededLimitError,
@@ -76,228 +75,167 @@ import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
 } from "../stubs/timeseriesRequests";
-import { authHandlerMiddleware } from "./commonHandlers";
 import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils";
 import { getOntology } from "./ontologyMetadataEndpoints";
-import { handleOpenApiCall } from "./util/handleOpenApiCall";
+import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
 
-export const loadObjectsEndpoints: RestHandler<
-  MockedRequest<DefaultBodyType>
->[] = [
+export const loadObjectsEndpoints = [
   /**
    * List ontologies
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/ontologies",
-    authHandlerMiddleware(
-      async (_req, res: ResponseComposition<ListOntologiesResponse>, ctx) => {
-        return res(
-          ctx.json({
-            data: [defaultOntology],
-          }),
-        );
-      },
-    ),
-  ),
+  handleOpenApiCall(listOntologies, [], async () => {
+    return {
+      data: [defaultOntology],
+    };
+  }),
 
   /**
    * Get specified Ontology
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/ontologies/:ontologyRid",
-    authHandlerMiddleware(
-      async (_req, res: ResponseComposition<Ontology>, ctx) => {
-        return res(ctx.json(defaultOntology));
-      },
-    ),
-  ),
+  handleOpenApiCall(getOntologyOpenApiCall, ["ontologyRid"], async req => {
+    return defaultOntology;
+  }),
 
   /**
    * List objectTypes
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListObjectTypesResponse | BaseAPIError>,
-        ctx,
-      ) => {
-        getOntology(req.params.ontologyRid as string);
+  handleOpenApiCall(listObjectTypes, ["ontologyRid"], async req => {
+    getOntology(req.params.ontologyRid as string);
 
-        return res(
-          ctx.json({
-            data: [
-              employeeObjectType,
-              objectTypeWithAllPropertyTypes,
-              officeObjectType,
-              objectTypeWithTimestampPrimaryKey,
-              equipmentObjectType,
-            ],
-          }),
-        );
-      },
-    ),
-  ),
+    return {
+      data: [
+        employeeObjectType,
+        objectTypeWithAllPropertyTypes,
+        officeObjectType,
+        objectTypeWithTimestampPrimaryKey,
+        equipmentObjectType,
+      ],
+    };
+  }),
 
   /**
    * List objectTypes V2
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListObjectTypesV2Response | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(listObjectTypesV2, ["ontologyApiName"], async req => {
+    // will throw if bad name
+    getOntology(req.params.ontologyApiName as string);
 
-        return res(
-          ctx.json({
-            data: ObjectTypesV2,
-          }),
-        );
-      },
-    ),
-  ),
+    return {
+      data: ObjectTypesV2,
+    };
+  }),
 
   /**
    * Load object
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<OntologyObjectV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    getObjectV2,
+    ["ontologyApiName", "objectType", "primaryKey"],
+    req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
 
-        const objectType = req.params.objectType;
-        const primaryKey = req.params.primaryKey;
-        if (typeof objectType !== "string" || typeof primaryKey !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid request")),
-          );
-        }
+      const objectType = req.params.objectType;
+      const primaryKey = req.params.primaryKey;
+      if (typeof objectType !== "string" || typeof primaryKey !== "string") {
+        throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+      }
 
-        if (
-          !objectLoadResponseMap[objectType]
-          || !objectLoadResponseMap[objectType][primaryKey]
-        ) {
-          return res(
-            ctx.status(404),
-            ctx.json(ObjectNotFoundError(objectType, primaryKey)),
-          );
-        }
-
-        const response = filterObjectProperties(
-          objectLoadResponseMap[objectType][primaryKey],
-          req.url,
+      if (
+        !objectLoadResponseMap[objectType]
+        || !objectLoadResponseMap[objectType][primaryKey]
+      ) {
+        throw new OpenApiCallError(
+          404,
+          ObjectNotFoundError(objectType, primaryKey),
         );
+      }
 
-        return res(ctx.json(response));
-      },
-    ),
+      const response = filterObjectProperties(
+        objectLoadResponseMap[objectType][primaryKey],
+        new URL(req.request.url),
+      );
+
+      return response;
+    },
   ),
 
   /**
    * Load all objects
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListObjectsResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(
-            ctx.status(500),
-            ctx.json(InvalidRequest("Request or response not found")),
-          );
-        }
-
-        const objectType = req.params.objectType;
-        if (typeof objectType !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(ObjectTypeDoesNotExistError(JSON.stringify(objectType))),
-          );
-        }
-
-        const paginationParams = {
-          pageSize: req.url.searchParams.get("pageSize") == null
-            ? undefined
-            : Number(req.url.searchParams.get("pageSize")),
-          pageToken: req.url.searchParams.get("pageToken") == null
-            ? undefined
-            : (req.url.searchParams.get("pageToken") as string),
-        };
-
-        const loadObjects = pageThroughResponseSearchParams(
-          loadRequestHandlersV2,
-          objectType,
-          paginationParams.pageSize,
-          paginationParams.pageToken,
+  handleOpenApiCall(
+    listObjectsV2,
+    ["ontologyApiName", "objectType"],
+    async req => {
+      const objectType = req.params.objectType;
+      if (typeof objectType !== "string") {
+        throw new OpenApiCallError(
+          400,
+          ObjectTypeDoesNotExistError(JSON.stringify(objectType)),
         );
+      }
 
-        if (
-          req.params.ontologyApiName === defaultOntology.apiName && loadObjects
-        ) {
-          return res(ctx.json(filterObjectsProperties(loadObjects, req.url)));
-        }
-        return res(
-          ctx.status(400),
-          ctx.json(InvalidRequest("Invalid Request")),
-        );
-      },
-    ),
+      const url = new URL(req.request.url);
+
+      const paginationParams = {
+        pageSize: url.searchParams.get("pageSize") == null
+          ? undefined
+          : Number(url.searchParams.get("pageSize")),
+        pageToken: url.searchParams.get("pageToken") == null
+          ? undefined
+          : (url.searchParams.get("pageToken") as string),
+      };
+
+      const loadObjects = pageThroughResponseSearchParams(
+        loadRequestHandlersV2,
+        objectType,
+        paginationParams.pageSize,
+        paginationParams.pageToken,
+      );
+
+      if (
+        req.params.ontologyApiName === defaultOntology.apiName && loadObjects
+      ) {
+        return filterObjectsProperties(loadObjects, url);
+      }
+      throw new OpenApiCallError(400, InvalidRequest("Invalid Request"));
+    },
   ),
 
   /**
    * Load firstPoint
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/timeseries/:propertyName/firstPoint",
-    authHandlerMiddleware(async (req, res, ctx) => {
-      if (!req || !res) {
-        return res(ctx.status(500, "Request or response not found"));
-      }
-      const pointParams = {
-        primaryKey: req.params.primaryKey,
-        propertyName: req.params.propertyName,
-      };
-      const firstPointResp =
-        firstPointRequestHandlers[JSON.stringify(pointParams)];
-      if (
-        req.params.ontologyApiName === defaultOntology.apiName
-        && req.params.objectType === employeeObjectType.apiName
-      ) {
-        return res(ctx.json(firstPointResp));
-      }
-      return res(ctx.status(400), ctx.json({ message: "Invalid request" }));
-    }),
-  ),
+  handleOpenApiCall(getFirstPoint, [
+    "ontologyApiName",
+    "objectType",
+    "primaryKey",
+    "propertyName",
+  ], async req => {
+    const pointParams = {
+      primaryKey: req.params.primaryKey,
+      propertyName: req.params.propertyName,
+    };
+    const firstPointResp =
+      firstPointRequestHandlers[JSON.stringify(pointParams)];
+    if (
+      req.params.ontologyApiName === defaultOntology.apiName
+      && req.params.objectType === employeeObjectType.apiName
+    ) {
+      return firstPointResp;
+    }
+    throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+  }),
 
   /**
    * Load lastPoint
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/timeseries/:propertyName/lastPoint",
-    authHandlerMiddleware(async (req, res, ctx) => {
-      if (!req || !res) {
-        return res(ctx.status(500, "Request or response not found"));
-      }
+  handleOpenApiCall(
+    getLastPoint,
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    async req => {
       const pointParams = {
         primaryKey: req.params.primaryKey,
         propertyName: req.params.propertyName,
@@ -308,268 +246,221 @@ export const loadObjectsEndpoints: RestHandler<
         req.params.ontologyApiName === "default-ontology"
         && req.params.objectType === employeeObjectType.apiName
       ) {
-        return res(ctx.json(lastPointResp));
+        return lastPointResp;
       }
-      return res(ctx.status(400), ctx.json({ message: "Invalid request" }));
-    }),
+      throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+    },
   ),
 
   /**
    * Get linkType
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes/:objectType/outgoingLinkTypes/:linkType",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<LinkTypeSide | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(getOutgoingLinkType, [
+    "ontologyRid",
+    "objectType",
+    "linkType",
+  ], async req => {
+    // will throw if bad name
+    getOntology(req.params.ontologyRid);
 
-        const objectTypeApiName = req.params.objectType;
-        const linkTypeApiName = req.params.linkType;
-        if (
-          typeof objectTypeApiName !== "string"
-          || typeof linkTypeApiName !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(
-              InvalidRequest(
-                "Invalid parameters for objectTypeApiName linkTypeApiName",
-              ),
-            ),
-          );
-        }
+    const objectTypeApiName = req.params.objectType;
+    const linkTypeApiName = req.params.linkType;
+    if (
+      typeof objectTypeApiName !== "string"
+      || typeof linkTypeApiName !== "string"
+    ) {
+      throw new OpenApiCallError(
+        400,
+        InvalidRequest(
+          "Invalid parameters for objectTypeApiName linkTypeApiName",
+        ),
+      );
+    }
 
-        if (linkTypesResponseMap[objectTypeApiName]) {
-          const linkTypes: ReadonlyArray<{
-            apiName: string;
-            status: string;
-            objectTypeApiName: string;
-            cardinality: string;
-          }> = linkTypesResponseMap[objectTypeApiName].data;
-          const foundLinkType = linkTypes.find(linkType =>
-            linkType.apiName === linkTypeApiName
-          );
+    if (linkTypesResponseMap[objectTypeApiName]) {
+      const linkTypes: ReadonlyArray<{
+        apiName: string;
+        status: string;
+        objectTypeApiName: string;
+        cardinality: string;
+      }> = linkTypesResponseMap[objectTypeApiName].data;
+      const foundLinkType = linkTypes.find(linkType =>
+        linkType.apiName === linkTypeApiName
+      );
 
-          if (foundLinkType) {
-            return res(ctx.json(foundLinkType as LinkTypeSide));
-          }
-        }
+      if (foundLinkType) {
+        return foundLinkType as LinkTypeSide;
+      }
+    }
 
-        return res(
-          ctx.json(LinkTypeNotFound(objectTypeApiName, linkTypeApiName)),
-        );
-      },
-    ),
-  ),
+    throw new OpenApiCallError(
+      400,
+      LinkTypeNotFound(objectTypeApiName, linkTypeApiName),
+    );
+  }),
 
   /**
    * List linkTypes
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes/:objectType/outgoingLinkTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListOutgoingLinkTypesResponse | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    listOutgoingLinkTypes,
+    ["ontologyRid", "objectType"],
+    req => {
+      // will throw if bad name
+      getOntology(req.params.ontologyRid as string);
 
-        const objectType = req.params.objectType;
-        if (typeof objectType !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameter objectType")),
-          );
-        }
-
-        const transformedMap = Object.fromEntries(
-          Object.entries(linkTypesResponseMap).map(
-            linkMap => [linkMap[0].toLowerCase(), linkMap[1]],
-          ),
+      const objectType = req.params.objectType;
+      if (typeof objectType !== "string") {
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid parameter objectType"),
         );
+      }
 
-        if (transformedMap[objectType.toLowerCase()]) {
-          return res(ctx.json(transformedMap[objectType.toLowerCase()]));
-        }
-        return res(
-          ctx.json({
-            data: [],
-          }),
-        );
-      },
-    ),
+      const transformedMap = Object.fromEntries(
+        Object.entries(linkTypesResponseMap).map(
+          linkMap => [linkMap[0].toLowerCase(), linkMap[1]],
+        ),
+      );
+
+      if (transformedMap[objectType.toLowerCase()]) {
+        return transformedMap[objectType.toLowerCase()];
+      }
+      return {
+        data: [],
+      };
+    },
   ),
 
   /**
    * List Linked Objects
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/links/:linkType",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListLinkedObjectsResponse | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(listLinkedObjectsV2, [
+    "ontologyApiName",
+    "objectType",
+    "primaryKey",
+    "linkType",
+  ], async req => {
+    // will throw if bad name
+    getOntology(req.params.ontologyApiName as string);
 
-        const primaryKey = req.params.primaryKey;
-        const linkType = req.params.linkType;
-        const objectType = req.params.objectType;
+    const primaryKey = req.params.primaryKey;
+    const linkType = req.params.linkType;
+    const objectType = req.params.objectType;
 
-        if (
-          typeof primaryKey !== "string" || typeof linkType !== "string"
-          || typeof objectType !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid path parameters sent")),
-          );
-        }
+    if (
+      typeof primaryKey !== "string" || typeof linkType !== "string"
+      || typeof objectType !== "string"
+    ) {
+      throw new OpenApiCallError(
+        400,
+        InvalidRequest("Invalid path parameters sent"),
+      );
+    }
 
-        if (!linkResponseMap[objectType]) {
-          return res(
-            ctx.status(400),
-            ctx.json(ObjectTypeDoesNotExistError(objectType)),
-          );
-        }
+    if (!linkResponseMap[objectType]) {
+      throw new OpenApiCallError(
+        400,
+        ObjectTypeDoesNotExistError(objectType),
+      );
+    }
 
-        if (!linkResponseMap[objectType][linkType]) {
-          return res(
-            ctx.status(400),
-            ctx.json(LinkTypeNotFound(objectType, linkType)),
-          );
-        }
+    if (!linkResponseMap[objectType][linkType]) {
+      throw new OpenApiCallError(
+        400,
+        LinkTypeNotFound(objectType, linkType),
+      );
+    }
 
-        if (!linkResponseMap[objectType][linkType][primaryKey]) {
-          return res(
-            ctx.json({
-              data: [],
-            }),
-          );
-        }
-        return res(
-          ctx.json(
-            filterObjectsProperties(
-              linkResponseMap[objectType][linkType][primaryKey],
-              req.url,
-            ),
-          ),
-        );
-      },
-    ),
-  ),
+    if (!linkResponseMap[objectType][linkType][primaryKey]) {
+      return {
+        data: [],
+      };
+    }
+    return filterObjectsProperties(
+      linkResponseMap[objectType][linkType][primaryKey],
+      new URL(req.request.url),
+    );
+  }),
 
   /**
    * Get specific Linked Object
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/links/:linkType/:targetPrimaryKey",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListLinkedObjectsResponse | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(getLinkedObjectV2, [
+    "ontologyApiName",
+    "objectType",
+    "primaryKey",
+    "linkType",
+    "targetPrimaryKey",
+  ], async req => {
+    // will throw if bad name
+    getOntology(req.params.ontologyApiName as string);
 
-        const primaryKey = req.params.primaryKey;
-        const linkType = req.params.linkType;
-        const objectType = req.params.objectType;
-        const targetPrimaryKey = req.params.targetPrimaryKey;
+    const primaryKey = req.params.primaryKey;
+    const linkType = req.params.linkType;
+    const objectType = req.params.objectType;
+    const targetPrimaryKey = req.params.targetPrimaryKey;
 
-        if (
-          typeof primaryKey !== "string" || typeof linkType !== "string"
-          || typeof objectType !== "string"
-          || typeof targetPrimaryKey !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid path parameters sent")),
-          );
-        }
+    if (
+      typeof primaryKey !== "string" || typeof linkType !== "string"
+      || typeof objectType !== "string"
+      || typeof targetPrimaryKey !== "string"
+    ) {
+      throw new OpenApiCallError(
+        400,
+        InvalidRequest("Invalid path parameters sent"),
+      );
+    }
 
-        if (!linkResponseMap[objectType]) {
-          return res(
-            ctx.status(400),
-            ctx.json(ObjectTypeDoesNotExistError(objectType)),
-          );
-        }
+    if (!linkResponseMap[objectType]) {
+      throw new OpenApiCallError(400, ObjectTypeDoesNotExistError(objectType));
+    }
 
-        if (!linkResponseMap[objectType][linkType]) {
-          return res(
-            ctx.status(400),
-            ctx.json(LinkTypeNotFound(objectType, linkType)),
-          );
-        }
+    if (!linkResponseMap[objectType][linkType]) {
+      throw new OpenApiCallError(400, LinkTypeNotFound(objectType, linkType));
+    }
 
-        if (!linkResponseMap[objectType][linkType][primaryKey]) {
-          return res(
-            ctx.json({
-              data: [],
-            }),
-          );
-        }
+    if (!linkResponseMap[objectType][linkType][primaryKey]) {
+      return {
+        data: [],
+      };
+    }
 
-        const object = linkResponseMap[objectType][linkType][primaryKey].data
-          .find((o: any) => o.__primaryKey.toString() === targetPrimaryKey);
+    const object = linkResponseMap[objectType][linkType][primaryKey].data
+      .find((o: any) => o.__primaryKey.toString() === targetPrimaryKey);
 
-        if (!object) {
-          return res(
-            ctx.status(404),
-            ctx.json(
-              ObjectNotFoundError(
-                linkResponseMap[objectType][linkType][primaryKey].data[0]
-                  ?.__apiName
-                  ?? `${objectType} -> ${linkType}`,
-                targetPrimaryKey,
-              ),
-            ),
-          );
-        }
+    if (!object) {
+      throw new OpenApiCallError(
+        404,
+        ObjectNotFoundError(
+          linkResponseMap[objectType][linkType][primaryKey].data[0]
+            ?.__apiName
+            ?? `${objectType} -> ${linkType}`,
+          targetPrimaryKey,
+        ),
+      );
+    }
 
-        return res(
-          ctx.json(
-            filterObjectProperties(
-              object,
-              req.url,
-            ),
-          ),
-        );
-      },
-    ),
-  ),
+    return filterObjectProperties(
+      object,
+      new URL(req.request.url),
+    );
+  }),
 
   /**
    * List Queries
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/queryTypes",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<ListQueryTypesResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        // will throw if bad name
-        getOntology(req.params.ontologyApiName as string);
+  handleOpenApiCall(
+    listQueryTypesV2,
+    ["ontologyApiName"],
+    async (req) => {
+      // will throw if bad name
+      getOntology(req.params.ontologyApiName as string);
 
-        return res(
-          ctx.json({
-            data: queryTypes,
-          }),
-        );
-      },
-    ),
+      return {
+        data: queryTypes,
+      };
+    },
   ),
 
   /**
@@ -578,27 +469,21 @@ export const loadObjectsEndpoints: RestHandler<
   handleOpenApiCall(
     executeQueryV2,
     ["ontologyApiName", "queryApiName"],
-    async (req, res, ctx) => {
-      if (!req || !res) {
-        return res(ctx.status(500, "Request or response not found"));
-      }
-      const body = await req.text();
+    async (req) => {
+      const body = await req.request.text();
       const parsedBody = JSON.parse(body);
       const queryApiName = req.params.queryApiName;
 
       if (typeof queryApiName !== "string") {
-        return res(
-          ctx.status(400),
-          ctx.json(InvalidRequest("Invalid parameters queryApiName")),
+        throw new OpenApiCallError(
+          400,
+          InvalidRequest("Invalid parameters queryApiName"),
         );
       }
 
       const queryResponses = queryRequestHandlers[queryApiName];
       if (!queryResponses) {
-        return res(
-          ctx.status(404),
-          ctx.json(QueryNotFoundError(queryApiName)),
-        );
+        throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
       }
 
       const queryResponse = queryResponses[JSON.stringify(parsedBody)];
@@ -606,207 +491,149 @@ export const loadObjectsEndpoints: RestHandler<
         req.params.ontologyApiName === defaultOntology.apiName
         && queryResponse
       ) {
-        return res(ctx.json(queryResponse));
+        return queryResponse;
       }
-      return res(
-        ctx.status(400),
-        ctx.json(InvalidRequest("Invalid Query Request")),
-      );
+      throw new OpenApiCallError(400, InvalidRequest("Invalid Query Request"));
     },
   ),
 
   /**
    * Upload attachment
    */
-  rest.post(
-    "https://stack.palantir.com/api/v1/attachments/upload",
-    authHandlerMiddleware(
-      async (req, res: ResponseComposition<Attachment | BaseAPIError>, ctx) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
-        const urlObj = new URL(req.url);
-        const fileName = urlObj.searchParams.get("filename");
+  handleOpenApiCall(uploadAttachment, [], async req => {
+    const urlObj = new URL(req.request.url);
+    const fileName = urlObj.searchParams.get("filename");
 
-        if (typeof fileName !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameter fileName")),
-          );
-        }
+    if (typeof fileName !== "string") {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameter"));
+    }
 
-        const attachmentsUploadResponse = attachmentUploadRequest[fileName];
-        const body = await req.arrayBuffer();
+    const attachmentsUploadResponse = attachmentUploadRequest[fileName];
+    const body = await req.request.arrayBuffer();
 
-        if (attachmentsUploadResponse) {
-          const expectedBody = attachmentUploadRequestBody[fileName];
-          const expectedBodyArray = await expectedBody.arrayBuffer();
+    if (attachmentsUploadResponse) {
+      const expectedBody = attachmentUploadRequestBody[fileName];
+      const expectedBodyArray = await expectedBody.arrayBuffer();
 
-          if (!areArrayBuffersEqual(body, expectedBodyArray)) {
-            return res(ctx.status(400), ctx.json(InvalidContentTypeError));
-          }
+      if (!areArrayBuffersEqual(body, expectedBodyArray)) {
+        throw new OpenApiCallError(400, InvalidContentTypeError);
+      }
 
-          return res(ctx.json(attachmentsUploadResponse));
-        }
-        return res(ctx.status(400), ctx.json(AttachmentSizeExceededLimitError));
-      },
-    ),
-  ),
+      return attachmentsUploadResponse;
+    }
+    throw new OpenApiCallError(400, AttachmentSizeExceededLimitError);
+  }),
 
   /**
    * Get attachment metadata V1
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/attachments/:attachmentRid",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<AttachmentV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
+  handleOpenApiCall(getAttachment, ["attachmentRid"], async req => {
+    const attachmentRid = req.params.attachmentRid;
 
-        const attachmentRid = req.params.attachmentRid;
+    if (typeof attachmentRid !== "string") {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+    }
 
-        if (typeof attachmentRid !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
+    const getAttachmentMetadataResponse =
+      attachmentMetadataRequest[attachmentRid];
+    if (getAttachmentMetadataResponse) {
+      return getAttachmentMetadataResponse;
+    }
 
-        const getAttachmentMetadataResponse =
-          attachmentMetadataRequest[attachmentRid];
-        if (getAttachmentMetadataResponse) {
-          return res(ctx.json(getAttachmentMetadataResponse));
-        }
-
-        return res(ctx.status(404), ctx.json(AttachmentNotFoundError));
-      },
-    ),
-  ),
+    throw new OpenApiCallError(404, AttachmentNotFoundError);
+  }),
 
   /**
    * Get attachment metadata V2
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/attachments/:propertyName",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<AttachmentV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
+  handleOpenApiCall(getAttachmentsV2, [
+    "ontologyApiName",
+    "objectType",
+    "primaryKey",
+    "propertyName",
+  ], async req => {
+    const ontologyApiName = req.params.ontologyApiName;
+    const primaryKey = req.params.primaryKey;
+    const objectType = req.params.objectType;
+    const propertyName = req.params.propertyName;
 
-        const ontologyApiName = req.params.ontologyApiName;
-        const primaryKey = req.params.primaryKey;
-        const objectType = req.params.objectType;
-        const propertyName = req.params.propertyName;
+    if (
+      typeof primaryKey !== "string"
+      || typeof ontologyApiName !== "string"
+      || typeof objectType !== "string"
+      || typeof propertyName !== "string"
+    ) {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+    }
 
-        if (
-          typeof primaryKey !== "string"
-          || typeof ontologyApiName !== "string"
-          || typeof objectType !== "string"
-          || typeof propertyName !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
+    const getAttachmentMetadataResponse =
+      attachmentMetadataRequest[propertyName];
+    if (getAttachmentMetadataResponse) {
+      return {
+        ...getAttachmentMetadataResponse,
+        type: "single" as const,
+      };
+    }
 
-        const getAttachmentMetadataResponse =
-          attachmentMetadataRequest[propertyName];
-        if (getAttachmentMetadataResponse) {
-          return res(ctx.json(getAttachmentMetadataResponse));
-        }
-
-        return res(ctx.status(404), ctx.json(AttachmentNotFoundError));
-      },
-    ),
-  ),
+    throw new OpenApiCallError(404, AttachmentNotFoundError);
+  }),
 
   /**
    * Read attachment content V1
    */
-  rest.get(
-    "https://stack.palantir.com/api/v1/attachments/:attachmentRid/content",
-    authHandlerMiddleware(
-      async (req, res: ResponseComposition<Blob | BaseAPIError>, ctx) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
+  handleOpenApiCall(getAttachmentContent, ["attachmentRid"], async req => {
+    const attachmentRid = req.params.attachmentRid;
 
-        const attachmentRid = req.params.attachmentRid;
+    if (typeof attachmentRid !== "string") {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+    }
 
-        if (typeof attachmentRid !== "string") {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
+    const getAttachmentContentResponse =
+      attachmentContentRequest[attachmentRid];
 
-        const getAttachmentContentResponse =
-          attachmentContentRequest[attachmentRid];
+    if (getAttachmentContentResponse) {
+      const blob = new Blob(
+        [JSON.stringify(getAttachmentContentResponse)],
+        { type: "application/json" },
+      );
+      return blob;
+    }
 
-        if (getAttachmentContentResponse) {
-          const blob = new Blob(
-            [JSON.stringify(getAttachmentContentResponse)],
-            { type: "application/json" },
-          );
-          return res(ctx.body(blob));
-        }
-
-        return res(ctx.status(404), ctx.json(AttachmentNotFoundError));
-      },
-    ),
-  ),
+    throw new OpenApiCallError(404, AttachmentNotFoundError);
+  }),
 
   /**
    * Read attachment content V2
    */
-  rest.get(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objects/:objectType/:primaryKey/attachments/:propertyName/content",
-    authHandlerMiddleware(
-      async (req, res: ResponseComposition<Blob | BaseAPIError>, ctx) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
+  handleOpenApiCall(getAttachmentContentV2, [
+    "ontologyApiName",
+    "objectType",
+    "primaryKey",
+    "propertyName",
+  ], async req => {
+    const ontologyApiName = req.params.ontologyApiName;
+    const primaryKey = req.params.primaryKey;
+    const objectType = req.params.objectType;
+    const propertyName = req.params.propertyName;
 
-        const ontologyApiName = req.params.ontologyApiName;
-        const primaryKey = req.params.primaryKey;
-        const objectType = req.params.objectType;
-        const propertyName = req.params.propertyName;
+    if (
+      typeof primaryKey !== "string"
+      || typeof ontologyApiName !== "string"
+      || typeof objectType !== "string"
+      || typeof propertyName !== "string"
+    ) {
+      throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
+    }
 
-        if (
-          typeof primaryKey !== "string"
-          || typeof ontologyApiName !== "string"
-          || typeof objectType !== "string"
-          || typeof propertyName !== "string"
-        ) {
-          return res(
-            ctx.status(400),
-            ctx.json(InvalidRequest("Invalid parameters")),
-          );
-        }
+    const getAttachmentContentResponse = attachmentContentRequest[propertyName];
+    if (getAttachmentContentResponse) {
+      const blob = new Blob(
+        [JSON.stringify(getAttachmentContentResponse)],
+        { type: "application/json" },
+      );
+      return blob;
+    }
 
-        const getAttachmentContentResponse =
-          attachmentContentRequest[propertyName];
-        if (getAttachmentContentResponse) {
-          const blob = new Blob(
-            [JSON.stringify(getAttachmentContentResponse)],
-            { type: "application/json" },
-          );
-          return res(ctx.body(blob));
-        }
-
-        return res(ctx.status(404), ctx.json(AttachmentNotFoundError));
-      },
-    ),
-  ),
+    throw new OpenApiCallError(404, AttachmentNotFoundError);
+  }),
 ];
