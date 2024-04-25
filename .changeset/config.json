@@ -10,7 +10,6 @@
   "ignore": [
     "@osdk/examples.*",
     "@osdk/tests.*",
-    "eslint-config-sane",
     "@osdk/version-updater",
     "mytsup",
     "tsconfig"
