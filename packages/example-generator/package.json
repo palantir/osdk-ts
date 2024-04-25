@@ -34,14 +34,14 @@
     "dir-compare": "^4.2.0",
     "find-up": "^7.0.0",
     "globby": "^14.0.1",
-    "tmp": "^0.2.1",
+    "tmp": "^0.2.3",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"

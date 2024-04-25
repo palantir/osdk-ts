@@ -28,15 +28,15 @@
   },
   "dependencies": {
     "consola": "^3.2.3",
-    "open": "^9.1.0",
+    "open": "^10.1.0",
     "semver": "^7.6.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/node": "^18.0.0",
-    "@types/semver": "^7.5.7",
+    "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"

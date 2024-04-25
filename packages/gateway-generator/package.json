@@ -34,12 +34,12 @@
   "dependencies": {
     "find-up": "^7.0.0",
     "ts-morph": "^19.0.0",
-    "yaml": "^2.3.4",
+    "yaml": "^2.4.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"

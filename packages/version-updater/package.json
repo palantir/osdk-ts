@@ -32,12 +32,11 @@
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute"
   },
-  "dependencies": {},
   "devDependencies": {
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"

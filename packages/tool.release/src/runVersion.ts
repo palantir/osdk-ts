@@ -139,7 +139,7 @@ export async function runVersion({
   const config = await readChangesetConfig(cwd, packages);
 
   const [changesets, preState] = await Promise.all([
-    readChangesets.default(cwd),
+    readChangesets(cwd),
     readPreState(cwd),
   ]);
 
