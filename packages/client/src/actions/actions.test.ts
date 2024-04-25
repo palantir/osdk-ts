@@ -88,6 +88,27 @@ describe("actions", () => {
 
     expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
     expect(undefinedResult).toBeUndefined();
+
+    const clientCreateOffice = client(createOffice);
+    expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
+      officeId: "NYC",
+      address: "123 Main Street",
+      capacity: 100,
+    }], { returnEdits: true });
+
+    //   const resultNoValidate = await client(moveOffice)([
+    //     {
+    //       officeId: "SEA",
+    //       newAddress: "456 Good Place",
+    //       newCapacity: 40,
+    //     },
+    //     {
+    //       officeId: "NYC",
+    //       newAddress: "123 Main Street",
+    //       newCapacity: 80,
+    //     },
+    //     // @ts-expect-error
+    //   ], { validateOnly: true });
   });
 
   it("returns validation directly on validateOnly mode", async () => {
@@ -136,7 +157,9 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment }>();
+      .toEqualTypeOf<
+        { attachment: Attachment } | { attachment: Attachment }[]
+      >();
 
     const attachment = new Attachment("attachment.rid");
     const result = await client(actionTakesAttachment)({

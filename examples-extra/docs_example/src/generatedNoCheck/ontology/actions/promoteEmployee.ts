@@ -1,5 +1,11 @@
 import type { ActionDefinition } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -22,14 +28,24 @@ export type ActionDef$promoteEmployee$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type promoteEmployee$Params = NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>;
+export type promoteEmployee$Params =
+  | NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>[];
 
 // Represents a fqn of the action
 export interface promoteEmployee {
   /**
    * Update an employee's title and compensation
    */
-  <OP extends ApplyActionOptions>(args: promoteEmployee$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+  <
+    P extends promoteEmployee$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Represents the definition of the action

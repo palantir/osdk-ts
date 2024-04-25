@@ -1,5 +1,11 @@
 import type { ActionDefinition } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -30,14 +36,24 @@ export type ActionDef$createOffice$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type createOffice$Params = NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>;
+export type createOffice$Params =
+  | NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>[];
 
 // Represents a fqn of the action
 export interface createOffice {
   /**
    * Create an office's
    */
-  <OP extends ApplyActionOptions>(args: createOffice$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+  <
+    P extends createOffice$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Represents the definition of the action

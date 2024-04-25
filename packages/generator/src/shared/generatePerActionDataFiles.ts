@@ -102,13 +102,13 @@ export async function generatePerActionDataFiles(
           
 
           // Represents the runtime arguments for the action
-          export type ${paramsIdentifier} = NOOP<OsdkActionParameters<${paramsDefIdentifier}>>;
+          export type ${paramsIdentifier} = NOOP<OsdkActionParameters<${paramsDefIdentifier}>> | NOOP<OsdkActionParameters<${paramsDefIdentifier}>>[];
 
           
           // Represents a fqn of the action
           export interface ${action.apiName} {
             ${getDescriptionIfPresent(action.description)}
-             <OP extends ApplyActionOptions>(args: ${paramsIdentifier}, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+             <P extends ${paramsIdentifier}, OP extends P extends NOOP<OsdkActionParameters<${paramsDefIdentifier}>>[]? ApplyBatchActionOptions: ApplyActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
           }
 
           
@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
         path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
-          import type { ActionSignature, ApplyActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client';
+          import type { ActionSignature, ApplyActionOptions, ApplyBatchActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${importObjects}
 

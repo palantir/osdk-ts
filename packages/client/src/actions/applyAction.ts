@@ -34,10 +34,11 @@ import { ActionValidationError } from "./ActionValidationError.js";
 
 // cannot specify both validateOnly and returnEdits as true
 
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { validateOnly: true } ? ActionValidationResponse
-    : Op extends { returnEdits: true } ? ActionEditResponse
-    : undefined;
+export type ActionReturnTypeForOptions<
+  Op extends ApplyActionOptions | ApplyBatchActionOptions,
+> = Op extends { validateOnly: true } ? ActionValidationResponse
+  : Op extends { returnEdits: true } ? ActionEditResponse
+  : undefined;
 
 export type BatchActionReturnTypeForOptions<
   Op extends ApplyBatchActionOptions,
@@ -46,37 +47,67 @@ export type BatchActionReturnTypeForOptions<
 
 export async function applyAction<
   AD extends ActionDefinition<any, any>,
-  Op extends ApplyActionOptions,
+  P extends OsdkActionParameters<AD["parameters"]> | OsdkActionParameters<
+    AD["parameters"]
+  >[],
+  Op extends P extends OsdkActionParameters<
+    AD["parameters"]
+  >[] ? ApplyBatchActionOptions
+    : ApplyActionOptions,
 >(
   client: MinimalClient,
   action: AD,
-  parameters?: OsdkActionParameters<AD["parameters"]>,
+  parameters?: P,
   options: Op = {} as Op,
-): Promise<ActionReturnTypeForOptions<Op>> {
-  const response = await applyActionV2(
-    addUserAgent(client, action),
-    client.ontologyRid,
-    action.apiName,
-    {
-      parameters: remapActionParams(parameters),
-      options: {
-        mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
-        returnEdits: options?.returnEdits ? "ALL" : "NONE",
+): Promise<
+  ActionReturnTypeForOptions<Op>
+> {
+  if (Array.isArray(parameters)) {
+    const response = await applyActionBatchV2(
+      addUserAgent(client, action),
+      client.ontologyRid,
+      action.apiName,
+      {
+        requests: parameters ? remapBatchActionParams(parameters) : [],
+        options: {
+          returnEdits: options?.returnEdits ? "ALL" : "NONE",
+        },
       },
-    },
-  );
+    );
 
-  if (options?.validateOnly) {
-    return response.validation as ActionReturnTypeForOptions<Op>;
+    return (options?.returnEdits
+      ? response.edits
+      : undefined) as ActionReturnTypeForOptions<Op>;
+  } else {
+    const response = await applyActionV2(
+      addUserAgent(client, action),
+      client.ontologyRid,
+      action.apiName,
+      {
+        parameters: remapActionParams(
+          parameters as OsdkActionParameters<AD["parameters"]>,
+        ),
+        options: {
+          mode: (options as ApplyActionOptions)?.validateOnly
+            ? "VALIDATE_ONLY"
+            : "VALIDATE_AND_EXECUTE",
+          returnEdits: options?.returnEdits ? "ALL" : "NONE",
+        },
+      },
+    );
+
+    if ((options as ApplyActionOptions)?.validateOnly) {
+      return response.validation as ActionReturnTypeForOptions<Op>;
+    }
+
+    if (response.validation?.result === "INVALID") {
+      throw new ActionValidationError(response.validation);
+    }
+
+    return (options?.returnEdits
+      ? response.edits
+      : undefined) as ActionReturnTypeForOptions<Op>;
   }
-
-  if (response.validation?.result === "INVALID") {
-    throw new ActionValidationError(response.validation);
-  }
-
-  return (options?.returnEdits
-    ? response.edits
-    : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
 export async function applyBatchAction<
