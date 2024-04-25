@@ -91,7 +91,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.4.2"|"^4.9.0",
+ *  tsVersion?: "^5.4.5"|"^4.9.5",
  *  skipTsconfigReferences?: boolean
  * }} options
  */
@@ -247,7 +247,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.2",
+      tsVersion: "^5.4.5",
     }),
 
     ...standardPackageRules({
@@ -256,7 +256,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.2",
+      tsVersion: "^5.4.5",
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
         "./src/generatedNoCheck/**/*",
@@ -270,7 +270,7 @@ export default {
       legacy: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.2",
+      tsVersion: "^5.4.5",
     }),
 
     ...standardPackageRules({
@@ -290,7 +290,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "example",
-      tsVersion: "^4.9.0",
+      tsVersion: "^4.9.5",
       skipTsconfigReferences: true,
     }),
 
