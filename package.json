@@ -21,7 +21,7 @@
     "@babel/core": "^7.24.4",
     "@babel/preset-typescript": "^7.23.3",
     "@changesets/changelog-git": "^0.2.0",
-    "@changesets/cli": "^2.26.2",
+    "@changesets/cli": "^2.27.1",
     "@monorepolint/cli": "0.5.0-alpha.108",
     "@monorepolint/config": "0.5.0-alpha.108",
     "@monorepolint/core": "0.5.0-alpha.108",
