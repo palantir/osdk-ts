@@ -89,13 +89,5 @@ export type ActionSignature<
   ActionReturnTypeForOptions<OP>
 >;
 
-// | (<
-//   OP extends ApplyBatchActionOptions,
-//   A extends NOOP<OsdkActionParameters<X>>[],
-// >(
-//   args: A,
-//   options?: OP,
-// ) => Promise<BatchActionReturnTypeForOptions<OP>>);
-
 export type ActionEditResponse = ActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;

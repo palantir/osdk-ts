@@ -40,11 +40,6 @@ export type ActionReturnTypeForOptions<
   : Op extends { returnEdits: true } ? ActionEditResponse
   : undefined;
 
-export type BatchActionReturnTypeForOptions<
-  Op extends ApplyBatchActionOptions,
-> = Op extends { returnEdits: true } ? ActionEditResponse
-  : undefined;
-
 export async function applyAction<
   AD extends ActionDefinition<any, any>,
   P extends OsdkActionParameters<AD["parameters"]> | OsdkActionParameters<
@@ -108,32 +103,6 @@ export async function applyAction<
       ? response.edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   }
-}
-
-export async function applyBatchAction<
-  AD extends ActionDefinition<any, any>,
-  Op extends ApplyActionOptions,
->(
-  client: MinimalClient,
-  action: AD,
-  parameters?: OsdkActionParameters<AD["parameters"]>[],
-  options: Op = {} as Op,
-): Promise<BatchActionReturnTypeForOptions<Op>> {
-  const response = await applyActionBatchV2(
-    addUserAgent(client, action),
-    client.ontologyRid,
-    action.apiName,
-    {
-      requests: parameters ? remapBatchActionParams(parameters) : [],
-      options: {
-        returnEdits: options?.returnEdits ? "ALL" : "NONE",
-      },
-    },
-  );
-
-  return (options?.returnEdits
-    ? response.edits
-    : undefined) as BatchActionReturnTypeForOptions<Op>;
 }
 
 function remapActionParams<AD extends ActionDefinition<any, any>>(
