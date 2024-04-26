@@ -20,6 +20,7 @@ export type {
   ActionEditResponse,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./actions/Actions.js";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
