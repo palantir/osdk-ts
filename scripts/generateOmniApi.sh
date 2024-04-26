@@ -7,7 +7,7 @@ source "$SCRIPT_DIR/checkCommand.sh"
 source "$SCRIPT_DIR/formatTypescript.sh"
 
 REALPATH=$(checkCommand "grealpath" "realpath" "Try 'brew install coreutils'")
-XQ=$(checkCommand "xq" "xq" "Try 'brew install python-yq'")
+XQ=$(checkCommand "yq" "yq" "Try 'brew install yq'")
 WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 
 # "$SCRIPT_DIR/getOpenApiIr.sh"
