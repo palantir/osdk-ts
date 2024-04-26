@@ -1,5 +1,5 @@
 import { LocalDate } from "{{osdkPackage}}";
-import { TodoProject, TodoTask } from "{{osdkPackage}}/ontology/objects";
+import { OsdkTodoProject, OsdkTodoTask } from "{{osdkPackage}}/ontology/objects";
 
 interface MockProject {
   id: string;
@@ -54,7 +54,7 @@ function randomId(): string {
   return `${Math.floor(Math.random() * 2 ** 31)}`;
 }
 
-async function getProjects(): Promise<TodoProject[]> {
+async function getProjects(): Promise<OsdkTodoProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -65,7 +65,7 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<TodoProject["__primaryKey"]> {
+}): Promise<OsdkTodoProject["__primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({ id, name, tasks: [] });
@@ -86,7 +86,7 @@ async function createTask({
 }: {
   name: string;
   projectId: string;
-}): Promise<TodoTask["__primaryKey"]> {
+}): Promise<OsdkTodoTask["__primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
   if (project == null) {
@@ -107,14 +107,14 @@ async function deleteTask(id: string): Promise<void> {
   }
 }
 
-function project(mockProject: MockProject): TodoProject {
+function project(mockProject: MockProject): OsdkTodoProject {
   return {
-    __apiName: "TodoProject",
+    __apiName: "OsdkTodoProject",
     __primaryKey: mockProject.id,
     __rid: `${mockProject.id}`,
     id: mockProject.id,
     name: mockProject.name,
-    todoTasks: {
+    OsdkTodoTasks: {
       all: async () => ({
         type: "ok",
         value: mockProject.tasks.map((mockTask) => task(mockProject, mockTask)),
@@ -146,9 +146,9 @@ function project(mockProject: MockProject): TodoProject {
   };
 }
 
-function task(mockProject: MockProject, mockTask: MockTask): TodoTask {
+function task(mockProject: MockProject, mockTask: MockTask): OsdkTodoTask {
   return {
-    __apiName: "TodoTask",
+    __apiName: "OsdkTodoTask",
     __primaryKey: mockTask.id,
     __rid: `${mockTask.id}`,
     id: mockTask.id,
@@ -157,7 +157,7 @@ function task(mockProject: MockProject, mockTask: MockTask): TodoTask {
     dueDate: LocalDate.now().plusWeeks(1),
     status: "IN PROGRESS",
     projectId: mockProject.id,
-    todoProject: {
+    OsdkTodoProject: {
       get: async () => ({
         type: "ok",
         value: project(mockProject),

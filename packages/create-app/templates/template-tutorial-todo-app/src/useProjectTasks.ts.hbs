@@ -1,16 +1,16 @@
-import { TodoProject, TodoTask } from "{{osdkPackage}}/ontology/objects";
+import { OsdkTodoProject, OsdkTodoTask } from "{{osdkPackage}}/ontology/objects";
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
 
-export function useProjectTasks(project: TodoProject | undefined) {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<TodoTask[]>(
+export function useProjectTasks(project: OsdkTodoProject | undefined) {
+  const { data, isLoading, isValidating, error, mutate } = useSWR<OsdkTodoTask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
     async () => {
       if (project == null) {
         return [];
       }
-      const result = await project.todoTasks.all();
+      const result = await project.osdkTodoTasks.all();
       if (result.type !== "ok") {
         throw result.error;
       }
@@ -20,7 +20,7 @@ export function useProjectTasks(project: TodoProject | undefined) {
 
   const createTask: (
     name: string
-  ) => Promise<TodoTask["__primaryKey"] | undefined> = useCallback(
+  ) => Promise<OsdkTodoTask["__primaryKey"] | undefined> = useCallback(
     async (name) => {
       if (project == null) {
         return undefined;
@@ -35,7 +35,7 @@ export function useProjectTasks(project: TodoProject | undefined) {
       // Solution:
       //
       // const result =
-      //   await client.ontology.actions.createTodoTask6bb97c19086d40c9B57285448e244ee3(
+      //   await client.ontology.actions.createOsdkTodoTask(
       //     {
       //       title: name,
       //       start_date: LocalDate.now(),
@@ -56,7 +56,7 @@ export function useProjectTasks(project: TodoProject | undefined) {
     [project, mutate]
   );
 
-  const deleteTask: (task: TodoTask) => Promise<void> = useCallback(
+  const deleteTask: (task: OsdkTodoTask) => Promise<void> = useCallback(
     async (task) => {
       if (project == null) {
         return;
@@ -66,7 +66,7 @@ export function useProjectTasks(project: TodoProject | undefined) {
       await mutate();
       // Solution:
       //
-      // await client.ontology.actions.deleteTodoTask73e95e4bEbfb47d3Ad86C712dfdc1ce5(
+      // await client.ontology.actions.deleteOsdkTodoTask(
       //   { "todo-task": task }
       // );
       // await mutate();

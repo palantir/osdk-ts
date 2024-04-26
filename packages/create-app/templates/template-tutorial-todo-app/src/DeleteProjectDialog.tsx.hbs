@@ -1,10 +1,10 @@
-import { TodoProject } from "{{osdkPackage}}/ontology/objects";
+import { OsdkTodoProject } from "{{osdkPackage}}/ontology/objects";
 import { useCallback, useState } from "react";
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
 
 interface DeleteProjectDialogProps {
-  project: TodoProject;
+  project: OsdkTodoProject;
   isOpen: boolean;
   onClose: () => void;
 }

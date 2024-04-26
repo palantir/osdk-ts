@@ -1,17 +1,17 @@
-import { TodoProject } from "{{osdkPackage}}/ontology/objects";
+import { OsdkTodoProject } from "{{osdkPackage}}/ontology/objects";
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";
 
 function useProjects() {
   const { data, isLoading, isValidating, error, mutate } = useSWR<
-    TodoProject[]
+    OsdkTodoProject[]
   >("projects", async () => {
     // Try to implement this with the Ontology SDK!
     return Mocks.getProjects();
     // Solution:
     //
-    // const result = await client.ontology.objects.TodoProject.orderBy((p) =>
+    // const result = await client.ontology.objects.OsdkTodoProject.orderBy((p) =>
     //   p.name.asc()
     // ).page({
     //   pageSize: 50,
@@ -22,7 +22,7 @@ function useProjects() {
     // return result.value.data;
   });
 
-  const createProject: (name: string) => Promise<TodoProject["__primaryKey"]> =
+  const createProject: (name: string) => Promise<OsdkTodoProject["__primaryKey"]> =
     useCallback(
       async (name) => {
         // Try to implement this with the Ontology SDK!
@@ -32,7 +32,7 @@ function useProjects() {
         // Solution:
         //
         // const result =
-        //   await client.ontology.actions.createTodoProjectd1a1a1f7E94f4470B73bEd518e7a8b11(
+        //   await client.ontology.actions.createOsdkTodoProject(
         //     { name, budget: 50 },
         //     { returnEdits: ReturnEditsMode.ALL }
         //   );
@@ -47,14 +47,14 @@ function useProjects() {
       [mutate]
     );
 
-  const deleteProject: (project: TodoProject) => Promise<void> = useCallback(
+  const deleteProject: (project: OsdkTodoProject) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteProject(project.__primaryKey);
       await mutate();
       // Solution:
       //
-      // await client.ontology.actions.deleteTodoProject022fbb06Bfb040a9880174c4111aa497(
+      // await client.ontology.actions.deleteOsdkTodoProject(
       //   { "todo-project": project }
       // );
       // await mutate();

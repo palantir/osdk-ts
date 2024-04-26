@@ -1,10 +1,10 @@
-import { TodoTask } from "{{osdkPackage}}/ontology/objects";
+import { OsdkTodoTask } from "{{osdkPackage}}/ontology/objects";
 import { useCallback, useState } from "react";
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {
-  task: TodoTask;
-  deleteTask: (task: TodoTask) => Promise<void>;
+  task: OsdkTodoTask;
+  deleteTask: (task: OsdkTodoTask) => Promise<void>;
 }
 
 function TaskListItem({ task, deleteTask }: TaskListItemProps) {
