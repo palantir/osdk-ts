@@ -14,92 +14,83 @@
  * limitations under the License.
  */
 
-import { listActionTypesV2 } from "@osdk/gateway/requests";
+import {
+  applyActionBatchV2,
+  applyActionV2,
+  listActionTypesV2,
+} from "@osdk/gateway/requests";
 import type {
   BatchApplyActionResponse,
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import type {
-  DefaultBodyType,
-  MockedRequest,
-  PathParams,
-  ResponseComposition,
-  RestContext,
-  RestHandler,
-  RestRequest,
-} from "msw";
-import { rest } from "msw";
+import type { HttpResponseResolver, PathParams } from "msw";
 import type { BaseAPIError } from "../BaseError";
 import { ApplyActionFailedError, InvalidRequest } from "../errors";
 import { actionResponseMap } from "../stubs/actions";
 import { defaultOntology } from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
 import { getOntology } from "./ontologyMetadataEndpoints";
-import { handleOpenApiCall } from "./util/handleOpenApiCall";
+import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall";
+import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
 
-export const actionHandlers: RestHandler<
-  MockedRequest<DefaultBodyType>
->[] = [
+export const actionHandlers = [
   /**
    * List ActionTypes
    */
   handleOpenApiCall(
     listActionTypesV2,
     ["ontologyApiName"],
-    async (req, res, ctx) => {
-      const ontology = getOntology(req.params.ontologyApiName);
+    async ({ params }) => {
+      const ontology = getOntology(params.ontologyApiName);
 
-      return res(
-        ctx.json({
-          data: Object.values(ontology.actionTypes),
-        }),
-      );
+      return {
+        data: Object.values(ontology.actionTypes),
+      };
     },
   ),
 
   /**
    * Apply an Action
    */
-  rest.post(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actions/:actionType/apply",
-    authHandlerMiddleware(
-      handleAction<SyncApplyActionResponseV2>,
-    ),
+  handleOpenApiCall(
+    applyActionV2,
+    ["ontologyApiName", "actionType"],
+    handleAction<SyncApplyActionResponseV2>,
   ),
 
   /**
    * Apply a Batch Action
    */
-  rest.post(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actions/:actionType/applyBatch",
-    authHandlerMiddleware(
-      handleAction<BatchApplyActionResponse>,
-    ),
+  handleOpenApiCall(
+    applyActionBatchV2,
+    ["ontologyApiName", "actionType"],
+    handleAction<
+      ExtractResponse<typeof applyActionBatchV2>
+    >,
   ),
 ];
 
 async function handleAction<
   T extends BatchApplyActionResponse | SyncApplyActionResponseV2,
 >(
-  req: RestRequest<DefaultBodyType, PathParams<string>>,
-  res: ResponseComposition<
-    T | BaseAPIError
-  >,
-  ctx: RestContext,
+  req: Parameters<
+    HttpResponseResolver<
+      PathParams<string>,
+      | ExtractBody<typeof applyActionV2>
+      | ExtractBody<typeof applyActionBatchV2>,
+      T | BaseAPIError
+    >
+  >[0],
 ) {
-  const body = await req.text();
-  const parsedBody = JSON.parse(body);
+  const parsedBody = await req.request.json();
+
   const ontologyApiName = req.params.ontologyApiName;
   const actionType = req.params.actionType;
 
   if (
     typeof ontologyApiName !== "string" || typeof actionType !== "string"
   ) {
-    return res(
-      ctx.status(400),
-      ctx.json(InvalidRequest("Invalid parameters")),
-    );
+    throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
   }
 
   const actionResponse =
@@ -110,8 +101,8 @@ async function handleAction<
       || req.params.ontologyApiName === defaultOntology.rid)
     && actionResponse
   ) {
-    return res(ctx.json(actionResponse));
+    return actionResponse;
   }
 
-  return res(ctx.status(400), ctx.json(ApplyActionFailedError));
+  throw new OpenApiCallError(400, ApplyActionFailedError);
 }

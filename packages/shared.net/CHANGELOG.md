@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 1.10.0
+
+### Minor Changes
+
+- 9906a41: Platform API support
+
 ## 1.1.1
 
 ### Patch Changes

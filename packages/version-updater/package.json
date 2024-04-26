@@ -12,13 +12,11 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -32,12 +30,11 @@
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute"
   },
-  "dependencies": {},
   "devDependencies": {
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -51,7 +48,6 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "sls": {

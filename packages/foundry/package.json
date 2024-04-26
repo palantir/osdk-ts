@@ -1,0 +1,55 @@
+{
+  "name": "@osdk/foundry",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs"
+    },
+    "./*": {
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "tsup",
+    "typecheck": "tsc-absolute"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:^",
+    "@osdk/shared.net": "workspace:^"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/types",
+    "build/js",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
+  "sls": {
+    "dependencies": {
+      "com.palantir.foundry.api:api-gateway": {
+        "minVersion": "1.804.0",
+        "maxVersion": "1.x.x"
+      }
+    }
+  },
+  "type": "module"
+}

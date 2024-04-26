@@ -15,7 +15,9 @@ MAVEN_CONJURE_ARTIFACT_ID="api-gateway-rosetta-bundle"
 MAVEN_REPO_PATH="${MAVEN_DIST_RELEASE}/$(echo "$MAVEN_CONJURE_GROUP_ID" | sed 's/\./\//g')/${MAVEN_CONJURE_ARTIFACT_ID}"
 
 API_GATEWAY_VERSION=$( wget -q -O - "${MAVEN_REPO_PATH}/maven-metadata.xml" | \
-    xq -r '.metadata.versioning.release' )
+    yq -p xml -r '.metadata.versioning.release' )
+
+echo "GATEWAY VERSION: ${API_GATEWAY_VERSION}"
 
 mkdir -p "${DOWNLOAD_DIR}"
 wget -P "${DOWNLOAD_DIR}"  "${MAVEN_REPO_PATH}/${API_GATEWAY_VERSION}/${MAVEN_CONJURE_ARTIFACT_ID}-${API_GATEWAY_VERSION}.sls.tgz"

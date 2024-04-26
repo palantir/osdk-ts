@@ -17,7 +17,12 @@
 export interface ClientContext<O extends { metadata: { userAgent: string } }> {
   /** @deprecated */
   ontology: O;
+
+  /**
+   * The base origin to use for requests (e.g. `https://api.example.com`)
+   */
   stack: string;
+
   /**
    * The fetch function to use for all requests.
    *

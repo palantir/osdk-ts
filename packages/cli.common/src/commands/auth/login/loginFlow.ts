@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-named-as-default
 import consola from "consola";
 import { getRandomValues, subtle } from "node:crypto";
 import { createServer } from "node:http";

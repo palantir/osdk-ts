@@ -1,5 +1,36 @@
 # @osdk/foundry-sdk-generator
 
+## 1.1.0
+
+### Minor Changes
+
+- 11434b9: Deprecated bulk actions with renamed batchActions functionality
+- 948c634: Add pivot to functionality and deprecate searchAround calls
+- 9906a41: add asyncIter
+
+### Patch Changes
+
+- Updated dependencies [11434b9]
+- Updated dependencies [948c634]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [9906a41]
+- Updated dependencies [f7287ae]
+- Updated dependencies [3c51797]
+  - @osdk/legacy-client@2.2.0
+  - @osdk/generator@1.10.0
+  - @osdk/api@1.7.0
+
+## 1.0.0
+
+### Major Changes
+
+- Creating first major version of sdk generator with 1.0 version of typescript OSDK
+
 ## 0.201.1
 
 ### Patch Changes

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregateObjectsResponseV2 } from "@osdk/omniapi";
+import type { AggregateObjectsResponseV2 } from "@osdk/foundry";
 import invariant from "tiny-invariant";
 import type {
   AggregationClause,

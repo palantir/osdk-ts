@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/client";
+import type { ObjectSetListener, Osdk, PageResult } from "@osdk/client";
 import { createClient } from "@osdk/client";
 import {
   assignEmployee1,
@@ -25,7 +25,8 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
-import * as LanguageModel from "@osdk/omniapi/Models_LanguageModel";
+import * as LanguageModel from "@osdk/foundry/Models_LanguageModel";
+import { pino } from "pino";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -40,13 +41,18 @@ import { typeChecks } from "./typeChecks.js";
 invariant(process.env.FOUNDRY_STACK !== undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
+const logger = pino({ level: "debug" });
+
 export const client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
   () => process.env.FOUNDRY_USER_TOKEN!,
+  { logger },
 );
 
 const runOld = false;
+
+const testSubscriptions = true;
 
 async function runTests() {
   try {
@@ -59,8 +65,10 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const foo = await LanguageModel.listLanguageModels(client.ctx as any);
-    console.log(foo.data);
+    const models = await LanguageModel.listLanguageModels(client.ctx as any);
+    logger.info({
+      models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
+    });
 
     // const { data: boundaries } = await client(BoundariesUsState).fetchPage();
     // let didThrow = false;
@@ -74,6 +82,34 @@ async function runTests() {
     // if (!didThrow) {
     //   throw new Error("Should not be allowed to convert between mixed types");
     // }
+    const makeObjectSetListener = (prefix: string): ObjectSetListener<any> => {
+      return {
+        onError(err) {
+          logger.error({ err }, "%s: Error in subscription", prefix);
+        },
+
+        onOutOfDate() {
+          logger.info("%s: out of date", prefix);
+        },
+
+        onChange(objects) {
+          logger.info("%s: Changed objects: %o", prefix, objects);
+        },
+      };
+    };
+
+    if (testSubscriptions) {
+      client(Employee).where({
+        jobProfile: "Echo",
+      }).subscribe(makeObjectSetListener("Sub(Echo)"));
+
+      client(Employee).where({
+        jobProfile: "Delta",
+      }).subscribe(makeObjectSetListener("Sub(Delta)"));
+
+      // we don't need the console flooded with additional things
+      return;
+    }
 
     // this has the nice effect of faking a 'race' with the below code
     (async () => {

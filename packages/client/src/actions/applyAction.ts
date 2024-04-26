@@ -15,11 +15,11 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import type { DataValue } from "@osdk/omniapi";
+import type { DataValue } from "@osdk/foundry";
 import {
   applyActionBatchV2,
   applyActionV2,
-} from "@osdk/omniapi/OntologiesV2_Action";
+} from "@osdk/foundry/OntologiesV2_Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
