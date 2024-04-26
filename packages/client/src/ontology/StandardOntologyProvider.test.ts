@@ -43,8 +43,8 @@ describe(createStandardOntologyProviderFactory, () => {
     );
 
     let loads: string[] = [];
-    apiServer.events.on("request:start", (request) => {
-      loads.push(request.url.pathname);
+    apiServer.events.on("request:start", ({ request }) => {
+      loads.push(new URL(request.url).pathname);
     });
 
     await fetchPage(client, MockOntology.objects.Employee, {});
@@ -88,8 +88,8 @@ describe(createStandardOntologyProviderFactory, () => {
     );
 
     let loads: string[] = [];
-    apiServer.events.on("request:start", (request) => {
-      loads.push(request.url.pathname);
+    apiServer.events.on("request:start", ({ request }) => {
+      loads.push(new URL(request.url).pathname);
     });
 
     const loadSequenceWithoutCaching = USE_FULL_ONTOLOGY

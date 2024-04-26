@@ -16,13 +16,12 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 import type {
-  MockedRequest,
-  ResponseComposition,
-  RestContext,
-  RestHandler,
-  RestRequest,
+  DefaultBodyType,
+  HttpHandler,
+  HttpResponseResolver,
+  StrictResponse,
 } from "msw";
-import { rest } from "msw";
+import { http as http, HttpResponse } from "msw";
 import type { BaseAPIError } from "../../BaseError";
 import { authHandlerMiddleware } from "../commonHandlers";
 
@@ -54,10 +53,16 @@ type SkipStringParams<T extends any[]> = T extends [infer A, ...infer B]
  * This will also fail if your body is defined as a string as that will get interpreted as a path param.
  * If this happens, you cannot use the helper. Sorry
  */
-type ExtractBody<
+export type ExtractBody<
   X extends ((reqCall: any, ...args: any[]) => Promise<any>),
 > = SkipStringParams<ParamsAfterReqCall<X>>[0] extends undefined ? never
   : SkipStringParams<ParamsAfterReqCall<X>>[0];
+
+export type ExtractResponse<
+  X extends ((...args: any[]) => Promise<any>),
+> =
+  & (Parameters<X>[0] extends OpenApiRequest<infer R, any> ? R : never)
+  & {};
 
 type ParamsAfterReqCall<
   T extends (reqCall: any, ...args: any[]) => Promise<any>,
@@ -70,17 +75,15 @@ export function handleOpenApiCall<
   openApiCall: X,
   names: N,
   restImpl: (
-    req: RestRequest<ExtractBody<X>, Record<N[number], string>>,
-    res: ResponseComposition<
-      | (
-        & (Parameters<X>[0] extends OpenApiRequest<infer R, any> ? R : never)
-        & {}
-      )
-      | BaseAPIError
-    >,
-    ctx: RestContext,
-  ) => any,
-): RestHandler<MockedRequest<ExtractBody<X>>> {
+    info: Parameters<
+      HttpResponseResolver<
+        Record<N[number], string>,
+        ExtractBody<X>,
+        ExtractResponse<X> | BaseAPIError
+      >
+    >[0],
+  ) => ExtractResponse<X> | Promise<ExtractResponse<X>>,
+): HttpHandler {
   let captured: {
     method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
     endPoint: string;
@@ -109,15 +112,24 @@ export function handleOpenApiCall<
     ...(names.map(n => `:${n}`) as any),
   );
 
-  return rest
+  return http
     [captured.method.toLowerCase() as Lowercase<typeof captured.method>](
       `https://stack.palantir.com/api${captured.endPoint}`,
-      authHandlerMiddleware((req, res, ctx) => {
+      authHandlerMiddleware(async (info) => {
         try {
-          return restImpl(req as any, res, ctx);
+          const result = await restImpl(
+            info as any,
+          );
+
+          if (result instanceof Blob) {
+            return new HttpResponse(result) as StrictResponse<DefaultBodyType>;
+          }
+          return HttpResponse.json(
+            result,
+          );
         } catch (e) {
           if (e instanceof OpenApiCallError) {
-            return res(ctx.status(e.status), ctx.json(e.json));
+            return HttpResponse.json(e.json, { status: e.status });
           }
           throw e;
         }

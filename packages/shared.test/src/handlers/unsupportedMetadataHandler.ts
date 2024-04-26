@@ -14,43 +14,37 @@
  * limitations under the License.
  */
 
-import type { DefaultBodyType, MockedRequest, RestHandler } from "msw";
-import { rest } from "msw";
+import { http, HttpResponse } from "msw";
 import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes";
 import { defaultOntology } from "../stubs/ontologies";
 import { authHandlerMiddleware } from "./commonHandlers";
 
-export const unsupportedMetadataHandler: RestHandler<
-  MockedRequest<DefaultBodyType>
->[] = [
+export const unsupportedMetadataHandler = [
   /**
    * List ActionTypes
    */
-  rest.get(
+  http.get(
     "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/actionTypes",
-    authHandlerMiddleware(async (_req, res, ctx) => {
-      return res(
-        ctx.json({
-          data: [ActionTypeWithUnsupportedTypes],
-        }),
-      );
+    authHandlerMiddleware(async () => {
+      return HttpResponse.json({
+        data: [ActionTypeWithUnsupportedTypes],
+      });
     }),
   ),
 
-  rest.get(
+  http.get(
     "https://stack.palantir.com/api/v1/ontologies/:ontologyRid/objectTypes",
-    authHandlerMiddleware(async (req, res, ctx) => {
-      if (req.params.ontologyRid !== defaultOntology.rid) {
-        return res(
-          ctx.status(404),
-          ctx.json({ message: "Ontology not found" }),
+    authHandlerMiddleware(async ({ params }) => {
+      if (params.ontologyRid !== defaultOntology.rid) {
+        return HttpResponse.json(
+          { message: "Ontology not found" },
+          { status: 404 },
         );
       }
 
-      return res(
-        ctx.status(500),
-        ctx.json({ error: "Internal Service Error" }),
-      );
+      return HttpResponse.json({ error: "Internal Service Error" }, {
+        status: 500,
+      });
     }),
   ),
 ];
