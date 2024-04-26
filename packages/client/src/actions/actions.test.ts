@@ -95,20 +95,6 @@ describe("actions", () => {
       address: "123 Main Street",
       capacity: 100,
     }], { returnEdits: true });
-
-    //   const resultNoValidate = await client(moveOffice)([
-    //     {
-    //       officeId: "SEA",
-    //       newAddress: "456 Good Place",
-    //       newCapacity: 40,
-    //     },
-    //     {
-    //       officeId: "NYC",
-    //       newAddress: "123 Main Street",
-    //       newCapacity: 80,
-    //     },
-    //     // @ts-expect-error
-    //   ], { validateOnly: true });
   });
 
   it("returns validation directly on validateOnly mode", async () => {
