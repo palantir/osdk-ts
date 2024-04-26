@@ -48,14 +48,12 @@ export default async (options, ourOptions) => {
     treeshake: true,
     target: "es2022",
     esbuildPlugins: [
-      /** @type {any} */ (
-        babel({
-          config: {
-            presets: ["@babel/preset-typescript"],
-            plugins: ["babel-plugin-dev-expression"],
-          },
-        })
-      ),
+      /** @type {any} */ (babel({
+        config: {
+          presets: ["@babel/preset-typescript"],
+          plugins: ["babel-plugin-dev-expression"],
+        },
+      })),
     ],
   };
 };
