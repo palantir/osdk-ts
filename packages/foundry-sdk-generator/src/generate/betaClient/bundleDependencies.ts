@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { Project } from "ts-morph";
 import { copyFiles } from "./copyFiles";
 import { withoutTrailingIndex } from "./getModuleSourceFile";

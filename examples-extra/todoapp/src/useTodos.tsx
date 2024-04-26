@@ -1,9 +1,10 @@
 import { ActionValidationError, type Osdk } from "@osdk/client";
 import { useCallback, useEffect } from "react";
-import useSWR, { KeyedMutator } from "swr";
+import type { KeyedMutator } from "swr";
+import useSWR from "swr";
 import { $ } from "./foundryClient";
 import * as MyOsdk from "./generatedNoCheck2";
-import { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 
 declare global {
   interface ArrayConstructor {
@@ -29,7 +30,6 @@ declare global {
     fromAsync<T, U>(
       iterableOrArrayLike: AsyncIterable<T> | Iterable<T> | ArrayLike<T>,
       mapFn: (value: Awaited<T>) => U,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       thisArg?: any
     ): Promise<Awaited<U>[]>;
   }
@@ -122,7 +122,7 @@ export function useTodos() {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 type OsdkPropsOnly<T extends ObjectTypeDefinition<any>> = Omit<
   Osdk<T>,
   "$as" | "$link"

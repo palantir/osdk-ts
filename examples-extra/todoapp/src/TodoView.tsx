@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { SimpleTodo } from "./useTodos";
+import type { SimpleTodo } from "./useTodos";
 
 export function TodoView({
   todo,

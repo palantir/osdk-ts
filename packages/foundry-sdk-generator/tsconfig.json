@@ -5,8 +5,7 @@
     "outDir": "build/types"
   },
   "include": [
-    "./src/**/*",
-    ".eslintrc.cjs"
+    "./src/**/*"
   ],
   "exclude": [
     "./src/__e2e_tests__/**/**.test.ts",

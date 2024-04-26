@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line header/header
 import { cli } from "../build/js/index.mjs";
 cli();

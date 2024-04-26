@@ -206,7 +206,6 @@ function convertMetricValue(value: any, metricValueType: MetricValueType) {
     case MetricValueType.LOCALDATE:
       return convertLocalDate(value);
     default:
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _: never = metricValueType;
       throw new Error(
         `Unknown metric value type encountered: ${metricValueType as string}`,
@@ -233,7 +232,6 @@ function convertGroupValue<TBucketGroup extends BucketGroup>(
     case GroupKeyType.TIMESTAMP:
       return convertTimestamp(value) as TBucketGroup[keyof TBucketGroup];
     default:
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const _: never = groupType;
       throw new Error(
         `Unknown group value type encountered: ${groupType as string}`,
