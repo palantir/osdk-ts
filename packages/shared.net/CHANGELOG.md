@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 9906a41: Omniapi support
+- 9906a41: Platform API support
 
 ## 1.1.1
 

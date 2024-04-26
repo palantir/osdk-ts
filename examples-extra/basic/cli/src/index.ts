@@ -25,7 +25,7 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
-import * as LanguageModel from "@osdk/omniapi/Models_LanguageModel";
+import * as LanguageModel from "@osdk/foundry/Models_LanguageModel";
 import { pino } from "pino";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";

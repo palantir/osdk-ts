@@ -164,7 +164,7 @@ export function generateRuntimeConst(resource: Resource) {
   }
 
   return `export const ${resource.component}: OmniResource<${resource.component}> = {
-    type: "omniapi",
+    type: "platformsdk",
     methods: {
       ${ret}
     }

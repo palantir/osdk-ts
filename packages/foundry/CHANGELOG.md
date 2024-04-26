@@ -1,10 +1,10 @@
-# @osdk/omniapi
+# @osdk/foundry
 
 ## 0.1.0
 
 ### Minor Changes
 
-- 9906a41: Omniapi support
+- 9906a41: Platform SDK support
 
 ### Patch Changes
 

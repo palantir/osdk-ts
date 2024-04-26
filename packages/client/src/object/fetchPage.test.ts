@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/omniapi";
+import type { SearchJsonQueryV2 } from "@osdk/foundry";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { FooInterface } from "../generatedNoCheck/index.js";

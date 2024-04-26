@@ -10,13 +10,11 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -49,7 +47,6 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"
