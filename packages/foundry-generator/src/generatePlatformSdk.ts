@@ -23,7 +23,7 @@ import type { ApiSpec } from "./ir/index.js";
 import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
 import { writeCode } from "./writeCode.js";
 
-export async function generateOmniApi(ir: ApiSpec, outputDir: string) {
+export async function generatePlatformSdk(ir: ApiSpec, outputDir: string) {
   let rootOut = `${copyright}
   `;
 
@@ -33,9 +33,6 @@ export async function generateOmniApi(ir: ApiSpec, outputDir: string) {
     if (isIgnoredNamespace(ns.name) || ns.name === "Ontologies") {
       continue;
     }
-
-    let nsRootOut = `${copyright}
-    `;
 
     const nsPath = path.join(outputDir, "public", ns.name);
     await fs.mkdir(nsPath, { recursive: true });
