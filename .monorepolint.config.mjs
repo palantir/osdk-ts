@@ -48,6 +48,13 @@ const legacyPackages = [
 const esmOnlyPackages = [
   "@osdk/foundry",
   "@osdk/foundry-generator",
+  "@osdk/client",
+  "@osdk/cli.*",
+  "@osdk/cli",
+  "@osdk/create-app",
+  "@osdk/tool.release",
+  "@osdk/version-updater",
+  // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
 
 const cache = new Map();
@@ -295,6 +302,7 @@ export default {
       includePackages: ["@osdk/examples.basic.**"],
       excludePackages: ["@osdk/examples.one.dot.one"],
     }, {
+      esmOnly: true,
       legacy: false,
       packageDepth: 3,
       type: "example",
