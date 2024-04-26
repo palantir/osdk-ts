@@ -34,8 +34,14 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
        * Its a todo item.
        */
       export interface Todo extends OntologyObject {
-        readonly __apiName: 'Todo';
+        /** @deprecated please migrate to $apiName instead */
+        readonly __apiName: 'Todo' & {
+          /** @deprecated please migrate to pivotTo(Assignee) instead */ searchAroundAssignee?: never;
+        };
+        /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
+        readonly $apiName: 'Todo';
+        readonly $primaryKey: number;
         /**
          * The text of the todo
          */
@@ -55,6 +61,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
           apiName: "Todo",
           status: "ACTIVE",
           primaryKey: "break",
+          titleProperty: "break",
           properties: {
             "break": {
               dataType: { type: "integer" },
@@ -77,8 +84,12 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       "import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
 
       export interface Todo extends OntologyObject {
-        readonly __apiName: 'Todo';
+        /** @deprecated please migrate to $apiName instead */
+        readonly __apiName: 'Todo' & { /** @deprecated please migrate to pivotTo(this) instead */ searchAroundThis?: never };
+        /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
+        readonly $apiName: 'Todo';
+        readonly $primaryKey: number;
         readonly break: number | undefined;
         /** @deprecated please migrate to 'break' instead */
         readonly break_: number | undefined;

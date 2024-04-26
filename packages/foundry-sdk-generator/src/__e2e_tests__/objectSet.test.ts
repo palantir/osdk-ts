@@ -57,7 +57,7 @@ describe("Object Sets", () => {
   it("objects set base", async () => {
     let iter = 0;
     const result: Result<Page<Employee>, ListObjectsError> = await client
-      .ontology.objects.Employee.page();
+      .ontology.objects.Employee.fetchPageWithErrors();
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     for (const emp of employees) {
@@ -72,7 +72,7 @@ describe("Object Sets", () => {
     const unionedObjectSet: ObjectSet<Employee> = objectSet.union(objectSet);
     let iter = 0;
     const result: Result<Page<Employee>, LoadObjectSetError> =
-      await unionedObjectSet.page();
+      await unionedObjectSet.fetchPageWithErrors();
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     for (const emp of employees) {
@@ -101,7 +101,7 @@ describe("Object Sets", () => {
     const subtractedObjectSet = objectSet.subtract(objectSet2);
     let iter = 0;
     const result: Result<Page<Employee>, LoadObjectSetError> =
-      await subtractedObjectSet.page();
+      await subtractedObjectSet.fetchPageWithErrors();
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     for (const emp of employees) {
@@ -118,7 +118,7 @@ describe("Object Sets", () => {
     );
     let iter = 0;
     const result: Result<Page<Employee>, LoadObjectSetError> =
-      await intersectedObjectSet.page();
+      await intersectedObjectSet.fetchPageWithErrors();
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     for (const emp of employees) {
@@ -134,7 +134,7 @@ describe("Object Sets", () => {
       emp.employeeId.eq(50030)
     );
     const result: Result<Page<Employee>, LoadObjectSetError> =
-      await filteredObjectSet.page();
+      await filteredObjectSet.fetchPageWithErrors();
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     let iter = 0;
@@ -149,6 +149,22 @@ describe("Object Sets", () => {
     const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
     const searchAroundObjectSet: ObjectSet<Office> = objectSet
       .searchAroundOfficeLink();
+    const result: Result<Page<Office>, LoadObjectSetError> =
+      await searchAroundObjectSet.fetchPageWithErrors();
+    const officePage = assertOkOrThrow(result);
+    const offices = officePage.data;
+    let iter = 0;
+    for (const off of offices) {
+      expect(off.officeId).toEqual("NYC");
+      iter += 1;
+    }
+    expect(iter).toEqual(1);
+  });
+
+  it("objects set searchAroundOffice with pivot", async () => {
+    const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
+    const searchAroundObjectSet: ObjectSet<Office> = objectSet
+      .pivotTo("officeLink");
     const result: Result<Page<Office>, LoadObjectSetError> =
       await searchAroundObjectSet.page();
     const officePage = assertOkOrThrow(result);
@@ -165,6 +181,23 @@ describe("Object Sets", () => {
     const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
     const officeObjectSet: ObjectSet<Office> = objectSet
       .searchAroundOfficeLink()
+      .where(off => off.officeId.eq("NYC"));
+    const result: Result<Page<Office>, LoadObjectSetError> =
+      await officeObjectSet.fetchPageWithErrors();
+    const officePage = assertOkOrThrow(result);
+    const offices = officePage.data;
+    let iter = 0;
+    for (const off of offices) {
+      expect(off.officeId).toEqual("NYC");
+      iter += 1;
+    }
+    expect(iter).toEqual(1);
+  });
+
+  it("objects set filtered searchAroundOffice with pivot", async () => {
+    const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
+    const officeObjectSet: ObjectSet<Office> = objectSet
+      .pivotTo("officeLink")
       .where(off => off.officeId.eq("NYC"));
     const result: Result<Page<Office>, LoadObjectSetError> =
       await officeObjectSet.page();

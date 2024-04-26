@@ -310,7 +310,7 @@ describe("Queries", () => {
         double: number;
         float: number;
         integer: number;
-        long: number;
+        long: number | string;
         attachment: any;
         boolean: boolean;
         date: LocalDate;

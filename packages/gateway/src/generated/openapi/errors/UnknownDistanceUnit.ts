@@ -23,6 +23,6 @@ export interface UnknownDistanceUnit {
   errorInstanceId: string;
   parameters: {
     unknownUnit: string;
-    knownUnits: Array<DistanceUnit>;
+    knownUnits: ReadonlyArray<DistanceUnit>;
   };
 }

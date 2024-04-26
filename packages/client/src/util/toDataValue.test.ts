@@ -19,16 +19,17 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Attachment } from "../object/Attachment.js";
+import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
-  let client: Client<typeof MockOntology>;
+  let client: Client;
 
   beforeAll(async () => {
     apiServer.listen();
     client = createClient(
-      MockOntology,
       "https://stack.palantir.com",
+      MockOntology.metadata.ontologyRid,
       () => "myAccessToken",
     );
   });
@@ -83,8 +84,8 @@ describe(toDataValue, () => {
   });
 
   it("passes through object set definitions", () => {
-    const clientObjectSet = client.objects.Task.where({ id: 0 });
-    const { definition } = clientObjectSet;
+    const clientObjectSet = client(MockOntology.objects.Task).where({ id: 0 });
+    const definition = getWireObjectSet(clientObjectSet);
 
     const expected = `
     {

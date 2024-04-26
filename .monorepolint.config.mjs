@@ -1,4 +1,21 @@
+/*
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 // @ts-check
+
 import {
   alphabeticalDependencies,
   alphabeticalScripts,
@@ -13,7 +30,6 @@ import * as child_process from "node:child_process";
 
 const DELETE_SCRIPT_ENTRTY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
-  "eslint-config-sane",
   "mytsup",
   "tsconfig",
   "@osdk/examples.todoapp",
@@ -58,45 +74,28 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
 
 /**
  * @param {string} baseTsconfigPath
- * @param {{customTsconfigExcludes?: string[]}} opts
- * @returns
+ * @param {{
+ *   customTsconfigExcludes?: string[]
+ *   skipTsconfigReferences?: boolean
+ * }} opts
+ * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
 function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
     file: "tsconfig.json",
+
+    excludedReferences: ["**/*"],
     template: {
       extends: baseTsconfigPath,
 
       compilerOptions: {
         rootDir: "src",
         outDir: "build/types",
-        composite: true,
       },
-      include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: ["**/__snapshots__"],
+      include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
         ? { exclude: opts.customTsconfigExcludes ?? [] }
         : {}),
-    },
-  };
-}
-
-function getTsconfigOptionsE2E(baseTsconfigPath) {
-  return {
-    file: "tsconfig.json",
-    template: {
-      extends: baseTsconfigPath,
-
-      compilerOptions: {
-        rootDir: "src",
-        outDir: "build/types",
-        composite: true,
-      },
-      include: ["./src/**/*", ".eslintrc.cjs"],
-      exclude: [
-        "./src/__e2e_tests__/**/**.test.ts",
-        "./src/generatedNoCheck/**/*",
-      ],
     },
   };
 }
@@ -108,18 +107,20 @@ function getTsconfigOptionsE2E(baseTsconfigPath) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.2.2"|"^4.9.0",
+ *  tsVersion?: "^5.4.5"|"^4.9.5",
+ *  skipTsconfigReferences?: boolean
  * }} options
  */
 function standardPackageRules(shared, options) {
   return [
     standardTsconfig({
       ...shared,
+
       options: getTsconfigOptions(
         `${
           "../".repeat(options.packageDepth)
         }monorepo/tsconfig/tsconfig.base.json`,
-        { customTsconfigExcludes: options.customTsconfigExcludes },
+        options,
       ),
     }),
     ...(options.tsVersion
@@ -136,14 +137,14 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": "tsup --watch",
+          "dev:transpile": DELETE_SCRIPT_ENTRTY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
           prettier: DELETE_SCRIPT_ENTRTY,
           transpile: "tsup",
-          typecheck: "tsc-absolute --build",
+          typecheck: "tsc-absolute",
         },
       },
     }),
@@ -169,8 +170,7 @@ function standardPackageRules(shared, options) {
           files: [
             "build/types",
             "build/js",
-            "changelog",
-            "CHANGELOG_OLD.md",
+            "CHANGELOG.md",
             "package.json",
             "templates",
 
@@ -218,37 +218,6 @@ function standardPackageRules(shared, options) {
         ),
       },
     }),
-    fileContents({
-      ...shared,
-      options: {
-        file: ".eslintrc.cjs",
-        generator: formatedGeneratorHelper(
-          `
-          /*
-           * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
-           *
-           * Licensed under the Apache License, Version 2.0 (the "License");
-           * you may not use this file except in compliance with the License.
-           * You may obtain a copy of the License at
-           *
-           *     http://www.apache.org/licenses/LICENSE-2.0
-           *
-           * Unless required by applicable law or agreed to in writing, software
-           * distributed under the License is distributed on an "AS IS" BASIS,
-           * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-           * See the License for the specific language governing permissions and
-           * limitations under the License.
-           */
-
-          module.exports = {
-              extends: ["sane/${options.type}"],
-              root: true,
-            };
-            `,
-          "js",
-        ),
-      },
-    }),
   ];
 }
 
@@ -263,7 +232,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.5",
     }),
 
     ...standardPackageRules({
@@ -272,7 +241,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.5",
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
         "./src/generatedNoCheck/**/*",
@@ -286,7 +255,7 @@ export default {
       legacy: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.2.2",
+      tsVersion: "^5.4.5",
     }),
 
     ...standardPackageRules({
@@ -306,7 +275,8 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "example",
-      tsVersion: "^4.9.0",
+      tsVersion: "^4.9.5",
+      skipTsconfigReferences: true,
     }),
 
     packageEntry({

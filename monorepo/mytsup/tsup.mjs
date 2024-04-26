@@ -1,4 +1,6 @@
+import { findUp } from "find-up";
 import { readFile } from "fs/promises";
+import * as path from "node:path";
 
 /**
  * @param {import('tsup').Options} options
@@ -24,6 +26,12 @@ export default async (options, ourOptions) => {
     },
     env: {
       PACKAGE_VERSION: packageJson.version,
+      PACKAGE_API_VERSION: await readPackageVersion("packages/api"),
+      PACKAGE_CLIENT_VERSION: await readPackageVersion("packages/client"),
+      PACKAGE_CLI_VERSION: await readPackageVersion("packages/cli"),
+      PACKAGE_LEGACY_CLIENT_VERSION: await readPackageVersion(
+        "packages/legacy-client",
+      ),
     },
     outDir: "build/js",
     clean: true,
@@ -46,3 +54,10 @@ export default async (options, ourOptions) => {
     ],
   };
 };
+
+async function readPackageVersion(k) {
+  const workspaceRoot = path.dirname(await findUp("pnpm-workspace.yaml"));
+  return await readFile(path.join(workspaceRoot, k, "package.json")).then(f =>
+    JSON.parse(f).version
+  );
+}

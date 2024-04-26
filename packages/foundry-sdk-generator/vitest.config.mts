@@ -26,5 +26,6 @@ export default defineConfig({
     alias: {
       "consola": join(__dirname, "./src/__e2e_tests__/consola.ts"),
     },
+    pool: "forks",
   },
 });

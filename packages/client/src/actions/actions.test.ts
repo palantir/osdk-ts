@@ -25,23 +25,27 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import {
+  actionTakesAttachment,
+  createOffice,
+  moveOffice,
+  Ontology as MockOntology,
+} from "../generatedNoCheck/index.js";
 import { Attachment } from "../object/Attachment.js";
 import type {
   ActionEditResponse,
   ActionValidationResponse,
 } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-import { createActionInvoker } from "./createActionInvoker.js";
 
 describe("actions", () => {
-  let client: Client<typeof MockOntology>;
+  let client: Client;
 
   beforeAll(async () => {
     apiServer.listen();
     client = createClient(
-      MockOntology,
       "https://stack.palantir.com",
+      MockOntology.metadata.ontologyRid,
       () => "myAccessToken",
     );
   });
@@ -50,24 +54,8 @@ describe("actions", () => {
     apiServer.close();
   });
 
-  describe(createActionInvoker, () => {
-    it("has an enumerable list of actions", () => {
-      expect(Object.getOwnPropertyNames(client.actions)).toMatchInlineSnapshot(`
-        [
-          "promoteEmployee",
-          "promoteEmployeeObject",
-          "createOffice",
-          "createOfficeAndEmployee",
-          "moveOffice",
-          "actionTakesObjectSet",
-          "actionTakesAttachment",
-        ]
-      `);
-    });
-  });
-
   it("conditionally returns the edits", async () => {
-    const result = await client.actions.createOffice({
+    const result = await client(createOffice)({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -78,6 +66,8 @@ describe("actions", () => {
       {
         "addedLinksCount": 0,
         "addedObjectCount": 2,
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
         "edits": [
           {
             "objectType": "Office",
@@ -90,7 +80,7 @@ describe("actions", () => {
       }
     `);
 
-    const undefinedResult = await client.actions.createOffice({
+    const undefinedResult = await client(createOffice)({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -101,7 +91,7 @@ describe("actions", () => {
   });
 
   it("returns validation directly on validateOnly mode", async () => {
-    const result = await client.actions.moveOffice({
+    const result = await client(moveOffice)({
       officeId: "SEA",
       newAddress: "456 Pike Place",
       newCapacity: 40,
@@ -121,7 +111,7 @@ describe("actions", () => {
 
   it("throws on validation errors", async () => {
     try {
-      const result = await client.actions.moveOffice({
+      const result = await client(moveOffice)({
         officeId: "SEA",
         newAddress: "456 Pike Place",
         newCapacity: 40,
@@ -142,11 +132,16 @@ describe("actions", () => {
   });
 
   it("Accepts attachments", async () => {
-    expectTypeOf<Parameters<typeof client.actions.actionTakesAttachment>[0]>()
+    const clientBoundActionTakesAttachment = client(
+      actionTakesAttachment,
+    );
+    expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<{ attachment: Attachment }>();
 
     const attachment = new Attachment("attachment.rid");
-    const result = await client.actions.actionTakesAttachment({ attachment });
+    const result = await client(actionTakesAttachment)({
+      attachment,
+    });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();

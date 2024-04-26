@@ -17,8 +17,10 @@
 import type { ObjectEdit } from "./ObjectEdit";
 
 export interface ObjectEdits {
-  edits: Array<ObjectEdit>;
+  edits: ReadonlyArray<ObjectEdit>;
   addedObjectCount: number;
   modifiedObjectsCount: number;
+  deletedObjectsCount: number;
   addedLinksCount: number;
+  deletedLinksCount: number;
 }

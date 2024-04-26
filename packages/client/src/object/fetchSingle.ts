@@ -15,31 +15,32 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet } from "@osdk/gateway/types";
-import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
+import type { ObjectSet } from "@osdk/omniapi/types";
+import { PalantirApiError } from "@osdk/shared.net";
 import type { Osdk } from "../index.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import {
-  fetchPageOrThrow,
-  type FetchPageOrThrowArgs,
+  fetchPage,
+  type FetchPageArgs,
   type SelectArgToKeys,
-} from "./fetchPageOrThrow.js";
+} from "./fetchPage.js";
 
 export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
-  const A extends FetchPageOrThrowArgs<Q, any, any>,
+  const A extends FetchPageArgs<Q, any, any>,
 >(
-  client: ClientContext<any>,
+  client: MinimalClient,
   objectType: Q,
   args: A,
   objectSet: ObjectSet,
 ): Promise<
   Osdk<
     Q,
-    SelectArgToKeys<Q, A>,
-    A["includeRid"] extends true ? true : false
+    A["includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+      : SelectArgToKeys<Q, A>
   >
 > {
-  const result = await fetchPageOrThrow(
+  const result = await fetchPage(
     client,
     objectType,
     { ...args, pageSize: 1 },

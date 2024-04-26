@@ -19,7 +19,7 @@ import type { AggregationGroupBy } from "./AggregationGroupBy";
 import type { SearchJsonQuery } from "./SearchJsonQuery";
 
 export interface AggregateObjectsRequest {
-  aggregation: Array<Aggregation>;
+  aggregation: ReadonlyArray<Aggregation>;
   query?: SearchJsonQuery;
-  groupBy: Array<AggregationGroupBy>;
+  groupBy: ReadonlyArray<AggregationGroupBy>;
 }

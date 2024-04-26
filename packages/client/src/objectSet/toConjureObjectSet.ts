@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/gateway/types";
+import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/omniapi/types";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
@@ -41,7 +41,7 @@ export function toConjureObjectSet<
       return {
         type: "static",
         static: {
-          objectRids: objectSet.objects,
+          objectRids: objectSet.objects as string[],
           provenance: undefined,
         },
       };
@@ -189,7 +189,7 @@ function mapWhereClauseToObjectSetFilter(
           propertyId: propertyMapping.propertyApiNameToIdMapping[
             objectSetFilter.field
           ],
-          terms: [],
+          terms: [objectSetFilter.value],
         },
       };
     case "and":

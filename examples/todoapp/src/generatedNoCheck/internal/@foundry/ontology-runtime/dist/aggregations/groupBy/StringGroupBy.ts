@@ -1,1 +1,0 @@
-export { StringGroupBy } from './index';

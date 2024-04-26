@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,91 +16,75 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
+  ObjectTypeDefinition,
 } from "@osdk/api";
-import { createClientContext } from "@osdk/shared.net";
+import type { Logger } from "pino";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
-import {
-  createBaseObjectSet,
-  createObjectSet,
-} from "./objectSet/createObjectSet.js";
-import type { ObjectSet, ObjectSetFactory } from "./objectSet/ObjectSet.js";
-import { createObjectSetCreator } from "./ObjectSetCreator.js";
-import { USER_AGENT } from "./util/UserAgent.js";
+import { createMinimalClient } from "./createMinimalClient.js";
+import type { MinimalClient } from "./MinimalClientContext.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
+import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 
-export function createClient<O extends OntologyDefinition<any>>(
-  ontology: O,
+export function createClient(
   stack: string,
+  ontologyRid: string,
   tokenProvider: () => Promise<string> | string,
+  options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
-): Client<O> {
-  const clientCtx = createClientContext<O>(
-    ontology,
+): Client {
+  const clientCtx: MinimalClient = createMinimalClient(
+    {
+      ontologyRid,
+      userAgent: "", // ontology specific user agent injected elsewhere
+    },
     stack,
     tokenProvider,
-    USER_AGENT,
+    options,
     fetchFn,
   );
 
-  const objectSetFactory: ObjectSetFactory<O> = <
-    K extends ObjectOrInterfaceKeysFrom<O>,
-  >(type: K) =>
-    createBaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>(
-      (ontology["objects"][type]
-        ?? ontology["interfaces"]?.[type]) as ObjectOrInterfaceDefinitionFrom<
-          O,
-          K
-        >,
-      clientCtx,
-    );
-
-  const actionInvoker = createActionInvoker(clientCtx);
-
   function clientFn<
-    T extends ObjectOrInterfaceDefinition | ActionDefinition<any, any>,
-  >(o: T): T extends ObjectOrInterfaceDefinition ? ObjectSet<T>
-    : T extends ActionDefinition<any, any> ? ActionSignatureFromDef<T>
+    T extends
+      | ObjectOrInterfaceDefinition
+      | ActionDefinition<any, any, any>,
+  >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
+    : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
+    : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
-      return createObjectSet(o, clientCtx) as ObjectSet<any> as any;
+      clientCtx.ontologyProvider.maybeSeed(o);
+      return createObjectSet(o, clientCtx) as any;
     } else if (o.type === "action") {
-      return actionInvoker[o.apiName];
+      clientCtx.ontologyProvider.maybeSeed(o);
+      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
     } else {
-      throw new Error("Unknown definition: " + JSON.stringify(o));
+      throw new Error("not implemented");
     }
   }
 
-  const client: Client<O> = Object.defineProperties(
-    clientFn as Client<O>,
+  const client: Client = Object.defineProperties<Client>(
+    clientFn as Client,
     {
-      objectSet: { get: () => objectSetFactory },
-      objects: { get: () => createObjectSetCreator(client, clientCtx) },
-      actions: {
-        get: () => actionInvoker,
-      },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>
-        <const K extends ObjectTypeKeysFrom<O>>(
-          objectType: K,
+        <T extends ObjectOrInterfaceDefinition>(
+          definition: T,
           rid: string,
         ) => {
           return createObjectSet(
-            ontology["interfaces"]?.[objectType]
-              ?? ontology["objects"][objectType],
+            definition,
             clientCtx,
             {
               type: "intersect",
               objectSets: [
                 {
                   type: "base",
-                  objectType: objectType as K & string,
+                  objectType: definition.apiName,
                 },
                 {
                   type: "reference",
@@ -111,7 +95,10 @@ export function createClient<O extends OntologyDefinition<any>>(
           );
         },
       },
-    } satisfies Record<keyof Client<any>, PropertyDescriptor>,
+      ctx: {
+        value: clientCtx,
+      },
+    } satisfies Record<keyof Client, PropertyDescriptor>,
   );
 
   return client;

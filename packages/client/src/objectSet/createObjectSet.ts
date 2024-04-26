@@ -16,26 +16,24 @@
 
 import type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
-  WirePropertyTypes,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
-import type { ClientContext } from "@osdk/shared.net";
+import type { ObjectSet as WireObjectSet } from "@osdk/omniapi";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
-import type { AggregateOptsThatErrors } from "../object/aggregateOrThrow.js";
-import type {
-  FetchPageOrThrowArgs,
-  SelectArg,
-} from "../object/fetchPageOrThrow.js";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
+import {
+  fetchPageInternal,
+  fetchPageWithErrorsInternal,
+  type SelectArg,
+} from "../object/fetchPage.js";
 import { fetchSingle } from "../object/fetchSingle.js";
-import { aggregateOrThrow, fetchPageOrThrow } from "../object/index.js";
+import { aggregate } from "../object/index.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults } from "../query/index.js";
+import { isWireObjectSet } from "../util/WireObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
-import type { BaseObjectSet, ObjectSet } from "./ObjectSet.js";
-import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";
+import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 
 function isObjectTypeDefinition(
   def: ObjectOrInterfaceDefinition,
@@ -43,62 +41,67 @@ function isObjectTypeDefinition(
   return def.type === "object";
 }
 
-const searchAroundPrefix = "searchAround_";
+export function isObjectSet(o: any): o is ObjectSet<any> {
+  return o != null && typeof o === "object"
+    && isWireObjectSet(objectSetDefinitions.get(o));
+}
+
+/** @internal */
+export function getWireObjectSet(
+  objectSet: ObjectSet<any> | MinimalObjectSet<any>,
+): WireObjectSet {
+  return objectSetDefinitions.get(objectSet)!;
+}
+
+const objectSetDefinitions = new WeakMap<
+  any,
+  WireObjectSet
+>();
+
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
-  clientCtx: ClientContext<any>,
+  clientCtx: MinimalClient,
   objectSet: WireObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
   },
 ): ObjectSet<Q> {
   const base: ObjectSet<Q> = {
-    definition: objectSet,
+    aggregate: (aggregate<Q, any>).bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ),
 
-    // aggregate: <
-    //   AC extends AggregationClause<O, K>,
-    //   GBC extends GroupByClause<O, K> | undefined = undefined,
-    // >(req: {
-    //   select: AC;
-    //   where?: WhereClause<ObjectTypeDefinitionFrom<O, K>>;
-    //   groupBy?: GBC;
-    // }) => {
-    //   throw "TODO";
-    // },
-    aggregateOrThrow: (<
-      // AC extends AggregationClause<Q>,
-      // GBC extends GroupByClause<O, K>,
-      AO extends AggregateOpts<Q>,
-    >(
-      req: AggregateOptsThatErrors<Q, AO>,
-    ): Promise<AggregationsResults<Q, AO>> => {
-      return aggregateOrThrow<Q, AO>(
-        clientCtx,
-        objectType,
-        objectSet,
-        req,
-      );
-    }),
-    // fetchPage: async (args?: { nextPageToken?: string }) => {
-    //   throw "TODO";
-    // },
-    fetchPageOrThrow: async <
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-      R extends boolean,
-    >(
-      args?: FetchPageOrThrowArgs<Q, L, R>,
-    ) => {
-      return fetchPageOrThrow(
-        clientCtx,
-        objectType,
-        args ?? {},
-        objectSet,
-      );
-    },
+    aggregateOrThrow: (aggregate<Q, any>).bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ),
 
-    // asyncIter: () => {
-    //   throw "";
-    // },
+    fetchPage: fetchPageInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPage"],
+
+    fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPageWithErrors"],
+
+    fetchPageOrThrow: fetchPageInternal.bind(
+      globalThis,
+      clientCtx,
+      objectType,
+      objectSet,
+    ) as ObjectSet<Q>["fetchPage"],
+
     where: (clause) => {
       return createObjectSet(objectType, clientCtx, {
         type: "filter",
@@ -106,46 +109,106 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         where: modernToLegacyWhereClause(clause),
       });
     },
-    // [Symbol.asyncIterator]: () => {
-    //   throw "";
-    // },
 
     pivotTo: function<L extends LinkNames<Q>>(
       type: L,
-    ): BaseObjectSet<LinkedType<Q, L>> {
+    ): ObjectSet<LinkedType<Q, L>> {
       return createSearchAround(type)();
     },
 
     union: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "union",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
     intersect: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "intersect",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
     subtract: (...objectSets) => {
       return createObjectSet(objectType, clientCtx, {
         type: "subtract",
-        objectSets: [objectSet, ...objectSets.map(os => os.definition)],
+        objectSets: [
+          objectSet,
+          ...objectSets.map(os => objectSetDefinitions.get(os)!),
+        ],
       });
     },
 
     subscribe(listener) {
-      const instance = ObjectSetListenerWebsocket.getInstance(clientCtx);
-      return instance.subscribe(objectSet, listener);
+      // We are going to lazy load subscriptions to reduce initial
+      // bundle sizes.
+      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then((
+        mod,
+      ) =>
+        mod.ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
+          objectSet,
+          listener,
+        )
+      );
+      return () => {
+        pendingSubscribe.then((subscribe) => subscribe());
+      };
     },
+
+    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
+      let nextPageToken: string | undefined = undefined;
+      do {
+        const result = await base.fetchPage({ nextPageToken });
+
+        for (
+          const obj of await convertWireToOsdkObjects(
+            clientCtx,
+            result.data,
+            undefined,
+          )
+        ) {
+          yield obj as Osdk<Q, "$all">;
+        }
+      } while (nextPageToken != null);
+    },
+
+    get: (isObjectTypeDefinition(objectType)
+      ? async <A extends SelectArg<Q>>(
+        primaryKey: Q extends ObjectTypeDefinition<any>
+          ? PropertyValueClientToWire[Q["primaryKeyType"]]
+          : never,
+        options: A,
+      ) => {
+        const withPk: WireObjectSet = {
+          type: "filter",
+          objectSet: objectSet,
+          where: {
+            type: "eq",
+            field: objectType.primaryKeyApiName,
+            value: primaryKey,
+          },
+        };
+
+        return await fetchSingle(
+          clientCtx,
+          objectType,
+          options,
+          withPk,
+        ) as Osdk<Q>;
+      }
+      : undefined) as ObjectSet<Q>["get"],
   };
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
-      return createBaseObjectSet(
+      return createObjectSet(
         objectType,
         clientCtx,
         {
@@ -157,51 +220,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     };
   }
 
-  return new Proxy(base as ObjectSet<Q>, {
-    get(target, p, receiver) {
-      if (typeof p === "string" && p.startsWith(searchAroundPrefix)) {
-        return createSearchAround(p.substring(searchAroundPrefix.length));
-      }
-      return (target as any)[p as any] as any;
-    },
-  });
-}
+  objectSetDefinitions.set(base, objectSet);
 
-export function createBaseObjectSet<
-  Q extends ObjectOrInterfaceDefinition,
->(
-  objectType: Q,
-  clientCtx: ClientContext<any>,
-  objectSet: WireObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
-): BaseObjectSet<Q> {
-  return {
-    ...createObjectSet(objectType, clientCtx, objectSet),
-
-    get: (isObjectTypeDefinition(objectType)
-      ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? WirePropertyTypes[Q["primaryKeyType"]]
-          : never,
-        options: A,
-      ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: modernToLegacyWhereClause({
-            [objectType.primaryKeyApiName]: primaryKey,
-          }),
-        };
-
-        return await fetchSingle(
-          clientCtx,
-          objectType,
-          options,
-          withPk,
-        ) as Osdk<Q>;
-      }
-      : undefined) as BaseObjectSet<Q>["get"],
-  };
+  return base;
 }

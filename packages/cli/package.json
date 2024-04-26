@@ -1,6 +1,6 @@
 {
   "name": "@osdk/cli",
-  "version": "0.11.0",
+  "version": "0.18.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,37 +22,40 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build"
+    "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
-    "@osdk/generator": "workspace:*",
-    "@osdk/shared.net": "workspace:*",
+    "@arethetypeswrong/cli": "^0.15.2",
+    "@osdk/api": "workspace:^",
+    "@osdk/gateway": "workspace:^",
+    "@osdk/generator": "workspace:^",
+    "@osdk/shared.net": "workspace:^",
     "ajv": "^8.12.0",
     "archiver": "^6.0.1",
     "conjure-lite": "^0.3.3",
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
-    "open": "^9.1.0",
+    "open": "^10.1.0",
     "semver": "^7.6.0",
+    "tslib": "^2.6.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@types/archiver": "^6.0.0",
+    "@osdk/cli.cmd.typescript": "workspace:^",
+    "@osdk/cli.common": "workspace:^",
+    "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.4",
     "@types/node": "^18.0.0",
-    "@types/semver": "^7.5.7",
+    "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.29",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -60,15 +63,14 @@
   "imports": {
     "#net": "./src/net/index.mts"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "osdk": "./bin/osdk.mjs"
   },
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

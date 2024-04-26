@@ -14,49 +14,82 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition } from "@osdk/api";
 import type { InterfaceType } from "@osdk/gateway/types";
-import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import { deleteUndefineds } from "../util/deleteUndefineds";
+import { stringify } from "../util/stringify";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-  interfaceType: InterfaceType,
+  interfaceDef: InterfaceType,
   v2: boolean = false,
 ) {
-  return `
-    export const ${interfaceType.apiName} = ${
-    JSON.stringify(
-      wireInterfaceTypeV2ToSdkObjectDefinition(
-        interfaceType,
-        v2,
-      ),
-      null,
-      2,
-    )
-  } satisfies InterfaceDefinition<"${interfaceType.apiName}", "">;`;
-}
-
-function wireInterfaceTypeV2ToSdkObjectDefinition(
-  interfaceType: InterfaceType,
-  v2: boolean,
-): InterfaceDefinition<any, any> {
-  return {
-    type: "interface",
-    apiName: interfaceType.apiName,
-    description: interfaceType.description,
-    properties: Object.fromEntries(
-      Object.entries(interfaceType.properties).map((
-        [key, value],
-      ) => {
-        return [
-          key,
-          wirePropertyV2ToSdkPropertyDefinition(
-            value,
-            true,
-          ),
-        ];
-      }),
+  const definition = deleteUndefineds(
+    __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+      interfaceDef,
+      v2,
     ),
-    links: {},
-  };
+  );
+
+  const objectDefIdentifier = getObjectDefIdentifier(
+    interfaceDef.apiName,
+    v2,
+  );
+
+  function getV2Types() {
+    return `
+  export interface ${objectDefIdentifier} extends InterfaceDefinition<"${interfaceDef.apiName}", ${interfaceDef.apiName}>, VersionBound<$ExpectedClientVersion> {
+    osdkMetadata: typeof $osdkMetadata;
+    ${
+      stringify(definition, {
+        osdkMetadata: () => undefined,
+        type: () => undefined,
+        apiName: () => undefined,
+        links: (_value) =>
+          `{
+      ${
+            stringify(definition.links, {
+              "*": (definition) =>
+                `ObjectTypeLinkDefinition<${
+                  getObjectDefIdentifier(definition.targetType, v2)
+                }, ${definition.multiplicity}>`,
+            })
+          }
+    }`,
+        properties: (_value) => (`{
+      ${
+          stringify(definition.properties, {
+            "*": (propertyDefinition) =>
+              `PropertyDef<"${propertyDefinition.type}", "${
+                propertyDefinition.nullable ? "nullable" : "non-nullable"
+              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
+          })
+        }
+    }`),
+      })
+    }
+  }
+
+`;
+  }
+
+  // FIXME: We need to fill in the imports
+  // if we want links to work
+  const imports: string[] = [];
+
+  return `${imports.join("\n")}
+
+    ${v2 ? getV2Types() : ""}
+
+    export const ${definition.apiName}: ${objectDefIdentifier} = {
+      osdkMetadata: $osdkMetadata,
+      ${
+    stringify(definition, {
+      osdkMetadata: () => undefined,
+    })
+  }
+      
+    };`;
 }

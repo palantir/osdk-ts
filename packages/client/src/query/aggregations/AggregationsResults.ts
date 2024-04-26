@@ -35,7 +35,12 @@ export type AggregationsResults<
     ?
       & AggregationResultsWithoutGroups<Q, AO["select"]>
       & AggregationCountResult<Q, AO["select"]>
-  : AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>
+  : Exclude<keyof AO["groupBy"], AggregatableKeys<Q>> extends never
+    ? AggregationResultsWithGroups<Q, AO["select"], AO["groupBy"]>
+  : `Sorry, the following are not valid groups for an aggregation: ${Exclude<
+    keyof AO["groupBy"] & string,
+    AggregatableKeys<Q>
+  >}`
   : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
     keyof AO["select"] & string,
     AggregatableKeys<Q> | "$count"

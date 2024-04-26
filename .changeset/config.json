@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.3.1/schema.json",
+  "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [],
@@ -8,17 +8,15 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "@osdk/examples.basic.cli",
-    "@osdk/examples.basic.sdk",
-    "@osdk/examples.one.dot.one",
-    "@osdk/examples.todoapp",
-    "@osdk/tests.verify-fallback-package",
-    "eslint-config-sane",
+    "@osdk/examples.*",
+    "@osdk/tests.*",
+    "@osdk/version-updater",
     "mytsup",
     "tsconfig"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {
     "useCalculatedVersion": true
-  }
+  },
+  "prereleaseTemplate": "{tag}-{datetime}-{commit}"
 }

@@ -106,6 +106,7 @@ interface PersonDef extends ObjectTypeDefinition<"Person"> {
 
 export const MockOntology = {
   metadata: {
+    expectsClientVersion: "0.0.0",
     ontologyRid: "ontologyRid",
     ontologyApiName: "ontologyApiName",
     userAgent: "userAgent",

@@ -17,22 +17,28 @@
 import type {
   DefaultBodyType,
   MockedResponse,
+  PathParams,
   ResponseComposition,
   RestContext,
   RestRequest,
 } from "msw";
+import { OpenApiCallError } from "./util/handleOpenApiCall";
 
-type MiddlewareHandler<TReqBody extends DefaultBodyType = DefaultBodyType> = (
-  req: RestRequest<TReqBody>,
+export type MiddlewareHandler<
+  TReqBody extends DefaultBodyType = DefaultBodyType,
+  TPathParams extends PathParams<string> = PathParams<string>,
+> = (
+  req: RestRequest<TReqBody, TPathParams>,
   res: ResponseComposition,
   ctx: RestContext,
 ) => Promise<MockedResponse<any>>;
 
 export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,
+  TPathParams extends PathParams<string> = PathParams<string>,
 >(
-  handler: MiddlewareHandler<TReqBody>,
-): MiddlewareHandler<TReqBody> {
+  handler: MiddlewareHandler<TReqBody, TPathParams>,
+): MiddlewareHandler<TReqBody, TPathParams> {
   return async (req, res, ctx) => {
     const authHeader = req.headers.get("authorization");
 
@@ -43,6 +49,13 @@ export function authHandlerMiddleware<
       );
     }
 
-    return handler(req, res, ctx);
+    try {
+      return handler(req as any, res, ctx);
+    } catch (e) {
+      if (e instanceof OpenApiCallError) {
+        return res(ctx.status(e.status), ctx.json(e.json));
+      }
+      throw e;
+    }
   };
 }

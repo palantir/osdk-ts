@@ -19,5 +19,5 @@ import type { PageToken } from "./PageToken";
 
 export interface ListLinkedObjectsResponse {
   nextPageToken?: PageToken;
-  data: Array<OntologyObject>;
+  data: ReadonlyArray<OntologyObject>;
 }

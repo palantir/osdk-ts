@@ -25,6 +25,6 @@ export interface ObjectTypesNotSynced {
   errorName: "ObjectTypesNotSynced";
   errorInstanceId: string;
   parameters: {
-    objectTypes: Array<ObjectTypeApiName>;
+    objectTypes: ReadonlyArray<ObjectTypeApiName>;
   };
 }

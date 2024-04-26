@@ -28,5 +28,5 @@ export interface SearchObjectsRequest {
   /**
    * The API names of the object type properties to include in the response.
    */
-  fields: Array<PropertyApiName>;
+  fields: ReadonlyArray<PropertyApiName>;
 }

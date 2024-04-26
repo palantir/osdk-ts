@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/gateway/types";
+import type { SearchJsonQueryV2 } from "@osdk/omniapi";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {
@@ -115,7 +115,10 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
     "Defined key values are only allowed when they are not undefined.",
   );
 
-  if (typeof filter === "string" || typeof filter === "number") {
+  if (
+    typeof filter === "string" || typeof filter === "number"
+    || typeof filter === "boolean"
+  ) {
     return {
       type: "eq",
       field,
@@ -137,7 +140,9 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
   if (!hasDollarSign) {
     // Future case for structs
     throw new Error(
-      "Unsupported filter. Did you forget to use a $-prefixed filter?",
+      `Unsupported filter. Did you forget to use a $-prefixed filter? (${
+        JSON.stringify(filter)
+      })`,
     );
   }
 

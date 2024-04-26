@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
   PalantirApiError,
 } from "@osdk/shared.net";
 import { consola } from "consola";
-import { ExitProcessError } from "../ExitProcessError.js";
 import { USER_AGENT } from "./UserAgent.js";
 
 export function createFetch(
@@ -64,11 +64,18 @@ function handleFetchError(e: unknown): Promise<Response> {
   }
 
   let message = e.message;
-  if (e.errorName === "Artifacts:ArtifactAlreadyExists") {
-    message = "Version already exists";
+  if (e.errorName === "CannotDeleteDeployedWebsiteVersion") {
+    message = "The site version to delete is live and cannot be deleted";
+    tip = "Run the `site version set` command to change the live site version";
+  } else if (e.errorName === "InvalidWebsiteVersion") {
+    message = "The site version is invalid and must be a valid SemVer string";
+  } else if (e.errorName === "WebsiteVersionAlreadyExists") {
+    message = "The site version already exists";
+  } else if (e.errorName === "WebsiteVersionNotFound") {
+    message = "The site version could not be found";
   }
 
-  throw new ExitProcessError(1, message, tip);
+  throw new ExitProcessError(1, message, tip, e);
 }
 
 function createRequestLoggingFetch(

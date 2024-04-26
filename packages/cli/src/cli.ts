@@ -14,78 +14,39 @@
  * limitations under the License.
  */
 
+import typescript from "@osdk/cli.cmd.typescript";
+import type { CliCommonArgs } from "@osdk/cli.common";
+import { ExitProcessError, getYargsBase } from "@osdk/cli.common";
 import { consola } from "consola";
-import { colorize } from "consola/utils";
 import type { Argv } from "yargs";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import type { CliCommonArgs } from "./CliCommonArgs.js";
 import auth from "./commands/auth/index.js";
 import site from "./commands/site/index.js";
-import typescript from "./commands/typescript/index.js";
-import { ExitProcessError } from "./ExitProcessError.js";
 import { logConfigFileMiddleware } from "./yargs/logConfigFileMiddleware.js";
-import { logLevelMiddleware } from "./yargs/logLevelMiddleware.js";
-import { YargsCheckError } from "./YargsCheckError.js";
 
 export async function cli(args: string[] = process.argv) {
   consola.info(
     `Palantir OSDK CLI ${process.env.PACKAGE_VERSION}\n`,
   );
 
-  const base: Argv<CliCommonArgs> = yargs(hideBin(args))
-    .wrap(Math.min(150, yargs().terminalWidth()))
-    .env("OSDK")
-    .version(false)
-    .option(
-      "verbose",
-      {
-        alias: "v",
-        type: "boolean",
-        description: "Enable verbose logging",
-        count: true,
-      },
-    )
-    .demandCommand()
-    .middleware(logLevelMiddleware, true)
-    .middleware(logConfigFileMiddleware)
-    .strict()
-    .command({
-      command: "unstable",
-      aliases: ["experimental"],
-      describe: "Unstable commands",
-      builder: async (argv) => {
-        return argv
-          .command(site)
-          .command(typescript)
-          .command(auth)
-          .demandCommand();
-      },
-      handler: (_args) => {},
-    })
-    .fail(async (msg, err, argv) => {
-      if (err instanceof ExitProcessError) {
-        consola.error(err.message);
-        if (err.tip != null) {
-          consola.log(colorize("bold", `💡 Tip: ${err.tip}`));
-          consola.log("");
-        }
-        consola.debug(err.stack);
-      } else {
-        if (err && err instanceof YargsCheckError === false) {
-          throw err;
-        } else {
-          argv.showHelp();
-          consola.log("");
-          consola.error(msg);
-        }
-      }
-      process.exit(1);
-    });
+  const base: Argv<CliCommonArgs> = getYargsBase(args);
 
   // Special handling where failures happen before yargs does its error handling within .fail
   try {
-    return await base.parseAsync();
+    return await base
+      .middleware(logConfigFileMiddleware)
+      .command({
+        command: "unstable",
+        aliases: ["experimental"],
+        describe: "Unstable commands",
+        builder: async (argv) => {
+          return argv
+            .command(site)
+            .command(typescript)
+            .command(auth)
+            .demandCommand();
+        },
+        handler: (_args) => {},
+      }).parseAsync();
   } catch (err) {
     if (err instanceof ExitProcessError) {
       consola.error(err);

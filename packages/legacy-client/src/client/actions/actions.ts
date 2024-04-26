@@ -26,11 +26,15 @@ import type {
   Timestamp,
 } from "../..";
 import type {
+  BatchActionExecutionOptions,
   BulkActionExecutionOptions,
   BulkActionResponseFromOptions,
 } from "../baseTypes";
 import type { ObjectSet } from "../interfaces";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
+import type {
+  OsdkLegacyObjectFrom,
+  OsdkLegacyObjectFromNoSearchArounds,
+} from "../OsdkLegacyObject";
 import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
 import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
 import type { ValuesOfMap } from "../utils/ValuesOfMap";
@@ -39,7 +43,7 @@ export interface ValidLegacyActionParameterTypes {
   boolean: boolean;
   string: string;
   integer: number;
-  long: number;
+  long: number | string;
   double: number;
   datetime: LocalDate;
   timestamp: Timestamp;
@@ -100,7 +104,7 @@ export type ModifiedObjects<
       "modifiedEntities"
     ] as O["actions"][A]["modifiedEntities"][K] extends { modified: true } ? K
       : never
-  ]: OsdkLegacyObjectFrom<O, K>;
+  ]: OsdkLegacyObjectFromNoSearchArounds<O, K>;
 };
 
 export type CreatedObjects<
@@ -112,21 +116,21 @@ export type CreatedObjects<
       "modifiedEntities"
     ] as O["actions"][A]["modifiedEntities"][K] extends { created: true } ? K
       : never
-  ]: OsdkLegacyObjectFrom<O, K>;
+  ]: OsdkLegacyObjectFromNoSearchArounds<O, K>;
 };
 
 export type CreatedObjectOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > = ValuesOfMap<CreatedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
-  ? OsdkLegacyObjectFrom<O, K>
+  ? OsdkLegacyObjectFromNoSearchArounds<O, K>
   : void;
 
 export type ModifiedObjectsOrVoid<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
 > = ValuesOfMap<ModifiedObjects<O, A>> extends OsdkLegacyObjectFrom<O, infer K>
-  ? OsdkLegacyObjectFrom<O, K>
+  ? OsdkLegacyObjectFromNoSearchArounds<O, K>
   : void;
 
 export type WrappedActionReturnType<
@@ -140,18 +144,34 @@ export type WrappedActionReturnType<
   >
 >;
 
-export type WrappedBulkActionReturnType<
+export type WrappedBatchActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
-  Op extends BulkActionExecutionOptions,
+  Op extends BatchActionExecutionOptions,
 > = Promise<
   Result<
-    BulkActionReturnType<O, A, Op>,
+    BatchActionReturnType<O, A, Op>,
     ActionError
   >
 >;
 
+export type WrappedBulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = WrappedBatchActionReturnType<O, A, Op>;
+
 export type BulkActionReturnType<
+  O extends OntologyDefinition<any>,
+  A extends keyof O["actions"],
+  Op extends BulkActionExecutionOptions,
+> = BatchActionReturnType<
+  O,
+  A,
+  Op
+>;
+
+export type BatchActionReturnType<
   O extends OntologyDefinition<any>,
   A extends keyof O["actions"],
   Op extends BulkActionExecutionOptions,
@@ -183,7 +203,7 @@ export type Actions<
       ) => WrappedActionReturnType<O, A, Op>;
 };
 
-export type BulkActions<O extends OntologyDefinition<any>> = {
+export type BatchActions<O extends OntologyDefinition<any>> = {
   [A in keyof O["actions"]]:
     IsEmptyRecord<O["actions"][A]["parameters"]> extends true
       ? <Op extends BulkActionExecutionOptions>(
@@ -195,3 +215,5 @@ export type BulkActions<O extends OntologyDefinition<any>> = {
         options?: Op,
       ) => WrappedBulkActionReturnType<O, A, Op>;
 };
+
+export type BulkActions<O extends OntologyDefinition<any>> = BatchActions<O>;

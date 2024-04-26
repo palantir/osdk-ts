@@ -17,7 +17,6 @@
 import type { ActionTypeApiName } from "../components/ActionTypeApiName";
 import type { ActionTypeV2 } from "../components/ActionTypeV2";
 import type { AggregateObjectSetRequestV2 } from "../components/AggregateObjectSetRequestV2";
-import type { AggregateObjectSetResponseV2 } from "../components/AggregateObjectSetResponseV2";
 import type { AggregateObjectsRequestV2 } from "../components/AggregateObjectsRequestV2";
 import type { AggregateObjectsResponseV2 } from "../components/AggregateObjectsResponseV2";
 import type { ApplyActionRequestV2 } from "../components/ApplyActionRequestV2";
@@ -286,7 +285,7 @@ export function listObjectsV2<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
@@ -313,7 +312,7 @@ export function getObjectV2<TResponse>(
   objectType: ObjectTypeApiName,
   primaryKey: PropertyValueEscapedString,
   queryParameters: {
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
     excludeRid?: boolean;
@@ -423,6 +422,7 @@ export function aggregateObjectsV2<TResponse>(
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
+    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -614,7 +614,7 @@ export function listLinkedObjectsV2<TResponse>(
   queryParameters: {
     pageSize?: PageSize;
     pageToken?: PageToken;
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     orderBy?: OrderBy;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
@@ -645,7 +645,7 @@ export function getLinkedObjectV2<TResponse>(
   linkType: LinkTypeApiName,
   linkedObjectPrimaryKey: PropertyValueEscapedString,
   queryParameters: {
-    select: Array<SelectedPropertyApiName>;
+    select: ReadonlyArray<SelectedPropertyApiName>;
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
     excludeRid?: boolean;
@@ -1066,12 +1066,13 @@ export function loadObjectSetV2<TResponse>(
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  */
 export function aggregateObjectSetV2<TResponse>(
-  _request: OpenApiRequest<AggregateObjectSetResponseV2, TResponse>,
+  _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
   ontology: OntologyIdentifier,
   request: AggregateObjectSetRequestV2,
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
+    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(

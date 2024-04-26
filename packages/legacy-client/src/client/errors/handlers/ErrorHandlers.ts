@@ -123,6 +123,14 @@ export function handleLoadObjectSetError(
       return handler.handleObjectTypeNotSynced(error, parameters.objectType);
     case "ObjectsExceededLimit":
       return handler.handleObjectsExceededLimit(error);
+    case "OntologySyncing":
+      return handler.handleOntologySyncing(error, parameters.objectType);
+    case "PropertiesNotFound":
+      return handler.handlePropertiesNotFound(
+        error,
+        parameters.objectType,
+        parameters.properties,
+      );
     case "PropertiesNotSearchable":
       return handler.handlePropertiesNotSearchable(
         error,

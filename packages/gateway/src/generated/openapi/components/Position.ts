@@ -32,4 +32,4 @@ import type { Coordinate } from "./Coordinate";
  * elements is beyond the scope of this specification, and additional
  * elements MAY be ignored by parsers.
  */
-export type Position = Array<Coordinate>;
+export type Position = ReadonlyArray<Coordinate>;

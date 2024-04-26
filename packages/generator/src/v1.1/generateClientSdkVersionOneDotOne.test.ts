@@ -34,7 +34,7 @@ describe("generator", () => {
     );
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
-    helper.dumpFilesToConsole();
+    // helper.dumpFilesToConsole();
 
     expect(
       helper.getFiles()[`${BASE_PATH}/index.ts`],

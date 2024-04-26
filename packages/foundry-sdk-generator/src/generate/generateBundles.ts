@@ -16,7 +16,6 @@
 
 import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
-// eslint-disable-next-line import/no-extraneous-dependencies
 import type { ModuleFormat, RollupBuild } from "rollup";
 import { rollup } from "rollup";
 import nodePolyfill from "rollup-plugin-polyfill-node";

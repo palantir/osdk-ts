@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
 
-export interface ObjectTypeWithAllPropertyTypesDef
-  extends ObjectTypeDefinition<"ObjectTypeWithAllPropertyTypes">
+export interface ObjectTypeWithAllPropertyTypesDef extends
+  ObjectTypeDefinition<
+    "ObjectTypeWithAllPropertyTypes",
+    ObjectTypeWithAllPropertyTypesDef
+  >,
+  VersionBound<"0.15.0">
 {
   type: "object";
   apiName: "ObjectTypeWithAllPropertyTypes";
@@ -147,7 +151,7 @@ export interface ObjectTypeWithAllPropertyTypesDef
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypesDef =
   {
     type: "object",
-    apiName: "ObjectTypeWithAllPropertyTypes",
+    apiName: "ObjectTypeWithAllPropertyTypes" as const,
     primaryKeyApiName: "id" as const,
     primaryKeyType: "integer",
     links: {},

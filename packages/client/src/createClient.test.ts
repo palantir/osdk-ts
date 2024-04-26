@@ -14,37 +14,105 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition, VersionBound } from "@osdk/api";
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Client } from "./Client.js";
 import { createClient } from "./createClient.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
 describe(createClient, () => {
-  it("Passes the expected userAgent string", async () => {
-    const fetchFunction: MockedFunction<typeof globalThis.fetch> = vi.fn();
+  const validOlderVersion = "0.13.0" as const;
+  const validCurrentVersion = "0.14.0" as const;
+  const invalidFutureVersion = "100.100.100" as const;
 
-    const client = createClient(
-      MockOntology,
+  let fetchFunction: MockedFunction<typeof globalThis.fetch>;
+  let client: Client;
+
+  beforeEach(() => {
+    fetchFunction = vi.fn();
+
+    client = createClient(
       "https://mock.com",
+      MockOntology.metadata.ontologyRid,
       () => "Token",
+      undefined,
       fetchFunction,
     );
 
     mockFetchResponse(fetchFunction, { data: [] });
+  });
 
-    await client.objects.Task.fetchPageOrThrow();
-    expect(fetchFunction).toHaveBeenCalledTimes(1);
+  describe("user agent passing", () => {
+    function getUserAgentPartsFromMockedFetch() {
+      const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers)
+        .get(
+          "Fetch-User-Agent",
+        );
+      const parts = userAgent?.split(" ") ?? [];
+      return parts;
+    }
 
-    const userAgent = (fetchFunction.mock.calls[0][1]?.headers as Headers).get(
-      "Fetch-User-Agent",
-    );
-    const parts = userAgent?.split(" ") ?? [];
-    const [packageUA, generatorUA] = MockOntology.metadata.userAgent
-      .split(" ");
-    expect(parts).toHaveLength(3);
-    expect(parts[0]).toEqual(packageUA);
-    expect(parts[1]).toEqual(generatorUA);
-    expect(parts[2]).toEqual(USER_AGENT); // the client USER_AGENT has an undefined version during vitest runs
+    it("works for objects", async () => {
+      await client(MockOntology.objects.Task).fetchPage();
+      expect(fetchFunction).toHaveBeenCalledTimes(1);
+
+      const parts = getUserAgentPartsFromMockedFetch();
+      expect(parts).toEqual([
+        ...MockOntology.objects.Task.osdkMetadata!
+          .extraUserAgent
+          .split(" "),
+        USER_AGENT,
+      ]);
+    });
+  });
+
+  describe("Version compatibility checks", () => {
+    it("does not error on older builds before this check", () => {
+      // this cast simulates older definitions as they wont have the BoundVersion type
+      client(MockOntology.objects.Task as ObjectTypeDefinition<"Task">)
+        .fetchPage();
+    });
+
+    it("works with 'older versions'", () => {
+      // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
+      // meaning this version of the code should work with 0.13.0 and 0.14.0.
+      // We will need to update these assumptions when we break major
+      client(
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<"Task">
+          & VersionBound<typeof validOlderVersion>,
+      )
+        .fetchPage();
+    });
+
+    it("works with 'current versions'", () => {
+      // to simulate this, we will use 0.13.0 as it was the prior version when this test was written
+      // meaning this version of the code should work with 0.13.0 and 0.14.0.
+      // We will need to update these assumptions when we break major
+      client(
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<
+            "Task",
+            any
+          >
+          & VersionBound<typeof validCurrentVersion>,
+      )
+        .fetchPage();
+    });
+
+    it("doesnt work with a far future version", () => {
+      client(
+        // @ts-expect-error
+        MockOntology.objects.Task as
+          & ObjectTypeDefinition<
+            "Task",
+            any
+          >
+          & VersionBound<typeof invalidFutureVersion>,
+      )
+        .fetchPage();
+    });
   });
 });

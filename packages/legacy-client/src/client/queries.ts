@@ -113,7 +113,7 @@ export interface ValidLegacyBaseQueryDataTypes {
   double: number;
   float: number;
   integer: number;
-  long: number;
+  long: number | string;
   boolean: boolean;
   string: string;
   date: LocalDate;
@@ -125,7 +125,11 @@ export type QueryDataTypeBase<
   O extends OntologyDefinition<any>,
   T extends QueryDataType<O, any, R>,
   R extends boolean,
-> = T extends PrimitiveDataType<infer X> ? ValidLegacyBaseQueryDataTypes[X]
+> = T extends PrimitiveDataType<infer X>
+  // returned longs are always strings, but we can accept numbers as input
+  ? (R extends true
+    ? X extends "long" ? string : ValidLegacyBaseQueryDataTypes[X]
+    : ValidLegacyBaseQueryDataTypes[X])
   : T extends ObjectQueryDataType<any>
     ? R extends true ? OsdkLegacyObjectFrom<O, T["object"]>
     :

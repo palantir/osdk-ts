@@ -50,17 +50,25 @@ export function generateNamespaces(
   namespaces: Namespace[],
   outputDir: string,
   project: Project,
+  addCopyright: (sf: SourceFile) => void,
 ) {
   const directory = project.createDirectory(`${outputDir}/namespaces`);
-  namespaces.forEach(namespace => generateNamespace(namespace, directory));
+  namespaces.forEach(namespace =>
+    generateNamespace(namespace, directory, addCopyright)
+  );
 }
 
 const UNDEFINED_CONSTANT = "__undefined";
 const APPLICATION_JSON_CONSTANT = `__applicationJson`;
 const ANY_MEDIA_TYPE_CONSTANT = `__anyMediaType`;
 
-export function generateNamespace(namespace: Namespace, directory: Directory) {
+export function generateNamespace(
+  namespace: Namespace,
+  directory: Directory,
+  addCopyright: (sf: SourceFile) => void,
+) {
   const sourceFile = directory.createSourceFile(`${namespace.name}.ts`);
+
   const referenceSet = new Set<string>();
 
   namespace.resources.forEach(resource =>
@@ -117,6 +125,8 @@ export function generateNamespace(namespace: Namespace, directory: Directory) {
     moduleSpecifier: "../request",
     namedImports: ["OpenApiRequest"],
   });
+
+  addCopyright(sourceFile);
 }
 
 export function generateResource(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet as WireObjectSet } from "@osdk/gateway/types";
+import type { ObjectSet as WireObjectSet } from "@osdk/omniapi/types";
 
 const WIRE_OBJECT_SET_TYPES = new Set([
   "base",

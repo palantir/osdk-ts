@@ -1,0 +1,56 @@
+{
+  "name": "@osdk/examples.basic.sdk",
+  "private": true,
+  "version": "0.0.0",
+  "description": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "types": "./build/types/index.d.ts",
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
+    },
+    "./*": {
+      "types": "./build/types/public/*.d.ts",
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
+    }
+  },
+  "scripts": {
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "tsc-absolute"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^"
+  },
+  "devDependencies": {
+    "@osdk/cli.cmd.typescript": "workspace:^",
+    "typescript": "^5.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [],
+  "files": [
+    "build/types",
+    "build/js",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "main": "./build/js/index.cjs",
+  "module": "./build/js/index.mjs",
+  "types": "./build/types/index.d.ts",
+  "type": "module"
+}

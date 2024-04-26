@@ -16,9 +16,10 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { Actions, BulkActions } from "./actions/actions";
+import type { Actions, BatchActions, BulkActions } from "./actions/actions";
 import {
   createActionProxy,
+  createBatchActionProxy,
   createBulkActionProxy,
 } from "./actions/createActionProxy";
 import { Attachments } from "./baseTypes";
@@ -41,8 +42,13 @@ export class Ontology<O extends OntologyDefinition<any>> {
     return createActionProxy(this.#client);
   }
 
+  /** @deprecated use batchActions() instead */
   get bulkActions(): BulkActions<O> {
     return createBulkActionProxy(this.#client);
+  }
+
+  get batchActions(): BatchActions<O> {
+    return createBatchActionProxy(this.#client);
   }
 
   get queries(): Queries<O> {

@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import type { Project } from "ts-morph";
+import type { Project, SourceFile } from "ts-morph";
 
-export function generateRequestType(outputDir: string, project: Project) {
+export function generateRequestType(
+  outputDir: string,
+  project: Project,
+  addCopyright: (sf: SourceFile) => void,
+) {
   const directory = project.createDirectory(`${outputDir}/request`);
   const sourceFile = directory.createSourceFile(`OpenApiRequest.ts`);
 
@@ -42,4 +46,5 @@ export function generateRequestType(outputDir: string, project: Project) {
             responseMediaType?: string
         ) => Promise<TResponse>`,
   });
+  addCopyright(sourceFile);
 }

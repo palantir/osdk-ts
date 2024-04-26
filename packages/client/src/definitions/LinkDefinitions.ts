@@ -20,8 +20,8 @@ import type {
   ObjectTypeLinkDefinition,
   ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
-import type { SelectArg, SelectArgToKeys } from "../object/fetchPageOrThrow.js";
-import type { BaseObjectSet } from "../objectSet/ObjectSet.js";
+import type { SelectArg, SelectArgToKeys } from "../object/fetchPage.js";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 /** The $link container to get from one object type to its linked objects */
@@ -35,7 +35,7 @@ export type OsdkObjectLinksEntry<
   O extends ObjectTypeDefinition<any>,
   L extends ObjectTypeLinkKeysFrom2<O>,
 > = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (
-    M extends false ? SingleLinkAccessor<T> : BaseObjectSet<T>
+    M extends false ? SingleLinkAccessor<T> : ObjectSet<T>
   )
   : never;
 
@@ -57,6 +57,6 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
   ) => Promise<
     DefaultToFalse<A["includeRid"]> extends false
       ? Osdk<T, SelectArgToKeys<T, A>>
-      : Osdk<T, SelectArgToKeys<T, A>, DefaultToFalse<A["includeRid"]>>
+      : Osdk<T, SelectArgToKeys<T, A> | "$rid">
   >;
 }

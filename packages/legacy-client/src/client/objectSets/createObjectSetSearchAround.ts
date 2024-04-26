@@ -25,6 +25,7 @@ import type { SearchAround } from "../interfaces/searchAround";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createOsdkObjectSet } from "./OsdkObjectSet";
 
+/**@deprecated */
 export function createObjectSetSearchAround<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,

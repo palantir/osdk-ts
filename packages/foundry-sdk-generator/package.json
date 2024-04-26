@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "0.205.0",
+  "version": "1.1.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,20 +22,19 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build"
+    "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
-    "@osdk/generator": "workspace:*",
-    "@osdk/legacy-client": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/gateway": "workspace:^",
+    "@osdk/generator": "workspace:^",
+    "@osdk/legacy-client": "workspace:^",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
@@ -46,23 +45,22 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/shared.test": "workspace:*",
+    "@osdk/shared.test": "workspace:^",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.2.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [ ],
+  "keywords": [],
   "bin": {
     "foundry-sdk-generator": "./bin/foundry-sdk-generator"
   },
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

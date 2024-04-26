@@ -19,50 +19,54 @@ import type {
   ObjectOrInterfaceKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ClientContext } from "@osdk/shared.net";
 import type { Client } from "./Client.js";
-import type { BaseObjectSet } from "./objectSet/ObjectSet.js";
+import type { ObjectSet } from "./objectSet/ObjectSet.js";
 
 /**
  * A type that creates an object set for each object in the ontology.
  */
 export type ObjectSetCreator<O extends OntologyDefinition<any>> = {
-  [T in ObjectOrInterfaceKeysFrom<O>]: BaseObjectSet<
+  [T in ObjectOrInterfaceKeysFrom<O>]: ObjectSet<
     ObjectOrInterfaceDefinitionFrom<O, T>
   >;
 };
 
 /**
  * Create a proxy for the object set creator.
+ *
+ * @deprecated will be removed when we complete switch to full client(Type) syntax
+ *
  * @param client The client to use to create the object sets.
  * @returns A proxy for the object set creator.
  */
 export function createObjectSetCreator<
-  T extends Client<any>,
+  T extends Client,
   D extends OntologyDefinition<any>,
 >(
   client: T,
-  clientContext: ClientContext<D>,
+  ontology: D,
 ) {
   return new Proxy(
     {},
     {
       get: (target, p, receiver) => {
-        if (typeof p === "string") return client.objectSet(p);
+        if (typeof p === "string") {
+          return client(ontology.objects[p] ?? ontology.interfaces?.[p]);
+        }
 
         return undefined;
       },
 
       ownKeys(target) {
-        return Object.keys(clientContext.ontology.objects);
+        return Object.keys(ontology.objects);
       },
 
       getOwnPropertyDescriptor(target, p) {
         if (typeof p === "string") {
           return {
-            enumerable: clientContext.ontology.objects[p] != null,
+            enumerable: ontology.objects[p] != null,
             configurable: true,
-            value: client.objectSet(p),
+            get: () => client(ontology.objects[p] ?? ontology.interfaces?.[p]),
           };
         }
       },

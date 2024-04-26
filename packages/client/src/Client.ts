@@ -16,36 +16,45 @@
 
 import type {
   ActionDefinition,
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
+  ObjectTypeDefinition,
+  VersionBound,
 } from "@osdk/api";
-import type { Actions, ActionSignatureFromDef } from "./actions/Actions.js";
-import type { BaseObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
-import type { ObjectSetCreator } from "./ObjectSetCreator.js";
+import type { ActionSignatureFromDef } from "./actions/Actions.js";
+import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
-export interface Client<O extends OntologyDefinition<any>> {
+export interface Client {
   <
-    Q extends ObjectOrInterfaceDefinition | ActionDefinition<any, any, any>,
-  >(o: Q): Q extends ObjectOrInterfaceDefinition ? ObjectSet<Q>
+    Q extends
+      | (ObjectTypeDefinition<any, any> & VersionBound<any>)
+      | (InterfaceDefinition<any, any> & VersionBound<any>)
+      | ActionDefinition<any, any, any>,
+  >(
+    o: Q extends VersionBound<infer V> ? (
+        SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
+          : Q & {
+            [ErrorMessage]:
+              `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
+          }
+      )
+      : Q,
+  ): Q extends ObjectTypeDefinition<any, any> ? ObjectSet<Q>
+    : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
     : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
     : never;
 
-  /** @deprecated use client(MyType) */
-  objectSet: <const K extends ObjectOrInterfaceKeysFrom<O>>(
-    type: K,
-  ) => BaseObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
-
-  /** @deprecated use client(MyType) */
-  objects: ObjectSetCreator<O>;
-
-  /** @deprecated use client(myAction) */
-  actions: Actions<O>;
-
-  __UNSTABLE_preexistingObjectSet<const K extends ObjectTypeKeysFrom<O>>(
-    type: K,
+  __UNSTABLE_preexistingObjectSet<T extends ObjectOrInterfaceDefinition>(
+    type: T,
     rid: string,
-  ): ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;
+  ): ObjectSet<T>;
+
+  ctx: unknown;
 }
+
+// BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
+const MaxOsdkVersion = "0.16.0";
+// END: THIS IS GENERATED CODE. DO NOT EDIT.
+export type MaxOsdkVersion = typeof MaxOsdkVersion;
+const ErrorMessage = Symbol("ErrorMessage");

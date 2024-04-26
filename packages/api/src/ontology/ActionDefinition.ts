@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "..";
+import type { OsdkMetadata } from "../OsdkMetadata";
 
 export interface ActionDefinition<
   A extends string,
@@ -28,6 +29,7 @@ export interface ActionDefinition<
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+  osdkMetadata?: OsdkMetadata;
 }
 
 export interface ActionModifiedEntity {
@@ -35,17 +37,16 @@ export interface ActionModifiedEntity {
   modified: boolean;
 }
 
-export interface ValidBaseActionParameterTypes {
-  boolean: boolean;
-  string: string;
-  integer: number;
-  long: number;
-  double: number;
-  datetime: Date;
-  timestamp: Date;
-  attachment: any;
-  marking: string;
-}
+export type ValidBaseActionParameterTypes =
+  | "boolean"
+  | "string"
+  | "integer"
+  | "long"
+  | "double"
+  | "datetime"
+  | "timestamp"
+  | "attachment"
+  | "marking";
 
 export interface ObjectActionDataType<
   K extends string,
@@ -69,7 +70,7 @@ export type ValidActionParameterTypes<
   K extends string = never,
   T_Target extends ObjectTypeDefinition<any> = never,
 > =
-  | keyof ValidBaseActionParameterTypes
+  | ValidBaseActionParameterTypes
   | ObjectActionDataType<K, T_Target>
   | ObjectSetActionDataType<K, T_Target>;
 

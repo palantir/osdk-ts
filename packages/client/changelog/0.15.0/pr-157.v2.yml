@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Remove thin client and methods from public api
+  links:
+  - https://github.com/palantir/osdk-ts/pull/157

@@ -14,9 +14,5 @@
  * limitations under the License.
  */
 
-export { ArtifactsSitesAdminV2Service } from "../generated/artifacts-sites/index.js";
-export type { SiteDomainInfo } from "../generated/artifacts-sites/SiteDomainInfo.js";
-export * as artifacts from "./artifacts/index.mjs";
-export { createConjureContext } from "./createConjureContext.mjs";
 export { createInternalClientContext } from "./createInternalClientContext.mjs";
-export * as thirdPartyApplicationService from "./third-party-application-service/index.mjs";
+export * as thirdPartyApplications from "./third-party-applications/index.mjs";

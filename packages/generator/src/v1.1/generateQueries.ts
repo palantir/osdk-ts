@@ -113,8 +113,9 @@ function handleQueryDataType(
     case "double":
     case "float":
     case "integer":
-    case "long":
       return "number";
+    case "long":
+      return isReturnValue ? "string" : "string | number";
 
     case "date":
       return "LocalDate";

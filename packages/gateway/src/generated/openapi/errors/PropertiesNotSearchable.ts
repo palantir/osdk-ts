@@ -26,6 +26,6 @@ export interface PropertiesNotSearchable {
   errorName: "PropertiesNotSearchable";
   errorInstanceId: string;
   parameters: {
-    propertyApiNames: Array<PropertyApiName>;
+    propertyApiNames: ReadonlyArray<PropertyApiName>;
   };
 }

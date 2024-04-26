@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { OntologyObjectV2 } from "@osdk/omniapi/types";
 
 export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
   return o && typeof o === "object" && typeof o.__apiName === "string"

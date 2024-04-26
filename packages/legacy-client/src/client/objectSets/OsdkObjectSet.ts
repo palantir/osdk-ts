@@ -21,14 +21,19 @@ import type {
   FilteredPropertiesTerminalOperationsWithGet,
   FilterObjectSetDefinition,
   ObjectSetDefinition,
+  SearchAroundObjectSetDefinition,
 } from "../baseTypes";
 import type {
   BaseObjectSet,
   BaseObjectSetOperations,
+  InferLinkType,
   ObjectSet,
   ObjectSetOperations,
 } from "../interfaces";
-import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
+import type {
+  LinksProperties,
+  SelectableProperties,
+} from "../interfaces/utils/OmitProperties";
 import { getObject } from "../net/getObject";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
@@ -120,6 +125,25 @@ export function createOsdkObjectSet<
         properties,
       );
     },
+    pivotTo<T extends keyof LinksProperties<OsdkLegacyObjectFrom<O, K>>>(
+      linkType: T & string,
+    ): ObjectSet<InferLinkType<OsdkLegacyObjectFrom<O, K>[T]>> {
+      const objectDefinition = client.ontology.objects[apiName];
+      const definition = {
+        type: "searchAround",
+        objectSet: objectSetDefinition,
+        link: linkType,
+      } satisfies SearchAroundObjectSetDefinition;
+
+      const targetType = objectDefinition.links[linkType].targetType;
+
+      const objSet = createOsdkObjectSet(
+        client,
+        targetType,
+        definition,
+      );
+      return objSet as any;
+    },
   };
 
   return {
@@ -162,7 +186,7 @@ export function createBaseOsdkObjectSet<
   };
 
   const objectSet: BaseObjectSetOperations<OsdkLegacyObjectFrom<O, K>> = {
-    apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["__apiName"],
+    apiName: apiName as string as OsdkLegacyObjectFrom<O, K>["$apiName"],
 
     description: client.ontology.objects[apiName].description ?? "",
 

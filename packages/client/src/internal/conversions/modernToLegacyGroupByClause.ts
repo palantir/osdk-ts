@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { AggregationGroupByV2 } from "@osdk/gateway/types";
+import type { AggregationGroupByV2, AggregationRangeV2 } from "@osdk/omniapi";
+import {
+  DurationMapping,
+  type GroupByRange,
+} from "../../query/aggregations/GroupByClause.js";
 import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
 
 export function modernToLegacyGroupByClause(
@@ -27,16 +31,41 @@ export function modernToLegacyGroupByClause(
   ).flatMap<AggregationGroupByV2>(([field, type]) => {
     if (type === "exact") {
       return [{ type, field }];
-    } else if (type.exactWithLimit) {
-      return [
-        {
-          type: "exact",
-          field,
-          maxGroupCount: type.exactWithLimit,
-        },
-      ];
-    } else {
-      return [];
-    }
+    } else if ("exactWithLimit" in type) {
+      {
+        return [
+          {
+            type: "exact",
+            field,
+            maxGroupCount: type.exactWithLimit,
+          },
+        ];
+      }
+    } else if ("fixedWidth" in type) {
+      return [{
+        type: "fixedWidth",
+        field,
+        fixedWidth: type.fixedWidth,
+      }];
+    } else if ("ranges" in type) {
+      return [{
+        type: "ranges",
+        field,
+        ranges: type.ranges.map(range => convertRange(range)),
+      }];
+    } else if ("duration" in type) {
+      return [{
+        type: "duration",
+        field,
+        value: type.duration[0],
+        unit: DurationMapping[type.duration[1]],
+      }];
+    } else return [];
   });
+}
+
+function convertRange(
+  range: GroupByRange<number | string>,
+): AggregationRangeV2 {
+  return { startValue: range[0], endValue: range[1] };
 }

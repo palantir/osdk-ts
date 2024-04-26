@@ -20,5 +20,5 @@ import type { PageToken } from "./PageToken";
 export interface ListObjectTypesV2Response {
   nextPageToken?: PageToken;
   /** The list of object types in the current page. */
-  data: Array<ObjectTypeV2>;
+  data: ReadonlyArray<ObjectTypeV2>;
 }

@@ -26,7 +26,7 @@ export interface PropertyFiltersNotSupported {
   errorName: "PropertyFiltersNotSupported";
   errorInstanceId: string;
   parameters: {
-    propertyFilters: Array<PropertyFilter>;
+    propertyFilters: ReadonlyArray<PropertyFilter>;
     property: PropertyApiName;
   };
 }

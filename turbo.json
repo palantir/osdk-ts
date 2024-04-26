@@ -7,44 +7,28 @@
       "dependsOn": ["^transpile", "^typecheck"]
     },
 
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "dependsOn": ["//#dev:typecheck", "dev:transpile", "codegen"]
-    },
-
-    "dev:transpile": {
-      "cache": false,
-      "dependsOn": ["codegen"]
-    },
-
-    "//#dev:typecheck": {
-      "cache": false
-    },
-
     "fix-lint": {
       "cache": false
     },
 
     "lint": {
       "inputs": [
-        "monorepo/eslint-config-sane/*.cjs",
         "src/**/*.ts",
         "src/**/*.tsx",
         ".eslintrc.cjs",
         "tsconfig.json"
       ],
       "outputs": [],
-      "dependsOn": ["eslint-config-sane#lint", "//#dprint"]
-    },
-
-    "eslint-config-sane#lint": {
-      "inputs": ["library.cjs"]
+      "dependsOn": ["//#global-eslint-config", "//#dprint"]
     },
 
     /* Psuedo task to let us depend on dprint config */
     "//#dprint": {
       "inputs": ["dprint.json"]
+    },
+
+    "//#global-eslint-config": {
+      "inputs": ["eslint.config.mjs"]
     },
 
     "clean": {
@@ -61,6 +45,19 @@
       "inputs": ["tsup.mjs"]
     },
 
+    "postVersioning": {
+    },
+
+    "@osdk/version-updater#postVersioning": {
+      "inputs": [
+        "scripts/postVersioning.mjs",
+        "../client/package.json",
+        "../client/src/Client.ts",
+        "../generator/src/v2.0/generateMetadata.ts"
+      ],
+      "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
+    },
+
     "tsconfig#typecheck": {
       "inputs": ["tsconfig.base.json"]
     },
@@ -74,6 +71,11 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
+    "@osdk/examples.next-static-export#build": {
+      "dependsOn": ["transpile", "typecheck"],
+      "inputs": ["../../google-font-mocked-response.js"]
+    },
+
     "transpile": {
       "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
@@ -82,8 +84,9 @@
 
     "test": {
       "env": ["FORCE_COLOR"],
-      "dependsOn": ["build"]
+      "dependsOn": ["transpile", "typecheck"]
     },
+
     "test:watch": {
       "env": ["FORCE_COLOR"],
       "cache": false
@@ -97,6 +100,8 @@
         "packages/*/tsconfig.json",
         "examples/*/*/package.json",
         "examples/*/*/tsconfig.json",
+        "examples-extra/*/*/package.json",
+        "examples-extra/*/*/tsconfig.json",
         "monorepo/*/*/package.json",
         "monorepo/*/*/tsconfig.json",
         "templates/*"
@@ -104,7 +109,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "build", "test"]
+      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
     }
   },
 

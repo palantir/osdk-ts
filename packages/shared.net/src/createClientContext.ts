@@ -15,8 +15,8 @@
  */
 
 import type { ClientContext } from "./ClientContext.js";
+import { PalantirApiError } from "./PalantirApiError.js";
 import {
-  createFetchAsJson,
   createFetchHeaderMutator,
   createFetchOrThrow,
   createRetryingFetch,
@@ -38,26 +38,52 @@ export function createClientContext<
     throw new Error("stack cannot be empty");
   }
 
-  const wireUserAgent = `${ontology.metadata.userAgent} ${userAgent}`;
-
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
     createRetryingFetch(createFetchOrThrow(fetchFn)),
     async (headers) => {
       const token = await tokenProvider();
       headers.set("Authorization", `Bearer ${token}`);
+
       headers.set(
         "Fetch-User-Agent",
-        wireUserAgent,
+        [
+          headers.get("Fetch-User-Agent"),
+          ontology.metadata.userAgent,
+          userAgent,
+        ].filter(x => x && x?.length > 0).join(" "),
       );
       return headers;
     },
   );
 
+  // because this is async await it preserves stack traces, which the retrying fetch does not
+  const fetchWrapper = async (
+    input: RequestInfo | URL,
+    init?: RequestInit | undefined,
+  ) => {
+    try {
+      return await retryingFetchWithAuthOrThrow(input, init);
+    } catch (e: any) {
+      const betterError = (e instanceof PalantirApiError)
+        ? new PalantirApiError(
+          e.message,
+          e.errorName,
+          e.errorType,
+          e.statusCode,
+          e.errorInstanceId,
+          e.parameters,
+        )
+        : new Error("Captured stack trace for error: " + e.message ?? e);
+
+      (betterError as any).cause = e;
+      throw betterError;
+    }
+  };
+
   return {
     ontology,
     stack,
-    fetch: retryingFetchWithAuthOrThrow,
-    fetchJson: createFetchAsJson(retryingFetchWithAuthOrThrow),
+    fetch: fetchWrapper,
     tokenProvider,
   };
 }

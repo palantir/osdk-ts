@@ -20,6 +20,6 @@ export interface InvalidFields {
   errorName: "InvalidFields";
   errorInstanceId: string;
   parameters: {
-    properties: Array<string>;
+    properties: ReadonlyArray<string>;
   };
 }

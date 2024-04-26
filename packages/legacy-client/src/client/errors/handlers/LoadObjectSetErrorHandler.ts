@@ -29,6 +29,7 @@ import type {
   ObjectTypeNotSynced,
   OntologySyncing,
   PropertiesNotFilterable,
+  PropertiesNotFound,
   PropertiesNotSearchable,
   PropertiesNotSortable,
   PropertyFiltersNotSupported,
@@ -77,6 +78,23 @@ export class LoadObjectSetErrorHandler extends DefaultErrorHandler {
       errorType: "INVALID_ARGUMENT",
       errorInstanceId: error.errorInstanceId,
       statusCode: error.statusCode,
+    };
+  }
+
+  handlePropertiesNotFound(
+    error: PalantirApiError,
+    objectType: string,
+    properties: string[],
+  ): PropertiesNotFound {
+    return {
+      name: error.errorName,
+      message: error.message,
+      errorName: "PropertiesNotFound",
+      errorType: "NOT_FOUND",
+      errorInstanceId: error.errorInstanceId,
+      statusCode: error.statusCode,
+      objectType,
+      properties,
     };
   }
 

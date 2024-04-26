@@ -16,6 +16,7 @@
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
+import { PalantirApiError } from "../PalantirApiError.js";
 import { createOpenApiRequest } from "./createOpenApiRequest.js";
 
 describe("createOpenApiRequest", () => {
@@ -23,6 +24,7 @@ describe("createOpenApiRequest", () => {
     const mockFetch = vi.fn();
 
     mockFetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ test: 1 }),
     });
 
@@ -66,6 +68,7 @@ describe("createOpenApiRequest", () => {
     const mockFetch = vi.fn();
 
     mockFetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ test: 1 }),
     });
 
@@ -97,6 +100,7 @@ describe("createOpenApiRequest", () => {
     const mockFetch = vi.fn();
 
     mockFetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ test: 1 }),
     });
 
@@ -123,6 +127,7 @@ describe("createOpenApiRequest", () => {
     const mockFetch = vi.fn();
 
     mockFetch.mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve({ test: 1 }),
     });
 
@@ -150,6 +155,7 @@ describe("createOpenApiRequest", () => {
 
     const stream = new ReadableStream();
     mockFetch.mockResolvedValue({
+      ok: true,
       body: stream,
     });
 
@@ -194,6 +200,7 @@ describe("createOpenApiRequest", () => {
 
     const blob = new Blob();
     mockFetch.mockResolvedValue({
+      ok: true,
       blob: () => Promise.resolve(blob),
     });
 
@@ -233,5 +240,37 @@ describe("createOpenApiRequest", () => {
         }),
       },
     );
+  });
+
+  it("handles error status codes", async () => {
+    const mockFetch = vi.fn();
+
+    const mockResponse: ReturnType<typeof fetch> = Promise.resolve({
+      ok: false,
+      status: 500,
+      json: () =>
+        Promise.resolve({
+          errorCode: "INTERNAL",
+          errorName: "Default:Internal",
+          errorInstanceId: "00000000-0000-0000-0000-000000000000",
+          parameters: {},
+        }),
+    } as Response);
+
+    mockFetch.mockImplementationOnce(() => mockResponse);
+
+    const request = createOpenApiRequest<{}>(
+      "http://example.com",
+      mockFetch,
+      undefined,
+      false,
+    );
+
+    try {
+      await request("POST", "/");
+      expect.fail();
+    } catch (error) {
+      expect(error).toBeInstanceOf(PalantirApiError);
+    }
   });
 });

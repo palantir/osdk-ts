@@ -30,8 +30,11 @@ import type {
 } from "./aggregations";
 import type { ObjectTypeFilterFunction } from "./filters";
 import type { OrderByFunction } from "./ordering";
-import type { SearchAround } from "./searchAround";
-import type { SelectableProperties } from "./utils/OmitProperties";
+import type { InferLinkType, SearchAround } from "./searchAround";
+import type {
+  LinksProperties,
+  SelectableProperties,
+} from "./utils/OmitProperties";
 
 export type ObjectSet<O extends OntologyObject> =
   & {
@@ -67,6 +70,12 @@ export type ObjectSetOperations<O extends OntologyObject> = {
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
   ): FilteredPropertiesTerminalOperations<O, T[]>;
+
+  pivotTo<
+    K extends keyof LinksProperties<O>,
+  >(
+    linkType: K,
+  ): ObjectSet<InferLinkType<O[K]>>;
 };
 
 export type ObjectSetOrderByStep<O extends OntologyObject> = {
@@ -82,14 +91,34 @@ export type ObjectSetOrderByStep<O extends OntologyObject> = {
 export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
   /**
    * Get a page of objects of this type.
+   * @deprecated use fetchPageWithErrors instead
    */
   page(options?: {
     pageSize?: number;
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
 
+  fetchPageWithErrors(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Result<Page<O>, ListObjectsError>>;
+
+  /**
+   * Get a page of objects of this type, without a result wrapper
+   */
+  fetchPage(options?: {
+    pageSize?: number;
+    pageToken?: string;
+  }): Promise<Page<O>>;
+
   /**
    * Get all objects of this type.
+   * @deprecated use asyncIter instead
    */
   all(): Promise<Result<O[], ListObjectsError>>;
+
+  /**
+   * Iterate through all objects
+   */
+  asyncIter(): AsyncIterableIterator<O>;
 };

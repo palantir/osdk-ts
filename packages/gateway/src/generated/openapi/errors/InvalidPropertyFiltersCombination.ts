@@ -23,7 +23,7 @@ export interface InvalidPropertyFiltersCombination {
   errorName: "InvalidPropertyFiltersCombination";
   errorInstanceId: string;
   parameters: {
-    propertyFilters: Array<PropertyFilter>;
+    propertyFilters: ReadonlyArray<PropertyFilter>;
     property: PropertyApiName;
   };
 }

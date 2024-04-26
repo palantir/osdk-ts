@@ -32,13 +32,13 @@ function asV2Object(o: any, includeRid?: boolean) {
 
 describe("OsdkObject", () => {
   describe("link", () => {
-    let client: Client<typeof MockOntology>;
+    let client: Client;
 
     beforeAll(async () => {
       apiServer.listen();
       client = createClient(
-        MockOntology,
         "https://stack.palantir.com",
+        MockOntology.metadata.ontologyRid,
         () => "myAccessToken",
       );
     });
@@ -48,9 +48,9 @@ describe("OsdkObject", () => {
     });
 
     it("loads an employee", async () => {
-      const result = await client.objects.Employee.where({
+      const result = await client(MockOntology.objects.Employee).where({
         employeeId: stubData.employee1.employeeId,
-      }).fetchPageOrThrow();
+      }).fetchPage();
 
       // we should get the employee we requested
       const employee = result.data[0];
@@ -63,9 +63,9 @@ describe("OsdkObject", () => {
     });
 
     it("traverses the link from an employee to their lead", async () => {
-      const result = await client.objects.Employee.where({
+      const result = await client(MockOntology.objects.Employee).where({
         employeeId: stubData.employee1.employeeId,
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const employee = result.data[0];
 
       const lead = await employee.$link.lead.get({ select: ["employeeId"] });
@@ -78,16 +78,16 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peeps", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client.objects.Employee.where({
+      const employees = await client(MockOntology.objects.Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
         ],
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
-      const peepsResult = await lead.$link.peeps.fetchPageOrThrow({
+      const peepsResult = await lead.$link.peeps.fetchPage({
         select: ["fullName", "employeeId"],
       });
       expect(peepsResult.data).toHaveLength(2);
@@ -100,12 +100,12 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peep by primaryKey", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client.objects.Employee.where({
+      const employees = await client(MockOntology.objects.Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
         ],
-      }).fetchPageOrThrow();
+      }).fetchPage();
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 

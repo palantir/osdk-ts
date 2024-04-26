@@ -6,6 +6,7 @@
     "moduleResolution": "nodenext",
 
     "emitDeclarationOnly": true,
+    "declarationMap": true,
     "declaration": true,
 
     "isolatedModules": true,
@@ -14,6 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
 
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   }
 }

@@ -17,9 +17,8 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 
-type StringAggregateOption = "approximateDistinct" | "count";
+type StringAggregateOption = "approximateDistinct";
 type NumericAggregateOption =
-  | "count"
   | "min"
   | "max"
   | "sum"

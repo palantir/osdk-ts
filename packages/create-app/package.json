@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "0.5.0",
+  "version": "0.12.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -22,15 +22,13 @@
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "dev:transpile": "tsup --watch",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute --build",
-    "update-snapshots": "UPDATE_SNAPSHOTS=true vitest run"
+    "typecheck": "tsc-absolute"
   },
   "dependencies": {
     "consola": "^3.2.3",
@@ -42,9 +40,8 @@
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "dir-compare": "^4.2.0",
-    "tmp": "^0.2.1",
-    "typescript": "^5.2.2"
+    "tmp": "^0.2.3",
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -55,8 +52,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

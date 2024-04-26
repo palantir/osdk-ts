@@ -39,7 +39,9 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BatchActions } from './ontology/actions/BatchActions';
       import type { BulkActions } from './ontology/actions/BulkActions';
+      import { deleteTodos } from './ontology/actions/deleteTodos';
       import { markTodoCompleted } from './ontology/actions/markTodoCompleted';
       import type { Objects } from './ontology/objects/Objects';
       import { Person } from './ontology/objects/Person';
@@ -59,6 +61,7 @@ describe(generateMetadataFile, () => {
         };
         actions: {
           markTodoCompleted: typeof markTodoCompleted;
+          deleteTodos: typeof deleteTodos;
         };
         queries: {
           getCount: typeof getCount;
@@ -75,16 +78,19 @@ describe(generateMetadataFile, () => {
         },
         actions: {
           markTodoCompleted,
+          deleteTodos,
         },
         queries: {
           getCount,
         },
-      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted', 'getCount'>;
+      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted' | 'deleteTodos', 'getCount'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        /** @deprecated use batchActions */
         bulkActions: BulkActions;
+        batchActions: BatchActions;
         queries: Queries;
       }
       "
@@ -110,6 +116,7 @@ describe(generateMetadataFile, () => {
               primaryKey: "id",
               rid: "rid.object.foo",
               status: "ACTIVE",
+              titleProperty: "id",
               properties: {
                 id: {
                   dataType: { type: "integer" },
@@ -169,6 +176,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BatchActions } from './ontology/actions/BatchActions';
       import type { BulkActions } from './ontology/actions/BulkActions';
       import { bar } from './ontology/actions/bar';
       import { foo as fooAction } from './ontology/actions/foo';
@@ -217,7 +225,9 @@ describe(generateMetadataFile, () => {
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        /** @deprecated use batchActions */
         bulkActions: BulkActions;
+        batchActions: BatchActions;
         queries: Queries;
       }
       "
@@ -255,6 +265,7 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import type { BatchActions } from './ontology/actions/BatchActions';
       import type { BulkActions } from './ontology/actions/BulkActions';
       import type { Objects } from './ontology/objects/Objects';
       import type { Queries } from './ontology/queries/Queries';
@@ -282,7 +293,9 @@ describe(generateMetadataFile, () => {
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;
         actions: Actions;
+        /** @deprecated use batchActions */
         bulkActions: BulkActions;
+        batchActions: BatchActions;
         queries: Queries;
       }
       "

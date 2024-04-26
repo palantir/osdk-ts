@@ -39,6 +39,7 @@ export type {
   ObjectOrInterfacePropertyKeysFrom2,
 } from "./ontology/ObjectOrInterface";
 export type {
+  BrandedApiName,
   ObjectTypeDefinition,
   ObjectTypeDefinitionFrom,
   ObjectTypeKeysFrom,
@@ -53,8 +54,10 @@ export type {
   ObjectTypePropertyDefinitionsFrom,
   ObjectTypePropertyKeysFrom,
   PropertyDef,
+  VersionBound,
 } from "./ontology/ObjectTypeDefinition";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition";
+export type { OntologyMetadata } from "./ontology/OntologyMetadata";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
@@ -72,6 +75,6 @@ export type {
   TwoDimensionalAggregationDataType,
   TwoDimensionalQueryAggregationDefinition,
   UnionQueryDataType,
-  WireQueryDataTypes,
 } from "./ontology/QueryDefinition";
 export type { WirePropertyTypes } from "./ontology/WirePropertyTypes";
+export type { OsdkMetadata } from "./OsdkMetadata";

@@ -25,4 +25,4 @@ import type { Coordinate } from "./Coordinate";
  * followed by all axes of the more northeasterly point. The axes order
  * of a bbox follows the axes order of geometries.
  */
-export type BBox = Array<Coordinate>;
+export type BBox = ReadonlyArray<Coordinate>;

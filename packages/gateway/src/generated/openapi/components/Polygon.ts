@@ -18,6 +18,6 @@ import type { BBox } from "./BBox";
 import type { LinearRing } from "./LinearRing";
 
 export interface Polygon {
-  coordinates: Array<LinearRing>;
+  coordinates: ReadonlyArray<LinearRing>;
   bbox?: BBox;
 }
