@@ -155,4 +155,41 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
+
+  it("conditionally returns edits in batch mode", async () => {
+    const result = await client(moveOffice)([
+      {
+        officeId: "SEA",
+        newAddress: "456 Good Place",
+        newCapacity: 40,
+      },
+      {
+        officeId: "NYC",
+        newAddress: "123 Main Street",
+        newCapacity: 80,
+      },
+    ], { returnEdits: true });
+
+    expect(result).toMatchInlineSnapshot(` 
+    {
+  "addedLinksCount": 0,
+  "addedObjectCount": 0,
+  "deletedLinksCount": 0,
+  "deletedObjectsCount": 0,
+  "edits": [
+    {
+      "objectType": "Office",
+      "primaryKey": "SEA",
+      "type": "modifyObject",
+    },
+    {
+      "objectType": "Office",
+      "primaryKey": "NYC",
+      "type": "modifyObject",
+    },
+  ],
+  "modifiedObjectsCount": 2,
+  "type": "edits",
+}`);
+  });
 });
