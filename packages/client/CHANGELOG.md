@@ -12,7 +12,7 @@
   - Fixes issues with where clauses for equality in subscriptions
   - Fixes issues with inconsistent idname and apiName's in the mapping data
 
-- 9906a41: Foundry Platform support
+- 9906a41: Foundry Platform API support
 - 9906a41: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
 
 ### Patch Changes
