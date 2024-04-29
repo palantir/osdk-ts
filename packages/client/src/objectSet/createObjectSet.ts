@@ -163,9 +163,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
-      let nextPageToken: string | undefined = undefined;
+      let $nextPageToken: string | undefined = undefined;
       do {
-        const result = await base.fetchPage({ nextPageToken });
+        const result = await base.fetchPage({ $nextPageToken });
 
         for (
           const obj of await convertWireToOsdkObjects(
@@ -176,7 +176,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) {
           yield obj as Osdk<Q, "$all">;
         }
-      } while (nextPageToken != null);
+      } while ($nextPageToken != null);
     },
 
     get: (isObjectTypeDefinition(objectType)

@@ -24,24 +24,24 @@ export type GroupByClause<
   [P in AggregatableKeys<Q>]?: GroupByEntry<Q, P>;
 };
 
-type BaseGroupByValue = "exact" | { exactWithLimit: number };
+type BaseGroupByValue = "exact" | { $exactWithLimit: number };
 export type GroupByRange<T> = [T, T];
 
 export type StringGroupByValue = BaseGroupByValue;
 
 export type NumericGroupByValue = BaseGroupByValue | {
-  fixedWidth: number;
-} | { ranges: GroupByRange<number>[] };
+  $fixedWidth: number;
+} | { $ranges: GroupByRange<number>[] };
 
 export type TimestampGroupByValue =
   | BaseGroupByValue
-  | { ranges: GroupByRange<string>[] }
-  | { duration: TimestampDurationGroupBy };
+  | { $ranges: GroupByRange<string>[] }
+  | { $duration: TimestampDurationGroupBy };
 
 export type DateGroupByValue =
   | BaseGroupByValue
-  | { ranges: GroupByRange<string>[] }
-  | { duration: DatetimeDurationGroupBy };
+  | { $ranges: GroupByRange<string>[] }
+  | { $duration: DatetimeDurationGroupBy };
 
 export type BooleanGroupByValue = BaseGroupByValue;
 

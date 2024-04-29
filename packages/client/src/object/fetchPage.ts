@@ -49,8 +49,8 @@ export interface SelectArg<
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > {
-  select?: readonly L[];
-  includeRid?: R;
+  $select?: readonly L[];
+  $includeRid?: R;
 }
 
 export interface OrderByArg<
@@ -58,7 +58,7 @@ export interface OrderByArg<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
 > {
-  orderBy?: {
+  $orderBy?: {
     [K in L]?: "asc" | "desc";
   };
 }
@@ -67,7 +67,7 @@ export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
   A extends SelectArg<Q, any, any>,
 > = A extends SelectArg<Q, never> ? "$all"
-  : A["select"] extends readonly string[] ? A["select"][number]
+  : A["$select"] extends readonly string[] ? A["$select"][number]
   : "$all";
 
 export interface FetchPageArgs<
@@ -80,9 +80,9 @@ export interface FetchPageArgs<
   SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
-  nextPageToken?: string;
-  pageSize?: number;
-  augment?: A;
+  $nextPageToken?: string;
+  $pageSize?: number;
+  $augment?: A;
 }
 
 export function augment<
@@ -113,9 +113,9 @@ export interface FetchInterfacePageArgs<
   SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
-  nextPageToken?: string;
-  pageSize?: number;
-  augment?: Augments;
+  $nextPageToken?: string;
+  $pageSize?: number;
+  $augment?: Augments;
 }
 
 export type FetchPageResult<
@@ -173,11 +173,11 @@ async function fetchInterfacePage<
     client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-      augmentedProperties: args.augment ?? {},
+      augmentedProperties: args.$augment ?? {},
       augmentedSharedPropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
-      selectedSharedPropertyTypes: args.select as undefined | string[] ?? [],
+      selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     }),
     { preview: true },
@@ -186,7 +186,7 @@ async function fetchInterfacePage<
     client,
     result.data as OntologyObjectV2[], // drop readonly
     interfaceType.apiName,
-    !args.includeRid,
+    !args.$includeRid,
   );
   return result as any;
 }
@@ -275,17 +275,17 @@ function applyFetchArgs<
   args: FetchPageArgs<any, any, any>,
   body: X,
 ): X {
-  if (args?.nextPageToken) {
-    body.pageToken = args.nextPageToken;
+  if (args?.$nextPageToken) {
+    body.pageToken = args.$nextPageToken;
   }
 
-  if (args?.pageSize != null) {
-    body.pageSize = args.pageSize;
+  if (args?.$pageSize != null) {
+    body.pageSize = args.$pageSize;
   }
 
-  if (args?.orderBy != null) {
+  if (args?.$orderBy != null) {
     body.orderBy = {
-      fields: Object.entries(args.orderBy).map(([field, direction]) => ({
+      fields: Object.entries(args.$orderBy).map(([field, direction]) => ({
         field,
         direction,
       })),
@@ -311,8 +311,8 @@ export async function fetchObjectPage<
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-      select: ((args?.select as string[] | undefined) ?? []), // FIXME?
-      excludeRid: !args?.includeRid,
+      select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
+      excludeRid: !args?.$includeRid,
     }),
   );
 

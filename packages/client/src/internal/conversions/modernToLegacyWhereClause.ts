@@ -165,28 +165,28 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
 
     if (Array.isArray(withinBody)) {
       return makeGeoFilterBbox(field, withinBody, firstKey);
-    } else if ("bbox" in withinBody && !("type" in withinBody)) {
-      return makeGeoFilterBbox(field, withinBody.bbox, firstKey);
-    } else if ("distance" in withinBody && "of" in withinBody) {
+    } else if ("$bbox" in withinBody) {
+      return makeGeoFilterBbox(field, withinBody.$bbox, firstKey);
+    } else if ("$distance" in withinBody && "$of" in withinBody) {
       return {
         type: "withinDistanceOf",
         field,
         value: {
-          center: Array.isArray(withinBody.of)
+          center: Array.isArray(withinBody.$of)
             ? {
               type: "Point",
-              coordinates: withinBody.of,
+              coordinates: withinBody.$of,
             }
-            : withinBody.of,
+            : withinBody.$of,
           distance: {
-            value: withinBody.distance[0],
-            unit: DistanceUnitMapping[withinBody.distance[1]],
+            value: withinBody.$distance[0],
+            unit: DistanceUnitMapping[withinBody.$distance[1]],
           },
         },
       };
     } else {
-      const coordinates = ("polygon" in withinBody)
-        ? withinBody.polygon
+      const coordinates = ("$polygon" in withinBody)
+        ? withinBody.$polygon
         : withinBody.coordinates;
       return makeGeoFilterPolygon(field, coordinates, "withinPolygon");
     }
@@ -196,11 +196,11 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
       filter[firstKey] as GeoFilter_Intersects["$intersects"];
     if (Array.isArray(intersectsBody)) {
       return makeGeoFilterBbox(field, intersectsBody, firstKey);
-    } else if ("bbox" in intersectsBody && !("type" in intersectsBody)) {
-      return makeGeoFilterBbox(field, intersectsBody.bbox, firstKey);
+    } else if ("$bbox" in intersectsBody) {
+      return makeGeoFilterBbox(field, intersectsBody.$bbox, firstKey);
     } else {
-      const coordinates = ("polygon" in intersectsBody)
-        ? intersectsBody.polygon
+      const coordinates = ("$polygon" in intersectsBody)
+        ? intersectsBody.$polygon
         : intersectsBody.coordinates;
       return makeGeoFilterPolygon(field, coordinates, "intersectsPolygon");
     }

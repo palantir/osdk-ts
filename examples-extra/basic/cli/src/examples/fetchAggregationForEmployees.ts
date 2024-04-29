@@ -24,12 +24,12 @@ export async function fetchAggregationForEmployees(
   client: Client,
 ) {
   const result = await client(Employee).aggregate({
-    select: {
+    $select: {
       locationCity: "approximateDistinct",
       locationName: "approximateDistinct",
       employeeNumber: ["avg", "max", "min"],
     },
-    groupBy: undefined,
+    $groupBy: undefined,
   });
   console.log("fetchAggregationForEmployees()");
   console.log(JSON.stringify(result, undefined, 2));

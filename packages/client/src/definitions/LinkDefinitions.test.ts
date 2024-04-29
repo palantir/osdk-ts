@@ -88,7 +88,7 @@ describe("LinkDefinitions", () => {
         // e.g. .lead.get({ select: [] });
         expectTypeOf<
           Awaited<
-            ReturnType<Helper<PersonDef, { select: [] }>["get"]>
+            ReturnType<Helper<PersonDef, { $select: [] }>["get"]>
           >
         >()
           .toEqualTypeOf<Osdk<PersonDef, "$all">>();
@@ -96,7 +96,7 @@ describe("LinkDefinitions", () => {
         // e.g. .lead.get({ select: ["name"] });
         expectTypeOf<
           Awaited<
-            ReturnType<Helper<PersonDef, { select: ["name"] }>["get"]>
+            ReturnType<Helper<PersonDef, { $select: ["name"] }>["get"]>
           >
         >()
           .toEqualTypeOf<Osdk<PersonDef, "name">>();

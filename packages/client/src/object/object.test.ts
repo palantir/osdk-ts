@@ -68,7 +68,7 @@ describe("OsdkObject", () => {
       }).fetchPage();
       const employee = result.data[0];
 
-      const lead = await employee.$link.lead.get({ select: ["employeeId"] });
+      const lead = await employee.$link.lead.get({ $select: ["employeeId"] });
       expect(lead.employeeId).toBe(stubData.employee2.employeeId);
 
       // ensure that the select was performed
@@ -88,7 +88,7 @@ describe("OsdkObject", () => {
       expect(lead).toBeDefined();
 
       const peepsResult = await lead.$link.peeps.fetchPage({
-        select: ["fullName", "employeeId"],
+        $select: ["fullName", "employeeId"],
       });
       expect(peepsResult.data).toHaveLength(2);
       expect(peepsResult.nextPageToken).toBeUndefined();
@@ -110,7 +110,7 @@ describe("OsdkObject", () => {
       expect(lead).toBeDefined();
 
       const peep = await lead.$link.peeps.get(stubData.employee1.employeeId, {
-        select: ["employeeId"],
+        $select: ["employeeId"],
       });
       expect(peep).toBeDefined();
 

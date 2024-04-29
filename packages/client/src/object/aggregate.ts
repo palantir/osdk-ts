@@ -44,26 +44,26 @@ export type AggregateOptsThatErrors<
 > =
   & AO
   & {
-    select:
+    $select:
       & Pick<
-        AO["select"],
-        keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+        AO["$select"],
+        keyof AggregateOpts<Q>["$select"] & keyof AO["$select"]
       >
       & Record<
-        Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+        Exclude<keyof AO["$select"], keyof AggregateOpts<Q>["$select"]>,
         never
       >;
   }
-  & (unknown extends AO["groupBy"] ? {}
-    : Exclude<AO["groupBy"], undefined> extends never ? {}
+  & (unknown extends AO["$groupBy"] ? {}
+    : Exclude<AO["$groupBy"], undefined> extends never ? {}
     : {
-      groupBy:
+      $groupBy:
         & Pick<
-          AO["groupBy"],
-          keyof GroupByClause<Q> & keyof AO["groupBy"]
+          AO["$groupBy"],
+          keyof GroupByClause<Q> & keyof AO["$groupBy"]
         >
         & Record<
-          Exclude<keyof AO["groupBy"], keyof GroupByClause<Q>>,
+          Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>,
           never
         >;
     });
@@ -97,18 +97,18 @@ export async function aggregate<
   req: AggregateOptsThatErrors<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["select"]>(
-      req.select,
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
+      req.$select,
     ),
     groupBy: [],
     where: undefined,
   };
 
-  if (req.groupBy) {
-    body.groupBy = modernToLegacyGroupByClause(req.groupBy);
+  if (req.$groupBy) {
+    body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
-  if (req.where) {
-    body.where = modernToLegacyWhereClause(req.where);
+  if (req.$where) {
+    body.where = modernToLegacyWhereClause(req.$where);
   }
   const result = await aggregateObjectSetV2(
     addUserAgent(clientCtx, objectType),
@@ -120,7 +120,7 @@ export async function aggregate<
     },
   );
 
-  if (!req.groupBy) {
+  if (!req.$groupBy) {
     invariant(
       result.data.length === 1,
       "no group by clause should mean only one data result",
@@ -128,13 +128,13 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult<AO["select"]>(
+      ...legacyToModernSingleAggregationResult<AO["$select"]>(
         result.data[0],
       ),
     } as any;
   }
 
-  const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
+  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
     .map((entry) => {
       return {
         $group: entry.group as any,

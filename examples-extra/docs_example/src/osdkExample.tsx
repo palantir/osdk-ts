@@ -57,13 +57,13 @@ export async function osdkObjectSetExample() {
   const withinFilteredObjectSet = await client(Office).where({
     $or: [
       {
-        entrance: { $within: { distance: [1_000, "miles"], of: [0, 0] } },
+        entrance: { $within: { $distance: [1_000, "miles"], of: [0, 0] } },
       },
-      { entrance: { $within: { bbox: [0, 1, 2, 3] } } },
+      { entrance: { $within: { $bbox: [0, 1, 2, 3] } } },
       { entrance: { $within: [0, 1, 2, 3] } },
       {
         entrance: {
-          $within: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
+          $within: { $polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
         },
       },
       {
@@ -80,11 +80,11 @@ export async function osdkObjectSetExample() {
   // Intersect clauses take either a polygon or bounding box
   const intersectFilteredObjectSet = await client(Office).where({
     $or: [
-      { entrance: { $intersects: { bbox: [0, 1, 2, 3] } } },
+      { entrance: { $intersects: { $bbox: [0, 1, 2, 3] } } },
       { entrance: { $intersects: [0, 1, 2, 3] } },
       {
         entrance: {
-          $intersects: { polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
+          $intersects: { $polygon: [[[0, 1], [0, 0], [1, 1], [1, 0], [0, 1]]] },
         },
       },
       {
@@ -126,9 +126,9 @@ export async function osdkObjectSetExample() {
 
   // When fetching a page of employees, you can down select properties you want, and also order the results
   const orderedEmployees = complexFilteredEmployeeObjectSet.fetchPage({
-    select: ["employeeId", "fullName", "startDate"],
-    orderBy: { "startDate": "asc" },
-    pageSize: 10,
+    $select: ["employeeId", "fullName", "startDate"],
+    $orderBy: { "startDate": "asc" },
+    $pageSize: 10,
   });
 
   /**

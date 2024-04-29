@@ -187,7 +187,7 @@ describe("aggregate", () => {
         objectType: "ToDo",
       },
       {
-        select: {
+        $select: {
           text: "approximateDistinct",
           priority: "avg",
           id: ["max", "avg"],
@@ -218,20 +218,20 @@ describe("aggregate", () => {
         objectType: "ToDo",
       },
       {
-        select: {
+        $select: {
           id: "approximateDistinct",
           $count: true,
         },
-        groupBy: {
+        $groupBy: {
           text: "exact",
-          priority: { exactWithLimit: 10 },
-          intProp: { ranges: [[1, 2]] },
+          priority: { $exactWithLimit: 10 },
+          intProp: { $ranges: [[1, 2]] },
           shortProp: {
-            ranges: [[2, 3], [4, 5]],
+            $ranges: [[2, 3], [4, 5]],
           },
-          floatProp: { fixedWidth: 10 },
-          timestamp: { duration: [10, "seconds"] },
-          date: { ranges: [["2024-01-02", "2024-01-09"]] },
+          floatProp: { $fixedWidth: 10 },
+          timestamp: { $duration: [10, "seconds"] },
+          date: { $ranges: [["2024-01-02", "2024-01-09"]] },
           boolean: "exact",
         },
       },
@@ -256,90 +256,90 @@ describe("aggregate", () => {
 
     expectType<
       AggregateOptsThatErrors<TodoDef, {
-        select: {
+        $select: {
           id: "approximateDistinct";
           $count: true;
         };
-        groupBy: {
+        $groupBy: {
           text: "exact";
-          priority: { exactWithLimit: 10 };
-          intProp: { ranges: [[1, 2]] };
+          priority: { $exactWithLimit: 10 };
+          intProp: { $ranges: [[1, 2]] };
           shortProp: {
-            ranges: [[2, 3], [4, 5]];
+            $ranges: [[2, 3], [4, 5]];
           };
-          floatProp: { fixedWidth: 10 };
+          floatProp: { $fixedWidth: 10 };
         };
       }>
     >({
-      select: {
+      $select: {
         id: "approximateDistinct",
         $count: true,
       },
-      groupBy: {
+      $groupBy: {
         text: "exact",
-        priority: { exactWithLimit: 10 },
-        intProp: { ranges: [[1, 2]] },
+        priority: { $exactWithLimit: 10 },
+        intProp: { $ranges: [[1, 2]] },
         shortProp: {
-          ranges: [[2, 3], [4, 5]],
+          $ranges: [[2, 3], [4, 5]],
         },
-        floatProp: { fixedWidth: 10 },
+        floatProp: { $fixedWidth: 10 },
       },
     });
 
     expectType<
       AggregateOptsThatErrors<TodoDef, {
-        select: {
+        $select: {
           id: "approximateDistinct";
           wrongSelectKey: "don't work";
           $count: true;
         };
-        groupBy: {
+        $groupBy: {
           wrongKey: "don't work";
           text: "exact";
-          priority: { exactWithLimit: 10 };
-          intProp: { ranges: [[1, 2]] };
+          priority: { $exactWithLimit: 10 };
+          intProp: { $ranges: [[1, 2]] };
           shortProp: {
-            ranges: [[2, 3], [4, 5]];
+            $ranges: [[2, 3], [4, 5]];
           };
-          floatProp: { fixedWidth: 10 };
+          floatProp: { $fixedWidth: 10 };
         };
       }>
     >({
-      select: {
+      $select: {
         id: "approximateDistinct",
         // @ts-expect-error
         wrongSelectKey: "don't work",
         $count: true,
       },
-      groupBy: {
+      $groupBy: {
         // @ts-expect-error
         wrongKey: "don't work",
         text: "exact",
-        priority: { exactWithLimit: 10 },
-        intProp: { ranges: [[1, 2]] },
+        priority: { $exactWithLimit: 10 },
+        intProp: { $ranges: [[1, 2]] },
         shortProp: {
-          ranges: [[2, 3], [4, 5]],
+          $ranges: [[2, 3], [4, 5]],
         },
-        floatProp: { fixedWidth: 10 },
+        floatProp: { $fixedWidth: 10 },
       },
     });
 
     expectTypeOf<
       typeof aggregate<TodoDef, {
-        select: {
+        $select: {
           id: "approximateDistinct";
           wrongSelectKey: "wrongKey";
           $count: true;
         };
-        groupBy: {
+        $groupBy: {
           text: "exact";
           wrongKey: "wrongKey";
-          priority: { exactWithLimit: 10 };
-          intProp: { ranges: [[1, 2]] };
+          priority: { $exactWithLimit: 10 };
+          intProp: { $ranges: [[1, 2]] };
           shortProp: {
-            ranges: [[2, 3], [4, 5]];
+            $ranges: [[2, 3], [4, 5]];
           };
-          floatProp: { fixedWidth: 10 };
+          floatProp: { $fixedWidth: 10 };
         };
       }>
     >().toBeCallableWith(
@@ -350,50 +350,50 @@ describe("aggregate", () => {
         objectType: "ToDo",
       },
       {
-        select: {
+        $select: {
           id: "approximateDistinct",
           // @ts-expect-error
           wrongSelectKey: "wrongKey",
           $count: true,
         },
-        groupBy: {
+        $groupBy: {
           text: "exact",
           // @ts-expect-error
           wrongKey: "wrongKey",
-          priority: { exactWithLimit: 10 },
-          intProp: { ranges: [[1, 2]] },
+          priority: { $exactWithLimit: 10 },
+          intProp: { $ranges: [[1, 2]] },
           shortProp: {
-            ranges: [[2, 3], [4, 5]],
+            $ranges: [[2, 3], [4, 5]],
           },
-          floatProp: { fixedWidth: 10 },
+          floatProp: { $fixedWidth: 10 },
         },
       },
     );
 
     expectType<GroupByClause<TodoDef>>({
-      timestamp: { duration: [10, "seconds"] },
-      date: { duration: [1, "years"] },
+      timestamp: { $duration: [10, "seconds"] },
+      date: { $duration: [1, "years"] },
     });
 
     // Can't use value greater than 1 for years
     expectType<GroupByClause<TodoDef>>({
-      timestamp: { duration: [1, "seconds"] },
+      timestamp: { $duration: [1, "seconds"] },
       // @ts-expect-error
-      date: { duration: [10, "years"] },
+      date: { $duration: [10, "years"] },
     });
 
     // Can't use arbitrary string for time unit
     expectType<GroupByClause<TodoDef>>({
       // @ts-expect-error
-      timestamp: { duration: [1, "nonexistentTimeUnit"] },
-      date: { duration: [10, "days"] },
+      timestamp: { $duration: [1, "nonexistentTimeUnit"] },
+      date: { $duration: [10, "days"] },
     });
 
     // Can't use time unit smaller than days for date type
     expectType<GroupByClause<TodoDef>>({
-      timestamp: { duration: [10, "seconds"] },
+      timestamp: { $duration: [10, "seconds"] },
       // @ts-expect-error
-      date: { duration: [1, "seconds"] },
+      date: { $duration: [1, "seconds"] },
     });
   });
 
@@ -454,7 +454,7 @@ describe("aggregate", () => {
         queries: {};
       }["objects"]["Todo"]
     > = {
-      select: {
+      $select: {
         locationCity: "approximateDistinct",
         text: "approximateDistinct",
       },

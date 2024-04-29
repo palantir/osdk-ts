@@ -122,7 +122,7 @@ async function runTests() {
       const r = await client(FooInterface)
         .where({ name: { $ne: "Patti" } })
         .where({ name: { $ne: "Roth" } })
-        .fetchPage({ pageSize: 1, select: ["name"] });
+        .fetchPage({ $pageSize: 1, $select: ["name"] });
 
       // This technically matches because the types are `| undefined`
       expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
@@ -172,8 +172,8 @@ async function runTests() {
     const result = await client(WeatherStation).where({
       geohash: {
         $within: {
-          distance: [1_000, "miles"],
-          of: [0, 0],
+          $distance: [1_000, "miles"],
+          $of: [0, 0],
         },
       },
     }).fetchPage();
@@ -184,7 +184,7 @@ async function runTests() {
     const intersectResult = await client(BoundariesUsState).where({
       geometry10M: {
         $intersects: {
-          polygon: [
+          $polygon: [
             [
               [
                 -75.09653518696345,
@@ -281,7 +281,7 @@ async function runTests() {
 
     const testAggregateCountNoGroup = await client(BoundariesUsState)
       .aggregate({
-        select: { $count: true, latitude: ["min", "max", "avg"] },
+        $select: { $count: true, latitude: ["min", "max", "avg"] },
       });
 
     // Should be 51 because it includes DC
@@ -293,31 +293,31 @@ async function runTests() {
     );
     const testAggregateCountWithGroups = await client(BoundariesUsState)
       .aggregate({
-        select: { $count: true, latitude: ["min", "max", "avg"] },
-        groupBy: {
+        $select: { $count: true, latitude: ["min", "max", "avg"] },
+        $groupBy: {
           usState: "exact",
           longitude: {
-            fixedWidth: 10,
+            $fixedWidth: 10,
           },
         },
       });
 
     const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
       .aggregate({
-        select: { $count: true, latitude: ["min", "max", "avg"] },
-        groupBy: {
+        $select: { $count: true, latitude: ["min", "max", "avg"] },
+        $groupBy: {
           longitude: {
-            exactWithLimit: 40,
+            $exactWithLimit: 40,
           },
         },
       });
 
     const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
       .aggregate({
-        select: { $count: true },
-        groupBy: {
+        $select: { $count: true },
+        $groupBy: {
           latitude: {
-            ranges: [[34, 39], [
+            $ranges: [[34, 39], [
               39,
               42,
             ], [43, 45]],
@@ -396,29 +396,29 @@ async function checkLinksAndActionsForVentures() {
 
 async function testGroupbysDates() {
   const groupedTimestamps = await client(BuilderDeploymentState).aggregate({
-    select: { $count: true },
+    $select: { $count: true },
     groupBy: { currentTimestamp: { duration: [10, "seconds"] } },
   });
 
   const groupedDates = await client(BuilderDeploymentState).aggregate({
-    select: { $count: true },
-    groupBy: { date: { duration: [10, "days"] } },
+    $select: { $count: true },
+    $groupBy: { date: { $duration: [10, "days"] } },
   });
 
   const rangedDates = await client(BuilderDeploymentState).aggregate({
-    select: { $count: true },
-    groupBy: {
+    $select: { $count: true },
+    $groupBy: {
       date: {
-        ranges: [["2008-03-01", "2009-11-05"], ["2015-10-01", "2018-11-05"]],
+        $ranges: [["2008-03-01", "2009-11-05"], ["2015-10-01", "2018-11-05"]],
       },
     },
   });
 
   const rangedTimestamps = await client(BuilderDeploymentState).aggregate({
-    select: { $count: true },
-    groupBy: {
+    $select: { $count: true },
+    $groupBy: {
       currentTimestamp: {
-        ranges: [["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"], [
+        $ranges: [["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"], [
           "2023-04-05T17:28:00Z",
           "2023-04-06T11:28:00Z",
         ]],

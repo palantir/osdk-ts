@@ -101,15 +101,15 @@ export const DistanceUnitMapping = {
 export type GeoFilter_Within = {
   "$within":
     | {
-      distance: [number, keyof typeof DistanceUnitMapping];
-      of: [number, number] | Readonly<Point>;
+      $distance: [number, keyof typeof DistanceUnitMapping];
+      $of: [number, number] | Readonly<Point>;
     }
     | {
-      bbox: BBox;
+      $bbox: BBox;
     }
     | BBox
     | {
-      polygon: Polygon["coordinates"];
+      $polygon: Polygon["coordinates"];
     }
     | Polygon;
 };
@@ -117,11 +117,11 @@ export type GeoFilter_Within = {
 export type GeoFilter_Intersects = {
   "$intersects":
     | {
-      bbox: BBox;
+      $bbox: BBox;
     }
     | BBox
     | {
-      polygon: Polygon["coordinates"];
+      $polygon: Polygon["coordinates"];
     }
     | Polygon;
 };
