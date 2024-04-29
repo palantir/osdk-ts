@@ -1110,8 +1110,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0
       '@octokit/plugin-throttling':
-        specifier: ^8.0.0
-        version: 8.2.0(@octokit/core@5.2.0)
+        specifier: ^9.2.1
+        version: 9.2.1(@octokit/core@5.2.0)
       chalk:
         specifier: ^5.3.0
         version: 5.3.0
@@ -2852,6 +2852,17 @@ packages:
     dependencies:
       '@octokit/core': 5.2.0
       '@octokit/types': 12.6.0
+      bottleneck: 2.19.5
+    dev: false
+
+  /@octokit/plugin-throttling@9.2.1(@octokit/core@5.2.0):
+    resolution: {integrity: sha512-n6EK4/1Npva54sAFDdpUxAbO14FbzudJ/k7DZPjQuLYOvNTWj4DGeH//J9ZCVoLkAlvRWV5sWKLaICsmGvqg2g==}
+    engines: {node: '>= 18'}
+    peerDependencies:
+      '@octokit/core': ^6.0.0
+    dependencies:
+      '@octokit/core': 5.2.0
+      '@octokit/types': 13.4.0
       bottleneck: 2.19.5
     dev: false
 
