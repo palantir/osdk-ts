@@ -1,5 +1,11 @@
 # @osdk/client
 
+## 0.17.0
+
+### Minor Changes
+
+- 63ff4b2: Only producing ESM now
+
 ## 0.16.0
 
 ### Minor Changes
