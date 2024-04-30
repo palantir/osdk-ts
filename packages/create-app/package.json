@@ -11,10 +11,12 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
+      "browser": "./build/js/index.browser.mjs",
       "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
+      "browser": "./build/js/public/*.browser.mjs",
       "import": "./build/js/public/*.mjs"
     }
   },
