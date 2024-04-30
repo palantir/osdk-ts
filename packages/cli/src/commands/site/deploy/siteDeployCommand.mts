@@ -76,7 +76,7 @@ export default async function siteDeployCommand(
 
   consola.start("Uploading site files");
   await Promise.all([
-    thirdPartyApplications.uploadWebsiteVersion(
+    thirdPartyApplications.uploadVersion(
       clientCtx,
       application,
       siteVersion,
@@ -87,13 +87,13 @@ export default async function siteDeployCommand(
   consola.success("Upload complete");
 
   if (!uploadOnly) {
-    const deployment = await thirdPartyApplications.updateWebsiteDeployment(
+    const website = await thirdPartyApplications.deployWebsite(
       clientCtx,
       application,
       { version: siteVersion },
     );
     consola.success(`Deployed ${siteVersion} successfully`);
-    const domain = deployment.subdomains[0];
+    const domain = website.subdomains[0];
     if (domain != null) {
       logSiteLink(
         "View live site:",
@@ -101,11 +101,11 @@ export default async function siteDeployCommand(
       );
     }
   } else {
-    const deployment = await thirdPartyApplications.getWebsiteDeployment(
+    const website = await thirdPartyApplications.getWebsite(
       clientCtx,
       application,
     );
-    const domain = deployment?.subdomains[0];
+    const domain = website?.subdomains[0];
     consola.debug("Upload only mode enabled, skipping deployment");
     if (domain != null) {
       logSiteLink(

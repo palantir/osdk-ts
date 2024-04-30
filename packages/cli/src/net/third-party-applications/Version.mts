@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export interface UpdateWebsiteDeploymentRequest {
+export interface Version {
   version: string;
 }

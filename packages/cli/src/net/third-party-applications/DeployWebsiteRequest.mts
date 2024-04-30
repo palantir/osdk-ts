@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-import type { WebsiteVersion } from "./WebsiteVersion.mts";
-
-export interface ListWebsiteVersionsResponse {
-  data: WebsiteVersion[];
-  nextPageToken?: string;
+export interface DeployWebsiteRequest {
+  version: string;
 }

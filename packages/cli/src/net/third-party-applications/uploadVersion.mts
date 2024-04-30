@@ -17,16 +17,28 @@
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
-import type { ListWebsiteVersionsResponse } from "./ListWebsiteVersionsResponse.mjs";
+import type { Version } from "./Version.mjs";
 
-export async function listWebsiteVersions(
+export async function uploadVersion(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-): Promise<ListWebsiteVersionsResponse> {
+  version: string,
+  zipFile: ReadableStream | Blob | BufferSource,
+): Promise<Version> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteVersions?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/upload?version=${version}&preview=true`;
 
-  const result = await fetch(url);
+  const result = await fetch(
+    url,
+    {
+      method: "POST",
+      body: zipFile,
+      headers: {
+        "Content-Type": "application/octet-stream",
+      },
+      duplex: "half", // Node hates me
+    } satisfies RequestInit & { duplex: "half" } as any,
+  );
   return result.json();
 }

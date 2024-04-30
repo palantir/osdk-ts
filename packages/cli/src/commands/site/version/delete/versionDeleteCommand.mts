@@ -39,7 +39,7 @@ export default async function versionDeleteCommand(
   const loadedToken = await loadToken(token, tokenFile);
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
-  await thirdPartyApplications.deleteWebsiteVersion(
+  await thirdPartyApplications.deleteVersion(
     clientCtx,
     application,
     version,

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-export { deleteWebsiteDeployment } from "./deleteWebsiteDeployment.mjs";
-export { deleteWebsiteVersion } from "./deleteWebsiteVersion.mjs";
-export { getWebsiteDeployment } from "./getWebsiteDeployment.mjs";
-export { listWebsiteVersions } from "./listWebsiteVersions.mjs";
-export type { ListWebsiteVersionsResponse } from "./ListWebsiteVersionsResponse.mjs";
-export { updateWebsiteDeployment } from "./updateWebsiteDeployment.mjs";
-export type { UpdateWebsiteDeploymentRequest } from "./UpdateWebsiteDeploymentRequest.mjs";
-export { uploadWebsiteVersion } from "./uploadWebsiteVersion.mjs";
-export type { WebsiteDeployment } from "./WebsiteDeployment.mjs";
-export type { WebsiteVersion } from "./WebsiteVersion.mjs";
+export { deleteVersion } from "./deleteVersion.mjs";
+export { deployWebsite } from "./deployWebsite.mjs";
+export type { DeployWebsiteRequest } from "./DeployWebsiteRequest.mjs";
+export { getWebsite } from "./getWebsite.mjs";
+export { listVersions } from "./listVersions.mjs";
+export type { ListVersionsResponse } from "./ListVersionsResponse.mjs";
+export { undeployWebsite } from "./undeployWebsite.mjs";
+export { uploadVersion } from "./uploadVersion.mjs";
+export type { Version } from "./Version.mjs";
+export type { Website } from "./Website.mjs";

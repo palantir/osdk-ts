@@ -28,9 +28,9 @@ export default async function versionListCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Fetching versions & deployed version");
 
-  const [versions, deployment] = await Promise.all([
-    thirdPartyApplications.listWebsiteVersions(clientCtx, application),
-    thirdPartyApplications.getWebsiteDeployment(clientCtx, application),
+  const [versions, website] = await Promise.all([
+    thirdPartyApplications.listVersions(clientCtx, application),
+    thirdPartyApplications.getWebsite(clientCtx, application),
   ]);
 
   if (versions.data.length === 0) {
@@ -47,8 +47,8 @@ export default async function versionListCommand(
   for (const version of sortedVersions) {
     consola.log(
       `    - ${version}${
-        deployment
-          && version === deployment.version
+        website?.deployedVersion
+          && version === website?.deployedVersion
           ? colorize("green", ` (deployed)`)
           : ""
       }`,
