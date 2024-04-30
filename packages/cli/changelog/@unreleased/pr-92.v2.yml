@@ -1,5 +1,0 @@
-type: improvement
-improvement:
-  description: Add @osdk/cli README
-  links:
-  - https://github.com/palantir/osdk-ts/pull/92
