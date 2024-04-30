@@ -98,5 +98,8 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
     get(primaryKey) {
       return getObject(client, apiName as string, primaryKey, properties);
     },
+    fetchOneWithErrors(primaryKey) {
+      return getObject(client, apiName as string, primaryKey, properties);
+    },
   };
 }

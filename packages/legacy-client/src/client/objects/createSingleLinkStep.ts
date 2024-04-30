@@ -36,5 +36,13 @@ export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
         targetLinkType,
       );
     },
+    async fetchOneWithErrors(): Promise<Result<T, GetLinkedObjectError>> {
+      return getOnlyLinkedObject(
+        client,
+        sourceObjectType,
+        sourcePrimaryKey,
+        targetLinkType,
+      );
+    },
   };
 }

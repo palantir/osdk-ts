@@ -198,6 +198,10 @@ export function createBaseOsdkObjectSet<
     get(primaryKey) {
       return getObject(client, apiName, primaryKey);
     },
+
+    fetchOneWithErrors(primaryKey) {
+      return getObject(client, apiName, primaryKey);
+    },
     select(properties) {
       return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
         client,

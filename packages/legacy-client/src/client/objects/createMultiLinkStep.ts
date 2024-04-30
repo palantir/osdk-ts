@@ -44,7 +44,17 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         primaryKey.toString(),
       );
     },
-
+    fetchOneWithErrors(
+      primaryKey: T["__primaryKey"],
+    ): Promise<Result<T, GetLinkedObjectError>> {
+      return getLinkedObject(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
+        primaryKey.toString(),
+      );
+    },
     all(): Promise<Result<T[], ListLinkedObjectsError>> {
       return listLinkedObjects(
         client,

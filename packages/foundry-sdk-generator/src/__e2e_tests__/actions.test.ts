@@ -100,6 +100,14 @@ describe("test", () => {
       expect(officeImpl.__rid).toBe(
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
+      const officeResult2: Result<Office, GetObjectError> = await objectEdit
+        .fetchOneWithErrors();
+      const officeImpl2: Office = assertOkOrThrow(officeResult2);
+      expect(officeImpl2.__apiName).toBe("Office");
+      expect(officeImpl2.__primaryKey).toBe("NYC");
+      expect(officeImpl2.__rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
     }
   });
 

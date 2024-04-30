@@ -84,6 +84,23 @@ describe("LoadObjects", () => {
     expect(destructured.office).toEqual("SF");
   });
 
+  it("Loads object which can be destructured with fetchOneWithErrors", async () => {
+    const result: Result<Employee, GetObjectError> = await client.ontology
+      .objects.Employee.fetchOneWithErrors(
+        stubData.employee1.__primaryKey,
+      );
+
+    const emp = assertOkOrThrow(result);
+    expect(emp.employeeId).toEqual(50030);
+    expect(emp.fullName).toEqual("John Doe");
+    expect(emp.office).toEqual("NYC");
+    expect(emp.startDate).toEqual(LocalDate.fromISOString("2019-01-01"));
+
+    const destructured: Employee = { ...emp, office: "SF" };
+    expect(destructured.fullName).toEqual("John Doe");
+    expect(destructured.office).toEqual("SF");
+  });
+
   it("Loads object with specified properties", async () => {
     const result = await client.ontology.objects.Employee.select(["fullName"])
       .get(stubData.employee1.__primaryKey);
@@ -102,9 +119,53 @@ describe("LoadObjects", () => {
     expect((emp as any).office).toBeUndefined();
   });
 
+  it("Loads object with specified properties - fetchOneWithErrors", async () => {
+    const result = await client.ontology.objects.Employee.select(["fullName"])
+      .fetchOneWithErrors(stubData.employee1.__primaryKey);
+
+    const emp = assertOkOrThrow(result);
+
+    expectTypeOf(emp).toEqualTypeOf<{
+      readonly fullName: string | undefined;
+      readonly __primaryKey: number;
+      readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
+    }>();
+
+    expect(emp.fullName).toEqual("John Doe");
+    expect((emp as any).office).toBeUndefined();
+  });
+
   it("Failure to load object", async () => {
     const result: Result<Employee, GetObjectError> = await client.ontology
       .objects.Employee.get(1234);
+    const err = assertErrOrThrow(result);
+
+    const visitor: ErrorVisitor<GetObjectError, void> = {
+      ObjectNotFound: error => {
+        expect(error).toMatchObject({
+          name: "ObjectNotFound",
+          errorType: "NOT_FOUND",
+          errorInstanceId: "errorInstanceId",
+          statusCode: 404,
+          primaryKey: {
+            employeeId: "1234",
+          },
+          objectType: "Employee",
+        });
+      },
+      default: error => {
+        throw new Error(`Unexpected error: ${error.errorName as string}`);
+      },
+    };
+
+    visitError(err, visitor);
+  });
+
+  it("Failure to load object - fetchOneWithErrors", async () => {
+    const result: Result<Employee, GetObjectError> = await client.ontology
+      .objects.Employee.fetchOneWithErrors(1234);
     const err = assertErrOrThrow(result);
 
     const visitor: ErrorVisitor<GetObjectError, void> = {

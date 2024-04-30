@@ -66,7 +66,9 @@ export declare type ObjectEdit<T extends OntologyObject> = {
     primaryKey: Extract<T, {
       __apiName: K;
     }>["__primaryKey"];
+    /** @deprecated use fetchOneWithErrors instead */
     get: () => Promise<Result<T, GetObjectError>>;
+    fetchOneWithErrors: () => Promise<Result<T, GetObjectError>>;
   };
 }[T["$apiName"]];
 
@@ -228,6 +230,8 @@ function getEdits(
         apiName: edit.objectType,
         primaryKey: edit.primaryKey,
         get: () => getObject(client, edit.objectType, edit.primaryKey),
+        fetchOneWithErrors: () =>
+          getObject(client, edit.objectType, edit.primaryKey),
       });
     }
     if (edit.type === "modifyObject") {
@@ -235,6 +239,8 @@ function getEdits(
         apiName: edit.objectType,
         primaryKey: edit.primaryKey,
         get: () => getObject(client, edit.objectType, edit.primaryKey),
+        fetchOneWithErrors: () =>
+          getObject(client, edit.objectType, edit.primaryKey),
       });
     }
   }
