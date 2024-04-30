@@ -172,6 +172,7 @@ function standardPackageRules(shared, options) {
           exports: {
             ".": {
               types: "./build/types/index.d.ts",
+              browser: "./build/js/index.browser.mjs",
               import: "./build/js/index.mjs",
               ...(options.esmOnly ? {} : {
                 require: `./build/js/index.${options.legacy ? "" : "c"}js`,
@@ -179,6 +180,7 @@ function standardPackageRules(shared, options) {
             },
             "./*": {
               types: "./build/types/public/*.d.ts",
+              browser: "./build/js/public/*.browser.mjs",
               import: "./build/js/public/*.mjs",
               ...(options.esmOnly ? {} : {
                 require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
