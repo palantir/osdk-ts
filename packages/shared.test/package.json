@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "1.2.0",
+  "version": "1.3.0",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -30,17 +30,17 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/gateway": "workspace:^",
     "fetch-retry": "^5.0.6",
-    "json-stable-stringify": "^1.1.0",
-    "msw": "^1.2.4",
+    "json-stable-stringify": "^1.1.1",
+    "msw": "^2.2.14",
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
     "@types/json-stable-stringify": "^1.0.36",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -49,8 +49,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

@@ -1,7 +1,11 @@
-import type { ObjectTypeDefinition, PropertyDef } from '@osdk/api';
+import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export interface ObjectTypeWithAllPropertyTypes
-  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
+  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
+    VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'A type with all property types';
   links: {};
   primaryKeyApiName: 'id';
@@ -42,6 +46,7 @@ export interface ObjectTypeWithAllPropertyTypes
 }
 
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
   links: {},

@@ -5,11 +5,12 @@
     "build": "turbo run build",
     "check": "turbo check",
     "check-mrl": "mrl check --verbose",
-    "ci:publish": "pnpm run prePublish && pnpm exec changeset publish --no-git-tag",
+    "ci:publish": "pnpm run prePublish && pnpm publish -r --report-summary",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "dev": "npx tsx packages/watch/src/watch.mts",
     "dev:typecheck": "npx tsx packages/watch/src/watch.mts",
     "lint": "turbo run lint",
+    "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
     "prepare": "husky install",
     "test": "FORCE_COLOR=1 turbo run test",
@@ -18,37 +19,51 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",
-    "@babel/preset-typescript": "^7.23.3",
-    "@changesets/cli": "^2.26.2",
-    "@monorepolint/cli": "0.5.0-alpha.108",
-    "@monorepolint/config": "0.5.0-alpha.108",
-    "@monorepolint/core": "0.5.0-alpha.108",
-    "@monorepolint/rules": "0.5.0-alpha.108",
-    "@types/lint-staged": "^13.2.0",
+    "@babel/preset-typescript": "^7.24.1",
+    "@changesets/changelog-git": "^0.2.0",
+    "@changesets/cli": "^2.27.1",
+    "@monorepolint/cli": "0.5.0-alpha.137",
+    "@monorepolint/config": "0.5.0-alpha.137",
+    "@monorepolint/core": "0.5.0-alpha.137",
+    "@monorepolint/rules": "0.5.0-alpha.137",
+    "@types/lint-staged": "^13.3.0",
+    "@typescript-eslint/parser": "^7.7.1",
     "babel-plugin-dev-expression": "^0.2.3",
-    "dprint": "^0.41.0",
+    "dprint": "^0.45.1",
     "esbuild-plugin-babel": "^0.2.3",
-    "eslint": "^8.54.0",
-    "eslint-config-sane": "workspace:*",
-    "find-up-cli": "^5.0.0",
+    "eslint": "^9.1.1",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-header": "^3.1.1",
+    "eslint-plugin-import": "^2.29.1",
+    "find-up-cli": "^6.0.0",
+    "globals": "^15.0.0",
     "husky": "^9.0.11",
-    "lint-staged": "^14.0.1",
+    "lint-staged": "^15.2.2",
     "micromatch": "^4.0.5",
-    "mytsup": "workspace:*",
+    "mytsup": "workspace:^",
     "tsc-absolute": "^1.0.1",
-    "tsconfig": "workspace:*",
+    "tsconfig": "workspace:^",
     "tsup": "^7.2.0",
-    "turbo": "^1.10.13",
+    "turbo": "^1.13.2",
     "turbotree": "^1.0.1",
-    "typescript": "^5.4.2",
-    "vitest": "^1.4.0"
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^7.7.1",
+    "vitest": "^1.5.2"
   },
   "dependencies": {
-    "eslint-plugin-unused-imports": "^3.0.0"
+    "eslint-plugin-unused-imports": "^3.1.0"
   },
   "pnpm": {
     "patchedDependencies": {
       "turbotree@1.0.1": "patches/turbotree@1.0.1.patch"
+    },
+    "overrides": {
+      "trim@0.0.1": "0.0.3"
     }
-  }
+  },
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=8.7.4"
+  },
+  "packageManager": "pnpm@8.7.4"
 }

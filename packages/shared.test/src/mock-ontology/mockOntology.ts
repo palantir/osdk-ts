@@ -19,9 +19,14 @@ import type {
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
   OntologyDefinition,
+  VersionBound,
 } from "@osdk/api";
 import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+
+const osdkMetadata = {
+  extraUserAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+};
 
 const Task: TaskDef = {
   type: "object",
@@ -37,6 +42,7 @@ const Task: TaskDef = {
       targetType: "Todo",
     },
   },
+  osdkMetadata,
 };
 
 const Todo: TodoDef = {
@@ -59,9 +65,10 @@ const Todo: TodoDef = {
       targetType: "Task",
     },
   },
+  osdkMetadata,
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Todo";
   primaryKeyApiName: "id";
@@ -80,7 +87,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   };
 }
 
-interface TaskDef extends ObjectTypeDefinition<"Task"> {
+interface TaskDef extends ObjectTypeDefinition<"Task">, VersionBound<"0.15.0"> {
   type: "object";
   apiName: "Task";
   primaryKeyApiName: "id";
@@ -377,7 +384,9 @@ export const MockOntology = {
   | "Todo"
   | "ObjectTypeWithAllPropertyTypes"
   | "ObjectTypeWithReservedNames",
-  "createTask" | "updateTask" | "createTodo"
+  "createTask" | "updateTask" | "createTodo",
+  any,
+  any
 >;
 type capture = typeof MockOntology;
 export interface MockOntology extends capture {

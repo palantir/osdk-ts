@@ -1,7 +1,8 @@
 import react from "@vitejs/plugin-react";
 import https from "node:https";
 import { visualizer } from "rollup-plugin-visualizer";
-import { defineConfig, loadEnv, PluginOption } from "vite";
+import type { PluginOption } from "vite";
+import { defineConfig, loadEnv } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {

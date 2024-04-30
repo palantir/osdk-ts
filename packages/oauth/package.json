@@ -29,13 +29,13 @@
     "delay": "^6.0.0",
     "oauth4webapi": "^2.10.3",
     "tiny-invariant": "^1.3.1",
-    "typescript-event-target": "^1.1.0"
+    "typescript-event-target": "^1.1.1"
   },
   "devDependencies": {
     "jest-extended": "^4.0.2",
     "ts-expect": "^1.3.0",
-    "type-fest": "^4.14.0",
-    "typescript": "^5.4.2"
+    "type-fest": "^4.17.0",
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -43,8 +43,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

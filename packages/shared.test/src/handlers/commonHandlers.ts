@@ -14,40 +14,36 @@
  * limitations under the License.
  */
 
-import type {
-  DefaultBodyType,
-  MockedResponse,
-  PathParams,
-  ResponseComposition,
-  RestContext,
-  RestRequest,
+import {
+  type DefaultBodyType,
+  HttpResponse,
+  type HttpResponseResolver,
+  type PathParams,
 } from "msw";
-
-export type MiddlewareHandler<
-  TReqBody extends DefaultBodyType = DefaultBodyType,
-  TPathParams extends PathParams<string> = PathParams<string>,
-> = (
-  req: RestRequest<TReqBody, TPathParams>,
-  res: ResponseComposition,
-  ctx: RestContext,
-) => Promise<MockedResponse<any>>;
+import { OpenApiCallError } from "./util/handleOpenApiCall";
 
 export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,
   TPathParams extends PathParams<string> = PathParams<string>,
 >(
-  handler: MiddlewareHandler<TReqBody, TPathParams>,
-): MiddlewareHandler<TReqBody, TPathParams> {
-  return async (req, res, ctx) => {
-    const authHeader = req.headers.get("authorization");
+  handler: HttpResponseResolver<TPathParams, TReqBody>,
+): HttpResponseResolver<TPathParams, TReqBody> {
+  return async (info) => {
+    const authHeader = info.request.headers.get("authorization");
 
     if (!authHeader || authHeader !== `Bearer myAccessToken`) {
-      return res(
-        ctx.status(401),
-        ctx.json({ message: "Missing Authorization header" }),
-      );
+      return HttpResponse.json({ message: "Missing Authorization header" }, {
+        status: 401,
+      });
     }
 
-    return handler(req, res, ctx);
+    try {
+      return handler(info);
+    } catch (e) {
+      if (e instanceof OpenApiCallError) {
+        return HttpResponse.json(e.json, { status: e.status });
+      }
+      throw e;
+    }
   };
 }

@@ -19,6 +19,10 @@ import type { MinimalFs } from "../MinimalFs";
 import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
+// BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
+const ExpectedOsdkVersion = "0.16.0";
+// END: THIS IS GENERATED CODE. DO NOT EDIT.
+
 export async function generateOntologyMetadataFile(
   ontology: WireOntologyDefinition,
   userAgent: string,
@@ -29,14 +33,15 @@ export async function generateOntologyMetadataFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `
-      import {OntologyMetadata as OM} from "@osdk/api";
+      import { OntologyMetadata as OM } from "@osdk/api";
 
-      export interface OntologyMetadata extends OM<"${process.env.PACKAGE_CLIENT_VERSION}"> {
-        expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",
-      };
+      export type $ExpectedClientVersion = "${ExpectedOsdkVersion}";
+      export const $osdkMetadata = { extraUserAgent: "${userAgent}" };
+
+      export interface OntologyMetadata extends OM<$ExpectedClientVersion> {};
 
       export const OntologyMetadata: OntologyMetadata = {
-        expectsClientVersion: "${process.env.PACKAGE_CLIENT_VERSION}",
+        expectsClientVersion: "${ExpectedOsdkVersion}",
         ontologyRid: "${ontology.ontology.rid}",
         ontologyApiName: "${ontology.ontology.apiName}",
         userAgent: "${userAgent}",

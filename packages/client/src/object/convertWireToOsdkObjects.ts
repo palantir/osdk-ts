@@ -19,7 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/omniapi";
+import type { OntologyObjectV2 } from "@osdk/foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
@@ -314,12 +314,12 @@ function createLocalObjectCacheAndInitiatePreseed(
 ) {
   // local cache delegates to the global one
   const localInterfaceCache = createAsyncCache((client, apiName: string) =>
-    client.ontology.provider.getInterfaceDefinition(apiName)
+    client.ontologyProvider.getInterfaceDefinition(apiName)
   );
 
   const localObjectCache = createAsyncCache(async (client, apiName: string) => {
     // first delegate to the global cache
-    const objectDef = await client.ontology.provider.getObjectDefinition(
+    const objectDef = await client.ontologyProvider.getObjectDefinition(
       apiName,
     ) as AugmentedObjectTypeDefinition<any>;
 

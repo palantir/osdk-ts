@@ -15,6 +15,7 @@
  */
 
 import { createClientContext } from "@osdk/shared.net";
+import type { Logger } from "pino";
 import type {
   MinimalClient,
   MinimalClientParams,
@@ -29,7 +30,7 @@ export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
   stack: string,
   tokenProvider: () => Promise<string> | string,
-  ontologyCachingOptions: OntologyCachingOptions = {},
+  options: OntologyCachingOptions & { logger?: Logger } = {},
   fetchFn: (
     input: RequestInfo | URL,
     init?: RequestInit | undefined,
@@ -45,18 +46,20 @@ export function createMinimalClient(
       throw new Error(`Invalid stack URL: ${stack}${hint}`);
     }
   }
-  const clientCtx: MinimalClient = createClientContext(
-    {
-      metadata,
-      provider: undefined as any,
-    },
-    stack,
-    tokenProvider,
-    USER_AGENT,
-    fetchFn,
-  );
-  clientCtx.ontology.provider = createStandardOntologyProviderFactory(
-    ontologyCachingOptions,
+  const clientCtx: MinimalClient = {
+    ...createClientContext(
+      { metadata },
+      stack,
+      tokenProvider,
+      USER_AGENT,
+      fetchFn,
+    ),
+    ontologyRid: metadata.ontologyRid,
+    ontologyProvider: undefined as any,
+    logger: options.logger,
+  };
+  clientCtx.ontologyProvider = createStandardOntologyProviderFactory(
+    options,
   )(clientCtx);
   return clientCtx;
 }

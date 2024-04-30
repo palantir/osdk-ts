@@ -39,3 +39,10 @@ export declare type OmitLinksProperties<T> = {
 export declare type SelectableProperties<T> = OmitLinksProperties<
   OmitMetadataProperties<T>
 >;
+
+export declare type LinksProperties<T> = {
+  [
+    K in Extract<keyof T, string> as IsLink<T[K]> extends true ? K
+      : never
+  ]: T[K];
+};

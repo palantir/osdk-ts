@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -11,20 +11,18 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
@@ -40,8 +38,8 @@
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "tmp": "^0.2.1",
-    "typescript": "^5.4.2"
+    "tmp": "^0.2.3",
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -52,13 +50,11 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"

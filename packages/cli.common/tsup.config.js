@@ -17,5 +17,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig(async (options) =>
-  (await import("mytsup")).default(options)
+  (await import("mytsup")).default(options, {
+    esmnOnly: true,
+  })
 );

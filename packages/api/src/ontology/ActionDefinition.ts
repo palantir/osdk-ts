@@ -15,6 +15,7 @@
  */
 
 import type { ObjectTypeDefinition } from "..";
+import type { OsdkMetadata } from "../OsdkMetadata";
 
 export interface ActionDefinition<
   A extends string,
@@ -28,6 +29,7 @@ export interface ActionDefinition<
   displayName?: string;
   parameters: Record<any, ActionParameterDefinition<K, any>>;
   modifiedEntities?: Partial<Record<K, ActionModifiedEntity>>;
+  osdkMetadata?: OsdkMetadata;
 }
 
 export interface ActionModifiedEntity {

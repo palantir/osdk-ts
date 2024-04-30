@@ -15,9 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet } from "@osdk/omniapi/types";
-import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
+import type { ObjectSet } from "@osdk/foundry/types";
+import { PalantirApiError } from "@osdk/shared.net";
 import type { Osdk } from "../index.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   fetchPage,
   type FetchPageArgs,
@@ -28,7 +29,7 @@ export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
   const A extends FetchPageArgs<Q, any, any>,
 >(
-  client: ClientContext<any>,
+  client: MinimalClient,
   objectType: Q,
   args: A,
   objectSet: ObjectSet,

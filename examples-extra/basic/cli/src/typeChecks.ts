@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { Client, Osdk, PageResult } from "@osdk/client";
-import type { Ontology } from "@osdk/examples.basic.sdk";
+import type { Client, ObjectSet, Osdk, PageResult } from "@osdk/client";
+import type { Employee } from "@osdk/examples.basic.sdk";
+import { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
@@ -25,35 +26,27 @@ import { expectType } from "ts-expect";
  * across changes.
  * @param client
  */
-export async function typeChecks(client: Client<Ontology>) {
-  // client.objectSet("Employee") is the same as client.objects.Employee
-  {
-    const objectSet = client.objectSet("Employee");
-    expectType<TypeOf<typeof objectSet, typeof client["objects"]["Employee"]>>(
-      true,
-    );
-  }
-
+export async function typeChecks(client: Client) {
   // single link pivot types are correct
   {
-    const objectSet = client.objectSet("Employee").pivotTo("lead");
-    expectType<TypeOf<typeof objectSet, typeof client["objects"]["Employee"]>>(
+    const objectSet = client(Ontology.objects.Employee).pivotTo("lead");
+    expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
       true,
     );
   }
 
   // multi link pivot types are correct
   {
-    const objectSet = client.objectSet("Employee").pivotTo("peeps");
-    expectType<TypeOf<typeof objectSet, typeof client["objects"]["Employee"]>>(
+    const objectSet = client(Ontology.objects.Employee).pivotTo("peeps");
+    expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
       true,
     );
   }
 
   // just a demo of aggregations
   {
-    const q = await client.objects.ObjectTypeWithAllPropertyTypes
-      .aggregateOrThrow({
+    const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
+      .aggregate({
         select: {
           integer: "sum",
           float: "sum",
@@ -73,9 +66,9 @@ export async function typeChecks(client: Client<Ontology>) {
 
   // object $link examples
   {
-    const page = await client.objectSet("Employee").where({
+    const page = await client(Ontology.objects.Employee).where({
       adUsername: "adUsername",
-    }).fetchPageOrThrow();
+    }).fetchPage();
     const employee = page.data[0];
 
     // lead is an employee
@@ -92,7 +85,7 @@ export async function typeChecks(client: Client<Ontology>) {
     expectType<TypeOf<{ jobProfile: any[] }, typeof leadName>>(false);
 
     // peeps is a page of employees, but only get the adUsername and employeeNumber
-    const peeps = await employee.$link.peeps.fetchPageOrThrow({
+    const peeps = await employee.$link.peeps.fetchPage({
       select: ["adUsername", "employeeNumber"],
     });
     expectType<

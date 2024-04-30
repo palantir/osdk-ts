@@ -10,13 +10,11 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -28,14 +26,15 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*",
-    "@osdk/examples.basic.sdk": "workspace:*",
-    "@osdk/omniapi": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/examples.basic.sdk": "workspace:^",
+    "@osdk/foundry": "workspace:^",
+    "pino": "^8.20.0",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
-    "@osdk/cli": "workspace:*",
+    "@osdk/cli": "workspace:^",
     "@types/node": "^18.0.0",
     "ts-expect": "^1.3.0"
   },
@@ -45,13 +44,11 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"

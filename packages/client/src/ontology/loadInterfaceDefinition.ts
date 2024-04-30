@@ -15,19 +15,17 @@
  */
 
 import type { InterfaceDefinition } from "@osdk/api";
+import { getInterfaceType } from "@osdk/foundry/OntologiesV2_OntologyObjectV2";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
-import { getInterfaceType } from "@osdk/omniapi/OntologiesV2_OntologyObjectV2";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadInterfaceDefinition(
   client: MinimalClient,
   objtype: string,
 ): Promise<InterfaceDefinition<any, any>> {
-  const { ontologyApiName } = client.ontology.metadata;
-
   const r = await getInterfaceType(
     client,
-    ontologyApiName,
+    client.ontologyRid,
     objtype,
     { preview: true },
   );

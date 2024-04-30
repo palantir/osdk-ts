@@ -1,6 +1,6 @@
 {
   "name": "@osdk/legacy-client",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -25,28 +25,28 @@
     "codegen": "node ./generateMockOntology.mjs",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run",
+    "test": "vitest run --pool=forks",
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/gateway": "workspace:*",
-    "@osdk/shared.net": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/gateway": "workspace:^",
+    "@osdk/shared.net": "workspace:^",
     "fetch-retry": "^5.0.6",
-    "luxon": "^3.4.3",
+    "luxon": "^3.4.4",
     "ngeohash": "^0.6.3",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
-    "@osdk/generator": "workspace:*",
-    "@osdk/shared.test": "workspace:*",
-    "@types/luxon": "^3.3.3",
+    "@osdk/generator": "workspace:^",
+    "@osdk/shared.test": "workspace:^",
+    "@types/luxon": "^3.4.2",
     "@types/ngeohash": "^0.6.4",
     "ts-expect": "^1.3.0",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -55,8 +55,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

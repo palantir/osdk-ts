@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import type {
   ExportedDeclarations,
   ExportSpecifier,
@@ -96,7 +95,6 @@ export class ProjectMinifier {
       }
 
       // Keep track of identifiers for this file which we will need to resolve
-      // eslint-disable-next-line @typescript-eslint/ban-types
       const identifiersToResolve = new Set<TsSymbol>();
 
       const sourceFile = visitImports.sourceFile;

@@ -30,14 +30,14 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/generator": "workspace:*",
-    "@osdk/legacy-client": "workspace:*"
+    "@osdk/api": "workspace:^",
+    "@osdk/generator": "workspace:^",
+    "@osdk/legacy-client": "workspace:^"
   },
   "devDependencies": {
-    "@osdk/cli.cmd.typescript": "workspace:*",
+    "@osdk/cli.cmd.typescript": "workspace:^",
     "@types/node": "^18.0.0",
-    "typescript": "^4.9.0"
+    "typescript": "^4.9.5"
   },
   "publishConfig": {
     "access": "public"
@@ -46,8 +46,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"

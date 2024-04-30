@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/omniapi/types";
+import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/foundry/types";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
@@ -189,7 +189,7 @@ function mapWhereClauseToObjectSetFilter(
           propertyId: propertyMapping.propertyApiNameToIdMapping[
             objectSetFilter.field
           ],
-          terms: [],
+          terms: [objectSetFilter.value],
         },
       };
     case "and":

@@ -17,13 +17,18 @@
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
 import type { ActionExecutionOptions } from "../..";
-import type { BulkActionExecutionOptions } from "../baseTypes";
+import type {
+  BatchActionExecutionOptions,
+  BulkActionExecutionOptions,
+} from "../baseTypes";
 import { executeAction, executeBatchAction } from "../net/executeAction";
 import type {
   ActionArgs,
   Actions,
+  BatchActions,
   BulkActions,
   WrappedActionReturnType,
+  WrappedBatchActionReturnType,
   WrappedBulkActionReturnType,
 } from "./actions";
 
@@ -121,5 +126,47 @@ export function createBulkActionProxy<
       },
     },
   ) as BulkActions<O>;
+  return proxy;
+}
+
+export function createBatchActionProxy<
+  O extends OntologyDefinition<any>,
+>(client: ClientContext<O>): BatchActions<O> {
+  const proxy = new Proxy(
+    {},
+    {
+      get: (_target, p: keyof O["actions"], _receiver) => {
+        if (typeof p === "string") {
+          return async function<
+            Op extends BatchActionExecutionOptions,
+          >(
+            params: ActionArgs<O, typeof p>[],
+            options?: Op,
+          ): Promise<WrappedBatchActionReturnType<O, typeof p, Op>> {
+            return executeBatchAction<O, typeof p, Op>(
+              client,
+              p,
+              params,
+              options,
+            );
+          };
+        }
+
+        return undefined;
+      },
+      ownKeys(_target) {
+        return Object.keys(client.ontology.actions);
+      },
+      getOwnPropertyDescriptor(_target, p) {
+        if (typeof p === "string") {
+          return {
+            enumerable: client.ontology.actions[p] != null,
+            configurable: true,
+            value: proxy[p],
+          };
+        }
+      },
+    },
+  ) as BatchActions<O>;
   return proxy;
 }

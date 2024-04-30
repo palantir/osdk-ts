@@ -1,6 +1,11 @@
-import type { InterfaceDefinition, PropertyDef } from '@osdk/api';
+import type { InterfaceDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInterface> {
+export interface FooInterface
+  extends InterfaceDefinition<'FooInterface', FooInterface>,
+    VersionBound<$ExpectedClientVersion> {
+  osdkMetadata: typeof $osdkMetadata;
   description: 'Its a Foo.';
   links: {};
   properties: {
@@ -10,6 +15,7 @@ export interface FooInterface extends InterfaceDefinition<'FooInterface', FooInt
 }
 
 export const FooInterface: FooInterface = {
+  osdkMetadata: $osdkMetadata,
   apiName: 'FooInterface',
   description: 'Its a Foo.',
   links: {},

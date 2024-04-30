@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -11,13 +11,11 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -32,28 +30,29 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/generator-converters": "workspace:*",
-    "@osdk/shared.net": "workspace:*",
+    "@osdk/api": "workspace:^",
+    "@osdk/generator-converters": "workspace:^",
+    "@osdk/shared.net": "workspace:^",
     "conjure-lite": "^0.3.3",
     "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^5.0.6",
     "isomorphic-ws": "^5.0.0",
     "tiny-invariant": "^1.3.1",
-    "ws": "^8.14.2"
+    "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@osdk/generator": "workspace:*",
-    "@osdk/omniapi": "workspace:*",
-    "@osdk/shared.test": "workspace:*",
+    "@osdk/foundry": "workspace:^",
+    "@osdk/generator": "workspace:^",
+    "@osdk/shared.test": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
     "jest-extended": "^4.0.2",
-    "p-defer": "^4.0.0",
-    "p-state": "^2.0.0",
+    "p-defer": "^4.0.1",
+    "p-state": "^2.0.1",
+    "pino": "^8.20.0",
     "ts-expect": "^1.3.0",
-    "type-fest": "^4.14.0",
-    "typescript": "^5.4.2"
+    "type-fest": "^4.17.0",
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -62,15 +61,16 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
+  "peerDependencies": {
+    "pino": "^8.20.0"
+  },
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {

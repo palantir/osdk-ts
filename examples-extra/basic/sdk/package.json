@@ -11,13 +11,11 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -30,12 +28,12 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*"
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^"
   },
   "devDependencies": {
-    "@osdk/cli.cmd.typescript": "workspace:*",
-    "typescript": "^5.2.2"
+    "@osdk/cli.cmd.typescript": "workspace:^",
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -44,13 +42,11 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"

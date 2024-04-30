@@ -5,8 +5,7 @@
     "outDir": "build/types"
   },
   "include": [
-    "./src/**/*",
-    ".eslintrc.cjs"
+    "./src/**/*"
   ],
   "references": []
 }

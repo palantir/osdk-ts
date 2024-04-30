@@ -1,16 +1,19 @@
+// @ts-check
 import { findUp } from "find-up";
 import { readFile } from "fs/promises";
 import * as path from "node:path";
 
 /**
  * @param {import('tsup').Options} options
- * @param {{cjsExtension?: ".cjs" | ".js"}} ourOptions
- * @returns {import('tsup').Options}
+ * @param {{cjsExtension?: ".cjs" | ".js", esmOnly?: boolean }} ourOptions
+ * @returns {Promise<import('tsup').Options>}
  */
 export default async (options, ourOptions) => {
   const babel = (await import("esbuild-plugin-babel")).default;
 
-  const packageJson = await readFile("package.json").then(f => JSON.parse(f));
+  const packageJson = await readFile("package.json", "utf-8").then(f =>
+    JSON.parse(f)
+  );
 
   return {
     entry: [
@@ -18,7 +21,7 @@ export default async (options, ourOptions) => {
       "src/public/*.ts",
       "src/public/*.mts",
     ],
-    format: ["cjs", "esm"],
+    format: ourOptions?.esmOnly ? ["esm"] : ["cjs", "esm"],
     outExtension: ({ format }) => {
       return {
         js: format === "cjs" ? (ourOptions?.cjsExtension ?? ".cjs") : ".mjs",
@@ -39,25 +42,26 @@ export default async (options, ourOptions) => {
     sourcemap: true,
     splitting: true,
     minify: false, // !options.watch,
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log("👍");
     },
     treeshake: true,
     target: "es2022",
     esbuildPlugins: [
-      babel({
+      /** @type {any} */ (babel({
         config: {
           presets: ["@babel/preset-typescript"],
           plugins: ["babel-plugin-dev-expression"],
         },
-      }),
+      })),
     ],
   };
 };
 
 async function readPackageVersion(k) {
-  const workspaceRoot = path.dirname(await findUp("pnpm-workspace.yaml"));
-  return await readFile(path.join(workspaceRoot, k, "package.json")).then(f =>
-    JSON.parse(f).version
-  );
+  const workspaceFile = await findUp("pnpm-workspace.yaml");
+  if (!workspaceFile) throw "couldnt find workspace file";
+  const workspaceRoot = path.dirname(workspaceFile);
+  return await readFile(path.join(workspaceRoot, k, "package.json"), "utf-8")
+    .then(f => JSON.parse(f).version);
 }

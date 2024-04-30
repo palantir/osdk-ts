@@ -14,104 +14,67 @@
  * limitations under the License.
  */
 
-import type {
-  AggregateObjectsResponseV2,
-  LoadObjectSetRequestV2,
-  LoadObjectSetResponseV2,
-} from "@osdk/gateway/types";
+import { aggregateObjectSetV2, loadObjectSetV2 } from "@osdk/gateway/requests";
+import type { LoadObjectSetResponseV2 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import type {
-  DefaultBodyType,
-  MockedRequest,
-  ResponseComposition,
-  RestHandler,
-  RestRequest,
-} from "msw";
-import { rest } from "msw";
-import type { BaseAPIError } from "../BaseError";
 import { InvalidRequest } from "../errors";
 import { filterObjectsProperties } from "../filterObjects";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests";
 import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest";
 import { defaultOntology } from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
 import { pageThroughResponse } from "./endpointUtils";
+import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
 
-export const objectSetHandlers: RestHandler<
-  MockedRequest<DefaultBodyType>
->[] = [
+export const objectSetHandlers = [
   /**
    * Load ObjectSet Objects
    */
-  rest.post(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectSets/loadObjects",
-    authHandlerMiddleware<LoadObjectSetRequestV2>(
-      async (
-        req: RestRequest<LoadObjectSetRequestV2>,
-        res: ResponseComposition<LoadObjectSetResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
+  handleOpenApiCall(
+    loadObjectSetV2,
+    ["ontologyApiName"],
+    async (req) => {
+      const parsedBody = await req.request.json();
+      const selected = parsedBody.select;
+      const response: LoadObjectSetResponseV2 | undefined = pageThroughResponse(
+        loadObjectSetRequestHandlers,
+        parsedBody,
+      );
 
-        const parsedBody = await req.json<LoadObjectSetRequestV2>();
-        const selected = parsedBody.select;
-        const response: LoadObjectSetResponseV2 | undefined =
-          pageThroughResponse(
-            loadObjectSetRequestHandlers,
-            parsedBody,
-          );
+      if (
+        (req.params.ontologyApiName === defaultOntology.apiName
+          || req.params.ontologyApiName === defaultOntology.rid)
+        && response
+      ) {
+        return filterObjectsProperties(response, [...selected]);
+      }
 
-        if (
-          req.params.ontologyApiName === defaultOntology.apiName && response
-        ) {
-          return res(
-            ctx.json(filterObjectsProperties(response, [...selected])),
-          );
-        }
-
-        return res(
-          ctx.status(400),
-          ctx.json(
-            InvalidRequest(
-              `Invalid request body: ${JSON.stringify(parsedBody)}`,
-            ),
-          ),
-        );
-      },
-    ),
+      throw new OpenApiCallError(
+        400,
+        InvalidRequest(
+          `Invalid request body: ${JSON.stringify(parsedBody)}`,
+        ),
+      );
+    },
   ),
 
   /**
    * Aggregate Objects in ObjectSet
    */
-  rest.post(
-    "https://stack.palantir.com/api/v2/ontologies/:ontologyApiName/objectSets/aggregate",
-    authHandlerMiddleware(
-      async (
-        req,
-        res: ResponseComposition<AggregateObjectsResponseV2 | BaseAPIError>,
-        ctx,
-      ) => {
-        if (!req || !res) {
-          return res(ctx.status(500, "Request or response not found"));
-        }
-        const body = await req.text();
-        const parsedBody = JSON.parse(body);
-        const aggResp = aggregationRequestHandlers[stableStringify(parsedBody)];
-        if (aggResp) {
-          return res(ctx.json(aggResp));
-        }
-        return res(
-          ctx.status(400),
-          ctx.json(
-            InvalidRequest(
-              `Invalid aggregation request: ${JSON.stringify(parsedBody)}`,
-            ),
-          ),
-        );
-      },
-    ),
+  handleOpenApiCall(
+    aggregateObjectSetV2,
+    ["ontologyApiName"],
+    async ({ request }) => {
+      const parsedBody = await request.json();
+      const aggResp = aggregationRequestHandlers[stableStringify(parsedBody)];
+      if (aggResp) {
+        return aggResp;
+      }
+      throw new OpenApiCallError(
+        400,
+        InvalidRequest(
+          `Invalid aggregation request: ${JSON.stringify(parsedBody)}`,
+        ),
+      );
+    },
   ),
 ];

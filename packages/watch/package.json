@@ -29,10 +29,10 @@
   },
   "dependencies": {
     "turbotree": "^1.0.1",
-    "zx": "^7.2.3"
+    "zx": "^8.0.2"
   },
   "devDependencies": {
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5"
   },
   "publishConfig": {
     "access": "public"
@@ -40,8 +40,7 @@
   "files": [
     "build/types",
     "build/js",
-    "changelog",
-    "CHANGELOG_OLD.md",
+    "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
