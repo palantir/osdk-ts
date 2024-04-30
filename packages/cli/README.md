@@ -36,6 +36,28 @@ Common options
 
 ---
 
+### Project config file
+
+A `foundry.config.json` file may be used in your project's root to simplify usage of the CLI by populating default values for commands. The current working directory will be traversed up to the root directory and the first `foundry.config.json` file, if found, will be used.
+
+An example of a full `foundry.config.json` is show below:
+
+```json
+{
+  "foundryUrl": "https://example.palantirfoundry.com",
+  "site": {
+    "application": "ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace",
+    "directory": "./dist",
+    "autoVersion": {
+      "type": "git-describe",
+      "tagPrefix": ""
+    }
+  }
+}
+```
+
+---
+
 The `site` subcommand is not runnable without passing a specific subcommand i.e (`deploy` or `version`)
 
 ### `deploy`subcommand
@@ -65,26 +87,6 @@ Auto Version options
 
 If `git-describe` is used for `--autoVersion`, the CLI will try to infer the version by running the `git describe` command with optionally `--match=<gitTagPrefix>` set if `--gitTagPrefix` is passed.
 
-#### `foundry.config.json` config file
-
-This file contains project related configuration for Foundry website hosting. If a valid project file is present in the directory where the CLI is run, the CLI will automatically load the project file and depending on the present data, the CLI will be able to apply default values for otherwise required options.
-
-An example of a full `foundry.config.json` is show below:
-
-```json
-{
-  "foundryUrl": "https://example.palantirfoundry.com",
-  "site": {
-    "application": "ri.third-party-applications.main.application.1c66b352-4e00-40d2-995d-061c9d533ace",
-    "directory": "./dist",
-    "autoVersion": {
-      "type": "git-describe",
-      "tagPrefix": ""
-    }
-  }
-}
-```
-
 ### `version` subcommand
 
 The version subcommand allows users to manage their site versions.
@@ -101,7 +103,7 @@ npx @osdk/cli site version list
 
 #### `get` subcommand
 
-The list subcommand allows users to get their site live version
+The get subcommand allows users to get their live site version
 
 ```
 npx @osdk/cli site version get
@@ -109,7 +111,7 @@ npx @osdk/cli site version get
 
 #### `set <version>` subcommand
 
-The list subcommand allows users to set their site live version
+The set subcommand allows users to set their live site version
 
 ```
 npx @osdk/cli site version set 0.1.0
@@ -117,7 +119,7 @@ npx @osdk/cli site version set 0.1.0
 
 #### `unset` subcommand
 
-The list subcommand allows users to clear their site live version
+The unset subcommand allows users to clear their live site version
 
 ```
 npx @osdk/cli site version unset
@@ -125,25 +127,21 @@ npx @osdk/cli site version unset
 
 #### `delete <version>` subcommand
 
-The list subcommand allows users to delete a site version
+The delete subcommand allows users to delete a site version
 
 ```
 npx @osdk/cli site version delete 0.1.0
 ```
 
-## `typescript` subcommand
-
-## `auth` subcommand
-
 ## Help and debugging
 
-To see all supported commands and their expected arguments, run your command with the --help flag
+To see all supported commands and their expected arguments, run a command with the --help flag
 
 ```
 npx @osdk/cli site version --help
 ```
 
-And for additional information for debugging, you can use the --verbose flag
+For additional information for debugging, use the --verbose flag
 
 ```
 npx @osdk/cli site version --verbose
