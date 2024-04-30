@@ -108,6 +108,13 @@ describe("test", () => {
       expect(officeImpl2.__rid).toBe(
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
+
+      const officeNoErrors: Office = await objectEdit.fetchOne();
+      expect(officeNoErrors.__apiName).toBe("Office");
+      expect(officeNoErrors.__primaryKey).toBe("NYC");
+      expect(officeNoErrors.__rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
     }
   });
 

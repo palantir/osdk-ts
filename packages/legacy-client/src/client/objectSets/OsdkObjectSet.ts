@@ -34,7 +34,7 @@ import type {
   LinksProperties,
   SelectableProperties,
 } from "../interfaces/utils/OmitProperties";
-import { getObject } from "../net/getObject";
+import { getObject, getObjectWithoutErrors } from "../net/getObject";
 import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
 import { createCachedOntologyTransform } from "./createCachedOntologyTransform";
 import { createFilteredPropertiesObjectSetWithGetTerminalOperationsStep } from "./createFilteredPropertiesObjectSetWithGetTerminalOperationsStep";
@@ -202,6 +202,11 @@ export function createBaseOsdkObjectSet<
     fetchOneWithErrors(primaryKey) {
       return getObject(client, apiName, primaryKey);
     },
+
+    fetchOne(primaryKey) {
+      return getObjectWithoutErrors(client, apiName, primaryKey);
+    },
+
     select(properties) {
       return createFilteredPropertiesObjectSetWithGetTerminalOperationsStep(
         client,

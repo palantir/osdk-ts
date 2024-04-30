@@ -501,12 +501,14 @@ describe("Actions", () => {
     "modified": [
       {
         "apiName": "Office",
+        "fetchOne": [Function],
         "fetchOneWithErrors": [Function],
         "get": [Function],
         "primaryKey": "SEA",
       },
       {
         "apiName": "Office",
+        "fetchOne": [Function],
         "fetchOneWithErrors": [Function],
         "get": [Function],
         "primaryKey": "NYC",

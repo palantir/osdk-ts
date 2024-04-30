@@ -116,4 +116,12 @@ export type FilteredPropertiesTerminalOperationsWithGet<
       GetObjectError
     >
   >;
+  fetchOne(
+    primaryKey: T["$primaryKey"],
+  ): Promise<
+    Pick<
+      T,
+      V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+    >
+  >;
 };

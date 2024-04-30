@@ -21,7 +21,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
-import { getObject } from "../../client/net/getObject";
+import { getObject, getObjectWithoutErrors } from "../../client/net/getObject";
 import type { GetObjectError } from "../errors";
 import type { Result } from "../Result";
 import type { OntologyObject } from "./OntologyObject";
@@ -69,6 +69,7 @@ export declare type ObjectEdit<T extends OntologyObject> = {
     /** @deprecated use fetchOneWithErrors instead */
     get: () => Promise<Result<T, GetObjectError>>;
     fetchOneWithErrors: () => Promise<Result<T, GetObjectError>>;
+    fetchOne: () => Promise<T>;
   };
 }[T["$apiName"]];
 
@@ -232,6 +233,8 @@ function getEdits(
         get: () => getObject(client, edit.objectType, edit.primaryKey),
         fetchOneWithErrors: () =>
           getObject(client, edit.objectType, edit.primaryKey),
+        fetchOne: () =>
+          getObjectWithoutErrors(client, edit.objectType, edit.primaryKey),
       });
     }
     if (edit.type === "modifyObject") {
@@ -241,6 +244,8 @@ function getEdits(
         get: () => getObject(client, edit.objectType, edit.primaryKey),
         fetchOneWithErrors: () =>
           getObject(client, edit.objectType, edit.primaryKey),
+        fetchOne: () =>
+          getObjectWithoutErrors(client, edit.objectType, edit.primaryKey),
       });
     }
   }

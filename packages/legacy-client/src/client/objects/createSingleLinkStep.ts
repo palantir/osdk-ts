@@ -18,7 +18,10 @@ import type { ClientContext } from "@osdk/shared.net";
 
 import type { OntologyObject, ParameterValue, SingleLink } from "../baseTypes";
 import type { GetLinkedObjectError } from "../errors";
-import { getOnlyLinkedObject } from "../net/getOnlyLinkedObject";
+import {
+  getOnlyLinkedObject,
+  getOnlyLinkedObjectNoErrors,
+} from "../net/getOnlyLinkedObject";
 import type { Result } from "../Result";
 
 export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
@@ -38,6 +41,14 @@ export function createSingleLinkStep<T extends OntologyObject = OntologyObject>(
     },
     async fetchOneWithErrors(): Promise<Result<T, GetLinkedObjectError>> {
       return getOnlyLinkedObject(
+        client,
+        sourceObjectType,
+        sourcePrimaryKey,
+        targetLinkType,
+      );
+    },
+    async fetchOne(): Promise<T> {
+      return getOnlyLinkedObjectNoErrors(
         client,
         sourceObjectType,
         sourcePrimaryKey,
