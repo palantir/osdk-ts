@@ -18,13 +18,14 @@ import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
 
-export async function deleteWebsiteDeployment(
+export async function deleteVersion(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
+  version: string,
 ): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteDeployment?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/versions/${version}?preview=true`;
 
   await fetch(
     url,

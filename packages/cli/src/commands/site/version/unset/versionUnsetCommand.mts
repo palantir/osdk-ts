@@ -42,6 +42,6 @@ export default async function versionUnsetCommand(
   const tokenProvider = () => loadedToken;
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Clearing live site version");
-  await thirdPartyApplications.deleteWebsiteDeployment(clientCtx, application);
+  await thirdPartyApplications.undeployWebsite(clientCtx, application);
   consola.success("Cleared live site version");
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export interface WebsiteDeployment {
-  version: string;
+export interface Website {
+  deployedVersion?: string;
   subdomains: string[];
 }

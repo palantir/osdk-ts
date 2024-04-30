@@ -14,23 +14,33 @@
  * limitations under the License.
  */
 
+import { ExitProcessError } from "@osdk/cli.common";
+import { PalantirApiError } from "@osdk/shared.net";
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
+import type { Website } from "./Website.mjs";
 
-export async function deleteWebsiteVersion(
+export async function getWebsite(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  version: string,
-): Promise<void> {
+): Promise<Website | undefined> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteVersions/${version}?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website?preview=true`;
 
-  await fetch(
-    url,
-    {
-      method: "DELETE",
-    },
-  );
+  try {
+    const result = await fetch(url);
+    return result.json();
+  } catch (e) {
+    // Revisit this error handling in the API
+    if (
+      e instanceof ExitProcessError && e.originalError != null
+      && e.originalError instanceof PalantirApiError
+      && e.originalError.errorName === "WebsiteNotFound"
+    ) {
+      return undefined;
+    }
+    throw e;
+  }
 }

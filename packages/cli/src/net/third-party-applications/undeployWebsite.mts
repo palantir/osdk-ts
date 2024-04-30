@@ -17,27 +17,19 @@
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
-import type { UpdateWebsiteDeploymentRequest } from "./UpdateWebsiteDeploymentRequest.mjs";
-import type { WebsiteDeployment } from "./WebsiteDeployment.mjs";
 
-export async function updateWebsiteDeployment(
+export async function undeployWebsite(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  request: UpdateWebsiteDeploymentRequest,
-): Promise<WebsiteDeployment> {
+): Promise<void> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteDeployment?preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/undeploy?preview=true`;
 
-  const result = await fetch(
+  await fetch(
     url,
     {
-      method: "PUT",
-      body: JSON.stringify(request),
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "POST",
     },
   );
-  return result.json();
 }
