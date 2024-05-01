@@ -125,9 +125,9 @@ importers:
       '@osdk/examples.basic.sdk':
         specifier: workspace:^
         version: link:../sdk
-      '@osdk/omniapi':
+      '@osdk/foundry':
         specifier: workspace:^
-        version: link:../../../packages/omniapi
+        version: link:../../../packages/foundry
       pino:
         specifier: ^8.20.0
         version: 8.21.0
@@ -679,12 +679,12 @@ importers:
         specifier: ^8.16.0
         version: 8.16.0
     devDependencies:
+      '@osdk/foundry':
+        specifier: workspace:^
+        version: link:../foundry
       '@osdk/generator':
         specifier: workspace:^
         version: link:../generator
-      '@osdk/omniapi':
-        specifier: workspace:^
-        version: link:../omniapi
       '@osdk/shared.test':
         specifier: workspace:^
         version: link:../shared.test
@@ -777,6 +777,47 @@ importers:
       '@types/tmp':
         specifier: ^0.2.6
         version: 0.2.6
+      '@types/yargs':
+        specifier: ^17.0.29
+        version: 17.0.32
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry-generator:
+    dependencies:
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
+      tiny-invariant:
+        specifier: ^1.3.3
+        version: 1.3.3
+      yaml:
+        specifier: ^2.4.1
+        version: 2.4.1
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.30
+        version: 20.12.7
       '@types/yargs':
         specifier: ^17.0.29
         version: 17.0.32
@@ -1031,47 +1072,6 @@ importers:
       type-fest:
         specifier: ^4.17.0
         version: 4.17.0
-      typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
-
-  packages/omniapi:
-    dependencies:
-      '@osdk/api':
-        specifier: workspace:^
-        version: link:../api
-      '@osdk/shared.net':
-        specifier: workspace:^
-        version: link:../shared.net
-    devDependencies:
-      typescript:
-        specifier: ^5.4.5
-        version: 5.4.5
-
-  packages/omniapi-generator:
-    dependencies:
-      find-up:
-        specifier: ^7.0.0
-        version: 7.0.0
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
-      tiny-invariant:
-        specifier: ^1.3.3
-        version: 1.3.3
-      yaml:
-        specifier: ^2.4.1
-        version: 2.4.1
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
-    devDependencies:
-      '@types/node':
-        specifier: ^20.11.30
-        version: 20.12.7
-      '@types/yargs':
-        specifier: ^17.0.29
-        version: 17.0.32
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

@@ -11,13 +11,13 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "browser": "./build/js/index.browser.mjs",
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "browser": "./build/js/public/*.browser.mjs",
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -43,8 +43,8 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
+    "@osdk/foundry": "workspace:^",
     "@osdk/generator": "workspace:^",
-    "@osdk/omniapi": "workspace:^",
     "@osdk/shared.test": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
@@ -68,7 +68,6 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "peerDependencies": {

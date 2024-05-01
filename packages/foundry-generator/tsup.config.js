@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
-export interface UpdateWebsiteDeploymentRequest {
-  version: string;
-}
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options, {
+    esmnOnly: true,
+  })
+);

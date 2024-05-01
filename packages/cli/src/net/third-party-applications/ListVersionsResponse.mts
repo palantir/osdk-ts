@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { WebsiteVersion } from "./WebsiteVersion.mts";
+import type { Version } from "./Version.mjs";
 
-export interface ListWebsiteVersionsResponse {
-  data: WebsiteVersion[];
+export interface ListVersionsResponse {
+  data: Version[];
   nextPageToken?: string;
 }

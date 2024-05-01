@@ -17,28 +17,27 @@
 import { createFetch } from "../createFetch.mjs";
 import type { InternalClientContext } from "../internalClientContext.mjs";
 import type { ThirdPartyAppRid } from "../ThirdPartyAppRid.js";
-import type { WebsiteVersion } from "./WebsiteVersion.mjs";
+import type { DeployWebsiteRequest } from "./DeployWebsiteRequest.mjs";
+import type { Website } from "./Website.mjs";
 
-export async function uploadWebsiteVersion(
+export async function deployWebsite(
   ctx: InternalClientContext,
   thirdPartyAppRid: ThirdPartyAppRid,
-  version: string,
-  zipFile: ReadableStream | Blob | BufferSource,
-): Promise<WebsiteVersion> {
+  request: DeployWebsiteRequest,
+): Promise<Website> {
   const fetch = createFetch(ctx.tokenProvider);
   const url =
-    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/websiteVersions/upload?version=${version}&preview=true`;
+    `${ctx.foundryUrl}/api/v2/thirdPartyApplications/${thirdPartyAppRid}/website/deploy?preview=true`;
 
   const result = await fetch(
     url,
     {
       method: "POST",
-      body: zipFile,
+      body: JSON.stringify(request),
       headers: {
-        "Content-Type": "application/octet-stream",
+        "Content-Type": "application/json",
       },
-      duplex: "half", // Node hates me
-    } satisfies RequestInit & { duplex: "half" } as any,
+    },
   );
   return result.json();
 }

@@ -22,7 +22,7 @@ import { parse } from "yaml";
 import yargs from "yargs";
 import type { Arguments, Argv, CommandModule } from "yargs";
 import { hideBin } from "yargs/helpers";
-import { generateOmniApi } from "./generateOmniApi.js";
+import { generatePlatformSdk } from "./generatePlatformSdk.js";
 import type { ApiSpec } from "./ir/index.js";
 import { updateSls } from "./updateSls.js";
 
@@ -85,9 +85,9 @@ export class GenerateCommand implements CommandModule<{}, Options> {
     });
     const manifest = parse(manifestRead);
 
-    await generateOmniApi(irSpec, output);
+    await generatePlatformSdk(irSpec, output);
 
-    // this updates the omniapi package.json with the correct versions
+    // this updates the foundry package.json with the correct versions
     await updateSls(manifest, output);
 
     // but right now we arent using that we are bundling it into client so we need to

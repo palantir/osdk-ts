@@ -17,5 +17,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig(async (options) =>
-  (await import("mytsup")).default(options, { cjsExtension: ".js" })
+  (await import("mytsup")).default(options, {
+    cjsExtension: ".js",
+  })
 );

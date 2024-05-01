@@ -10,13 +10,13 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "browser": "./build/js/index.browser.mjs",
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "browser": "./build/js/public/*.browser.mjs",
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -31,7 +31,7 @@
     "@osdk/api": "workspace:^",
     "@osdk/client": "workspace:^",
     "@osdk/examples.basic.sdk": "workspace:^",
-    "@osdk/omniapi": "workspace:^",
+    "@osdk/foundry": "workspace:^",
     "pino": "^8.20.0",
     "tiny-invariant": "^1.3.1"
   },
@@ -51,7 +51,6 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "type": "module"

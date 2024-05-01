@@ -12,11 +12,11 @@ WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 
 # "$SCRIPT_DIR/getOpenApiIr.sh"
 
-CODE_GENERATOR="$SCRIPT_DIR/../packages/omniapi-generator/bin/omniapi-generator.mjs"
+CODE_GENERATOR="$SCRIPT_DIR/../packages/foundry-generator/bin/foundry-generator.mjs"
 OPENAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/openapi-ir.json"
 OPENAPI_MANIFEST_YML="${SCRIPT_DIR}/../tmp/api-gateway-ir/manifest.yml"
 
-PACKAGE_PATH="${SCRIPT_DIR}/../packages/omniapi"
+PACKAGE_PATH="${SCRIPT_DIR}/../packages/foundry"
 OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src")
 
 # Generate the API bindings

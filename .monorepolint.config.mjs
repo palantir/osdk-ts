@@ -45,6 +45,18 @@ const legacyPackages = [
   "@osdk/shared.net",
 ];
 
+const esmOnlyPackages = [
+  "@osdk/foundry",
+  "@osdk/foundry-generator",
+  "@osdk/client",
+  "@osdk/cli.*",
+  "@osdk/cli",
+  "@osdk/create-app",
+  "@osdk/tool.release",
+  "@osdk/version-updater",
+  // "@osdk/examples.*", but they have their own config cause they are nonstandard
+];
+
 const cache = new Map();
 
 /**
@@ -104,6 +116,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @param {{
  *  legacy: boolean,
+ *  esmOnly?: boolean,
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
@@ -112,6 +125,10 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  * }} options
  */
 function standardPackageRules(shared, options) {
+  if (options.esmOnly && options.legacy) {
+    throw "It doesnt makes sense to be legacy and esmOnly";
+  }
+
   return [
     standardTsconfig({
       ...shared,
@@ -155,13 +172,19 @@ function standardPackageRules(shared, options) {
           exports: {
             ".": {
               types: "./build/types/index.d.ts",
+              browser: "./build/js/index.browser.mjs",
               import: "./build/js/index.mjs",
-              require: `./build/js/index.${options.legacy ? "" : "c"}js`,
+              ...(options.esmOnly ? {} : {
+                require: `./build/js/index.${options.legacy ? "" : "c"}js`,
+              }),
             },
             "./*": {
               types: "./build/types/public/*.d.ts",
+              browser: "./build/js/public/*.browser.mjs",
               import: "./build/js/public/*.mjs",
-              require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
+              ...(options.esmOnly ? {} : {
+                require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
+              }),
             },
           },
           publishConfig: {
@@ -178,10 +201,14 @@ function standardPackageRules(shared, options) {
             "*.d.ts",
           ],
 
-          main: `./build/js/index.${options.legacy ? "" : "c"}js`,
+          ...(options.esmOnly ? {} : {
+            main: `./build/js/index.${options.legacy ? "" : "c"}js`,
+          }),
+
           module: "./build/js/index.mjs",
           types: "./build/types/index.d.ts",
         },
+        ...(options.esmOnly ? { type: "module" } : {}),
       },
     }),
     fileContents({
@@ -209,8 +236,9 @@ function standardPackageRules(shared, options) {
           import { defineConfig } from "tsup";
 
           export default defineConfig(async (options) =>
-            (await import("mytsup")).default(options, ${
-            options.legacy ? "{cjsExtension: '.js'}" : ""
+            (await import("mytsup")).default(options, {
+              ${options.legacy ? "cjsExtension: '.js'" : ""}
+              ${options.esmOnly ? "esmnOnly: true," : ""}
           })
           );     
           `,
@@ -227,9 +255,23 @@ function standardPackageRules(shared, options) {
 export default {
   rules: [
     ...standardPackageRules({
-      excludePackages: [...nonStandardPackages, ...legacyPackages],
+      excludePackages: [
+        ...nonStandardPackages,
+        ...legacyPackages,
+        ...esmOnlyPackages,
+      ],
     }, {
       legacy: false,
+      packageDepth: 2,
+      type: "library",
+      tsVersion: "^5.4.5",
+    }),
+
+    ...standardPackageRules({
+      includePackages: [...esmOnlyPackages],
+    }, {
+      legacy: false,
+      esmOnly: true,
       packageDepth: 2,
       type: "library",
       tsVersion: "^5.4.5",
@@ -262,6 +304,7 @@ export default {
       includePackages: ["@osdk/examples.basic.**"],
       excludePackages: ["@osdk/examples.one.dot.one"],
     }, {
+      esmOnly: true,
       legacy: false,
       packageDepth: 3,
       type: "example",
