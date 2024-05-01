@@ -34,27 +34,13 @@ export function listLinkedObjects<T extends OntologyObject>(
   linkTypeApiName: T["__apiName"],
 ): Promise<Result<T[], ListLinkedObjectsError>> {
   return wrapResult(
-    async () => {
-      const allObjects: T[] = [];
-
-      let page: Page<T> | undefined;
-      do {
-        page = await getLinkedObjectsPage<T>(
-          client,
-          sourceApiName,
-          primaryKey,
-          linkTypeApiName,
-          {
-            pageToken: page?.nextPageToken,
-          },
-        );
-        for (const object of page.data) {
-          allObjects.push(object);
-        }
-      } while (page.nextPageToken);
-
-      return allObjects;
-    },
+    async () =>
+      listLinkedObjectsWithoutErrors(
+        client,
+        sourceApiName,
+        primaryKey,
+        linkTypeApiName,
+      ),
     e =>
       handleListLinkedObjectsError(
         new ListLinkedObjectsErrorHandler(),
@@ -62,6 +48,33 @@ export function listLinkedObjects<T extends OntologyObject>(
         e.parameters,
       ),
   );
+}
+
+export async function listLinkedObjectsWithoutErrors<T extends OntologyObject>(
+  client: ClientContext<OntologyDefinition<any>>,
+  sourceApiName: string,
+  primaryKey: any,
+  linkTypeApiName: T["__apiName"],
+): Promise<T[]> {
+  const allObjects: T[] = [];
+
+  let page: Page<T> | undefined;
+  do {
+    page = await getLinkedObjectsPage<T>(
+      client,
+      sourceApiName,
+      primaryKey,
+      linkTypeApiName,
+      {
+        pageToken: page?.nextPageToken,
+      },
+    );
+    for (const object of page.data) {
+      allObjects.push(object);
+    }
+  } while (page.nextPageToken);
+
+  return allObjects;
 }
 
 export async function* loadLinkedObjects<T extends OntologyObject>(
