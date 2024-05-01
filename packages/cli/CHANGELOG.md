@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.19.0
+
+### Minor Changes
+
+- 4cd0d04: Move site command out of unstable
+- 63ff4b2: Only producing ESM now
+- fa7fc46: Update site APIs in preparation for stable
+
 ## 0.18.0
 
 ### Patch Changes
