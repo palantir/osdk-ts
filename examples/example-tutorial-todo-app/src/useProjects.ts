@@ -1,4 +1,4 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks from "./mocks";

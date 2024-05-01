@@ -1,4 +1,4 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback, useState } from "react";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import useProjects from "./useProjects";

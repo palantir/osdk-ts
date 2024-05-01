@@ -1,4 +1,4 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { ChangeEvent, useCallback } from "react";
 
 interface ProjectSelectProps {

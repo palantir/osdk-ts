@@ -1,5 +1,4 @@
-import { LocalDate } from "@osdk/examples.one.dot.one";
-import { OsdkTodoProject, OsdkTodoTask } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoProject, OsdkTodoTask , LocalDate } from "@osdk/examples.one.dot.one";
 
 interface MockProject {
   id: string;
@@ -112,9 +111,12 @@ function project(mockProject: MockProject): OsdkTodoProject {
     __apiName: "OsdkTodoProject",
     __primaryKey: mockProject.id,
     __rid: `${mockProject.id}`,
+    $apiName: "OsdkTodoProject",
+    $primaryKey: mockProject.id,
+    $rid: `${mockProject.id}`,
     id: mockProject.id,
     name: mockProject.name,
-    OsdkTodoTasks: {
+    osdkTodoTasks: {
       all: async () => ({
         type: "ok",
         value: mockProject.tasks.map((mockTask) => task(mockProject, mockTask)),
@@ -139,6 +141,15 @@ function project(mockProject: MockProject): OsdkTodoProject {
           message: "Not implemented!",
         },
       }),
+      asyncIter: function (): AsyncIterableIterator<OsdkTodoTask> {
+        throw new Error("Function not implemented.");
+      },
+      fetchPage: function (_options?: { pageSize?: number | undefined; pageToken?: string | undefined; } | undefined): Promise<any> {
+        throw new Error("Function not implemented.");
+      },
+      fetchPageWithErrors: function (_options?: { pageSize?: number | undefined; pageToken?: string | undefined; } | undefined): Promise<any> {
+        throw new Error("Function not implemented.");
+      }
     },
     budget: undefined,
     description: undefined,
@@ -151,13 +162,16 @@ function task(mockProject: MockProject, mockTask: MockTask): OsdkTodoTask {
     __apiName: "OsdkTodoTask",
     __primaryKey: mockTask.id,
     __rid: `${mockTask.id}`,
+    $apiName: "OsdkTodoTask",
+    $primaryKey: mockTask.id,
+    $rid: `${mockTask.id}`,
     id: mockTask.id,
     title: mockTask.name,
     startDate: LocalDate.now(),
     dueDate: LocalDate.now().plusWeeks(1),
     status: "IN PROGRESS",
     projectId: mockProject.id,
-    OsdkTodoProject: {
+    osdkTodoProject: {
       get: async () => ({
         type: "ok",
         value: project(mockProject),

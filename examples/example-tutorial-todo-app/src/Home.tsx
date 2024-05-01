@@ -1,4 +1,4 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
@@ -10,7 +10,7 @@ import TaskList from "./TaskList";
 import useProjects from "./useProjects";
 
 function Home() {
-  const [projectId, setProjectId] = useState<number | undefined>(undefined);
+  const [projectId, setProjectId] = useState<string | undefined>(undefined);
   const { projects } = useProjects();
   const project = projects?.find((p) => p.id === projectId);
 

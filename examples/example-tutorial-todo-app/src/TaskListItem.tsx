@@ -1,4 +1,4 @@
-import { OsdkTodoTask } from "@osdk/examples.one.dot.one/ontology/objects";
+import { OsdkTodoTask } from "@osdk/examples.one.dot.one";
 import { useCallback, useState } from "react";
 import css from "./TaskListItem.module.css";
 
