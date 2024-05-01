@@ -5,7 +5,7 @@ import useProjects from "./useProjects";
 interface CreateProjectDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onProjectCreated?: (projectId: number) => void;
+  onProjectCreated?: (projectId: string) => void;
 }
 
 function CreateProjectDialog({

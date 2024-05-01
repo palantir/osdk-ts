@@ -3,7 +3,7 @@ import CreateProjectDialog from "./CreateProjectDialog";
 import useProjects from "./useProjects";
 
 interface CreateProjectButtonProps {
-  onProjectCreated?: (projectId: number) => void;
+  onProjectCreated?: (projectId: string) => void;
 }
 
 function CreateProjectButton({ onProjectCreated }: CreateProjectButtonProps) {
