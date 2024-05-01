@@ -21,7 +21,7 @@ import type {
   ObjectSetDefinition,
 } from "..";
 import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
-import { getObject } from "../net/getObject";
+import { getObject, getObjectWithoutErrors } from "../net/getObject";
 import { loadAllObjects } from "../net/loadObjects";
 import {
   loadObjectsIterator,
@@ -97,6 +97,17 @@ export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
     },
     get(primaryKey) {
       return getObject(client, apiName as string, primaryKey, properties);
+    },
+    fetchOneWithErrors(primaryKey) {
+      return getObject(client, apiName as string, primaryKey, properties);
+    },
+    fetchOne(primaryKey) {
+      return getObjectWithoutErrors(
+        client,
+        apiName as string,
+        primaryKey,
+        properties,
+      );
     },
   };
 }
