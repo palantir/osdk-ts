@@ -100,6 +100,11 @@ describe("test", () => {
       expect(officeImpl.__rid).toBe(
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
+      expect(officeImpl.$apiName).toBe("Office");
+      expect(officeImpl.$primaryKey).toBe("NYC");
+      expect(officeImpl.$rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
     }
   });
 
