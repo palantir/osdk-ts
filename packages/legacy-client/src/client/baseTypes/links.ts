@@ -22,8 +22,17 @@ import type { OntologyObject } from "./OntologyObject";
 export interface SingleLink<T extends OntologyObject = OntologyObject> {
   /**
    * Loads the linked object
+   * @deprecated use fetchOneWithErrors instead
    */
   get(): Promise<Result<T, GetLinkedObjectError>>;
+  /**
+   * Loads the linked object
+   */
+  fetchOneWithErrors(): Promise<Result<T, GetLinkedObjectError>>;
+  /**
+   * Loads the linked object, without a result wrapper
+   */
+  fetchOne(): Promise<T>;
 }
 
 export interface MultiLink<T extends OntologyObject = OntologyObject> {
@@ -31,8 +40,25 @@ export interface MultiLink<T extends OntologyObject = OntologyObject> {
    * Loads the linked object with the given primary key
    *
    * @param primaryKey
+   * @deprecated use fetchOneWithErrors instead
    */
   get(primaryKey: T["__primaryKey"]): Promise<Result<T, GetLinkedObjectError>>;
+  /**
+   * Loads the linked object with the given primary key
+   *
+   * @param primaryKey
+   */
+  fetchOneWithErrors(
+    primaryKey: T["__primaryKey"],
+  ): Promise<Result<T, GetLinkedObjectError>>;
+  /**
+   * Loads the linked object with the given primary key, without a result wrapper
+   *
+   * @param primaryKey
+   */
+  fetchOne(
+    primaryKey: T["__primaryKey"],
+  ): Promise<T>;
   /**
    * Gets all the linked objects
    * @deprecated use asyncIter instead
