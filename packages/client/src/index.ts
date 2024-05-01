@@ -28,7 +28,6 @@ export type {
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
-export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
