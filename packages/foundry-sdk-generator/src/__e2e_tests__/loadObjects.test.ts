@@ -101,6 +101,22 @@ describe("LoadObjects", () => {
     expect(destructured.office).toEqual("SF");
   });
 
+  it("Loads object which can be destructured with fetchOne", async () => {
+    const emp: Employee = await client.ontology
+      .objects.Employee.fetchOne(
+        stubData.employee1.__primaryKey,
+      );
+
+    expect(emp.employeeId).toEqual(50030);
+    expect(emp.fullName).toEqual("John Doe");
+    expect(emp.office).toEqual("NYC");
+    expect(emp.startDate).toEqual(LocalDate.fromISOString("2019-01-01"));
+
+    const destructured: Employee = { ...emp, office: "SF" };
+    expect(destructured.fullName).toEqual("John Doe");
+    expect(destructured.office).toEqual("SF");
+  });
+
   it("Loads object with specified properties", async () => {
     const result = await client.ontology.objects.Employee.select(["fullName"])
       .get(stubData.employee1.__primaryKey);
@@ -124,6 +140,22 @@ describe("LoadObjects", () => {
       .fetchOneWithErrors(stubData.employee1.__primaryKey);
 
     const emp = assertOkOrThrow(result);
+
+    expectTypeOf(emp).toEqualTypeOf<{
+      readonly fullName: string | undefined;
+      readonly __primaryKey: number;
+      readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
+    }>();
+
+    expect(emp.fullName).toEqual("John Doe");
+    expect((emp as any).office).toBeUndefined();
+  });
+
+  it("Loads object with specified properties - fetchOne", async () => {
+    const emp = await client.ontology.objects.Employee.select(["fullName"])
+      .fetchOne(stubData.employee1.__primaryKey);
 
     expectTypeOf(emp).toEqualTypeOf<{
       readonly fullName: string | undefined;

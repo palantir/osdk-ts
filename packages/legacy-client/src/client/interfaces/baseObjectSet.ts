@@ -42,6 +42,10 @@ export type BaseObjectSetOperations<O extends OntologyObject> = {
     primaryKey: O["$primaryKey"],
   ): Promise<Result<O, GetObjectError>>;
 
+  fetchOne(
+    primaryKey: O["$primaryKey"],
+  ): Promise<O>;
+
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
   ): FilteredPropertiesTerminalOperationsWithGet<O, T[]>;
