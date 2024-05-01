@@ -1,4 +1,8 @@
-import { OsdkTodoProject, OsdkTodoTask , LocalDate } from "@osdk/examples.one.dot.one";
+import {
+  LocalDate,
+  OsdkTodoProject,
+  OsdkTodoTask,
+} from "@osdk/examples.one.dot.one";
 
 interface MockProject {
   id: string;
@@ -141,15 +145,29 @@ function project(mockProject: MockProject): OsdkTodoProject {
           message: "Not implemented!",
         },
       }),
-      asyncIter: function (): AsyncIterableIterator<OsdkTodoTask> {
+      asyncIter: function(): AsyncIterableIterator<OsdkTodoTask> {
         throw new Error("Function not implemented.");
       },
-      fetchPage: function (_options?: { pageSize?: number | undefined; pageToken?: string | undefined; } | undefined): Promise<any> {
+      fetchPage: function(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _options?: {
+          pageSize?: number | undefined;
+          pageToken?: string | undefined;
+        } | undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ): Promise<any> {
         throw new Error("Function not implemented.");
       },
-      fetchPageWithErrors: function (_options?: { pageSize?: number | undefined; pageToken?: string | undefined; } | undefined): Promise<any> {
+      fetchPageWithErrors: function(
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        _options?: {
+          pageSize?: number | undefined;
+          pageToken?: string | undefined;
+        } | undefined,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ): Promise<any> {
         throw new Error("Function not implemented.");
-      }
+      },
     },
     budget: undefined,
     description: undefined,
