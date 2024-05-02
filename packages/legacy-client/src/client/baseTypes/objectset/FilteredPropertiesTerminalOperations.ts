@@ -93,6 +93,7 @@ export type FilteredPropertiesTerminalOperationsWithGet<
   T extends OntologyObject,
   V extends Array<keyof T>,
 > = FilteredPropertiesTerminalOperations<T, V> & {
+  /** @deprecated use fetchOneWithErrors */
   get(
     primaryKey: T["$primaryKey"],
   ): Promise<
@@ -102,6 +103,25 @@ export type FilteredPropertiesTerminalOperationsWithGet<
         V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
       >,
       GetObjectError
+    >
+  >;
+  fetchOneWithErrors(
+    primaryKey: T["$primaryKey"],
+  ): Promise<
+    Result<
+      Pick<
+        T,
+        V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
+      >,
+      GetObjectError
+    >
+  >;
+  fetchOne(
+    primaryKey: T["$primaryKey"],
+  ): Promise<
+    Pick<
+      T,
+      V[number] | "$apiName" | "$primaryKey" | "__apiName" | "__primaryKey"
     >
   >;
 };

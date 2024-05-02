@@ -37,23 +37,14 @@ export function getLinkedObject<T extends OntologyObject>(
   linkedObjectPrimaryKey: string,
 ): Promise<Result<T, GetLinkedObjectError>> {
   return wrapResult(
-    async () => {
-      const object = await getLinkedObjectV2(
-        createOpenApiRequest(client.stack, client.fetch),
-        client.ontology.metadata.ontologyApiName,
+    async () =>
+      getLinkedObjectNoErrors(
+        client,
         sourceApiName,
         primaryKey,
         linkTypeApiName,
         linkedObjectPrimaryKey,
-        {
-          select: [],
-        },
-      );
-      return convertWireToOsdkObject(
-        client,
-        object as WireOntologyObjectV2<T["__apiName"]>,
-      ) as unknown as T;
-    },
+      ),
     e =>
       handleGetLinkedObjectError(
         new GetLinkedObjectErrorHandler(),
@@ -61,4 +52,28 @@ export function getLinkedObject<T extends OntologyObject>(
         e.parameters,
       ),
   );
+}
+
+export async function getLinkedObjectNoErrors<T extends OntologyObject>(
+  client: ClientContext<OntologyDefinition<T["__apiName"]>>,
+  sourceApiName: string,
+  primaryKey: any,
+  linkTypeApiName: string,
+  linkedObjectPrimaryKey: string,
+): Promise<T> {
+  const object = await getLinkedObjectV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    sourceApiName,
+    primaryKey,
+    linkTypeApiName,
+    linkedObjectPrimaryKey,
+    {
+      select: [],
+    },
+  );
+  return convertWireToOsdkObject(
+    client,
+    object as WireOntologyObjectV2<T["__apiName"]>,
+  ) as unknown as T;
 }
