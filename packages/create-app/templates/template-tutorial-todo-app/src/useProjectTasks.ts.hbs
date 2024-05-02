@@ -32,26 +32,6 @@ export function useProjectTasks(project: OsdkTodoProject | undefined) {
       });
       await mutate();
       return id;
-      // Solution:
-      //
-      // const result =
-      //   await client.ontology.actions.createOsdkTodoTask(
-      //     {
-      //       title: name,
-      //       start_date: LocalDate.now(),
-      //       due_date: LocalDate.now().plusWeeks(1),
-      //       status: "IN PROGRESS",
-      //       project_id: project.__primaryKey,
-      //     },
-      //     { returnEdits: ReturnEditsMode.ALL }
-      //   );
-      // if (result.type !== "ok") {
-      //   throw result.error;
-      // } else if (result.value.edits.type !== "edits") {
-      //   throw new Error("Expected edits to be returned");
-      // }
-      // await mutate();
-      // return result.value.edits.added[0].primaryKey;
     },
     [project, mutate]
   );
@@ -61,15 +41,6 @@ export function useProjectTasks(project: OsdkTodoProject | undefined) {
       if (project == null) {
         return;
       }
-      // Try to implement this with the Ontology SDK!
-      await Mocks.deleteTask(task.__primaryKey);
-      await mutate();
-      // Solution:
-      //
-      // await client.ontology.actions.deleteOsdkTodoTask(
-      //   { "todo-task": task }
-      // );
-      // await mutate();
     },
     [project, mutate]
   );
