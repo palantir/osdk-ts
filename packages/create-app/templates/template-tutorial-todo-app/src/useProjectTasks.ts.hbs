@@ -41,6 +41,9 @@ export function useProjectTasks(project: OsdkTodoProject | undefined) {
       if (project == null) {
         return;
       }
+      // Try to implement this with the Ontology SDK!
+      await Mocks.deleteTask(task.__primaryKey);
+      await mutate();
     },
     [project, mutate]
   );
