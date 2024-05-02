@@ -71,12 +71,6 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
     });
 
     for (const mutator of MUTATORS) {
-      // We only want to apply the tutorial imports mutator to the tutorial template
-      if (
-        mutator === UPDATE_TUTORIAL_IMPORTS
-        && exampleId !== "example-tutorial-todo-app"
-      ) continue;
-
       const matches = await globby(
         mutator.filePattern,
         { cwd: path.join(tmpDir.name, exampleId) },
@@ -215,6 +209,7 @@ const UPDATE_README: Mutator = {
   }),
 };
 
+// We re-export ontology object submodules from the root in this locally generated SDK
 const UPDATE_TUTORIAL_IMPORTS: Mutator = {
   filePattern: "./**/*.ts*",
   mutate: (_template, content) => ({
