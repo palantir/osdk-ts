@@ -51,7 +51,17 @@ function createPrototype<
   const proto = {};
 
   Object.defineProperty(proto, "__apiName", { get: () => type });
-
+  Object.defineProperty(proto, "$apiName", { get: () => type });
+  Object.defineProperty(proto, "$primaryKey", {
+    get: function() {
+      return this["__primaryKey"];
+    },
+  });
+  Object.defineProperty(proto, "$rid", {
+    get: function() {
+      return this["__rid"];
+    },
+  });
   // toString that uses the ontology definition to enumerate the props that need to be serialized
   proto.toString = function() {
     const obj: Record<string, unknown> = {};
@@ -63,6 +73,10 @@ function createPrototype<
     obj["__primaryKey"] = self.__primaryKey;
     obj["__apiName"] = type;
     obj["__rid"] = self.__rid;
+
+    obj["$primaryKey"] = self.__primaryKey;
+    obj["$apiName"] = type;
+    obj["$rid"] = self.__rid;
     return JSON.stringify(obj, undefined, 2);
   };
 
