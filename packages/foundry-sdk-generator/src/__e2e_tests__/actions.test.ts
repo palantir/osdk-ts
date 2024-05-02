@@ -100,6 +100,11 @@ describe("test", () => {
       expect(officeImpl.__rid).toBe(
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
+      expect(officeImpl.$apiName).toBe("Office");
+      expect(officeImpl.$primaryKey).toBe("NYC");
+      expect(officeImpl.$rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
       const officeResult2: Result<Office, GetObjectError> = await objectEdit
         .fetchOneWithErrors();
       const officeImpl2: Office = assertOkOrThrow(officeResult2);
@@ -109,10 +114,22 @@ describe("test", () => {
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
 
+      expect(officeImpl2.$apiName).toBe("Office");
+      expect(officeImpl2.$primaryKey).toBe("NYC");
+      expect(officeImpl2.$rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
+
       const officeNoErrors: Office = await objectEdit.fetchOne();
       expect(officeNoErrors.__apiName).toBe("Office");
       expect(officeNoErrors.__primaryKey).toBe("NYC");
       expect(officeNoErrors.__rid).toBe(
+        "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
+      );
+
+      expect(officeNoErrors.$apiName).toBe("Office");
+      expect(officeNoErrors.$primaryKey).toBe("NYC");
+      expect(officeNoErrors.$rid).toBe(
         "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
       );
     }
