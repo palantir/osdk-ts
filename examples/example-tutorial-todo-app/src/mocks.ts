@@ -1,4 +1,5 @@
-import { OsdkTodoProject, OsdkTodoTask , LocalDate } from "@osdk/examples.one.dot.one";
+import { OsdkTodoProject, OsdkTodoTask } from "@osdk/examples.one.dot.one";
+import { LocalDate } from "@osdk/examples.one.dot.one";
 
 interface MockProject {
   id: string;
