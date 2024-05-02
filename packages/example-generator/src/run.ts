@@ -210,7 +210,7 @@ const UPDATE_README: Mutator = {
 };
 
 // We re-export ontology object submodules from the root in this locally generated SDK
-const UPDATE_TUTORIAL_IMPORTS: Mutator = {
+const UPDATE_SUBMODULE_IMPORTS: Mutator = {
   filePattern: "./**/*.ts*",
   mutate: (_template, content) => ({
     type: "modify",
@@ -225,7 +225,7 @@ const MUTATORS: Mutator[] = [
   DELETE_NPM_RC,
   UPDATE_PACKAGE_JSON,
   UPDATE_README,
-  UPDATE_TUTORIAL_IMPORTS,
+  UPDATE_SUBMODULE_IMPORTS,
 ];
 
 function templateCanonicalId(template: Template): string {
