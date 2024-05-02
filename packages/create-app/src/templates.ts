@@ -19,6 +19,7 @@ export interface Template {
   label: string;
   envPrefix: string;
   buildDirectory: string;
+  hidden?: boolean;
 }
 
 export interface TemplateContext {
@@ -52,5 +53,6 @@ export const TEMPLATES: readonly Template[] = [
     label: "Tutorial: Todo App",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    hidden: true,
   },
 ];
