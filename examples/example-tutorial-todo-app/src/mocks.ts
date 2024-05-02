@@ -142,27 +142,19 @@ function project(mockProject: MockProject): OsdkTodoProject {
           message: "Not implemented!",
         },
       }),
-      asyncIter: function (): AsyncIterableIterator<OsdkTodoTask> {
+      asyncIter: () => {
         throw new Error("Function not implemented.");
       },
-      fetchPage: function(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _options?: {
-          pageSize?: number | undefined;
-          pageToken?: string | undefined;
-        } | undefined,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ): Promise<any> {
+      fetchPage: () => {
         throw new Error("Function not implemented.");
       },
-      fetchPageWithErrors: function(
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        _options?: {
-          pageSize?: number | undefined;
-          pageToken?: string | undefined;
-        } | undefined,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ): Promise<any> {
+      fetchPageWithErrors: () => {
+        throw new Error("Function not implemented.");
+      },
+      fetchOneWithErrors: () => {
+        throw new Error("Function not implemented.");
+      },
+      fetchOne: () => {
         throw new Error("Function not implemented.");
       },
     },
@@ -191,6 +183,12 @@ function task(mockProject: MockProject, mockTask: MockTask): OsdkTodoTask {
         type: "ok",
         value: project(mockProject),
       }),
+      fetchOneWithErrors: () => {
+        throw new Error("Function not implemented.");
+      },
+      fetchOne: () => {
+        throw new Error("Function not implemented.");
+      },
     },
     description: undefined,
     assignedTo: undefined,
