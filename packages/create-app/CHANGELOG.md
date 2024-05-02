@@ -1,5 +1,12 @@
 # @osdk/create-app
 
+## 0.13.0
+
+### Minor Changes
+
+- 37c5e2d: Update eslint to v8.57
+- 63ff4b2: Only producing ESM now
+
 ## 0.12.0
 
 ### Minor Changes

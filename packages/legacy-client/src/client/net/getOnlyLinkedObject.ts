@@ -15,11 +15,14 @@
  */
 
 import type { OntologyDefinition } from "@osdk/api";
-import type { ClientContext } from "@osdk/shared.net";
+import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
 import type { OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, LinkedObjectNotFound } from "../errors";
 import { isErr, type Result } from "../Result";
-import { listLinkedObjects } from "./listLinkedObjects";
+import {
+  listLinkedObjects,
+  listLinkedObjectsWithoutErrors,
+} from "./listLinkedObjects";
 import { createErrorResponse } from "./util/ResponseCreators";
 
 /**
@@ -78,4 +81,27 @@ export async function getOnlyLinkedObject<
   }
 
   return { type: "ok", value: result.value[0] };
+}
+
+export async function getOnlyLinkedObjectNoErrors<
+  T extends OntologyObject = OntologyObject,
+>(
+  client: ClientContext<OntologyDefinition<any>>,
+  sourceObjectType: string,
+  sourcePrimaryKey: NonNullable<ParameterValue>,
+  targetLinkType: string,
+): Promise<T> {
+  const result = await listLinkedObjectsWithoutErrors<T>(
+    client,
+    sourceObjectType,
+    sourcePrimaryKey,
+    targetLinkType,
+  );
+  if (result.length !== 1) {
+    throw new PalantirApiError(
+      `Expected a single result but got ${result.length} instead`,
+    );
+  }
+
+  return result[0];
 }
