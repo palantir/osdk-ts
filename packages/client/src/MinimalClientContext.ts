@@ -16,6 +16,7 @@
 
 import type { ClientContext } from "@osdk/shared.net";
 import type { Logger } from "pino";
+import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 
 /*
@@ -28,6 +29,7 @@ export interface MinimalClient
   ontologyRid: string;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
+  objectSetFactory: ObjectSetFactory<any, any>;
 }
 
 export type MinimalClientParams = {
@@ -36,6 +38,5 @@ export type MinimalClientParams = {
 };
 
 export interface MinimalClientMetadata {
-  userAgent: string;
   ontologyRid: string;
 }

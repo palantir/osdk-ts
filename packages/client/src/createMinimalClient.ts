@@ -20,6 +20,8 @@ import type {
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
+import { createObjectSet } from "./objectSet/createObjectSet.js";
+import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import {
   createStandardOntologyProviderFactory,
   type OntologyCachingOptions,
@@ -35,6 +37,7 @@ export function createMinimalClient(
     input: RequestInfo | URL,
     init?: RequestInit | undefined,
   ) => Promise<Response> = global.fetch,
+  objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,
 ) {
   if (process?.env?.NODE_ENV !== "production") {
     try {
@@ -48,12 +51,18 @@ export function createMinimalClient(
   }
   const clientCtx: MinimalClient = {
     ...createClientContext(
-      { metadata },
+      {
+        metadata: {
+          ...metadata,
+          userAgent: "", // ontology specific user agent injected elsewhere
+        },
+      },
       stack,
       tokenProvider,
       USER_AGENT,
       fetchFn,
     ),
+    objectSetFactory,
     ontologyRid: metadata.ontologyRid,
     ontologyProvider: undefined as any,
     logger: options.logger,

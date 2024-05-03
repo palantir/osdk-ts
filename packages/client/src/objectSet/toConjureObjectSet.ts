@@ -20,6 +20,7 @@ import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
 } from "../generated/object-set-service/api/index.js";
+import { conjureUnionType } from "./conjureUnionType.js";
 import type { ObjectPropertyMapping } from "./ObjectSetListenerWebsocket.js";
 
 export function toConjureObjectSet<
@@ -31,69 +32,50 @@ export function toConjureObjectSet<
 ): OssObjectSet {
   switch (objectSet.type) {
     case "base":
-      return {
-        type: "base",
-        base: {
-          objectTypeId: objectPropertyMapping.id,
-        },
-      };
+      return conjureUnionType("base", {
+        objectTypeId: objectPropertyMapping.id,
+      });
     case "static":
-      return {
-        type: "static",
-        static: {
-          objectRids: objectSet.objects as string[],
-          provenance: undefined,
-        },
-      };
+      return conjureUnionType("static", {
+        objectRids: objectSet.objects as string[],
+        provenance: undefined,
+      });
+
     case "reference":
-      return {
-        type: "referenced",
-        referenced: {
-          objectSetRid: objectSet.reference,
-        },
-      };
+      return conjureUnionType("referenced", {
+        objectSetRid: objectSet.reference,
+      });
+
     case "filter":
-      return {
-        type: "filtered",
-        filtered: {
-          objectSet: toConjureObjectSet(
-            objectSet.objectSet,
-            objectPropertyMapping,
-          ),
-          runtimeDerivedProperties: undefined,
-          filter: mapWhereClauseToObjectSetFilter(
-            objectSet.where,
-            objectPropertyMapping,
-          ),
-        },
-      };
+      return conjureUnionType("filtered", {
+        objectSet: toConjureObjectSet(
+          objectSet.objectSet,
+          objectPropertyMapping,
+        ),
+        runtimeDerivedProperties: undefined,
+        filter: mapWhereClauseToObjectSetFilter(
+          objectSet.where,
+          objectPropertyMapping,
+        ),
+      });
     case "union":
-      return {
-        type: "unioned",
-        unioned: {
-          objectSets: objectSet.objectSets.map(os =>
-            toConjureObjectSet(os, objectPropertyMapping)
-          ),
-        },
-      };
+      return conjureUnionType("unioned", {
+        objectSets: objectSet.objectSets.map(os =>
+          toConjureObjectSet(os, objectPropertyMapping)
+        ),
+      });
     case "intersect":
-      return {
-        type: "intersected",
-        intersected: {
-          objectSets: objectSet.objectSets.map(os =>
-            toConjureObjectSet(os, objectPropertyMapping)
-          ),
-        },
-      };
+      return conjureUnionType("intersected", {
+        objectSets: objectSet.objectSets.map(os =>
+          toConjureObjectSet(os, objectPropertyMapping)
+        ),
+      });
     case "subtract":
-      return {
-        type: "subtracted",
-        subtracted: {
-          objectSets: objectSet.objectSets.map(os =>
-            toConjureObjectSet(os, objectPropertyMapping)
-          ),
-        },
-      };
+      return conjureUnionType("subtracted", {
+        objectSets: objectSet.objectSets.map(os =>
+          toConjureObjectSet(os, objectPropertyMapping)
+        ),
+      });
     case "searchAround":
       throw new Error("not implemented");
   }
@@ -131,108 +113,82 @@ function mapWhereClauseToObjectSetFilter(
 ): ObjectSetFilter {
   switch (objectSetFilter.type) {
     case "lt":
-      return {
-        type: "range",
-        range: {
-          propertyId: propertyMapping.propertyApiNameToIdMapping[
-            objectSetFilter.field
-          ],
-          lt: objectSetFilter.value,
-          lte: undefined,
-          gt: undefined,
-          gte: undefined,
-        },
-      };
+      return conjureUnionType("range", {
+        propertyId: propertyMapping.propertyApiNameToIdMapping[
+          objectSetFilter.field
+        ],
+        lt: objectSetFilter.value,
+        lte: undefined,
+        gt: undefined,
+        gte: undefined,
+      });
     case "gt":
-      return {
-        type: "range",
-        range: {
-          propertyId: propertyMapping.propertyApiNameToIdMapping[
-            objectSetFilter.field
-          ],
-          gt: objectSetFilter.value,
-          lte: undefined,
-          lt: undefined,
-          gte: undefined,
-        },
-      };
+      return conjureUnionType("range", {
+        propertyId: propertyMapping.propertyApiNameToIdMapping[
+          objectSetFilter.field
+        ],
+        gt: objectSetFilter.value,
+        lte: undefined,
+        lt: undefined,
+        gte: undefined,
+      });
     case "lte":
-      return {
-        type: "range",
-        range: {
-          propertyId: propertyMapping.propertyApiNameToIdMapping[
-            objectSetFilter.field
-          ],
-          lte: objectSetFilter.value,
-          lt: undefined,
-          gt: undefined,
-          gte: undefined,
-        },
-      };
+      return conjureUnionType("range", {
+        propertyId: propertyMapping.propertyApiNameToIdMapping[
+          objectSetFilter.field
+        ],
+        lte: objectSetFilter.value,
+        lt: undefined,
+        gt: undefined,
+        gte: undefined,
+      });
     case "gte":
-      return {
-        type: "range",
-        range: {
-          propertyId: propertyMapping.propertyApiNameToIdMapping[
-            objectSetFilter.field
-          ],
-          gte: objectSetFilter.value,
-          lt: undefined,
-          lte: undefined,
-          gt: undefined,
-        },
-      };
+      return conjureUnionType("range", {
+        propertyId: propertyMapping.propertyApiNameToIdMapping[
+          objectSetFilter.field
+        ],
+        gte: objectSetFilter.value,
+        lt: undefined,
+        lte: undefined,
+        gt: undefined,
+      });
+
     case "eq":
-      return {
-        type: "exactMatch",
-        exactMatch: {
-          propertyId: propertyMapping.propertyApiNameToIdMapping[
-            objectSetFilter.field
-          ],
-          terms: [objectSetFilter.value],
-        },
-      };
+      return conjureUnionType("exactMatch", {
+        propertyId: propertyMapping.propertyApiNameToIdMapping[
+          objectSetFilter.field
+        ],
+        terms: [objectSetFilter.value],
+      });
     case "and":
-      return {
-        type: "and",
-        and: {
-          filters: objectSetFilter.value.map(filter =>
-            mapWhereClauseToObjectSetFilter(filter, propertyMapping)
-          ),
-        },
-      };
+      return conjureUnionType("and", {
+        filters: objectSetFilter.value.map(filter =>
+          mapWhereClauseToObjectSetFilter(filter, propertyMapping)
+        ),
+      });
     case "or":
-      return {
-        type: "or",
-        or: {
-          filters: objectSetFilter.value.map(filter =>
-            mapWhereClauseToObjectSetFilter(filter, propertyMapping)
-          ),
-        },
-      };
+      return conjureUnionType("or", {
+        filters: objectSetFilter.value.map(filter =>
+          mapWhereClauseToObjectSetFilter(filter, propertyMapping)
+        ),
+      });
     case "isNull":
-      return {
-        type: "not",
-        not: {
-          filter: {
-            type: "hasProperty",
-            hasProperty: {
-              propertyId: propertyMapping
-                .propertyApiNameToIdMapping[objectSetFilter.field],
-            },
+      return conjureUnionType("not", {
+        filter: {
+          type: "hasProperty",
+          hasProperty: {
+            propertyId: propertyMapping
+              .propertyApiNameToIdMapping[objectSetFilter.field],
           },
         },
-      };
+      });
     case "not":
-      return {
-        type: "not",
-        not: {
-          filter: mapWhereClauseToObjectSetFilter(
-            objectSetFilter.value,
-            propertyMapping,
-          ),
-        },
-      };
+      return conjureUnionType("not", {
+        filter: mapWhereClauseToObjectSetFilter(
+          objectSetFilter.value,
+          propertyMapping,
+        ),
+      });
     case "contains":
     case "startsWith":
     case "containsAllTermsInOrder":

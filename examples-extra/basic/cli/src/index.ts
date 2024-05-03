@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectSetListener, Osdk, PageResult } from "@osdk/client";
-import { createClient } from "@osdk/client";
+import type { Osdk, PageResult } from "@osdk/client";
+import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
+import { createClient } from "@osdk/client/unstable-do-not-use";
 import {
   assignEmployee1,
   BoundariesUsState,

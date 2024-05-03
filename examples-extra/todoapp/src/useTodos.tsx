@@ -233,6 +233,8 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
       },
     });
 
-    return unsubscribe;
+    return function() {
+      unsubscribe();
+    }
   }, [mutate]);
 }
