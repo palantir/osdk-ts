@@ -138,6 +138,9 @@ importers:
       '@osdk/cli':
         specifier: workspace:^
         version: link:../../../packages/cli
+      '@osdk/foundry':
+        specifier: workspace:^
+        version: link:../../../packages/foundry
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15

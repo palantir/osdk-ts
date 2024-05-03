@@ -25,6 +25,7 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
+import * as Foundry from "@osdk/foundry";
 import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
 import { pino } from "pino";
 import invariant from "tiny-invariant";
@@ -56,6 +57,11 @@ const testSubscriptions = true;
 
 async function runTests() {
   try {
+    const myUser = await Foundry.Security.User.meUsers(client.ctx as any, {
+      preview: true,
+    });
+    console.log("User", myUser!.email);
+
     if (runOld) {
       await fetchEmployeePage(client);
       await fetchEmployeePageByAdUsername(client, "fish");
