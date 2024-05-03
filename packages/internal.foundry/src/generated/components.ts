@@ -206,7 +206,7 @@ export interface AggregateObjectsResponseItemV2 {
  */
 export interface AggregateObjectsResponseV2 {
   excludedItems?: number;
-  accuracy?: AggregationAccuracy;
+  accuracy: AggregationAccuracy;
   data: Array<AggregateObjectsResponseItemV2>;
 }
 
@@ -2207,7 +2207,18 @@ export interface ObjectTypeFullMetadata {
   objectType: ObjectTypeV2;
   linkTypes: Array<LinkTypeSideV2>;
   implementsInterfaces: Array<InterfaceTypeApiName>;
+  implementsInterfaces2: Record<
+    InterfaceTypeApiName,
+    ObjectTypeInterfaceImplementation
+  >;
   sharedPropertyTypeMapping: Record<SharedPropertyTypeApiName, PropertyApiName>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ObjectTypeInterfaceImplementation {
+  properties: Record<SharedPropertyTypeApiName, PropertyApiName>;
 }
 
 /**

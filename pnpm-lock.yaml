@@ -784,6 +784,28 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  packages/foundry:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/foundry.security':
+        specifier: workspace:*
+        version: link:../foundry.security
+      '@osdk/foundry.thirdpartyapplications':
+        specifier: workspace:*
+        version: link:../foundry.thirdpartyapplications
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/foundry-generator:
     dependencies:
       find-up:
@@ -860,6 +882,51 @@ importers:
       '@types/yargs':
         specifier: ^17.0.29
         version: 17.0.32
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.common:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.security:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.thirdpartyapplications:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

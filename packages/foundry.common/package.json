@@ -1,7 +1,7 @@
 {
-  "name": "@osdk/internal.foundry",
-  "private": "true",
-  "version": "0.2.0",
+  "name": "@osdk/foundry.common",
+  "private": true,
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -11,12 +11,14 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs"
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs"
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -44,6 +46,7 @@
     "templates",
     "*.d.ts"
   ],
+  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "sls": {
