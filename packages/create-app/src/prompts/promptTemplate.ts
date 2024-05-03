@@ -35,7 +35,9 @@ export async function promptTemplate(
         : "Select a framework:",
       {
         type: "select",
-        options: TEMPLATES.map((template) => ({
+        options: TEMPLATES.filter(template => template.hidden !== true).map((
+          template,
+        ) => ({
           value: template.id,
           label: template.label,
         })),
