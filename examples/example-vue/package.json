@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@osdk/examples.one.dot.one": "workspace:*",
-    "vue": "^3.3.8",
+    "vue": "^3.4.26",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
