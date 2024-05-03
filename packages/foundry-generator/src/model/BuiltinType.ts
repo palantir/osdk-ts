@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import * as Prettier from "prettier";
+import { convertIrPrimitiveTypeToTsTypeReference } from "../convertIrPrimitiveTypeToTsTypeReference.js";
+import type * as ir from "../ir/index.js";
+import { SimpleType } from "./Type.js";
 
-export async function writeCode(filePath: string, code: string) {
-  return await fs.writeFile(filePath, await formatCode(filePath, code));
-}
+export class BuiltinType extends SimpleType {
+  constructor(public primitiveType: ir.PrimitiveType) {
+    super();
+  }
 
-export async function formatCode(filePath: string, code: string) {
-  try {
-    return await Prettier.format(code, {
-      parser: "typescript",
-      filepath: filePath,
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error("failed to format code: " + filePath);
-    return code;
+  get tsReferenceString() {
+    return convertIrPrimitiveTypeToTsTypeReference(
+      this.primitiveType,
+    );
   }
 }

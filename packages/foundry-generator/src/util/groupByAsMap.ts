@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import * as Prettier from "prettier";
-
-export async function writeCode(filePath: string, code: string) {
-  return await fs.writeFile(filePath, await formatCode(filePath, code));
-}
-
-export async function formatCode(filePath: string, code: string) {
-  try {
-    return await Prettier.format(code, {
-      parser: "typescript",
-      filepath: filePath,
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error("failed to format code: " + filePath);
-    return code;
+export function groupByAsMap<T, K extends keyof T>(
+  items: Iterable<T>,
+  key: K,
+): Map<T[K], T[]> {
+  const ret = new Map<T[K], T[]>();
+  for (const item of items) {
+    if (!ret.has(item[key])) {
+      ret.set(item[key], []);
+    }
+    ret.get(item[key])!.push(item);
   }
+  return ret;
 }

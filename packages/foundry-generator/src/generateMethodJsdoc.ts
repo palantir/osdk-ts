@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import * as Prettier from "prettier";
+import { getCleanedUpJsdoc } from "./getCleanedUpJsdoc.js";
+import type * as ir from "./ir/index.js";
 
-export async function writeCode(filePath: string, code: string) {
-  return await fs.writeFile(filePath, await formatCode(filePath, code));
-}
-
-export async function formatCode(filePath: string, code: string) {
-  try {
-    return await Prettier.format(code, {
-      parser: "typescript",
-      filepath: filePath,
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error("failed to format code: " + filePath);
-    return code;
-  }
+export function generateMethodJsdoc(
+  method: Pick<ir.StaticOperation, "documentation" | "auth" | "path">,
+) {
+  return `/**
+  * ${getCleanedUpJsdoc(method.documentation)}
+  * 
+  * Required Scopes: [${method.auth.scopes.join(", ")}]
+  * ${true ? `URL: ${method.path}` : ``}
+  */`;
 }

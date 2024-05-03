@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import * as Prettier from "prettier";
+import type { Component } from "./model/Component.js";
+import type { Namespace } from "./model/Namespace.js";
+import { groupByAsMap } from "./util/groupByAsMap.js";
 
-export async function writeCode(filePath: string, code: string) {
-  return await fs.writeFile(filePath, await formatCode(filePath, code));
-}
-
-export async function formatCode(filePath: string, code: string) {
-  try {
-    return await Prettier.format(code, {
-      parser: "typescript",
-      filepath: filePath,
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error("failed to format code: " + filePath);
-    return code;
-  }
+export function generateImports(
+  referencedComponents: Set<Component>,
+  namespaceToSkip?: Namespace,
+) {
+  const groups = groupByAsMap(referencedComponents, "namespace");
+  const imports = [...groups.entries()].filter(([ns]) => ns !== namespaceToSkip)
+    .map(([ns, components]) => {
+      return `import { ${
+        components.map(a => a.name).join(",")
+      } } from "${ns.packageName}";`;
+    }).join("\n");
+  return imports;
 }

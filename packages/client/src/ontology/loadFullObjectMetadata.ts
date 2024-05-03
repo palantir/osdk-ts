@@ -99,6 +99,7 @@ export async function loadFullObjectMetadata(
 
   const full: ObjectTypeFullMetadata = {
     implementsInterfaces: interfaceTypes.data.map(i => i.apiName),
+    implementsInterfaces2: {}, // FIXME(interfaces)
     linkTypes,
     objectType,
     sharedPropertyTypeMapping,

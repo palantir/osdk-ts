@@ -138,6 +138,7 @@ describe("aggregate", () => {
     const mockFetch: Mock = vi.fn();
 
     const aggregationResponse: AggregateObjectsResponseV2 = {
+      accuracy: "APPROXIMATE",
       data: [
         {
           group: {

@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import fs from "node:fs/promises";
-import * as Prettier from "prettier";
+import type { Component } from "./Component.js";
+import type { Type } from "./Type.js";
+import { SimpleType } from "./Type.js";
 
-export async function writeCode(filePath: string, code: string) {
-  return await fs.writeFile(filePath, await formatCode(filePath, code));
-}
+export class UnionType extends SimpleType {
+  constructor(
+    public discriminator: string,
+    public subTypes: Record<string, Component>,
+  ) {
+    super();
+  }
 
-export async function formatCode(filePath: string, code: string) {
-  try {
-    return await Prettier.format(code, {
-      parser: "typescript",
-      filepath: filePath,
-    });
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error("failed to format code: " + filePath);
-    return code;
+  get referencedTypes(): Set<Type> {
+    return new Set(Object.values(this.subTypes));
+  }
+
+  get tsReferenceString() {
+    return Object.entries(this.subTypes).map(([name, type]) =>
+      `{ ${this.discriminator}: "${name}" } & ${type.tsReferenceString}`
+    ).join("|");
   }
 }

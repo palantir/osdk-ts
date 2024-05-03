@@ -348,8 +348,7 @@ export default {
       includePackages: ["@osdk/internal.*"],
       options: {
         file: "README.md",
-        template: `
-# WARNING
+        template: `# WARNING
 
 This is an internal only package.
 
