@@ -5,7 +5,7 @@
     "build": "turbo run build",
     "check": "turbo check",
     "check-mrl": "mrl check --verbose",
-    "ci:publish": "pnpm run prePublish && pnpm publish -r --report-summary",
+    "ci:publish": "pnpm run prePublish && pnpm publish --no-git-checks -r --report-summary",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
     "dev": "npx tsx packages/watch/src/watch.mts",
     "dev:typecheck": "npx tsx packages/watch/src/watch.mts",
