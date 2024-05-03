@@ -140,7 +140,7 @@ export async function osdkObjectSetExample() {
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,
-  }, { returnEdits: true });
+  }, { $returnEdits: true });
 
   if (actionResults.type === "edits") {
     console.log("Edited employee: ", actionResults.edits);
@@ -152,7 +152,7 @@ export async function osdkObjectSetExample() {
     employee: employeeLead,
     newTitle: "Architect",
     newCompensation: 1000000,
-  }, { validateOnly: true });
+  }, { $validateOnly: true });
 
   // You can get the entire validation result, or validation on a per-param basis
   console.log(actionValidation.result);

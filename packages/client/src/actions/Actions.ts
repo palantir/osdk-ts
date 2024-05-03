@@ -31,10 +31,10 @@ import type { PartialBy } from "../util/PartialBy.js";
 import type { ActionReturnTypeForOptions } from "./applyAction.js";
 
 export type ApplyActionOptions =
-  | { returnEdits?: true; validateOnly?: false }
+  | { $returnEdits?: true; $validateOnly?: false }
   | {
-    validateOnly?: true;
-    returnEdits?: false;
+    $validateOnly?: true;
+    $returnEdits?: false;
   };
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =

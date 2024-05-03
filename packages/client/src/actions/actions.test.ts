@@ -59,7 +59,7 @@ describe("actions", () => {
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
-    }, { returnEdits: true });
+    }, { $returnEdits: true });
 
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
     expect(result).toMatchInlineSnapshot(`
@@ -96,7 +96,7 @@ describe("actions", () => {
       newAddress: "456 Pike Place",
       newCapacity: 40,
     }, {
-      validateOnly: true,
+      $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
@@ -116,7 +116,7 @@ describe("actions", () => {
         newAddress: "456 Pike Place",
         newCapacity: 40,
       }, {
-        returnEdits: true,
+        $returnEdits: true,
       });
       expect.fail("Should not reach here");
     } catch (e) {

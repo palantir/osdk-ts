@@ -31,8 +31,8 @@ import { ActionValidationError } from "./ActionValidationError.js";
 // cannot specify both validateOnly and returnEdits as true
 
 export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { validateOnly: true } ? ActionValidationResponse
-    : Op extends { returnEdits: true } ? ActionEditResponse
+  Op extends { $validateOnly: true } ? ActionValidationResponse
+    : Op extends { $returnEdits: true } ? ActionEditResponse
     : undefined;
 
 export async function applyAction<
@@ -51,13 +51,13 @@ export async function applyAction<
     {
       parameters: remapActionParams(parameters),
       options: {
-        mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
-        returnEdits: options?.returnEdits ? "ALL" : "NONE",
+        mode: options?.$validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
+        returnEdits: options?.$returnEdits ? "ALL" : "NONE",
       },
     },
   );
 
-  if (options?.validateOnly) {
+  if (options?.$validateOnly) {
     return response.validation as ActionReturnTypeForOptions<Op>;
   }
 
@@ -65,7 +65,7 @@ export async function applyAction<
     throw new ActionValidationError(response.validation);
   }
 
-  return (options?.returnEdits
+  return (options?.$returnEdits
     ? response.edits
     : undefined) as ActionReturnTypeForOptions<Op>;
 }
