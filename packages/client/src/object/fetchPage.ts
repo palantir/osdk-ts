@@ -30,11 +30,11 @@ import type {
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
-} from "@osdk/foundry";
-import { loadObjectSetV2 } from "@osdk/foundry/OntologiesV2_OntologyObjectSet";
+} from "@osdk/internal.foundry";
+import { loadObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
 import {
   searchObjectsForInterface,
-} from "@osdk/foundry/OntologiesV2_OntologyObjectV2";
+} from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";

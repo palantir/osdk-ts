@@ -19,8 +19,8 @@ import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
   ObjectSet,
-} from "@osdk/foundry";
-import { aggregateObjectSetV2 } from "@osdk/foundry/OntologiesV2_OntologyObjectSet";
+} from "@osdk/internal.foundry";
+import { aggregateObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
