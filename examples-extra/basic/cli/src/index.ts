@@ -397,7 +397,7 @@ async function checkLinksAndActionsForVentures() {
 async function testGroupbysDates() {
   const groupedTimestamps = await client(BuilderDeploymentState).aggregate({
     $select: { $count: true },
-    groupBy: { currentTimestamp: { duration: [10, "seconds"] } },
+    $groupBy: { currentTimestamp: { $duration: [10, "seconds"] } },
   });
 
   const groupedDates = await client(BuilderDeploymentState).aggregate({
