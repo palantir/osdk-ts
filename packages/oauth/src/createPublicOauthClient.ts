@@ -41,7 +41,11 @@ import type { Token } from "./Token.js";
 
 const storageKey = "asdfasdfdhjlkajhgj";
 
-declare const __DEV__: boolean;
+declare const process: undefined | {
+  env?: {
+    NODE_ENV: "production" | "development";
+  };
+};
 
 type LocalStorageState =
   // when we are going to the login page
@@ -174,7 +178,7 @@ export function createPublicOauthClient(
         "refresh",
       );
     } catch (e) {
-      if (!__DEV__) {
+      if (process?.env?.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
           "Failed to get OAuth2 refresh token. Removing refresh token",
@@ -221,7 +225,7 @@ export function createPublicOauthClient(
       go(oldUrl);
       return ret;
     } catch (e) {
-      if (__DEV__) {
+      if (process?.env?.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
           "Failed to get OAuth2 token using PCKE, removing PCKE and starting a new auth flow",
