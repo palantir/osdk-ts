@@ -154,7 +154,7 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
-  it("allows fetching by PK from a base object set - fetchONe", async () => {
+  it("allows fetching by PK from a base object set - fetchOne", async () => {
     const employee = await client(MockOntology.objects.Employee).fetchOne(
       stubData.employee1.employeeId,
     );
