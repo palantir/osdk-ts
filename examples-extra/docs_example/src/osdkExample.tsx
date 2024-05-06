@@ -57,7 +57,7 @@ export async function osdkObjectSetExample() {
   const withinFilteredObjectSet = await client(Office).where({
     $or: [
       {
-        entrance: { $within: { $distance: [1_000, "miles"], of: [0, 0] } },
+        entrance: { $within: { $distance: [1_000, "miles"], $of: [0, 0] } },
       },
       { entrance: { $within: { $bbox: [0, 1, 2, 3] } } },
       { entrance: { $within: [0, 1, 2, 3] } },
