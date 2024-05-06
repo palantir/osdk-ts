@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import type { OntologyVersion } from "../../api/OntologyVersion.js";
 import type { BranchIndexingConfig } from "./BranchIndexingConfig.js";
 import type { BranchStatus } from "./BranchStatus.js";
 import type { OntologyBranchAttribution } from "./OntologyBranchAttribution.js";
+import type { OntologyBranchModificationData } from "./OntologyBranchModificationData.js";
 import type { OwnerIdentifier } from "./OwnerIdentifier.js";
 export interface NonDefaultOntologyBranchDetails {
   attribution: OntologyBranchAttribution;
@@ -27,5 +28,6 @@ export interface NonDefaultOntologyBranchDetails {
   datasourceBranchId: BranchId | undefined;
   ownerIdentifier: OwnerIdentifier;
   status: BranchStatus;
+  branchModificationData: OntologyBranchModificationData;
   indexingConfig: BranchIndexingConfig;
 }

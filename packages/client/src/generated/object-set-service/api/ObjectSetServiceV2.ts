@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 export { getAllObjectsInitialPage } from "./ObjectSetServiceV2/getAllObjectsInitialPage.js";
 export { getAllObjectsNextPage } from "./ObjectSetServiceV2/getAllObjectsNextPage.js";
+export { getBulkLinksPage } from "./ObjectSetServiceV2/getBulkLinksPage.js";
 export { getLinks } from "./ObjectSetServiceV2/getLinks.js";
 export { getTopObjectsInitialPage } from "./ObjectSetServiceV2/getTopObjectsInitialPage.js";
 export { getTopObjectsNextPage } from "./ObjectSetServiceV2/getTopObjectsNextPage.js";

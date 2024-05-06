@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import type { PropertyTypeRid } from "../PropertyTypeRid.js";
 import type { GothamObjectTypeUri } from "./GothamObjectTypeUri.js";
 import type { GothamOntologyParentType } from "./GothamOntologyParentType.js";
 import type { PropertyTypeGothamMapping } from "./PropertyTypeGothamMapping.js";
+import type { RevDbIntegrationState } from "./RevDbIntegrationState.js";
 
 /**
  * An ObjectTypeGothamMappingModification included in a client request can include all three fields, although
@@ -31,4 +32,5 @@ export interface ObjectTypeGothamMappingModification {
   parentTypeUri: GothamObjectTypeUri | undefined;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeGothamMapping>;
   clearGothamMapping: boolean | undefined;
+  revDbIntegrationState: RevDbIntegrationState | undefined;
 }

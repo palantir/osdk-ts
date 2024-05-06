@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import type { NonRevertibleMigrationModification } from "./NonRevertibleMigratio
 import type { RenameDatasourceMigrationModification } from "./RenameDatasourceMigrationModification.js";
 import type { RenamePropertyMigrationModification } from "./RenamePropertyMigrationModification.js";
 import type { RevertMigration } from "./RevertMigration.js";
-import type { UpdateEditsResolutionStrategyMigrationModification } from "./UpdateEditsResolutionStrategyMigrationModification.js";
+import type { UpdateEditsResolutionStrategyMigration } from "./UpdateEditsResolutionStrategyMigration.js";
 export interface SchemaMigrationInstructionModification_dropProperty {
   type: "dropProperty";
   dropProperty: DropPropertyMigration;
@@ -65,8 +65,7 @@ export interface SchemaMigrationInstructionModification_nonRevertible {
 
 export interface SchemaMigrationInstructionModification_updateEditsResolutionStrategy {
   type: "updateEditsResolutionStrategy";
-  updateEditsResolutionStrategy:
-    UpdateEditsResolutionStrategyMigrationModification;
+  updateEditsResolutionStrategy: UpdateEditsResolutionStrategyMigration;
 }
 /**
  * One out of potentially many instructions on how to transition from one version to another.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import type { ObjectTypeId } from "../ObjectTypeId.js";
 import type { ObjectTypeStatus } from "../ObjectTypeStatus.js";
 import type { PropertyTypeId } from "../PropertyTypeId.js";
 import type { TypeGroupRidOrIdInRequest } from "../TypeGroupRidOrIdInRequest.js";
+import type { ObjectTypeInterfaceImplementationModification } from "./ObjectTypeInterfaceImplementationModification.js";
 import type { ObjectTypeTraitsModification } from "./ObjectTypeTraitsModification.js";
 import type { PartialPropertyTypeModification } from "./PartialPropertyTypeModification.js";
 import type { PropertyTypeModification } from "./PropertyTypeModification.js";
@@ -35,5 +36,6 @@ export interface ObjectTypeModification {
   apiName: ObjectTypeApiName | undefined;
   status: ObjectTypeStatus | undefined;
   implementsInterfaces: Array<InterfaceTypeRidOrIdInRequest>;
+  implementsInterfaces2: Array<ObjectTypeInterfaceImplementationModification>;
   typeGroups: Array<TypeGroupRidOrIdInRequest>;
 }

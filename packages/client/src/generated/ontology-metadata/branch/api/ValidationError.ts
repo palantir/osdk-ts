@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
+import type { DatasourceModificationConstraintError } from "./DatasourceModificationConstraintError.js";
 import type { ForeignKeyConstraintError } from "./ForeignKeyConstraintError.js";
 import type { FoundrySchemaConstraintError } from "./FoundrySchemaConstraintError.js";
+import type { InterfaceImplementationError } from "./InterfaceImplementationError.js";
 import type { MediaReferencePropertyTypeConstraintError } from "./MediaReferencePropertyTypeConstraintError.js";
 import type { NumberOfDatasourcesConstraintError } from "./NumberOfDatasourcesConstraintError.js";
 import type { SchemaMigrationError } from "./SchemaMigrationError.js";
+import type { TimeDependentPropertyTypeConstraintError } from "./TimeDependentPropertyTypeConstraintError.js";
 export interface ValidationError_foreignKeyConstraint {
   type: "foreignKeyConstraint";
   foreignKeyConstraint: ForeignKeyConstraintError;
@@ -44,9 +47,27 @@ export interface ValidationError_mediaReferencePropertyTypeConstraint {
   mediaReferencePropertyTypeConstraint:
     MediaReferencePropertyTypeConstraintError;
 }
+
+export interface ValidationError_interfaceImplementationConstraint {
+  type: "interfaceImplementationConstraint";
+  interfaceImplementationConstraint: InterfaceImplementationError;
+}
+
+export interface ValidationError_timeDependentPropertyTypeConstraint {
+  type: "timeDependentPropertyTypeConstraint";
+  timeDependentPropertyTypeConstraint: TimeDependentPropertyTypeConstraintError;
+}
+
+export interface ValidationError_datasourceModificationConstraint {
+  type: "datasourceModificationConstraint";
+  datasourceModificationConstraint: DatasourceModificationConstraintError;
+}
 export type ValidationError =
   | ValidationError_foreignKeyConstraint
   | ValidationError_foundrySchemaConstraint
   | ValidationError_numberOfDatasourcesConstraint
   | ValidationError_schemaMigration
-  | ValidationError_mediaReferencePropertyTypeConstraint;
+  | ValidationError_mediaReferencePropertyTypeConstraint
+  | ValidationError_interfaceImplementationConstraint
+  | ValidationError_timeDependentPropertyTypeConstraint
+  | ValidationError_datasourceModificationConstraint;

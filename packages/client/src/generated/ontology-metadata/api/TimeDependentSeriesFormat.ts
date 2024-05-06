@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { TimeDependentNonNumericSeriesFormat } from "./TimeDependentNonNumericSeriesFormat.js";
 import type { TimeDependentNumericOrNonNumericSeriesFormat } from "./TimeDependentNumericOrNonNumericSeriesFormat.js";
+import type { TimeDependentNumericOrNonNumericSeriesFormatV2 } from "./TimeDependentNumericOrNonNumericSeriesFormatV2.js";
 import type { TimeDependentNumericSeriesFormat } from "./TimeDependentNumericSeriesFormat.js";
 export interface TimeDependentSeriesFormat_numeric {
   type: "numeric";
@@ -31,7 +32,13 @@ export interface TimeDependentSeriesFormat_numericOrNonNumeric {
   type: "numericOrNonNumeric";
   numericOrNonNumeric: TimeDependentNumericOrNonNumericSeriesFormat;
 }
+
+export interface TimeDependentSeriesFormat_numericOrNonNumericV2 {
+  type: "numericOrNonNumericV2";
+  numericOrNonNumericV2: TimeDependentNumericOrNonNumericSeriesFormatV2;
+}
 export type TimeDependentSeriesFormat =
   | TimeDependentSeriesFormat_numeric
   | TimeDependentSeriesFormat_nonNumeric
-  | TimeDependentSeriesFormat_numericOrNonNumeric;
+  | TimeDependentSeriesFormat_numericOrNonNumeric
+  | TimeDependentSeriesFormat_numericOrNonNumericV2;

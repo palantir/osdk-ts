@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 import type { ObjectLocator } from "./ObjectLocator.js";
 import type { ObjectSetEntities } from "./ObjectSetEntities.js";
 import type { ScrollId } from "./ScrollId.js";
+import type { UsageCost } from "./UsageCost.js";
 export interface GetObjectLocatorsScrollResponse {
   objectLocators: Array<ObjectLocator>;
   scrollId: ScrollId;
   totalObjects: number;
   objectSetEntities: ObjectSetEntities | undefined;
+  usageCost: UsageCost | undefined;
 }

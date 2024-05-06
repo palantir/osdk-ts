@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 import type { ObjectSet } from "./ObjectSet.js";
 import type { ObjectSetContext } from "./ObjectSetContext.js";
 import type { PropertyId } from "./PropertyId.js";
+import type { ResponseOptions } from "./ResponseOptions.js";
 import type { SuggestInput } from "./SuggestInput.js";
 export interface SuggestRequest {
   objectSet: ObjectSet;
   objectSetContext: ObjectSetContext;
   propertyId: PropertyId;
   suggestInput: SuggestInput;
-  numRequestedValues: string;
+  numRequestedValues: number;
+  responseOptions: ResponseOptions | undefined;
 }

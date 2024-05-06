@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,15 @@
 
 import type { AllPropertiesPropertySetV2 } from "./AllPropertiesPropertySetV2.js";
 import type { SelectedPropertiesPropertySetV2 } from "./SelectedPropertiesPropertySetV2.js";
+import type { SelectedTypesPropertySetV2 } from "./SelectedTypesPropertySetV2.js";
 export interface PropertySetV2_selected {
   type: "selected";
   selected: SelectedPropertiesPropertySetV2;
+}
+
+export interface PropertySetV2_selectedTypes {
+  type: "selectedTypes";
+  selectedTypes: SelectedTypesPropertySetV2;
 }
 
 export interface PropertySetV2_allProperties {
@@ -26,8 +32,9 @@ export interface PropertySetV2_allProperties {
   allProperties: AllPropertiesPropertySetV2;
 }
 /**
- * Specification of a subset of properties to use.
+ * Specification of a subset of properties to load.
  */
 export type PropertySetV2 =
   | PropertySetV2_selected
+  | PropertySetV2_selectedTypes
   | PropertySetV2_allProperties;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,12 +30,18 @@ import type { MarkingPropertyValue } from "./MarkingPropertyValue.js";
 import type { MediaReferencePropertyValue } from "./MediaReferencePropertyValue.js";
 import type { NullPropertyValue } from "./NullPropertyValue.js";
 import type { StringPropertyValue } from "./StringPropertyValue.js";
+import type { StructPropertyValue } from "./StructPropertyValue.js";
 import type { TimeDependentPropertyValue } from "./TimeDependentPropertyValue.js";
 import type { TimestampPropertyValue } from "./TimestampPropertyValue.js";
 import type { VectorPropertyValue } from "./VectorPropertyValue.js";
 export interface PropertyValue_array {
   type: "array";
   array: ArrayPropertyValue;
+}
+
+export interface PropertyValue_attachment {
+  type: "attachment";
+  attachment: AttachmentPropertyValue;
 }
 
 export interface PropertyValue_boolean {
@@ -93,6 +99,11 @@ export interface PropertyValue_marking {
   marking: MarkingPropertyValue;
 }
 
+export interface PropertyValue_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferencePropertyValue;
+}
+
 export interface PropertyValue_null {
   type: "null";
   null: NullPropertyValue;
@@ -101,6 +112,11 @@ export interface PropertyValue_null {
 export interface PropertyValue_string {
   type: "string";
   string: StringPropertyValue;
+}
+
+export interface PropertyValue_struct {
+  type: "struct";
+  struct: StructPropertyValue;
 }
 
 export interface PropertyValue_timeDependent {
@@ -113,16 +129,6 @@ export interface PropertyValue_timestamp {
   timestamp: TimestampPropertyValue;
 }
 
-export interface PropertyValue_attachment {
-  type: "attachment";
-  attachment: AttachmentPropertyValue;
-}
-
-export interface PropertyValue_mediaReference {
-  type: "mediaReference";
-  mediaReference: MediaReferencePropertyValue;
-}
-
 export interface PropertyValue_vector {
   type: "vector";
   vector: VectorPropertyValue;
@@ -132,6 +138,7 @@ export interface PropertyValue_vector {
  */
 export type PropertyValue =
   | PropertyValue_array
+  | PropertyValue_attachment
   | PropertyValue_boolean
   | PropertyValue_cipherText
   | PropertyValue_date
@@ -143,10 +150,10 @@ export type PropertyValue =
   | PropertyValue_integer
   | PropertyValue_long
   | PropertyValue_marking
+  | PropertyValue_mediaReference
   | PropertyValue_null
   | PropertyValue_string
+  | PropertyValue_struct
   | PropertyValue_timeDependent
   | PropertyValue_timestamp
-  | PropertyValue_attachment
-  | PropertyValue_mediaReference
   | PropertyValue_vector;

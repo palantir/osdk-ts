@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import type { LinkTypeId } from "../LinkTypeId.js";
 import type { ObjectTypeId } from "../ObjectTypeId.js";
 import type { ObjectTypeRid } from "../ObjectTypeRid.js";
 import type { OntologyBranchRid } from "../OntologyBranchRid.js";
+import type { OntologyPackageRid } from "../OntologyPackageRid.js";
 import type { OntologyVersion } from "../OntologyVersion.js";
 import type { RuleSetRid } from "../RuleSetRid.js";
 import type { SchemaMigrationInitialization } from "../schemamigrations/SchemaMigrationInitialization.js";
@@ -88,6 +89,10 @@ export interface OntologyModificationRequest {
     SharedPropertyTypeIdInRequest,
     SharedPropertyTypeModification
   >;
+  sharedPropertyTypesToCreateInPackage: Record<
+    SharedPropertyTypeIdInRequest,
+    OntologyPackageRid
+  >;
   sharedPropertyTypesToUpdate: Record<
     SharedPropertyTypeRid,
     SharedPropertyTypeModification
@@ -96,6 +101,10 @@ export interface OntologyModificationRequest {
   interfaceTypesToCreate: Record<
     InterfaceTypeIdInRequest,
     InterfaceTypeModification
+  >;
+  interfaceTypesToCreateInPackage: Record<
+    InterfaceTypeIdInRequest,
+    OntologyPackageRid
   >;
   interfaceTypesToUpdate: Record<InterfaceTypeRid, InterfaceTypeModification>;
   interfaceTypesToDelete: Array<InterfaceTypeRid>;
@@ -108,4 +117,5 @@ export interface OntologyModificationRequest {
   rebasedOntologyVersion: OntologyVersion | undefined;
   validateActiveEntityDeletions: boolean | undefined;
   useRoles: boolean | undefined;
+  checkForNoops: boolean | undefined;
 }

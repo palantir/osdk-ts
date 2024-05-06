@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import type { MarkingPropertyValue } from "../MarkingPropertyValue.js";
 import type { MediaReferencePropertyValue } from "../MediaReferencePropertyValue.js";
 import type { NullPropertyValue } from "../NullPropertyValue.js";
 import type { StringPropertyValue } from "../StringPropertyValue.js";
+import type { StructPropertyValue } from "../StructPropertyValue.js";
 import type { TimeDependentPropertyValue } from "../TimeDependentPropertyValue.js";
 import type { TimestampPropertyValue } from "../TimestampPropertyValue.js";
 import type { VectorPropertyValue } from "../VectorPropertyValue.js";
@@ -37,6 +38,11 @@ import type { InternalGeohashPropertyValue } from "./InternalGeohashPropertyValu
 export interface InternalPropertyValue_array {
   type: "array";
   array: InternalArrayPropertyValue;
+}
+
+export interface InternalPropertyValue_attachment {
+  type: "attachment";
+  attachment: AttachmentPropertyValue;
 }
 
 export interface InternalPropertyValue_boolean {
@@ -99,6 +105,11 @@ export interface InternalPropertyValue_marking {
   marking: MarkingPropertyValue;
 }
 
+export interface InternalPropertyValue_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferencePropertyValue;
+}
+
 export interface InternalPropertyValue_null {
   type: "null";
   null: NullPropertyValue;
@@ -107,6 +118,11 @@ export interface InternalPropertyValue_null {
 export interface InternalPropertyValue_string {
   type: "string";
   string: StringPropertyValue;
+}
+
+export interface InternalPropertyValue_struct {
+  type: "struct";
+  struct: StructPropertyValue;
 }
 
 export interface InternalPropertyValue_timeDependent {
@@ -119,16 +135,6 @@ export interface InternalPropertyValue_timestamp {
   timestamp: TimestampPropertyValue;
 }
 
-export interface InternalPropertyValue_attachment {
-  type: "attachment";
-  attachment: AttachmentPropertyValue;
-}
-
-export interface InternalPropertyValue_mediaReference {
-  type: "mediaReference";
-  mediaReference: MediaReferencePropertyValue;
-}
-
 export interface InternalPropertyValue_vector {
   type: "vector";
   vector: VectorPropertyValue;
@@ -139,6 +145,7 @@ export interface InternalPropertyValue_vector {
  */
 export type InternalPropertyValue =
   | InternalPropertyValue_array
+  | InternalPropertyValue_attachment
   | InternalPropertyValue_boolean
   | InternalPropertyValue_cipherText
   | InternalPropertyValue_date
@@ -151,10 +158,10 @@ export type InternalPropertyValue =
   | InternalPropertyValue_integer
   | InternalPropertyValue_long
   | InternalPropertyValue_marking
+  | InternalPropertyValue_mediaReference
   | InternalPropertyValue_null
   | InternalPropertyValue_string
+  | InternalPropertyValue_struct
   | InternalPropertyValue_timeDependent
   | InternalPropertyValue_timestamp
-  | InternalPropertyValue_attachment
-  | InternalPropertyValue_mediaReference
   | InternalPropertyValue_vector;

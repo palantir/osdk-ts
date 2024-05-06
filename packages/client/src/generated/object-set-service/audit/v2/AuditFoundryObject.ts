@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectPrimaryKeyV2 } from "../../api/ObjectPrimaryKeyV2.js";
-import type { ObjectRid } from "../../api/ObjectRid.js";
-import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
-import type { ObjectVersion } from "../../api/ObjectVersion.js";
 import type { PropertyTypeRid } from "../../api/PropertyTypeRid.js";
-import type { PropertyValue } from "../../api/PropertyValue.js";
+import type { LoggableObjectPrimaryKeyV2 } from "../../loggable/LoggableObjectPrimaryKeyV2.js";
+import type { LoggablePropertyValue } from "../../loggable/LoggablePropertyValue.js";
 
 /**
  * Property values other than primary key values are not included in the audit version of a FoundryObject to
  * avoid dropping audit logs due to them being too large.
  */
 export interface AuditFoundryObject {
-  objectRid: ObjectRid | undefined;
-  objectTypeRid: ObjectTypeRid;
-  primaryKey: ObjectPrimaryKeyV2;
+  primaryKey: LoggableObjectPrimaryKeyV2;
   additionalObjectProperties:
-    | Record<PropertyTypeRid, PropertyValue>
+    | Record<PropertyTypeRid, LoggablePropertyValue>
     | undefined;
-  version: ObjectVersion;
 }

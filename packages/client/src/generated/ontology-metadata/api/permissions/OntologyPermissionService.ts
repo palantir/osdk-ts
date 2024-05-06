@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ export { bulkUpdateEntityRoles } from "./OntologyPermissionService/bulkUpdateEnt
 export { getActionTypePermissions } from "./OntologyPermissionService/getActionTypePermissions.js";
 export { getBulkActionTypePermissions } from "./OntologyPermissionService/getBulkActionTypePermissions.js";
 export { getBulkActionTypePermissionsForUsers } from "./OntologyPermissionService/getBulkActionTypePermissionsForUsers.js";
+export { getBulkInterfaceTypePermissions } from "./OntologyPermissionService/getBulkInterfaceTypePermissions.js";
 export { getBulkLinkTypePermissions } from "./OntologyPermissionService/getBulkLinkTypePermissions.js";
 export { getBulkLinkTypePermissionsForUsers } from "./OntologyPermissionService/getBulkLinkTypePermissionsForUsers.js";
 export { getBulkObjectTypePermissions } from "./OntologyPermissionService/getBulkObjectTypePermissions.js";
@@ -26,6 +27,7 @@ export { getBulkSharedPropertyTypePermissions } from "./OntologyPermissionServic
 export { getBulkTypeGroupPermissions } from "./OntologyPermissionService/getBulkTypeGroupPermissions.js";
 export { getCreateOntologyPermissions } from "./OntologyPermissionService/getCreateOntologyPermissions.js";
 export { getEditorsForObjectType } from "./OntologyPermissionService/getEditorsForObjectType.js";
+export { getInterfaceTypePermissions } from "./OntologyPermissionService/getInterfaceTypePermissions.js";
 export { getLinkTypePermissions } from "./OntologyPermissionService/getLinkTypePermissions.js";
 export { getObjectTypePermissions } from "./OntologyPermissionService/getObjectTypePermissions.js";
 export { getOntologyPermissions } from "./OntologyPermissionService/getOntologyPermissions.js";
@@ -37,4 +39,5 @@ export { getSuggestedRolesForManyToManyLinkTypeDatasource } from "./OntologyPerm
 export { getSuggestedRolesForObjectType } from "./OntologyPermissionService/getSuggestedRolesForObjectType.js";
 export { getSuggestedRolesForObjectTypeDatasource } from "./OntologyPermissionService/getSuggestedRolesForObjectTypeDatasource.js";
 export { getWorkflowPermissions } from "./OntologyPermissionService/getWorkflowPermissions.js";
+export { updateEntitiesInPackage } from "./OntologyPermissionService/updateEntitiesInPackage.js";
 export { updateEntityRoles } from "./OntologyPermissionService/updateEntityRoles.js";

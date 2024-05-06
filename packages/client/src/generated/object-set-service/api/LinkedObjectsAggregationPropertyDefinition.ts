@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { LinkedMetric } from "./LinkedMetric.js";
 import type { LinkedPropertyRelationSide } from "./LinkedPropertyRelationSide.js";
-import type { Metric } from "./Metric.js";
 import type { ObjectSet } from "./ObjectSet.js";
 import type { RelationId } from "./RelationId.js";
 
@@ -26,6 +26,6 @@ import type { RelationId } from "./RelationId.js";
 export interface LinkedObjectsAggregationPropertyDefinition {
   relationId: RelationId;
   relationSide: LinkedPropertyRelationSide;
-  metric: Metric;
+  metric: LinkedMetric;
   targetObjectSet: ObjectSet;
 }

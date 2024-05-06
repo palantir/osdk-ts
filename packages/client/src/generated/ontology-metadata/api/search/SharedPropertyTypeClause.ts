@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,11 @@ export interface SharedPropertyTypeClause_displayName {
   displayName: FullTextStringPredicate;
 }
 
+export interface SharedPropertyTypeClause_alias {
+  type: "alias";
+  alias: FullTextStringPredicate;
+}
+
 export interface SharedPropertyTypeClause_description {
   type: "description";
   description: FullTextStringPredicate;
@@ -84,6 +89,7 @@ export type SharedPropertyTypeClause =
   | SharedPropertyTypeClause_sharedPropertyTypeRid
   | SharedPropertyTypeClause_apiName
   | SharedPropertyTypeClause_displayName
+  | SharedPropertyTypeClause_alias
   | SharedPropertyTypeClause_description
   | SharedPropertyTypeClause_visibility
   | SharedPropertyTypeClause_isIndexedForSearch

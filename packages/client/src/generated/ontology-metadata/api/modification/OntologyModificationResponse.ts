@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { WorkflowIdInRequest } from "../../workflow/api/WorkflowIdInRequest.js";
 import type { WorkflowRid } from "../../workflow/api/WorkflowRid.js";
 import type { ActionType } from "../ActionType.js";
+import type { ActionTypeIdInRequest } from "../ActionTypeIdInRequest.js";
 import type { ActionTypeRid } from "../ActionTypeRid.js";
 import type { RuleSetIdInRequest } from "../formatting/RuleSetIdInRequest.js";
 import type { InterfaceTypeIdInRequest } from "../InterfaceTypeIdInRequest.js";
@@ -36,6 +37,7 @@ export interface OntologyModificationResponse {
   createdRuleSets: Record<RuleSetIdInRequest, RuleSetRid>;
   createdWorkflows: Record<WorkflowIdInRequest, WorkflowRid>;
   createdActionTypes: Array<ActionType>;
+  createdActionTypeRids: Record<ActionTypeIdInRequest, ActionTypeRid>;
   updatedActionTypes: Record<ActionTypeRid, ActionType>;
   createdSharedPropertyTypes: Record<
     SharedPropertyTypeIdInRequest,

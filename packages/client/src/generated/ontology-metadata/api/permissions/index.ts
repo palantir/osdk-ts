@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ export type { GetBulkActionTypePermissionsForUsersResponse } from "./GetBulkActi
 export type { GetBulkActionTypePermissionsForUsersResult } from "./GetBulkActionTypePermissionsForUsersResult.js";
 export type { GetBulkActionTypePermissionsRequest } from "./GetBulkActionTypePermissionsRequest.js";
 export type { GetBulkActionTypePermissionsResponse } from "./GetBulkActionTypePermissionsResponse.js";
+export type { GetBulkInterfaceTypePermissionsRequest } from "./GetBulkInterfaceTypePermissionsRequest.js";
+export type { GetBulkInterfaceTypePermissionsResponse } from "./GetBulkInterfaceTypePermissionsResponse.js";
 export type { GetBulkLinkTypePermissionsForUsersQuery } from "./GetBulkLinkTypePermissionsForUsersQuery.js";
 export type { GetBulkLinkTypePermissionsForUsersRequest } from "./GetBulkLinkTypePermissionsForUsersRequest.js";
 export type { GetBulkLinkTypePermissionsForUsersResponse } from "./GetBulkLinkTypePermissionsForUsersResponse.js";
@@ -49,6 +51,7 @@ export type { GetBulkTypeGroupPermissionsResponse } from "./GetBulkTypeGroupPerm
 export type { GetCreateOntologyPermissionsResponse } from "./GetCreateOntologyPermissionsResponse.js";
 export type { GetEditorsForObjectTypeRequest } from "./GetEditorsForObjectTypeRequest.js";
 export type { GetEditorsForObjectTypeResponse } from "./GetEditorsForObjectTypeResponse.js";
+export type { GetInterfaceTypePermissionsResponse } from "./GetInterfaceTypePermissionsResponse.js";
 export type { GetLinkTypePermissionsResponse } from "./GetLinkTypePermissionsResponse.js";
 export type { GetObjectTypePermissionsResponse } from "./GetObjectTypePermissionsResponse.js";
 export type { GetOntologyPermissionsResponse } from "./GetOntologyPermissionsResponse.js";
@@ -69,6 +72,8 @@ export type { RoleGrant } from "./RoleGrant.js";
 export type { RoleGrantPatch } from "./RoleGrantPatch.js";
 export type { RolesEnabled } from "./RolesEnabled.js";
 export type { RolesEnforced } from "./RolesEnforced.js";
+export type { UpdateEntitiesInPackageRequest } from "./UpdateEntitiesInPackageRequest.js";
+export type { UpdateEntitiesInPackageResponse } from "./UpdateEntitiesInPackageResponse.js";
 export type { UpdateEntityRolesRequest } from "./UpdateEntityRolesRequest.js";
 export type { UpdateEntityRolesResponse } from "./UpdateEntityRolesResponse.js";
 export type { UserPrincipal } from "./UserPrincipal.js";

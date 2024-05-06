@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,5 @@ export type { CreatePackageRequest } from "./CreatePackageRequest.js";
 export type { CreatePackageResponse } from "./CreatePackageResponse.js";
 export type { GetPackagesForOwningResourcesRequest } from "./GetPackagesForOwningResourcesRequest.js";
 export type { GetPackagesForOwningResourcesResponse } from "./GetPackagesForOwningResourcesResponse.js";
-export type { MarkingPatch } from "./MarkingPatch.js";
 export type { OntologyPackageMetadata } from "./OntologyPackageMetadata.js";
-export type { OrganizationMarkingPatch } from "./OrganizationMarkingPatch.js";
 export type { OwningResource } from "./OwningResource.js";
-export type { UpdatePackageRequest } from "./UpdatePackageRequest.js";
-export type { UpdatePackageResponse } from "./UpdatePackageResponse.js";

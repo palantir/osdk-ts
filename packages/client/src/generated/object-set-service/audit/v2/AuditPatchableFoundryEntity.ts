@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 
 import type { DatasourceRid } from "../../api/DatasourceRid.js";
-import type { EntityPrimaryKey } from "../../api/EntityPrimaryKey.js";
 import type { EntityTypeRid } from "../../api/EntityTypeRid.js";
 import type { EntityVersion } from "../../api/EntityVersion.js";
+import type { LoggableEntityPrimaryKey } from "../../loggable/LoggableEntityPrimaryKey.js";
 
 /**
  * Property values other than primary key values are not included in the audit version of a
@@ -25,7 +25,7 @@ import type { EntityVersion } from "../../api/EntityVersion.js";
  */
 export interface AuditPatchableFoundryEntity {
   entityTypeRid: EntityTypeRid;
-  primaryKey: EntityPrimaryKey;
+  primaryKey: LoggableEntityPrimaryKey;
   version: EntityVersion;
   isAlive: boolean;
   datasourceRids: Array<DatasourceRid>;

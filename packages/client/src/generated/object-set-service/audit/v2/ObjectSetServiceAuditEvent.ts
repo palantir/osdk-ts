@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ export type ObjectSetServiceAuditEvent =
   | "OBJECT_SET_SERVICE_V2_GET_ALL_OBJECTS_NEXT_PAGE"
   | "OBJECT_SET_SERVICE_V2_LOAD_OBJECTS"
   | "OBJECT_SET_SERVICE_V2_GET_LINKS"
+  | "OBJECT_SET_SERVICE_V2_GET_BULK_LINKS_PAGE"
   | "OBJECT_SET_AGGREGATION_SERVICE_AGGREGATE"
   | "OBJECT_SET_SCROLL_SERVICE_GET_OBJECTS_INITIAL_SCROLL"
   | "OBJECT_SET_SCROLL_SERVICE_GET_OBJECTS_NEXT_SCROLL"
@@ -41,4 +42,5 @@ export type ObjectSetServiceAuditEvent =
   | "VERSIONED_OBJECT_SET_SERVICE_GET_LATEST_VERSION"
   | "VERSIONED_OBJECT_SET_SERVICE_GET_BULK_LATEST_VERSION"
   | "VERSIONED_OBJECT_SET_SERVICE_PUT_LATEST_VERSION"
+  | "VERSIONED_OBJECT_SET_SERVICE_CHECK_BULK_OPERATION_PERMISSIONS"
   | "INTERNAL_OBJECT_SET_LOAD_PATCHABLE_OBJECTS";

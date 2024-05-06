@@ -28,18 +28,20 @@ import invariant from "tiny-invariant";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
 import type {
   Message,
-  ObjectSetSubscribeRequest,
-  ObjectSetSubscribeRequests,
-  ObjectSetSubscribeResponses,
-  RefreshObjectSet,
-} from "../generated/object-set-watcher/index.js";
-import type { Message_objectSetChanged } from "../generated/object-set-watcher/Message.js";
-import type { FoundryObject } from "../generated/object-set-watcher/object/FoundryObject.js";
-import { batchEnableWatcher } from "../generated/object-set-watcher/ObjectSetWatchService.js";
+  Message_objectSetChanged,
+} from "../generated/object-set-watcher/objectsetwatcher/api/Message.js";
+import type { FoundryObject } from "../generated/object-set-watcher/objectsetwatcher/api/object/FoundryObject.js";
+import type { ObjectSetSubscribeRequest } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequest.js";
+import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequests.js";
+import type { ObjectSetSubscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponses.js";
+import { batchEnableWatcher } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetWatchService.js";
+import type { ObjectUpdate_object } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
+import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
 import type {
   StreamMessage,
   StreamMessage_objectSetChanged,
-} from "../generated/object-set-watcher/StreamMessage.js";
+} from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
+import type { SubscriptionClosed } from "../generated/object-set-watcher/objectsetwatcher/api/SubscriptionClosed.js";
 import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
 import {
   loadAllOntologies,
@@ -399,6 +401,12 @@ export class ObjectSetListenerWebsocket {
       case "subscribeResponses":
         return this.#handleMessage_subscribeResponses(data.subscribeResponses);
 
+      case "subscriptionClosed": {
+        const payload = data.subscriptionClosed;
+
+        return this.#handleMessage_subscriptionClosed(payload);
+      }
+
       default:
         const _: never = data;
         invariant(false, "Unexpected message type");
@@ -418,11 +426,22 @@ export class ObjectSetListenerWebsocket {
       return;
     }
 
+    const objects = payload.updates.filter(
+      function(a): a is ObjectUpdate_object {
+        return a.type === "object";
+      },
+    ).map(a => a.object);
+
+    invariant(
+      objects.length === payload.updates.length,
+      "currently only support full updates not reference updates",
+    );
+
     sub.listener.onChange(
       await convertFoundryToOsdkObjects(
         this.#client,
         this.#metadataContext,
-        payload.objects,
+        objects,
       ) as Array<Osdk<any>>,
     );
   };
@@ -473,6 +492,13 @@ export class ObjectSetListenerWebsocket {
       }
     }
   };
+
+  #handleMessage_subscriptionClosed(payload: SubscriptionClosed) {
+    const sub = this.#subscriptions.get(payload.id);
+    invariant(sub, `Expected subscription id ${payload.id}`);
+    sub.listener.onError(payload.error);
+    this.#unsubscribe(sub, "error");
+  }
 
   #onClose = () => {
     // TODO we should probably throttle this so we don't abuse the backend
