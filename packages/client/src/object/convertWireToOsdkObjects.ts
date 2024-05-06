@@ -57,7 +57,15 @@ class LinkFetcherProxyHandler<Q extends AugmentedObjectTypeDefinition<any, any>>
 
     if (!linkDef.multiplicity) {
       return {
+        /** @deprecated  */
         get: <A extends SelectArg<any>>(options?: A) =>
+          fetchSingle(
+            this.client,
+            this.objDef,
+            options ?? {},
+            getWireObjectSet(objectSet),
+          ),
+        fetchOne: <A extends SelectArg<any>>(options?: A) =>
           fetchSingle(
             this.client,
             this.objDef,
@@ -104,6 +112,7 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
 
   const objectProto = Object.defineProperties({}, {
     $link: {
+      /** @deprecated */
       get: function() {
         return new Proxy(
           {},

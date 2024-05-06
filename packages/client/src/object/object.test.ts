@@ -118,5 +118,29 @@ describe("OsdkObject", () => {
       expect(peep.employeeId).toBeDefined();
       expect((peep as any).employeeStatus).toBeUndefined();
     });
+
+    it("traverses the link from an lead to their peep by primaryKey with fetchOne", async () => {
+      // slightly weird request here to hit the existing mocks for employee2
+      const employees = await client(MockOntology.objects.Employee).where({
+        $and: [
+          { "employeeId": { "$gt": 50030 } },
+          { "employeeId": { "$lt": 50032 } },
+        ],
+      }).fetchPage();
+      const lead = employees.data[0];
+      expect(lead).toBeDefined();
+
+      const peep = await lead.$link.peeps.fetchOne(
+        stubData.employee1.employeeId,
+        {
+          select: ["employeeId"],
+        },
+      );
+      expect(peep).toBeDefined();
+
+      // ensure that select worked
+      expect(peep.employeeId).toBeDefined();
+      expect((peep as any).employeeStatus).toBeUndefined();
+    });
   });
 });
