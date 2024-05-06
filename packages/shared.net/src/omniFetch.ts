@@ -144,6 +144,10 @@ export async function apiFetch(
     }
   }
 
+  if (response.status === 204) {
+    return;
+  }
+
   if (responseMediaType == null || responseMediaType === "application/json") {
     return await response.json();
   }

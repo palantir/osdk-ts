@@ -17,7 +17,10 @@
 import type { ClientContext } from "@osdk/shared.net";
 import type { MultiLink, OntologyObject, ParameterValue } from "../baseTypes";
 import type { GetLinkedObjectError, ListLinkedObjectsError } from "../errors";
-import { getLinkedObject } from "../net/getLinkedObject";
+import {
+  getLinkedObject,
+  getLinkedObjectNoErrors,
+} from "../net/getLinkedObject";
 import { listLinkedObjects, loadLinkedObjects } from "../net/listLinkedObjects";
 import {
   pageLinkedObjects,
@@ -44,7 +47,28 @@ export function createMultiLinkStep<T extends OntologyObject = OntologyObject>(
         primaryKey.toString(),
       );
     },
-
+    fetchOneWithErrors(
+      primaryKey: T["__primaryKey"],
+    ): Promise<Result<T, GetLinkedObjectError>> {
+      return getLinkedObject(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
+        primaryKey.toString(),
+      );
+    },
+    fetchOne(
+      primaryKey: T["__primaryKey"],
+    ): Promise<T> {
+      return getLinkedObjectNoErrors(
+        client,
+        sourceApiName,
+        sourcePrimaryKey,
+        targetApiName,
+        primaryKey.toString(),
+      );
+    },
     all(): Promise<Result<T[], ListLinkedObjectsError>> {
       return listLinkedObjects(
         client,

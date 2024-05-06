@@ -70,19 +70,6 @@ export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends MinimalObjectSet<Q>
 {
-  /** @deprecated */
-  fetchPageOrThrow: <
-    L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-    R extends boolean,
-  >(
-    args?: FetchPageArgs<Q, L, R>,
-  ) => Promise<FetchPageResult<Q, L, R>>;
-
-  /** @deprecated use `aggregate` */
-  aggregateOrThrow: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrors<Q, AO>,
-  ) => Promise<AggregationsResults<Q, AO>>;
-
   aggregate: <AO extends AggregateOpts<Q>>(
     req: AggregateOptsThatErrors<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
@@ -111,12 +98,4 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
       options?: SelectArg<Q, L>,
     ) => Promise<Osdk<Q, L>>
     : never;
-
-  subscribe: (listener: ObjectSetListener<Q>) => () => void;
 }
-
-export type ObjectSetFactory<O extends OntologyDefinition<any>> = <
-  K extends ObjectOrInterfaceKeysFrom<O>,
->(
-  type: K,
-) => ObjectSet<ObjectOrInterfaceDefinitionFrom<O, K>>;

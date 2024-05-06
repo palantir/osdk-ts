@@ -27,14 +27,15 @@ export default async function versionGetCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
   consola.start("Getting live version");
 
-  const deployment = await thirdPartyApplications.getWebsiteDeployment(
+  const website = await thirdPartyApplications.getWebsite(
     clientCtx,
     application,
   );
+  const deployedVersion = website?.deployedVersion;
 
-  if (!deployment) {
+  if (!deployedVersion) {
     consola.info("No live site version set");
   } else {
-    consola.success(`Live site version is ${deployment.version}`);
+    consola.success(`Live site version is ${deployedVersion}`);
   }
 }

@@ -24,4 +24,5 @@ wget -P "${DOWNLOAD_DIR}"  "${MAVEN_REPO_PATH}/${API_GATEWAY_VERSION}/${MAVEN_CO
 
 mkdir -p "${EXTRACT_DIR}"
 tar -xf "${DOWNLOAD_DIR}/api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}.sls.tgz" -C "${EXTRACT_DIR}" --strip-components=4 "api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}/asset/palantir/ir/openapi-ir.json"
+tar -xf "${DOWNLOAD_DIR}/api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}.sls.tgz" -C "${EXTRACT_DIR}" --strip-components=4 "api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}/asset/palantir/ir/v2.json"
 tar -xf "${DOWNLOAD_DIR}/api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}.sls.tgz" -C "${EXTRACT_DIR}" --strip-components=2 "api-gateway-rosetta-bundle-${API_GATEWAY_VERSION}/deployment/manifest.yml"

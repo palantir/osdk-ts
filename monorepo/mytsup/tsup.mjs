@@ -6,7 +6,7 @@ import * as path from "node:path";
 /**
  * @param {import('tsup').Options} options
  * @param {{cjsExtension?: ".cjs" | ".js", esmOnly?: boolean }} ourOptions
- * @returns {Promise<import('tsup').Options>}
+ * @returns {Promise<import('tsup').Options | import('tsup').Options[]>}
  */
 export default async (options, ourOptions) => {
   const babel = (await import("esbuild-plugin-babel")).default;
@@ -15,7 +15,8 @@ export default async (options, ourOptions) => {
     JSON.parse(f)
   );
 
-  return {
+  /** @type {import("tsup").Options} */
+  const baseConfig = {
     entry: [
       "src/index.ts",
       "src/public/*.ts",
@@ -35,6 +36,7 @@ export default async (options, ourOptions) => {
       PACKAGE_LEGACY_CLIENT_VERSION: await readPackageVersion(
         "packages/legacy-client",
       ),
+      TARGET: "node",
     },
     outDir: "build/js",
     clean: true,
@@ -56,6 +58,19 @@ export default async (options, ourOptions) => {
       })),
     ],
   };
+
+  /** @type {import("tsup").Options} */
+  const browserConfig = {
+    ...baseConfig,
+    format: ["esm"],
+    outExtension: (ctx) => ({ js: ".browser.mjs" }),
+    env: {
+      ...baseConfig.env,
+      TARGET: "browser",
+    },
+  };
+
+  return [baseConfig, browserConfig];
 };
 
 async function readPackageVersion(k) {

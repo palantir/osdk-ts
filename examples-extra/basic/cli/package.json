@@ -10,10 +10,12 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
+      "browser": "./build/js/index.browser.mjs",
       "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
+      "browser": "./build/js/public/*.browser.mjs",
       "import": "./build/js/public/*.mjs"
     }
   },
@@ -29,12 +31,13 @@
     "@osdk/api": "workspace:^",
     "@osdk/client": "workspace:^",
     "@osdk/examples.basic.sdk": "workspace:^",
-    "@osdk/foundry": "workspace:^",
+    "@osdk/internal.foundry": "workspace:^",
     "pino": "^8.20.0",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
     "@osdk/cli": "workspace:^",
+    "@osdk/foundry": "workspace:^",
     "@types/node": "^18.0.0",
     "ts-expect": "^1.3.0"
   },

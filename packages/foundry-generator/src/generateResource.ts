@@ -17,15 +17,16 @@
 import invariant from "tiny-invariant";
 import { convertIrDataTypeToTsTypeReference } from "./convertIrDataTypeToTsTypeReference.js";
 import { copyright } from "./copyright.js";
+import { generateMethodJsdoc } from "./generateMethodJsdoc.js";
 import { HTTP_VERB_MAP } from "./HTTP_VERB_MAP.js";
 import type {
-  Documentation,
   Parameter,
   RequestBodyType,
   Resource,
   Response,
   StaticOperation,
 } from "./ir/index.js";
+import { quoteMimeTypeOrEmpty } from "./quoteMimeTypeOrEmpty.js";
 import { writeCode } from "./writeCode.js";
 
 type Params = Array<
@@ -75,15 +76,6 @@ function generateMethods(resource: Resource) {
     `;
   }
   return out;
-}
-
-function generateMethodJsdoc(method: StaticOperation) {
-  return `/**
-  * ${getCleanedUpJsdoc(method.documentation)}
-  * 
-  * Required Scopes: [${method.auth.scopes.join(", ")}]
-  * ${true ? `URL: ${method.path}` : ``}
-  */`;
 }
 
 function generateMethodParameters(method: StaticOperation) {
@@ -183,13 +175,6 @@ interface PayloadInfo {
   componentType: string | undefined;
 }
 
-function getCleanedUpJsdoc(doc?: Documentation) {
-  if (doc?.description?.includes("*/")) {
-    throw "unsupported description";
-  }
-  return doc?.description?.replace(/\n/g, "\n * ") ?? "";
-}
-
 function getParamInfo(irParams: Parameter[]) {
   const ret: Record<"PATH" | "QUERY" | "HEADER", Params> = {
     PATH: [],
@@ -287,8 +272,4 @@ function getResponseInfo(response: Response) {
   } else {
     return { componentType: "void", mimeType: "" };
   }
-}
-
-function quoteMimeTypeOrEmpty(s: string) {
-  return s === "application/json" ? "" : `"${s}"`;
 }

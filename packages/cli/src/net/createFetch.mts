@@ -64,14 +64,14 @@ function handleFetchError(e: unknown): Promise<Response> {
   }
 
   let message = e.message;
-  if (e.errorName === "CannotDeleteDeployedWebsiteVersion") {
+  if (e.errorName === "CannotDeleteDeployedVersion") {
     message = "The site version to delete is live and cannot be deleted";
     tip = "Run the `site version set` command to change the live site version";
-  } else if (e.errorName === "InvalidWebsiteVersion") {
+  } else if (e.errorName === "InvalidVersion") {
     message = "The site version is invalid and must be a valid SemVer string";
-  } else if (e.errorName === "WebsiteVersionAlreadyExists") {
+  } else if (e.errorName === "VersionAlreadyExists") {
     message = "The site version already exists";
-  } else if (e.errorName === "WebsiteVersionNotFound") {
+  } else if (e.errorName === "VersionNotFound") {
     message = "The site version could not be found";
   }
 

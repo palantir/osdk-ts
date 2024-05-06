@@ -32,20 +32,36 @@ export async function getObject<T extends OntologyObject>(
   primaryKey: T["$primaryKey"],
   selectedProperties: ReadonlyArray<keyof T> = [],
 ): Promise<Result<T, GetObjectError>> {
-  return wrapResult(async () => {
-    const object = await getObjectV2(
-      createOpenApiRequest(client.stack, client.fetch),
-      client.ontology.metadata.ontologyApiName,
-      objectApiName,
-      primaryKey.toString(),
-      {
-        select: selectedProperties.map(x => x.toString()),
-      },
-    ) as WireOntologyObjectV2<T["$apiName"]>;
+  return wrapResult(
+    async () =>
+      getObjectWithoutErrors(
+        client,
+        objectApiName,
+        primaryKey,
+        selectedProperties,
+      ),
+    e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters),
+  );
+}
 
-    return convertWireToOsdkObject(
-      client,
-      object,
-    ) as unknown as T;
-  }, e => handleGetObjectError(new GetObjectErrorHandler(), e, e.parameters));
+export async function getObjectWithoutErrors<T extends OntologyObject>(
+  client: ClientContext<OntologyDefinition<T["$apiName"]>>,
+  objectApiName: string,
+  primaryKey: T["$primaryKey"],
+  selectedProperties: ReadonlyArray<keyof T> = [],
+): Promise<T> {
+  const object = await getObjectV2(
+    createOpenApiRequest(client.stack, client.fetch),
+    client.ontology.metadata.ontologyApiName,
+    objectApiName,
+    primaryKey.toString(),
+    {
+      select: selectedProperties.map(x => x.toString()),
+    },
+  ) as WireOntologyObjectV2<T["$apiName"]>;
+
+  return convertWireToOsdkObject(
+    client,
+    object,
+  ) as unknown as T;
 }

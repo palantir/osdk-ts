@@ -19,13 +19,10 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/foundry";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  createObjectSet,
-  getWireObjectSet,
-} from "../objectSet/createObjectSet.js";
+import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import type { OsdkObject } from "../OsdkObject.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { WhereClause } from "../query/WhereClause.js";
@@ -53,9 +50,10 @@ class LinkFetcherProxyHandler<Q extends AugmentedObjectTypeDefinition<any, any>>
       return;
     }
 
-    const objectSet = createObjectSet(this.objDef, this.client).where({
-      [this.objDef.primaryKeyApiName]: this.primaryKey,
-    } as WhereClause<Q>).pivotTo(p as string);
+    const objectSet = this.client.objectSetFactory(this.objDef, this.client)
+      .where({
+        [this.objDef.primaryKeyApiName]: this.primaryKey,
+      } as WhereClause<Q>).pivotTo(p as string);
 
     if (!linkDef.multiplicity) {
       return {

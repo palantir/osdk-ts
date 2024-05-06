@@ -29,7 +29,7 @@ export default async function versionSetCommand(
   const clientCtx = createInternalClientContext(foundryUrl, tokenProvider);
 
   if (version) {
-    await thirdPartyApplications.updateWebsiteDeployment(
+    await thirdPartyApplications.deployWebsite(
       clientCtx,
       application,
       { version },

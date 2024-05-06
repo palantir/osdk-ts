@@ -18,7 +18,7 @@ import type { PrimitiveType } from "./ir/index.js";
 
 export function convertIrPrimitiveTypeToTsTypeReference(
   builtin: PrimitiveType,
-) {
+): "string" | "any" | "boolean" | "number" {
   switch (builtin.type) {
     case "rid":
     case "string":

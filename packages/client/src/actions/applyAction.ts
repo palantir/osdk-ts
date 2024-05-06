@@ -15,8 +15,8 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
-import type { DataValue } from "@osdk/foundry";
-import { applyActionV2 } from "@osdk/foundry/OntologiesV2_Action";
+import type { DataValue } from "@osdk/internal.foundry";
+import { applyActionV2 } from "@osdk/internal.foundry/OntologiesV2_Action";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";

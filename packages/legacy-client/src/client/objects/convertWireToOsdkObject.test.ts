@@ -126,8 +126,18 @@ describe("convertWireToOsdkObject", () => {
       MockOntology
     >(client, wireObject);
 
+    const convertedObject = {
+      id: 1,
+      __primaryKey: 1,
+      __apiName: "Task",
+      __rid: "rid.1",
+      $primaryKey: 1,
+      $apiName: "Task",
+      $rid: "rid.1",
+    } as const;
+
     expect(object.toString()).toEqual(
-      JSON.stringify(wireObject, null, 2),
+      JSON.stringify(convertedObject, null, 2),
     );
   });
 
@@ -151,7 +161,10 @@ describe("convertWireToOsdkObject", () => {
         "catch_": 1,
         "__primaryKey": 1,
         "__apiName": "ObjectTypeWithReservedNames",
-        "__rid": "rid.1"
+        "__rid": "rid.1",
+        "$primaryKey": 1,
+        "$apiName": "ObjectTypeWithReservedNames",
+        "$rid": "rid.1"
       }"
     `);
   });

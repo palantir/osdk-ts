@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -11,11 +11,13 @@
   "exports": {
     ".": {
       "types": "./build/types/index.d.ts",
+      "browser": "./build/js/index.browser.mjs",
       "import": "./build/js/index.mjs",
       "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
+      "browser": "./build/js/public/*.browser.mjs",
       "import": "./build/js/public/*.mjs",
       "require": "./build/js/public/*.cjs"
     }

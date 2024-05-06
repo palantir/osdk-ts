@@ -28,8 +28,11 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import type { UnstableClient } from "./UnstableClient.js";
 
-export function createClient(
+export function createClientInternal(
+  objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
   stack: string,
   ontologyRid: string,
   tokenProvider: () => Promise<string> | string,
@@ -39,12 +42,12 @@ export function createClient(
   const clientCtx: MinimalClient = createMinimalClient(
     {
       ontologyRid,
-      userAgent: "", // ontology specific user agent injected elsewhere
     },
     stack,
     tokenProvider,
     options,
     fetchFn,
+    objectSetFactory,
   );
 
   function clientFn<
@@ -58,7 +61,7 @@ export function createClient(
   {
     if (o.type === "object" || o.type === "interface") {
       clientCtx.ontologyProvider.maybeSeed(o);
-      return createObjectSet(o, clientCtx) as any;
+      return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
@@ -68,33 +71,8 @@ export function createClient(
   }
 
   const client: Client = Object.defineProperties<Client>(
-    clientFn as Client,
+    clientFn as UnstableClient,
     {
-      __UNSTABLE_preexistingObjectSet: {
-        get: () =>
-        <T extends ObjectOrInterfaceDefinition>(
-          definition: T,
-          rid: string,
-        ) => {
-          return createObjectSet(
-            definition,
-            clientCtx,
-            {
-              type: "intersect",
-              objectSets: [
-                {
-                  type: "base",
-                  objectType: definition.apiName,
-                },
-                {
-                  type: "reference",
-                  reference: rid,
-                },
-              ],
-            },
-          );
-        },
-      },
       ctx: {
         value: clientCtx,
       },
@@ -103,3 +81,8 @@ export function createClient(
 
   return client;
 }
+
+export const createClient = createClientInternal.bind(
+  undefined,
+  createObjectSet,
+);

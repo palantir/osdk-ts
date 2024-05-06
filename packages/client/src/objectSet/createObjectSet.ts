@@ -18,7 +18,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -74,13 +74,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       objectSet,
     ),
 
-    aggregateOrThrow: (aggregate<Q, any>).bind(
-      globalThis,
-      clientCtx,
-      objectType,
-      objectSet,
-    ),
-
     fetchPage: fetchPageInternal.bind(
       globalThis,
       clientCtx,
@@ -95,15 +88,8 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
 
-    fetchPageOrThrow: fetchPageInternal.bind(
-      globalThis,
-      clientCtx,
-      objectType,
-      objectSet,
-    ) as ObjectSet<Q>["fetchPage"],
-
     where: (clause) => {
-      return createObjectSet(objectType, clientCtx, {
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "filter",
         objectSet: objectSet,
         where: modernToLegacyWhereClause(clause),
@@ -117,7 +103,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     union: (...objectSets) => {
-      return createObjectSet(objectType, clientCtx, {
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "union",
         objectSets: [
           objectSet,
@@ -127,7 +113,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     intersect: (...objectSets) => {
-      return createObjectSet(objectType, clientCtx, {
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "intersect",
         objectSets: [
           objectSet,
@@ -137,29 +123,13 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     },
 
     subtract: (...objectSets) => {
-      return createObjectSet(objectType, clientCtx, {
+      return clientCtx.objectSetFactory(objectType, clientCtx, {
         type: "subtract",
         objectSets: [
           objectSet,
           ...objectSets.map(os => objectSetDefinitions.get(os)!),
         ],
       });
-    },
-
-    subscribe(listener) {
-      // We are going to lazy load subscriptions to reduce initial
-      // bundle sizes.
-      const pendingSubscribe = import("./ObjectSetListenerWebsocket.js").then((
-        mod,
-      ) =>
-        mod.ObjectSetListenerWebsocket.getInstance(clientCtx).subscribe(
-          objectSet,
-          listener,
-        )
-      );
-      return () => {
-        pendingSubscribe.then((subscribe) => subscribe());
-      };
     },
 
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
@@ -208,7 +178,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {
     return () => {
-      return createObjectSet(
+      return clientCtx.objectSetFactory(
         objectType,
         clientCtx,
         {

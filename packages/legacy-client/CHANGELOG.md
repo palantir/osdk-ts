@@ -1,5 +1,13 @@
 # @osdk/legacy-client
 
+## 2.2.1
+
+### Patch Changes
+
+- 212f651: Add fetchone, that is get replacement without result wrapper
+- e690399: Fix $rid, $apiName and $primaryKey population
+- 212f651: Deprecate get and add fetchonewitherrors, which functionally is the same
+
 ## 2.2.0
 
 ### Minor Changes
