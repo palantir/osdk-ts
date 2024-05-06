@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/foundry";
+import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {

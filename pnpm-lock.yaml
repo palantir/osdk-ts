@@ -125,9 +125,9 @@ importers:
       '@osdk/examples.basic.sdk':
         specifier: workspace:^
         version: link:../sdk
-      '@osdk/foundry':
+      '@osdk/internal.foundry':
         specifier: workspace:^
-        version: link:../../../packages/foundry
+        version: link:../../../packages/internal.foundry
       pino:
         specifier: ^8.20.0
         version: 8.21.0
@@ -138,6 +138,9 @@ importers:
       '@osdk/cli':
         specifier: workspace:^
         version: link:../../../packages/cli
+      '@osdk/foundry':
+        specifier: workspace:^
+        version: link:../../../packages/foundry
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
@@ -679,12 +682,12 @@ importers:
         specifier: ^8.16.0
         version: 8.16.0
     devDependencies:
-      '@osdk/foundry':
-        specifier: workspace:^
-        version: link:../foundry
       '@osdk/generator':
         specifier: workspace:^
         version: link:../generator
+      '@osdk/internal.foundry':
+        specifier: workspace:^
+        version: link:../internal.foundry
       '@osdk/shared.test':
         specifier: workspace:^
         version: link:../shared.test
@@ -789,6 +792,15 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/foundry.security':
+        specifier: workspace:*
+        version: link:../foundry.security
+      '@osdk/foundry.thirdpartyapplications':
+        specifier: workspace:*
+        version: link:../foundry.thirdpartyapplications
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
@@ -873,6 +885,51 @@ importers:
       '@types/yargs':
         specifier: ^17.0.29
         version: 17.0.32
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.common:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.security:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/foundry.thirdpartyapplications:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/foundry.common':
+        specifier: workspace:*
+        version: link:../foundry.common
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -970,6 +1027,19 @@ importers:
       vitest:
         specifier: ^1.5.2
         version: 1.5.2
+
+  packages/internal.foundry:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/shared.net':
+        specifier: workspace:^
+        version: link:../shared.net
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
 
   packages/legacy-client:
     dependencies:

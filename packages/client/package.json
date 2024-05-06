@@ -43,8 +43,8 @@
     "ws": "^8.16.0"
   },
   "devDependencies": {
-    "@osdk/foundry": "workspace:^",
     "@osdk/generator": "workspace:^",
+    "@osdk/internal.foundry": "workspace:^",
     "@osdk/shared.test": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
@@ -76,7 +76,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.804.0",
+        "minVersion": "1.824.0",
         "maxVersion": "1.x.x"
       }
     }

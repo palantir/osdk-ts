@@ -18,13 +18,18 @@ import fs from "node:fs/promises";
 import * as Prettier from "prettier";
 
 export async function writeCode(filePath: string, code: string) {
-  let formattedCode;
+  return await fs.writeFile(filePath, await formatCode(filePath, code));
+}
+
+export async function formatCode(filePath: string, code: string) {
   try {
-    formattedCode = await Prettier.format(code, { parser: "typescript" });
+    return await Prettier.format(code, {
+      parser: "typescript",
+      filepath: filePath,
+    });
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error("failed to format code: " + filePath);
-    formattedCode = code;
+    return code;
   }
-  return await fs.writeFile(filePath, formattedCode);
 }

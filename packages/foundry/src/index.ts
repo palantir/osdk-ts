@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export type * from "./generated/components.js";
-export {};
+export * from "@osdk/foundry.common";
+export * as Security from "@osdk/foundry.security";
+export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";

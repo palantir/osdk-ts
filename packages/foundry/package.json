@@ -1,6 +1,7 @@
 {
   "name": "@osdk/foundry",
-  "version": "0.2.0",
+  "private": true,
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -10,12 +11,14 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs"
+      "import": "./build/js/index.mjs",
+      "require": "./build/js/index.cjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs"
+      "import": "./build/js/public/*.mjs",
+      "require": "./build/js/public/*.cjs"
     }
   },
   "scripts": {
@@ -27,6 +30,9 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:^",
+    "@osdk/foundry.common": "workspace:*",
+    "@osdk/foundry.security": "workspace:*",
+    "@osdk/foundry.thirdpartyapplications": "workspace:*",
     "@osdk/shared.net": "workspace:^"
   },
   "devDependencies": {
@@ -43,12 +49,13 @@
     "templates",
     "*.d.ts"
   ],
+  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.804.0",
+        "minVersion": "1.824.0",
         "maxVersion": "1.x.x"
       }
     }

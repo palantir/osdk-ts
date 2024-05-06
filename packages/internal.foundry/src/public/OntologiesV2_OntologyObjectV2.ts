@@ -213,7 +213,6 @@ const _aggregateObjectsV2: $OmniMethod<
     $queryParams?: {
       artifactRepository?: $C.ArtifactRepositoryRid;
       packageName?: $C.SdkPackageName;
-      preview?: $C.PreviewMode;
     },
   ) => Promise<$C.AggregateObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/objects/{1}/aggregate", 3];
@@ -235,7 +234,6 @@ export function aggregateObjectsV2(
     $queryParams?: {
       artifactRepository?: $C.ArtifactRepositoryRid;
       packageName?: $C.SdkPackageName;
-      preview?: $C.PreviewMode;
     },
   ]
 ): Promise<$C.AggregateObjectsResponseV2> {

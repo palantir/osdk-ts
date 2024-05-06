@@ -46,7 +46,7 @@ const legacyPackages = [
 ];
 
 const esmOnlyPackages = [
-  "@osdk/foundry",
+  "@osdk/internal.foundry",
   "@osdk/foundry-generator",
   "@osdk/client",
   "@osdk/cli.*",
@@ -348,8 +348,7 @@ export default {
       includePackages: ["@osdk/internal.*"],
       options: {
         file: "README.md",
-        template: `
-# WARNING
+        template: `# WARNING
 
 This is an internal only package.
 

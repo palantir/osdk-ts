@@ -19,8 +19,8 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { getObjectTypeV2 } from "@osdk/foundry/OntologiesV2_ObjectTypeV2";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/foundry/types";
+import { getObjectTypeV2 } from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
