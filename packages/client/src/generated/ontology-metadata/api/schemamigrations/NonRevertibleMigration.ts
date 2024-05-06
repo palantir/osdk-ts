@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,19 @@
  */
 
 import type { InitializePatchesMigration } from "./InitializePatchesMigration.js";
+import type { PermanentlyDeletePatchesMigration } from "./PermanentlyDeletePatchesMigration.js";
 export interface NonRevertibleMigration_initializePatches {
   type: "initializePatches";
   initializePatches: InitializePatchesMigration;
 }
+
+export interface NonRevertibleMigration_permanentlyDeletePatches {
+  type: "permanentlyDeletePatches";
+  permanentlyDeletePatches: PermanentlyDeletePatchesMigration;
+}
 /**
  * Migration that cannot be reverted in future, this migration type implies that all migrations before it will be checkpointed.
  */
-export type NonRevertibleMigration = NonRevertibleMigration_initializePatches;
+export type NonRevertibleMigration =
+  | NonRevertibleMigration_initializePatches
+  | NonRevertibleMigration_permanentlyDeletePatches;

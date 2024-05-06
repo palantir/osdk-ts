@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,6 @@
 export type { BuilderEntityProvenance } from "./BuilderEntityProvenance.js";
 export type { EntityProvenance } from "./EntityProvenance.js";
 export type { EntityProvenanceSource } from "./EntityProvenanceSource.js";
+export type { MarketplaceBlockSetInstallationRid } from "./MarketplaceBlockSetInstallationRid.js";
 export type { MarketplaceEntityProvenance } from "./MarketplaceEntityProvenance.js";
-export type { MarketplaceInstallationRid } from "./MarketplaceInstallationRid.js";
 export type { OntologyMetadataAppEntityProvenance } from "./OntologyMetadataAppEntityProvenance.js";

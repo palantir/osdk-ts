@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import type { LongListValue } from "./LongListValue.js";
 import type { LongValue } from "./LongValue.js";
 import type { MarkingListValue } from "./MarkingListValue.js";
 import type { MarkingValue } from "./MarkingValue.js";
+import type { MediaReferenceValue } from "./MediaReferenceValue.js";
 import type { NullValue } from "./NullValue.js";
 import type { ObjectLocatorListValue } from "./ObjectLocatorListValue.js";
 import type { ObjectLocatorValue } from "./ObjectLocatorValue.js";
@@ -139,6 +140,11 @@ export interface DataValue_markingList {
   type: "markingList";
   markingList: MarkingListValue;
 }
+
+export interface DataValue_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferenceValue;
+}
 export type DataValue =
   | DataValue_boolean
   | DataValue_booleanList
@@ -160,4 +166,5 @@ export type DataValue =
   | DataValue_attachment
   | DataValue_attachmentList
   | DataValue_marking
-  | DataValue_markingList;
+  | DataValue_markingList
+  | DataValue_mediaReference;

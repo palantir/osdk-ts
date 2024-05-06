@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,6 @@
  * Range of one bucket in RangeBucketing.
  */
 export interface BucketRange {
-  fromValue: string | undefined;
-  toValue: string | undefined;
+  fromValue: number | undefined;
+  toValue: number | undefined;
 }

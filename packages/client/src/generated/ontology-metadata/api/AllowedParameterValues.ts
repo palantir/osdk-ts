@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import type { ParameterCbacMarkingOrEmpty } from "./ParameterCbacMarkingOrEmpty.
 import type { ParameterDateTimeRangeOrEmpty } from "./ParameterDateTimeRangeOrEmpty.js";
 import type { ParameterFreeTextOrEmpty } from "./ParameterFreeTextOrEmpty.js";
 import type { ParameterMandatoryMarkingOrEmpty } from "./ParameterMandatoryMarkingOrEmpty.js";
+import type { ParameterMediaReferenceOrEmpty } from "./ParameterMediaReferenceOrEmpty.js";
 import type { ParameterMultipassGroupOrEmpty } from "./ParameterMultipassGroupOrEmpty.js";
 import type { ParameterMultipassUserOrEmpty } from "./ParameterMultipassUserOrEmpty.js";
 import type { ParameterObjectListOrEmpty } from "./ParameterObjectListOrEmpty.js";
@@ -99,6 +100,11 @@ export interface AllowedParameterValues_mandatoryMarking {
   mandatoryMarking: ParameterMandatoryMarkingOrEmpty;
 }
 
+export interface AllowedParameterValues_mediaReference {
+  type: "mediaReference";
+  mediaReference: ParameterMediaReferenceOrEmpty;
+}
+
 export interface AllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
@@ -118,4 +124,5 @@ export type AllowedParameterValues =
   | AllowedParameterValues_attachment
   | AllowedParameterValues_cbacMarking
   | AllowedParameterValues_mandatoryMarking
+  | AllowedParameterValues_mediaReference
   | AllowedParameterValues_redacted;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import type { NumberFormatNotation } from "./NumberFormatNotation.js";
 export interface NumberFormatBase {
   useGrouping: boolean | undefined;
   convertNegativeToParenthesis: boolean | undefined;
-  minimumIntegerDigits: string | undefined;
-  minimumFractionDigits: string | undefined;
-  maximumFractionDigits: string | undefined;
-  minimumSignificantDigits: string | undefined;
-  maximumSignificantDigits: string | undefined;
+  minimumIntegerDigits: number | undefined;
+  minimumFractionDigits: number | undefined;
+  maximumFractionDigits: number | undefined;
+  minimumSignificantDigits: number | undefined;
+  maximumSignificantDigits: number | undefined;
   notation: NumberFormatNotation | undefined;
 }

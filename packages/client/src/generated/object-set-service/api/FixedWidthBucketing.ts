@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import type { BucketCountLimit } from "./BucketCountLimit.js";
  * Bucketing dividing objects into buckets with fixed width.
  */
 export interface FixedWidthBucketing {
-  bucketWidth: string;
+  bucketWidth: number;
   maxBuckets: BucketCountLimit | undefined;
   excludeEmptyBuckets: boolean | undefined;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 import type { DataType } from "../DataType.js";
+import type { TypeGroupRid } from "../TypeGroupRid.js";
 import type { Visibility } from "../Visibility.js";
 import type { FullTextStringPredicate } from "./FullTextStringPredicate.js";
 import type { ObjectTypeExternalMappingFilter } from "./ObjectTypeExternalMappingFilter.js";
@@ -65,6 +66,11 @@ export interface ObjectTypeClause_propertyTypeDisplayName {
   propertyTypeDisplayName: FullTextStringPredicate;
 }
 
+export interface ObjectTypeClause_propertyTypeAlias {
+  type: "propertyTypeAlias";
+  propertyTypeAlias: FullTextStringPredicate;
+}
+
 export interface ObjectTypeClause_objectTypeId {
   type: "objectTypeId";
   objectTypeId: FullTextStringPredicate;
@@ -73,6 +79,11 @@ export interface ObjectTypeClause_objectTypeId {
 export interface ObjectTypeClause_objectTypeDisplayName {
   type: "objectTypeDisplayName";
   objectTypeDisplayName: FullTextStringPredicate;
+}
+
+export interface ObjectTypeClause_objectTypeAlias {
+  type: "objectTypeAlias";
+  objectTypeAlias: FullTextStringPredicate;
 }
 
 export interface ObjectTypeClause_objectTypeDescription {
@@ -94,6 +105,11 @@ export interface ObjectTypeClause_objectTypeExternalMapping {
   type: "objectTypeExternalMapping";
   objectTypeExternalMapping: ObjectTypeExternalMappingFilter;
 }
+
+export interface ObjectTypeClause_objectTypeTypeGroupRids {
+  type: "objectTypeTypeGroupRids";
+  objectTypeTypeGroupRids: Array<TypeGroupRid>;
+}
 /**
  * Data structure to represent search query for ObjectTypes. Supports filters for various ObjectType features.
  */
@@ -107,9 +123,12 @@ export type ObjectTypeClause =
   | ObjectTypeClause_propertyTypeId
   | ObjectTypeClause_propertyTypeDescription
   | ObjectTypeClause_propertyTypeDisplayName
+  | ObjectTypeClause_propertyTypeAlias
   | ObjectTypeClause_objectTypeId
   | ObjectTypeClause_objectTypeDisplayName
+  | ObjectTypeClause_objectTypeAlias
   | ObjectTypeClause_objectTypeDescription
   | ObjectTypeClause_visibility
   | ObjectTypeClause_status
-  | ObjectTypeClause_objectTypeExternalMapping;
+  | ObjectTypeClause_objectTypeExternalMapping
+  | ObjectTypeClause_objectTypeTypeGroupRids;

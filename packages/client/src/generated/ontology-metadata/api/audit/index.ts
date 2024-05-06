@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -206,6 +206,8 @@ export type { OntologyPermissionServiceGetBulkActionTypePermissionsForUsersReque
 export type { OntologyPermissionServiceGetBulkActionTypePermissionsForUsersResultParams } from "./OntologyPermissionServiceGetBulkActionTypePermissionsForUsersResultParams.js";
 export type { OntologyPermissionServiceGetBulkActionTypePermissionsRequestParams } from "./OntologyPermissionServiceGetBulkActionTypePermissionsRequestParams.js";
 export type { OntologyPermissionServiceGetBulkActionTypePermissionsResultParams } from "./OntologyPermissionServiceGetBulkActionTypePermissionsResultParams.js";
+export type { OntologyPermissionServiceGetBulkInterfaceTypePermissionsRequestParams } from "./OntologyPermissionServiceGetBulkInterfaceTypePermissionsRequestParams.js";
+export type { OntologyPermissionServiceGetBulkInterfaceTypePermissionsResultParams } from "./OntologyPermissionServiceGetBulkInterfaceTypePermissionsResultParams.js";
 export type { OntologyPermissionServiceGetBulkLinkTypePermissionsForUsersRequestParams } from "./OntologyPermissionServiceGetBulkLinkTypePermissionsForUsersRequestParams.js";
 export type { OntologyPermissionServiceGetBulkLinkTypePermissionsForUsersResultParams } from "./OntologyPermissionServiceGetBulkLinkTypePermissionsForUsersResultParams.js";
 export type { OntologyPermissionServiceGetBulkLinkTypePermissionsRequestParams } from "./OntologyPermissionServiceGetBulkLinkTypePermissionsRequestParams.js";
@@ -222,6 +224,8 @@ export type { OntologyPermissionServiceGetCreateOntologyPermissionsRequestParams
 export type { OntologyPermissionServiceGetCreateOntologyPermissionsResultParams } from "./OntologyPermissionServiceGetCreateOntologyPermissionsResultParams.js";
 export type { OntologyPermissionServiceGetEditorsForObjectTypeRequestParams } from "./OntologyPermissionServiceGetEditorsForObjectTypeRequestParams.js";
 export type { OntologyPermissionServiceGetEditorsForObjectTypeResultParams } from "./OntologyPermissionServiceGetEditorsForObjectTypeResultParams.js";
+export type { OntologyPermissionServiceGetInterfaceTypePermissionsRequestParams } from "./OntologyPermissionServiceGetInterfaceTypePermissionsRequestParams.js";
+export type { OntologyPermissionServiceGetInterfaceTypePermissionsResultParams } from "./OntologyPermissionServiceGetInterfaceTypePermissionsResultParams.js";
 export type { OntologyPermissionServiceGetLinkTypePermissionsRequestParams } from "./OntologyPermissionServiceGetLinkTypePermissionsRequestParams.js";
 export type { OntologyPermissionServiceGetLinkTypePermissionsResultParams } from "./OntologyPermissionServiceGetLinkTypePermissionsResultParams.js";
 export type { OntologyPermissionServiceGetObjectTypePermissionsRequestParams } from "./OntologyPermissionServiceGetObjectTypePermissionsRequestParams.js";

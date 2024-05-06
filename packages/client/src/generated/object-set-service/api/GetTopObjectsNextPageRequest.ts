@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import type { ObjectTypeId } from "./ObjectTypeId.js";
 import type { PageToken } from "./PageToken.js";
 import type { PropertySetV2 } from "./PropertySetV2.js";
 import type { ReferenceSigningOptions } from "./ReferenceSigningOptions.js";
+import type { ResponseOptions } from "./ResponseOptions.js";
 import type { ResultOrdering } from "./ResultOrdering.js";
 export interface GetTopObjectsNextPageRequest {
   objectSet: ObjectSet;
@@ -29,8 +30,9 @@ export interface GetTopObjectsNextPageRequest {
   runtimeDerivedProperties: Record<ObjectTypeId, DerivedProperties>;
   propertySet: PropertySetV2;
   resultOrdering: ResultOrdering;
-  pageSize: string;
+  pageSize: number;
   pageToken: PageToken;
   referenceSigningOptions: ReferenceSigningOptions | undefined;
+  responseOptions: ResponseOptions | undefined;
   objectLoadingResponseOptions: ObjectLoadingResponseOptions | undefined;
 }

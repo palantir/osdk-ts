@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,4 +19,4 @@
  * public API, a dedicated float type is necessary so that Actions can distinguish double property types
  * from float property types, as defined in OMS.
  */
-export type InternalFloatPropertyValue = string;
+export type InternalFloatPropertyValue = number;

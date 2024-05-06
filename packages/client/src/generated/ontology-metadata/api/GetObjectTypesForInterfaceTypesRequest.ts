@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ import type { InterfaceTypeRid } from "./InterfaceTypeRid.js";
 import type { OntologyVersion } from "./OntologyVersion.js";
 
 /**
- * Request to get a map of interfaces to the set of object types that implement the interface.
+ * Request to get a map of interfaces to the set of object types that implement the interface, directly and
+ * indirectly.
  */
 export interface GetObjectTypesForInterfaceTypesRequest {
   ontologyVersion: OntologyVersion | undefined;

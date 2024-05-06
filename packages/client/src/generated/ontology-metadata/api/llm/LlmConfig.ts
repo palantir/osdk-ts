@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import type { LanguageModel } from "./LanguageModel.js";
  * This is used to override the default settings used to query the LLM for optimal performance.
  */
 export interface LlmConfig {
-  maxTokens: string | undefined;
-  temperature: string | undefined;
+  maxTokens: number | undefined;
+  temperature: number | undefined;
   languageModel: LanguageModel | undefined;
 }
