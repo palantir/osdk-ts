@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { AggregationGroupByV2, AggregationRangeV2 } from "@osdk/foundry";
+import type {
+  AggregationGroupByV2,
+  AggregationRangeV2,
+} from "@osdk/internal.foundry";
 import {
   DurationMapping,
   type GroupByRange,

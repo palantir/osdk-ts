@@ -305,6 +305,39 @@ describe("OsdkObjectSet", () => {
     expect(result.type).toEqual("ok");
   });
 
+  it("supports select methods - fetchOneWithErrors", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockFetchResponse(fetch, getMockTodoObject());
+    const result = await os.select(["id", "body", "complete"])
+      .fetchOneWithErrors("123");
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      `${baseUrl}Ontology/objects/Todo/123?select=id&select=body&select=complete`,
+      {
+        method: "GET",
+        body: undefined,
+        headers: expect.anything(),
+      },
+    );
+    expect(result.type).toEqual("ok");
+  });
+
+  it("supports select methods - fetchOne", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockFetchResponse(fetch, getMockTodoObject());
+    const result = await os.select(["id", "body", "complete"])
+      .fetchOne("123");
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      `${baseUrl}Ontology/objects/Todo/123?select=id&select=body&select=complete`,
+      {
+        method: "GET",
+        body: undefined,
+        headers: expect.anything(),
+      },
+    );
+  });
+
   it("supports round-trip of circular links", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockFetchResponse(fetch, getMockTodoObject());
@@ -323,6 +356,52 @@ describe("OsdkObjectSet", () => {
 
     mockObjectPage([getMockTodoObject()]);
     const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
+
+    if (!isOk(linkedTodosResponse)) {
+      expect.fail("linked todos response was not ok");
+    }
+
+    expect(linkedTodosResponse.value.length).toEqual(1);
+  });
+
+  it("supports round-trip of circular links -fetchOneWithErrors", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockFetchResponse(fetch, getMockTodoObject());
+    const todoResponse = await os.fetchOneWithErrors("1");
+
+    if (!isOk(todoResponse)) {
+      expect.fail("todo response was not ok");
+    }
+
+    mockObjectPage([getMockTaskObject()]);
+    const taskResponse = await todoResponse.value.linkedTask
+      .fetchOneWithErrors();
+
+    if (!isOk(taskResponse)) {
+      expect.fail("task response was not ok");
+    }
+
+    mockObjectPage([getMockTodoObject()]);
+    const linkedTodosResponse = await taskResponse.value.linkedTodos.all();
+
+    if (!isOk(linkedTodosResponse)) {
+      expect.fail("linked todos response was not ok");
+    }
+
+    expect(linkedTodosResponse.value.length).toEqual(1);
+  });
+
+  it("supports round-trip of circular links -fetchOne", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockFetchResponse(fetch, getMockTodoObject());
+    const todoResponse = await os.fetchOne("1");
+
+    mockObjectPage([getMockTaskObject()]);
+    const taskResponse = await todoResponse.linkedTask
+      .fetchOne();
+
+    mockObjectPage([getMockTodoObject()]);
+    const linkedTodosResponse = await taskResponse.linkedTodos.all();
 
     if (!isOk(linkedTodosResponse)) {
       expect.fail("linked todos response was not ok");
@@ -502,6 +581,22 @@ describe("OsdkObjectSet", () => {
     await todo2.linkedTask.get();
     expect(fetch1).toHaveBeenCalledOnce();
     expect(fetch2).toHaveBeenCalledOnce();
+
+    await todo1.linkedTask.fetchOneWithErrors();
+    expect(fetch1).toHaveBeenCalledTimes(2);
+    expect(fetch2).toHaveBeenCalledTimes(1);
+
+    await todo2.linkedTask.fetchOneWithErrors();
+    expect(fetch1).toHaveBeenCalledTimes(2);
+    expect(fetch2).toHaveBeenCalledTimes(2);
+
+    await todo1.linkedTask.fetchOne();
+    expect(fetch1).toHaveBeenCalledTimes(3);
+    expect(fetch2).toHaveBeenCalledTimes(2);
+
+    await todo2.linkedTask.fetchOne();
+    expect(fetch1).toHaveBeenCalledTimes(3);
+    expect(fetch2).toHaveBeenCalledTimes(3);
   });
 
   function mockObjectPage(

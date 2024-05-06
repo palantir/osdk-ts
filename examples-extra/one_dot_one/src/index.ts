@@ -14,4 +14,9 @@
  * limitations under the License.
  */
 
-export { FoundryClient, PublicClientAuth } from "./generatedNoCheck/index.js";
+export {
+  FoundryClient,
+  LocalDate,
+  PublicClientAuth,
+} from "./generatedNoCheck/index.js";
+export * from "./generatedNoCheck/ontology/objects/index.js";

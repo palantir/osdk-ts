@@ -16,45 +16,36 @@
 
 import type {
   ActionDefinition,
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
-import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
-export interface Client {
-  <
-    Q extends
-      | (ObjectTypeDefinition<any, any> & VersionBound<any>)
-      | (InterfaceDefinition<any, any> & VersionBound<any>)
-      | ActionDefinition<any, any, any>,
-  >(
-    o: Q extends VersionBound<infer V> ? (
-        SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
-          : Q & {
-            [ErrorMessage]:
-              `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
-          }
-      )
-      : Q,
-  ): Q extends ObjectTypeDefinition<any, any> ? ObjectSet<Q>
-    : Q extends InterfaceDefinition<any, any> ? MinimalObjectSet<Q>
-    : Q extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<Q>
-    : never;
+export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
+    SatisfiesSemver<V, MaxOsdkVersion> extends true ? Q
+      : Q & {
+        [ErrorMessage]:
+          `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
+      }
+  )
+  : Q;
 
-  __UNSTABLE_preexistingObjectSet<T extends ObjectOrInterfaceDefinition>(
-    type: T,
-    rid: string,
-  ): ObjectSet<T>;
+export interface Client {
+  <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(
+    o: CheckVersionBound<Q>,
+  ): ObjectSet<Q>;
+
+  <Q extends ActionDefinition<any, any, any>>(
+    o: CheckVersionBound<Q>,
+  ): ActionSignatureFromDef<Q>;
 
   ctx: unknown;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "0.16.0";
+const MaxOsdkVersion = "0.17.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");

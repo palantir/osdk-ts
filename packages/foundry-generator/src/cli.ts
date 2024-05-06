@@ -18,11 +18,12 @@ import { findUp } from "find-up";
 import fs from "node:fs/promises";
 import * as path from "node:path";
 import * as process from "node:process";
-import { parse } from "yaml";
+import { parse as parseYaml } from "yaml";
 import yargs from "yargs";
 import type { Arguments, Argv, CommandModule } from "yargs";
 import { hideBin } from "yargs/helpers";
 import { generatePlatformSdk } from "./generatePlatformSdk.js";
+import { generatePlatformSdkV2 } from "./generatePlatformSdkv2.js";
 import type { ApiSpec } from "./ir/index.js";
 import { updateSls } from "./updateSls.js";
 
@@ -36,6 +37,7 @@ export async function cli(args: string[] = process.argv) {
 }
 
 export interface Options {
+  v2: boolean;
   inputFile: string;
   manifestFile: string;
   outputDir: string;
@@ -50,6 +52,7 @@ export class GenerateCommand implements CommandModule<{}, Options> {
 
   public builder(args: Argv): Argv<Options> {
     return args
+      .option("v2", { type: "boolean", default: false })
       .positional("inputFile", {
         describe: "The location of the API IR",
         type: "string",
@@ -80,24 +83,37 @@ export class GenerateCommand implements CommandModule<{}, Options> {
     const irSpecRead = await fs.readFile(`${input}`, { encoding: "utf8" });
     const irSpec: ApiSpec = JSON.parse(irSpecRead);
 
-    const manifestRead = await fs.readFile(`${args.manifestFile}`, {
-      encoding: "utf8",
-    });
-    const manifest = parse(manifestRead);
-
-    await generatePlatformSdk(irSpec, output);
-
-    // this updates the foundry package.json with the correct versions
-    await updateSls(manifest, output);
-
-    // but right now we arent using that we are bundling it into client so we need to
-    // manually update client too
-    const pnpmWorkspaceFile = await findUp("pnpm-workspace.yaml", {
-      cwd: output,
-    });
-    await updateSls(
-      manifest,
-      path.join(path.dirname(pnpmWorkspaceFile!), "packages", "client", "src"),
+    const manifest = parseYaml(
+      await fs.readFile(`${args.manifestFile}`, {
+        encoding: "utf8",
+      }),
     );
+
+    if (args.v2) {
+      const pkgDirs = await generatePlatformSdkV2(irSpec, output);
+      for (const pkgDir of pkgDirs) {
+        await updateSls(manifest, pkgDir);
+      }
+    } else {
+      await generatePlatformSdk(irSpec, output);
+
+      // this updates the foundry package.json with the correct versions
+      await updateSls(manifest, output);
+
+      // but right now we arent using that we are bundling it into client so we need to
+      // manually update client too
+      const pnpmWorkspaceFile = await findUp("pnpm-workspace.yaml", {
+        cwd: output,
+      });
+      await updateSls(
+        manifest,
+        path.join(
+          path.dirname(pnpmWorkspaceFile!),
+          "packages",
+          "client",
+          "src",
+        ),
+      );
+    }
   };
 }

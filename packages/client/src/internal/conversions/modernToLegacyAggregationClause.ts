@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AggregationV2 } from "@osdk/foundry";
+import type { AggregationV2 } from "@osdk/internal.foundry";
 import type { AggregationClause } from "../../query/index.js";
 
 export function modernToLegacyAggregationClause<

@@ -15,17 +15,17 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
 import {
   getObjectTypeV2,
   listOutgoingLinkTypesV2,
-} from "@osdk/foundry/OntologiesV2_ObjectTypeV2";
-import { listInterfaceTypes } from "@osdk/foundry/OntologiesV2_OntologyObjectV2";
+} from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
+import { listInterfaceTypes } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
 import type {
   LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
   ObjectTypeFullMetadata,
-} from "@osdk/foundry/types";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+} from "@osdk/internal.foundry/types";
 import type { ConjureContext } from "conjure-lite";
 import invariant from "tiny-invariant";
 import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
@@ -99,6 +99,7 @@ export async function loadFullObjectMetadata(
 
   const full: ObjectTypeFullMetadata = {
     implementsInterfaces: interfaceTypes.data.map(i => i.apiName),
+    implementsInterfaces2: {}, // FIXME(interfaces)
     linkTypes,
     objectType,
     sharedPropertyTypeMapping,

@@ -1,4 +1,4 @@
-import { createClient } from "@osdk/client";
+import { createClient } from "@osdk/client/unstable-do-not-use";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
 import { Ontology } from "./generatedNoCheck2";

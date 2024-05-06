@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectSetListener, Osdk, PageResult } from "@osdk/client";
-import { createClient } from "@osdk/client";
+import type { Osdk, PageResult } from "@osdk/client";
+import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
+import { createClient } from "@osdk/client/unstable-do-not-use";
 import {
   assignEmployee1,
   BoundariesUsState,
@@ -25,7 +26,8 @@ import {
   Venture,
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
-import * as LanguageModel from "@osdk/foundry/Models_LanguageModel";
+import * as Foundry from "@osdk/foundry";
+import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
 import { pino } from "pino";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
@@ -56,6 +58,11 @@ const testSubscriptions = true;
 
 async function runTests() {
   try {
+    const myUser = await Foundry.Security.User.meUsers(client.ctx as any, {
+      preview: true,
+    });
+    console.log("User", myUser!.email);
+
     if (runOld) {
       await fetchEmployeePage(client);
       await fetchEmployeePageByAdUsername(client, "fish");

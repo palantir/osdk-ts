@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+export type { Client } from "./Client.js";
+export { createClient } from "./createClient.js";
+
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
 export type {
@@ -24,11 +27,7 @@ export type {
 } from "./actions/Actions.js";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
-export type { Client } from "./Client.js";
-export { createClient } from "./createClient.js";
-export { augment } from "./object/fetchPage.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
-export type { ObjectSetListener } from "./objectSet/ObjectSetListener.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";

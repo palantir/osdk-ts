@@ -34,13 +34,13 @@ export async function cli(args: string[] = process.argv) {
   try {
     return await base
       .middleware(logConfigFileMiddleware)
+      .command(site)
       .command({
         command: "unstable",
         aliases: ["experimental"],
         describe: "Unstable commands",
         builder: async (argv) => {
           return argv
-            .command(site)
             .command(typescript)
             .command(auth)
             .demandCommand();

@@ -19,8 +19,8 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { getObjectTypeV2 } from "@osdk/foundry/OntologiesV2_ObjectTypeV2";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/foundry/types";
+import { getObjectTypeV2 } from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry/types";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
@@ -164,9 +164,11 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
     listener: ObjectSetListener<Q>,
   ): Promise<() => void> {
-    // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
-    // will not be needed after our minimum version is 19 or greater.
-    globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
+    if (process.env.TARGET !== "browser") {
+      // Node 18 does not expose 'crypto' on globalThis, so we need to do it ourselves. This
+      // will not be needed after our minimum version is 19 or greater.
+      globalThis.crypto ??= (await import("node:crypto")).webcrypto as any;
+    }
     const sub: Subscription<Q> = {
       listener: fillOutListener<Q>(listener),
       objectSet,
