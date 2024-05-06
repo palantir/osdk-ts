@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet as WireObjectSet } from "@osdk/foundry";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { createObjectSet } from "./createObjectSet.js";
