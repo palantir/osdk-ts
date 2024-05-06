@@ -112,7 +112,6 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
 
   const objectProto = Object.defineProperties({}, {
     $link: {
-      /** @deprecated */
       get: function() {
         return new Proxy(
           {},
