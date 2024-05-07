@@ -28,8 +28,9 @@ import {
   fetchPageWithErrorsInternal,
   type SelectArg,
 } from "../object/fetchPage.js";
-import { fetchSingle } from "../object/fetchSingle.js";
+import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import { aggregate } from "../object/index.js";
+import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
@@ -200,6 +201,32 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         ) as Osdk<Q>;
       }
       : undefined) as ObjectSet<Q>["fetchOne"],
+
+    fetchOneWithErrors: (isObjectTypeDefinition(objectType)
+      ? async <A extends SelectArg<Q>>(
+        primaryKey: Q extends ObjectTypeDefinition<any>
+          ? PropertyValueClientToWire[Q["primaryKeyType"]]
+          : never,
+        options: A,
+      ) => {
+        const withPk: WireObjectSet = {
+          type: "filter",
+          objectSet: objectSet,
+          where: {
+            type: "eq",
+            field: objectType.primaryKeyApiName,
+            value: primaryKey,
+          },
+        };
+
+        return await fetchSingleWithErrors(
+          clientCtx,
+          objectType,
+          options,
+          withPk,
+        ) as Result<Osdk<Q>>;
+      }
+      : undefined) as ObjectSet<Q>["fetchOneWithErrors"],
   };
 
   function createSearchAround<L extends LinkNames<Q>>(link: L) {

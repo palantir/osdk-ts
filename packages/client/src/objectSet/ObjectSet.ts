@@ -106,4 +106,11 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
       options?: SelectArg<Q, L>,
     ) => Promise<Osdk<Q, L>>
     : never;
+
+  fetchOneWithErrors: Q extends ObjectTypeDefinition<any>
+    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
+      options?: SelectArg<Q, L>,
+    ) => Promise<Result<Osdk<Q, L>>>
+    : never;
 }

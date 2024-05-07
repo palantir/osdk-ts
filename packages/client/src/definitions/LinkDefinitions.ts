@@ -21,6 +21,7 @@ import type {
   ObjectTypeLinkKeysFrom2,
 } from "@osdk/api";
 import type { SelectArg, SelectArgToKeys } from "../object/fetchPage.js";
+import type { Result } from "../object/Result.js";
 import type { ObjectSet } from "../objectSet/ObjectSet.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
@@ -76,5 +77,23 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
     DefaultToFalse<A["includeRid"]> extends false
       ? Osdk<T, SelectArgToKeys<T, A>>
       : Osdk<T, SelectArgToKeys<T, A> | "$rid">
+  >;
+
+  /** Load the linked object
+   */
+  fetchOneWithErrors: <
+    const A extends SelectArg<
+      T,
+      ObjectOrInterfacePropertyKeysFrom2<T>,
+      boolean
+    >,
+  >(
+    options?: A,
+  ) => Promise<
+    Result<
+      DefaultToFalse<A["includeRid"]> extends false
+        ? Osdk<T, SelectArgToKeys<T, A>>
+        : Osdk<T, SelectArgToKeys<T, A> | "$rid">
+    >
   >;
 }
