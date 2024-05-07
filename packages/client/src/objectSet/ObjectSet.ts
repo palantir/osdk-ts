@@ -92,7 +92,15 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
+  /** @deprecated use fetchOne instead*/
   get: Q extends ObjectTypeDefinition<any>
+    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
+      options?: SelectArg<Q, L>,
+    ) => Promise<Osdk<Q, L>>
+    : never;
+
+  fetchOne: Q extends ObjectTypeDefinition<any>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,

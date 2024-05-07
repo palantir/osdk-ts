@@ -154,8 +154,29 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
+  it("allows fetching by PK from a base object set - fetchOne", async () => {
+    const employee = await client(MockOntology.objects.Employee).fetchOne(
+      stubData.employee1.employeeId,
+    );
+    expectTypeOf<typeof employee>().toMatchTypeOf<
+      Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>
+    >;
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
   it("allows fetching by PK from a base object set with selected properties", async () => {
     const employee = await client(MockOntology.objects.Employee).get(
+      stubData.employee1.employeeId,
+      { select: ["fullName"] },
+    );
+    expectTypeOf<typeof employee>().toEqualTypeOf<
+      Osdk<Employee, "fullName">
+    >;
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
+    const employee = await client(MockOntology.objects.Employee).fetchOne(
       stubData.employee1.employeeId,
       { select: ["fullName"] },
     );
@@ -170,11 +191,25 @@ describe("ObjectSet", () => {
       .toThrow();
   });
 
+  it("throws when fetching by PK with an object that does not exist - fetchOne", async () => {
+    await expect(client(MockOntology.objects.Employee).fetchOne(-1)).rejects
+      .toThrow();
+  });
+
   it("allows fetching by PK from a pivoted object set", async () => {
     const employee = await client(MockOntology.objects.Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
       .pivotTo("peeps").get(stubData.employee1.employeeId);
+
+    expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("allows fetching by PK from a pivoted object set - fetchOne", async () => {
+    const employee = await client(MockOntology.objects.Employee).where({
+      employeeId: stubData.employee2.employeeId,
+    })
+      .pivotTo("peeps").fetchOne(stubData.employee1.employeeId);
 
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
