@@ -27,6 +27,8 @@ export function generateNpmRc({
     ? osdkRegistryUrl
     : osdkRegistryUrl + "/";
   const withoutProtocol = withTrailingSlash.replace(/^https:\/\//, "");
+  const packageScope = osdkPackage.split("/")[0];
+
   return `//${withoutProtocol}:_authToken=\${FOUNDRY_TOKEN}\n`
-    + `${osdkPackage.split("/")[0]}:registry=${withTrailingSlash}\n`;
+    + `${packageScope}:registry=${withTrailingSlash}\n`;
 }
