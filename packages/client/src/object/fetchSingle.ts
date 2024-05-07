@@ -77,21 +77,8 @@ export async function fetchSingleWithErrors<
   >
 > {
   try {
-    const result = await fetchPage(
-      client,
-      objectType,
-      { ...args, pageSize: 1 },
-      objectSet,
-    );
-
-    if (result.data.length !== 1 || result.nextPageToken != null) {
-      throw new PalantirApiError(
-        `Expected a single result but got ${result.data.length} instead${
-          result.nextPageToken != null ? " with nextPageToken set" : ""
-        }`,
-      );
-    }
-    return { value: result.data[0] as any };
+    const result = fetchSingle(client, objectType, args, objectSet);
+    return { value: result as any };
   } catch (e) {
     if (e instanceof Error) {
       return { error: e };

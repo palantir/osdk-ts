@@ -79,7 +79,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
       : Osdk<T, SelectArgToKeys<T, A> | "$rid">
   >;
 
-  /** Load the linked object
+  /** Load the linked object, with a result wrapper
    */
   fetchOneWithErrors: <
     const A extends SelectArg<
