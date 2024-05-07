@@ -43,7 +43,7 @@
     "mytsup": "workspace:^",
     "tsc-absolute": "^1.0.1",
     "tsconfig": "workspace:^",
-    "tsup": "^7.2.0",
+    "tsup": "^8.0.2",
     "turbo": "^1.13.2",
     "turbotree": "^1.0.1",
     "typescript": "^5.4.5",
