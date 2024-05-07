@@ -77,7 +77,7 @@ export async function fetchSingleWithErrors<
   >
 > {
   try {
-    const result = fetchSingle(client, objectType, args, objectSet);
+    const result = await fetchSingle(client, objectType, args, objectSet);
     return { value: result as any };
   } catch (e) {
     if (e instanceof Error) {

@@ -202,7 +202,7 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
-  it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
+  it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
     const employeeResult = await client(MockOntology.objects.Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
