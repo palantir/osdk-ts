@@ -15,4 +15,4 @@
  */
 
 export const USER_AGENT =
-  `typescript-sdk-generator/${process.env.PACKAGE_VERSION}`;
+  `typescript-osdk-generator/${process.env.PACKAGE_VERSION}`;

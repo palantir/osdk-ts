@@ -222,9 +222,9 @@ async function generateSourceFiles(
 // This makes it so that releases don't force us to have to regenerate the code when the version strings change.
 function getUserAgent(version: string) {
   if (version === "dev") {
-    return "typescript-sdk/dev osdk-cli/dev";
+    return "typescript-osdk/dev osdk-cli/dev";
   } else {
-    return `typescript-sdk/${version} ${USER_AGENT}`;
+    return `typescript-osdk/${version} ${USER_AGENT}`;
   }
 }
 
