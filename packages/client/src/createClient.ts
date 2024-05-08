@@ -29,7 +29,6 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import type { UnstableClient } from "./UnstableClient.js";
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
@@ -71,10 +70,11 @@ export function createClientInternal(
   }
 
   const client: Client = Object.defineProperties<Client>(
-    clientFn as UnstableClient,
+    clientFn as Client,
     {
       ctx: {
         value: clientCtx,
+        writable: false,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );

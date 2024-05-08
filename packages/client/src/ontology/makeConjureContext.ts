@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
-import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import {
-  getObjectTypeFullMetadata,
-} from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
+import type { ConjureContext } from "conjure-lite";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export async function loadFullObjectMetadata(
+export function makeConjureContext(
   client: MinimalClient,
-  objtype: string,
-): Promise<ObjectTypeDefinition<any, any> & { rid: string }> {
-  const full = await getObjectTypeFullMetadata(
-    client,
-    client.ontologyRid,
-    objtype,
-    { preview: true },
-  );
-  const ret = wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
-  client.logger?.debug(`END loadFullObjectMetadata(${objtype})`);
-  return { ...ret, rid: full.objectType.rid };
+  servicePath: string,
+): ConjureContext {
+  return {
+    baseUrl: client.stack,
+    servicePath,
+    fetchFn: client.fetch,
+    tokenProvider: async () => await client.tokenProvider(),
+  };
 }
