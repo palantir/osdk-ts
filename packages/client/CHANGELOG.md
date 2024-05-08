@@ -1,5 +1,12 @@
 # @osdk/client
 
+## 0.18.0
+
+### Minor Changes
+
+- d183d92: Deprecated get and added fetchOne as a replacement. They function exactly the same.
+- f810576: Separate unstable client features from regular import
+
 ## 0.17.0
 
 ### Minor Changes
