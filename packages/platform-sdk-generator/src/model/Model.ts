@@ -145,7 +145,7 @@ export class Model {
   async #addNamespace(ns: ir.Namespace) {
     const dir = `${this.#opts.packagePrefix}${
       ns.name === ""
-        ? ".common"
+        ? ".core"
         : `.${ns.name.toLowerCase()}`
     }`;
     const packagePath = path.join(this.#opts.outputDir, dir);
