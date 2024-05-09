@@ -1,5 +1,13 @@
 # @osdk/client
 
+## 0.18.0
+
+### Minor Changes
+
+- d183d92: Deprecated get and added fetchOne as a replacement. They function exactly the same.
+- c68983b: Add fetchOneWithErrors that will add a result wrapper when fetching one object. This wrapper will either contain the data value, or an error if an error was thrown.
+- f810576: Separate unstable client features from regular import
+
 ## 0.17.0
 
 ### Minor Changes
