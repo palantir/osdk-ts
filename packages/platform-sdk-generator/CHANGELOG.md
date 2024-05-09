@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.3.0
+
+### Minor Changes
+
+- e0eb7f8: Prepare foundry platform sdk for shipping
+
 ## 0.2.0
 
 ### Minor Changes
