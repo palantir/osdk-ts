@@ -1013,7 +1013,7 @@ importers:
   packages/legacy-client:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: ^1.7.0
         version: link:../api
       '@osdk/gateway':
         specifier: workspace:^

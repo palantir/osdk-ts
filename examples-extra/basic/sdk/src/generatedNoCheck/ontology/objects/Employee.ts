@@ -8,6 +8,18 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, Ve
   osdkMetadata: typeof $osdkMetadata;
   description: 'An employee';
   implements: ['FooInterface'];
+  interfaceMap: {
+    FooInterface: {
+      name: 'firstName';
+      description: 'email';
+    };
+  };
+  inverseInterfaceMap: {
+    FooInterface: {
+      firstName: 'name';
+      email: 'description';
+    };
+  };
   inverseSpts: {
     firstName: 'name';
     email: 'description';
@@ -44,6 +56,18 @@ export const Employee: Employee = {
   apiName: 'Employee',
   description: 'An employee',
   implements: ['FooInterface'],
+  interfaceMap: {
+    FooInterface: {
+      name: 'firstName',
+      description: 'email',
+    },
+  },
+  inverseInterfaceMap: {
+    FooInterface: {
+      firstName: 'name',
+      email: 'description',
+    },
+  },
   inverseSpts: {
     firstName: 'name',
     email: 'description',

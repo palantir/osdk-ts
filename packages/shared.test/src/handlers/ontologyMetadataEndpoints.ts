@@ -16,6 +16,7 @@
 
 import {
   getInterfaceType,
+  getObjectTypeFullMetadata,
   getObjectTypeV2,
   getOntologyFullMetadata,
   getOutgoingLinkTypeV2,
@@ -142,6 +143,17 @@ export const ontologyMetadataEndpoint = [
       );
 
       return objectType;
+    },
+  ),
+
+  handleOpenApiCall(
+    getObjectTypeFullMetadata,
+    ["ontologyApiName", "objectTypeApiName"],
+    (req) => {
+      return getObjectDef(
+        req.params.ontologyApiName,
+        req.params.objectTypeApiName,
+      );
     },
   ),
 

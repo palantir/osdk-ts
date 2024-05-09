@@ -42,6 +42,13 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
       "implementsInterfaces": [
         "FooInterface",
       ],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "fooSpt": "fullName",
+          },
+        },
+      },
       "linkTypes": [
         {
           "apiName": "peeps",
@@ -108,6 +115,7 @@ exports[`Load Ontologies Metadata > Loads object and action types using only spe
     },
     "Office": {
       "implementsInterfaces": [],
+      "implementsInterfaces2": {},
       "linkTypes": [],
       "objectType": {
         "apiName": "Office",
@@ -197,6 +205,13 @@ exports[`Load Ontologies Metadata > Loads object and action types without link t
       "implementsInterfaces": [
         "FooInterface",
       ],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "fooSpt": "fullName",
+          },
+        },
+      },
       "linkTypes": [],
       "objectType": {
         "apiName": "Employee",

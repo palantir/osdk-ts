@@ -131,13 +131,21 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
 
   // We use the exact same logic for both the interface rep and the underlying rep
   function $as<NEWQ extends ObjectOrInterfaceDefinition<any>>(
-    this: OsdkObject<any> & { $primaryKey: any } & { [UnderlyingObject]: any },
+    this: OsdkObject<any> & { [UnderlyingObject]: any },
     newDef: NEWQ | string,
   ) {
     if (typeof newDef === "string") {
       if (newDef === objDef.apiName) {
         return this[UnderlyingObject];
       }
+
+      // this is sufficient to determine if we implement the interface
+      if (objDef.interfaceMap?.[newDef] == null) {
+        throw new Error(`Object does not implement interface '${newDef}'.`);
+      }
+
+      // We dont need this currently but we may need it when we have interface links so
+      // we will keep it for now
       const def = objDef[InterfaceDefinitions][newDef];
       if (!def) {
         throw new Error(`Object does not implement interface '${newDef}'.`);
@@ -176,7 +184,8 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
       },
       ...Object.fromEntries(
         Object.keys(newDef.properties).map(p => {
-          const value = underlying[objDef.spts![p]];
+          const value =
+            (underlying as any)[objDef.interfaceMap![newDef.apiName][p]];
           return [p, {
             value,
             enumerable: value !== undefined,
@@ -297,8 +306,22 @@ export async function convertWireToOsdkObjects(
 
     if (interfaceApiName !== undefined) {
       // API returns interface spt names but we cache by real values
+      if (objectDef.interfaceMap?.[interfaceApiName] == null) {
+        const warning =
+          "Interfaces are only supported 'as views' but your metadata object is missing the correct information. This suggests your interfaces have not been migrated to the newer version yet and you cannot use this version of the SDK.";
+        if (client.logger) {
+          client.logger.warn(warning);
+        } else {
+          // eslint-disable-next-line no-console
+          console.error(`WARNING! ${warning}`);
+        }
+        throw new Error(warning);
+      }
+
       for (
-        const [sptProp, regularProp] of Object.entries(objectDef.spts!)
+        const [sptProp, regularProp] of Object.entries(
+          objectDef.interfaceMap[interfaceApiName],
+        )
       ) {
         if (sptProp in obj) {
           const value = obj[sptProp];

@@ -29,6 +29,10 @@ export type OsdkObjectPrimaryKeyType<
 
 type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
 
+type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
+  T["apiName"]["__Unbranded"]
+>;
+
 /**
  * DO NOT EXPORT FROM PACKAGE
  * @param FROM - the interface or object type to convert from
@@ -41,20 +45,22 @@ export type ConvertProps<
   P extends string = "$all",
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition<any> ? (
-      (NonNullable<
-        TO["spts"]
-      >[
-        P extends "$all"
-          ? keyof FROM["properties"] extends keyof TO["spts"]
-            ? keyof FROM["properties"]
-          : never
-          : DropRidAndAll<P>
-      ])
+      (
+        TO["interfaceMap"][ApiNameAsString<FROM>][
+          P extends "$all"
+            ? keyof FROM["properties"] extends
+              keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+              ? keyof FROM["properties"]
+            : never
+            : DropRidAndAll<P>
+        ]
+      )
     )
   : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
     : FROM extends ObjectTypeDefinition<any>
-      ? DropRidAndAll<P> extends keyof FROM["inverseSpts"]
-        ? NonNullable<FROM["inverseSpts"]>[DropRidAndAll<P>]
+      ? DropRidAndAll<P> extends keyof FROM["inverseInterfaceMap"][
+        ApiNameAsString<TO>
+      ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropRidAndAll<P>]
       : never
     : never
   : never;
