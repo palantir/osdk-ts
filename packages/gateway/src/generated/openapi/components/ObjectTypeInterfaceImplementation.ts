@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "./DataValue";
-import type { FieldName } from "./FieldName";
+import type { PropertyApiName } from "./PropertyApiName";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
 
-export interface TransformDataResponse {
-  outputs: Record<FieldName, DataValue>;
+export interface ObjectTypeInterfaceImplementation {
+  properties: Record<SharedPropertyTypeApiName, PropertyApiName>;
 }

@@ -39,8 +39,6 @@ export * from "./CreateTransactionPermissionDenied";
 export * from "./DatasetNotFound";
 export * from "./DeleteBranchPermissionDenied";
 export * from "./DeleteSchemaPermissionDenied";
-export * from "./DeploymentNotAvailable";
-export * from "./DeploymentNotFound";
 export * from "./DuplicateOrderBy";
 export * from "./EditObjectPermissionDenied";
 export * from "./FileAlreadyExists";

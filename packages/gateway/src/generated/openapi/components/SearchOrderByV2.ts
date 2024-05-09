@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ModelApiDataType } from "./ModelApiDataType";
+import type { SearchOrderingV2 } from "./SearchOrderingV2";
 
-export interface DeploymentTransformApi {
-  inputs: ReadonlyArray<ModelApiDataType>;
-  outputs: ReadonlyArray<ModelApiDataType>;
+/** Specifies the ordering of search results by a field and an ordering direction. */
+export interface SearchOrderByV2 {
+  fields: ReadonlyArray<SearchOrderingV2>;
 }

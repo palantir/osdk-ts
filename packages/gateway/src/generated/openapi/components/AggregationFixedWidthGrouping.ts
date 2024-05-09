@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
+
 /** Divides objects into groups with the specified width. */
 export interface AggregationFixedWidthGrouping {
-  field: string;
+  field: FieldNameV1;
   fixedWidth: number;
 }

@@ -33,6 +33,7 @@ export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: employeeObjectType,
   linkTypes: [peepsLinkType, leadLinkType, officeLinkType],
   implementsInterfaces: ["FooInterface"],
+  implementsInterfaces2: {},
   sharedPropertyTypeMapping: {
     fooSpt: "fullName",
   },
@@ -42,6 +43,7 @@ export const officeObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: officeObjectType,
   linkTypes: [occupants],
   implementsInterfaces: [],
+  implementsInterfaces2: {},
   sharedPropertyTypeMapping: {},
 };
 
@@ -50,6 +52,7 @@ export const objectTypeWithAllPropertyTypesWithLinkTypes:
     objectType: objectTypeWithAllPropertyTypes,
     linkTypes: [],
     implementsInterfaces: [],
+    implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},
   };
 export const objectTypeWithTimestampPrimaryKeyWithLinkTypes:
@@ -57,12 +60,14 @@ export const objectTypeWithTimestampPrimaryKeyWithLinkTypes:
     objectType: objectTypeWithTimestampPrimaryKey,
     linkTypes: [],
     implementsInterfaces: [],
+    implementsInterfaces2: {},
     sharedPropertyTypeMapping: {},
   };
 export const equipmentObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   objectType: equipmentObjectType,
   linkTypes: [],
   implementsInterfaces: [],
+  implementsInterfaces2: {},
   sharedPropertyTypeMapping: {},
 };
 

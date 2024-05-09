@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
 import type { Fuzzy } from "./Fuzzy";
 
 /**
@@ -21,7 +22,7 @@ import type { Fuzzy } from "./Fuzzy";
  * order in the provided value. This query supports fuzzy matching.
  */
 export interface AnyTermQuery {
-  field: string;
+  field: FieldNameV1;
   value: string;
   fuzzy?: Fuzzy;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,11 @@
  * limitations under the License.
  */
 
-import type { DeploymentApi } from "./DeploymentApi";
-import type { DeploymentApiName } from "./DeploymentApiName";
-import type { DeploymentDescription } from "./DeploymentDescription";
+import type { PropertyApiName } from "./PropertyApiName";
 
-/**
- * Metadata related to a model deployment.
- */
-export interface DeploymentMetadata {
-  apiName: DeploymentApiName;
-  description?: DeploymentDescription;
-  api: DeploymentApi;
+/** Returns objects where the specified array contains a value. */
+export interface ContainsQueryV2 {
+  field: PropertyApiName;
+  /** Contains value */
+  value: any;
 }

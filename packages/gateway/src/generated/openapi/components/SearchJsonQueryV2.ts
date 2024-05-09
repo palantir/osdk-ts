@@ -19,17 +19,17 @@ import type { ContainsAllTermsInOrderPrefixLastTerm } from "./ContainsAllTermsIn
 import type { ContainsAllTermsInOrderQuery } from "./ContainsAllTermsInOrderQuery";
 import type { ContainsAllTermsQuery } from "./ContainsAllTermsQuery";
 import type { ContainsAnyTermQuery } from "./ContainsAnyTermQuery";
-import type { ContainsQuery } from "./ContainsQuery";
+import type { ContainsQueryV2 } from "./ContainsQueryV2";
 import type { DoesNotIntersectBoundingBoxQuery } from "./DoesNotIntersectBoundingBoxQuery";
 import type { DoesNotIntersectPolygonQuery } from "./DoesNotIntersectPolygonQuery";
-import type { EqualsQuery } from "./EqualsQuery";
-import type { GteQuery } from "./GteQuery";
-import type { GtQuery } from "./GtQuery";
+import type { EqualsQueryV2 } from "./EqualsQueryV2";
+import type { GteQueryV2 } from "./GteQueryV2";
+import type { GtQueryV2 } from "./GtQueryV2";
 import type { IntersectsBoundingBoxQuery } from "./IntersectsBoundingBoxQuery";
 import type { IntersectsPolygonQuery } from "./IntersectsPolygonQuery";
-import type { IsNullQuery } from "./IsNullQuery";
-import type { LteQuery } from "./LteQuery";
-import type { LtQuery } from "./LtQuery";
+import type { IsNullQueryV2 } from "./IsNullQueryV2";
+import type { LteQueryV2 } from "./LteQueryV2";
+import type { LtQueryV2 } from "./LtQueryV2";
 import type { NotQueryV2 } from "./NotQueryV2";
 import type { OrQueryV2 } from "./OrQueryV2";
 import type { StartsWithQuery } from "./StartsWithQuery";
@@ -37,31 +37,31 @@ import type { WithinBoundingBoxQuery } from "./WithinBoundingBoxQuery";
 import type { WithinDistanceOfQuery } from "./WithinDistanceOfQuery";
 import type { WithinPolygonQuery } from "./WithinPolygonQuery";
 
-export interface SearchJsonQueryV2_Lt extends LtQuery {
+export interface SearchJsonQueryV2_Lt extends LtQueryV2 {
   type: "lt";
 }
 
-export interface SearchJsonQueryV2_Gt extends GtQuery {
+export interface SearchJsonQueryV2_Gt extends GtQueryV2 {
   type: "gt";
 }
 
-export interface SearchJsonQueryV2_Lte extends LteQuery {
+export interface SearchJsonQueryV2_Lte extends LteQueryV2 {
   type: "lte";
 }
 
-export interface SearchJsonQueryV2_Gte extends GteQuery {
+export interface SearchJsonQueryV2_Gte extends GteQueryV2 {
   type: "gte";
 }
 
-export interface SearchJsonQueryV2_Eq extends EqualsQuery {
+export interface SearchJsonQueryV2_Eq extends EqualsQueryV2 {
   type: "eq";
 }
 
-export interface SearchJsonQueryV2_IsNull extends IsNullQuery {
+export interface SearchJsonQueryV2_IsNull extends IsNullQueryV2 {
   type: "isNull";
 }
 
-export interface SearchJsonQueryV2_Contains extends ContainsQuery {
+export interface SearchJsonQueryV2_Contains extends ContainsQueryV2 {
   type: "contains";
 }
 

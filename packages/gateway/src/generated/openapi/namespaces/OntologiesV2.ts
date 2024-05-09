@@ -29,8 +29,8 @@ import type { AttachmentV2 } from "../components/AttachmentV2";
 import type { BatchApplyActionRequestV2 } from "../components/BatchApplyActionRequestV2";
 import type { BatchApplyActionResponseV2 } from "../components/BatchApplyActionResponseV2";
 import type { CountObjectsResponseV2 } from "../components/CountObjectsResponseV2";
-import type { DeploymentApiName } from "../components/DeploymentApiName";
-import type { DeploymentMetadata } from "../components/DeploymentMetadata";
+import type { CreateTemporaryObjectSetRequestV2 } from "../components/CreateTemporaryObjectSetRequestV2";
+import type { CreateTemporaryObjectSetResponseV2 } from "../components/CreateTemporaryObjectSetResponseV2";
 import type { ExecuteQueryRequest } from "../components/ExecuteQueryRequest";
 import type { ExecuteQueryResponse } from "../components/ExecuteQueryResponse";
 import type { InterfaceType } from "../components/InterfaceType";
@@ -38,7 +38,6 @@ import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName";
 import type { LinkTypeApiName } from "../components/LinkTypeApiName";
 import type { LinkTypeSideV2 } from "../components/LinkTypeSideV2";
 import type { ListActionTypesResponseV2 } from "../components/ListActionTypesResponseV2";
-import type { ListDeploymentsResponse } from "../components/ListDeploymentsResponse";
 import type { ListInterfaceTypesResponse } from "../components/ListInterfaceTypesResponse";
 import type { ListLinkedObjectsResponseV2 } from "../components/ListLinkedObjectsResponseV2";
 import type { ListObjectsResponseV2 } from "../components/ListObjectsResponseV2";
@@ -51,6 +50,7 @@ import type { LoadObjectSetResponseV2 } from "../components/LoadObjectSetRespons
 import type { ObjectSet } from "../components/ObjectSet";
 import type { ObjectSetRid } from "../components/ObjectSetRid";
 import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { ObjectTypeFullMetadata } from "../components/ObjectTypeFullMetadata";
 import type { ObjectTypeV2 } from "../components/ObjectTypeV2";
 import type { OntologyFullMetadata } from "../components/OntologyFullMetadata";
 import type { OntologyIdentifier } from "../components/OntologyIdentifier";
@@ -72,8 +72,6 @@ import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiN
 import type { StreamTimeSeriesPointsRequest } from "../components/StreamTimeSeriesPointsRequest";
 import type { SyncApplyActionResponseV2 } from "../components/SyncApplyActionResponseV2";
 import type { TimeSeriesPoint } from "../components/TimeSeriesPoint";
-import type { TransformDataRequest } from "../components/TransformDataRequest";
-import type { TransformDataResponse } from "../components/TransformDataResponse";
 import type { OpenApiRequest } from "../request";
 
 /**
@@ -393,22 +391,6 @@ export function searchObjectsV2<TResponse>(
   );
 }
 
-/** Temporary endpoint for search. */
-export function deprecatedSearchObjectsV2<TResponse>(
-  _request: OpenApiRequest<SearchObjectsResponseV2, TResponse>,
-  ontology: OntologyIdentifier,
-  objectType: ObjectTypeApiName,
-  request: SearchObjectsRequestV2,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/objects/${objectType}/_search`,
-    request,
-    __undefined,
-    __undefined,
-  );
-}
-
 /**
  * Perform functions on object fields in the specified ontology and object type.
  *
@@ -422,7 +404,6 @@ export function aggregateObjectsV2<TResponse>(
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -430,24 +411,6 @@ export function aggregateObjectsV2<TResponse>(
     `/v2/ontologies/${ontology}/objects/${objectType}/aggregate`,
     request,
     queryParameters,
-    __undefined,
-  );
-}
-
-/**
- * Temporary endpoint for aggregations
- */
-export function deprecatedAggregateObjectsV2<TResponse>(
-  _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
-  ontology: OntologyIdentifier,
-  objectType: ObjectTypeApiName,
-  request: AggregateObjectsRequestV2,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/objects/${objectType}/_aggregate`,
-    request,
-    __undefined,
     __undefined,
   );
 }
@@ -854,6 +817,28 @@ export function streamPoints<TResponse>(
 }
 
 /**
+ * Gets the full metadata for a specific object type with the given API name.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function getObjectTypeFullMetadata<TResponse>(
+  _request: OpenApiRequest<ObjectTypeFullMetadata, TResponse>,
+  ontology: OntologyIdentifier,
+  objectType: ObjectTypeApiName,
+  queryParameters?: {
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "GET",
+    `/v2/ontologies/${ontology}/objectTypes/${objectType}/fullMetadata`,
+    __undefined,
+    queryParameters,
+    __undefined,
+  );
+}
+
+/**
  * Applies an action using the given parameters.
  *
  * Changes to the Ontology are eventually consistent and may take some time to be visible.
@@ -1014,6 +999,26 @@ export function executeQueryV2<TResponse>(
 }
 
 /**
+ * Creates a temporary `ObjectSet` from the given definition.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:read-data api:write-data`.
+ */
+export function createTemporaryObjectSetV2<TResponse>(
+  _request: OpenApiRequest<CreateTemporaryObjectSetResponseV2, TResponse>,
+  ontology: OntologyIdentifier,
+  request: CreateTemporaryObjectSetRequestV2,
+): Promise<TResponse> {
+  return _request(
+    "POST",
+    `/v2/ontologies/${ontology}/objectSets/createTemporary`,
+    request,
+    __undefined,
+    __undefined,
+  );
+}
+
+/**
  * Gets the definition of the `ObjectSet` with the given RID.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
@@ -1072,7 +1077,6 @@ export function aggregateObjectSetV2<TResponse>(
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -1080,59 +1084,6 @@ export function aggregateObjectSetV2<TResponse>(
     `/v2/ontologies/${ontology}/objectSets/aggregate`,
     request,
     queryParameters,
-    __undefined,
-  );
-}
-
-/**
- * Fetches a list of the available model deployments within a given Ontology.
- */
-export function listDeployments<TResponse>(
-  _request: OpenApiRequest<ListDeploymentsResponse, TResponse>,
-  ontology: OntologyIdentifier,
-): Promise<TResponse> {
-  return _request(
-    "GET",
-    `/v2/ontologies/${ontology}/models/deployments`,
-    __undefined,
-    __undefined,
-    __undefined,
-  );
-}
-
-/**
- * Fetches information about a model deployment within a given Ontology.
- */
-export function getDeployment<TResponse>(
-  _request: OpenApiRequest<DeploymentMetadata, TResponse>,
-  ontology: OntologyIdentifier,
-  deployment: DeploymentApiName,
-): Promise<TResponse> {
-  return _request(
-    "GET",
-    `/v2/ontologies/${ontology}/models/deployments/${deployment}`,
-    __undefined,
-    __undefined,
-    __undefined,
-  );
-}
-
-/**
- * Use a given model deployment to transform the provided data.
- *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
- */
-export function transformDeployment<TResponse>(
-  _request: OpenApiRequest<TransformDataResponse, TResponse>,
-  ontology: OntologyIdentifier,
-  deployment: DeploymentApiName,
-  request: TransformDataRequest,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/models/deployments/${deployment}/transform`,
-    request,
-    __undefined,
     __undefined,
   );
 }

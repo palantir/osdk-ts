@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { PropertyApiName } from "./PropertyApiName";
 import type { TimeUnit } from "./TimeUnit";
 
 /**
@@ -21,7 +22,7 @@ import type { TimeUnit } from "./TimeUnit";
  * When grouping by `YEARS`, `QUARTERS`, `MONTHS`, or `WEEKS`, the `value` must be set to `1`.
  */
 export interface AggregationDurationGroupingV2 {
-  field: string;
+  field: PropertyApiName;
   value: number;
   unit: TimeUnit;
 }

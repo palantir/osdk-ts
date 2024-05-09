@@ -120,6 +120,7 @@ export const aggResp1: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 export const aggResp2: AggregateObjectsResponseV2 = {
   data: [
@@ -137,6 +138,7 @@ export const aggResp2: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 export const aggResp3: AggregateObjectsResponseV2 = {
   excludedItems: 5,
@@ -172,6 +174,7 @@ export const aggResp3: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 
 export const aggResp4: AggregateObjectsResponseV2 = {
@@ -189,6 +192,7 @@ export const aggResp4: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 
 export const aggregationRequestHandlers = {

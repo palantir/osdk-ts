@@ -15,9 +15,10 @@
  */
 
 import type { AggregationMetricName } from "./AggregationMetricName";
+import type { FieldNameV1 } from "./FieldNameV1";
 
 /** Computes the average value for the provided field. */
 export interface AvgAggregation {
-  field: string;
+  field: FieldNameV1;
   name?: AggregationMetricName;
 }

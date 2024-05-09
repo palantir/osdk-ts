@@ -125,6 +125,7 @@ describe(generateMetadataFile, () => {
             },
             linkTypes: [],
             implementsInterfaces: [],
+            implementsInterfaces2: {},
             sharedPropertyTypeMapping: {},
           },
         },

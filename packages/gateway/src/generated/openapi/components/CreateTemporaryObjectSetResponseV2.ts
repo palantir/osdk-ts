@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-import type { DeploymentApiName } from "../components/DeploymentApiName";
-import type { OntologyApiName } from "../components/OntologyApiName";
+import type { ObjectSetRid } from "./ObjectSetRid";
 
-/** The requested model deployment does not have a model deployed. It may be disabled or failed. */
-export interface DeploymentNotAvailable {
-  errorCode: "INTERNAL";
-  errorName: "DeploymentNotAvailable";
-  errorInstanceId: string;
-  parameters: {
-    ontologyApiName: OntologyApiName;
-    deploymentApiName: DeploymentApiName;
-  };
+export interface CreateTemporaryObjectSetResponseV2 {
+  objectSetRid: ObjectSetRid;
 }

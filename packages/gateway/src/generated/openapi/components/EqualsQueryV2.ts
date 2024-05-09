@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import type { ModelApiType } from "./ModelApiType";
+import type { PropertyApiName } from "./PropertyApiName";
 
-export interface ModelApiStructField {
-  name: string;
-  fieldType: ModelApiType;
+/** Returns objects where the specified field is equal to a value. */
+export interface EqualsQueryV2 {
+  field: PropertyApiName;
+  /** Equals to value */
+  value: any;
 }

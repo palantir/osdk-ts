@@ -20,12 +20,12 @@ import type { PageSize } from "./PageSize";
 import type { PageToken } from "./PageToken";
 import type { PropertyApiName } from "./PropertyApiName";
 import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
-import type { SearchOrderBy } from "./SearchOrderBy";
+import type { SearchOrderByV2 } from "./SearchOrderByV2";
 import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
 
 export interface SearchObjectsForInterfaceRequest {
   where?: SearchJsonQueryV2;
-  orderBy?: SearchOrderBy;
+  orderBy?: SearchOrderByV2;
   /**
    * A map from object type API name to a list of property type API names. For each returned object, if the
    * object’s object type is a key in the map, then we augment the response for that object type with the list

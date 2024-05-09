@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/**
- * The name of a field.
- */
-export type FieldName = string;
+import type { PropertyApiName } from "./PropertyApiName";
+
+/** Divides objects into groups with the specified width. */
+export interface AggregationFixedWidthGroupingV2 {
+  field: PropertyApiName;
+  fixedWidth: number;
+}

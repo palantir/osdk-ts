@@ -69,6 +69,7 @@ describe(createObjectSetAggregationStep, () => {
         }],
         group: {},
       }],
+      accuracy: "ACCURATE",
     };
 
     mockFetchResponse(fetch, aggregationResponse);
@@ -105,6 +106,7 @@ describe(createObjectSetAggregationStep, () => {
         }],
         group: {},
       }],
+      accuracy: "ACCURATE",
     };
 
     mockFetchResponse(fetch, aggregationResponse);

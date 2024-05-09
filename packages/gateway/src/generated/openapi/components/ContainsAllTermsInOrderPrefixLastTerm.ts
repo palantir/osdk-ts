@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import type { PropertyApiName } from "./PropertyApiName";
+
 /**
  * Returns objects where the specified field contains all of the terms in the order provided,
  * but they do have to be adjacent to each other.
  * The last term can be a partial prefix match.
  */
 export interface ContainsAllTermsInOrderPrefixLastTerm {
-  field: string;
+  field: PropertyApiName;
   value: string;
 }

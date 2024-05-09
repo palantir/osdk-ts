@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type { DeploymentApiName } from "./DeploymentApiName";
-import type { DeploymentDescription } from "./DeploymentDescription";
+import type { PropertyApiName } from "./PropertyApiName";
 
-/**
- * Name and description associated with a model deployment.
- */
-export interface DeploymentListing {
-  apiName: DeploymentApiName;
-  description?: DeploymentDescription;
+/** Returns objects where the specified field is less than or equal to a value. */
+export interface LteQueryV2 {
+  field: PropertyApiName;
+  /** Less than or equal to value */
+  value: any;
 }

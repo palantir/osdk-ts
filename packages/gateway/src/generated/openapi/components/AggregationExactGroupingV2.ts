@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-import type { DeploymentApiName } from "../components/DeploymentApiName";
-import type { OntologyApiName } from "../components/OntologyApiName";
+import type { PropertyApiName } from "./PropertyApiName";
 
-/** The requested model deployment is not found, or the client token does not have access to it. */
-export interface DeploymentNotFound {
-  errorCode: "NOT_FOUND";
-  errorName: "DeploymentNotFound";
-  errorInstanceId: string;
-  parameters: {
-    ontologyApiName: OntologyApiName;
-    deploymentApiName: DeploymentApiName;
-  };
+/** Divides objects into groups according to an exact value. */
+export interface AggregationExactGroupingV2 {
+  field: PropertyApiName;
+  maxGroupCount?: number;
 }

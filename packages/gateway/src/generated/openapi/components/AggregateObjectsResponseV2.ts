@@ -19,6 +19,6 @@ import type { AggregationAccuracy } from "./AggregationAccuracy";
 
 export interface AggregateObjectsResponseV2 {
   excludedItems?: number;
-  accuracy?: AggregationAccuracy;
+  accuracy: AggregationAccuracy;
   data: ReadonlyArray<AggregateObjectsResponseItemV2>;
 }
