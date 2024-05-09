@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PreviewMode, PrincipalId, User } from "@osdk/foundry.common";
+import type { PreviewMode, PrincipalId, User } from "@osdk/foundry.core";
 import type {
   ClientContext as $ClientContext,
   OmniMethod as $OmniMethod,

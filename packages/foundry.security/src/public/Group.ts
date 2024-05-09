@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.common";
+import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.core";
 import type { CreateGroupRequest } from "@osdk/foundry.security";
 import type {
   ClientContext as $ClientContext,

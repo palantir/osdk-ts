@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "@osdk/foundry.common";
+export * from "@osdk/foundry.core";
 export * as Security from "@osdk/foundry.security";
 export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";

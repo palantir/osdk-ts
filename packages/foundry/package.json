@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:^",
-    "@osdk/foundry.common": "workspace:*",
+    "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.security": "workspace:*",
     "@osdk/foundry.thirdpartyapplications": "workspace:*",
     "@osdk/shared.net": "workspace:^"

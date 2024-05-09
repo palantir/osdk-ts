@@ -1,7 +1,7 @@
 {
-  "name": "@osdk/foundry.common",
+  "name": "@osdk/platform-sdk-generator",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.2.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -11,14 +11,12 @@
     ".": {
       "types": "./build/types/index.d.ts",
       "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/js/index.mjs"
     },
     "./*": {
       "types": "./build/types/public/*.d.ts",
       "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/js/public/*.mjs"
     }
   },
   "scripts": {
@@ -29,10 +27,15 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/shared.net": "workspace:^"
+    "find-up": "^7.0.0",
+    "prettier": "^3.2.5",
+    "tiny-invariant": "^1.3.3",
+    "yaml": "^2.4.1",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/yargs": "^17.0.29",
     "typescript": "^5.4.5"
   },
   "publishConfig": {
@@ -46,16 +49,7 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/js/index.mjs",
   "types": "./build/types/index.d.ts",
-  "sls": {
-    "dependencies": {
-      "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.824.0",
-        "maxVersion": "1.x.x"
-      }
-    }
-  },
   "type": "module"
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PageToken, Version, VersionVersion } from "@osdk/foundry.common";
+import type { PageToken, Version, VersionVersion } from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;

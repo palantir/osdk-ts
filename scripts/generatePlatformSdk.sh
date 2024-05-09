@@ -10,11 +10,11 @@ XQ=$(checkCommand "yq" "yq" "Try 'brew install yq'")
 WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 
 echo "Making sure the tool is built"
-pnpm exec turbo run transpile --filter ./packages/foundry-generator --output-logs=errors-only
+pnpm exec turbo run transpile --filter ./packages/platform-sdk-generator --output-logs=errors-only
 
 # "$SCRIPT_DIR/getOpenApiIr.sh"
 
-CODE_GENERATOR="$SCRIPT_DIR/../packages/foundry-generator/bin/foundry-generator.mjs"
+CODE_GENERATOR="$SCRIPT_DIR/../packages/platform-sdk-generator/bin/platform-sdk-generator.mjs"
 OPENAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/openapi-ir.json"
 OPENAPI_MANIFEST_YML="${SCRIPT_DIR}/../tmp/api-gateway-ir/manifest.yml"
 
