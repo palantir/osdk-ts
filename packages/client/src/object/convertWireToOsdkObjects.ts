@@ -29,7 +29,7 @@ import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
 import { createAsyncCache, createCache } from "./Cache.js";
 import type { SelectArg } from "./fetchPage.js";
-import { fetchSingle } from "./fetchSingle.js";
+import { fetchSingle, fetchSingleWithErrors } from "./fetchSingle.js";
 
 const OriginClient = Symbol();
 const UnderlyingObject = Symbol();
@@ -67,6 +67,13 @@ class LinkFetcherProxyHandler<Q extends AugmentedObjectTypeDefinition<any, any>>
           ),
         fetchOne: <A extends SelectArg<any>>(options?: A) =>
           fetchSingle(
+            this.client,
+            this.objDef,
+            options ?? {},
+            getWireObjectSet(objectSet),
+          ),
+        fetchOneWithErrors: <A extends SelectArg<any>>(options?: A) =>
+          fetchSingleWithErrors(
             this.client,
             this.objDef,
             options ?? {},

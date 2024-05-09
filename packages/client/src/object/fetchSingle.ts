@@ -24,6 +24,7 @@ import {
   type FetchPageArgs,
   type SelectArgToKeys,
 } from "./fetchPage.js";
+import type { Result } from "./Result.js";
 
 export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
@@ -56,4 +57,32 @@ export async function fetchSingle<
   }
 
   return result.data[0] as any;
+}
+
+export async function fetchSingleWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends FetchPageArgs<Q, any, any>,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: A,
+  objectSet: ObjectSet,
+): Promise<
+  Result<
+    Osdk<
+      Q,
+      A["includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+        : SelectArgToKeys<Q, A>
+    >
+  >
+> {
+  try {
+    const result = await fetchSingle(client, objectType, args, objectSet);
+    return { value: result as any };
+  } catch (e) {
+    if (e instanceof Error) {
+      return { error: e };
+    }
+    return { error: e as Error };
+  }
 }
