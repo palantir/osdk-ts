@@ -21,7 +21,7 @@ import type {
   ThirdPartyApplicationRid,
   Version,
   VersionVersion,
-} from "@osdk/foundry.common";
+} from "@osdk/foundry.core";
 import type { ListVersionsResponse } from "@osdk/foundry.thirdpartyapplications";
 import type {
   ClientContext as $ClientContext,

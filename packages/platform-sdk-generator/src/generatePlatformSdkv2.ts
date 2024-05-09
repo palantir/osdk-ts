@@ -176,7 +176,6 @@ export async function ensurePackageSetup(
 }
 
 const BASE_PACKAGE_JSON = {
-  "private": true,
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

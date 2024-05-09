@@ -18,7 +18,7 @@ import type {
   PreviewMode,
   ThirdPartyApplication,
   ThirdPartyApplicationRid,
-} from "@osdk/foundry.common";
+} from "@osdk/foundry.core";
 import type {
   ClientContext as $ClientContext,
   OmniMethod as $OmniMethod,

@@ -1,6 +1,5 @@
 {
-  "name": "@osdk/foundry.common",
-  "private": true,
+  "name": "@osdk/foundry.core",
   "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {

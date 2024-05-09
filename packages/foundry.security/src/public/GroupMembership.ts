@@ -19,7 +19,7 @@ import type {
   PageToken,
   PreviewMode,
   PrincipalId,
-} from "@osdk/foundry.common";
+} from "@osdk/foundry.core";
 import type { ListGroupMembershipsResponse } from "@osdk/foundry.security";
 import type {
   ClientContext as $ClientContext,

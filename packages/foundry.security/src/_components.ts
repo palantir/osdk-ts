@@ -24,7 +24,7 @@ import type {
   OrganizationRid,
   PageToken,
   PrincipalId,
-} from "@osdk/foundry.common";
+} from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;

@@ -1,5 +1,5 @@
 {
-  "name": "@osdk/foundry-generator",
+  "name": "@osdk/platform-sdk-generator",
   "private": true,
   "version": "0.2.0",
   "license": "Apache-2.0",

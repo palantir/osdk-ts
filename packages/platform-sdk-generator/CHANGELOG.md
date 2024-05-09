@@ -1,4 +1,4 @@
-# @osdk/foundry-generator
+# @osdk/platform-sdk-generator
 
 ## 0.2.0
 

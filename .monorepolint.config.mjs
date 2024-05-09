@@ -47,7 +47,7 @@ const legacyPackages = [
 
 const esmOnlyPackages = [
   "@osdk/internal.foundry",
-  "@osdk/foundry-generator",
+  "@osdk/platform-sdk-generator",
   "@osdk/client",
   "@osdk/cli.*",
   "@osdk/cli",
