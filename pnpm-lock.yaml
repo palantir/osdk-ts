@@ -864,8 +864,8 @@ importers:
         specifier: ^3.28.1
         version: 3.29.1
       rollup-plugin-polyfill-node:
-        specifier: ^0.12.0
-        version: 0.12.0(rollup@3.29.1)
+        specifier: ^0.13.0
+        version: 0.13.0(rollup@3.29.1)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -8748,10 +8748,10 @@ packages:
       safe-stable-stringify: 2.4.3
       semver-compare: 1.0.0
 
-  /rollup-plugin-polyfill-node@0.12.0(rollup@3.29.1):
-    resolution: {integrity: sha512-PWEVfDxLEKt8JX1nZ0NkUAgXpkZMTb85rO/Ru9AQ69wYW8VUCfDgP4CGRXXWYni5wDF0vIeR1UoF3Jmw/Lt3Ug==}
+  /rollup-plugin-polyfill-node@0.13.0(rollup@3.29.1):
+    resolution: {integrity: sha512-FYEvpCaD5jGtyBuBFcQImEGmTxDTPbiHjJdrYIp+mFIwgXiXabxvKUK7ZT9P31ozu2Tqm9llYQMRWsfvTMTAOw==}
     peerDependencies:
-      rollup: ^1.20.0 || ^2.0.0 || ^3.0.0
+      rollup: ^1.20.0 || ^2.0.0 || ^3.0.0 || ^4.0.0
     dependencies:
       '@rollup/plugin-inject': 5.0.5(rollup@3.29.1)
       rollup: 3.29.1
