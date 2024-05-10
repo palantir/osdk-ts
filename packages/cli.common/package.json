@@ -29,7 +29,7 @@
   "dependencies": {
     "consola": "^3.2.3",
     "open": "^10.1.0",
-    "semver": "^7.6.0",
+    "semver": "^7.6.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

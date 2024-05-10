@@ -50,7 +50,7 @@
     "package-json": "^10.0.0",
     "pkg-versions": "^4.0.0",
     "resolve-from": "^5.0.0",
-    "semver": "^7.5.3",
+    "semver": "^7.6.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
