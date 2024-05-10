@@ -808,3 +808,31 @@ export function streamPoints(
 ): Promise<unknown> {
   return $omniFetch($ctx, _streamPoints, ...args);
 }
+
+const _getObjectTypeFullMetadata: $OmniMethod<
+  (
+    ontology: $C.OntologyIdentifier,
+    objectType: $C.ObjectTypeApiName,
+    $queryParams?: { preview?: $C.PreviewMode },
+  ) => Promise<$C.ObjectTypeFullMetadata>
+> = [0, "/v2/ontologies/{0}/objectTypes/{1}/fullMetadata", 2];
+
+/**
+ * Gets the full metadata for a specific object type with the given API name.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ *
+ * Required Scopes: [api:read-data]
+ * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/fullMetadata
+ */
+export function getObjectTypeFullMetadata(
+  $ctx: $ClientContext<any>,
+  ...args: [
+    ontology: $C.OntologyIdentifier,
+    objectType: $C.ObjectTypeApiName,
+
+    $queryParams?: { preview?: $C.PreviewMode },
+  ]
+): Promise<$C.ObjectTypeFullMetadata> {
+  return $omniFetch($ctx, _getObjectTypeFullMetadata, ...args);
+}
