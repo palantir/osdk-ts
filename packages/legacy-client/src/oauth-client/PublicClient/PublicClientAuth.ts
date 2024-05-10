@@ -132,10 +132,12 @@ export class PublicClientAuth implements Auth {
           this.options.fetchFn,
           this.options.multipassContextPath,
         );
-        localStorage.setItem(
-          this.palantirRefreshToken,
-          this.token.refreshToken,
-        );
+        if (this.token.refreshToken != null) {
+          localStorage.setItem(
+            this.palantirRefreshToken,
+            this.token.refreshToken,
+          );
+        }
         shouldMakeAuthRequest = false;
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -310,7 +312,12 @@ export class PublicClientAuth implements Auth {
         this.options.fetchFn,
         this.options.multipassContextPath,
       );
-      localStorage.setItem(this.palantirRefreshToken, this.token.refreshToken);
+      if (this.token.refreshToken != null) {
+        localStorage.setItem(
+          this.palantirRefreshToken,
+          this.token.refreshToken,
+        );
+      }
       return true;
     } catch (e) {
       // eslint-disable-next-line no-console
