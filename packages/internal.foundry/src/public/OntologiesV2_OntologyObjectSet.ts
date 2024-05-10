@@ -21,6 +21,32 @@ import type {
 import { omniFetch as $omniFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
+const _createTemporaryObjectSetV2: $OmniMethod<
+  (
+    ontology: $C.OntologyIdentifier,
+    $body: $C.CreateTemporaryObjectSetRequestV2,
+  ) => Promise<$C.CreateTemporaryObjectSetResponseV2>
+> = [1, "/v2/ontologies/{0}/objectSets/createTemporary", 1];
+
+/**
+ * Creates a temporary `ObjectSet` from the given definition.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:read-data api:write-data`.
+ *
+ * Required Scopes: [api:read-data, api:write-data]
+ * URL: /v2/ontologies/{ontology}/objectSets/createTemporary
+ */
+export function createTemporaryObjectSetV2(
+  $ctx: $ClientContext<any>,
+  ...args: [
+    ontology: $C.OntologyIdentifier,
+    $body: $C.CreateTemporaryObjectSetRequestV2,
+  ]
+): Promise<$C.CreateTemporaryObjectSetResponseV2> {
+  return $omniFetch($ctx, _createTemporaryObjectSetV2, ...args);
+}
+
 const _getObjectSetV2: $OmniMethod<
   (
     ontology: $C.OntologyIdentifier,

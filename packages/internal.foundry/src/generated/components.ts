@@ -995,6 +995,20 @@ export interface CreateObjectRule {
 }
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface CreateTemporaryObjectSetRequestV2 {
+  objectSet: ObjectSet;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface CreateTemporaryObjectSetResponseV2 {
+  objectSetRid: ObjectSetRid;
+}
+
+/**
  * Log Safety: SAFE
  */
 export interface CreateTransactionRequest {
