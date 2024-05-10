@@ -15,9 +15,10 @@
  */
 
 import type { AggregationRange } from "./AggregationRange";
+import type { FieldNameV1 } from "./FieldNameV1";
 
 /** Divides objects into groups according to specified ranges. */
 export interface AggregationRangesGrouping {
-  field: string;
+  field: FieldNameV1;
   ranges: ReadonlyArray<AggregationRange>;
 }

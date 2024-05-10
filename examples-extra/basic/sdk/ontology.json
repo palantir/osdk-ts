@@ -385,6 +385,14 @@
         }
       ],
       "implementsInterfaces": ["FooInterface"],
+      "implementsInterfaces2": {
+        "FooInterface": {
+          "properties": {
+            "name": "firstName",
+            "description": "email"
+          }
+        }
+      },
       "sharedPropertyTypeMapping": {
         "name": "firstName",
         "description": "email"

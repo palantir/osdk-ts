@@ -15,7 +15,9 @@
  */
 
 /**
- * Duration groupBy value is invalid.
+ * Duration groupBy value is invalid. Units larger than day must have value `1` and date properties do not support
+ * filtering on units smaller than day. As examples, neither bucketing by every two weeks nor bucketing a date by
+ * every two hours are allowed.
  */
 export interface InvalidDurationGroupByValue {
   errorCode: "INVALID_ARGUMENT";

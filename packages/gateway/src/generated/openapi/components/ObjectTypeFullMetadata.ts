@@ -16,6 +16,7 @@
 
 import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
 import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
+import type { ObjectTypeInterfaceImplementation } from "./ObjectTypeInterfaceImplementation";
 import type { ObjectTypeV2 } from "./ObjectTypeV2";
 import type { PropertyApiName } from "./PropertyApiName";
 import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
@@ -25,6 +26,11 @@ export interface ObjectTypeFullMetadata {
   linkTypes: ReadonlyArray<LinkTypeSideV2>;
   /** A list of interfaces that this object type implements. */
   implementsInterfaces: ReadonlyArray<InterfaceTypeApiName>;
+  /** A list of interfaces that this object type implements and how it implements them. */
+  implementsInterfaces2: Record<
+    InterfaceTypeApiName,
+    ObjectTypeInterfaceImplementation
+  >;
   /**
    * A map from shared property type API name to backing local property API name for the shared property types
    * present on this object type.

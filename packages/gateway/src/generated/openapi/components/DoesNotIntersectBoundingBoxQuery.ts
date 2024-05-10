@@ -15,11 +15,12 @@
  */
 
 import type { BoundingBoxValue } from "./BoundingBoxValue";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /**
  * Returns objects where the specified field does not intersect the bounding box provided.
  */
 export interface DoesNotIntersectBoundingBoxQuery {
-  field: string;
+  field: PropertyApiName;
   value: BoundingBoxValue;
 }

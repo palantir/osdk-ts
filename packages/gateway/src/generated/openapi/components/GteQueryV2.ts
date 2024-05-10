@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * A description or explanation of what this model deployment does and is intended to be used for.
- */
-export type DeploymentDescription = string;
+import type { PropertyApiName } from "./PropertyApiName";
+
+/** Returns objects where the specified field is greater than or equal to a value. */
+export interface GteQueryV2 {
+  field: PropertyApiName;
+  /** Greater than or equal to value */
+  value: any;
+}

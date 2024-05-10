@@ -16,10 +16,11 @@
 
 import type { AggregationMetricName } from "./AggregationMetricName";
 import type { OrderByDirection } from "./OrderByDirection";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /** Computes the average value for the provided field. */
 export interface AvgAggregationV2 {
-  field: string;
+  field: PropertyApiName;
   name?: AggregationMetricName;
   direction?: OrderByDirection;
 }

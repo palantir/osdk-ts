@@ -15,11 +15,12 @@
  */
 
 import type { BoundingBoxValue } from "./BoundingBoxValue";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /**
  * Returns objects where the specified field intersects the bounding box provided.
  */
 export interface IntersectsBoundingBoxQuery {
-  field: string;
+  field: PropertyApiName;
   value: BoundingBoxValue;
 }

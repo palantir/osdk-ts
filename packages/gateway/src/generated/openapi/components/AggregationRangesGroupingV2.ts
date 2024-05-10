@@ -15,9 +15,10 @@
  */
 
 import type { AggregationRangeV2 } from "./AggregationRangeV2";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /** Divides objects into groups according to specified ranges. */
 export interface AggregationRangesGroupingV2 {
-  field: string;
+  field: PropertyApiName;
   ranges: ReadonlyArray<AggregationRangeV2>;
 }

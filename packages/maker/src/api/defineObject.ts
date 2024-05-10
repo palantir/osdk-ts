@@ -48,6 +48,7 @@ export function defineObject(
 ): ObjectType {
   ontologyDefinition.objectTypes[apiName] = {
     implementsInterfaces: [],
+    implementsInterfaces2: {},
     linkTypes: [],
     objectType: {
       apiName,

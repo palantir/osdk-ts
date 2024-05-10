@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
+
 /** Returns objects where the specified field is greater than a value. */
 export interface GtQuery {
-  field: string;
+  field: FieldNameV1;
   /** Greater than value */
   value: any;
 }

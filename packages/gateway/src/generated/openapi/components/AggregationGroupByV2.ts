@@ -15,12 +15,12 @@
  */
 
 import type { AggregationDurationGroupingV2 } from "./AggregationDurationGroupingV2";
-import type { AggregationExactGrouping } from "./AggregationExactGrouping";
-import type { AggregationFixedWidthGrouping } from "./AggregationFixedWidthGrouping";
+import type { AggregationExactGroupingV2 } from "./AggregationExactGroupingV2";
+import type { AggregationFixedWidthGroupingV2 } from "./AggregationFixedWidthGroupingV2";
 import type { AggregationRangesGroupingV2 } from "./AggregationRangesGroupingV2";
 
 export interface AggregationGroupByV2_FixedWidth
-  extends AggregationFixedWidthGrouping
+  extends AggregationFixedWidthGroupingV2
 {
   type: "fixedWidth";
 }
@@ -31,7 +31,7 @@ export interface AggregationGroupByV2_Ranges
   type: "ranges";
 }
 
-export interface AggregationGroupByV2_Exact extends AggregationExactGrouping {
+export interface AggregationGroupByV2_Exact extends AggregationExactGroupingV2 {
   type: "exact";
 }
 

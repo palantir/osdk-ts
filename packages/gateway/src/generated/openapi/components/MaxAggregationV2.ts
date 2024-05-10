@@ -16,10 +16,11 @@
 
 import type { AggregationMetricName } from "./AggregationMetricName";
 import type { OrderByDirection } from "./OrderByDirection";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /** Computes the maximum value for the provided field. */
 export interface MaxAggregationV2 {
-  field: string;
+  field: PropertyApiName;
   name?: AggregationMetricName;
   direction?: OrderByDirection;
 }

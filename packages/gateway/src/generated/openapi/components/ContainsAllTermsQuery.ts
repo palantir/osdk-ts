@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { Fuzzy } from "./Fuzzy";
+import type { FuzzyV2 } from "./FuzzyV2";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /**
  * Returns objects where the specified field contains all of the whitespace separated words in any
  * order in the provided value. This query supports fuzzy matching.
  */
 export interface ContainsAllTermsQuery {
-  field: string;
+  field: PropertyApiName;
   value: string;
-  fuzzy?: Fuzzy;
+  fuzzy?: FuzzyV2;
 }

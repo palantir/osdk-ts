@@ -77,6 +77,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
           objectTypeApiName: "Todo",
         }],
         implementsInterfaces: [],
+        implementsInterfaces2: {},
         sharedPropertyTypeMapping: {},
       },
     );

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
+
 /** Returns objects where the specified field is equal to a value. */
 export interface EqualsQuery {
-  field: string;
+  field: FieldNameV1;
   /** Equals to value */
   value: any;
 }

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectSetRid } from "../components/ObjectSetRid";
-
 /**
  * The parameter object set RID is not found, or the client token does not have access to it.
  */
@@ -24,6 +22,6 @@ export interface ParameterObjectSetRidNotFound {
   errorName: "ParameterObjectSetRidNotFound";
   errorInstanceId: string;
   parameters: {
-    objectSetRid: ObjectSetRid;
+    objectSetRid: string;
   };
 }

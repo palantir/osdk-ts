@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
+
 export interface SearchOrdering {
-  /** Specifies the field to order search results by. */
-  field: string;
+  field: FieldNameV1;
   /** Specifies the ordering direction (can be either `asc` or `desc`) */
   direction?: string;
 }

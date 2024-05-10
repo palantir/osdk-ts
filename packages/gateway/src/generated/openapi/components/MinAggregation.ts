@@ -15,9 +15,10 @@
  */
 
 import type { AggregationMetricName } from "./AggregationMetricName";
+import type { FieldNameV1 } from "./FieldNameV1";
 
 /** Computes the minimum value for the provided field. */
 export interface MinAggregation {
-  field: string;
+  field: FieldNameV1;
   name?: AggregationMetricName;
 }

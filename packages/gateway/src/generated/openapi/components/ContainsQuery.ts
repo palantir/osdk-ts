@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1";
+
 /** Returns objects where the specified array contains a value. */
 export interface ContainsQuery {
-  field: string;
+  field: FieldNameV1;
   /** Contains value */
   value: any;
 }

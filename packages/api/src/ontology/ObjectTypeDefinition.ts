@@ -73,8 +73,37 @@ export interface ObjectTypeDefinition<
   primaryKeyApiName: keyof this["properties"];
   primaryKeyType: WirePropertyTypes;
 
+  /**
+   * Optional because they may not exist on legacy.
+   */
   implements?: string[];
+
+  /**
+   * Optional because they may not exist on legacy.
+   */
+  interfaceMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType property api name */ string,
+      /* ObjectType property api name */ string
+    >
+  >;
+
+  /**
+   * Optional because they may not exist on legacy.
+   */
+  inverseInterfaceMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* ObjectType property api name */ string,
+      /* InterfaceType property api name */ string
+    >
+  >;
+
+  /* no longer used */
   spts?: Record<string, string>;
+
+  /* no longer used */
   inverseSpts?: Record<string, string>;
 }
 

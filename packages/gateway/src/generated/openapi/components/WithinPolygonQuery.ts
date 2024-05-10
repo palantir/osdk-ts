@@ -15,11 +15,12 @@
  */
 
 import type { PolygonValue } from "./PolygonValue";
+import type { PropertyApiName } from "./PropertyApiName";
 
 /**
  * Returns objects where the specified field contains a point within the polygon provided.
  */
 export interface WithinPolygonQuery {
-  field: string;
+  field: PropertyApiName;
   value: PolygonValue;
 }
