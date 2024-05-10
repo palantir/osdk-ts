@@ -71,6 +71,39 @@ describe("ConfidentialClientFlow", () => {
     expect(token.expiresIn).approximately(3600, 1);
   });
 
+  it("getTokenWithClientSecret with fetch error", async () => {
+    const mockFetch: Mock = vi.fn();
+    mockFetch.mockResolvedValue({
+      ok: false,
+      status: 400,
+      statusText: "Bad Request",
+    });
+
+    await expect(() =>
+      getTokenWithClientSecret(
+        clientId,
+        clientSecret,
+        url,
+        mockFetch,
+        undefined,
+        scopes,
+      )
+    ).rejects.toThrow("400 Bad Request");
+
+    expect(mockFetch).toBeCalledWith(
+      `https://example.com/multipass/api/oauth2/token`,
+      {
+        body:
+          "grant_type=client_credentials&client_id=testClientId&client_secret=testClientSecret&scopes=offline_access+api%3Aread+api%3Awrite",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        method: "POST",
+      },
+    );
+  });
+
   it("revokeTokenWithClientSecret", async () => {
     const mockFetch: Mock = vi.fn();
     mockFetch.mockResolvedValue({

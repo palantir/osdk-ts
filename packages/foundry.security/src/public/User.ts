@@ -71,19 +71,19 @@ export function getUser(
   return $omniFetch($ctx, _getUser, ...args);
 }
 
-const _meUsers: $OmniMethod<
+const _getCurrentUser: $OmniMethod<
   ($queryParams?: { preview?: PreviewMode | undefined }) => Promise<User>
-> = [0, "/v2/security/users/me", 2];
+> = [0, "/v2/security/users/getCurrent", 2];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/users/me
+ * URL: /v2/security/users/getCurrent
  */
-export function meUsers(
+export function getCurrentUser(
   $ctx: $ClientContext<any>,
   ...args: [$queryParams?: { preview?: PreviewMode | undefined }]
 ): Promise<User> {
-  return $omniFetch($ctx, _meUsers, ...args);
+  return $omniFetch($ctx, _getCurrentUser, ...args);
 }
 
 const _profilePictureUser: $OmniMethod<

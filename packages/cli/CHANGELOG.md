@@ -1,5 +1,11 @@
 # @osdk/cli
 
+## 0.20.0
+
+### Minor Changes
+
+- 3955502: Updates archiver dependency
+
 ## 0.19.0
 
 ### Minor Changes

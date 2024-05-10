@@ -35,7 +35,7 @@
   "devDependencies": {
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
-    "semver": "^7.6.0",
+    "semver": "^7.6.2",
     "typescript": "^5.4.5"
   },
   "publishConfig": {

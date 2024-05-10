@@ -58,9 +58,10 @@ const testSubscriptions = true;
 
 async function runTests() {
   try {
-    const myUser = await Foundry.Security.User.meUsers(client.ctx as any, {
-      preview: true,
-    });
+    const myUser = await Foundry.Security.User.getCurrentUser(
+      client.ctx as any,
+      { preview: true },
+    );
     console.log("User", myUser!.email);
 
     if (runOld) {
