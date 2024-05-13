@@ -19,7 +19,9 @@ import type {
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
+import type { SharedClient } from "@osdk/shared.net";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
+import type { MinimalClient } from "./MinimalClientContext.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
@@ -32,7 +34,7 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
   )
   : Q;
 
-export interface Client {
+export interface Client extends SharedClient<MinimalClient> {
   <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(
     o: CheckVersionBound<Q>,
   ): ObjectSet<Q>;
@@ -40,8 +42,6 @@ export interface Client {
   <Q extends ActionDefinition<any, any, any>>(
     o: CheckVersionBound<Q>,
   ): ActionSignatureFromDef<Q>;
-
-  ctx: unknown;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.

@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "./ClientContext.js";
+import type { SharedClient, SharedClientContext } from "./ClientContext.js";
+import { symbolClientContext } from "./ClientContext.js";
 import { PalantirApiError } from "./PalantirApiError.js";
 import { UnknownError } from "./UnknownError.js";
 
-export type OmniMethod<F extends (...args: any[]) => any> = [
+export type FoundryPlatformMethod<F extends (...args: any[]) => any> = [
   method: number,
   path: string,
   flags?: number,
@@ -28,8 +29,10 @@ export type OmniMethod<F extends (...args: any[]) => any> = [
   __funcBrand?: F;
 };
 
-export async function omniFetch<X extends OmniMethod<any>>(
-  clientCtx: ClientContext<any>,
+export async function foundryPlatformFetch<
+  X extends FoundryPlatformMethod<any>,
+>(
+  client: SharedClient | SharedClientContext,
   [
     httpMethodNum,
     origPath,
@@ -64,7 +67,7 @@ export async function omniFetch<X extends OmniMethod<any>>(
   ][httpMethodNum];
 
   return await apiFetch(
-    clientCtx,
+    (client as SharedClient)[symbolClientContext] ?? client,
     method,
     path,
     body,
@@ -75,8 +78,8 @@ export async function omniFetch<X extends OmniMethod<any>>(
   );
 }
 
-export async function apiFetch(
-  clientCtx: Pick<ClientContext<any>, "stack" | "fetch">,
+async function apiFetch(
+  clientCtx: Pick<SharedClientContext, "baseUrl" | "fetch">,
   method: string,
   endpointPath: string,
   data?: any,
@@ -85,7 +88,7 @@ export async function apiFetch(
   requestMediaType?: string,
   responseMediaType?: string,
 ) {
-  const url = new URL(`/api${endpointPath}`, clientCtx.stack);
+  const url = new URL(`/api${endpointPath}`, clientCtx.baseUrl);
   for (const [key, value] of Object.entries(queryArguments || {})) {
     if (value == null) {
       continue;

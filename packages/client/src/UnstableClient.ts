@@ -38,6 +38,4 @@ export interface UnstableClient extends Client {
     type: T,
     rid: string,
   ): UNSTABLE_ObjectSet<T>;
-
-  ctx: unknown;
 }

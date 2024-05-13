@@ -36,8 +36,8 @@ export async function writeResource2(
   return writeCode(
     filePath,
     `${copyright}\n\n
-        import type { ClientContext as $ClientContext, OmniMethod as $OmniMethod } from "@osdk/shared.net";
-        import { omniFetch as $omniFetch } from "@osdk/shared.net";
+        import type { SharedClient as $Client, SharedClientContext as $ClientContext, FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net";
+        import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
         ${generateImports(referencedTypes)}
         
         //
@@ -62,7 +62,7 @@ function generateMethods(resource: Resource, model: Model) {
     const returnType = `Promise<${innerReturnType}>`;
 
     out += `
-     const _${methodName}: $OmniMethod<(${
+     const _${methodName}: $FoundryPlatformMethod<(${
       generateMethodParameters(method)
     }) => ${returnType}> = ${generateOperationArray(method, model)};
     
@@ -70,9 +70,9 @@ function generateMethods(resource: Resource, model: Model) {
 
     ${generateMethodJsdoc(method)}
     export function ${methodName}(
-      $ctx: $ClientContext<any>,
+      $ctx: $Client | $ClientContext,
       ...args: [${generateMethodParameters(method)}]
-    ): ${returnType}{ return $omniFetch($ctx, _${methodName}, ...args); }
+    ): ${returnType}{ return $foundryPlatformFetch($ctx, _${methodName}, ...args); }
 
     `;
   }

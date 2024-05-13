@@ -36,7 +36,7 @@ describe(createStandardOntologyProviderFactory, () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
       {
         alwaysRevalidate: false,
       },
@@ -77,7 +77,7 @@ describe(createStandardOntologyProviderFactory, () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
       {
         alwaysRevalidate: true,
       },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type Osdk, type PageResult } from "@osdk/client";
+import type { Osdk, PageResult } from "@osdk/client";
 import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
 import { createClient } from "@osdk/client/unstable-do-not-use";
 import {
@@ -53,18 +53,17 @@ export const logger = pino(
 export const client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-  () => process.env.FOUNDRY_USER_TOKEN!,
+  async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
 );
 
 const runOld = false;
-
 const testSubscriptions = false;
 
 async function runTests() {
   try {
     const myUser = await Foundry.Security.User.getCurrentUser(
-      client.ctx as any,
+      client,
       { preview: true },
     );
     logger.info(myUser, "Loaded user");
@@ -79,7 +78,7 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const models = await LanguageModel.listLanguageModels(client.ctx as any);
+    const models = await LanguageModel.listLanguageModels(client);
     logger.info({
       models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
     }, "Loaded models");

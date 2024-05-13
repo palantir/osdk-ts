@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import { symbolClientContext } from "@osdk/shared.net";
 import type { Logger } from "pino";
 import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
@@ -33,17 +34,15 @@ import type { UnstableClient } from "./UnstableClient.js";
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
-  stack: string,
+  baseUrl: string,
   ontologyRid: string,
-  tokenProvider: () => Promise<string> | string,
+  tokenProvider: () => Promise<string>,
   options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   const clientCtx: MinimalClient = createMinimalClient(
-    {
-      ontologyRid,
-    },
-    stack,
+    { ontologyRid },
+    baseUrl,
     tokenProvider,
     options,
     fetchFn,
@@ -73,7 +72,7 @@ export function createClientInternal(
   const client: Client = Object.defineProperties<Client>(
     clientFn as UnstableClient,
     {
-      ctx: {
+      [symbolClientContext]: {
         value: clientCtx,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
