@@ -15,10 +15,7 @@
  */
 
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
-import type {
-  ObjectSet,
-  SearchJsonQueryV2,
-} from "@osdk/internal.foundry/types";
+import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,

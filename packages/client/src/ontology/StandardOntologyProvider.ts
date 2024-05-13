@@ -22,12 +22,11 @@ import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
   wireObjectTypeFullMetadataToSdkObjectTypeDefinition,
 } from "@osdk/generator-converters";
-import { listInterfaceTypes } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
-import { getOntologyFullMetadata } from "@osdk/internal.foundry/OntologiesV2_OntologyV2";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   ListInterfaceTypesResponse,
   OntologyFullMetadata,
-} from "@osdk/internal.foundry/types";
+} from "@osdk/internal.foundry";
 import deepEqual from "fast-deep-equal";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncCache } from "../object/Cache.js";
@@ -44,12 +43,12 @@ const alwaysRevalidateDefault = false;
 // SLLLLLLOOOOOOOWWWW
 async function fullOntologyLoad(client: MinimalClient) {
   return await Promise.all([
-    listInterfaceTypes(
+    OntologiesV2.OntologyObjectV2.listInterfaceTypes(
       client,
       client.ontologyRid,
       { pageSize: 200, preview: true },
     ),
-    getOntologyFullMetadata(
+    OntologiesV2.OntologyV2.getOntologyFullMetadata(
       client,
       client.ontologyRid,
     ),

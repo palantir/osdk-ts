@@ -16,7 +16,7 @@
 
 import type { ActionDefinition } from "@osdk/api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { applyActionV2 } from "@osdk/internal.foundry/OntologiesV2_Action";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
@@ -44,7 +44,7 @@ export async function applyAction<
   parameters?: OsdkActionParameters<AD["parameters"]>,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
-  const response = await applyActionV2(
+  const response = await OntologiesV2.Action.applyActionV2(
     addUserAgent(client, action),
     client.ontologyRid,
     action.apiName,

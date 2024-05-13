@@ -27,7 +27,7 @@ import {
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
 import * as Foundry from "@osdk/foundry";
-import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
+import { Models } from "@osdk/internal.foundry";
 import { pino } from "pino";
 import pinoPretty from "pino-pretty";
 import invariant from "tiny-invariant";
@@ -78,7 +78,7 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const models = await LanguageModel.listLanguageModels(client);
+    const models = await Models.LanguageModel.listLanguageModels(client);
     logger.info({
       models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
     }, "Loaded models");

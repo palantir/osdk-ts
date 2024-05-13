@@ -19,8 +19,8 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { getObjectTypeV2 } from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry/types";
+import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
@@ -219,7 +219,7 @@ export class ObjectSetListenerWebsocket {
         // look up the object type's rid and ensure that we have enabled object set watcher for that rid
         // TODO ???
         getObjectSetBaseType(sub.objectSet).then(baseType =>
-          getObjectTypeV2(
+          OntologiesV2.ObjectTypeV2.getObjectTypeV2(
             this.#client,
             this.#client.ontologyRid,
             baseType,
@@ -624,7 +624,7 @@ async function getOntologyPropertyMappingForApiName(
     );
   }
 
-  const wireObjectType = await getObjectTypeV2(
+  const wireObjectType = await OntologiesV2.ObjectTypeV2.getObjectTypeV2(
     client,
     client.ontologyRid,
     objectApiName,

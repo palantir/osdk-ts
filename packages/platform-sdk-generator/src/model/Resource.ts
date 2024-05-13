@@ -18,6 +18,6 @@ import type { Component } from "./Component.js";
 import type { StaticOperation } from "./StaticOperation.js";
 
 export interface Resource {
-  component: Component;
+  component: string;
   operations: StaticOperation[];
 }
