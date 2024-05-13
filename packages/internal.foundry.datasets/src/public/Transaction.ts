@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
+import type { BranchId, DatasetRid } from "@osdk/internal.foundry.core";
 import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+import type {
+  CreateTransactionRequest,
+  Transaction,
+  TransactionRid,
+} from "../_components.js";
+
+//
 
 const _createTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
-    $body: $C.CreateTransactionRequest,
-    $queryParams?: { branchId?: $C.BranchId },
-  ) => Promise<$C.Transaction>
+    datasetRid: DatasetRid,
+    $body: CreateTransactionRequest,
+    $queryParams?: { branchId?: BranchId | undefined },
+  ) => Promise<Transaction>
 > = [1, "/v1/datasets/{0}/transactions", 3];
 
 /**
@@ -41,19 +48,19 @@ const _createTransaction: $FoundryPlatformMethod<
 export function createTransaction(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
-    $body: $C.CreateTransactionRequest,
-    $queryParams?: { branchId?: $C.BranchId },
+    datasetRid: DatasetRid,
+    $body: CreateTransactionRequest,
+    $queryParams?: { branchId?: BranchId | undefined },
   ]
-): Promise<$C.Transaction> {
+): Promise<Transaction> {
   return $foundryPlatformFetch($ctx, _createTransaction, ...args);
 }
 
 const _getTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
-    transactionRid: $C.TransactionRid,
-  ) => Promise<$C.Transaction>
+    datasetRid: DatasetRid,
+    transactionRid: TransactionRid,
+  ) => Promise<Transaction>
 > = [0, "/v1/datasets/{0}/transactions/{1}"];
 
 /**
@@ -66,16 +73,16 @@ const _getTransaction: $FoundryPlatformMethod<
  */
 export function getTransaction(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
-): Promise<$C.Transaction> {
+  ...args: [datasetRid: DatasetRid, transactionRid: TransactionRid]
+): Promise<Transaction> {
   return $foundryPlatformFetch($ctx, _getTransaction, ...args);
 }
 
 const _commitTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
-    transactionRid: $C.TransactionRid,
-  ) => Promise<$C.Transaction>
+    datasetRid: DatasetRid,
+    transactionRid: TransactionRid,
+  ) => Promise<Transaction>
 > = [1, "/v1/datasets/{0}/transactions/{1}/commit"];
 
 /**
@@ -89,16 +96,16 @@ const _commitTransaction: $FoundryPlatformMethod<
  */
 export function commitTransaction(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
-): Promise<$C.Transaction> {
+  ...args: [datasetRid: DatasetRid, transactionRid: TransactionRid]
+): Promise<Transaction> {
   return $foundryPlatformFetch($ctx, _commitTransaction, ...args);
 }
 
 const _abortTransaction: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
-    transactionRid: $C.TransactionRid,
-  ) => Promise<$C.Transaction>
+    datasetRid: DatasetRid,
+    transactionRid: TransactionRid,
+  ) => Promise<Transaction>
 > = [1, "/v1/datasets/{0}/transactions/{1}/abort"];
 
 /**
@@ -112,7 +119,7 @@ const _abortTransaction: $FoundryPlatformMethod<
  */
 export function abortTransaction(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
-): Promise<$C.Transaction> {
+  ...args: [datasetRid: DatasetRid, transactionRid: TransactionRid]
+): Promise<Transaction> {
   return $foundryPlatformFetch($ctx, _abortTransaction, ...args);
 }

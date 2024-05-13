@@ -15,18 +15,33 @@
  */
 
 import type {
+  BranchId,
+  DatasetRid,
+  PageSize,
+  PageToken,
+} from "@osdk/internal.foundry.core";
+import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+import type {
+  Branch,
+  CreateBranchRequest,
+  ListBranchesResponse,
+} from "../_components.js";
+
+//
 
 const _listBranches: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
-    $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
-  ) => Promise<$C.ListBranchesResponse>
+    datasetRid: DatasetRid,
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
+  ) => Promise<ListBranchesResponse>
 > = [0, "/v1/datasets/{0}/branches", 2];
 
 /**
@@ -40,19 +55,19 @@ const _listBranches: $FoundryPlatformMethod<
 export function listBranches(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
 
-    $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
   ]
-): Promise<$C.ListBranchesResponse> {
+): Promise<ListBranchesResponse> {
   return $foundryPlatformFetch($ctx, _listBranches, ...args);
 }
 
 const _createBranch: $FoundryPlatformMethod<
-  (
-    datasetRid: $C.DatasetRid,
-    $body: $C.CreateBranchRequest,
-  ) => Promise<$C.Branch>
+  (datasetRid: DatasetRid, $body: CreateBranchRequest) => Promise<Branch>
 > = [1, "/v1/datasets/{0}/branches", 1];
 
 /**
@@ -65,13 +80,13 @@ const _createBranch: $FoundryPlatformMethod<
  */
 export function createBranch(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, $body: $C.CreateBranchRequest]
-): Promise<$C.Branch> {
+  ...args: [datasetRid: DatasetRid, $body: CreateBranchRequest]
+): Promise<Branch> {
   return $foundryPlatformFetch($ctx, _createBranch, ...args);
 }
 
 const _getBranch: $FoundryPlatformMethod<
-  (datasetRid: $C.DatasetRid, branchId: $C.BranchId) => Promise<$C.Branch>
+  (datasetRid: DatasetRid, branchId: BranchId) => Promise<Branch>
 > = [0, "/v1/datasets/{0}/branches/{1}"];
 
 /**
@@ -84,13 +99,13 @@ const _getBranch: $FoundryPlatformMethod<
  */
 export function getBranch(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, branchId: $C.BranchId]
-): Promise<$C.Branch> {
+  ...args: [datasetRid: DatasetRid, branchId: BranchId]
+): Promise<Branch> {
   return $foundryPlatformFetch($ctx, _getBranch, ...args);
 }
 
 const _deleteBranch: $FoundryPlatformMethod<
-  (datasetRid: $C.DatasetRid, branchId: $C.BranchId) => Promise<void>
+  (datasetRid: DatasetRid, branchId: BranchId) => Promise<void>
 > = [3, "/v1/datasets/{0}/branches/{1}"];
 
 /**
@@ -103,7 +118,7 @@ const _deleteBranch: $FoundryPlatformMethod<
  */
 export function deleteBranch(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid, branchId: $C.BranchId]
+  ...args: [datasetRid: DatasetRid, branchId: BranchId]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _deleteBranch, ...args);
 }

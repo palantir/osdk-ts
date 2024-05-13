@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-export * from "@osdk/internal.foundry.core";
-export * as Datasets from "@osdk/internal.foundry.datasets";
-export * as Models from "@osdk/internal.foundry.models";
-export * as Ontologies from "@osdk/internal.foundry.ontologies";
-export * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+export type * from "./_components.js";
+export * as Action from "./public/Action.js";
+export * as ActionTypeV2 from "./public/ActionTypeV2.js";
+export * as ObjectTypeV2 from "./public/ObjectTypeV2.js";
+export * as OntologyObjectSet from "./public/OntologyObjectSet.js";
+export * as OntologyObjectV2 from "./public/OntologyObjectV2.js";
+export * as OntologyV2 from "./public/OntologyV2.js";
+export * as QueryType from "./public/QueryType.js";

@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export * from "../generated/components.js";
+export type LooselyBrandedString<T extends string> = string & {
+  __LOOSE_BRAND?: T;
+};

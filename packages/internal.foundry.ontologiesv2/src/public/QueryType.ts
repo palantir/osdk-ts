@@ -15,18 +15,34 @@
  */
 
 import type {
+  ArtifactRepositoryRid,
+  ExecuteQueryRequest,
+  ExecuteQueryResponse,
+  ListQueryTypesResponseV2,
+  OntologyIdentifier,
+  PageSize,
+  PageToken,
+  QueryApiName,
+  QueryTypeV2,
+  SdkPackageName,
+} from "@osdk/internal.foundry.core";
+import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+
+//
 
 const _listQueryTypesV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
-  ) => Promise<$C.ListQueryTypesResponseV2>
+    ontology: OntologyIdentifier,
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
+  ) => Promise<ListQueryTypesResponseV2>
 > = [0, "/v2/ontologies/{0}/queryTypes", 2];
 
 /**
@@ -43,19 +59,22 @@ const _listQueryTypesV2: $FoundryPlatformMethod<
 export function listQueryTypesV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: $C.OntologyIdentifier,
+    ontology: OntologyIdentifier,
 
-    $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+    },
   ]
-): Promise<$C.ListQueryTypesResponseV2> {
+): Promise<ListQueryTypesResponseV2> {
   return $foundryPlatformFetch($ctx, _listQueryTypesV2, ...args);
 }
 
 const _getQueryTypeV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    queryApiName: $C.QueryApiName,
-  ) => Promise<$C.QueryTypeV2>
+    ontology: OntologyIdentifier,
+    queryApiName: QueryApiName,
+  ) => Promise<QueryTypeV2>
 > = [0, "/v2/ontologies/{0}/queryTypes/{1}"];
 
 /**
@@ -68,21 +87,21 @@ const _getQueryTypeV2: $FoundryPlatformMethod<
  */
 export function getQueryTypeV2(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: $C.OntologyIdentifier, queryApiName: $C.QueryApiName]
-): Promise<$C.QueryTypeV2> {
+  ...args: [ontology: OntologyIdentifier, queryApiName: QueryApiName]
+): Promise<QueryTypeV2> {
   return $foundryPlatformFetch($ctx, _getQueryTypeV2, ...args);
 }
 
 const _executeQueryV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    queryApiName: $C.QueryApiName,
-    $body: $C.ExecuteQueryRequest,
+    ontology: OntologyIdentifier,
+    queryApiName: QueryApiName,
+    $body: ExecuteQueryRequest,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<$C.ExecuteQueryResponse>
+  ) => Promise<ExecuteQueryResponse>
 > = [1, "/v2/ontologies/{0}/queries/{1}/execute", 3];
 
 /**
@@ -99,14 +118,14 @@ const _executeQueryV2: $FoundryPlatformMethod<
 export function executeQueryV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: $C.OntologyIdentifier,
-    queryApiName: $C.QueryApiName,
-    $body: $C.ExecuteQueryRequest,
+    ontology: OntologyIdentifier,
+    queryApiName: QueryApiName,
+    $body: ExecuteQueryRequest,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<$C.ExecuteQueryResponse> {
+): Promise<ExecuteQueryResponse> {
   return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
 }

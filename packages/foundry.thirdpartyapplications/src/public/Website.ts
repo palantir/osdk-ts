@@ -19,13 +19,13 @@ import type {
   ThirdPartyApplicationRid,
   Website,
 } from "@osdk/foundry.core";
-import type { DeployWebsiteRequest } from "@osdk/foundry.thirdpartyapplications";
 import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+import type { DeployWebsiteRequest } from "../_components.js";
 
 //
 

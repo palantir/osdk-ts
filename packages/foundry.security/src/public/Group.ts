@@ -15,13 +15,13 @@
  */
 
 import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.core";
-import type { CreateGroupRequest } from "@osdk/foundry.security";
 import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+import type { CreateGroupRequest } from "../_components.js";
 
 //
 

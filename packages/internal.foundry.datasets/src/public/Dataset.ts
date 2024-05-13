@@ -15,15 +15,27 @@
  */
 
 import type {
+  BranchId,
+  DatasetRid,
+  PreviewMode,
+} from "@osdk/internal.foundry.core";
+import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+import type {
+  CreateDatasetRequest,
+  Dataset,
+  TableExportFormat,
+  TransactionRid,
+} from "../_components.js";
+
+//
 
 const _createDataset: $FoundryPlatformMethod<
-  ($body: $C.CreateDatasetRequest) => Promise<$C.Dataset>
+  ($body: CreateDatasetRequest) => Promise<Dataset>
 > = [1, "/v1/datasets", 1];
 
 /**
@@ -36,13 +48,13 @@ const _createDataset: $FoundryPlatformMethod<
  */
 export function createDataset(
   $ctx: $Client | $ClientContext,
-  ...args: [$body: $C.CreateDatasetRequest]
-): Promise<$C.Dataset> {
+  ...args: [$body: CreateDatasetRequest]
+): Promise<Dataset> {
   return $foundryPlatformFetch($ctx, _createDataset, ...args);
 }
 
 const _getDataset: $FoundryPlatformMethod<
-  (datasetRid: $C.DatasetRid) => Promise<$C.Dataset>
+  (datasetRid: DatasetRid) => Promise<Dataset>
 > = [0, "/v1/datasets/{0}"];
 
 /**
@@ -55,21 +67,21 @@ const _getDataset: $FoundryPlatformMethod<
  */
 export function getDataset(
   $ctx: $Client | $ClientContext,
-  ...args: [datasetRid: $C.DatasetRid]
-): Promise<$C.Dataset> {
+  ...args: [datasetRid: DatasetRid]
+): Promise<Dataset> {
   return $foundryPlatformFetch($ctx, _getDataset, ...args);
 }
 
 const _readTable: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
     $queryParams: {
-      branchId?: $C.BranchId;
-      startTransactionRid?: $C.TransactionRid;
-      endTransactionRid?: $C.TransactionRid;
-      format: $C.TableExportFormat;
+      branchId?: BranchId | undefined;
+      startTransactionRid?: TransactionRid | undefined;
+      endTransactionRid?: TransactionRid | undefined;
+      format: TableExportFormat;
       columns: Array<string>;
-      rowLimit?: number;
+      rowLimit?: number | undefined;
     },
   ) => Promise<unknown>
 > = [0, "/v1/datasets/{0}/readTable", 2, , "*/*"];
@@ -87,15 +99,15 @@ const _readTable: $FoundryPlatformMethod<
 export function readTable(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
 
     $queryParams: {
-      branchId?: $C.BranchId;
-      startTransactionRid?: $C.TransactionRid;
-      endTransactionRid?: $C.TransactionRid;
-      format: $C.TableExportFormat;
+      branchId?: BranchId | undefined;
+      startTransactionRid?: TransactionRid | undefined;
+      endTransactionRid?: TransactionRid | undefined;
+      format: TableExportFormat;
       columns: Array<string>;
-      rowLimit?: number;
+      rowLimit?: number | undefined;
     },
   ]
 ): Promise<unknown> {
@@ -104,11 +116,11 @@ export function readTable(
 
 const _getSchema: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
     $queryParams?: {
-      branchId?: $C.BranchId;
-      transactionRid?: $C.TransactionRid;
-      preview?: $C.PreviewMode;
+      branchId?: BranchId | undefined;
+      transactionRid?: TransactionRid | undefined;
+      preview?: PreviewMode | undefined;
     },
   ) => Promise<any | undefined>
 > = [0, "/v1/datasets/{0}/schema", 2];
@@ -122,12 +134,12 @@ const _getSchema: $FoundryPlatformMethod<
 export function getSchema(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
 
     $queryParams?: {
-      branchId?: $C.BranchId;
-      transactionRid?: $C.TransactionRid;
-      preview?: $C.PreviewMode;
+      branchId?: BranchId | undefined;
+      transactionRid?: TransactionRid | undefined;
+      preview?: PreviewMode | undefined;
     },
   ]
 ): Promise<any | undefined> {
@@ -136,9 +148,12 @@ export function getSchema(
 
 const _putSchema: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
     $body: any,
-    $queryParams?: { branchId?: $C.BranchId; preview?: $C.PreviewMode },
+    $queryParams?: {
+      branchId?: BranchId | undefined;
+      preview?: PreviewMode | undefined;
+    },
   ) => Promise<void>
 > = [2, "/v1/datasets/{0}/schema", 3];
 
@@ -151,9 +166,12 @@ const _putSchema: $FoundryPlatformMethod<
 export function putSchema(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
     $body: any,
-    $queryParams?: { branchId?: $C.BranchId; preview?: $C.PreviewMode },
+    $queryParams?: {
+      branchId?: BranchId | undefined;
+      preview?: PreviewMode | undefined;
+    },
   ]
 ): Promise<void> {
   return $foundryPlatformFetch($ctx, _putSchema, ...args);
@@ -161,11 +179,11 @@ export function putSchema(
 
 const _deleteSchema: $FoundryPlatformMethod<
   (
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
     $queryParams?: {
-      branchId?: $C.BranchId;
-      transactionRid?: $C.TransactionRid;
-      preview?: $C.PreviewMode;
+      branchId?: BranchId | undefined;
+      transactionRid?: TransactionRid | undefined;
+      preview?: PreviewMode | undefined;
     },
   ) => Promise<void>
 > = [3, "/v1/datasets/{0}/schema", 2];
@@ -179,12 +197,12 @@ const _deleteSchema: $FoundryPlatformMethod<
 export function deleteSchema(
   $ctx: $Client | $ClientContext,
   ...args: [
-    datasetRid: $C.DatasetRid,
+    datasetRid: DatasetRid,
 
     $queryParams?: {
-      branchId?: $C.BranchId;
-      transactionRid?: $C.TransactionRid;
-      preview?: $C.PreviewMode;
+      branchId?: BranchId | undefined;
+      transactionRid?: TransactionRid | undefined;
+      preview?: PreviewMode | undefined;
     },
   ]
 ): Promise<void> {

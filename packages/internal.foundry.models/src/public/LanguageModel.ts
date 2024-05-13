@@ -14,19 +14,27 @@
  * limitations under the License.
  */
 
+import type { LanguageModelSource } from "@osdk/internal.foundry.core";
 import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+import type {
+  ChatCompletionRequest,
+  ChatCompletionResponse,
+  LanguageModelApiName,
+  ListLanguageModelsResponse,
+} from "../_components.js";
+
+//
 
 const _createChatCompletion: $FoundryPlatformMethod<
   (
-    modelName: $C.LanguageModelApiName,
-    $body: $C.ChatCompletionRequest,
-  ) => Promise<$C.ChatCompletionResponse>
+    modelName: LanguageModelApiName,
+    $body: ChatCompletionRequest,
+  ) => Promise<ChatCompletionResponse>
 > = [1, "/v1/models/languageModels/{0}/chatCompletions", 1];
 
 /**
@@ -37,15 +45,15 @@ const _createChatCompletion: $FoundryPlatformMethod<
  */
 export function createChatCompletion(
   $ctx: $Client | $ClientContext,
-  ...args: [modelName: $C.LanguageModelApiName, $body: $C.ChatCompletionRequest]
-): Promise<$C.ChatCompletionResponse> {
+  ...args: [modelName: LanguageModelApiName, $body: ChatCompletionRequest]
+): Promise<ChatCompletionResponse> {
   return $foundryPlatformFetch($ctx, _createChatCompletion, ...args);
 }
 
 const _streamChatCompletion: $FoundryPlatformMethod<
   (
-    modelName: $C.LanguageModelApiName,
-    $body: $C.ChatCompletionRequest,
+    modelName: LanguageModelApiName,
+    $body: ChatCompletionRequest,
   ) => Promise<unknown>
 > = [1, "/v1/models/languageModels/{0}/chatCompletions/stream", 1, , "*/*"];
 
@@ -58,15 +66,15 @@ const _streamChatCompletion: $FoundryPlatformMethod<
  */
 export function streamChatCompletion(
   $ctx: $Client | $ClientContext,
-  ...args: [modelName: $C.LanguageModelApiName, $body: $C.ChatCompletionRequest]
+  ...args: [modelName: LanguageModelApiName, $body: ChatCompletionRequest]
 ): Promise<unknown> {
   return $foundryPlatformFetch($ctx, _streamChatCompletion, ...args);
 }
 
 const _listLanguageModels: $FoundryPlatformMethod<
   ($queryParams?: {
-    source?: $C.LanguageModelSource;
-  }) => Promise<$C.ListLanguageModelsResponse>
+    source?: LanguageModelSource | undefined;
+  }) => Promise<ListLanguageModelsResponse>
 > = [0, "/v1/models/languageModels", 2];
 
 /**
@@ -77,7 +85,7 @@ const _listLanguageModels: $FoundryPlatformMethod<
  */
 export function listLanguageModels(
   $ctx: $Client | $ClientContext,
-  ...args: [$queryParams?: { source?: $C.LanguageModelSource }]
-): Promise<$C.ListLanguageModelsResponse> {
+  ...args: [$queryParams?: { source?: LanguageModelSource | undefined }]
+): Promise<ListLanguageModelsResponse> {
   return $foundryPlatformFetch($ctx, _listLanguageModels, ...args);
 }

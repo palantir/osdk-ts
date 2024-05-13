@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export * from "@osdk/internal.foundry.core";
-export * as Datasets from "@osdk/internal.foundry.datasets";
-export * as Models from "@osdk/internal.foundry.models";
-export * as Ontologies from "@osdk/internal.foundry.ontologies";
-export * as OntologiesV2 from "@osdk/internal.foundry.ontologiesv2";
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options, {})
+);

@@ -15,18 +15,32 @@
  */
 
 import type {
+  AggregateObjectSetRequestV2,
+  AggregateObjectsResponseV2,
+  ArtifactRepositoryRid,
+  CreateTemporaryObjectSetRequestV2,
+  CreateTemporaryObjectSetResponseV2,
+  LoadObjectSetRequestV2,
+  LoadObjectSetResponseV2,
+  ObjectSet,
+  ObjectSetRid,
+  OntologyIdentifier,
+  SdkPackageName,
+} from "@osdk/internal.foundry.core";
+import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
+
+//
 
 const _createTemporaryObjectSetV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    $body: $C.CreateTemporaryObjectSetRequestV2,
-  ) => Promise<$C.CreateTemporaryObjectSetResponseV2>
+    ontology: OntologyIdentifier,
+    $body: CreateTemporaryObjectSetRequestV2,
+  ) => Promise<CreateTemporaryObjectSetResponseV2>
 > = [1, "/v2/ontologies/{0}/objectSets/createTemporary", 1];
 
 /**
@@ -41,18 +55,18 @@ const _createTemporaryObjectSetV2: $FoundryPlatformMethod<
 export function createTemporaryObjectSetV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: $C.OntologyIdentifier,
-    $body: $C.CreateTemporaryObjectSetRequestV2,
+    ontology: OntologyIdentifier,
+    $body: CreateTemporaryObjectSetRequestV2,
   ]
-): Promise<$C.CreateTemporaryObjectSetResponseV2> {
+): Promise<CreateTemporaryObjectSetResponseV2> {
   return $foundryPlatformFetch($ctx, _createTemporaryObjectSetV2, ...args);
 }
 
 const _getObjectSetV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    objectSetRid: $C.ObjectSetRid,
-  ) => Promise<$C.ObjectSet>
+    ontology: OntologyIdentifier,
+    objectSetRid: ObjectSetRid,
+  ) => Promise<ObjectSet>
 > = [0, "/v2/ontologies/{0}/objectSets/{1}"];
 
 /**
@@ -65,20 +79,20 @@ const _getObjectSetV2: $FoundryPlatformMethod<
  */
 export function getObjectSetV2(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: $C.OntologyIdentifier, objectSetRid: $C.ObjectSetRid]
-): Promise<$C.ObjectSet> {
+  ...args: [ontology: OntologyIdentifier, objectSetRid: ObjectSetRid]
+): Promise<ObjectSet> {
   return $foundryPlatformFetch($ctx, _getObjectSetV2, ...args);
 }
 
 const _loadObjectSetV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    $body: $C.LoadObjectSetRequestV2,
+    ontology: OntologyIdentifier,
+    $body: LoadObjectSetRequestV2,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<$C.LoadObjectSetResponseV2>
+  ) => Promise<LoadObjectSetResponseV2>
 > = [1, "/v2/ontologies/{0}/objectSets/loadObjects", 3];
 
 /**
@@ -97,26 +111,26 @@ const _loadObjectSetV2: $FoundryPlatformMethod<
 export function loadObjectSetV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: $C.OntologyIdentifier,
-    $body: $C.LoadObjectSetRequestV2,
+    ontology: OntologyIdentifier,
+    $body: LoadObjectSetRequestV2,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<$C.LoadObjectSetResponseV2> {
+): Promise<LoadObjectSetResponseV2> {
   return $foundryPlatformFetch($ctx, _loadObjectSetV2, ...args);
 }
 
 const _aggregateObjectSetV2: $FoundryPlatformMethod<
   (
-    ontology: $C.OntologyIdentifier,
-    $body: $C.AggregateObjectSetRequestV2,
+    ontology: OntologyIdentifier,
+    $body: AggregateObjectSetRequestV2,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<$C.AggregateObjectsResponseV2>
+  ) => Promise<AggregateObjectsResponseV2>
 > = [1, "/v2/ontologies/{0}/objectSets/aggregate", 3];
 
 /**
@@ -130,13 +144,13 @@ const _aggregateObjectSetV2: $FoundryPlatformMethod<
 export function aggregateObjectSetV2(
   $ctx: $Client | $ClientContext,
   ...args: [
-    ontology: $C.OntologyIdentifier,
-    $body: $C.AggregateObjectSetRequestV2,
+    ontology: OntologyIdentifier,
+    $body: AggregateObjectSetRequestV2,
     $queryParams?: {
-      artifactRepository?: $C.ArtifactRepositoryRid;
-      packageName?: $C.SdkPackageName;
+      artifactRepository?: ArtifactRepositoryRid | undefined;
+      packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<$C.AggregateObjectsResponseV2> {
+): Promise<AggregateObjectsResponseV2> {
   return $foundryPlatformFetch($ctx, _aggregateObjectSetV2, ...args);
 }

@@ -15,16 +15,22 @@
  */
 
 import type {
+  ListOntologiesResponse,
+  Ontology,
+  OntologyRid,
+} from "@osdk/internal.foundry.core";
+import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type * as $C from "../generated/components.js";
 
-const _listOntologiesV2: $FoundryPlatformMethod<
-  () => Promise<$C.ListOntologiesV2Response>
-> = [0, "/v2/ontologies"];
+//
+
+const _listOntologies: $FoundryPlatformMethod<
+  () => Promise<ListOntologiesResponse>
+> = [0, "/v1/ontologies"];
 
 /**
  * Lists the Ontologies visible to the current user.
@@ -32,18 +38,18 @@ const _listOntologiesV2: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  * Required Scopes: [api:read-data]
- * URL: /v2/ontologies
+ * URL: /v1/ontologies
  */
-export function listOntologiesV2(
+export function listOntologies(
   $ctx: $Client | $ClientContext,
   ...args: []
-): Promise<$C.ListOntologiesV2Response> {
-  return $foundryPlatformFetch($ctx, _listOntologiesV2, ...args);
+): Promise<ListOntologiesResponse> {
+  return $foundryPlatformFetch($ctx, _listOntologies, ...args);
 }
 
-const _getOntologyV2: $FoundryPlatformMethod<
-  (ontology: $C.OntologyIdentifier) => Promise<$C.OntologyV2>
-> = [0, "/v2/ontologies/{0}"];
+const _getOntology: $FoundryPlatformMethod<
+  (ontologyRid: OntologyRid) => Promise<Ontology>
+> = [0, "/v1/ontologies/{0}"];
 
 /**
  * Gets a specific ontology with the given Ontology RID.
@@ -51,28 +57,11 @@ const _getOntologyV2: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
  *
  * Required Scopes: [api:read-data]
- * URL: /v2/ontologies/{ontology}
+ * URL: /v1/ontologies/{ontologyRid}
  */
-export function getOntologyV2(
+export function getOntology(
   $ctx: $Client | $ClientContext,
-  ...args: [ontology: $C.OntologyIdentifier]
-): Promise<$C.OntologyV2> {
-  return $foundryPlatformFetch($ctx, _getOntologyV2, ...args);
-}
-
-const _getOntologyFullMetadata: $FoundryPlatformMethod<
-  (ontology: $C.OntologyIdentifier) => Promise<$C.OntologyFullMetadata>
-> = [0, "/v2/ontologies/{0}/fullMetadata"];
-
-/**
- * Get the full Ontology metadata. This includes the objects, links, actions, queries, and interfaces.
- *
- * Required Scopes: [api:read-data]
- * URL: /v2/ontologies/{ontology}/fullMetadata
- */
-export function getOntologyFullMetadata(
-  $ctx: $Client | $ClientContext,
-  ...args: [ontology: $C.OntologyIdentifier]
-): Promise<$C.OntologyFullMetadata> {
-  return $foundryPlatformFetch($ctx, _getOntologyFullMetadata, ...args);
+  ...args: [ontologyRid: OntologyRid]
+): Promise<Ontology> {
+  return $foundryPlatformFetch($ctx, _getOntology, ...args);
 }
