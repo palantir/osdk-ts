@@ -378,6 +378,7 @@ package you do so at your own risk.
           "file",
           "scripts",
           "dependencies",
+          "peerDependencies",
           "devDependencies",
           "publishConfig",
           "imports",

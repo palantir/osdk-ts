@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listQueryTypesV2: $OmniMethod<
+const _listQueryTypesV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
@@ -40,17 +41,17 @@ const _listQueryTypesV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/queryTypes
  */
 export function listQueryTypesV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
 
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ]
 ): Promise<$C.ListQueryTypesResponseV2> {
-  return $omniFetch($ctx, _listQueryTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listQueryTypesV2, ...args);
 }
 
-const _getQueryTypeV2: $OmniMethod<
+const _getQueryTypeV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     queryApiName: $C.QueryApiName,
@@ -66,13 +67,13 @@ const _getQueryTypeV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/queryTypes/{queryApiName}
  */
 export function getQueryTypeV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier, queryApiName: $C.QueryApiName]
 ): Promise<$C.QueryTypeV2> {
-  return $omniFetch($ctx, _getQueryTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _getQueryTypeV2, ...args);
 }
 
-const _executeQueryV2: $OmniMethod<
+const _executeQueryV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     queryApiName: $C.QueryApiName,
@@ -96,7 +97,7 @@ const _executeQueryV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/queries/{queryApiName}/execute
  */
 export function executeQueryV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     queryApiName: $C.QueryApiName,
@@ -107,5 +108,5 @@ export function executeQueryV2(
     },
   ]
 ): Promise<$C.ExecuteQueryResponse> {
-  return $omniFetch($ctx, _executeQueryV2, ...args);
+  return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
 }

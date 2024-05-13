@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _createTemporaryObjectSetV2: $OmniMethod<
+const _createTemporaryObjectSetV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $body: $C.CreateTemporaryObjectSetRequestV2,
@@ -38,16 +39,16 @@ const _createTemporaryObjectSetV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectSets/createTemporary
  */
 export function createTemporaryObjectSetV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     $body: $C.CreateTemporaryObjectSetRequestV2,
   ]
 ): Promise<$C.CreateTemporaryObjectSetResponseV2> {
-  return $omniFetch($ctx, _createTemporaryObjectSetV2, ...args);
+  return $foundryPlatformFetch($ctx, _createTemporaryObjectSetV2, ...args);
 }
 
-const _getObjectSetV2: $OmniMethod<
+const _getObjectSetV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectSetRid: $C.ObjectSetRid,
@@ -63,13 +64,13 @@ const _getObjectSetV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectSets/{objectSetRid}
  */
 export function getObjectSetV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier, objectSetRid: $C.ObjectSetRid]
 ): Promise<$C.ObjectSet> {
-  return $omniFetch($ctx, _getObjectSetV2, ...args);
+  return $foundryPlatformFetch($ctx, _getObjectSetV2, ...args);
 }
 
-const _loadObjectSetV2: $OmniMethod<
+const _loadObjectSetV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $body: $C.LoadObjectSetRequestV2,
@@ -94,7 +95,7 @@ const _loadObjectSetV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectSets/loadObjects
  */
 export function loadObjectSetV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     $body: $C.LoadObjectSetRequestV2,
@@ -104,10 +105,10 @@ export function loadObjectSetV2(
     },
   ]
 ): Promise<$C.LoadObjectSetResponseV2> {
-  return $omniFetch($ctx, _loadObjectSetV2, ...args);
+  return $foundryPlatformFetch($ctx, _loadObjectSetV2, ...args);
 }
 
-const _aggregateObjectSetV2: $OmniMethod<
+const _aggregateObjectSetV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $body: $C.AggregateObjectSetRequestV2,
@@ -127,7 +128,7 @@ const _aggregateObjectSetV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectSets/aggregate
  */
 export function aggregateObjectSetV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     $body: $C.AggregateObjectSetRequestV2,
@@ -137,5 +138,5 @@ export function aggregateObjectSetV2(
     },
   ]
 ): Promise<$C.AggregateObjectsResponseV2> {
-  return $omniFetch($ctx, _aggregateObjectSetV2, ...args);
+  return $foundryPlatformFetch($ctx, _aggregateObjectSetV2, ...args);
 }

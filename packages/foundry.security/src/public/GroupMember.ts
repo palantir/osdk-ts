@@ -26,14 +26,15 @@ import type {
   RemoveGroupMembersRequest,
 } from "@osdk/foundry.security";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 
 //
 
-const _listGroupMembers: $OmniMethod<
+const _listGroupMembers: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $queryParams?: {
@@ -52,7 +53,7 @@ const _listGroupMembers: $OmniMethod<
  * URL: /v2/security/groups/{groupId}/groupMembers
  */
 export function listGroupMembers(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
 
@@ -64,10 +65,10 @@ export function listGroupMembers(
     },
   ]
 ): Promise<ListGroupMembersResponse> {
-  return $omniFetch($ctx, _listGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _listGroupMembers, ...args);
 }
 
-const _addGroupMembers: $OmniMethod<
+const _addGroupMembers: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $body: AddGroupMembersRequest,
@@ -80,17 +81,17 @@ const _addGroupMembers: $OmniMethod<
  * URL: /v2/security/groups/{groupId}/groupMembers/add
  */
 export function addGroupMembers(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
     $body: AddGroupMembersRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _addGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _addGroupMembers, ...args);
 }
 
-const _removeGroupMembers: $OmniMethod<
+const _removeGroupMembers: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $body: RemoveGroupMembersRequest,
@@ -103,12 +104,12 @@ const _removeGroupMembers: $OmniMethod<
  * URL: /v2/security/groups/{groupId}/groupMembers/remove
  */
 export function removeGroupMembers(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
     $body: RemoveGroupMembersRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _removeGroupMembers, ...args);
+  return $foundryPlatformFetch($ctx, _removeGroupMembers, ...args);
 }

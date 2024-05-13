@@ -17,14 +17,15 @@
 import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.core";
 import type { CreateGroupRequest } from "@osdk/foundry.security";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 
 //
 
-const _createGroup: $OmniMethod<
+const _createGroup: $FoundryPlatformMethod<
   (
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -38,16 +39,16 @@ const _createGroup: $OmniMethod<
  * URL: /v2/security/groups
  */
 export function createGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Group> {
-  return $omniFetch($ctx, _createGroup, ...args);
+  return $foundryPlatformFetch($ctx, _createGroup, ...args);
 }
 
-const _deleteGroup: $OmniMethod<
+const _deleteGroup: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -61,17 +62,17 @@ const _deleteGroup: $OmniMethod<
  * URL: /v2/security/groups/{groupId}
  */
 export function deleteGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteGroup, ...args);
+  return $foundryPlatformFetch($ctx, _deleteGroup, ...args);
 }
 
-const _getGroup: $OmniMethod<
+const _getGroup: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -85,12 +86,12 @@ const _getGroup: $OmniMethod<
  * URL: /v2/security/groups/{groupId}
  */
 export function getGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Group> {
-  return $omniFetch($ctx, _getGroup, ...args);
+  return $foundryPlatformFetch($ctx, _getGroup, ...args);
 }

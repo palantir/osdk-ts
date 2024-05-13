@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listOntologiesV2: $OmniMethod<
+const _listOntologiesV2: $FoundryPlatformMethod<
   () => Promise<$C.ListOntologiesV2Response>
 > = [0, "/v2/ontologies"];
 
@@ -34,13 +35,13 @@ const _listOntologiesV2: $OmniMethod<
  * URL: /v2/ontologies
  */
 export function listOntologiesV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: []
 ): Promise<$C.ListOntologiesV2Response> {
-  return $omniFetch($ctx, _listOntologiesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listOntologiesV2, ...args);
 }
 
-const _getOntologyV2: $OmniMethod<
+const _getOntologyV2: $FoundryPlatformMethod<
   (ontology: $C.OntologyIdentifier) => Promise<$C.OntologyV2>
 > = [0, "/v2/ontologies/{0}"];
 
@@ -53,13 +54,13 @@ const _getOntologyV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}
  */
 export function getOntologyV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier]
 ): Promise<$C.OntologyV2> {
-  return $omniFetch($ctx, _getOntologyV2, ...args);
+  return $foundryPlatformFetch($ctx, _getOntologyV2, ...args);
 }
 
-const _getOntologyFullMetadata: $OmniMethod<
+const _getOntologyFullMetadata: $FoundryPlatformMethod<
   (ontology: $C.OntologyIdentifier) => Promise<$C.OntologyFullMetadata>
 > = [0, "/v2/ontologies/{0}/fullMetadata"];
 
@@ -70,8 +71,8 @@ const _getOntologyFullMetadata: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/fullMetadata
  */
 export function getOntologyFullMetadata(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier]
 ): Promise<$C.OntologyFullMetadata> {
-  return $omniFetch($ctx, _getOntologyFullMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _getOntologyFullMetadata, ...args);
 }

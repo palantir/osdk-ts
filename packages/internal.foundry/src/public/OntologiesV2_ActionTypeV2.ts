@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listActionTypesV2: $OmniMethod<
+const _listActionTypesV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
@@ -40,17 +41,17 @@ const _listActionTypesV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/actionTypes
  */
 export function listActionTypesV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
 
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ]
 ): Promise<$C.ListActionTypesResponseV2> {
-  return $omniFetch($ctx, _listActionTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listActionTypesV2, ...args);
 }
 
-const _getActionTypeV2: $OmniMethod<
+const _getActionTypeV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     actionType: $C.ActionTypeApiName,
@@ -66,8 +67,8 @@ const _getActionTypeV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/actionTypes/{actionType}
  */
 export function getActionTypeV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier, actionType: $C.ActionTypeApiName]
 ): Promise<$C.ActionTypeV2> {
-  return $omniFetch($ctx, _getActionTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _getActionTypeV2, ...args);
 }

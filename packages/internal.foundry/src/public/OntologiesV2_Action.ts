@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _applyActionV2: $OmniMethod<
+const _applyActionV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -48,7 +49,7 @@ const _applyActionV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/actions/{action}/apply
  */
 export function applyActionV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -59,10 +60,10 @@ export function applyActionV2(
     },
   ]
 ): Promise<$C.SyncApplyActionResponseV2> {
-  return $omniFetch($ctx, _applyActionV2, ...args);
+  return $foundryPlatformFetch($ctx, _applyActionV2, ...args);
 }
 
-const _applyActionBatchV2: $OmniMethod<
+const _applyActionBatchV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -88,7 +89,7 @@ const _applyActionBatchV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyBatch
  */
 export function applyActionBatchV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -99,10 +100,10 @@ export function applyActionBatchV2(
     },
   ]
 ): Promise<$C.BatchApplyActionResponseV2> {
-  return $omniFetch($ctx, _applyActionBatchV2, ...args);
+  return $foundryPlatformFetch($ctx, _applyActionBatchV2, ...args);
 }
 
-const _applyActionAsyncV2: $OmniMethod<
+const _applyActionAsyncV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -129,7 +130,7 @@ const _applyActionAsyncV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync
  */
 export function applyActionAsyncV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     action: $C.ActionTypeApiName,
@@ -140,5 +141,5 @@ export function applyActionAsyncV2(
     },
   ]
 ): Promise<$C.AsyncApplyActionResponseV2> {
-  return $omniFetch($ctx, _applyActionAsyncV2, ...args);
+  return $foundryPlatformFetch($ctx, _applyActionAsyncV2, ...args);
 }

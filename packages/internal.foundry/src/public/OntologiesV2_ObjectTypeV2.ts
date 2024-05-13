@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listObjectTypesV2: $OmniMethod<
+const _listObjectTypesV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
@@ -41,17 +42,17 @@ const _listObjectTypesV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectTypes
  */
 export function listObjectTypesV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
 
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ]
 ): Promise<$C.ListObjectTypesV2Response> {
-  return $omniFetch($ctx, _listObjectTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listObjectTypesV2, ...args);
 }
 
-const _getObjectTypeV2: $OmniMethod<
+const _getObjectTypeV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -67,13 +68,13 @@ const _getObjectTypeV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}
  */
 export function getObjectTypeV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [ontology: $C.OntologyIdentifier, objectType: $C.ObjectTypeApiName]
 ): Promise<$C.ObjectTypeV2> {
-  return $omniFetch($ctx, _getObjectTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _getObjectTypeV2, ...args);
 }
 
-const _listOutgoingLinkTypesV2: $OmniMethod<
+const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -91,7 +92,7 @@ const _listOutgoingLinkTypesV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes
  */
 export function listOutgoingLinkTypesV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -99,10 +100,10 @@ export function listOutgoingLinkTypesV2(
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ]
 ): Promise<$C.ListOutgoingLinkTypesResponseV2> {
-  return $omniFetch($ctx, _listOutgoingLinkTypesV2, ...args);
+  return $foundryPlatformFetch($ctx, _listOutgoingLinkTypesV2, ...args);
 }
 
-const _getOutgoingLinkTypeV2: $OmniMethod<
+const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -120,12 +121,12 @@ const _getOutgoingLinkTypeV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}
  */
 export function getOutgoingLinkTypeV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
     linkType: $C.LinkTypeApiName,
   ]
 ): Promise<$C.LinkTypeSideV2> {
-  return $omniFetch($ctx, _getOutgoingLinkTypeV2, ...args);
+  return $foundryPlatformFetch($ctx, _getOutgoingLinkTypeV2, ...args);
 }

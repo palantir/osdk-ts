@@ -792,6 +792,9 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
@@ -866,10 +869,13 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
+    devDependencies:
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
-    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -879,13 +885,16 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
+    devDependencies:
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
-    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -895,13 +904,16 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
+    devDependencies:
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
-    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
