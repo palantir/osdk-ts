@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/client";
+import { type Osdk, type PageResult } from "@osdk/client";
 import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
 import { createClient } from "@osdk/client/unstable-do-not-use";
 import {
@@ -29,6 +29,7 @@ import {
 import * as Foundry from "@osdk/foundry";
 import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
 import { pino } from "pino";
+import pinoPretty from "pino-pretty";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -38,12 +39,16 @@ import { fetchEmployeeLead } from "./examples/fetchEmployeeLead.js";
 import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
 import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
+import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { typeChecks } from "./typeChecks.js";
 
 invariant(process.env.FOUNDRY_STACK !== undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
-const logger = pino({ level: "debug" });
+export const logger = pino(
+  { level: "debug" },
+  pinoPretty.default({ colorize: true, sync: true }),
+);
 
 export const client = createClient(
   process.env.FOUNDRY_STACK,
@@ -54,7 +59,7 @@ export const client = createClient(
 
 const runOld = false;
 
-const testSubscriptions = true;
+const testSubscriptions = false;
 
 async function runTests() {
   try {
@@ -62,6 +67,7 @@ async function runTests() {
       client.ctx as any,
       { preview: true },
     );
+    logger.info(myUser, "Loaded user");
     console.log("User", myUser!.email);
 
     if (runOld) {
@@ -76,7 +82,7 @@ async function runTests() {
     const models = await LanguageModel.listLanguageModels(client.ctx as any);
     logger.info({
       models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
-    });
+    }, "Loaded models");
 
     // const { data: boundaries } = await client(BoundariesUsState).fetchPage();
     // let didThrow = false;
@@ -118,6 +124,10 @@ async function runTests() {
       // we don't need the console flooded with additional things
       return;
     }
+
+    const datasetRid =
+      "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
+    await runFoundrySdkClientVerificationTest(datasetRid);
 
     // this has the nice effect of faking a 'race' with the below code
     (async () => {
@@ -357,7 +367,7 @@ async function runTests() {
 
     if (runOld) await typeChecks(client);
   } catch (e) {
-    console.error("Caught an error we did not expect", typeof e);
+    console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
   }
 }

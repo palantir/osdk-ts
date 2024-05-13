@@ -114,12 +114,16 @@ export async function apiFetch(
     ? data
     : JSON.stringify(data);
 
+  // Because this uses the client's fetch, there is a 99.99% chance that it is already going
+  // to handle the error case and throw a PalantirApiError since its wrapped in a
+  // createFetchOrThrow.
   const response = await clientCtx.fetch(url.toString(), {
     body,
     method: method,
     headers: headersInit,
   });
 
+  // However, if we ended up using a "regular" fetch, the
   // error status codes are not thrown by fetch automatically,
   // we have to look at the ok property and behave accordingly
   if (!response.ok) {
@@ -144,6 +148,7 @@ export async function apiFetch(
     }
   }
 
+  // Do not return anything if its a 204. Do not parse either!
   if (response.status === 204) {
     return;
   }
