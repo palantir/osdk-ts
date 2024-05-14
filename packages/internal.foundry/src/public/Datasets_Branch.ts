@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listBranches: $OmniMethod<
+const _listBranches: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
@@ -37,17 +38,17 @@ const _listBranches: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/branches
  */
 export function listBranches(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
     $queryParams?: { pageSize?: $C.PageSize; pageToken?: $C.PageToken },
   ]
 ): Promise<$C.ListBranchesResponse> {
-  return $omniFetch($ctx, _listBranches, ...args);
+  return $foundryPlatformFetch($ctx, _listBranches, ...args);
 }
 
-const _createBranch: $OmniMethod<
+const _createBranch: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $body: $C.CreateBranchRequest,
@@ -63,13 +64,13 @@ const _createBranch: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/branches
  */
 export function createBranch(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, $body: $C.CreateBranchRequest]
 ): Promise<$C.Branch> {
-  return $omniFetch($ctx, _createBranch, ...args);
+  return $foundryPlatformFetch($ctx, _createBranch, ...args);
 }
 
-const _getBranch: $OmniMethod<
+const _getBranch: $FoundryPlatformMethod<
   (datasetRid: $C.DatasetRid, branchId: $C.BranchId) => Promise<$C.Branch>
 > = [0, "/v1/datasets/{0}/branches/{1}"];
 
@@ -82,13 +83,13 @@ const _getBranch: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/branches/{branchId}
  */
 export function getBranch(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, branchId: $C.BranchId]
 ): Promise<$C.Branch> {
-  return $omniFetch($ctx, _getBranch, ...args);
+  return $foundryPlatformFetch($ctx, _getBranch, ...args);
 }
 
-const _deleteBranch: $OmniMethod<
+const _deleteBranch: $FoundryPlatformMethod<
   (datasetRid: $C.DatasetRid, branchId: $C.BranchId) => Promise<void>
 > = [3, "/v1/datasets/{0}/branches/{1}"];
 
@@ -101,8 +102,8 @@ const _deleteBranch: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/branches/{branchId}
  */
 export function deleteBranch(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, branchId: $C.BranchId]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteBranch, ...args);
+  return $foundryPlatformFetch($ctx, _deleteBranch, ...args);
 }

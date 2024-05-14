@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import { symbolClientContext } from "@osdk/shared.net";
 import type { Logger } from "pino";
 import type { Client } from "./Client.js";
 import type { createClient } from "./createClient.js";
@@ -43,7 +44,7 @@ export function UNSTABLE_createClient(
         ) => {
           return UNSTABLE_createObjectSet(
             definition,
-            client.ctx as any,
+            client[symbolClientContext],
             {
               type: "intersect",
               objectSets: [

@@ -15,11 +15,19 @@
  */
 
 export { createOpenApiRequest } from "./client/createOpenApiRequest.js";
-export type { ClientContext } from "./ClientContext.js";
-export { createClientContext } from "./createClientContext.js";
+export type {
+  ClientContext,
+  SharedClient,
+  SharedClientContext,
+} from "./ClientContext.js";
+export { symbolClientContext } from "./ClientContext.js";
+export {
+  createClientContext,
+  createSharedClientContext,
+} from "./createSharedClientContext.js";
 export type { FetchAsJsonFn } from "./FetchAsJsonFn.js";
-export { omniFetch } from "./omniFetch.js";
-export type { OmniMethod } from "./omniFetch.js";
+export { foundryPlatformFetch } from "./foundryPlatformFetch.js";
+export type { FoundryPlatformMethod } from "./foundryPlatformFetch.js";
 export { PalantirApiError } from "./PalantirApiError.js";
 export { isOk, type ResultOrError } from "./ResultOrError.js";
 export { UnknownError } from "./UnknownError.js";

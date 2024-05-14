@@ -21,14 +21,15 @@ import type {
 } from "@osdk/foundry.core";
 import type { DeployWebsiteRequest } from "@osdk/foundry.thirdpartyapplications";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 
 //
 
-const _getWebsite: $OmniMethod<
+const _getWebsite: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -42,17 +43,17 @@ const _getWebsite: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website
  */
 export function getWebsite(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Website> {
-  return $omniFetch($ctx, _getWebsite, ...args);
+  return $foundryPlatformFetch($ctx, _getWebsite, ...args);
 }
 
-const _deployWebsite: $OmniMethod<
+const _deployWebsite: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $body: DeployWebsiteRequest,
@@ -65,17 +66,17 @@ const _deployWebsite: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/deploy
  */
 export function deployWebsite(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $body: DeployWebsiteRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Website> {
-  return $omniFetch($ctx, _deployWebsite, ...args);
+  return $foundryPlatformFetch($ctx, _deployWebsite, ...args);
 }
 
-const _undeployWebsite: $OmniMethod<
+const _undeployWebsite: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -87,12 +88,12 @@ const _undeployWebsite: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/undeploy
  */
 export function undeployWebsite(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Website> {
-  return $omniFetch($ctx, _undeployWebsite, ...args);
+  return $foundryPlatformFetch($ctx, _undeployWebsite, ...args);
 }

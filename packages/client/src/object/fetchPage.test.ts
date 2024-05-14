@@ -128,7 +128,7 @@ describe(fetchPage, () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://foo",
-      () => "",
+      async () => "",
     );
     const objectSet = createObjectSet(MockOntology.objects.Todo, client).where({
       text: "hello",

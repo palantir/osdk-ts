@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listFiles: $OmniMethod<
+const _listFiles: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams?: {
@@ -66,7 +67,7 @@ const _listFiles: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/files
  */
 export function listFiles(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
@@ -79,10 +80,10 @@ export function listFiles(
     },
   ]
 ): Promise<$C.ListFilesResponse> {
-  return $omniFetch($ctx, _listFiles, ...args);
+  return $foundryPlatformFetch($ctx, _listFiles, ...args);
 }
 
-const _uploadFile: $OmniMethod<
+const _uploadFile: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams: {
@@ -120,7 +121,7 @@ const _uploadFile: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/files:upload
  */
 export function uploadFile(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
@@ -132,10 +133,10 @@ export function uploadFile(
     },
   ]
 ): Promise<$C.File> {
-  return $omniFetch($ctx, _uploadFile, ...args);
+  return $foundryPlatformFetch($ctx, _uploadFile, ...args);
 }
 
-const _getFileMetadata: $OmniMethod<
+const _getFileMetadata: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -177,7 +178,7 @@ const _getFileMetadata: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
  */
 export function getFileMetadata(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -189,10 +190,10 @@ export function getFileMetadata(
     },
   ]
 ): Promise<$C.File> {
-  return $omniFetch($ctx, _getFileMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _getFileMetadata, ...args);
 }
 
-const _deleteFile: $OmniMethod<
+const _deleteFile: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -225,7 +226,7 @@ const _deleteFile: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
  */
 export function deleteFile(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -236,10 +237,10 @@ export function deleteFile(
     },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteFile, ...args);
+  return $foundryPlatformFetch($ctx, _deleteFile, ...args);
 }
 
-const _getFileContent: $OmniMethod<
+const _getFileContent: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -282,7 +283,7 @@ const _getFileContent: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/files/{filePath}/content
  */
 export function getFileContent(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
     filePath: $C.FilePath,
@@ -294,5 +295,5 @@ export function getFileContent(
     },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _getFileContent, ...args);
+  return $foundryPlatformFetch($ctx, _getFileContent, ...args);
 }

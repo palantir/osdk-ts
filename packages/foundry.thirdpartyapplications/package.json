@@ -29,10 +29,14 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:^",
-    "@osdk/foundry.core": "workspace:*",
+    "@osdk/foundry.core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@osdk/client": "workspace:^",
     "@osdk/shared.net": "workspace:^"
   },
   "devDependencies": {
+    "@osdk/shared.net": "workspace:^",
     "typescript": "^5.4.5"
   },
   "publishConfig": {
@@ -52,7 +56,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.833.0",
+        "minVersion": "1.834.0",
         "maxVersion": "1.x.x"
       }
     }

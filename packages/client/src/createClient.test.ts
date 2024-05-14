@@ -36,7 +36,7 @@ describe(createClient, () => {
     client = createClient(
       "https://mock.com",
       MockOntology.metadata.ontologyRid,
-      () => "Token",
+      async () => "Token",
       undefined,
       fetchFunction,
     );

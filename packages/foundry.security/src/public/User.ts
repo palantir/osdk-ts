@@ -16,14 +16,15 @@
 
 import type { PreviewMode, PrincipalId, User } from "@osdk/foundry.core";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 
 //
 
-const _deleteUser: $OmniMethod<
+const _deleteUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -37,17 +38,17 @@ const _deleteUser: $OmniMethod<
  * URL: /v2/security/users/{userId}
  */
 export function deleteUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteUser, ...args);
+  return $foundryPlatformFetch($ctx, _deleteUser, ...args);
 }
 
-const _getUser: $OmniMethod<
+const _getUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -61,17 +62,17 @@ const _getUser: $OmniMethod<
  * URL: /v2/security/users/{userId}
  */
 export function getUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<User> {
-  return $omniFetch($ctx, _getUser, ...args);
+  return $foundryPlatformFetch($ctx, _getUser, ...args);
 }
 
-const _getCurrentUser: $OmniMethod<
+const _getCurrentUser: $FoundryPlatformMethod<
   ($queryParams?: { preview?: PreviewMode | undefined }) => Promise<User>
 > = [0, "/v2/security/users/getCurrent", 2];
 
@@ -80,13 +81,13 @@ const _getCurrentUser: $OmniMethod<
  * URL: /v2/security/users/getCurrent
  */
 export function getCurrentUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [$queryParams?: { preview?: PreviewMode | undefined }]
 ): Promise<User> {
-  return $omniFetch($ctx, _getCurrentUser, ...args);
+  return $foundryPlatformFetch($ctx, _getCurrentUser, ...args);
 }
 
-const _profilePictureUser: $OmniMethod<
+const _profilePictureUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -104,12 +105,12 @@ const _profilePictureUser: $OmniMethod<
  * URL: /v2/security/users/{userId}/profilePicture
  */
 export function profilePictureUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _profilePictureUser, ...args);
+  return $foundryPlatformFetch($ctx, _profilePictureUser, ...args);
 }

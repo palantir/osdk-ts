@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _createTransaction: $OmniMethod<
+const _createTransaction: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $body: $C.CreateTransactionRequest,
@@ -38,17 +39,17 @@ const _createTransaction: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/transactions
  */
 export function createTransaction(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
     $body: $C.CreateTransactionRequest,
     $queryParams?: { branchId?: $C.BranchId },
   ]
 ): Promise<$C.Transaction> {
-  return $omniFetch($ctx, _createTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _createTransaction, ...args);
 }
 
-const _getTransaction: $OmniMethod<
+const _getTransaction: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     transactionRid: $C.TransactionRid,
@@ -64,13 +65,13 @@ const _getTransaction: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}
  */
 export function getTransaction(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
 ): Promise<$C.Transaction> {
-  return $omniFetch($ctx, _getTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _getTransaction, ...args);
 }
 
-const _commitTransaction: $OmniMethod<
+const _commitTransaction: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     transactionRid: $C.TransactionRid,
@@ -87,13 +88,13 @@ const _commitTransaction: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}/commit
  */
 export function commitTransaction(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
 ): Promise<$C.Transaction> {
-  return $omniFetch($ctx, _commitTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _commitTransaction, ...args);
 }
 
-const _abortTransaction: $OmniMethod<
+const _abortTransaction: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     transactionRid: $C.TransactionRid,
@@ -110,8 +111,8 @@ const _abortTransaction: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}/abort
  */
 export function abortTransaction(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid, transactionRid: $C.TransactionRid]
 ): Promise<$C.Transaction> {
-  return $omniFetch($ctx, _abortTransaction, ...args);
+  return $foundryPlatformFetch($ctx, _abortTransaction, ...args);
 }
