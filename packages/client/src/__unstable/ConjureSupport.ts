@@ -230,7 +230,6 @@ function createObjectPropertyMapping(conjureOT: ObjectType) {
   if (!pkProperty) {
     throw new Error("Could not find PK property");
   }
-  pkProperty?.type;
 
   const propertyIdToApiNameMapping: Record<string, string> = Object
     .fromEntries(

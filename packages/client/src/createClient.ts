@@ -74,7 +74,6 @@ export function createClientInternal(
     {
       ctx: {
         value: clientCtx,
-        writable: false,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,
   );

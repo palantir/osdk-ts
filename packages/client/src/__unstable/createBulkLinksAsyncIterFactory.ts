@@ -134,7 +134,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
         ];
         const pk = getPrimaryKeyOrThrow(ref);
         const otherObjectApiName =
-          await (await mcc.forObjectByRid(pk.objecTypeRid))
+          await (await mcc.forObjectByRid(pk.objectTypeRid))
             .getApiName();
 
         const mappedLink = Object.values(linkMapping).find(a =>
@@ -184,7 +184,7 @@ function getPrimaryKeyOrThrow(
   }
 
   return {
-    objecTypeRid: ref.objectLocatorV2.objectTypeRid,
+    objectTypeRid: ref.objectLocatorV2.objectTypeRid,
     pkValue: (pks[0][1] as any)[pks[0][1].type] as unknown,
   };
 }
