@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 2.3.0
+
+### Minor Changes
+
+- c9f3214: Adds support for latest api definitions
+
 ## 1.1.1
 
 ### Patch Changes

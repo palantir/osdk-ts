@@ -1,5 +1,17 @@
 # @osdk/api
 
+## 1.8.0
+
+### Minor Changes
+
+- c9f3214: Interfaces are now mapped as views
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+  - @osdk/gateway@2.3.0
+  - @osdk/shared.net@1.11.0
+
 ## 1.7.0
 
 ### Patch Changes
