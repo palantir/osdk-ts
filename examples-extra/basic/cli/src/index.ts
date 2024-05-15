@@ -27,7 +27,6 @@ import {
 } from "@osdk/examples.basic.sdk";
 import * as Foundry from "@osdk/foundry";
 import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
-import pinoPretty from "pino-pretty";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";

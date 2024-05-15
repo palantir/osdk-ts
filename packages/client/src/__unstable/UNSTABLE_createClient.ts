@@ -38,7 +38,7 @@ export function UNSTABLE_createClient(
     client as UnstableClient,
     {
       __UNSTABLE_getBulkLinks: {
-        get: () => createBulkLinksAsyncIterFactory(client.ctx as MinimalClient),
+        get: () => createBulkLinksAsyncIterFactory(client[symbolClientContext]),
       },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>

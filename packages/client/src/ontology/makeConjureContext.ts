@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import type { SharedClientContext } from "@osdk/shared.net";
 import type { ConjureContext } from "conjure-lite";
-import type { MinimalClient } from "../MinimalClientContext.js";
 
 export function makeConjureContext(
-  client: MinimalClient,
+  { baseUrl, fetch: fetchFn, tokenProvider }: SharedClientContext,
   servicePath: string,
 ): ConjureContext {
   return {
-    baseUrl: client.stack,
+    baseUrl,
     servicePath,
-    fetchFn: client.fetch,
-    tokenProvider: async () => await client.tokenProvider(),
+    fetchFn,
+    tokenProvider,
   };
 }

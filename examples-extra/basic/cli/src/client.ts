@@ -9,7 +9,7 @@ invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 export const client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-  () => process.env.FOUNDRY_USER_TOKEN!,
+  async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
   loggingFetch,
 );
