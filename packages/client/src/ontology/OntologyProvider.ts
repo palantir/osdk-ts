@@ -32,7 +32,7 @@ export interface OntologyProvider {
    */
   getObjectDefinition: (
     apiName: string,
-  ) => Promise<ObjectTypeDefinition<any>>;
+  ) => Promise<ObjectTypeDefinition<any> & { rid: string }>;
 
   /**
    * Returns the current known definition for the interface.

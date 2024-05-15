@@ -17,7 +17,8 @@
 import { PalantirApiError } from "@osdk/client";
 import * as Branch from "@osdk/internal.foundry/Datasets_Branch";
 import * as Dataset from "@osdk/internal.foundry/Datasets_Dataset";
-import { client, logger } from "./index.js";
+import { client } from "./client.js";
+import { logger } from "./logger.js";
 
 export async function runFoundrySdkClientVerificationTest(
   datasetRid: string,
