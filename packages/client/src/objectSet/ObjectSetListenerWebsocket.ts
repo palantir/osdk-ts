@@ -141,12 +141,13 @@ export class ObjectSetListenerWebsocket {
       msgPrefix: "<OSW> ",
     });
     invariant(
-      client.stack.startsWith("https://") || client.stack.startsWith("http://"),
+      client.baseUrl.startsWith("https://")
+        || client.baseUrl.startsWith("http://"),
       "Stack must be a URL",
     );
 
     this.#oswContext = {
-      baseUrl: client.stack,
+      baseUrl: client.baseUrl,
       servicePath: "/object-set-watcher/api",
       fetchFn: client.fetch,
       tokenProvider: async () => await client.tokenProvider(),
@@ -330,8 +331,8 @@ export class ObjectSetListenerWebsocket {
 
   async #ensureWebsocket() {
     if (this.#ws == null) {
-      const { stack, tokenProvider } = this.#client;
-      const base = new URL(stack);
+      const { baseUrl, tokenProvider } = this.#client;
+      const base = new URL(baseUrl);
       // TODO: This should be a different endpoint
       const url = `wss://${base.host}/object-set-watcher/ws/subscriptions`;
       const token = await tokenProvider();

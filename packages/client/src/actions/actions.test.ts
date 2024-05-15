@@ -46,7 +46,7 @@ describe("actions", () => {
     client = createClient(
       "https://stack.palantir.com",
       MockOntology.metadata.ontologyRid,
-      () => "myAccessToken",
+      async () => "myAccessToken",
     );
   });
 

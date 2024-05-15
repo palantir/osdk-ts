@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.net";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
@@ -35,7 +35,7 @@ describe("convertWireToOsdkObjects", () => {
     client = createClient(
       "https://stack.palantir.com",
       MockOntology.metadata.ontologyRid,
-      () => "myAccessToken",
+      async () => "myAccessToken",
     );
   });
 
@@ -103,11 +103,9 @@ describe("convertWireToOsdkObjects", () => {
     const clientCtx = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
     );
-    createClientContext(
-      // by only taking the metadata, we are seeding a client that knows nothing
-      { metadata: MockOntology.metadata },
+    createSharedClientContext(
       "https://stack.palantir.com",
       () => "myAccessToken",
       "userAgent",

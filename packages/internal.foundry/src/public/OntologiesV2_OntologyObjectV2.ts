@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _listObjectsV2: $OmniMethod<
+const _listObjectsV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -58,7 +59,7 @@ const _listObjectsV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}
  */
 export function listObjectsV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -74,10 +75,10 @@ export function listObjectsV2(
     },
   ]
 ): Promise<$C.ListObjectsResponseV2> {
-  return $omniFetch($ctx, _listObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _listObjectsV2, ...args);
 }
 
-const _getObjectV2: $OmniMethod<
+const _getObjectV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -100,7 +101,7 @@ const _getObjectV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}
  */
 export function getObjectV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -114,10 +115,10 @@ export function getObjectV2(
     },
   ]
 ): Promise<$C.OntologyObjectV2> {
-  return $omniFetch($ctx, _getObjectV2, ...args);
+  return $foundryPlatformFetch($ctx, _getObjectV2, ...args);
 }
 
-const _countObjects: $OmniMethod<
+const _countObjects: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -137,7 +138,7 @@ const _countObjects: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/count
  */
 export function countObjects(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -148,10 +149,10 @@ export function countObjects(
     },
   ]
 ): Promise<$C.CountObjectsResponseV2> {
-  return $omniFetch($ctx, _countObjects, ...args);
+  return $foundryPlatformFetch($ctx, _countObjects, ...args);
 }
 
-const _searchObjectsV2: $OmniMethod<
+const _searchObjectsV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -191,7 +192,7 @@ const _searchObjectsV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/search
  */
 export function searchObjectsV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -202,10 +203,10 @@ export function searchObjectsV2(
     },
   ]
 ): Promise<$C.SearchObjectsResponseV2> {
-  return $omniFetch($ctx, _searchObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _searchObjectsV2, ...args);
 }
 
-const _aggregateObjectsV2: $OmniMethod<
+const _aggregateObjectsV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -226,7 +227,7 @@ const _aggregateObjectsV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/aggregate
  */
 export function aggregateObjectsV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -237,10 +238,10 @@ export function aggregateObjectsV2(
     },
   ]
 ): Promise<$C.AggregateObjectsResponseV2> {
-  return $omniFetch($ctx, _aggregateObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _aggregateObjectsV2, ...args);
 }
 
-const _listInterfaceTypes: $OmniMethod<
+const _listInterfaceTypes: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     $queryParams?: {
@@ -268,7 +269,7 @@ const _listInterfaceTypes: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/interfaceTypes
  */
 export function listInterfaceTypes(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
 
@@ -279,10 +280,10 @@ export function listInterfaceTypes(
     },
   ]
 ): Promise<$C.ListInterfaceTypesResponse> {
-  return $omniFetch($ctx, _listInterfaceTypes, ...args);
+  return $foundryPlatformFetch($ctx, _listInterfaceTypes, ...args);
 }
 
-const _getInterfaceType: $OmniMethod<
+const _getInterfaceType: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -304,7 +305,7 @@ const _getInterfaceType: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/interfaceTypes/{interfaceType}
  */
 export function getInterfaceType(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -312,10 +313,10 @@ export function getInterfaceType(
     $queryParams?: { preview?: $C.PreviewMode },
   ]
 ): Promise<$C.InterfaceType> {
-  return $omniFetch($ctx, _getInterfaceType, ...args);
+  return $foundryPlatformFetch($ctx, _getInterfaceType, ...args);
 }
 
-const _searchObjectsForInterface: $OmniMethod<
+const _searchObjectsForInterface: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -359,7 +360,7 @@ const _searchObjectsForInterface: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/interfaces/{interfaceType}/search
  */
 export function searchObjectsForInterface(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -367,10 +368,10 @@ export function searchObjectsForInterface(
     $queryParams?: { preview?: $C.PreviewMode },
   ]
 ): Promise<$C.SearchObjectsResponseV2> {
-  return $omniFetch($ctx, _searchObjectsForInterface, ...args);
+  return $foundryPlatformFetch($ctx, _searchObjectsForInterface, ...args);
 }
 
-const _aggregateObjectsForInterface: $OmniMethod<
+const _aggregateObjectsForInterface: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -394,7 +395,7 @@ const _aggregateObjectsForInterface: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/interfaces/{interfaceType}/aggregate
  */
 export function aggregateObjectsForInterface(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     interfaceType: $C.InterfaceTypeApiName,
@@ -402,10 +403,10 @@ export function aggregateObjectsForInterface(
     $queryParams?: { preview?: $C.PreviewMode },
   ]
 ): Promise<$C.AggregateObjectsResponseV2> {
-  return $omniFetch($ctx, _aggregateObjectsForInterface, ...args);
+  return $foundryPlatformFetch($ctx, _aggregateObjectsForInterface, ...args);
 }
 
-const _listLinkedObjectsV2: $OmniMethod<
+const _listLinkedObjectsV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -444,7 +445,7 @@ const _listLinkedObjectsV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
 export function listLinkedObjectsV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -462,10 +463,10 @@ export function listLinkedObjectsV2(
     },
   ]
 ): Promise<$C.ListLinkedObjectsResponseV2> {
-  return $omniFetch($ctx, _listLinkedObjectsV2, ...args);
+  return $foundryPlatformFetch($ctx, _listLinkedObjectsV2, ...args);
 }
 
-const _getLinkedObjectV2: $OmniMethod<
+const _getLinkedObjectV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -492,7 +493,7 @@ const _getLinkedObjectV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
  */
 export function getLinkedObjectV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -508,10 +509,10 @@ export function getLinkedObjectV2(
     },
   ]
 ): Promise<$C.OntologyObjectV2> {
-  return $omniFetch($ctx, _getLinkedObjectV2, ...args);
+  return $foundryPlatformFetch($ctx, _getLinkedObjectV2, ...args);
 }
 
-const _getAttachmentsV2: $OmniMethod<
+const _getAttachmentsV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -534,7 +535,7 @@ const _getAttachmentsV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}
  */
 export function getAttachmentsV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -547,10 +548,10 @@ export function getAttachmentsV2(
     },
   ]
 ): Promise<$C.AttachmentMetadataResponse> {
-  return $omniFetch($ctx, _getAttachmentsV2, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachmentsV2, ...args);
 }
 
-const _getAttachmentByRidV2: $OmniMethod<
+const _getAttachmentByRidV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -574,7 +575,7 @@ const _getAttachmentByRidV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}
  */
 export function getAttachmentByRidV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -588,10 +589,10 @@ export function getAttachmentByRidV2(
     },
   ]
 ): Promise<$C.AttachmentV2> {
-  return $omniFetch($ctx, _getAttachmentByRidV2, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachmentByRidV2, ...args);
 }
 
-const _getAttachmentContentV2: $OmniMethod<
+const _getAttachmentContentV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -620,7 +621,7 @@ const _getAttachmentContentV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/content
  */
 export function getAttachmentContentV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -633,10 +634,10 @@ export function getAttachmentContentV2(
     },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _getAttachmentContentV2, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachmentContentV2, ...args);
 }
 
-const _getAttachmentContentByRidV2: $OmniMethod<
+const _getAttachmentContentByRidV2: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -668,7 +669,7 @@ const _getAttachmentContentByRidV2: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}/content
  */
 export function getAttachmentContentByRidV2(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -682,10 +683,10 @@ export function getAttachmentContentByRidV2(
     },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _getAttachmentContentByRidV2, ...args);
+  return $foundryPlatformFetch($ctx, _getAttachmentContentByRidV2, ...args);
 }
 
-const _getFirstPoint: $OmniMethod<
+const _getFirstPoint: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -708,7 +709,7 @@ const _getFirstPoint: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/firstPoint
  */
 export function getFirstPoint(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -721,10 +722,10 @@ export function getFirstPoint(
     },
   ]
 ): Promise<$C.TimeSeriesPoint | undefined> {
-  return $omniFetch($ctx, _getFirstPoint, ...args);
+  return $foundryPlatformFetch($ctx, _getFirstPoint, ...args);
 }
 
-const _getLastPoint: $OmniMethod<
+const _getLastPoint: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -747,7 +748,7 @@ const _getLastPoint: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/lastPoint
  */
 export function getLastPoint(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -760,10 +761,10 @@ export function getLastPoint(
     },
   ]
 ): Promise<$C.TimeSeriesPoint | undefined> {
-  return $omniFetch($ctx, _getLastPoint, ...args);
+  return $foundryPlatformFetch($ctx, _getLastPoint, ...args);
 }
 
-const _streamPoints: $OmniMethod<
+const _streamPoints: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -793,7 +794,7 @@ const _streamPoints: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/streamPoints
  */
 export function streamPoints(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -806,10 +807,10 @@ export function streamPoints(
     },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _streamPoints, ...args);
+  return $foundryPlatformFetch($ctx, _streamPoints, ...args);
 }
 
-const _getObjectTypeFullMetadata: $OmniMethod<
+const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
   (
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -826,7 +827,7 @@ const _getObjectTypeFullMetadata: $OmniMethod<
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/fullMetadata
  */
 export function getObjectTypeFullMetadata(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     ontology: $C.OntologyIdentifier,
     objectType: $C.ObjectTypeApiName,
@@ -834,5 +835,5 @@ export function getObjectTypeFullMetadata(
     $queryParams?: { preview?: $C.PreviewMode },
   ]
 ): Promise<$C.ObjectTypeFullMetadata> {
-  return $omniFetch($ctx, _getObjectTypeFullMetadata, ...args);
+  return $foundryPlatformFetch($ctx, _getObjectTypeFullMetadata, ...args);
 }

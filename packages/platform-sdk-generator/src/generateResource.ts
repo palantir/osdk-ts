@@ -40,8 +40,8 @@ export async function generateResource(resource: Resource, nsPath: string) {
   await writeCode(
     filePath,
     `${copyright}\n\n
-        import type { ClientContext as $ClientContext, OmniMethod as $OmniMethod } from "@osdk/shared.net";
-        import { omniFetch as $omniFetch } from "@osdk/shared.net";
+        import type { SharedClient as $Client, SharedClientContext as $ClientContext, FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net";
+        import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
         import type * as $C from "../generated/components.js";
         
         ${generateMethods(resource)}
@@ -59,7 +59,7 @@ function generateMethods(resource: Resource) {
     }>`;
 
     out += `
-     const _${methodName}: $OmniMethod<(${
+     const _${methodName}: $FoundryPlatformMethod<(${
       generateMethodParameters(method)
     }) => ${returnType}> = ${generateOperationArray(method)};
     
@@ -67,11 +67,11 @@ function generateMethods(resource: Resource) {
 
     ${generateMethodJsdoc(method)}
     export function ${methodName}(
-      $ctx: $ClientContext<any>,
+      $ctx: $Client | $ClientContext,
       ...args: [${generateMethodParameters(method)}]
     ): Promise<${
       getResponseInfo(method.response).componentType
-    }>{ return $omniFetch($ctx, _${methodName}, ...args); }
+    }>{ return $foundryPlatformFetch($ctx, _${methodName}, ...args); }
 
     `;
   }

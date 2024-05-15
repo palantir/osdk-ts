@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "./ClientContext.js";
+import type { SharedClient, SharedClientContext } from "./ClientContext.js";
+import { symbolClientContext } from "./ClientContext.js";
 import { PalantirApiError } from "./PalantirApiError.js";
 import { UnknownError } from "./UnknownError.js";
 
-export type OmniMethod<F extends (...args: any[]) => any> = [
+export type FoundryPlatformMethod<F extends (...args: any[]) => any> = [
   method: number,
   path: string,
   flags?: number,
@@ -28,8 +29,10 @@ export type OmniMethod<F extends (...args: any[]) => any> = [
   __funcBrand?: F;
 };
 
-export async function omniFetch<X extends OmniMethod<any>>(
-  clientCtx: ClientContext<any>,
+export async function foundryPlatformFetch<
+  X extends FoundryPlatformMethod<any>,
+>(
+  client: SharedClient | SharedClientContext,
   [
     httpMethodNum,
     origPath,
@@ -64,7 +67,7 @@ export async function omniFetch<X extends OmniMethod<any>>(
   ][httpMethodNum];
 
   return await apiFetch(
-    clientCtx,
+    (client as SharedClient)[symbolClientContext] ?? client,
     method,
     path,
     body,
@@ -75,8 +78,8 @@ export async function omniFetch<X extends OmniMethod<any>>(
   );
 }
 
-export async function apiFetch(
-  clientCtx: Pick<ClientContext<any>, "stack" | "fetch">,
+async function apiFetch(
+  clientCtx: Pick<SharedClientContext, "baseUrl" | "fetch">,
   method: string,
   endpointPath: string,
   data?: any,
@@ -85,7 +88,7 @@ export async function apiFetch(
   requestMediaType?: string,
   responseMediaType?: string,
 ) {
-  const url = new URL(`/api${endpointPath}`, clientCtx.stack);
+  const url = new URL(`/api${endpointPath}`, clientCtx.baseUrl);
   for (const [key, value] of Object.entries(queryArguments || {})) {
     if (value == null) {
       continue;
@@ -114,12 +117,16 @@ export async function apiFetch(
     ? data
     : JSON.stringify(data);
 
+  // Because this uses the client's fetch, there is a 99.99% chance that it is already going
+  // to handle the error case and throw a PalantirApiError since its wrapped in a
+  // createFetchOrThrow.
   const response = await clientCtx.fetch(url.toString(), {
     body,
     method: method,
     headers: headersInit,
   });
 
+  // However, if we ended up using a "regular" fetch, the
   // error status codes are not thrown by fetch automatically,
   // we have to look at the ok property and behave accordingly
   if (!response.ok) {
@@ -144,6 +151,7 @@ export async function apiFetch(
     }
   }
 
+  // Do not return anything if its a 204. Do not parse either!
   if (response.status === 204) {
     return;
   }

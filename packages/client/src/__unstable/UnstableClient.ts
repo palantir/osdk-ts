@@ -44,6 +44,4 @@ export interface UnstableClient extends Client {
     objs: T[],
     links: string[],
   ): AsyncGenerator<BulkLinkResult, void, undefined>;
-
-  ctx: unknown;
 }

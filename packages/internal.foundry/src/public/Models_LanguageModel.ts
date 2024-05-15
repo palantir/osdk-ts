@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _createChatCompletion: $OmniMethod<
+const _createChatCompletion: $FoundryPlatformMethod<
   (
     modelName: $C.LanguageModelApiName,
     $body: $C.ChatCompletionRequest,
@@ -35,13 +36,13 @@ const _createChatCompletion: $OmniMethod<
  * URL: /v1/models/languageModels/{modelName}/chatCompletions
  */
 export function createChatCompletion(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [modelName: $C.LanguageModelApiName, $body: $C.ChatCompletionRequest]
 ): Promise<$C.ChatCompletionResponse> {
-  return $omniFetch($ctx, _createChatCompletion, ...args);
+  return $foundryPlatformFetch($ctx, _createChatCompletion, ...args);
 }
 
-const _streamChatCompletion: $OmniMethod<
+const _streamChatCompletion: $FoundryPlatformMethod<
   (
     modelName: $C.LanguageModelApiName,
     $body: $C.ChatCompletionRequest,
@@ -56,13 +57,13 @@ const _streamChatCompletion: $OmniMethod<
  * URL: /v1/models/languageModels/{modelName}/chatCompletions/stream
  */
 export function streamChatCompletion(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [modelName: $C.LanguageModelApiName, $body: $C.ChatCompletionRequest]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _streamChatCompletion, ...args);
+  return $foundryPlatformFetch($ctx, _streamChatCompletion, ...args);
 }
 
-const _listLanguageModels: $OmniMethod<
+const _listLanguageModels: $FoundryPlatformMethod<
   ($queryParams?: {
     source?: $C.LanguageModelSource;
   }) => Promise<$C.ListLanguageModelsResponse>
@@ -75,8 +76,8 @@ const _listLanguageModels: $OmniMethod<
  * URL: /v1/models/languageModels
  */
 export function listLanguageModels(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [$queryParams?: { source?: $C.LanguageModelSource }]
 ): Promise<$C.ListLanguageModelsResponse> {
-  return $omniFetch($ctx, _listLanguageModels, ...args);
+  return $foundryPlatformFetch($ctx, _listLanguageModels, ...args);
 }

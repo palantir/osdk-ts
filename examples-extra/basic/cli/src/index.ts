@@ -27,6 +27,7 @@ import {
 } from "@osdk/examples.basic.sdk";
 import * as Foundry from "@osdk/foundry";
 import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
+import pinoPretty from "pino-pretty";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -39,6 +40,7 @@ import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdU
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
 import { logger } from "./logger.js";
 import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
+import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { typeChecks } from "./typeChecks.js";
 
 const runOld = false;
@@ -48,9 +50,10 @@ const testSubscriptions = false;
 async function runTests() {
   try {
     const myUser = await Foundry.Security.User.getCurrentUser(
-      client.ctx as any,
+      client,
       { preview: true },
     );
+    logger.info(myUser, "Loaded user");
     console.log("User", myUser!.email);
 
     await checkUnstableBulkLinks();
@@ -64,10 +67,10 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const models = await LanguageModel.listLanguageModels(client.ctx as any);
+    const models = await LanguageModel.listLanguageModels(client);
     logger.info({
       models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
-    });
+    }, "Loaded models");
 
     // const { data: boundaries } = await client(BoundariesUsState).fetchPage();
     // let didThrow = false;
@@ -109,6 +112,10 @@ async function runTests() {
       // we don't need the console flooded with additional things
       return;
     }
+
+    const datasetRid =
+      "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
+    await runFoundrySdkClientVerificationTest(datasetRid);
 
     // this has the nice effect of faking a 'race' with the below code
     (async () => {
@@ -348,7 +355,7 @@ async function runTests() {
 
     if (runOld) await typeChecks(client);
   } catch (e) {
-    console.error("Caught an error we did not expect", typeof e);
+    console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);
   }
 }

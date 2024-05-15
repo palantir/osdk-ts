@@ -36,8 +36,8 @@
     },
 
     "typecheck": {
-      "inputs": ["src/**", "src/**/*.mts", "src/**/*.cts", "src/**/*.tsx", "tsconfig.json"],
-      "outputs": ["types/**/*.d.ts", "types/**/*.d.ts.map"],
+      "inputs": ["src/**", "src/**/*.mts", "src/**/*.cts", "src/**/*.tsx", "tsconfig.json", "*.d.ts"],
+      "outputs": ["build/types/**/*.d.ts", "build/types/**/*.d.ts.map"],
       "dependsOn": ["mytsup#typecheck", "^typecheck", "codegen"]
     },
 

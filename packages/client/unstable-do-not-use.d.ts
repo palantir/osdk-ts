@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.net";
-import type { Logger } from "pino";
-import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import type { OntologyProvider } from "./ontology/OntologyProvider.js";
-
-export interface MinimalClient extends SharedClientContext {
-  ontologyRid: string;
-  ontologyProvider: OntologyProvider;
-  logger?: Logger;
-  objectSetFactory: ObjectSetFactory<any, any>;
-}
-
-export type MinimalClientParams = {
-  metadata: MinimalClientMetadata;
-  provider: OntologyProvider;
-};
-
-export interface MinimalClientMetadata {
-  ontologyRid: string;
-}
+export * from "./build/types/public/unstable-do-not-use";

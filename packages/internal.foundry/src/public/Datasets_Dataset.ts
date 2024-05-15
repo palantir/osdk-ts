@@ -15,13 +15,14 @@
  */
 
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
+  FoundryPlatformMethod as $FoundryPlatformMethod,
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
 import type * as $C from "../generated/components.js";
 
-const _createDataset: $OmniMethod<
+const _createDataset: $FoundryPlatformMethod<
   ($body: $C.CreateDatasetRequest) => Promise<$C.Dataset>
 > = [1, "/v1/datasets", 1];
 
@@ -34,13 +35,13 @@ const _createDataset: $OmniMethod<
  * URL: /v1/datasets
  */
 export function createDataset(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [$body: $C.CreateDatasetRequest]
 ): Promise<$C.Dataset> {
-  return $omniFetch($ctx, _createDataset, ...args);
+  return $foundryPlatformFetch($ctx, _createDataset, ...args);
 }
 
-const _getDataset: $OmniMethod<
+const _getDataset: $FoundryPlatformMethod<
   (datasetRid: $C.DatasetRid) => Promise<$C.Dataset>
 > = [0, "/v1/datasets/{0}"];
 
@@ -53,13 +54,13 @@ const _getDataset: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}
  */
 export function getDataset(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [datasetRid: $C.DatasetRid]
 ): Promise<$C.Dataset> {
-  return $omniFetch($ctx, _getDataset, ...args);
+  return $foundryPlatformFetch($ctx, _getDataset, ...args);
 }
 
-const _readTable: $OmniMethod<
+const _readTable: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams: {
@@ -84,7 +85,7 @@ const _readTable: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/readTable
  */
 export function readTable(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
@@ -98,10 +99,10 @@ export function readTable(
     },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _readTable, ...args);
+  return $foundryPlatformFetch($ctx, _readTable, ...args);
 }
 
-const _getSchema: $OmniMethod<
+const _getSchema: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams?: {
@@ -119,7 +120,7 @@ const _getSchema: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/schema
  */
 export function getSchema(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
@@ -130,10 +131,10 @@ export function getSchema(
     },
   ]
 ): Promise<any | undefined> {
-  return $omniFetch($ctx, _getSchema, ...args);
+  return $foundryPlatformFetch($ctx, _getSchema, ...args);
 }
 
-const _putSchema: $OmniMethod<
+const _putSchema: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $body: any,
@@ -148,17 +149,17 @@ const _putSchema: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/schema
  */
 export function putSchema(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
     $body: any,
     $queryParams?: { branchId?: $C.BranchId; preview?: $C.PreviewMode },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _putSchema, ...args);
+  return $foundryPlatformFetch($ctx, _putSchema, ...args);
 }
 
-const _deleteSchema: $OmniMethod<
+const _deleteSchema: $FoundryPlatformMethod<
   (
     datasetRid: $C.DatasetRid,
     $queryParams?: {
@@ -176,7 +177,7 @@ const _deleteSchema: $OmniMethod<
  * URL: /v1/datasets/{datasetRid}/schema
  */
 export function deleteSchema(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: $C.DatasetRid,
 
@@ -187,5 +188,5 @@ export function deleteSchema(
     },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteSchema, ...args);
+  return $foundryPlatformFetch($ctx, _deleteSchema, ...args);
 }

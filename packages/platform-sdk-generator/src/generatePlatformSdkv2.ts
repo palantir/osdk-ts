@@ -39,7 +39,6 @@ export async function generatePlatformSdkV2(ir: ir.ApiSpec, outputDir: string) {
   }
 
   // Now we can generate the resources
-
   for (const ns of model.namespaces) {
     for (const r of ns.resources) {
       const sourceFilePath = path.join(
@@ -200,8 +199,10 @@ const BASE_PACKAGE_JSON = {
     "transpile": "tsup",
     "typecheck": "tsc-absolute",
   },
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
     "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
     "@osdk/shared.net": "workspace:^",
   },
   "devDependencies": {

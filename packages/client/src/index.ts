@@ -19,6 +19,7 @@ export { createClient } from "./createClient.js";
 
 export { isOk } from "@osdk/shared.net";
 export type { ResultOrError } from "@osdk/shared.net";
+export { PalantirApiError } from "@osdk/shared.net";
 export type {
   ActionEditResponse,
   ActionValidationResponse,
