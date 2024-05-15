@@ -20,9 +20,9 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { Attachment } from "../object/Attachment.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
-import { toDataValue } from "./toDataValue.js";
+import { clientToWireDataValue } from "./clientToWireDataValue.js";
 
-describe(toDataValue, () => {
+describe(clientToWireDataValue, () => {
   let client: Client;
 
   beforeAll(async () => {
@@ -48,7 +48,7 @@ describe(toDataValue, () => {
       string: "string",
       timestamp: "2024-01-01T00:00:00Z",
     };
-    expect(toDataValue(basic)).toEqual(basic);
+    expect(clientToWireDataValue(basic)).toEqual(basic);
   });
 
   it("recursively converts arrays and sets into array types", () => {
@@ -56,7 +56,7 @@ describe(toDataValue, () => {
     const attachmentArray = [attachment];
     const attachmentSet = new Set(attachmentArray);
 
-    expect(toDataValue({
+    expect(clientToWireDataValue({
       attachment,
       attachmentArray,
       attachmentSet,
@@ -75,12 +75,16 @@ describe(toDataValue, () => {
       },
     };
 
-    expect(toDataValue(struct)).toEqual({ inner: { attachment: "rid" } });
+    expect(clientToWireDataValue(struct)).toEqual({
+      inner: { attachment: "rid" },
+    });
   });
 
   it("maps an ontology object into just its primary key", () => {
     const employee = stubData.employee1;
-    expect(toDataValue(employee)).toEqual(stubData.employee1.__primaryKey);
+    expect(clientToWireDataValue(employee)).toEqual(
+      stubData.employee1.__primaryKey,
+    );
   });
 
   it("passes through object set definitions", () => {
@@ -102,7 +106,9 @@ describe(toDataValue, () => {
     }
   `;
 
-    expect(toDataValue(clientObjectSet)).toMatchInlineSnapshot(expected);
-    expect(toDataValue(definition)).toMatchInlineSnapshot(expected);
+    expect(clientToWireDataValue(clientObjectSet)).toMatchInlineSnapshot(
+      expected,
+    );
+    expect(clientToWireDataValue(definition)).toMatchInlineSnapshot(expected);
   });
 });

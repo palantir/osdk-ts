@@ -17,9 +17,9 @@
 import type { ActionDefinition } from "@osdk/api";
 import type { DataValue } from "@osdk/internal.foundry";
 import { applyActionV2 } from "@osdk/internal.foundry/OntologiesV2_Action";
+import { clientToWireDataValue } from "../mapping/clientToWireDataValue.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
-import { toDataValue } from "../util/toDataValue.js";
 import type {
   ActionEditResponse,
   ActionValidationResponse,
@@ -79,7 +79,7 @@ function remapActionParams<AD extends ActionDefinition<any, any>>(
 
   const parameterMap: { [parameterName: string]: any } = {};
   const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
-    acc[key] = toDataValue(value);
+    acc[key] = clientToWireDataValue(value);
     return acc;
   }, parameterMap);
 

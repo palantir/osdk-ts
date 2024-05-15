@@ -17,15 +17,15 @@
 import type { DataValue } from "@osdk/internal.foundry/types";
 import { isAttachment } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
-import { isWireObjectSet } from "./WireObjectSet.js";
+import { isOntologyObjectV2 } from "../util/isOntologyObjectV2.js";
+import { isWireObjectSet } from "../util/WireObjectSet.js";
 
 /**
  * Marshall user-facing data into the wire DataValue type
  *
  * @see DataValue for the expected payloads
  */
-export function toDataValue(value: any): DataValue {
+export function clientToWireDataValue(value: any): DataValue {
   if (value == null) {
     // typeof null is 'object' so do this first
     return value;
@@ -33,7 +33,7 @@ export function toDataValue(value: any): DataValue {
 
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
-    return Array.from(value, toDataValue);
+    return Array.from(value, clientToWireDataValue);
   }
 
   // attachments just send the rid directly
@@ -43,7 +43,7 @@ export function toDataValue(value: any): DataValue {
 
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return toDataValue(value.__primaryKey);
+    return clientToWireDataValue(value.__primaryKey);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -61,7 +61,7 @@ export function toDataValue(value: any): DataValue {
   // struct
   if (typeof value === "object") {
     return Object.entries(value).reduce((acc, [key, structValue]) => {
-      acc[key] = toDataValue(structValue);
+      acc[key] = clientToWireDataValue(structValue);
       return acc;
     }, {} as { [key: string]: DataValue });
   }
