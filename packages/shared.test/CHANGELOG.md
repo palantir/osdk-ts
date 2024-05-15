@@ -1,5 +1,18 @@
 # @osdk/shared.test
 
+## 1.4.0
+
+### Minor Changes
+
+- c9f3214: Adds support for latest api definitions
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+- Updated dependencies [c9f3214]
+  - @osdk/gateway@2.3.0
+  - @osdk/api@1.8.0
+
 ## 1.3.0
 
 ### Minor Changes

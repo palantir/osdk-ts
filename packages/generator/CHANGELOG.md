@@ -1,5 +1,20 @@
 # @osdk/generator
 
+## 1.11.0
+
+### Minor Changes
+
+- c9f3214: Adds support for latest api definitions
+- c9f3214: Interfaces are now mapped as views
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+- Updated dependencies [c9f3214]
+  - @osdk/gateway@2.3.0
+  - @osdk/api@1.8.0
+  - @osdk/generator-converters@0.6.0
+
 ## 1.10.0
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",

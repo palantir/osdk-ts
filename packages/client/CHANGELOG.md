@@ -1,5 +1,22 @@
 # @osdk/client
 
+## 0.19.0
+
+### Minor Changes
+
+- 0a64def: Adds experimental batch link support
+- f9b3c72: Support importing the unstable-do-not-use from moduleResolution: node
+- 978ecd5: Rexport PalantirApiError
+- 978ecd5: Client is now usable for calling Platform SDK
+- c9f3214: Interfaces are now mapped as views
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+  - @osdk/api@1.8.0
+  - @osdk/generator-converters@0.6.0
+  - @osdk/shared.net@1.11.0
+
 ## 0.18.0
 
 ### Minor Changes
