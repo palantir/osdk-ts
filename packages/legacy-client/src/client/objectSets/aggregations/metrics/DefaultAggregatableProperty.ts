@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregatableProperty, MetricValue } from "../Aggregations";
-import { MetricValueType } from "./metrics";
+import type { AggregatableProperty, MetricValue } from "../Aggregations.js";
+import { MetricValueType } from "./metrics.js";
 
 export const DefaultAggregatableProperty = <T extends MetricValue>(
   propertyApiName: string,

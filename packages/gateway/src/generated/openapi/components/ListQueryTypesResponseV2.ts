@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "./PageToken";
-import type { QueryTypeV2 } from "./QueryTypeV2";
+import type { PageToken } from "./PageToken.js";
+import type { QueryTypeV2 } from "./QueryTypeV2.js";
 
 export interface ListQueryTypesResponseV2 {
   nextPageToken?: PageToken;

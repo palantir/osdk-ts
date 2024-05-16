@@ -1,6 +1,6 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 import type { LocalDate, OntologyObject, SingleLink } from '@osdk/legacy-client';
-import type { OsdkTodoProject } from './OsdkTodoProject';
+import type { OsdkTodoProject } from './OsdkTodoProject.js';
 
 /**
  * Its a todo task.
@@ -30,7 +30,7 @@ export interface OsdkTodoTask extends OntologyObject {
   readonly osdkTodoProject: SingleLink<OsdkTodoProject>;
 }
 
-import type { OsdkTodoProjectDef } from './OsdkTodoProject';
+import type { OsdkTodoProjectDef } from './OsdkTodoProject.js';
 
 export interface OsdkTodoTaskDef extends ObjectTypeDefinition<'OsdkTodoTask', OsdkTodoTask> {
   apiName: 'OsdkTodoTask';

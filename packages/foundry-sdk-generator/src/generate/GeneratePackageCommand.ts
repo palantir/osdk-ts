@@ -16,10 +16,10 @@
 
 import { exit } from "process";
 import type { Arguments, Argv, CommandModule } from "yargs";
-import { OntologyMetadataResolver } from "../ontologyMetadata";
-import { isValidSemver } from "../utils";
-import { generatePackage } from "./betaClient/generatePackage";
-import { transformArrayArg } from "./commandUtils";
+import { OntologyMetadataResolver } from "../ontologyMetadata/index.js";
+import { isValidSemver } from "../utils/index.js";
+import { generatePackage } from "./betaClient/generatePackage.js";
+import { transformArrayArg } from "./commandUtils.js";
 
 export interface generatePackageCommandArgs {
   authToken: string;

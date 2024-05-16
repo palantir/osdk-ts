@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregationRange } from "./AggregationRange";
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { AggregationRange } from "./AggregationRange.js";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Divides objects into groups according to specified ranges. */
 export interface AggregationRangesGrouping {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FuzzyV2 } from "./FuzzyV2";
-import type { PropertyApiName } from "./PropertyApiName";
+import type { FuzzyV2 } from "./FuzzyV2.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field contains any of the whitespace separated words in any

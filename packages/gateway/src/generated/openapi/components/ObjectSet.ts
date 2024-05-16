@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { ObjectSetBaseType } from "./ObjectSetBaseType";
-import type { ObjectSetFilterType } from "./ObjectSetFilterType";
-import type { ObjectSetIntersectionType } from "./ObjectSetIntersectionType";
-import type { ObjectSetReferenceType } from "./ObjectSetReferenceType";
-import type { ObjectSetSearchAroundType } from "./ObjectSetSearchAroundType";
-import type { ObjectSetStaticType } from "./ObjectSetStaticType";
-import type { ObjectSetSubtractType } from "./ObjectSetSubtractType";
-import type { ObjectSetUnionType } from "./ObjectSetUnionType";
+import type { ObjectSetBaseType } from "./ObjectSetBaseType.js";
+import type { ObjectSetFilterType } from "./ObjectSetFilterType.js";
+import type { ObjectSetIntersectionType } from "./ObjectSetIntersectionType.js";
+import type { ObjectSetReferenceType } from "./ObjectSetReferenceType.js";
+import type { ObjectSetSearchAroundType } from "./ObjectSetSearchAroundType.js";
+import type { ObjectSetStaticType } from "./ObjectSetStaticType.js";
+import type { ObjectSetSubtractType } from "./ObjectSetSubtractType.js";
+import type { ObjectSetUnionType } from "./ObjectSetUnionType.js";
 
 export interface ObjectSet_Base extends ObjectSetBaseType {
   type: "base";

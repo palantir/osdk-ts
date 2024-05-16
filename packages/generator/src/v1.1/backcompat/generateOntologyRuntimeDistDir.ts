@@ -15,14 +15,14 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../MinimalFs";
-import { formatTs } from "../../util/test/formatTs";
-import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir";
-import { generateBaseTypesDir } from "./internal-foundry-ontology-runtime-dist/generateBaseTypesDir";
-import { generateClientDir } from "./internal-foundry-ontology-runtime-dist/generateClientDir";
-import { generateFiltersDir } from "./internal-foundry-ontology-runtime-dist/generateFiltersDir";
-import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir";
-import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir";
+import type { MinimalFs } from "../../MinimalFs.js";
+import { formatTs } from "../../util/test/formatTs.js";
+import { generateAggregationsDir } from "./internal-foundry-ontology-runtime-dist/generateAggregationsDir.js";
+import { generateBaseTypesDir } from "./internal-foundry-ontology-runtime-dist/generateBaseTypesDir.js";
+import { generateClientDir } from "./internal-foundry-ontology-runtime-dist/generateClientDir.js";
+import { generateFiltersDir } from "./internal-foundry-ontology-runtime-dist/generateFiltersDir.js";
+import { generateOntologyProviderDir } from "./internal-foundry-ontology-runtime-dist/generateOntologyProviderDir.js";
+import { generatePagingDir } from "./internal-foundry-ontology-runtime-dist/generatePagingDir.js";
 
 export async function generateOntologyRuntimeDistDir(
   outDir: string,

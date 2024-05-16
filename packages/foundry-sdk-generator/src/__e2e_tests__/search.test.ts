@@ -28,20 +28,20 @@ import {
   GeoPoint,
   Op,
   Polygon,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   LoadObjectSetError,
   Page,
   Result,
   SearchObjectsError,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 
 import { apiServer, loadAll } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
-} from "../generatedNoCheck/@test-app/osdk/ontology/objects";
-import { assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/ontology/objects/index.js";
+import { assertOkOrThrow } from "./resultUtils.js";
 
 describe("SearchObjects", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

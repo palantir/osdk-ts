@@ -18,8 +18,8 @@ import type { components } from "@osdk/gateway";
 import { namespaces } from "@osdk/gateway";
 import type { WireOntologyDefinition } from "@osdk/generator";
 import { UserTokenAuth } from "@osdk/legacy-client";
-import { getApiRequestFunction } from "../net/FetchClient";
-import { Result } from "./Result";
+import { getApiRequestFunction } from "../net/FetchClient.js";
+import { Result } from "./Result.js";
 
 export class OntologyMetadataResolver {
   #authToken: string;

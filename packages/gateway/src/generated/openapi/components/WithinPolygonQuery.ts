@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PolygonValue } from "./PolygonValue";
-import type { PropertyApiName } from "./PropertyApiName";
+import type { PolygonValue } from "./PolygonValue.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field contains a point within the polygon provided.

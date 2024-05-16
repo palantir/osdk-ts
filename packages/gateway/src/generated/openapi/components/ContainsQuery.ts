@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Returns objects where the specified array contains a value. */
 export interface ContainsQuery {

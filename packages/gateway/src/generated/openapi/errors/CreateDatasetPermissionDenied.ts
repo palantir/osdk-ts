@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DatasetName } from "../components/DatasetName";
-import type { FolderRid } from "../components/FolderRid";
+import type { DatasetName } from "../components/DatasetName.js";
+import type { FolderRid } from "../components/FolderRid.js";
 
 /** The provided token does not have permission to create a dataset in this folder. */
 export interface CreateDatasetPermissionDenied {

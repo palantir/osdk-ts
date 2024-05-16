@@ -15,9 +15,9 @@
  */
 
 import { http, HttpResponse } from "msw";
-import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes";
-import { defaultOntology } from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
+import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes.js";
+import { defaultOntology } from "../stubs/ontologies.js";
+import { authHandlerMiddleware } from "./commonHandlers.js";
 
 export const unsupportedMetadataHandler = [
   /**

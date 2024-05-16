@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDataType } from "./OntologyDataType";
-import type { ValueType } from "./ValueType";
+import type { OntologyDataType } from "./OntologyDataType.js";
+import type { ValueType } from "./ValueType.js";
 
 /** Details about a parameter of an action or query. */
 export interface Parameter {

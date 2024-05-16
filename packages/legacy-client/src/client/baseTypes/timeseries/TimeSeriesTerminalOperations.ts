@@ -17,11 +17,11 @@
 import type { OntologyDefinition } from "@osdk/api";
 import type { StreamTimeSeriesPointsRequest as StreamPointsBody } from "@osdk/gateway/types";
 import type { ClientContext } from "@osdk/shared.net";
-import { getAllTimeSeriesPoints } from "../../../client/net/getAllTimeSeriesPoints";
-import { iterateTimeSeriesPoints } from "../../../client/net/iterateTimeSeriesPoints";
-import type { TimeSeriesError } from "../../errors";
-import type { Result } from "../../Result";
-import type { TimeSeriesPoint } from "./TimeSeriesPoint";
+import { getAllTimeSeriesPoints } from "../../../client/net/getAllTimeSeriesPoints.js";
+import { iterateTimeSeriesPoints } from "../../../client/net/iterateTimeSeriesPoints.js";
+import type { TimeSeriesError } from "../../errors/index.js";
+import type { Result } from "../../Result.js";
+import type { TimeSeriesPoint } from "./TimeSeriesPoint.js";
 
 export interface TimeSeriesTerminalOperations<T extends number | string> {
   /**

@@ -16,7 +16,7 @@
 
 import { describe, expectTypeOf, it } from "vitest";
 
-import type { Todo } from "../../util/test/TodoObject";
+import type { Todo } from "../../util/test/TodoObject.js";
 import type {
   AggregatableProperty,
   ApproximateDistinctCountAggregatableProperty,
@@ -25,12 +25,12 @@ import type {
   MultipleAggregatableProperty,
   NumericGroupBy,
   StringGroupBy,
-} from "../objectSets/aggregations";
+} from "../objectSets/aggregations/index.js";
 import type {
   ObjectSetAggregateArg,
   ObjectSetGroupByArg,
   ObjectSetMultipleAggregateArg,
-} from "./aggregations";
+} from "./aggregations.js";
 
 describe("Aggregations", () => {
   it("correct types", () => {

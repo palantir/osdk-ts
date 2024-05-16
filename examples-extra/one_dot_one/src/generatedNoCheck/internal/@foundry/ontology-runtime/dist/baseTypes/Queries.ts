@@ -1,4 +1,4 @@
-import { BucketValue } from '../aggregations/index';
+import { BucketValue } from '../aggregations/index.js';
 
 import type { QueryResponse as OG_QueryResponse } from '@osdk/legacy-client';
 

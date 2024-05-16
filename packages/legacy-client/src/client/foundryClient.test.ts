@@ -17,9 +17,9 @@
 import { mockFetchResponse, MockOntology } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { describe, expect, it, vi } from "vitest";
-import { UserTokenAuth } from "..";
-import { USER_AGENT } from "../USER_AGENT";
-import { BaseFoundryClient } from "./foundryClient";
+import { UserTokenAuth } from "../index.js";
+import { USER_AGENT } from "../USER_AGENT.js";
+import { BaseFoundryClient } from "./foundryClient.js";
 
 describe(BaseFoundryClient, () => {
   it("Passes the expected userAgent string", async () => {

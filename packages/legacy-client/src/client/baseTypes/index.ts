@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-export * from "./ActionType";
-export * from "./attachments";
-export * from "./geoshapes";
-export * from "./links";
-export * from "./localDate";
-export * from "./objectset";
-export * from "./ObjectType";
-export * from "./OntologyObject";
-export * from "./ParameterValue";
-export * from "./Queries";
-export * from "./timeseries";
-export * from "./timestamp";
+export * from "./ActionType.js";
+export * from "./attachments/index.js";
+export * from "./geoshapes/index.js";
+export * from "./links.js";
+export * from "./localDate.js";
+export * from "./objectset/index.js";
+export * from "./ObjectType.js";
+export * from "./OntologyObject.js";
+export * from "./ParameterValue.js";
+export * from "./Queries.js";
+export * from "./timeseries/index.js";
+export * from "./timestamp.js";

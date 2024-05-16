@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DatasetName } from "./DatasetName";
-import type { FolderRid } from "./FolderRid";
+import type { DatasetName } from "./DatasetName.js";
+import type { FolderRid } from "./FolderRid.js";
 
 export interface CreateDatasetRequest {
   name: DatasetName;

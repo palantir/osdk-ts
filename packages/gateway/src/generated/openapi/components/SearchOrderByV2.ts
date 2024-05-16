@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SearchOrderingV2 } from "./SearchOrderingV2";
+import type { SearchOrderingV2 } from "./SearchOrderingV2.js";
 
 /** Specifies the ordering of search results by a field and an ordering direction. */
 export interface SearchOrderByV2 {

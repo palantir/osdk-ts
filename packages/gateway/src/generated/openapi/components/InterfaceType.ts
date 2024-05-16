@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
-import type { InterfaceLinkType } from "./InterfaceLinkType";
-import type { InterfaceLinkTypeApiName } from "./InterfaceLinkTypeApiName";
-import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
-import type { InterfaceTypeRid } from "./InterfaceTypeRid";
-import type { SharedPropertyType } from "./SharedPropertyType";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { DisplayName } from "./DisplayName.js";
+import type { InterfaceLinkType } from "./InterfaceLinkType.js";
+import type { InterfaceLinkTypeApiName } from "./InterfaceLinkTypeApiName.js";
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
+import type { InterfaceTypeRid } from "./InterfaceTypeRid.js";
+import type { SharedPropertyType } from "./SharedPropertyType.js";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
 
 /** Represents an interface type in the Ontology. */
 export interface InterfaceType {

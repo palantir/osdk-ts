@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
+import type { DatasetRid } from "../components/DatasetRid.js";
 
 /** The provided token does not have permission to read the given dataset as a table. */
 export interface ReadTablePermissionDenied {

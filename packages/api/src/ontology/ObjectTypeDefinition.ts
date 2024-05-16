@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "..";
-import type { OsdkMetadata } from "../OsdkMetadata";
-import type { OntologyDefinition } from "./OntologyDefinition";
-import type { VersionString } from "./VersionString";
-import type { WirePropertyTypes } from "./WirePropertyTypes";
+import type { ObjectOrInterfaceDefinition } from "../index.js";
+import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { VersionString } from "./VersionString.js";
+import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type ObjectTypeDefinitionFrom<
   O extends OntologyDefinition<any>,

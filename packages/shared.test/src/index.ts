@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export * as handlers from "./handlers";
-export { loadAll } from "./handlers/util/loadAll";
-export * from "./mock-ontology";
-export { apiServer } from "./setupServers";
-export * as stubData from "./stubs";
-export { withoutRid } from "./withoutRid";
+export * as handlers from "./handlers/index.js";
+export { loadAll } from "./handlers/util/loadAll.js";
+export * from "./mock-ontology/index.js";
+export { apiServer } from "./setupServers.js";
+export * as stubData from "./stubs/index.js";
+export { withoutRid } from "./withoutRid.js";

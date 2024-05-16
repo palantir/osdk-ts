@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Divides objects into groups according to an exact value. */
 export interface AggregationExactGrouping {

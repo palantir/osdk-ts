@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { DateType } from "./DateType";
-import type { DoubleType } from "./DoubleType";
-import type { IntegerType } from "./IntegerType";
-import type { TimestampType } from "./TimestampType";
+import type { DateType } from "./DateType.js";
+import type { DoubleType } from "./DoubleType.js";
+import type { IntegerType } from "./IntegerType.js";
+import type { TimestampType } from "./TimestampType.js";
 
 export interface QueryAggregationRangeSubType_Date extends DateType {
   type: "date";

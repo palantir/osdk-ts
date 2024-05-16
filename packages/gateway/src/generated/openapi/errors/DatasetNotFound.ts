@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
+import type { DatasetRid } from "../components/DatasetRid.js";
 
 /** The requested dataset could not be found, or the client token does not have access to it. */
 export interface DatasetNotFound {

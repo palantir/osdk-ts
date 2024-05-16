@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentRid } from "../components/AttachmentRid";
+import type { AttachmentRid } from "../components/AttachmentRid.js";
 
 /**
  * The requested attachment is not found, or the client token does not have access to it.

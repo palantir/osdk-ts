@@ -1,5 +1,5 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
-import { OsdkTodoTask as OG_OsdkTodoTask } from "../OsdkTodoTask";
+import { OsdkTodoTask as OG_OsdkTodoTask } from "../OsdkTodoTask.js";
 
 /** @deprecated Use OsdkTodoTask from ontology/objects instead */
 export type OsdkTodoTask = OG_OsdkTodoTask;

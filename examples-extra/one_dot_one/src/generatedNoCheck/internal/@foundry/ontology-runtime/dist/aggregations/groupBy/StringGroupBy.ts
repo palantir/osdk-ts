@@ -1,1 +1,1 @@
-export { StringGroupBy } from './index';
+export { StringGroupBy } from './index.js';

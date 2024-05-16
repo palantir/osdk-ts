@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { PropertyApiName } from "../components/PropertyApiName";
-import type { ValueType } from "../components/ValueType";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { ValueType } from "../components/ValueType.js";
 
 /**
  * Range group by is not supported by property type.

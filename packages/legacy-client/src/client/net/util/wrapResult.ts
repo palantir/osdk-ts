@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError, PalantirApiError } from "../../errors";
-import { isPalantirApiError } from "../../errors";
-import type { Result } from "../../Result";
-import { createErrorResponse, createOkResponse } from "./ResponseCreators";
+import type { FoundryApiError, PalantirApiError } from "../../errors/index.js";
+import { isPalantirApiError } from "../../errors/index.js";
+import type { Result } from "../../Result.js";
+import { createErrorResponse, createOkResponse } from "./ResponseCreators.js";
 
 export async function wrapResult<T, E extends FoundryApiError>(
   apiCall: () => Promise<T>,

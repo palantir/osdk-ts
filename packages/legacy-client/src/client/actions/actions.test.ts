@@ -34,35 +34,35 @@ import {
   it,
   vi,
 } from "vitest";
-import { ActionExecutionMode, ReturnEditsMode } from "../..";
+import { Ontology as MockOntologyGenerated } from "../../generatedNoCheck/Ontology.js";
+import { ActionExecutionMode, ReturnEditsMode } from "../../index.js";
 import type {
   ActionError,
   ActionExecutionOptions,
   ActionResponseFromOptions,
   Edits,
   Result,
-} from "../..";
-import { Ontology as MockOntologyGenerated } from "../../generatedNoCheck/Ontology";
-import { USER_AGENT } from "../../USER_AGENT";
+} from "../../index.js";
+import { USER_AGENT } from "../../USER_AGENT.js";
 import {
   expectFetchToBeCalledWithBody,
   expectFetchToBeCalledWithGet,
-} from "../../util/test/expectUtils";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils";
+} from "../../util/test/expectUtils.js";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
 import type {
   BatchActionExecutionOptions,
   BatchActionResponseFromOptions,
   BulkActionExecutionOptions,
   BulkActionResponseFromOptions,
-} from "../baseTypes";
-import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import type { Actions, BatchActions, BulkActions } from "./actions";
+} from "../baseTypes/index.js";
+import { createBaseOsdkObjectSet } from "../objectSets/OsdkObjectSet.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import type { Actions, BatchActions, BulkActions } from "./actions.js";
 import {
   createActionProxy,
   createBatchActionProxy,
   createBulkActionProxy,
-} from "./createActionProxy";
+} from "./createActionProxy.js";
 
 describe("Actions", () => {
   let client: ClientContext<typeof MockOntology>;

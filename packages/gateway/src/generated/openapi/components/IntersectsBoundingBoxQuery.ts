@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BoundingBoxValue } from "./BoundingBoxValue";
-import type { PropertyApiName } from "./PropertyApiName";
+import type { BoundingBoxValue } from "./BoundingBoxValue.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field intersects the bounding box provided.

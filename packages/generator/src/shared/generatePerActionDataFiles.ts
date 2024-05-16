@@ -16,14 +16,14 @@
 
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { deleteUndefineds } from "../util/deleteUndefineds";
-import { stringify } from "../util/stringify";
-import { formatTs } from "../util/test/formatTs";
-import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition";
-import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst";
+import type { MinimalFs } from "../MinimalFs.js";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { stringify } from "../util/stringify.js";
+import { formatTs } from "../util/test/formatTs.js";
+import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 export async function generatePerActionDataFiles(
   ontology: WireOntologyDefinition,

@@ -23,10 +23,10 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { USER_AGENT } from "../../USER_AGENT";
-import { expectFetchToBeCalledWithGet } from "../../util/test/expectUtils";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils";
-import { getAttachment } from "./getAttachment";
+import { USER_AGENT } from "../../USER_AGENT.js";
+import { expectFetchToBeCalledWithGet } from "../../util/test/expectUtils.js";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
+import { getAttachment } from "./getAttachment.js";
 
 describe(getAttachment, () => {
   let client: ClientContext<typeof MockOntology>;

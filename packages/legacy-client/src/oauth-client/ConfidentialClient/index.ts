@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from "./ConfidentialClientAuth";
-export * from "./ConfidentialClientFlow";
+export * from "./ConfidentialClientAuth.js";
+export * from "./ConfidentialClientFlow.js";

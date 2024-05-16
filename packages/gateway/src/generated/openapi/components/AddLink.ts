@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkSideObject } from "./LinkSideObject";
-import type { LinkTypeApiName } from "./LinkTypeApiName";
+import type { LinkSideObject } from "./LinkSideObject.js";
+import type { LinkTypeApiName } from "./LinkTypeApiName.js";
 
 export interface AddLink {
   linkTypeApiNameAtoB: LinkTypeApiName;

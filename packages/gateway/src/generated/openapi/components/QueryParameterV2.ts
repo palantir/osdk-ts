@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "./QueryDataType";
+import type { QueryDataType } from "./QueryDataType.js";
 
 /** Details about a parameter of a query. */
 export interface QueryParameterV2 {

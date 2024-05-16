@@ -1,6 +1,6 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 import type { MultiLink, OntologyObject } from '@osdk/legacy-client';
-import type { Todo } from './Todo';
+import type { Todo } from './Todo.js';
 
 /**
  * A person
@@ -20,7 +20,7 @@ export interface Person extends OntologyObject {
   readonly Friends: MultiLink<Person>;
 }
 
-import type { TodoDef } from './Todo';
+import type { TodoDef } from './Todo.js';
 
 export interface PersonDef extends ObjectTypeDefinition<'Person', Person> {
   apiName: 'Person';

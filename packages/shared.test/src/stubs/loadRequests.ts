@@ -22,7 +22,7 @@ import {
   employee3,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
-} from "./objects";
+} from "./objects.js";
 
 export const loadRequestHandlersV2: {
   [objectTypeApiName: string]: ListObjectsResponseV2["data"];

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { mapCoordinatesToGeoPoint } from ".";
-import type { GeoJsonMultiLineString } from "./GeoJson";
-import type { Geometry } from "./Geometry";
-import { LineString } from "./LineString";
+import type { GeoJsonMultiLineString } from "./GeoJson.js";
+import type { Geometry } from "./Geometry.js";
+import { mapCoordinatesToGeoPoint } from "./index.js";
+import { LineString } from "./LineString.js";
 
 export interface MultiLineString extends Geometry {
   getLineStrings(): LineString[];

@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { sanitizeMetadata } from "./sanitizeMetadata";
+import { sanitizeMetadata } from "./sanitizeMetadata.js";
 
 describe(sanitizeMetadata, () => {
   it("sanitized action apiNames", () => {

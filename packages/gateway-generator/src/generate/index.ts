@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export * from "./client";
-export * from "./common";
-export * from "./component";
-export * from "./error";
-export * from "./generate";
-export * from "./namespace";
-export * from "./types";
+export * from "./client.js";
+export * from "./common.js";
+export * from "./component.js";
+export * from "./error.js";
+export * from "./generate.js";
+export * from "./namespace.js";
+export * from "./types.js";

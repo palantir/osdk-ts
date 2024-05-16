@@ -1,5 +1,5 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
-import { Person as OG_Person } from "../Person";
+import { Person as OG_Person } from "../Person.js";
 
 /** @deprecated Use Person from ontology/objects instead */
 export type Person = OG_Person;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ParameterOption } from "./ParameterOption";
+import type { ParameterOption } from "./ParameterOption.js";
 
 /**
  * The parameter has a manually predefined set of options.

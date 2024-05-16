@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregationRangeV2 } from "./AggregationRangeV2";
-import type { PropertyApiName } from "./PropertyApiName";
+import type { AggregationRangeV2 } from "./AggregationRangeV2.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Divides objects into groups according to specified ranges. */
 export interface AggregationRangesGroupingV2 {

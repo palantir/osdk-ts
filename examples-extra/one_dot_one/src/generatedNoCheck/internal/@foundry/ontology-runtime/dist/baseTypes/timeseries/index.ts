@@ -1,6 +1,6 @@
-export * from './TimeSeries';
-export * from './TimeSeriesDuration';
-export * from './TimeSeriesPoint';
+export * from './TimeSeries.js';
+export * from './TimeSeriesDuration.js';
+export * from './TimeSeriesPoint.js';
 
-export * from './TimeSeriesQuery';
-export * from './TimeSeriesTerminalOperations';
+export * from './TimeSeriesQuery.js';
+export * from './TimeSeriesTerminalOperations.js';

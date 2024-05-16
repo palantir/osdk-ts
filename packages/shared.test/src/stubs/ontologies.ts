@@ -15,11 +15,11 @@
  */
 
 import type { Ontology, OntologyFullMetadata } from "@osdk/gateway/types";
-import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes";
-import { FooInterface } from "./interfaces";
-import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes";
-import { queryTypes } from "./queryTypes";
-import { fooSpt } from "./spts";
+import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
+import { FooInterface } from "./interfaces.js";
+import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
+import { queryTypes } from "./queryTypes.js";
+import { fooSpt } from "./spts.js";
 
 export const defaultOntology: Ontology = {
   apiName: "default-ontology",

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DateType } from "./DateType";
-import type { DoubleType } from "./DoubleType";
-import type { TimestampType } from "./TimestampType";
+import type { DateType } from "./DateType.js";
+import type { DoubleType } from "./DoubleType.js";
+import type { TimestampType } from "./TimestampType.js";
 
 export interface QueryAggregationValueType_Date extends DateType {
   type: "date";

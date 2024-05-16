@@ -15,7 +15,7 @@
  */
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { OntologyMetadataResolver } from "../ontologyMetadata/ontologyMetadataResolver";
+import { OntologyMetadataResolver } from "../ontologyMetadata/ontologyMetadataResolver.js";
 
 import { apiServer, handlers } from "@osdk/shared.test";
 

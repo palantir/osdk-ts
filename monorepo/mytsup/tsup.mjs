@@ -22,10 +22,9 @@ export default async (options, ourOptions) => {
       "src/public/*.ts",
       "src/public/*.mts",
     ],
-    format: ourOptions?.esmOnly ? ["esm"] : ["cjs", "esm"],
     outExtension: ({ format }) => {
       return {
-        js: format === "cjs" ? (ourOptions?.cjsExtension ?? ".cjs") : ".mjs",
+        js: ".js",
       };
     },
     env: {
@@ -38,7 +37,6 @@ export default async (options, ourOptions) => {
       ),
       TARGET: "node",
     },
-    outDir: "build/js",
     clean: true,
     silent: true,
     sourcemap: true,
@@ -49,6 +47,7 @@ export default async (options, ourOptions) => {
     },
     treeshake: true,
     target: "es2022",
+
     esbuildPlugins: [
       /** @type {any} */ (babel({
         config: {
@@ -60,17 +59,36 @@ export default async (options, ourOptions) => {
   };
 
   /** @type {import("tsup").Options} */
+  const esmConfig = {
+    ...baseConfig,
+    format: ["esm"],
+    outDir: "build/esm",
+  };
+
+  /** @type {import("tsup").Options} */
+  const cjsConfig = {
+    ...esmConfig,
+    format: ["cjs"],
+    outExtension: () => {
+      return {
+        js: ".cjs",
+      };
+    },
+    outDir: "build/cjs",
+  };
+
+  /** @type {import("tsup").Options} */
   const browserConfig = {
     ...baseConfig,
     format: ["esm"],
-    outExtension: (ctx) => ({ js: ".browser.mjs" }),
+    outDir: "build/browser",
     env: {
       ...baseConfig.env,
       TARGET: "browser",
     },
   };
 
-  return [baseConfig, browserConfig];
+  return [esmConfig, cjsConfig, browserConfig];
 };
 
 async function readPackageVersion(k) {

@@ -27,6 +27,21 @@
       "inputs": ["dprint.json"]
     },
 
+    /* Psuedo task to depend on the script contents */
+    "//#script-check-attw": {
+      "inputs": ["scripts/build_common/check-attw.sh"]
+    },
+
+    "check-attw": {
+      "dependsOn": ["//#script-check-attw", "transpile", "typecheck"],
+      "inputs": ["build/{esm,cjs,browser}", "package.json"]
+    },
+
+    /* Psuedo task to depend on the script contents */
+    "//#script-typecheck": {
+      "inputs": ["scripts/build_common/typecheck.sh"]
+    },
+
     "//#global-eslint-config": {
       "inputs": ["eslint.config.mjs"]
     },
@@ -37,8 +52,11 @@
 
     "typecheck": {
       "inputs": ["src/**", "src/**/*.mts", "src/**/*.cts", "src/**/*.tsx", "tsconfig.json", "*.d.ts"],
-      "outputs": ["build/types/**/*.d.ts", "build/types/**/*.d.ts.map"],
-      "dependsOn": ["mytsup#typecheck", "^typecheck", "codegen"]
+      "outputs": [
+        "build/**/*.{d.ts,d.ts.map}",
+        "build/**/package.json"
+      ],
+      "dependsOn": ["//#script-typecheck", "mytsup#typecheck", "^typecheck", "codegen", "transpile"]
     },
 
     "mytsup#typecheck": {
@@ -78,8 +96,8 @@
 
     "transpile": {
       "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
-      "inputs": ["src/**", "tsup.config.js", "tsconfig.json"],
-      "outputs": ["dist/**", "lib/**", "build/js/**"]
+      "inputs": ["src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
+      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
     },
 
     "test": {
@@ -109,7 +127,7 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test"]
+      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test", "check-attw"]
     }
   },
 

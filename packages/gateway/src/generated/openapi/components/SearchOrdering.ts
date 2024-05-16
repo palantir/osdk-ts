@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 export interface SearchOrdering {
   field: FieldNameV1;

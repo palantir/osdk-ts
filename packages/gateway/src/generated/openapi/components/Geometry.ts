@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { GeometryCollection } from "./GeometryCollection";
-import type { GeoPoint } from "./GeoPoint";
-import type { LineString } from "./LineString";
-import type { MultiLineString } from "./MultiLineString";
-import type { MultiPoint } from "./MultiPoint";
-import type { MultiPolygon } from "./MultiPolygon";
-import type { Polygon } from "./Polygon";
+import type { GeometryCollection } from "./GeometryCollection.js";
+import type { GeoPoint } from "./GeoPoint.js";
+import type { LineString } from "./LineString.js";
+import type { MultiLineString } from "./MultiLineString.js";
+import type { MultiPoint } from "./MultiPoint.js";
+import type { MultiPolygon } from "./MultiPolygon.js";
+import type { Polygon } from "./Polygon.js";
 
 export interface Geometry_Point extends GeoPoint {
   type: "Point";

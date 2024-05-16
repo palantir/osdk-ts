@@ -1,4 +1,4 @@
-import { Double, MetricValue } from '../Aggregations';
+import { Double, MetricValue } from '../Aggregations.js';
 
 import { MultipleAggregatableProperty as OG_MultipleAggregatableProperty } from '@osdk/legacy-client';
 

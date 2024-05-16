@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyObject } from "../OntologyObject";
-import type { ObjectSetDefinition } from "./ObjectSetDefinition";
+import type { OntologyObject } from "../OntologyObject.js";
+import type { ObjectSetDefinition } from "./ObjectSetDefinition.js";
 export interface OntologyObjectSet<
   TOntologyObject extends OntologyObject = OntologyObject,
 > {

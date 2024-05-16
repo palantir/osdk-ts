@@ -1,1 +1,1 @@
-export { BooleanGroupBy } from './index';
+export { BooleanGroupBy } from './index.js';

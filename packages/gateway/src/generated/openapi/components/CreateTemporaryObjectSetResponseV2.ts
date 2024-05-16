@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSetRid } from "./ObjectSetRid";
+import type { ObjectSetRid } from "./ObjectSetRid.js";
 
 export interface CreateTemporaryObjectSetResponseV2 {
   objectSetRid: ObjectSetRid;

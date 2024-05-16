@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
-import type { PageSize } from "./PageSize";
-import type { PageToken } from "./PageToken";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
-import type { SearchOrderByV2 } from "./SearchOrderByV2";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
+import type { PageSize } from "./PageSize.js";
+import type { PageToken } from "./PageToken.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2.js";
+import type { SearchOrderByV2 } from "./SearchOrderByV2.js";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
 
 export interface SearchObjectsForInterfaceRequest {
   where?: SearchJsonQueryV2;

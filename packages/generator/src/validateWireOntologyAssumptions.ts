@@ -15,7 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
-import type { WireOntologyDefinition } from "./WireOntologyDefinition";
+import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
 export function validateWireOntologyAssumptions(
   ontology: WireOntologyDefinition,

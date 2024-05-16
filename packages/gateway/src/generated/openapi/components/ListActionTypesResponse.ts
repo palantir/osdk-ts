@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionType } from "./ActionType";
-import type { PageToken } from "./PageToken";
+import type { ActionType } from "./ActionType.js";
+import type { PageToken } from "./PageToken.js";
 
 export interface ListActionTypesResponse {
   nextPageToken?: PageToken;

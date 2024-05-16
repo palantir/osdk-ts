@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "./BranchId";
-import type { TransactionRid } from "./TransactionRid";
+import type { BranchId } from "./BranchId.js";
+import type { TransactionRid } from "./TransactionRid.js";
 
 export interface CreateBranchRequest {
   branchId: BranchId;

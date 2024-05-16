@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Position } from "./Position";
+import type { Position } from "./Position.js";
 
 /**
  * A linear ring is a closed LineString with four or more positions.

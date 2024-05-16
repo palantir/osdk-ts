@@ -1,4 +1,4 @@
-import { OntologyObject } from './OntologyObject';
+import { OntologyObject } from './OntologyObject.js';
 
 import {
   ActionExecutionMode as OG_ActionExecutionMode,

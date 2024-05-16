@@ -56,4 +56,5 @@ await generateClientSdkVersionOneDotOne(
     readdir: async (path) => readdir(path),
   },
   outDir,
+  "module",
 );

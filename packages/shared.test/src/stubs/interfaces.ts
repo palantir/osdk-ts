@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { fooSpt } from "./spts";
+import { fooSpt } from "./spts.js";
 
 export const FooInterface = {
   apiName: "FooInterface",

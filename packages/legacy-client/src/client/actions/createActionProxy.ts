@@ -16,12 +16,12 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ActionExecutionOptions } from "../..";
+import type { ActionExecutionOptions } from "../../index.js";
 import type {
   BatchActionExecutionOptions,
   BulkActionExecutionOptions,
-} from "../baseTypes";
-import { executeAction, executeBatchAction } from "../net/executeAction";
+} from "../baseTypes/index.js";
+import { executeAction, executeBatchAction } from "../net/executeAction.js";
 import type {
   ActionArgs,
   Actions,
@@ -30,7 +30,7 @@ import type {
   WrappedActionReturnType,
   WrappedBatchActionReturnType,
   WrappedBulkActionReturnType,
-} from "./actions";
+} from "./actions.js";
 
 export function createActionProxy<
   O extends OntologyDefinition<any>,

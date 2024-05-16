@@ -1,1 +1,1 @@
-export { GroupKeyType } from './index';
+export { GroupKeyType } from './index.js';
