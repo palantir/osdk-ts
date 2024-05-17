@@ -19,8 +19,11 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry";
-import { getObjectTypeV2 } from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
+import {
+  type ObjectSet,
+  OntologiesV2,
+  type OntologyObjectV2,
+} from "@osdk/internal.foundry";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
@@ -41,11 +44,13 @@ import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher
 import type { ObjectSetSubscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponses.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetWatchService.js";
 import type {
-  ObjectUpdate,
   ObjectUpdate_object,
 } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
 import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
 import type { StreamMessage_objectSetChanged } from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
+import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
+import { loadAllOntologies } from "../generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
+import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
