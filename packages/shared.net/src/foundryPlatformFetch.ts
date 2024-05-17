@@ -44,7 +44,7 @@ export async function foundryPlatformFetch<
 ): Promise<Awaited<ReturnType<NonNullable<X["__funcBrand"]>>>> {
   const path = origPath.replace(
     /\{([^}]+)\}/g,
-    () => (args as any[]).shift(),
+    () => encodeURIComponent((args as any[]).shift()),
   );
 
   const body = (flags! & 1) ? args.shift() : undefined;
