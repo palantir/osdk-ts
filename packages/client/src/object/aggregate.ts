@@ -20,7 +20,7 @@ import type {
   AggregateObjectsResponseV2,
   ObjectSet,
 } from "@osdk/internal.foundry";
-import { aggregateObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import {
   legacyToModernSingleAggregationResult,
@@ -110,7 +110,7 @@ export async function aggregate<
   if (req.where) {
     body.where = modernToLegacyWhereClause(req.where);
   }
-  const result = await aggregateObjectSetV2(
+  const result = await OntologiesV2.OntologyObjectSet.aggregateObjectSetV2(
     addUserAgent(clientCtx, objectType),
     clientCtx.ontologyRid,
     {

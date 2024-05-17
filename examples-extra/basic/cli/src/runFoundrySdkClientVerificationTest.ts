@@ -15,8 +15,7 @@
  */
 
 import { PalantirApiError } from "@osdk/client";
-import * as Branch from "@osdk/internal.foundry/Datasets_Branch";
-import * as Dataset from "@osdk/internal.foundry/Datasets_Dataset";
+import { Datasets } from "@osdk/internal.foundry";
 import { client } from "./client.js";
 import { logger } from "./logger.js";
 
@@ -27,10 +26,10 @@ export async function runFoundrySdkClientVerificationTest(
   const pageSize = 10;
 
   // will throw if dataset not found
-  const dataset = await Dataset.getDataset(client, datasetRid);
+  const dataset = await Datasets.Dataset.getDataset(client, datasetRid);
   logger.info({ dataset }, `Loaded dataset ${datasetRid}`);
 
-  const branchesResult = await Branch.listBranches(
+  const branchesResult = await Datasets.Branch.listBranches(
     client,
     datasetRid,
     { pageSize },
@@ -61,7 +60,7 @@ export async function runFoundrySdkClientVerificationTest(
   // We want to be sure the error is filled out nicely, so we can use the `master` branch
   // now that we know it exists.
   try {
-    await Branch.createBranch(client, datasetRid, {
+    await Datasets.Branch.createBranch(client, datasetRid, {
       branchId: "master",
     });
     throw new Error("createBranch(master) should have failed");
@@ -79,7 +78,7 @@ export async function runFoundrySdkClientVerificationTest(
     }
   }
 
-  const testBranch = await Branch.createBranch(
+  const testBranch = await Datasets.Branch.createBranch(
     client,
     datasetRid,
     { branchId: branchToCreate },
@@ -87,7 +86,7 @@ export async function runFoundrySdkClientVerificationTest(
   logger.info({ testBranch }, "Created test branch");
 
   // Returns Promise<void> and should not error
-  await Branch.deleteBranch(
+  await Datasets.Branch.deleteBranch(
     client,
     datasetRid,
     testBranch.branchId,

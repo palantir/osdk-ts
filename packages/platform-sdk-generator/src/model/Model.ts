@@ -17,6 +17,8 @@
 import * as path from "node:path";
 import { ensurePackageSetup } from "../generatePlatformSdkv2.js";
 import type * as ir from "../ir/index.js";
+import { isIgnoredNamespace } from "../isIgnoredNamespace.js";
+import { isIgnoredType } from "../isIgnoredType.js";
 import { mapObjectValues } from "../util/mapObjectValues.js";
 import { BuiltinType } from "./BuiltinType.js";
 import { Component } from "./Component.js";
@@ -80,8 +82,11 @@ export class Model {
           mapObjectValues(dt.object.properties, p => this.getType(p.type)),
         );
       case "asyncOperation":
-      case "binary":
+        return new BuiltinType({ type: "any", any: {} });
         throw new Error("Method not implemented.");
+      case "binary":
+        // throw new Error("Method not implemented.");
+        return new BuiltinType({ type: "any", any: {} });
       default:
         const foo: never = dt;
         throw new Error("Method not implemented.");
@@ -109,14 +114,24 @@ export class Model {
     });
 
     for (const ns of ir.namespaces) {
+      if (isIgnoredNamespace(ns.name)) continue;
+
       await model.#addNamespace(ns);
     }
 
     for (const c of ir.components) {
+      if (c.namespace === "Ontologies") {
+        c.namespace = undefined;
+      }
+      if (isIgnoredType(c)) continue;
+
       await model.#addComponent(c);
     }
 
     for (const ns of ir.namespaces) {
+      if (isIgnoredNamespace(ns.name)) {
+        continue;
+      }
       for (const r of ns.resources) {
         await model.addResource(ns, r);
       }
@@ -162,7 +177,7 @@ export class Model {
   #addComponent(c: ir.Component) {
     const ns = this.#namespaces.get(c.namespace ?? "");
     if (!ns) {
-      throw new Error(`Namespace not found for ${c.namespace}`);
+      throw new Error(`Namespace not found for ${c.namespace} in ${c.name}`);
     }
 
     const component = new Component(
@@ -179,7 +194,7 @@ export class Model {
 
   addResource(ns: ir.Namespace, r: ir.Resource) {
     this.#namespaces.get(ns.name)!.resources.push({
-      component: this.getComponent(r.component),
+      component: r.component,
       operations: r.staticOperations.map(so => new StaticOperation(so, this)),
     });
   }

@@ -16,16 +16,14 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import {
-  getObjectTypeFullMetadata,
-} from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
   client: MinimalClient,
   objtype: string,
 ): Promise<ObjectTypeDefinition<any, any> & { rid: string }> {
-  const full = await getObjectTypeFullMetadata(
+  const full = await OntologiesV2.OntologyObjectV2.getObjectTypeFullMetadata(
     client,
     client.ontologyRid,
     objtype,

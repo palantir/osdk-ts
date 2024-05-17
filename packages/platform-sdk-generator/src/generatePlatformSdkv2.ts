@@ -18,9 +18,11 @@ import fs from "node:fs/promises";
 import * as path from "node:path";
 import { addPackagesToPackageJson } from "./addPackagesToPackageJson.js";
 import { copyright } from "./copyright.js";
-import { generateImports } from "./generateImports.js";
+import { generateImports, SKIP } from "./generateImports.js";
 import { writeResource2 } from "./generateResource2.js";
 import type * as ir from "./ir/index.js";
+import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
+import { isIgnoredType } from "./isIgnoredType.js";
 import type { Component } from "./model/Component.js";
 import { Model } from "./model/Model.js";
 import type { Namespace } from "./model/Namespace.js";
@@ -28,8 +30,11 @@ import { addAll } from "./util/addAll.js";
 import { fileExists } from "./util/fileExists.js";
 import { writeCode } from "./writeCode.js";
 
-export async function generatePlatformSdkV2(ir: ir.ApiSpec, outputDir: string) {
-  const packagePrefix = "foundry";
+export async function generatePlatformSdkV2(
+  ir: ir.ApiSpec,
+  outputDir: string,
+  packagePrefix: string,
+) {
   const npmOrg = "@osdk";
   const model = await Model.create(ir, { npmOrg, outputDir, packagePrefix });
 
@@ -43,9 +48,9 @@ export async function generatePlatformSdkV2(ir: ir.ApiSpec, outputDir: string) {
     for (const r of ns.resources) {
       const sourceFilePath = path.join(
         ns.paths.resourcesDir,
-        `${r.component.name}.ts`,
+        `${r.component}.ts`,
       );
-      await writeResource2(r, sourceFilePath, model);
+      await writeResource2(ns, r, sourceFilePath, model);
     }
   }
 
@@ -62,7 +67,7 @@ export async function generatePlatformSdkV2(ir: ir.ApiSpec, outputDir: string) {
 
       // path utilities are bad for urls like things because they strip the leading period
       nsIndexTsContents +=
-        `export * as ${r.component.name} from "${resourceDirRelToSrc}/${r.component.name}.js";\n`;
+        `export * as ${r.component} from "${resourceDirRelToSrc}/${r.component}.js";\n`;
     }
 
     const deps = new Set<Namespace>([model.commonNamespace]);
@@ -129,12 +134,15 @@ export async function generateComponents(
       `;
 
   for (const component of ns.components) {
+    if (isIgnoredType(component.component)) {
+      continue;
+    }
     out += component.declaration;
 
     addAll(referencedComponents, component.referencedComponents);
   }
 
-  const imports = generateImports(referencedComponents, ns);
+  const imports = generateImports(referencedComponents, new Map([[ns, SKIP]]));
 
   await writeCode(
     path.join(outputDir, "_components.ts"),

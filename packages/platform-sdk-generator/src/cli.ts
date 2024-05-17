@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import { findUp } from "find-up";
 import fs from "node:fs/promises";
-import * as path from "node:path";
 import * as process from "node:process";
 import { parse as parseYaml } from "yaml";
-import yargs from "yargs";
 import type { Arguments, Argv, CommandModule } from "yargs";
+import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { generatePlatformSdk } from "./generatePlatformSdk.js";
 import { generatePlatformSdkV2 } from "./generatePlatformSdkv2.js";
 import type { ApiSpec } from "./ir/index.js";
 import { updateSls } from "./updateSls.js";
@@ -41,6 +38,7 @@ export interface Options {
   inputFile: string;
   manifestFile: string;
   outputDir: string;
+  prefix: string;
 }
 
 export class GenerateCommand implements CommandModule<{}, Options> {
@@ -53,17 +51,21 @@ export class GenerateCommand implements CommandModule<{}, Options> {
   public builder(args: Argv): Argv<Options> {
     return args
       .option("v2", { type: "boolean", default: false })
-      .positional("inputFile", {
+      .option("prefix", {
+        type: "string",
+        demandOption: true,
+      })
+      .option("inputFile", {
         describe: "The location of the API IR",
         type: "string",
         demandOption: true,
       })
-      .positional("manifestFile", {
+      .option("manifestFile", {
         describe: "The location of the API manifest.yml",
         type: "string",
         demandOption: true,
       })
-      .positional("outputDir", {
+      .option("outputDir", {
         describe: "The output directory for the generated code",
         type: "string",
         demandOption: true,
@@ -90,30 +92,12 @@ export class GenerateCommand implements CommandModule<{}, Options> {
     );
 
     if (args.v2) {
-      const pkgDirs = await generatePlatformSdkV2(irSpec, output);
+      const pkgDirs = await generatePlatformSdkV2(irSpec, output, args.prefix);
       for (const pkgDir of pkgDirs) {
         await updateSls(manifest, pkgDir);
       }
     } else {
-      await generatePlatformSdk(irSpec, output);
-
-      // this updates the foundry package.json with the correct versions
-      await updateSls(manifest, output);
-
-      // but right now we arent using that we are bundling it into client so we need to
-      // manually update client too
-      const pnpmWorkspaceFile = await findUp("pnpm-workspace.yaml", {
-        cwd: output,
-      });
-      await updateSls(
-        manifest,
-        path.join(
-          path.dirname(pnpmWorkspaceFile!),
-          "packages",
-          "client",
-          "src",
-        ),
-      );
+      throw new Error("No longer supported");
     }
   };
 }

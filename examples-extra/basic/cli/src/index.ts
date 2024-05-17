@@ -26,7 +26,7 @@ import {
   WeatherStation,
 } from "@osdk/examples.basic.sdk";
 import * as Foundry from "@osdk/foundry";
-import * as LanguageModel from "@osdk/internal.foundry/Models_LanguageModel";
+import { Models } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
@@ -66,7 +66,7 @@ async function runTests() {
       await fetchEmployeeLead(client, "bob");
     }
 
-    const models = await LanguageModel.listLanguageModels(client);
+    const models = await Models.LanguageModel.listLanguageModels(client);
     logger.info({
       models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
     }, "Loaded models");

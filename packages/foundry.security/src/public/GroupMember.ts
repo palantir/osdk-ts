@@ -21,16 +21,16 @@ import type {
   PrincipalId,
 } from "@osdk/foundry.core";
 import type {
-  AddGroupMembersRequest,
-  ListGroupMembersResponse,
-  RemoveGroupMembersRequest,
-} from "@osdk/foundry.security";
-import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+import type {
+  AddGroupMembersRequest,
+  ListGroupMembersResponse,
+  RemoveGroupMembersRequest,
+} from "../_components.js";
 
 //
 

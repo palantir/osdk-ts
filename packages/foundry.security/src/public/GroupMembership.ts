@@ -20,13 +20,13 @@ import type {
   PreviewMode,
   PrincipalId,
 } from "@osdk/foundry.core";
-import type { ListGroupMembershipsResponse } from "@osdk/foundry.security";
 import type {
   FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.net";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+import type { ListGroupMembershipsResponse } from "../_components.js";
 
 //
 

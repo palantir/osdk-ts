@@ -10,7 +10,7 @@ XQ=$(checkCommand "yq" "yq" "Try 'brew install yq'")
 WGET=$(checkCommand "wget" "wget" "Try 'brew install wget'")
 
 echo "Making sure the tool is built"
-pnpm exec turbo run transpile --filter ./packages/platform-sdk-generator --output-logs=errors-only
+pnpm exec turbo run transpile typecheck --filter ./packages/platform-sdk-generator --output-logs=errors-only
 
 # "$SCRIPT_DIR/getOpenApiIr.sh"
 
@@ -19,20 +19,17 @@ OPENAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/openapi-ir.json"
 OPENAPI_MANIFEST_YML="${SCRIPT_DIR}/../tmp/api-gateway-ir/manifest.yml"
 
 PACKAGE_PATH="${SCRIPT_DIR}/../packages/internal.foundry"
-OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src")
+OUT_PATH="${SCRIPT_DIR}/../packages/"
 
 echo "Generating bindings for internal.foundry"
-$CODE_GENERATOR generate --inputFile "${OPENAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_DIR}"
+$CODE_GENERATOR generate --v2 --prefix "internal.foundry" --inputFile "${OPENAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_PATH}"
 
 
 # Generate the API bindings for @oskd/foundry (omni v2)
-OUT_PATH="${SCRIPT_DIR}/../packages/"
-OUT_DIR=$("$REALPATH" --relative-to=. "${OUT_PATH}")
 OMNIAPI_IR_JSON="${SCRIPT_DIR}/../tmp/api-gateway-ir/v2.json"
 
-
 echo "Generating bindings"
-$CODE_GENERATOR generate --v2 --inputFile "${OMNIAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_PATH}"
+$CODE_GENERATOR generate --v2 --prefix foundry --inputFile "${OMNIAPI_IR_JSON}" --manifestFile "${OPENAPI_MANIFEST_YML}" --outputDir "${OUT_PATH}" 
 
 echo
 echo pnpm install to make align deps

@@ -18,16 +18,20 @@ import type { Component } from "./model/Component.js";
 import type { Namespace } from "./model/Namespace.js";
 import { groupByAsMap } from "./util/groupByAsMap.js";
 
+export const SKIP = Symbol("SKIP");
+
 export function generateImports(
   referencedComponents: Set<Component>,
-  namespaceToSkip?: Namespace,
+  namespaceMapping: Map<Namespace, string | typeof SKIP>,
 ) {
   const groups = groupByAsMap(referencedComponents, "namespace");
-  const imports = [...groups.entries()].filter(([ns]) => ns !== namespaceToSkip)
+  const imports = [...groups.entries()].filter(([ns]) =>
+    namespaceMapping.get(ns) !== SKIP
+  )
     .map(([ns, components]) => {
-      return `import { ${
-        components.map(a => a.name).join(",")
-      } } from "${ns.packageName}";`;
+      return `import { ${components.map(a => a.name).join(",")} } from "${
+        namespaceMapping.get(ns) as string ?? ns.packageName
+      }";`;
     }).join("\n");
   return imports;
 }

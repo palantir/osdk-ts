@@ -31,10 +31,7 @@ import type {
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/internal.foundry";
-import { loadObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
-import {
-  searchObjectsForInterface,
-} from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
@@ -168,7 +165,7 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const result = await searchObjectsForInterface(
+  const result = await OntologiesV2.OntologyObjectV2.searchObjectsForInterface(
     addUserAgent(client, interfaceType),
     client.ontologyRid,
     interfaceType.apiName,
@@ -305,7 +302,7 @@ export async function fetchObjectPage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const r = await loadObjectSetV2(
+  const r = await OntologiesV2.OntologyObjectSet.loadObjectSetV2(
     addUserAgent(client, objectType),
     client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {

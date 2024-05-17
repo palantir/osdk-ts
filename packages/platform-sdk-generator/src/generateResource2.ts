@@ -20,6 +20,7 @@ import { generateMethodJsdoc } from "./generateMethodJsdoc.js";
 import { HTTP_VERB_MAP } from "./HTTP_VERB_MAP.js";
 import type { Component } from "./model/Component.js";
 import type { Model } from "./model/Model.js";
+import type { Namespace } from "./model/Namespace.js";
 import { OptionalType } from "./model/OptionalType.js";
 import type { Resource } from "./model/Resource.js";
 import type { StaticOperation } from "./model/StaticOperation.js";
@@ -27,6 +28,7 @@ import { addAll } from "./util/addAll.js";
 import { writeCode } from "./writeCode.js";
 
 export async function writeResource2(
+  ns: Namespace,
   resource: Resource,
   filePath: string,
   model: Model,
@@ -38,7 +40,9 @@ export async function writeResource2(
     `${copyright}\n\n
         import type { SharedClient as $Client, SharedClientContext as $ClientContext, FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net";
         import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-        ${generateImports(referencedTypes)}
+        ${
+      generateImports(referencedTypes, new Map([[ns, "../_components.js"]]))
+    }
         
         //
         ${out}
