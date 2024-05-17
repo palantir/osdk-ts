@@ -27,7 +27,7 @@ import type { OsdkObject } from "../OsdkObject.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
-import { createAsyncCache, createCache } from "./Cache.js";
+import { createAsyncClientCache, createClientCache } from "./Cache.js";
 import type { SelectArg } from "./fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "./fetchSingle.js";
 
@@ -233,7 +233,7 @@ function createConverter<Q extends ObjectTypeDefinition<any, any>>(
     : undefined;
 }
 
-const protoConverterCache = createCache(
+const protoConverterCache = createClientCache(
   (
     client: MinimalClient,
     objectDef: AugmentedObjectTypeDefinition<any, any>,
@@ -268,6 +268,8 @@ export async function convertWireToOsdkObjects(
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
 ): Promise<Osdk<ObjectOrInterfaceDefinition>[]> {
+  client.logger?.debug(`START convertWireToOsdkObjects()`);
+
   if (forceRemoveRid) {
     for (const obj of objects) {
       delete obj.__rid;
@@ -336,12 +338,13 @@ export async function convertWireToOsdkObjects(
     internalConvertObjectInPlace(objectDef, client, obj);
   }
 
-  if (interfaceApiName) {
-    return objects.map(o => o.$as(interfaceApiName));
-  } else {
+  const ret = interfaceApiName
+    ? objects.map(o => o.$as(interfaceApiName))
     // we did the conversion so we can cast
-    return objects as unknown as Osdk<ObjectOrInterfaceDefinition>[];
-  }
+    : objects as unknown as Osdk<ObjectOrInterfaceDefinition>[];
+
+  client.logger?.debug(`END convertWireToOsdkObjects()`);
+  return ret;
 }
 
 function createLocalObjectCacheAndInitiatePreseed(
@@ -349,33 +352,36 @@ function createLocalObjectCacheAndInitiatePreseed(
   client: MinimalClient,
 ) {
   // local cache delegates to the global one
-  const localInterfaceCache = createAsyncCache((client, apiName: string) =>
-    client.ontologyProvider.getInterfaceDefinition(apiName)
+  const localInterfaceCache = createAsyncClientCache((
+    client,
+    apiName: string,
+  ) => client.ontologyProvider.getInterfaceDefinition(apiName));
+
+  const localObjectCache = createAsyncClientCache(
+    async (client, apiName: string) => {
+      // first delegate to the global cache
+      const objectDef = await client.ontologyProvider.getObjectDefinition(
+        apiName,
+      ) as unknown as AugmentedObjectTypeDefinition<any>;
+
+      // ensure we have all of the interfaces loaded
+      const interfaceDefs = Object.fromEntries((await Promise.all(
+        objectDef.implements?.map(i => localInterfaceCache.get(client, i))
+          ?? [],
+      )).map(i => [i.apiName, i]));
+
+      // save interfaces for later if not the first time
+      if (objectDef[InterfaceDefinitions] == null) {
+        Object.defineProperty(objectDef, InterfaceDefinitions, {
+          value: interfaceDefs,
+          enumerable: false,
+          configurable: false,
+          writable: false,
+        });
+      }
+      return objectDef;
+    },
   );
-
-  const localObjectCache = createAsyncCache(async (client, apiName: string) => {
-    // first delegate to the global cache
-    const objectDef = await client.ontologyProvider.getObjectDefinition(
-      apiName,
-    ) as AugmentedObjectTypeDefinition<any>;
-
-    // ensure we have all of the interfaces loaded
-    const interfaceDefs = Object.fromEntries((await Promise.all(
-      objectDef.implements?.map(i => localInterfaceCache.get(client, i))
-        ?? [],
-    )).map(i => [i.apiName, i]));
-
-    // save interfaces for later if not the first time
-    if (objectDef[InterfaceDefinitions] == null) {
-      Object.defineProperty(objectDef, InterfaceDefinitions, {
-        value: interfaceDefs,
-        enumerable: false,
-        configurable: false,
-        writable: false,
-      });
-    }
-    return objectDef as AugmentedObjectTypeDefinition<any, any>;
-  });
 
   const uniqueApiNames = new Set<string>();
   for (const { $apiName } of objects) {

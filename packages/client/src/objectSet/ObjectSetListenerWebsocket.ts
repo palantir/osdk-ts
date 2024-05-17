@@ -19,13 +19,18 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
-import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { ObjectSet, OntologyObjectV2 } from "@osdk/internal.foundry";
+import { getObjectTypeV2 } from "@osdk/internal.foundry/OntologiesV2_ObjectTypeV2";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
 import invariant from "tiny-invariant";
+import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
 import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
+import type {
+  StreamMessage,
+  SubscriptionClosed,
+} from "../generated/object-set-watcher/objectsetwatcher/api/index.js";
 import type {
   Message,
   Message_objectSetChanged,
@@ -35,18 +40,12 @@ import type { ObjectSetSubscribeRequest } from "../generated/object-set-watcher/
 import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequests.js";
 import type { ObjectSetSubscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponses.js";
 import { batchEnableWatcher } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetWatchService.js";
-import type { ObjectUpdate_object } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
-import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
 import type {
-  StreamMessage,
-  StreamMessage_objectSetChanged,
-} from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
-import type { SubscriptionClosed } from "../generated/object-set-watcher/objectsetwatcher/api/SubscriptionClosed.js";
-import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
-import {
-  loadAllOntologies,
-  loadOntologyEntities,
-} from "../generated/ontology-metadata/api/OntologyMetadataService.js";
+  ObjectUpdate,
+  ObjectUpdate_object,
+} from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
+import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
+import type { StreamMessage_objectSetChanged } from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
@@ -516,11 +515,9 @@ export class ObjectSetListenerWebsocket {
     objectSet: ObjectSet,
   ) {
     const objectSetBaseType = await getObjectSetBaseType(objectSet);
-    const mapping = await getOntologyPropertyMappingForApiName(
-      this.#client,
-      this.#metadataContext,
-      objectSetBaseType,
-    );
+    const mapping = await (await (await metadataCacheClient(this.#client))
+      .forObjectByApiName(objectSetBaseType))
+      .getPropertyMapping();
 
     const temporaryObjectSet = await createTemporaryObjectSet(
       this.#ossContext,
@@ -565,11 +562,10 @@ async function convertFoundryToOsdkObjects<
 ): Promise<Array<Osdk<O["objects"][K]>>> {
   const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
-      const propertyMapping = await getOntologyPropertyMappingForRid(
-        ctx,
-        client.ontologyRid,
-        object.type,
-      );
+      const propertyMapping = await (await (await metadataCacheClient(client))
+        .forObjectByRid(object.type))
+        .getPropertyMapping();
+
       const convertedObject: OntologyObjectV2 = Object.fromEntries([
         ...Object.entries(object.properties).map(([key, value]) => {
           return [propertyMapping?.propertyIdToApiNameMapping[key], value];

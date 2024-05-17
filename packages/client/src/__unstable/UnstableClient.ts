@@ -15,15 +15,16 @@
  */
 
 import type {
-  ActionDefinition,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
-import type { CheckVersionBound, Client } from "./Client.js";
-import type { UNSTABLE_ObjectSet } from "./objectSet/createUnstableObjectSet.js";
-import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
+import type { CheckVersionBound, Client } from "../Client.js";
+import type { UNSTABLE_ObjectSet } from "../objectSet/createUnstableObjectSet.js";
+import type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
 
 export interface UnstableClient extends Client {
   <Q extends (InterfaceDefinition<any, any> & VersionBound<any>)>(
@@ -38,4 +39,9 @@ export interface UnstableClient extends Client {
     type: T,
     rid: string,
   ): UNSTABLE_ObjectSet<T>;
+
+  __UNSTABLE_getBulkLinks<T extends Osdk<ObjectOrInterfaceDefinition>>(
+    objs: T[],
+    links: string[],
+  ): AsyncGenerator<BulkLinkResult, void, undefined>;
 }

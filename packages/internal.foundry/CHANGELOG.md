@@ -1,5 +1,17 @@
 # @osdk/foundry
 
+## 0.3.0
+
+### Minor Changes
+
+- c9f3214: Adds support for latest api definitions
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+  - @osdk/api@1.8.0
+  - @osdk/shared.net@1.11.0
+
 ## 0.2.0
 
 ### Minor Changes

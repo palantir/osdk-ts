@@ -16,11 +16,12 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { symbolClientContext } from "@osdk/shared.net";
-import type { Logger } from "pino";
-import type { Client } from "./Client.js";
-import type { createClient } from "./createClient.js";
-import { createClientInternal } from "./createClient.js";
-import { UNSTABLE_createObjectSet } from "./objectSet/createUnstableObjectSet.js";
+import type { Client } from "../Client.js";
+import type { createClient } from "../createClient.js";
+import { createClientInternal } from "../createClient.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { UNSTABLE_createObjectSet } from "../objectSet/createUnstableObjectSet.js";
+import { createBulkLinksAsyncIterFactory } from "./createBulkLinksAsyncIterFactory.js";
 import type { UnstableClient } from "./UnstableClient.js";
 
 export function UNSTABLE_createClient(
@@ -36,6 +37,9 @@ export function UNSTABLE_createClient(
   >(
     client as UnstableClient,
     {
+      __UNSTABLE_getBulkLinks: {
+        get: () => createBulkLinksAsyncIterFactory(client[symbolClientContext]),
+      },
       __UNSTABLE_preexistingObjectSet: {
         get: () =>
         <T extends ObjectOrInterfaceDefinition>(

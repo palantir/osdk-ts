@@ -1,5 +1,19 @@
 # @osdk/legacy-client
 
+## 2.3.0
+
+### Minor Changes
+
+- 6b03c55: Fix legacy-client to handle fetch token errors
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+- Updated dependencies [c9f3214]
+  - @osdk/gateway@2.3.0
+  - @osdk/api@1.8.0
+  - @osdk/shared.net@1.11.0
+
 ## 2.2.1
 
 ### Patch Changes

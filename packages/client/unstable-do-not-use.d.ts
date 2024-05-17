@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export { UNSTABLE_createClient as createClient } from "../__unstable/UNSTABLE_createClient.js";
-export type { UnstableClient as Client } from "../__unstable/UnstableClient.js";
-export { augment } from "../object/fetchPage.js";
-export type { UNSTABLE_ObjectSet as ObjectSet } from "../objectSet/createUnstableObjectSet.js";
-export type { ObjectSetListener } from "../objectSet/ObjectSetListener.js";
+export * from "./build/types/public/unstable-do-not-use";

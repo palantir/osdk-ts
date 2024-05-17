@@ -131,6 +131,9 @@ importers:
       '@osdk/internal.foundry':
         specifier: workspace:^
         version: link:../../../packages/internal.foundry
+      chalk:
+        specifier: ^5.3.0
+        version: 5.3.0
       pino:
         specifier: ^9.0.0
         version: 9.0.0
@@ -205,7 +208,7 @@ importers:
         version: 7.8.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@5.2.10)
+        version: 4.2.1(vite@5.2.11)
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
@@ -213,8 +216,8 @@ importers:
         specifier: ^8.57.0
         version: 8.57.0
       eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.57.0)
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
       eslint-plugin-react-refresh:
         specifier: ^0.4.6
         version: 0.4.6(eslint@8.57.0)
@@ -231,8 +234,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.2.10
-        version: 5.2.10(@types/node@20.12.7)
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.7)
 
   examples-extra/one_dot_one:
     dependencies:
@@ -303,7 +306,7 @@ importers:
         version: 7.8.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.1
-        version: 4.2.1(vite@5.2.10)
+        version: 4.2.1(vite@5.2.11)
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
@@ -320,8 +323,8 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
       vite:
-        specifier: ^5.2.10
-        version: 5.2.10(@types/node@20.12.7)
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.7)
 
   examples/example-next-static-export:
     dependencies:
@@ -369,8 +372,8 @@ importers:
         specifier: ^18.2.0
         version: 18.3.0(react@18.3.0)
       react-router-dom:
-        specifier: ^6.20.1
-        version: 6.22.2(react-dom@18.3.0)(react@18.3.0)
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.0)(react@18.3.0)
     devDependencies:
       '@types/react':
         specifier: ^18
@@ -386,13 +389,13 @@ importers:
         version: 7.8.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.2.10)
+        version: 4.2.1(vite@5.2.11)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
       eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.57.0)
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
       eslint-plugin-react-refresh:
         specifier: ^0.4.6
         version: 0.4.6(eslint@8.57.0)
@@ -400,8 +403,8 @@ importers:
         specifier: ^5.2.2
         version: 5.4.5
       vite:
-        specifier: ^5.0.13
-        version: 5.2.10(@types/node@20.12.7)
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.7)
 
   examples/example-tutorial-todo-app:
     dependencies:
@@ -415,8 +418,8 @@ importers:
         specifier: ^18.2.0
         version: 18.3.0(react@18.3.0)
       react-router-dom:
-        specifier: ^6.20.1
-        version: 6.22.2(react-dom@18.3.0)(react@18.3.0)
+        specifier: ^6.23.1
+        version: 6.23.1(react-dom@18.3.0)(react@18.3.0)
       swr:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.0)
@@ -435,13 +438,13 @@ importers:
         version: 7.8.0(eslint@8.57.0)(typescript@5.4.5)
       '@vitejs/plugin-react':
         specifier: ^4.2.0
-        version: 4.2.1(vite@5.2.10)
+        version: 4.2.1(vite@5.2.11)
       eslint:
         specifier: ^8.57.0
         version: 8.57.0
       eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.57.0)
+        specifier: ^4.6.2
+        version: 4.6.2(eslint@8.57.0)
       eslint-plugin-react-refresh:
         specifier: ^0.4.6
         version: 0.4.6(eslint@8.57.0)
@@ -449,8 +452,8 @@ importers:
         specifier: ^5.2.2
         version: 5.4.5
       vite:
-        specifier: ^5.0.13
-        version: 5.2.10(@types/node@20.12.7)
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.7)
 
   examples/example-vue:
     dependencies:
@@ -466,13 +469,13 @@ importers:
     devDependencies:
       '@vitejs/plugin-vue':
         specifier: ^4.5.0
-        version: 4.6.2(vite@5.2.10)(vue@3.4.27)
+        version: 4.6.2(vite@5.2.11)(vue@3.4.27)
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
       vite:
-        specifier: ^5.0.13
-        version: 5.2.10(@types/node@20.12.7)
+        specifier: ^5.2.11
+        version: 5.2.11(@types/node@20.12.7)
       vue-tsc:
         specifier: ^1.8.22
         version: 1.8.27(typescript@5.4.5)
@@ -3273,8 +3276,8 @@ packages:
       write-yaml-file: 4.2.0
     dev: true
 
-  /@remix-run/router@1.15.2:
-    resolution: {integrity: sha512-+Rnav+CaoTE5QJc4Jcwh5toUpnVLKYbpU6Ys0zqbakqbaLQHeglLVHPfxOiQqdNmUy5C2lXz5dwC6tQNX2JW2Q==}
+  /@remix-run/router@1.16.1:
+    resolution: {integrity: sha512-es2g3dq6Nb07iFxGk5GuHN20RwBZOsuDQN7izWIisUcv9r+d2C5jQxqmgkdebXgReWfiyUabcki6Fg77mSNrig==}
     engines: {node: '>=14.0.0'}
     dev: false
 
@@ -4003,7 +4006,7 @@ packages:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
     dev: true
 
-  /@vitejs/plugin-react@4.2.1(vite@5.2.10):
+  /@vitejs/plugin-react@4.2.1(vite@5.2.11):
     resolution: {integrity: sha512-oojO9IDc4nCUUi8qIR11KoQm0XFFLIwsRBwHRR4d/88IWghn1y6ckz/bJ8GHDCsYEJee8mDzqtJxh15/cisJNQ==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
@@ -4014,19 +4017,19 @@ packages:
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.24.5)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /@vitejs/plugin-vue@4.6.2(vite@5.2.10)(vue@3.4.27):
+  /@vitejs/plugin-vue@4.6.2(vite@5.2.11)(vue@3.4.27):
     resolution: {integrity: sha512-kqf7SGFoG+80aZG6Pf+gsZIVvGSCKE98JbiWqcCV9cThtg91Jav0yvYFC9Zb+jKetNGF6ZKeoaxgZfND21fWKw==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       vite: ^4.0.0 || ^5.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
       vue: 3.4.27(typescript@5.4.5)
     dev: true
 
@@ -5489,7 +5492,7 @@ packages:
       eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.8.0)(eslint-import-resolver-typescript@3.6.1)(eslint@8.57.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.57.0)
       eslint-plugin-react: 7.34.0(eslint@8.57.0)
-      eslint-plugin-react-hooks: 4.6.0(eslint@8.57.0)
+      eslint-plugin-react-hooks: 4.6.2(eslint@8.57.0)
       typescript: 5.4.5
     transitivePeerDependencies:
       - eslint-import-resolver-webpack
@@ -5745,8 +5748,8 @@ packages:
       object.fromentries: 2.0.8
     dev: true
 
-  /eslint-plugin-react-hooks@4.6.0(eslint@8.57.0):
-    resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}
+  /eslint-plugin-react-hooks@4.6.2(eslint@8.57.0):
+    resolution: {integrity: sha512-QzliNJq4GinDBcD8gPB5v0wh6g8q3SUi6EFF0x8N/BL9PoVs0atuGc47ozMRyOWAKdwaZ5OnbOEa3WR+dSGKuQ==}
     engines: {node: '>=10'}
     peerDependencies:
       eslint: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0-0
@@ -8421,26 +8424,26 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
-  /react-router-dom@6.22.2(react-dom@18.3.0)(react@18.3.0):
-    resolution: {integrity: sha512-WgqxD2qySEIBPZ3w0sHH+PUAiamDeszls9tzqMPBDA1YYVucTBXLU7+gtRfcSnhe92A3glPnvSxK2dhNoAVOIQ==}
+  /react-router-dom@6.23.1(react-dom@18.3.0)(react@18.3.0):
+    resolution: {integrity: sha512-utP+K+aSTtEdbWpC+4gxhdlPFwuEfDKq8ZrPFU65bbRJY+l706qjR7yaidBpo3MSeA/fzwbXWbKBI6ftOnP3OQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
       react-dom: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.15.2
+      '@remix-run/router': 1.16.1
       react: 18.3.0
       react-dom: 18.3.0(react@18.3.0)
-      react-router: 6.22.2(react@18.3.0)
+      react-router: 6.23.1(react@18.3.0)
     dev: false
 
-  /react-router@6.22.2(react@18.3.0):
-    resolution: {integrity: sha512-YD3Dzprzpcq+tBMHBS822tCjnWD3iIZbTeSXMY9LPSG541EfoBGyZ3bS25KEnaZjLcmQpw2AVLkFyfgXY8uvcw==}
+  /react-router@6.23.1(react@18.3.0):
+    resolution: {integrity: sha512-fzcOaRF69uvqbbM7OhvQyBTFDVrrGlsFdS3AL+1KfIBtGETibHzi3FkoTRyiDJnWNc2VxrfvR+657ROHjaNjqQ==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
       react: '>=16.8'
     dependencies:
-      '@remix-run/router': 1.15.2
+      '@remix-run/router': 1.16.1
       react: 18.3.0
     dev: false
 
@@ -9981,7 +9984,7 @@ packages:
       debug: 4.3.4(supports-color@9.4.0)
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -10002,7 +10005,7 @@ packages:
       debug: 4.3.4(supports-color@9.4.0)
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 5.2.10(@types/node@18.17.15)
+      vite: 5.2.11(@types/node@18.17.15)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -10023,7 +10026,7 @@ packages:
       debug: 4.3.4(supports-color@9.4.0)
       pathe: 1.1.1
       picocolors: 1.0.0
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -10035,8 +10038,8 @@ packages:
       - terser
     dev: true
 
-  /vite@5.2.10(@types/node@18.17.15):
-    resolution: {integrity: sha512-PAzgUZbP7msvQvqdSD+ErD5qGnSFiGOoWmV5yAKUEI0kdhjbH6nMWVyZQC/hSc4aXwc0oJ9aEdIiF9Oje0JFCw==}
+  /vite@5.2.11(@types/node@18.17.15):
+    resolution: {integrity: sha512-HndV31LWW05i1BLPMUCE1B9E9GFbOu1MbenhS58FuK6owSO5qHm7GiCotrNY1YE5rMeQSFBGmT5ZaLEjFizgiQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -10071,8 +10074,8 @@ packages:
       fsevents: 2.3.3
     dev: true
 
-  /vite@5.2.10(@types/node@20.12.7):
-    resolution: {integrity: sha512-PAzgUZbP7msvQvqdSD+ErD5qGnSFiGOoWmV5yAKUEI0kdhjbH6nMWVyZQC/hSc4aXwc0oJ9aEdIiF9Oje0JFCw==}
+  /vite@5.2.11(@types/node@20.12.7):
+    resolution: {integrity: sha512-HndV31LWW05i1BLPMUCE1B9E9GFbOu1MbenhS58FuK6owSO5qHm7GiCotrNY1YE5rMeQSFBGmT5ZaLEjFizgiQ==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
     peerDependencies:
@@ -10149,7 +10152,7 @@ packages:
       strip-literal: 2.0.0
       tinybench: 2.5.1
       tinypool: 0.8.4
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
       vite-node: 1.6.0
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
@@ -10205,7 +10208,7 @@ packages:
       strip-literal: 2.0.0
       tinybench: 2.5.1
       tinypool: 0.8.4
-      vite: 5.2.10(@types/node@18.17.15)
+      vite: 5.2.11(@types/node@18.17.15)
       vite-node: 1.6.0(@types/node@18.17.15)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:
@@ -10261,7 +10264,7 @@ packages:
       strip-literal: 2.0.0
       tinybench: 2.5.1
       tinypool: 0.8.4
-      vite: 5.2.10(@types/node@20.12.7)
+      vite: 5.2.11(@types/node@20.12.7)
       vite-node: 1.6.0(@types/node@20.12.7)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:

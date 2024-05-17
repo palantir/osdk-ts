@@ -23,8 +23,8 @@ import { promiseStateAsync as pStateAsync } from "p-state";
 import type { Mock, MockInstance } from "vitest";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { AsyncCache } from "./Cache.js";
-import { createAsyncCache, createCache } from "./Cache.js";
+import type { AsyncClientCache } from "./Cache.js";
+import { createAsyncClientCache, createClientCache } from "./Cache.js";
 
 declare module "vitest" {
   interface Assertion<T = any> extends CustomMatchers<T> {}
@@ -36,7 +36,7 @@ declare module "vitest" {
 
 expect.extend(matchers);
 
-function createSpys(cache: ReturnType<typeof createCache>) {
+function createSpys(cache: ReturnType<typeof createClientCache>) {
   return {
     get: vi.spyOn(cache, "get"),
     remove: vi.spyOn(cache, "remove"),
@@ -56,7 +56,7 @@ describe("AsyncCache", () => {
       });
 
     const mock = vi.fn(resolveToKey);
-    const cache = createAsyncCache(mock);
+    const cache = createAsyncClientCache(mock);
 
     await Promise.all([
       cache.get(fauxClient, "a"),
@@ -75,7 +75,7 @@ describe("AsyncCache", () => {
     let factoryFn: Mock<[MinimalClient, string], Promise<any>>;
     let cache: ReturnType<typeof createSpys>;
     let inProgress: ReturnType<typeof createSpys>;
-    let asyncCache: AsyncCache<string, string>;
+    let asyncCache: AsyncClientCache<string, string>;
     let asyncCacheSpies: {
       [K in keyof typeof asyncCache]: MockInstance<
         Parameters<typeof asyncCache[K]>,
@@ -116,12 +116,12 @@ describe("AsyncCache", () => {
 
       const createSyncCacheMock = vi.fn();
 
-      cache = createSpys(createCache() as any);
-      inProgress = createSpys(createCache() as any);
+      cache = createSpys(createClientCache() as any);
+      inProgress = createSpys(createClientCache() as any);
       createSyncCacheMock.mockReturnValueOnce(cache);
       createSyncCacheMock.mockReturnValueOnce(inProgress);
 
-      asyncCache = createAsyncCache<string, string>(
+      asyncCache = createAsyncClientCache<string, string>(
         factoryFn,
         createSyncCacheMock as any,
       );

@@ -20,7 +20,7 @@ import { formatTs } from "../util/test/formatTs";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const ExpectedOsdkVersion = "0.18.0";
+const ExpectedOsdkVersion = "0.19.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataFile(

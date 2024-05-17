@@ -16,7 +16,6 @@
 
 import type { Osdk, PageResult } from "@osdk/client";
 import type { ObjectSetListener } from "@osdk/client/unstable-do-not-use";
-import { createClient } from "@osdk/client/unstable-do-not-use";
 import {
   assignEmployee1,
   BoundariesUsState,
@@ -28,36 +27,23 @@ import {
 } from "@osdk/examples.basic.sdk";
 import * as Foundry from "@osdk/foundry";
 import { Models } from "@osdk/internal.foundry";
-import { pino } from "pino";
-import pinoPretty from "pino-pretty";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
+import { client } from "./client.js";
 import { fetchAggregationForEmployees } from "./examples/fetchAggregationForEmployees.js";
 import { fetchAggregationForEmployeesGrouped } from "./examples/fetchAggregationForEmployeesGrouped.js";
 import { fetchEmployeeLead } from "./examples/fetchEmployeeLead.js";
 import { fetchEmployeePage } from "./examples/fetchEmployeePage.js";
 import { fetchEmployeePageByAdUsername } from "./examples/fetchEmployeePageByAdUsername.js";
 import { fetchEmployeePageByAdUsernameAndLimit } from "./examples/fetchEmployeePageByAdUsernameAndLimit.js";
+import { logger } from "./logger.js";
+import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { typeChecks } from "./typeChecks.js";
 
-invariant(process.env.FOUNDRY_STACK !== undefined);
-invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
-
-export const logger = pino(
-  { level: "debug" },
-  pinoPretty.default({ colorize: true, sync: true }),
-);
-
-export const client = createClient(
-  process.env.FOUNDRY_STACK,
-  "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",
-  async () => process.env.FOUNDRY_USER_TOKEN!,
-  { logger },
-);
-
 const runOld = false;
+
 const testSubscriptions = false;
 
 async function runTests() {
@@ -68,6 +54,8 @@ async function runTests() {
     );
     logger.info(myUser, "Loaded user");
     console.log("User", myUser!.email);
+
+    await checkUnstableBulkLinks();
 
     if (runOld) {
       await fetchEmployeePage(client);
