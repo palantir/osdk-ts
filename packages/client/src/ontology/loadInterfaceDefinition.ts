@@ -23,7 +23,7 @@ export async function loadInterfaceDefinition(
   client: MinimalClient,
   objtype: string,
 ): Promise<InterfaceDefinition<any, any>> {
-  const r = await OntologiesV2.OntologyObjectV2.getInterfaceType(
+  const r = await OntologiesV2.OntologyObjectsV2.getInterfaceType(
     client,
     client.ontologyRid,
     objtype,

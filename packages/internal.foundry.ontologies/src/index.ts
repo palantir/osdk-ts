@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as ActionType from "./public/ActionType.js";
-export * as Attachment from "./public/Attachment.js";
-export * as ObjectType from "./public/ObjectType.js";
-export * as Ontology from "./public/Ontology.js";
-export * as OntologyObject from "./public/OntologyObject.js";
-export * as QueryType from "./public/QueryType.js";
+export type {} from "./_components.js";
+export * as ActionTypes from "./public/ActionType.js";
+export * as Attachments from "./public/Attachment.js";
+export * as ObjectTypes from "./public/ObjectType.js";
+export * as Ontologies from "./public/Ontology.js";
+export * as OntologyObjects from "./public/OntologyObject.js";
+export * as QueryTypes from "./public/QueryType.js";

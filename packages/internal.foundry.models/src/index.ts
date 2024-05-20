@@ -14,5 +14,16 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as LanguageModel from "./public/LanguageModel.js";
+export type {
+  ChatCompletionChoice,
+  ChatCompletionRequest,
+  ChatCompletionResponse,
+  ChatMessage,
+  ChatMessageRole,
+  LanguageModel,
+  LanguageModelApiName,
+  ListLanguageModelsResponse,
+  ParameterKey,
+  ParameterValue,
+} from "./_components.js";
+export * as LanguageModels from "./public/LanguageModel.js";

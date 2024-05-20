@@ -165,7 +165,7 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const result = await OntologiesV2.OntologyObjectV2.searchObjectsForInterface(
+  const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
     addUserAgent(client, interfaceType),
     client.ontologyRid,
     interfaceType.apiName,
@@ -302,7 +302,7 @@ export async function fetchObjectPage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const r = await OntologiesV2.OntologyObjectSet.loadObjectSetV2(
+  const r = await OntologiesV2.OntologyObjectSets.loadObjectSetV2(
     addUserAgent(client, objectType),
     client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {

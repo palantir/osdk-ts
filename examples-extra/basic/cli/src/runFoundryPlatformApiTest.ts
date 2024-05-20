@@ -20,14 +20,14 @@ import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export async function runFoundryPlatformApiTest() {
-  const myUser = await Foundry.Security.User.getCurrentUser(
+  const myUser = await Foundry.Security.Users.getCurrentUser(
     client,
     { preview: true },
   );
   logger.info(myUser, "Loaded user");
   console.log("User", myUser!.email);
 
-  const models = await Models.LanguageModel.listLanguageModels(client);
+  const models = await Models.LanguageModels.listLanguageModels(client);
   logger.info({
     models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
   }, "Loaded models");
