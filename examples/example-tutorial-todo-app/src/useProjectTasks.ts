@@ -15,15 +15,15 @@ export function useProjectTasks(project: MockProject | undefined) {
   );
 
   const createTask: (
-    name: string
+    title: string
   ) => Promise<MockTask["__primaryKey"] | undefined> = useCallback(
-    async (name) => {
+    async (title) => {
       if (project == null) {
         return undefined;
       }
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
-        name,
+        title,
         projectId: project.__primaryKey,
       });
       await mutate();
