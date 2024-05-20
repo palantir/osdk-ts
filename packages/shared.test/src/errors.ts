@@ -15,7 +15,7 @@
  */
 
 import type { errors } from "@osdk/gateway";
-import type { BaseAPIError } from "./BaseError";
+import type { BaseAPIError } from "./BaseError.js";
 
 const errorInstanceId = "errorInstanceId";
 const objectTypeRid = "ri.foundry.main.objectType.1";

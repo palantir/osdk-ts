@@ -22,8 +22,8 @@ import type {
   StrictResponse,
 } from "msw";
 import { http as http, HttpResponse } from "msw";
-import type { BaseAPIError } from "../../BaseError";
-import { authHandlerMiddleware } from "../commonHandlers";
+import type { BaseAPIError } from "../../BaseError.js";
+import { authHandlerMiddleware } from "../commonHandlers.js";
 
 export class OpenApiCallError extends Error {
   constructor(

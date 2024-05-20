@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AbsoluteTimeRange } from "./AbsoluteTimeRange";
-import type { RelativeTimeRange } from "./RelativeTimeRange";
+import type { AbsoluteTimeRange } from "./AbsoluteTimeRange.js";
+import type { RelativeTimeRange } from "./RelativeTimeRange.js";
 
 export interface TimeRange_Absolute extends AbsoluteTimeRange {
   type: "absolute";

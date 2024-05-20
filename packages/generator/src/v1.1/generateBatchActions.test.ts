@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
-import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateBatchActions } from "./generateBatchActions";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
+import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
+import { generateBatchActions } from "./generateBatchActions.js";
 
 describe(generateBatchActions, () => {
   it("generates bulk action interface", async () => {

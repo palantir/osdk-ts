@@ -19,20 +19,20 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   ConfidentialClientAuth,
   FoundryClient,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   ListObjectsError,
   LoadObjectSetError,
   ObjectSet,
   Page,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   Employee,
   Office,
-} from "../generatedNoCheck/@test-app/osdk/ontology/objects";
-import { fetchAllPages, fetchPage } from "./paginationHelpers";
-import { assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/ontology/objects/index.js";
+import { fetchAllPages, fetchPage } from "./paginationHelpers.js";
+import { assertOkOrThrow } from "./resultUtils.js";
 
 describe("Object Sets", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

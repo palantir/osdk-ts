@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Returns objects based on the existence of the specified field. */
 export interface IsNullQueryV2 {

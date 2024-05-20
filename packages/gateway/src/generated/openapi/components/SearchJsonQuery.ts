@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-import type { AllTermsQuery } from "./AllTermsQuery";
-import type { AndQuery } from "./AndQuery";
-import type { AnyTermQuery } from "./AnyTermQuery";
-import type { ContainsQuery } from "./ContainsQuery";
-import type { EqualsQuery } from "./EqualsQuery";
-import type { GteQuery } from "./GteQuery";
-import type { GtQuery } from "./GtQuery";
-import type { IsNullQuery } from "./IsNullQuery";
-import type { LteQuery } from "./LteQuery";
-import type { LtQuery } from "./LtQuery";
-import type { NotQuery } from "./NotQuery";
-import type { OrQuery } from "./OrQuery";
-import type { PhraseQuery } from "./PhraseQuery";
-import type { PrefixQuery } from "./PrefixQuery";
+import type { AllTermsQuery } from "./AllTermsQuery.js";
+import type { AndQuery } from "./AndQuery.js";
+import type { AnyTermQuery } from "./AnyTermQuery.js";
+import type { ContainsQuery } from "./ContainsQuery.js";
+import type { EqualsQuery } from "./EqualsQuery.js";
+import type { GteQuery } from "./GteQuery.js";
+import type { GtQuery } from "./GtQuery.js";
+import type { IsNullQuery } from "./IsNullQuery.js";
+import type { LteQuery } from "./LteQuery.js";
+import type { LtQuery } from "./LtQuery.js";
+import type { NotQuery } from "./NotQuery.js";
+import type { OrQuery } from "./OrQuery.js";
+import type { PhraseQuery } from "./PhraseQuery.js";
+import type { PrefixQuery } from "./PrefixQuery.js";
 
 export interface SearchJsonQuery_Lt extends LtQuery {
   type: "lt";

@@ -15,7 +15,7 @@
  */
 
 import commonjs from "@rollup/plugin-commonjs";
-import resolve from "@rollup/plugin-node-resolve";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import type { ModuleFormat, RollupBuild } from "rollup";
 import { rollup } from "rollup";
 import nodePolyfill from "rollup-plugin-polyfill-node";
@@ -35,12 +35,13 @@ async function createRollupBuild(
   return rollup({
     input: inputPath,
     plugins: [
-      resolve({
+      nodeResolve({
         browser: true,
         modulePaths: [nodeModulesPath!],
       }),
-      commonjs({}),
-      nodePolyfill(),
+      (commonjs.default ?? (commonjs as any as typeof commonjs["default"]))({}),
+      (nodePolyfill.default
+        ?? (nodePolyfill as any as typeof nodePolyfill["default"]))(),
     ],
     onwarn: (warning, warn) => {
       // Ignore circular dependency warnings

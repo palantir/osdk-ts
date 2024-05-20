@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MinimalFs } from "../MinimalFs";
+import type { MinimalFs } from "../MinimalFs.js";
 
 /**
  * Verify that the target outDir does not yet exist OR is empty.

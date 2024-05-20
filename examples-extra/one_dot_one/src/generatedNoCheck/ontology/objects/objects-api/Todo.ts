@@ -1,5 +1,5 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
-import { Todo as OG_Todo } from "../Todo";
+import { Todo as OG_Todo } from "../Todo.js";
 
 /** @deprecated Use Todo from ontology/objects instead */
 export type Todo = OG_Todo;

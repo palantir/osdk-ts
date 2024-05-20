@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionResults } from "./ActionResults";
+import type { ActionResults } from "./ActionResults.js";
 
 export interface BatchApplyActionResponseV2 {
   edits?: ActionResults;

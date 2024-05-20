@@ -16,8 +16,8 @@
 
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import { deleteUndefineds } from "../util/deleteUndefineds";
-import { stringify } from "../util/stringify";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { stringify } from "../util/stringify.js";
 
 export function getObjectDefIdentifier(name: string, v2: boolean) {
   return v2 ? name : `${name}Def`;

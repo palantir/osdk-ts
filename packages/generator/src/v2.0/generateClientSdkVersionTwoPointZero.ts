@@ -15,17 +15,17 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles";
-import { sanitizeMetadata } from "../shared/sanitizeMetadata";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
+import type { MinimalFs } from "../MinimalFs.js";
+import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
+import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 import {
   wireObjectTypeV2ToSdkObjectConst,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst";
-import { formatTs } from "../util/test/formatTs";
-import { verifyOutdir } from "../util/verifyOutdir";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { generateOntologyMetadataFile } from "./generateMetadata";
+} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
+import { formatTs } from "../util/test/formatTs.js";
+import { verifyOutdir } from "../util/verifyOutdir.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { generateOntologyMetadataFile } from "./generateMetadata.js";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,

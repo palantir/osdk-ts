@@ -1,1 +1,1 @@
-export * from './clientOptions';
+export * from './clientOptions.js';

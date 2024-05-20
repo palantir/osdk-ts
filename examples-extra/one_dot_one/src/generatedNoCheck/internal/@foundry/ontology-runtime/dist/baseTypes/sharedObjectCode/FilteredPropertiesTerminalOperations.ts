@@ -2,7 +2,7 @@ import type {
   FilteredPropertiesTerminalOperations as OG_FilteredPropertiesTerminalOperations,
   FilteredPropertiesTerminalOperationsWithGet as OG_FilteredPropertiesTerminalOperationsWithGet,
 } from '@osdk/legacy-client';
-import { OntologyObject } from '../OntologyObject';
+import { OntologyObject } from '../OntologyObject.js';
 
 /** @deprecated submodule imports arent public api **/
 export type FilteredPropertiesTerminalOperations<

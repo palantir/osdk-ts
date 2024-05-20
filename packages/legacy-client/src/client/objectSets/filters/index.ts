@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-export * from "./ArrayFilter";
-export * from "./AttachmentFilter";
-export * from "./BooleanFilter";
-export * from "./DateTimeFilters";
-export * from "./Filters";
-export * from "./GeoPointFilter";
-export * from "./GeoShapeFilter";
-export * from "./NumericFilter";
-export * as Op from "./Op";
-export * from "./OrderByOption";
-export * from "./StringFilter";
+export * from "./ArrayFilter.js";
+export * from "./AttachmentFilter.js";
+export * from "./BooleanFilter.js";
+export * from "./DateTimeFilters.js";
+export * from "./Filters.js";
+export * from "./GeoPointFilter.js";
+export * from "./GeoShapeFilter.js";
+export * from "./NumericFilter.js";
+export * as Op from "./Op.js";
+export * from "./OrderByOption.js";
+export * from "./StringFilter.js";

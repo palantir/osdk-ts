@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { IsLink } from "./IsLink";
+import type { IsLink } from "./IsLink.js";
 
 export declare type OmitMetadataProperties<T> = {
   [

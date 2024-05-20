@@ -27,7 +27,7 @@ import type {
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
 } from "@osdk/gateway/types";
-import { isNullableQueryDataType } from "./isNullableQueryDataType";
+import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
   input: QueryDataType,

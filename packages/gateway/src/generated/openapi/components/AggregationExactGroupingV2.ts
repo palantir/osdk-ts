@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Divides objects into groups according to an exact value. */
 export interface AggregationExactGroupingV2 {

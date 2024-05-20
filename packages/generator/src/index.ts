@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-export { generateClientSdkPackage as __UNSTABLE_generateClientSdkPackage } from "./generateClientSdkPackage";
-export type { MinimalFs } from "./MinimalFs";
-export { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne";
-export { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero";
-export type { WireOntologyDefinition } from "./WireOntologyDefinition";
+export { generateClientSdkPackage as __UNSTABLE_generateClientSdkPackage } from "./generateClientSdkPackage.js";
+export type { MinimalFs } from "./MinimalFs.js";
+export { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne.js";
+export { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
+export type { WireOntologyDefinition } from "./WireOntologyDefinition.js";

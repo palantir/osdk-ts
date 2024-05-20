@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox";
-import type { Position } from "./Position";
+import type { BBox } from "./BBox.js";
+import type { Position } from "./Position.js";
 
 export interface GeoPoint {
   coordinates: Position;

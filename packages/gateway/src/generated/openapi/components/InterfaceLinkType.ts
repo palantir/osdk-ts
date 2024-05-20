@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
-import type { InterfaceLinkTypeApiName } from "./InterfaceLinkTypeApiName";
-import type { InterfaceLinkTypeCardinality } from "./InterfaceLinkTypeCardinality";
-import type { InterfaceLinkTypeLinkedEntityApiName } from "./InterfaceLinkTypeLinkedEntityApiName";
-import type { InterfaceLinkTypeRid } from "./InterfaceLinkTypeRid";
+import type { DisplayName } from "./DisplayName.js";
+import type { InterfaceLinkTypeApiName } from "./InterfaceLinkTypeApiName.js";
+import type { InterfaceLinkTypeCardinality } from "./InterfaceLinkTypeCardinality.js";
+import type { InterfaceLinkTypeLinkedEntityApiName } from "./InterfaceLinkTypeLinkedEntityApiName.js";
+import type { InterfaceLinkTypeRid } from "./InterfaceLinkTypeRid.js";
 
 /**
  * A link type constraint defined at the interface level where the implementation of the links is provided

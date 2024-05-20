@@ -27,10 +27,10 @@ import {
 } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { USER_AGENT } from "../../USER_AGENT";
-import { expectFetchToBeCalledWithBody } from "../../util/test/expectUtils";
-import { unwrapResultOrThrow } from "../../util/test/resultUtils";
-import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep";
+import { USER_AGENT } from "../../USER_AGENT.js";
+import { expectFetchToBeCalledWithBody } from "../../util/test/expectUtils.js";
+import { unwrapResultOrThrow } from "../../util/test/resultUtils.js";
+import { createObjectSetAggregationStep } from "./createObjectSetAggregationStep.js";
 
 describe(createObjectSetAggregationStep, () => {
   let fetch: MockedFunction<typeof globalThis.fetch>;

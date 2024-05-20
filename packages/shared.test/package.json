@@ -11,32 +11,31 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
-      "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "require": "./build/cjs/index.cjs",
+      "import": "./build/esm/index.js",
+      "browser": "./build/browser/index.browser.js"
     },
     "./*": {
-      "types": "./build/types/public/*.d.ts",
-      "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "require": "./build/cjs/public/*.cjs",
+      "import": "./build/esm/public/*.js",
+      "browser": "./build/browser/public/*.js"
     }
   },
   "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh both",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute"
+    "typecheck": "../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
     "@osdk/api": "workspace:^",
     "@osdk/gateway": "workspace:^",
-    "fetch-retry": "^5.0.6",
+    "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
-    "msw": "^2.2.14",
+    "msw": "^2.3.0",
     "tiny-invariant": "^1.3.3"
   },
   "devDependencies": {
@@ -49,14 +48,16 @@
   },
   "keywords": [],
   "files": [
-    "build/types",
-    "build/js",
+    "build/cjs",
+    "build/esm",
+    "build/browser",
     "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
-  "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "main": "./build/cjs/index.cjs",
+  "module": "./build/esm/index.js",
+  "types": "./build/cjs/index.d.cts",
+  "type": "module"
 }

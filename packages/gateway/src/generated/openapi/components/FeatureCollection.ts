@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BBox } from "./BBox";
-import type { FeatureCollectionTypes } from "./FeatureCollectionTypes";
+import type { BBox } from "./BBox.js";
+import type { FeatureCollectionTypes } from "./FeatureCollectionTypes.js";
 
 /** GeoJSon 'FeatureCollection' object */
 export interface FeatureCollection {

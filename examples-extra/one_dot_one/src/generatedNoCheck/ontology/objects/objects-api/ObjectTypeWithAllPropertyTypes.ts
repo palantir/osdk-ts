@@ -1,5 +1,5 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
-import { ObjectTypeWithAllPropertyTypes as OG_ObjectTypeWithAllPropertyTypes } from "../ObjectTypeWithAllPropertyTypes";
+import { ObjectTypeWithAllPropertyTypes as OG_ObjectTypeWithAllPropertyTypes } from "../ObjectTypeWithAllPropertyTypes.js";
 
 /** @deprecated Use ObjectTypeWithAllPropertyTypes from ontology/objects instead */
 export type ObjectTypeWithAllPropertyTypes = OG_ObjectTypeWithAllPropertyTypes;

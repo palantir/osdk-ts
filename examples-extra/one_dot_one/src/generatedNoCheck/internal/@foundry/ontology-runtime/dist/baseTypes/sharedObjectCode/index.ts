@@ -1,1 +1,1 @@
-export * from './FilteredPropertiesTerminalOperations';
+export * from './FilteredPropertiesTerminalOperations.js';

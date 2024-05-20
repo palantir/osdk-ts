@@ -21,8 +21,10 @@ import type {
   OntologyDefinition,
   VersionBound,
 } from "@osdk/api";
-import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
-import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+import type { ObjectTypeWithAllPropertyTypesDef } from "./ObjectTypeWithAllPropertyTypes.js";
+import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes.js";
+import type { ObjectTypeWithReservedNamesDef } from "./ObjectTypeWithReservedNames.js";
+import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames.js";
 
 const osdkMetadata = {
   extraUserAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
@@ -171,8 +173,10 @@ export const MockOntology = {
   objects: {
     Task,
     Todo,
-    ObjectTypeWithAllPropertyTypes,
-    ObjectTypeWithReservedNames,
+    ObjectTypeWithAllPropertyTypes:
+      ObjectTypeWithAllPropertyTypes as ObjectTypeWithAllPropertyTypesDef, // forces the type to be imported allowing attw to work
+    ObjectTypeWithReservedNames:
+      ObjectTypeWithReservedNames as ObjectTypeWithReservedNamesDef, // forces the type to be imported allowing attw to work
   },
   actions: {
     createTask: {

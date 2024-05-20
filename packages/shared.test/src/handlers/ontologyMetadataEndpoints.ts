@@ -31,14 +31,17 @@ import {
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
-} from "../errors";
+} from "../errors.js";
 import {
   defaultOntology,
   defaultOntologyForConjure,
   fullOntology,
-} from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
-import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+} from "../stubs/ontologies.js";
+import { authHandlerMiddleware } from "./commonHandlers.js";
+import {
+  handleOpenApiCall,
+  OpenApiCallError,
+} from "./util/handleOpenApiCall.js";
 
 export function getOntology(ontologyApiName: string) {
   if (

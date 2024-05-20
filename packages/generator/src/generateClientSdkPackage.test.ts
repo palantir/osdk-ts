@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, test } from "vitest";
-import { getPackageJsonContents } from "./generateClientSdkPackage";
+import { getPackageJsonContents } from "./generateClientSdkPackage.js";
 
 describe("generateClientSdkPackage", () => {
   describe(getPackageJsonContents, () => {

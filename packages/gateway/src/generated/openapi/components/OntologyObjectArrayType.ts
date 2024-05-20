@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectPropertyType } from "./ObjectPropertyType";
+import type { ObjectPropertyType } from "./ObjectPropertyType.js";
 
 export interface OntologyObjectArrayType {
   subType: ObjectPropertyType;

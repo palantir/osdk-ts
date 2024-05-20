@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { AttachmentRid } from "./AttachmentRid";
-import type { Filename } from "./Filename";
-import type { MediaType } from "./MediaType";
-import type { SizeBytes } from "./SizeBytes";
+import type { AttachmentRid } from "./AttachmentRid.js";
+import type { Filename } from "./Filename.js";
+import type { MediaType } from "./MediaType.js";
+import type { SizeBytes } from "./SizeBytes.js";
 
 /** The representation of an attachment. */
 export interface Attachment {

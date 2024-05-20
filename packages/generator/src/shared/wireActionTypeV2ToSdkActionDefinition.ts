@@ -24,7 +24,7 @@ import type {
   ActionParameterV2,
   ActionTypeV2,
 } from "@osdk/gateway/types";
-import { getModifiedEntityTypes } from "./getEditedEntities";
+import { getModifiedEntityTypes } from "./getEditedEntities.js";
 
 export function wireActionTypeV2ToSdkActionDefinition(
   input: ActionTypeV2,

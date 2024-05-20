@@ -1,1 +1,1 @@
-export * from './PublicClientAuth';
+export * from './PublicClientAuth.js';

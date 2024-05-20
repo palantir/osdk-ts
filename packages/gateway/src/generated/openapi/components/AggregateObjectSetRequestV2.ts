@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { AggregationAccuracyRequest } from "./AggregationAccuracyRequest";
-import type { AggregationGroupByV2 } from "./AggregationGroupByV2";
-import type { AggregationV2 } from "./AggregationV2";
-import type { ObjectSet } from "./ObjectSet";
+import type { AggregationAccuracyRequest } from "./AggregationAccuracyRequest.js";
+import type { AggregationGroupByV2 } from "./AggregationGroupByV2.js";
+import type { AggregationV2 } from "./AggregationV2.js";
+import type { ObjectSet } from "./ObjectSet.js";
 
 export interface AggregateObjectSetRequestV2 {
   aggregation: ReadonlyArray<AggregationV2>;

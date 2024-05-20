@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimeRange } from "./TimeRange";
+import type { TimeRange } from "./TimeRange.js";
 
 export interface StreamTimeSeriesPointsRequest {
   range?: TimeRange;

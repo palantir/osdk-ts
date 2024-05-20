@@ -17,9 +17,9 @@
 import type { InterfaceType } from "@osdk/gateway/types";
 
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
-import { deleteUndefineds } from "../util/deleteUndefineds";
-import { stringify } from "../util/stringify";
-import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { stringify } from "../util/stringify.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(

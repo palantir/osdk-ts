@@ -21,7 +21,7 @@ import type {
   LocalDate,
   OntologyObject,
   Timestamp,
-} from "../../client/baseTypes";
+} from "../../client/baseTypes/index.js";
 
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly __apiName: "ObjectTypeWithAllPropertyTypes";

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
-import type { LinkTypeApiName } from "./LinkTypeApiName";
-import type { LinkTypeSideCardinality } from "./LinkTypeSideCardinality";
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { ReleaseStatus } from "./ReleaseStatus";
+import type { DisplayName } from "./DisplayName.js";
+import type { LinkTypeApiName } from "./LinkTypeApiName.js";
+import type { LinkTypeSideCardinality } from "./LinkTypeSideCardinality.js";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { ReleaseStatus } from "./ReleaseStatus.js";
 
 export interface LinkTypeSideV2 {
   apiName: LinkTypeApiName;

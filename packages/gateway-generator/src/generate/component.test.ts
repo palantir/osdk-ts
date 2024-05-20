@@ -17,7 +17,7 @@
 import type { SourceFile } from "ts-morph";
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { generateComponent } from "./component";
+import { generateComponent } from "./component.js";
 
 export function addCopyrightForTest(sf: SourceFile) {
   sf.insertText(

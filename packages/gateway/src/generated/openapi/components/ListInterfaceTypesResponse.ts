@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "./InterfaceType";
-import type { PageToken } from "./PageToken";
+import type { InterfaceType } from "./InterfaceType.js";
+import type { PageToken } from "./PageToken.js";
 
 export interface ListInterfaceTypesResponse {
   nextPageToken?: PageToken;

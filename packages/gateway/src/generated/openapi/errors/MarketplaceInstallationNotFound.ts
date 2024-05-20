@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
-import type { SdkPackageName } from "../components/SdkPackageName";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid.js";
+import type { SdkPackageName } from "../components/SdkPackageName.js";
 
 /**
  * The given marketplace installation could not be found or the user does not have access to it.

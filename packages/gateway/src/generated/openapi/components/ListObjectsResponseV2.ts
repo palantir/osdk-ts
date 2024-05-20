@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "./OntologyObjectV2";
-import type { PageToken } from "./PageToken";
+import type { OntologyObjectV2 } from "./OntologyObjectV2.js";
+import type { PageToken } from "./PageToken.js";
 
 export interface ListObjectsResponseV2 {
   nextPageToken?: PageToken;

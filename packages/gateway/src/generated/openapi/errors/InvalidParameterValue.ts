@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "../components/DataValue";
-import type { OntologyDataType } from "../components/OntologyDataType";
-import type { ParameterId } from "../components/ParameterId";
-import type { ValueType } from "../components/ValueType";
+import type { DataValue } from "../components/DataValue.js";
+import type { OntologyDataType } from "../components/OntologyDataType.js";
+import type { ParameterId } from "../components/ParameterId.js";
+import type { ValueType } from "../components/ValueType.js";
 
 /**
  * The value of the given parameter is invalid. See the documentation of `DataValue` for details on

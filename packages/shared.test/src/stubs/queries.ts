@@ -18,7 +18,7 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/gateway/types";
-import { employee1 } from "./objects";
+import { employee1 } from "./objects.js";
 import {
   addOneQueryType,
   queryTypeReturnsDate,
@@ -27,7 +27,7 @@ import {
   queryTypeReturnsTimestamp,
   queryTypeThreeDimensionalAggregation,
   queryTypeTwoDimensionalAggregation,
-} from "./queryTypes";
+} from "./queryTypes.js";
 
 export const addOneQueryRequest: ExecuteQueryRequest = {
   parameters: {

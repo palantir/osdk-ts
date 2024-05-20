@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Returns objects where the specified array contains a value. */
 export interface ContainsQueryV2 {

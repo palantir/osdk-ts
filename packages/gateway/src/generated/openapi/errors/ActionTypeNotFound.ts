@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName";
-import type { ActionTypeRid } from "../components/ActionTypeRid";
+import type { ActionTypeApiName } from "../components/ActionTypeApiName.js";
+import type { ActionTypeRid } from "../components/ActionTypeRid.js";
 
 /** The action type is not found, or the user does not have access to it. */
 export interface ActionTypeNotFound {

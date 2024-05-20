@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DatasetRid } from "../components/DatasetRid";
-import type { TransactionRid } from "../components/TransactionRid";
+import type { DatasetRid } from "../components/DatasetRid.js";
+import type { TransactionRid } from "../components/TransactionRid.js";
 
 /** The requested transaction could not be found on the dataset, or the client token does not have access to it. */
 export interface TransactionNotFound {

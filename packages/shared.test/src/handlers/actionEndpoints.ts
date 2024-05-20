@@ -25,13 +25,16 @@ import type {
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
 import type { HttpResponseResolver, PathParams } from "msw";
-import type { BaseAPIError } from "../BaseError";
-import { ApplyActionFailedError, InvalidRequest } from "../errors";
-import { actionResponseMap } from "../stubs/actions";
-import { defaultOntology } from "../stubs/ontologies";
-import { getOntology } from "./ontologyMetadataEndpoints";
-import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall";
-import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+import type { BaseAPIError } from "../BaseError.js";
+import { ApplyActionFailedError, InvalidRequest } from "../errors.js";
+import { actionResponseMap } from "../stubs/actions.js";
+import { defaultOntology } from "../stubs/ontologies.js";
+import { getOntology } from "./ontologyMetadataEndpoints.js";
+import type { ExtractBody, ExtractResponse } from "./util/handleOpenApiCall.js";
+import {
+  handleOpenApiCall,
+  OpenApiCallError,
+} from "./util/handleOpenApiCall.js";
 
 export const actionHandlers = [
   /**

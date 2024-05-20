@@ -18,12 +18,17 @@ import type { OntologyDefinition } from "@osdk/api";
 import { aggregateObjectSetV2 } from "@osdk/gateway/requests";
 import { createOpenApiRequest } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
-import type { ObjectSetDefinition } from "../baseTypes";
-import type { AggregateObjectsError } from "../errors";
+import type { ObjectSetDefinition } from "../baseTypes/index.js";
+import type { AggregateObjectsError } from "../errors/index.js";
 import {
   AggregateObjectsErrorHandler,
   handleAggregateObjectsError,
-} from "../errors";
+} from "../errors/index.js";
+import { convertToAggregationResult } from "../objectSets/aggregations/aggregationConverters.js";
+import {
+  mapAggregation,
+  mapBucketing,
+} from "../objectSets/aggregations/AggregationUtils.js";
 import type {
   AggregationClause,
   AggregationResult,
@@ -33,14 +38,9 @@ import type {
   InternalBucketing,
   Metrics,
   MetricValue,
-} from "../objectSets/aggregations";
-import { convertToAggregationResult } from "../objectSets/aggregations/aggregationConverters";
-import {
-  mapAggregation,
-  mapBucketing,
-} from "../objectSets/aggregations/AggregationUtils";
-import type { Result } from "../Result";
-import { wrapResult } from "./util/wrapResult";
+} from "../objectSets/aggregations/index.js";
+import type { Result } from "../Result.js";
+import { wrapResult } from "./util/wrapResult.js";
 
 export function aggregate<
   TBucketGroup extends BucketGroup,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "./PropertyApiName";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
 
 export interface ObjectTypeInterfaceImplementation {
   properties: Record<SharedPropertyTypeApiName, PropertyApiName>;

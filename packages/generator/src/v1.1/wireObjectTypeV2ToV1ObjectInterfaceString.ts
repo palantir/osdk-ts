@@ -18,7 +18,7 @@ import type {
   ObjectPropertyType,
   ObjectTypeFullMetadata,
 } from "@osdk/gateway/types";
-import { isReservedKeyword } from "../util/reservedKeywords";
+import { isReservedKeyword } from "../util/reservedKeywords.js";
 
 export function wireObjectTypeV2ToObjectInterfaceStringV1(
   objectTypeWithLinks: ObjectTypeFullMetadata,

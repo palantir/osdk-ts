@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { type MinimalFs } from "../MinimalFs";
+import { type MinimalFs } from "../MinimalFs.js";
 export interface InMemoryFs extends MinimalFs {
   getFiles(): Record<string, string>;
   getFile(path: string): string;

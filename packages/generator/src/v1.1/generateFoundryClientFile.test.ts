@@ -15,8 +15,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
-import { generateFoundryClientFile } from "./generateFoundryClientFile";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
+import { generateFoundryClientFile } from "./generateFoundryClientFile.js";
 
 describe(generateFoundryClientFile, () => {
   it("generates foundry client", async () => {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { OAuthToken } from "../OAuthToken";
-import { fetchFormEncoded, getRevokeUri, getTokenUri } from "../utils";
+import { OAuthToken } from "../OAuthToken.js";
+import { fetchFormEncoded, getRevokeUri, getTokenUri } from "../utils/index.js";
 
 export async function getTokenWithClientSecret(
   clientId: string,

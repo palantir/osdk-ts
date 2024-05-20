@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { QueryDataType } from "./QueryDataType";
-import type { StructFieldName } from "./StructFieldName";
+import type { QueryDataType } from "./QueryDataType.js";
+import type { StructFieldName } from "./StructFieldName.js";
 
 export interface QueryStructField {
   name: StructFieldName;
