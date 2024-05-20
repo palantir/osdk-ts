@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "{{osdkPackage}}/ontology/objects";
+import { MockProject } from "./mocks";
 import css from "./TaskList.module.css";
 import TaskListItem from "./TaskListItem";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
-  project: OsdkTodoProject;
+  project: MockProject;
 }
 
 function TaskList({ project }: TaskListProps) {

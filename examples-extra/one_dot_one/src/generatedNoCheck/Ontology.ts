@@ -7,8 +7,6 @@ import { actionTakesAllParameterTypes } from './ontology/actions/actionTakesAllP
 import { createTodo } from './ontology/actions/createTodo.js';
 import { ObjectTypeWithAllPropertyTypes } from './ontology/objects/ObjectTypeWithAllPropertyTypes.js';
 import type { Objects } from './ontology/objects/Objects.js';
-import { OsdkTodoProject } from './ontology/objects/OsdkTodoProject.js';
-import { OsdkTodoTask } from './ontology/objects/OsdkTodoTask.js';
 import { Person } from './ontology/objects/Person.js';
 import { Todo } from './ontology/objects/Todo.js';
 import type { Queries } from './ontology/queries/Queries.js';
@@ -22,8 +20,6 @@ export const Ontology: {
     userAgent: 'typescript-sdk/dev osdk-cli/dev';
   };
   objects: {
-    OsdkTodoProject: typeof OsdkTodoProject;
-    OsdkTodoTask: typeof OsdkTodoTask;
     Todo: typeof Todo;
     Person: typeof Person;
     ObjectTypeWithAllPropertyTypes: typeof ObjectTypeWithAllPropertyTypes;
@@ -43,8 +39,6 @@ export const Ontology: {
     userAgent: 'typescript-sdk/dev osdk-cli/dev' as const,
   },
   objects: {
-    OsdkTodoProject,
-    OsdkTodoTask,
     Todo,
     Person,
     ObjectTypeWithAllPropertyTypes,
@@ -58,7 +52,7 @@ export const Ontology: {
     getTodoCount,
   },
 } satisfies OntologyDefinition<
-  'OsdkTodoProject' | 'OsdkTodoTask' | 'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes',
+  'Todo' | 'Person' | 'ObjectTypeWithAllPropertyTypes',
   'actionTakesAllParameterTypes' | 'createTodo',
   'queryTakesAllParameterTypes' | 'getTodoCount'
 >;
