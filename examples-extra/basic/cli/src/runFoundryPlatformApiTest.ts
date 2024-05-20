@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { pino } from "pino";
-import PinoPretty from "pino-pretty";
+import * as Foundry from "@osdk/foundry";
+import { Models } from "@osdk/internal.foundry";
+import { client } from "./client.js";
+import { logger } from "./logger.js";
 
-export const logger = pino(
-  { level: "debug" },
-  PinoPretty.build({ sync: true }),
-);
+export async function runFoundryPlatformApiTest() {
+  const myUser = await Foundry.Security.User.getCurrentUser(
+    client,
+    { preview: true },
+  );
+  logger.info(myUser, "Loaded user");
+  console.log("User", myUser!.email);
+
+  const models = await Models.LanguageModel.listLanguageModels(client);
+  logger.info({
+    models: models.data.map(m => `'${m.apiName}' in ${m.source}`),
+  }, "Loaded models");
+}
