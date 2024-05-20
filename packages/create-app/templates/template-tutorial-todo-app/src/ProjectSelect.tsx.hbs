@@ -4,7 +4,7 @@ import { MockProject } from "./mocks";
 interface ProjectSelectProps {
   project: MockProject | undefined;
   projects: MockProject[];
-  onSelectProject: (project: any) => void;
+  onSelectProject: (project: MockProject) => void;
 }
 
 function ProjectSelect({
