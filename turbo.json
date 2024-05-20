@@ -51,7 +51,13 @@
     },
 
     "typecheck": {
-      "inputs": ["src/**", "src/**/*.mts", "src/**/*.cts", "src/**/*.tsx", "tsconfig.json", "*.d.ts"],
+      "inputs": [
+        "src/**",
+        "src/**/*.{mts,cts,ts,tsx}",
+        "tsconfig.json",
+        "tsconfig.cjs.json",
+        "*.d.ts"
+      ],
       "outputs": [
         "build/**/*.{d.ts,d.ts.map}",
         "build/**/package.json"
