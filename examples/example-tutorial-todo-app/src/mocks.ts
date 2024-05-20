@@ -71,7 +71,7 @@ async function getProjects(): Promise<MockProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
-  return result.map(project);
+  return result;
 }
 
 async function createProject({
@@ -124,16 +124,6 @@ async function deleteTask(id: string): Promise<void> {
       project.tasks.splice(idx, 1);
     }
   }
-}
-
-function project(mockProject: MockProject): MockProject {
-  return {
-    __apiName: "MockProject",
-    __primaryKey: mockProject.id,
-    id: mockProject.id,
-    name: mockProject.name,
-    tasks: mockProject.tasks,
-  };
 }
 
 const Mocks = {

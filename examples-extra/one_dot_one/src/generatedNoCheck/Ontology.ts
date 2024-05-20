@@ -1,17 +1,17 @@
 import type { OntologyDefinition } from '@osdk/api';
 import type { Ontology as ClientOntology } from '@osdk/legacy-client';
-import type { Actions } from './ontology/actions/Actions';
-import type { BatchActions } from './ontology/actions/BatchActions';
-import type { BulkActions } from './ontology/actions/BulkActions';
-import { actionTakesAllParameterTypes } from './ontology/actions/actionTakesAllParameterTypes';
-import { createTodo } from './ontology/actions/createTodo';
-import { ObjectTypeWithAllPropertyTypes } from './ontology/objects/ObjectTypeWithAllPropertyTypes';
-import type { Objects } from './ontology/objects/Objects';
-import { Person } from './ontology/objects/Person';
-import { Todo } from './ontology/objects/Todo';
-import type { Queries } from './ontology/queries/Queries';
-import { getTodoCount } from './ontology/queries/getTodoCount';
-import { queryTakesAllParameterTypes } from './ontology/queries/queryTakesAllParameterTypes';
+import type { Actions } from './ontology/actions/Actions.js';
+import type { BatchActions } from './ontology/actions/BatchActions.js';
+import type { BulkActions } from './ontology/actions/BulkActions.js';
+import { actionTakesAllParameterTypes } from './ontology/actions/actionTakesAllParameterTypes.js';
+import { createTodo } from './ontology/actions/createTodo.js';
+import { ObjectTypeWithAllPropertyTypes } from './ontology/objects/ObjectTypeWithAllPropertyTypes.js';
+import type { Objects } from './ontology/objects/Objects.js';
+import { Person } from './ontology/objects/Person.js';
+import { Todo } from './ontology/objects/Todo.js';
+import type { Queries } from './ontology/queries/Queries.js';
+import { getTodoCount } from './ontology/queries/getTodoCount.js';
+import { queryTakesAllParameterTypes } from './ontology/queries/queryTakesAllParameterTypes.js';
 
 export const Ontology: {
   metadata: {
