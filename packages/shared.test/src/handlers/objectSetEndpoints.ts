@@ -17,13 +17,16 @@
 import { aggregateObjectSetV2, loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetResponseV2 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import { InvalidRequest } from "../errors";
-import { filterObjectsProperties } from "../filterObjects";
-import { aggregationRequestHandlers } from "../stubs/aggregationRequests";
-import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest";
-import { defaultOntology } from "../stubs/ontologies";
-import { pageThroughResponse } from "./endpointUtils";
-import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+import { InvalidRequest } from "../errors.js";
+import { filterObjectsProperties } from "../filterObjects.js";
+import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
+import { loadObjectSetRequestHandlers } from "../stubs/objectSetRequest.js";
+import { defaultOntology } from "../stubs/ontologies.js";
+import { pageThroughResponse } from "./endpointUtils.js";
+import {
+  handleOpenApiCall,
+  OpenApiCallError,
+} from "./util/handleOpenApiCall.js";
 
 export const objectSetHandlers = [
   /**

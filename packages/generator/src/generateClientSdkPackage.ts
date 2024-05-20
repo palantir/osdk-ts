@@ -16,10 +16,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { MinimalFs } from "./MinimalFs";
-import { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne";
-import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero";
-import type { WireOntologyDefinition } from "./WireOntologyDefinition";
+import type { MinimalFs } from "./MinimalFs.js";
+import { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne.js";
+import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
+import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
 export async function generateClientSdkPackage(
   packageName: string,

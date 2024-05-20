@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Returns objects based on the existence of the specified field. */
 export interface IsNullQuery {

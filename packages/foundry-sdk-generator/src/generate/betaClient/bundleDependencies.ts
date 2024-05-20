@@ -15,9 +15,9 @@
  */
 
 import { Project } from "ts-morph";
-import { copyFiles } from "./copyFiles";
-import { withoutTrailingIndex } from "./getModuleSourceFile";
-import { ProjectMinifier } from "./minifyBundle";
+import { copyFiles } from "./copyFiles.js";
+import { withoutTrailingIndex } from "./getModuleSourceFile.js";
+import { ProjectMinifier } from "./minifyBundle.js";
 
 export async function bundleDependencies(
   dirs: string[],

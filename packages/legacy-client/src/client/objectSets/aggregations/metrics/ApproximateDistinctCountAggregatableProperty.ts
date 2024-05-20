@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { Double, MultipleAggregationsOperations } from "../Aggregations";
-import { MetricValueType } from "./metrics";
+import type {
+  Double,
+  MultipleAggregationsOperations,
+} from "../Aggregations.js";
+import { MetricValueType } from "./metrics.js";
 
 export interface ApproximateDistinctCountAggregatableProperty {
   type: "ApproximateDistinctCountAggregatableProperty";

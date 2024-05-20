@@ -1,1 +1,1 @@
-export * from './ConfidentialClientAuth';
+export * from './ConfidentialClientAuth.js';

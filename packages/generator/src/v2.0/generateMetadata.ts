@@ -15,9 +15,9 @@
  */
 
 import path from "path";
-import type { MinimalFs } from "../MinimalFs";
-import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { MinimalFs } from "../MinimalFs.js";
+import { formatTs } from "../util/test/formatTs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const ExpectedOsdkVersion = "0.19.0";

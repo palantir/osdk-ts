@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { OAuthToken } from "./OAuthToken";
+import { OAuthToken } from "./OAuthToken.js";
 
 describe("OAuthToken", () => {
   it("constructs successfully", () => {

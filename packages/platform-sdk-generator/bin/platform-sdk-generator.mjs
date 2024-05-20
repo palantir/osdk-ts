@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-import { cli } from "../build/js/index.mjs";
+import { cli } from "../build/esm/index.js";
 cli();

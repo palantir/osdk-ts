@@ -1,5 +1,5 @@
 import { ObjectSetAggregateArg, ObjectSetFilterArg, ObjectSetGroupByArg, ObjectSetMultipleAggregateArg, ObjectSetOrderByArg } from "@osdk/legacy-client";
-import { OsdkTodoProject as OG_OsdkTodoProject } from "../OsdkTodoProject";
+import { OsdkTodoProject as OG_OsdkTodoProject } from "../OsdkTodoProject.js";
 
 /** @deprecated Use OsdkTodoProject from ontology/objects instead */
 export type OsdkTodoProject = OG_OsdkTodoProject;

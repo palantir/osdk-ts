@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryAggregation } from "./QueryAggregation";
+import type { QueryAggregation } from "./QueryAggregation.js";
 
 export interface NestedQueryAggregation {
   key: any;

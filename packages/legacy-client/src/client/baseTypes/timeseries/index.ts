@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./TimeSeries";
-export * from "./TimeSeriesDuration";
-export * from "./TimeSeriesPoint";
-export * from "./TimeSeriesProperty";
-export * from "./TimeSeriesQuery";
-export * from "./TimeSeriesTerminalOperations";
+export * from "./TimeSeries.js";
+export * from "./TimeSeriesDuration.js";
+export * from "./TimeSeriesPoint.js";
+export * from "./TimeSeriesProperty.js";
+export * from "./TimeSeriesQuery.js";
+export * from "./TimeSeriesTerminalOperations.js";

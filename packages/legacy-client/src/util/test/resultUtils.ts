@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FoundryApiError } from "../../client/errors";
-import type { Result } from "../../client/Result";
+import type { FoundryApiError } from "../../client/errors/index.js";
+import type { Result } from "../../client/Result.js";
 
 export function unwrapResultOrThrow<Response, Error extends FoundryApiError>(
   result: Result<Response, Error>,

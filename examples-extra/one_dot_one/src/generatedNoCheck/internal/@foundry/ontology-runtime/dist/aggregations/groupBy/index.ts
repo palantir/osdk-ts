@@ -5,7 +5,7 @@ import {
   StringGroupBy as OG_StringGroupBy,
   TimestampGroupBy as OG_TimestampGroupBy,
 } from '@osdk/legacy-client';
-import { BucketKey } from '../Aggregations';
+import { BucketKey } from '../Aggregations.js';
 
 /** @deprecated submodule imports arent public api **/
 export const BooleanGroupBy = OG_BooleanGroupBy;

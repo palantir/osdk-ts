@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Token } from "./Token";
+import type { Token } from "./Token.js";
 
 export type AuthSubscription = {
   onSignIn: () => void;

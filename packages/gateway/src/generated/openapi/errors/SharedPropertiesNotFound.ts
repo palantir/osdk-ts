@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName.js";
 
 /** The requested shared property types are not present on every object type. */
 export interface SharedPropertiesNotFound {

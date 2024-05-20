@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./ontologyMetadataResolver";
+export * from "./ontologyMetadataResolver.js";

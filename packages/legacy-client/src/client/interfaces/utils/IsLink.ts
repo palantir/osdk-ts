@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MultiLink, SingleLink } from "../../baseTypes";
+import type { MultiLink, SingleLink } from "../../baseTypes/index.js";
 
 export type IsLink<T> = T extends SingleLink<any> | MultiLink<any> ? true
   : false;

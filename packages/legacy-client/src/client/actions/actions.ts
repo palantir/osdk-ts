@@ -24,20 +24,20 @@ import type {
   LocalDate,
   Result,
   Timestamp,
-} from "../..";
+} from "../../index.js";
 import type {
   BatchActionExecutionOptions,
   BulkActionExecutionOptions,
   BulkActionResponseFromOptions,
-} from "../baseTypes";
-import type { ObjectSet } from "../interfaces";
+} from "../baseTypes/index.js";
+import type { ObjectSet } from "../interfaces/index.js";
 import type {
   OsdkLegacyObjectFrom,
   OsdkLegacyObjectFromNoSearchArounds,
-} from "../OsdkLegacyObject";
-import type { IsEmptyRecord } from "../utils/IsEmptyRecord";
-import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys";
-import type { ValuesOfMap } from "../utils/ValuesOfMap";
+} from "../OsdkLegacyObject.js";
+import type { IsEmptyRecord } from "../utils/IsEmptyRecord.js";
+import type { NonNullableKeys, NullableKeys } from "../utils/NullableKeys.js";
+import type { ValuesOfMap } from "../utils/ValuesOfMap.js";
 
 export interface ValidLegacyActionParameterTypes {
   boolean: boolean;

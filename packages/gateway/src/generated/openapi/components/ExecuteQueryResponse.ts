@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "./DataValue";
+import type { DataValue } from "./DataValue.js";
 
 export interface ExecuteQueryResponse {
   value: DataValue;

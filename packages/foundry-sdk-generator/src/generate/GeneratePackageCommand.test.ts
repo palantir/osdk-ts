@@ -18,7 +18,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import { describe, expect, it } from "vitest";
-import { GeneratePackageCommand } from "./GeneratePackageCommand";
+import { GeneratePackageCommand } from "./GeneratePackageCommand.js";
 
 describe(GeneratePackageCommand, () => {
   // ensure that we do not break backcompat by retaining our scripts export that links to the bundled types and esm output
@@ -45,7 +45,7 @@ describe(GeneratePackageCommand, () => {
     const typesPath = path.join(generatedPath, scriptsExport.types);
     const esmPath = path.join(generatedPath, scriptsExport.default);
 
-    expect(existsSync(typesPath)).toBe(true);
-    expect(existsSync(esmPath)).toBe(true);
+    expect(existsSync(typesPath), typesPath).toBe(true);
+    expect(existsSync(esmPath), esmPath).toBe(true);
   });
 });

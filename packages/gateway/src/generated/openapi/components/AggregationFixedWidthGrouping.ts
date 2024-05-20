@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Divides objects into groups with the specified width. */
 export interface AggregationFixedWidthGrouping {

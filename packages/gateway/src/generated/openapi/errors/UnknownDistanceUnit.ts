@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DistanceUnit } from "../components/DistanceUnit";
+import type { DistanceUnit } from "../components/DistanceUnit.js";
 
 /** An unknown distance unit was provided. */
 export interface UnknownDistanceUnit {

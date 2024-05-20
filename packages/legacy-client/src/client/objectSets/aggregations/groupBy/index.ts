@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-export * from "./BooleanGroupBy";
-export * from "./GroupKeyType";
-export * from "./LocalDateGroupBy";
-export * from "./NumericGroupBy";
-export * from "./StringGroupBy";
-export * from "./TimestampGroupBy";
+export * from "./BooleanGroupBy.js";
+export * from "./GroupKeyType.js";
+export * from "./LocalDateGroupBy.js";
+export * from "./NumericGroupBy.js";
+export * from "./StringGroupBy.js";
+export * from "./TimestampGroupBy.js";

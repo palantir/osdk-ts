@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName";
+import type { SharedPropertyTypeApiName } from "../components/SharedPropertyTypeApiName.js";
 
 /**
  * Properties used in ordering must have the same ids. Temporary restriction imposed due to OSS limitations.

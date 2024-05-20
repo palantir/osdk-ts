@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WhereClause } from "./Filters";
+import type { WhereClause } from "./Filters.js";
 
 /** All the sub-queries match */
 export const and = (...whereClauses: WhereClause[]): WhereClause => ({

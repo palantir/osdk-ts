@@ -20,7 +20,7 @@ import {
   type HttpResponseResolver,
   type PathParams,
 } from "msw";
-import { OpenApiCallError } from "./util/handleOpenApiCall";
+import { OpenApiCallError } from "./util/handleOpenApiCall.js";
 
 export function authHandlerMiddleware<
   TReqBody extends DefaultBodyType = DefaultBodyType,

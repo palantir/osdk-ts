@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { OntologyObject, SingleLink } from "../../client/baseTypes";
-import type { Task } from "./TaskObject";
+import type {
+  OntologyObject,
+  SingleLink,
+} from "../../client/baseTypes/index.js";
+import type { Task } from "./TaskObject.js";
 
 /**
  * Its a todo item.

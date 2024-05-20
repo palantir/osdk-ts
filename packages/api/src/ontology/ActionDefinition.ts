@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "..";
-import type { OsdkMetadata } from "../OsdkMetadata";
+import type { ObjectTypeDefinition } from "../index.js";
+import type { OsdkMetadata } from "../OsdkMetadata.js";
 
 export interface ActionDefinition<
   A extends string,

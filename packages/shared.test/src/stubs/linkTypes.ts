@@ -18,7 +18,7 @@ import type {
   LinkTypeSideV2,
   ListOutgoingLinkTypesResponseV2,
 } from "@osdk/gateway/types";
-import { employeeObjectType, officeObjectType } from "./objectTypes";
+import { employeeObjectType, officeObjectType } from "./objectTypes.js";
 
 export const peepsLinkType: LinkTypeSideV2 = {
   apiName: "peeps",

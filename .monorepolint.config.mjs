@@ -28,7 +28,7 @@ import {
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
-const DELETE_SCRIPT_ENTRTY = { options: [undefined], fixValue: undefined };
+const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "mytsup",
   "tsconfig",
@@ -46,14 +46,22 @@ const legacyPackages = [
 ];
 
 const esmOnlyPackages = [
-  "@osdk/internal.foundry",
-  "@osdk/platform-sdk-generator",
-  "@osdk/client",
   "@osdk/cli.*",
   "@osdk/cli",
+  "@osdk/client",
   "@osdk/create-app",
+  "@osdk/example-generator",
+  "@osdk/gateway-generator",
+  "@osdk/internal.foundry",
+  "@osdk/internal.foundry.*",
+  "@osdk/foundry",
+  "@osdk/foundry.*",
+  "@osdk/maker",
+  "@osdk/oauth",
+  "@osdk/platform-sdk-generator",
   "@osdk/tool.release",
   "@osdk/version-updater",
+  "watch",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
 
@@ -62,7 +70,7 @@ const cache = new Map();
 /**
  * @param {string} contents
  */
-const formatedGeneratorHelper = (contents, ext) => async (context) => {
+const formattedGeneratorHelper = (contents, ext) => async (context) => {
   if (cache.has(contents)) {
     return cache.get(contents);
   }
@@ -89,20 +97,35 @@ const formatedGeneratorHelper = (contents, ext) => async (context) => {
  * @param {{
  *   customTsconfigExcludes?: string[]
  *   skipTsconfigReferences?: boolean
+ *   outDir: string
+ *   commonjs?: boolean
+ *   singlePackageName?: string
  * }} opts
  * @returns {Parameters<import("@monorepolint/rules")["standardTsconfig"]>[0]["options"]}
  */
 function getTsconfigOptions(baseTsconfigPath, opts) {
   return {
-    file: "tsconfig.json",
+    file: opts.commonjs ? "tsconfig.cjs.json" : "tsconfig.json",
 
     excludedReferences: ["**/*"],
     template: {
       extends: baseTsconfigPath,
 
       compilerOptions: {
+        ...(opts.commonjs
+          ? { module: "CommonJS", moduleResolution: "Node", target: "ES6" }
+          : {}),
         rootDir: "src",
-        outDir: "build/types",
+        outDir: opts.outDir,
+        ...(
+          opts.singlePackageName
+            ? {
+              paths: {
+                [opts.singlePackageName]: ["./src"],
+              },
+            }
+            : {}
+        ),
       },
       include: ["./src/**/*"],
       ...(opts.customTsconfigExcludes
@@ -122,24 +145,53 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: "^5.4.5"|"^4.9.5",
  *  skipTsconfigReferences?: boolean
+ *  singlePackageName?: string
  * }} options
  */
 function standardPackageRules(shared, options) {
   if (options.esmOnly && options.legacy) {
-    throw "It doesnt makes sense to be legacy and esmOnly";
+    throw "It doesn't makes sense to be legacy and esmOnly";
   }
+
+  if (options.singlePackageName && !options.legacy) {
+    throw "singlePackageName only makes sense for legacy packages";
+  }
+
+  const pathToWorkspaceRoot = "../".repeat(options.packageDepth)
+    .slice(0, -1); // drop trailing slash
 
   return [
     standardTsconfig({
       ...shared,
 
       options: getTsconfigOptions(
-        `${
-          "../".repeat(options.packageDepth)
-        }monorepo/tsconfig/tsconfig.base.json`,
-        options,
+        `${pathToWorkspaceRoot}/monorepo/tsconfig/tsconfig.base.json`,
+        {
+          customTsconfigExcludes: options.customTsconfigExcludes,
+          skipTsconfigReferences: options.skipTsconfigReferences,
+          outDir: "build/esm",
+          singlePackageName: options.singlePackageName,
+        },
       ),
     }),
+    ...(
+      options.esmOnly ? [] : [
+        standardTsconfig({
+          ...shared,
+
+          options: getTsconfigOptions(
+            "./tsconfig.json",
+            {
+              customTsconfigExcludes: options.customTsconfigExcludes,
+              skipTsconfigReferences: options.skipTsconfigReferences,
+              outDir: "build/cjs",
+              commonjs: true,
+              singlePackageName: options.singlePackageName,
+            },
+          ),
+        }),
+      ]
+    ),
     ...(options.tsVersion
       ? [
         requireDependency({
@@ -154,14 +206,21 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": DELETE_SCRIPT_ENTRTY,
+          "dev:transpile": DELETE_SCRIPT_ENTRY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
+          "check-attw":
+            `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
+              options.esmOnly ? "esm" : "both"
+            }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          prettier: DELETE_SCRIPT_ENTRTY,
+          prettier: DELETE_SCRIPT_ENTRY,
           transpile: "tsup",
-          typecheck: "tsc-absolute",
+          typecheck:
+            `${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
+              options.esmOnly ? "esm" : "both"
+            }`,
         },
       },
     }),
@@ -171,28 +230,28 @@ function standardPackageRules(shared, options) {
         entries: {
           exports: {
             ".": {
-              types: "./build/types/index.d.ts",
-              browser: "./build/js/index.browser.mjs",
-              import: "./build/js/index.mjs",
               ...(options.esmOnly ? {} : {
-                require: `./build/js/index.${options.legacy ? "" : "c"}js`,
+                "require": "./build/cjs/index.cjs",
               }),
+              "import": "./build/esm/index.js",
+              "browser": "./build/browser/index.browser.js",
             },
+
             "./*": {
-              types: "./build/types/public/*.d.ts",
-              browser: "./build/js/public/*.browser.mjs",
-              import: "./build/js/public/*.mjs",
               ...(options.esmOnly ? {} : {
-                require: `./build/js/public/*.${options.legacy ? "" : "c"}js`,
+                require: "./build/cjs/public/*.cjs",
               }),
+              import: "./build/esm/public/*.js",
+              browser: "./build/browser/public/*.js",
             },
           },
           publishConfig: {
             "access": "public",
           },
           files: [
-            "build/types",
-            "build/js",
+            "build/cjs",
+            "build/esm",
+            "build/browser",
             "CHANGELOG.md",
             "package.json",
             "templates",
@@ -202,20 +261,22 @@ function standardPackageRules(shared, options) {
           ],
 
           ...(options.esmOnly ? {} : {
-            main: `./build/js/index.${options.legacy ? "" : "c"}js`,
+            main: `./build/cjs/index.cjs`,
           }),
 
-          module: "./build/js/index.mjs",
-          types: "./build/types/index.d.ts",
+          module: "./build/esm/index.js",
+          types: `./build/${options.esmOnly ? "esm" : "cjs"}/index.d.${
+            options.esmOnly ? "" : "c"
+          }ts`,
+          type: "module",
         },
-        ...(options.esmOnly ? { type: "module" } : {}),
       },
     }),
     fileContents({
       ...shared,
       options: {
         file: "tsup.config.js",
-        generator: formatedGeneratorHelper(
+        generator: formattedGeneratorHelper(
           `
           /*
            * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
@@ -238,7 +299,7 @@ function standardPackageRules(shared, options) {
           export default defineConfig(async (options) =>
             (await import("mytsup")).default(options, {
               ${options.legacy ? "cjsExtension: '.js'" : ""}
-              ${options.esmOnly ? "esmnOnly: true," : ""}
+              ${options.esmOnly ? "esmOnly: true," : ""}
           })
           );     
           `,
@@ -284,21 +345,26 @@ export default {
       packageDepth: 2,
       type: "library",
       tsVersion: "^5.4.5",
+      esmOnly: true,
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
         "./src/generatedNoCheck/**/*",
       ],
     }),
 
-    ...standardPackageRules({
-      excludePackages: [...nonStandardPackages],
-      includePackages: legacyPackages,
-    }, {
-      legacy: true,
-      packageDepth: 2,
-      type: "library",
-      tsVersion: "^5.4.5",
-    }),
+    ...(
+      legacyPackages.flatMap((pkg) =>
+        standardPackageRules({
+          includePackages: [pkg],
+        }, {
+          legacy: true,
+          packageDepth: 2,
+          type: "library",
+          tsVersion: "^5.4.5",
+          singlePackageName: pkg,
+        })
+      )
+    ),
 
     ...standardPackageRules({
       includePackages: ["@osdk/examples.basic.**"],

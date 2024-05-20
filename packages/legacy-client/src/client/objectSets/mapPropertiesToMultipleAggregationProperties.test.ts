@@ -19,7 +19,7 @@ import { describe, expect, it } from "vitest";
 import {
   mapPropertiesToMultipleAggregationProperties,
   MetricValueType,
-} from ".";
+} from "./index.js";
 
 describe(mapPropertiesToMultipleAggregationProperties, () => {
   it("maps properties correctly", () => {

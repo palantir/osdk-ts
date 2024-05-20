@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import type { AggregationDurationGroupingV2 } from "./AggregationDurationGroupingV2";
-import type { AggregationExactGroupingV2 } from "./AggregationExactGroupingV2";
-import type { AggregationFixedWidthGroupingV2 } from "./AggregationFixedWidthGroupingV2";
-import type { AggregationRangesGroupingV2 } from "./AggregationRangesGroupingV2";
+import type { AggregationDurationGroupingV2 } from "./AggregationDurationGroupingV2.js";
+import type { AggregationExactGroupingV2 } from "./AggregationExactGroupingV2.js";
+import type { AggregationFixedWidthGroupingV2 } from "./AggregationFixedWidthGroupingV2.js";
+import type { AggregationRangesGroupingV2 } from "./AggregationRangesGroupingV2.js";
 
 export interface AggregationGroupByV2_FixedWidth
   extends AggregationFixedWidthGroupingV2

@@ -1,1 +1,1 @@
-export { LocalDateGroupBy } from './index';
+export { LocalDateGroupBy } from './index.js';

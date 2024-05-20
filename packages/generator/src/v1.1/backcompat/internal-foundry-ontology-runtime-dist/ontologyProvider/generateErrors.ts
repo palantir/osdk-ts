@@ -15,9 +15,9 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../../MinimalFs";
-import { formatTs } from "../../../../util/test/formatTs";
-import { reexportTypes } from "../../util/reexportTypes";
+import type { MinimalFs } from "../../../../MinimalFs.js";
+import { formatTs } from "../../../../util/test/formatTs.js";
+import { reexportTypes } from "../../util/reexportTypes.js";
 
 export async function generateErrors(
   fs: MinimalFs,

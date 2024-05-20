@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import * as path from "path";
+import * as path from "node:path";
 import type { FileSystemHost, SourceFile } from "ts-morph";
 import { IndentationText, Project, QuoteKind } from "ts-morph";
-import type { ApiSpec } from "../spec";
-import { generateRequestType } from "./client";
-import { generateComponents } from "./component";
-import { generateErrors } from "./error";
-import type { GenerateOptions } from "./GenerateOptions";
-import { generateNamespaces } from "./namespace";
+import type { ApiSpec } from "../spec/ApiSpec.js";
+import { generateRequestType } from "./client.js";
+import { generateComponents } from "./component.js";
+import { generateErrors } from "./error.js";
+import type { GenerateOptions } from "./GenerateOptions.js";
+import { generateNamespaces } from "./namespace.js";
 
 const dashRegex = /-(\w)/g;
 

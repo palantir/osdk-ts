@@ -19,18 +19,18 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   ConfidentialClientAuth,
   FoundryClient,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   Attachment,
   AttachmentMetadata,
   AttachmentsError,
   GetObjectError,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   objectTypeWithAllPropertyTypes,
-} from "../generatedNoCheck/@test-app/osdk/ontology/objects";
-import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/ontology/objects/index.js";
+import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils.js";
 
 describe("AttachmentsTest", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

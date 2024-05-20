@@ -15,11 +15,11 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs";
-import { formatTs } from "../../../util/test/formatTs";
-import { generateErrors } from "./ontologyProvider/generateErrors";
-import { generateOntologyMetadata } from "./ontologyProvider/generateOntologyMetadata";
-import { generateResult } from "./ontologyProvider/generateResult";
+import type { MinimalFs } from "../../../MinimalFs.js";
+import { formatTs } from "../../../util/test/formatTs.js";
+import { generateErrors } from "./ontologyProvider/generateErrors.js";
+import { generateOntologyMetadata } from "./ontologyProvider/generateOntologyMetadata.js";
+import { generateResult } from "./ontologyProvider/generateResult.js";
 
 export async function generateOntologyProviderDir(
   fs: MinimalFs,

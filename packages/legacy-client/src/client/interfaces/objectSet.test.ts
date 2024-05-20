@@ -15,8 +15,8 @@
  */
 
 import { describe, it } from "vitest";
-import type { Task } from "../../util/test";
-import type { ObjectSet } from "./objectSet";
+import type { Task } from "../../util/test/index.js";
+import type { ObjectSet } from "./objectSet.js";
 
 describe("ObjectSet", () => {
   it("creates", () => {

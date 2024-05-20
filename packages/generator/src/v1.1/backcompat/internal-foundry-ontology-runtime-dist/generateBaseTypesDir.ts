@@ -15,15 +15,15 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../../MinimalFs";
-import { formatTs } from "../../../util/test/formatTs";
-import { reexportConsts } from "../util/reexportConsts";
-import { reexportTypes } from "../util/reexportTypes";
-import { generateAttachmentsDir } from "./baseTypes/generateAttachmentsDir";
-import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir";
-import { generateObjectSetDir } from "./baseTypes/generateObjectSetDir";
-import { generateSharedObjectCodeDir } from "./baseTypes/generateSharedObjectCode";
-import { generateTimeSeriesDir } from "./baseTypes/generateTimeSeriesDir";
+import type { MinimalFs } from "../../../MinimalFs.js";
+import { formatTs } from "../../../util/test/formatTs.js";
+import { reexportConsts } from "../util/reexportConsts.js";
+import { reexportTypes } from "../util/reexportTypes.js";
+import { generateAttachmentsDir } from "./baseTypes/generateAttachmentsDir.js";
+import { generateGeoshapesDir } from "./baseTypes/generateGeoshapesDir.js";
+import { generateObjectSetDir } from "./baseTypes/generateObjectSetDir.js";
+import { generateSharedObjectCodeDir } from "./baseTypes/generateSharedObjectCode.js";
+import { generateTimeSeriesDir } from "./baseTypes/generateTimeSeriesDir.js";
 
 export async function generateBaseTypesDir(
   runtimeDistDir: string,

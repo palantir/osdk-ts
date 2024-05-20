@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Duration } from "./Duration";
-import type { FieldNameV1 } from "./FieldNameV1";
+import type { Duration } from "./Duration.js";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /**
  * Divides objects into groups according to an interval. Note that this grouping applies only on date types.

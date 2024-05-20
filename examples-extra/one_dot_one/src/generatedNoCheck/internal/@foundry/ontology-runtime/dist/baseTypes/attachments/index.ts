@@ -1,2 +1,2 @@
-export * from './Attachment';
-export * from './Attachments';
+export * from './Attachment.js';
+export * from './Attachments.js';

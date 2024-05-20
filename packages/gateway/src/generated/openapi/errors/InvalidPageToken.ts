@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PageToken } from "../components/PageToken";
+import type { PageToken } from "../components/PageToken.js";
 
 /** The provided page token could not be used to retrieve the next page of results. */
 export interface InvalidPageToken {

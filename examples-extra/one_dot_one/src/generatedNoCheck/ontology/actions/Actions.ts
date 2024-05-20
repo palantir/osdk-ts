@@ -9,9 +9,9 @@ import type {
   Result,
   Timestamp,
 } from '@osdk/legacy-client';
-import type { ObjectTypeWithAllPropertyTypes } from '../objects/ObjectTypeWithAllPropertyTypes';
-import type { Person } from '../objects/Person';
-import type { Todo } from '../objects/Todo';
+import type { ObjectTypeWithAllPropertyTypes } from '../objects/ObjectTypeWithAllPropertyTypes.js';
+import type { Person } from '../objects/Person.js';
+import type { Todo } from '../objects/Todo.js';
 export interface Actions {
   /**
    * An action which takes different types of parameters

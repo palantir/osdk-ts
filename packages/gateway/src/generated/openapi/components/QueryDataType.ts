@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-import type { AttachmentType } from "./AttachmentType";
-import type { BooleanType } from "./BooleanType";
-import type { DateType } from "./DateType";
-import type { DoubleType } from "./DoubleType";
-import type { FloatType } from "./FloatType";
-import type { IntegerType } from "./IntegerType";
-import type { LongType } from "./LongType";
-import type { NullType } from "./NullType";
-import type { OntologyObjectSetType } from "./OntologyObjectSetType";
-import type { OntologyObjectType } from "./OntologyObjectType";
-import type { QueryArrayType } from "./QueryArrayType";
-import type { QuerySetType } from "./QuerySetType";
-import type { QueryStructType } from "./QueryStructType";
-import type { QueryUnionType } from "./QueryUnionType";
-import type { StringType } from "./StringType";
-import type { ThreeDimensionalAggregation } from "./ThreeDimensionalAggregation";
-import type { TimestampType } from "./TimestampType";
-import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation";
-import type { UnsupportedType } from "./UnsupportedType";
+import type { AttachmentType } from "./AttachmentType.js";
+import type { BooleanType } from "./BooleanType.js";
+import type { DateType } from "./DateType.js";
+import type { DoubleType } from "./DoubleType.js";
+import type { FloatType } from "./FloatType.js";
+import type { IntegerType } from "./IntegerType.js";
+import type { LongType } from "./LongType.js";
+import type { NullType } from "./NullType.js";
+import type { OntologyObjectSetType } from "./OntologyObjectSetType.js";
+import type { OntologyObjectType } from "./OntologyObjectType.js";
+import type { QueryArrayType } from "./QueryArrayType.js";
+import type { QuerySetType } from "./QuerySetType.js";
+import type { QueryStructType } from "./QueryStructType.js";
+import type { QueryUnionType } from "./QueryUnionType.js";
+import type { StringType } from "./StringType.js";
+import type { ThreeDimensionalAggregation } from "./ThreeDimensionalAggregation.js";
+import type { TimestampType } from "./TimestampType.js";
+import type { TwoDimensionalAggregation } from "./TwoDimensionalAggregation.js";
+import type { UnsupportedType } from "./UnsupportedType.js";
 
 export interface QueryDataType_Array extends QueryArrayType {
   type: "array";

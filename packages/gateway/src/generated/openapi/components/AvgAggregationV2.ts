@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName";
-import type { OrderByDirection } from "./OrderByDirection";
-import type { PropertyApiName } from "./PropertyApiName";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { OrderByDirection } from "./OrderByDirection.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Computes the average value for the provided field. */
 export interface AvgAggregationV2 {

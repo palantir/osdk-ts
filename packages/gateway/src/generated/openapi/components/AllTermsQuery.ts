@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { FieldNameV1 } from "./FieldNameV1";
-import type { Fuzzy } from "./Fuzzy";
+import type { FieldNameV1 } from "./FieldNameV1.js";
+import type { Fuzzy } from "./Fuzzy.js";
 
 /**
  * Returns objects where the specified field contains all of the whitespace separated words in any

@@ -20,12 +20,12 @@ import type {
   AggregateObjectsError,
   AggregationGroup,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import {
   ConfidentialClientAuth,
   FoundryClient,
-} from "../generatedNoCheck/@test-app/osdk";
-import { assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
+import { assertOkOrThrow } from "./resultUtils.js";
 
 describe("AggregateObjects", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

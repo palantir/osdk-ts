@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AsyncActionOperation } from "./AsyncActionOperation";
-import type { AsyncApplyActionOperationV2 } from "./AsyncApplyActionOperationV2";
+import type { AsyncActionOperation } from "./AsyncActionOperation.js";
+import type { AsyncApplyActionOperationV2 } from "./AsyncApplyActionOperationV2.js";
 
 export interface AsyncOperation_ApplyActionAsyncV2
   extends AsyncApplyActionOperationV2

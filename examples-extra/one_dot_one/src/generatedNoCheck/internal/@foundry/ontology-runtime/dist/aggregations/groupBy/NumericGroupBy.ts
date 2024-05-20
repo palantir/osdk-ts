@@ -1,1 +1,1 @@
-export { NumericGroupBy } from './index';
+export { NumericGroupBy } from './index.js';

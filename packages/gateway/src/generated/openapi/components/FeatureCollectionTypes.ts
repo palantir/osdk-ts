@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Feature } from "./Feature";
+import type { Feature } from "./Feature.js";
 
 export interface FeatureCollectionTypes_Feature extends Feature {
   type: "Feature";

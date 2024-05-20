@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
 
 /** A reference to the linked interface type. */
 export interface LinkedInterfaceTypeApiName {

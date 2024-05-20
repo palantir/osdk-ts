@@ -1,6 +1,6 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 import type { Attachment, MultiLink, OntologyObject } from '@osdk/legacy-client';
-import type { OsdkTodoTask } from './OsdkTodoTask';
+import type { OsdkTodoTask } from './OsdkTodoTask.js';
 
 /**
  * Its a todo project.
@@ -25,7 +25,7 @@ export interface OsdkTodoProject extends OntologyObject {
   readonly osdkTodoTasks: MultiLink<OsdkTodoTask>;
 }
 
-import type { OsdkTodoTaskDef } from './OsdkTodoTask';
+import type { OsdkTodoTaskDef } from './OsdkTodoTask.js';
 
 export interface OsdkTodoProjectDef extends ObjectTypeDefinition<'OsdkTodoProject', OsdkTodoProject> {
   apiName: 'OsdkTodoProject';

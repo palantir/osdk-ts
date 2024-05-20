@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "target": "ES6",
+    "rootDir": "src",
+    "outDir": "build/cjs"
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./src/__e2e_tests__/**/**.test.ts",
+    "./src/generatedNoCheck/**/*"
+  ],
+  "references": []
+}

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { OntologyDataType } from "./OntologyDataType";
-import type { StructFieldName } from "./StructFieldName";
+import type { OntologyDataType } from "./OntologyDataType.js";
+import type { StructFieldName } from "./StructFieldName.js";
 
 export interface OntologyStructField {
   name: StructFieldName;

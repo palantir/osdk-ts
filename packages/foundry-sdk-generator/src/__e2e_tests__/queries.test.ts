@@ -20,15 +20,15 @@ import {
   FoundryClient,
   LocalDate,
   Timestamp,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   QueryError,
   QueryResponse,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 
 import { apiServer, stubData } from "@osdk/shared.test";
-import { assertOkOrThrow } from "./resultUtils";
+import { assertOkOrThrow } from "./resultUtils.js";
 
 describe("QueryTests", () => {
   let client: FoundryClient<ConfidentialClientAuth>;
