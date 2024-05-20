@@ -1,5 +1,13 @@
 # @osdk/legacy-client
 
+## 2.4.0
+
+### Patch Changes
+
+- Updated dependencies [94833a7]
+  - @osdk/shared.net@1.12.0
+  - @osdk/api@1.9.0
+
 ## 2.3.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @osdk/client
 
+## 0.20.0
+
+### Patch Changes
+
+- Updated dependencies [94833a7]
+  - @osdk/shared.net@1.12.0
+  - @osdk/api@1.9.0
+  - @osdk/generator-converters@0.7.0
+
 ## 0.19.0
 
 ### Minor Changes

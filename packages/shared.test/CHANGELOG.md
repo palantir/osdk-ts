@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.5.0
+
+### Patch Changes
+
+- @osdk/api@1.9.0
+
 ## 1.4.0
 
 ### Minor Changes

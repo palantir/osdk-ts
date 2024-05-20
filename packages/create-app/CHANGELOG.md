@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.16.0
+
+### Minor Changes
+
+- 471a618: Make tutorial app not depend on OSDK imports
+
 ## 0.15.0
 
 ### Minor Changes

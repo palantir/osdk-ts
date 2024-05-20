@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 1.12.0
+
+### Minor Changes
+
+- 94833a7: URL encode path portions for foundry platform sdk
+
 ## 1.11.0
 
 ### Patch Changes

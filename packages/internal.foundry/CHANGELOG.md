@@ -1,5 +1,18 @@
 # @osdk/foundry
 
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies [94833a7]
+  - @osdk/shared.net@1.12.0
+  - @osdk/api@1.9.0
+  - @osdk/internal.foundry.core@0.1.0
+  - @osdk/internal.foundry.datasets@0.1.0
+  - @osdk/internal.foundry.models@0.1.0
+  - @osdk/internal.foundry.ontologies@0.1.0
+  - @osdk/internal.foundry.ontologiesv2@0.1.0
+
 ## 0.3.0
 
 ### Minor Changes
