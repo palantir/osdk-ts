@@ -1,8 +1,9 @@
 import { ChangeEvent, useCallback } from "react";
+import { MockProject } from "./mocks";
 
 interface ProjectSelectProps {
-  project: any | undefined;
-  projects: any[];
+  project: MockProject | undefined;
+  projects: MockProject[];
   onSelectProject: (project: any) => void;
 }
 

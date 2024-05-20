@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
+import { MockProject } from "./mocks";
 
 interface DeleteProjectDialogProps {
-  project: any;
+  project: MockProject;
   isOpen: boolean;
   onClose: () => void;
 }

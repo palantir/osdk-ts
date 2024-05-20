@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import useSWR from "swr";
 import Mocks, { MockProject, MockTask } from "./mocks";
 
+// Import the OSDK Project type here
 export function useProjectTasks(project: MockProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
