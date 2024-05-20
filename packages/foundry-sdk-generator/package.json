@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@osdk/shared.test": "workspace:^",
-    "@types/node": "^18.0.0",
+    "@types/node": "^20.12.12",
     "@types/yargs": "^17.0.29",
     "typescript": "^5.4.5"
   },
