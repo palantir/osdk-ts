@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
+import { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
-  project: OsdkTodoProject;
+  project: MockProject;
   isOpen: boolean;
   onClose: () => void;
 }

@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "{{osdkPackage}}/ontology/objects";
 import { useCallback, useState } from "react";
 import CreateTaskDialog from "./CreateTaskDialog";
+import { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskButtonProps {
-  project: OsdkTodoProject;
+  project: MockProject;
 }
 
 function CreateTaskButton({ project }: CreateTaskButtonProps) {

@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
 import DeleteProjectButton from "./DeleteProjectButton";
 import css from "./Home.module.css";
 import Layout from "./Layout";
+import { MockProject } from "./mocks";
 import ProjectSelect from "./ProjectSelect";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";
@@ -15,7 +15,7 @@ function Home() {
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
-    (p: OsdkTodoProject) => setProjectId(p.id),
+    (p: MockProject) => setProjectId(p.id),
     [],
   );
 

@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "{{osdkPackage}}/ontology/objects";
 import { ChangeEvent, useCallback } from "react";
+import { MockProject } from "./mocks";
 
 interface ProjectSelectProps {
-  project: OsdkTodoProject | undefined;
-  projects: OsdkTodoProject[];
-  onSelectProject: (project: OsdkTodoProject) => void;
+  project: MockProject | undefined;
+  projects: MockProject[];
+  onSelectProject: (project: MockProject) => void;
 }
 
 function ProjectSelect({
