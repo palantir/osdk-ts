@@ -1,10 +1,10 @@
-import { MockProject } from "./mocks";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
 import DeleteProjectButton from "./DeleteProjectButton";
 import css from "./Home.module.css";
 import Layout from "./Layout";
+import { MockProject } from "./mocks";
 import ProjectSelect from "./ProjectSelect";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";

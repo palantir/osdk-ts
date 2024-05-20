@@ -18,7 +18,7 @@ function useProjects() {
         await mutate();
         return id;
       },
-      [mutate]
+      [mutate],
     );
 
   const deleteProject: (project: MockProject) => Promise<void> = useCallback(
@@ -27,7 +27,7 @@ function useProjects() {
       await Mocks.deleteProject(project.__primaryKey);
       await mutate();
     },
-    [mutate]
+    [mutate],
   );
 
   return {

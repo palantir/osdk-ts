@@ -81,7 +81,13 @@ async function createProject({
 }): Promise<MockTask["__primaryKey"]> {
   await delay();
   const id = randomId();
-  projects.push({__apiName: "MockProject", __primaryKey: id ,id, name, tasks: [] });
+  projects.push({
+    __apiName: "MockProject",
+    __primaryKey: id,
+    id,
+    name,
+    tasks: [],
+  });
   return id;
 }
 

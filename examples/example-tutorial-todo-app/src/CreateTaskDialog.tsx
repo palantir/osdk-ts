@@ -1,10 +1,10 @@
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Dialog from "./Dialog";
-import { useProjectTasks } from "./useProjectTasks";
 import { MockProject } from "./mocks";
+import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
-  project: MockProject
+  project: MockProject;
   isOpen: boolean;
   onClose: () => void;
 }
