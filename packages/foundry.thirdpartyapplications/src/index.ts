@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as ThirdPartyApplication from "./public/ThirdPartyApplication.js";
-export * as Version from "./public/Version.js";
-export * as Website from "./public/Website.js";
+export type {
+  DeployWebsiteRequest,
+  ListVersionsResponse,
+} from "./_components.js";
+export * as ThirdPartyApplications from "./public/ThirdPartyApplication.js";
+export * as Versions from "./public/Version.js";
+export * as Websites from "./public/Website.js";

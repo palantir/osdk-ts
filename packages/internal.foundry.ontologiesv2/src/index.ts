@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as Action from "./public/Action.js";
-export * as ActionTypeV2 from "./public/ActionTypeV2.js";
-export * as ObjectTypeV2 from "./public/ObjectTypeV2.js";
-export * as OntologyObjectSet from "./public/OntologyObjectSet.js";
-export * as OntologyObjectV2 from "./public/OntologyObjectV2.js";
-export * as OntologyV2 from "./public/OntologyV2.js";
-export * as QueryType from "./public/QueryType.js";
+export type {} from "./_components.js";
+export * as Actions from "./public/Action.js";
+export * as ActionTypesV2 from "./public/ActionTypeV2.js";
+export * as ObjectTypesV2 from "./public/ObjectTypeV2.js";
+export * as OntologyObjectSets from "./public/OntologyObjectSet.js";
+export * as OntologyObjectsV2 from "./public/OntologyObjectV2.js";
+export * as OntologiesV2 from "./public/OntologyV2.js";
+export * as QueryTypes from "./public/QueryType.js";

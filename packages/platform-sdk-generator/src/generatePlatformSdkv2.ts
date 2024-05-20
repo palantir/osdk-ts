@@ -16,6 +16,7 @@
 
 import fs from "node:fs/promises";
 import * as path from "node:path";
+import pluralizeWord from "pluralize";
 import { addPackagesToPackageJson } from "./addPackagesToPackageJson.js";
 import { copyright } from "./copyright.js";
 import { generateImports, SKIP } from "./generateImports.js";
@@ -38,9 +39,11 @@ export async function generatePlatformSdkV2(
   const npmOrg = "@osdk";
   const model = await Model.create(ir, { npmOrg, outputDir, packagePrefix });
 
+  const componentsGenerated = new Map<Namespace, string[]>();
+
   // We need to make sure the components are all populated before we generate the resources
   for (const ns of model.namespaces) {
-    await generateComponents(ns, ns.paths.srcDir);
+    componentsGenerated.set(ns, await generateComponents(ns, ns.paths.srcDir));
   }
 
   // Now we can generate the resources
@@ -65,9 +68,16 @@ export async function generatePlatformSdkV2(
           ns.paths.resourcesDir,
         );
 
+      const resourceName = pluralize(r.component);
+      if (componentsGenerated.get(ns)!.some(c => c === resourceName)) {
+        throw new Error(
+          `Even the duplicated components aren't unique: ${resourceName}`,
+        );
+      }
+
       // path utilities are bad for urls like things because they strip the leading period
       nsIndexTsContents +=
-        `export * as ${r.component} from "${resourceDirRelToSrc}/${r.component}.js";\n`;
+        `export * as ${resourceName} from "${resourceDirRelToSrc}/${r.component}.js";\n`;
     }
 
     const deps = new Set<Namespace>([model.commonNamespace]);
@@ -86,7 +96,9 @@ export async function generatePlatformSdkV2(
       [...deps].map(n => n.packageName),
     );
 
-    nsIndexTsContents += `export type * from "./_components.js";\n`;
+    nsIndexTsContents += `export type {${
+      componentsGenerated.get(ns)?.sort().join(",\n")
+    }} from "./_components.js";\n`;
     await writeCode(
       path.join(ns.paths.srcDir, "index.ts"),
       nsIndexTsContents,
@@ -121,13 +133,14 @@ export async function generatePlatformSdkV2(
     primaryPackagePath,
     ...[...model.namespaces].map(ns => ns.paths.packagePath),
   ];
-}
+} // ^(.*?)(V2)?$
 
 export async function generateComponents(
   ns: Namespace,
   outputDir: string,
 ) {
   const referencedComponents = new Set<Component>();
+  const ret = [];
 
   let out =
     `export type LooselyBrandedString<T extends string> = string & {__LOOSE_BRAND?: T };
@@ -138,6 +151,7 @@ export async function generateComponents(
       continue;
     }
     out += component.declaration;
+    ret.push(component.name);
 
     addAll(referencedComponents, component.referencedComponents);
   }
@@ -152,6 +166,8 @@ export async function generateComponents(
 
   ${out}`,
   );
+
+  return ret;
 }
 
 export async function ensurePackageSetup(
@@ -253,4 +269,17 @@ async function createPackageJson(outputDir: string, name: string) {
       2,
     ),
   );
+}
+
+export function pluralize(s: string) {
+  const parts = s.split(/(?=[A-Z])/);
+  if (!parts) throw new Error("Failed to pluralize");
+
+  const lastPart = parts[parts.length - 1] === "V2"
+    ? parts.length - 2
+    : parts.length - 1;
+
+  parts[lastPart] = pluralizeWord(parts[lastPart]);
+
+  return parts.join("");
 }

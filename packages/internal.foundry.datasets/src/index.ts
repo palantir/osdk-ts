@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as Branch from "./public/Branch.js";
-export * as Dataset from "./public/Dataset.js";
-export * as File from "./public/File.js";
-export * as Transaction from "./public/Transaction.js";
+export type {
+  Branch,
+  CreateBranchRequest,
+  CreateDatasetRequest,
+  CreateTransactionRequest,
+  Dataset,
+  DatasetName,
+  File,
+  ListBranchesResponse,
+  ListFilesResponse,
+  ResourcePath,
+  TableExportFormat,
+  Transaction,
+  TransactionRid,
+  TransactionStatus,
+  TransactionType,
+} from "./_components.js";
+export * as Branches from "./public/Branch.js";
+export * as Datasets from "./public/Dataset.js";
+export * as Files from "./public/File.js";
+export * as Transactions from "./public/Transaction.js";

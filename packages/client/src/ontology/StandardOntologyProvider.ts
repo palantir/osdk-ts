@@ -43,12 +43,12 @@ const alwaysRevalidateDefault = false;
 // SLLLLLLOOOOOOOWWWW
 async function fullOntologyLoad(client: MinimalClient) {
   return await Promise.all([
-    OntologiesV2.OntologyObjectV2.listInterfaceTypes(
+    OntologiesV2.OntologyObjectsV2.listInterfaceTypes(
       client,
       client.ontologyRid,
       { pageSize: 200, preview: true },
     ),
-    OntologiesV2.OntologyV2.getOntologyFullMetadata(
+    OntologiesV2.OntologiesV2.getOntologyFullMetadata(
       client,
       client.ontologyRid,
     ),

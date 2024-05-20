@@ -1247,6 +1247,9 @@ importers:
       find-up:
         specifier: ^7.0.0
         version: 7.0.0
+      pluralize:
+        specifier: ^8.0.0
+        version: 8.0.0
       prettier:
         specifier: ^3.2.5
         version: 3.2.5
@@ -1263,6 +1266,9 @@ importers:
       '@types/node':
         specifier: ^20.11.30
         version: 20.12.12
+      '@types/pluralize':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/yargs':
         specifier: ^17.0.29
         version: 17.0.32
@@ -3617,6 +3623,10 @@ packages:
 
   /@types/normalize-package-data@2.4.2:
     resolution: {integrity: sha512-lqa4UEhhv/2sjjIQgjX8B+RBjj47eo0mzGasklVJ78UKGQY1r0VpB9XHDaZZO9qzEFDdy4MrXLuEaSmPrPSe/A==}
+    dev: true
+
+  /@types/pluralize@0.0.33:
+    resolution: {integrity: sha512-JOqsl+ZoCpP4e8TDke9W79FDcSgPAR0l6pixx2JHkhnRjvShyYiAYw2LVsnA7K08Y6DeOnaU6ujmENO4os/cYg==}
     dev: true
 
   /@types/prop-types@15.7.10:
@@ -8175,6 +8185,11 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       package-json: 10.0.0
+    dev: false
+
+  /pluralize@8.0.0:
+    resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
+    engines: {node: '>=4'}
     dev: false
 
   /possible-typed-array-names@1.0.0:

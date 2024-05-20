@@ -223,7 +223,7 @@ export class ObjectSetListenerWebsocket {
         // look up the object type's rid and ensure that we have enabled object set watcher for that rid
         // TODO ???
         getObjectSetBaseType(sub.objectSet).then(baseType =>
-          OntologiesV2.ObjectTypeV2.getObjectTypeV2(
+          OntologiesV2.ObjectTypesV2.getObjectTypeV2(
             this.#client,
             this.#client.ontologyRid,
             baseType,
@@ -625,11 +625,12 @@ async function getOntologyPropertyMappingForApiName(
     );
   }
 
-  const wireObjectType = await OntologiesV2.ObjectTypeV2.getObjectTypeV2(
-    client,
-    client.ontologyRid,
-    objectApiName,
-  );
+  const wireObjectType = await OntologiesV2.ObjectTypesV2
+    .getObjectTypeV2(
+      client,
+      client.ontologyRid,
+      objectApiName,
+    );
 
   return getOntologyPropertyMappingForRid(
     ctx,
