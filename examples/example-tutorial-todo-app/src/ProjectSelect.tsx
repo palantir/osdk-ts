@@ -1,10 +1,9 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { ChangeEvent, useCallback } from "react";
 
 interface ProjectSelectProps {
-  project: OsdkTodoProject | undefined;
-  projects: OsdkTodoProject[];
-  onSelectProject: (project: OsdkTodoProject) => void;
+  project: any | undefined;
+  projects: any[];
+  onSelectProject: (project: any) => void;
 }
 
 function ProjectSelect({

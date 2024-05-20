@@ -1,10 +1,10 @@
-import { OsdkTodoTask } from "@osdk/examples.one.dot.one";
 import { useCallback, useState } from "react";
+import { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
 
 interface TaskListItemProps {
-  task: OsdkTodoTask;
-  deleteTask: (task: OsdkTodoTask) => Promise<void>;
+  task: MockTask;
+  deleteTask: (task: MockTask) => Promise<void>;
 }
 
 function TaskListItem({ task, deleteTask }: TaskListItemProps) {

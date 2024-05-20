@@ -1,4 +1,4 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
+import { MockProject } from "./mocks";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
@@ -15,7 +15,7 @@ function Home() {
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
-    (p: OsdkTodoProject) => setProjectId(p.id),
+    (p: MockProject) => setProjectId(p.id),
     [],
   );
 

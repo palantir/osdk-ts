@@ -1,43 +1,61 @@
-import { OsdkTodoProject, OsdkTodoTask } from "@osdk/examples.one.dot.one";
-import { LocalDate } from "@osdk/examples.one.dot.one";
-
-interface MockProject {
+export interface MockProject {
+  __apiName: string;
+  __primaryKey: string;
   id: string;
   name: string;
   tasks: MockTask[];
 }
 
-interface MockTask {
+export interface MockTask {
+  __apiName: string;
+  __primaryKey: string;
   id: string;
   name: string;
+  title: string;
 }
 
 const projects: MockProject[] = [
   {
+    __apiName: "MockProject",
+    __primaryKey: "1",
     id: "1",
     name: "Fake Project",
     tasks: [
       {
+        __apiName: "MockTask",
+        __primaryKey: "1",
         id: "1",
         name: "Try to",
+        title: "Try to",
       },
       {
+        __apiName: "MockTask",
+        __primaryKey: "2",
         id: "2",
         name: "Implement this",
+        title: "Implement this",
       },
       {
+        __apiName: "MockTask",
+        __primaryKey: "3",
         id: "3",
         name: "With the Ontology SDK!",
+        title: "With the Ontology SDK!",
       },
     ],
   },
   {
+    __apiName: "MockProject",
+    __primaryKey: "2",
     id: "2",
     name: "Yet Another Fake Project",
     tasks: [
       {
+        __apiName: "MockTask",
+        __primaryKey: "4",
         id: "4",
         name: "More tasks here",
+        title: "More tasks here",
       },
     ],
   },
@@ -54,7 +72,7 @@ function randomId(): string {
   return `${Math.floor(Math.random() * 2 ** 31)}`;
 }
 
-async function getProjects(): Promise<OsdkTodoProject[]> {
+async function getProjects(): Promise<MockProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -65,10 +83,10 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<OsdkTodoProject["__primaryKey"]> {
+}): Promise<MockTask["__primaryKey"]> {
   await delay();
   const id = randomId();
-  projects.push({ id, name, tasks: [] });
+  projects.push({__apiName: "MockProject", __primaryKey: id ,id, name, tasks: [] });
   return id;
 }
 
@@ -86,14 +104,14 @@ async function createTask({
 }: {
   name: string;
   projectId: string;
-}): Promise<OsdkTodoTask["__primaryKey"]> {
+}): Promise<MockTask["__primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
   if (project == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  project.tasks.unshift({ id, name });
+  project.tasks.unshift({ __apiName: "MockTask", __primaryKey:id, id, name, title: name});
   return id;
 }
 
@@ -107,93 +125,13 @@ async function deleteTask(id: string): Promise<void> {
   }
 }
 
-function project(mockProject: MockProject): OsdkTodoProject {
+function project(mockProject: MockProject): MockProject {
   return {
-    __apiName: "OsdkTodoProject",
+    __apiName: "MockProject",
     __primaryKey: mockProject.id,
-    __rid: `${mockProject.id}`,
-    $apiName: "OsdkTodoProject",
-    $primaryKey: mockProject.id,
-    $rid: `${mockProject.id}`,
     id: mockProject.id,
     name: mockProject.name,
-    osdkTodoTasks: {
-      all: async () => ({
-        type: "ok",
-        value: mockProject.tasks.map((mockTask) => task(mockProject, mockTask)),
-      }),
-      get: async () => ({
-        type: "error",
-        error: {
-          errorType: "UNKNOWN",
-          errorName: "UnknownError",
-          originalError: "",
-          name: "Error",
-          message: "Not implemented!",
-        },
-      }),
-      page: async () => ({
-        type: "error",
-        error: {
-          errorType: "UNKNOWN",
-          errorName: "UnknownError",
-          originalError: "",
-          name: "Error",
-          message: "Not implemented!",
-        },
-      }),
-      asyncIter: () => {
-        throw new Error("Function not implemented.");
-      },
-      fetchPage: () => {
-        throw new Error("Function not implemented.");
-      },
-      fetchPageWithErrors: () => {
-        throw new Error("Function not implemented.");
-      },
-      fetchOneWithErrors: () => {
-        throw new Error("Function not implemented.");
-      },
-      fetchOne: () => {
-        throw new Error("Function not implemented.");
-      },
-    },
-    budget: undefined,
-    description: undefined,
-    document: undefined,
-  };
-}
-
-function task(mockProject: MockProject, mockTask: MockTask): OsdkTodoTask {
-  return {
-    __apiName: "OsdkTodoTask",
-    __primaryKey: mockTask.id,
-    __rid: `${mockTask.id}`,
-    $apiName: "OsdkTodoTask",
-    $primaryKey: mockTask.id,
-    $rid: `${mockTask.id}`,
-    id: mockTask.id,
-    title: mockTask.name,
-    startDate: LocalDate.now(),
-    dueDate: LocalDate.now().plusWeeks(1),
-    status: "IN PROGRESS",
-    projectId: mockProject.id,
-    osdkTodoProject: {
-      get: async () => ({
-        type: "ok",
-        value: project(mockProject),
-      }),
-      fetchOneWithErrors: () => {
-        throw new Error("Function not implemented.");
-      },
-      fetchOne: () => {
-        throw new Error("Function not implemented.");
-      },
-    },
-    description: undefined,
-    assignedTo: undefined,
-    createdAt: undefined,
-    createdBy: undefined,
+    tasks: mockProject.tasks,
   };
 }
 

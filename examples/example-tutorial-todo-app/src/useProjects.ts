@@ -1,17 +1,16 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks from "./mocks";
+import Mocks, { MockProject } from "./mocks";
 
 function useProjects() {
   const { data, isLoading, isValidating, error, mutate } = useSWR<
-    OsdkTodoProject[]
+    MockProject[]
   >("projects", async () => {
     // Try to implement this with the Ontology SDK!
     return Mocks.getProjects();
   });
 
-  const createProject: (name: string) => Promise<OsdkTodoProject["__primaryKey"]> =
+  const createProject: (name: string) => Promise<MockProject["__primaryKey"]> =
     useCallback(
       async (name) => {
         // Try to implement this with the Ontology SDK!
@@ -22,7 +21,7 @@ function useProjects() {
       [mutate]
     );
 
-  const deleteProject: (project: OsdkTodoProject) => Promise<void> = useCallback(
+  const deleteProject: (project: MockProject) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteProject(project.__primaryKey);

@@ -1,10 +1,9 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import css from "./TaskList.module.css";
 import TaskListItem from "./TaskListItem";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
-  project: OsdkTodoProject;
+  project: any;
 }
 
 function TaskList({ project }: TaskListProps) {

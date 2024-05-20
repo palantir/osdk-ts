@@ -1,10 +1,9 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback, useState } from "react";
 import Dialog from "./Dialog";
 import useProjects from "./useProjects";
 
 interface DeleteProjectDialogProps {
-  project: OsdkTodoProject;
+  project: any;
   isOpen: boolean;
   onClose: () => void;
 }
