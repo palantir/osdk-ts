@@ -30,7 +30,7 @@
   "dependencies": {
     "@osdk/create-app": "workspace:^",
     "consola": "^3.2.3",
-    "dir-compare": "^4.2.0",
+    "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",
     "globby": "^14.0.1",
     "tmp": "^0.2.3",

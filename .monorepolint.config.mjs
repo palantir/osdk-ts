@@ -445,6 +445,7 @@ package you do so at your own risk.
           "scripts",
           "dependencies",
           "peerDependencies",
+          "peerDependenciesMeta",
           "devDependencies",
           "publishConfig",
           "imports",

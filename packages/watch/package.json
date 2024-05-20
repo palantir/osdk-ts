@@ -27,8 +27,8 @@
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "turbotree": "^1.0.1",
-    "zx": "^8.0.2"
+    "chalk": "^5.3.0",
+    "turbotree": "^1.0.1"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
