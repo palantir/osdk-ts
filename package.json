@@ -27,7 +27,7 @@
     "@monorepolint/core": "0.5.0-alpha.137",
     "@monorepolint/rules": "0.5.0-alpha.137",
     "@types/lint-staged": "^13.3.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/parser": "^7.9.0",
     "babel-plugin-dev-expression": "^0.2.3",
     "dprint": "^0.45.1",
     "esbuild-plugin-babel": "^0.2.3",
