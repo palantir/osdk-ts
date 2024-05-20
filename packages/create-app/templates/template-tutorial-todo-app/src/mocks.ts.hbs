@@ -10,7 +10,6 @@ export interface MockTask {
   __apiName: string;
   __primaryKey: string;
   id: string;
-  name: string;
   title: string;
 }
 
@@ -25,21 +24,18 @@ const projects: MockProject[] = [
         __apiName: "MockTask",
         __primaryKey: "1",
         id: "1",
-        name: "Try to",
         title: "Try to",
       },
       {
         __apiName: "MockTask",
         __primaryKey: "2",
         id: "2",
-        name: "Implement this",
         title: "Implement this",
       },
       {
         __apiName: "MockTask",
         __primaryKey: "3",
         id: "3",
-        name: "With the Ontology SDK!",
         title: "With the Ontology SDK!",
       },
     ],
@@ -54,7 +50,6 @@ const projects: MockProject[] = [
         __apiName: "MockTask",
         __primaryKey: "4",
         id: "4",
-        name: "More tasks here",
         title: "More tasks here",
       },
     ],
@@ -99,10 +94,10 @@ async function deleteProject(id: string): Promise<void> {
 }
 
 async function createTask({
-  name,
+  title,
   projectId,
 }: {
-  name: string;
+  title: string;
   projectId: string;
 }): Promise<MockTask["__primaryKey"]> {
   await delay();
@@ -111,7 +106,7 @@ async function createTask({
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  project.tasks.unshift({ __apiName: "MockTask", __primaryKey:id, id, name, title: name});
+  project.tasks.unshift({ __apiName: "MockTask", __primaryKey: id, id, title });
   return id;
 }
 
