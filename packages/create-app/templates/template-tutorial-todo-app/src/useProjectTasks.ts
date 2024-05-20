@@ -5,17 +5,17 @@ import Mocks, { MockProject, MockTask } from "./mocks";
 export function useProjectTasks(project: MockProject | undefined) {
   const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
     project != null ? `projects/${project.id}/tasks` : null,
-     // Try to implement this with the Ontology SDK!
-     async () => {
+    // Try to implement this with the Ontology SDK!
+    async () => {
       if (project == null) {
         return [];
       }
       return project.tasks;
-    }
+    },
   );
 
   const createTask: (
-    title: string
+    title: string,
   ) => Promise<MockTask["__primaryKey"] | undefined> = useCallback(
     async (title) => {
       if (project == null) {
@@ -29,7 +29,7 @@ export function useProjectTasks(project: MockProject | undefined) {
       await mutate();
       return id;
     },
-    [project, mutate]
+    [project, mutate],
   );
 
   const deleteTask: (task: MockTask) => Promise<void> = useCallback(
@@ -41,7 +41,7 @@ export function useProjectTasks(project: MockProject | undefined) {
       await Mocks.deleteTask(task.__primaryKey);
       await mutate();
     },
-    [project, mutate]
+    [project, mutate],
   );
 
   return {
