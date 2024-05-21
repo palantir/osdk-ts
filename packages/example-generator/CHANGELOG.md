@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.5.0
+
+### Minor Changes
+
+- 82e333d: Make tutorial app not depend on OSDK imports
+
+### Patch Changes
+
+- Updated dependencies [82e333d]
+  - @osdk/create-app@0.16.0
+
 ## 0.4.0
 
 ### Patch Changes
