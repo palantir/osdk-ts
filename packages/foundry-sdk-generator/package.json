@@ -38,7 +38,7 @@
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
-    "rollup": "^3.28.1",
+    "rollup": "^4.17.2",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-morph": "^19.0.0",
     "yargs": "^17.7.2"
