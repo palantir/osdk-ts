@@ -1,10 +1,10 @@
-import { OsdkTodoProject } from "@osdk/examples.one.dot.one";
 import { useCallback, useState } from "react";
 import DeleteProjectDialog from "./DeleteProjectDialog";
+import { MockProject } from "./mocks";
 import useProjects from "./useProjects";
 
 interface DeleteProjectButtonProps {
-  project: OsdkTodoProject;
+  project: MockProject;
 }
 
 function DeleteProjectButton({ project }: DeleteProjectButtonProps) {
