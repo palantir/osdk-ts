@@ -15,11 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { symbolClientContext } from "@osdk/shared.net";
+import { symbolClientContext } from "@osdk/shared.client";
 import type { Client } from "../Client.js";
 import type { createClient } from "../createClient.js";
 import { createClientInternal } from "../createClient.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
 import { UNSTABLE_createObjectSet } from "../objectSet/createUnstableObjectSet.js";
 import { createBulkLinksAsyncIterFactory } from "./createBulkLinksAsyncIterFactory.js";
 import type { UnstableClient } from "./UnstableClient.js";

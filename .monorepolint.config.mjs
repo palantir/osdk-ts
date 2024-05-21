@@ -36,6 +36,7 @@ const nonStandardPackages = [
   "@osdk/tests.*",
   "@osdk/foundry-sdk-generator",
   "@osdk/examples.*",
+  "@osdk/shared.client",
 ];
 
 const legacyPackages = [
@@ -43,6 +44,8 @@ const legacyPackages = [
   "@osdk/gateway",
   "@osdk/legacy-client",
   "@osdk/shared.net",
+  "@osdk/shared.net.errors",
+  "@osdk/shared.net.fetch",
 ];
 
 const esmOnlyPackages = [
@@ -61,6 +64,7 @@ const esmOnlyPackages = [
   "@osdk/platform-sdk-generator",
   "@osdk/tool.release",
   "@osdk/version-updater",
+  "@osdk/shared.net.platformapi",
   "watch",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
@@ -398,6 +402,21 @@ export default {
           },
         },
         entriesExist: ["version"],
+      },
+    }),
+
+    requireDependency({
+      includePackages: [
+        "@osdk/foundry.*",
+        "@osdk/internal.foundry.*",
+        "@osdk/foundry",
+        "@osdk/internal.foundry",
+      ],
+      options: {
+        dependencies: {
+          "@osdk/shared.client": "workspace:^",
+          "@osdk/shared.net.platformapi": "workspace:^",
+        },
       },
     }),
 

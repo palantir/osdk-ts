@@ -38,8 +38,9 @@ export async function writeResource2(
   return writeCode(
     filePath,
     `${copyright}\n\n
-        import type { SharedClient as $Client, SharedClientContext as $ClientContext, FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net";
-        import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+        import type { SharedClient as $Client, SharedClientContext as $ClientContext,  } from "@osdk/shared.client";
+        import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+        import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
         ${
       generateImports(referencedTypes, new Map([[ns, "../_components.js"]]))
     }

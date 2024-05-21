@@ -665,9 +665,18 @@ importers:
       '@osdk/generator-converters':
         specifier: workspace:^
         version: link:../generator-converters
-      '@osdk/shared.net':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../shared.net
+        version: link:../shared.client
+      '@osdk/shared.client.impl':
+        specifier: workspace:^
+        version: link:../shared.client.impl
+      '@osdk/shared.net.errors':
+        specifier: workspace:^
+        version: link:../shared.net.errors
+      '@osdk/shared.net.fetch':
+        specifier: workspace:^
+        version: link:../shared.net.fetch
       conjure-lite:
         specifier: ^0.4.4
         version: 0.4.4
@@ -794,12 +803,6 @@ importers:
 
   packages/foundry:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:^
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
@@ -809,9 +812,12 @@ importers:
       '@osdk/foundry.thirdpartyapplications':
         specifier: workspace:*
         version: link:../foundry.thirdpartyapplications
-      '@osdk/shared.net':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../shared.net
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
     devDependencies:
       typescript:
         specifier: ^5.4.5
@@ -871,54 +877,45 @@ importers:
 
   packages/foundry.core:
     dependencies:
-      '@osdk/api':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../api
-      '@osdk/client':
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
         specifier: workspace:^
-        version: link:../client
+        version: link:../shared.net.platformapi
     devDependencies:
-      '@osdk/shared.net':
-        specifier: workspace:^
-        version: link:../shared.net
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
 
   packages/foundry.security:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:^
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
-    devDependencies:
-      '@osdk/shared.net':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../shared.net
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
 
   packages/foundry.thirdpartyapplications:
     dependencies:
-      '@osdk/api':
-        specifier: workspace:^
-        version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/foundry.core':
         specifier: workspace:*
         version: link:../foundry.core
-    devDependencies:
-      '@osdk/shared.net':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../shared.net
+        version: link:../shared.client
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1037,9 +1034,15 @@ importers:
       '@osdk/internal.foundry.ontologiesv2':
         specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
     devDependencies:
       typescript:
         specifier: ^5.4.5
@@ -1050,13 +1053,16 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
+      '@osdk/shared.client':
         specifier: workspace:^
-        version: link:../client
-    devDependencies:
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1066,16 +1072,19 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
-    devDependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1085,16 +1094,19 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
-    devDependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1104,16 +1116,19 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
-    devDependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1123,19 +1138,22 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/internal.foundry.ontologies':
         specifier: workspace:*
         version: link:../internal.foundry.ontologies
-    devDependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
       '@osdk/shared.net':
         specifier: workspace:^
         version: link:../shared.net
+      '@osdk/shared.net.platformapi':
+        specifier: workspace:^
+        version: link:../shared.net.platformapi
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -1276,18 +1294,81 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  packages/shared.client:
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/shared.client.impl:
+    dependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.net.errors':
+        specifier: workspace:^
+        version: link:../shared.net.errors
+      '@osdk/shared.net.fetch':
+        specifier: workspace:^
+        version: link:../shared.net.fetch
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/shared.net:
     dependencies:
       '@osdk/gateway':
         specifier: workspace:^
         version: link:../gateway
-      fetch-retry:
-        specifier: ^6.0.0
-        version: 6.0.0
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.client.impl':
+        specifier: workspace:^
+        version: link:../shared.client.impl
+      '@osdk/shared.net.errors':
+        specifier: workspace:^
+        version: link:../shared.net.errors
+      '@osdk/shared.net.fetch':
+        specifier: workspace:^
+        version: link:../shared.net.fetch
     devDependencies:
       ts-expect:
         specifier: ^1.3.0
         version: 1.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/shared.net.errors:
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/shared.net.fetch:
+    dependencies:
+      '@osdk/shared.net.errors':
+        specifier: workspace:^
+        version: link:../shared.net.errors
+      fetch-retry:
+        specifier: ^6.0.0
+        version: 6.0.0
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/shared.net.platformapi:
+    dependencies:
+      '@osdk/shared.client':
+        specifier: workspace:^
+        version: link:../shared.client
+      '@osdk/shared.net.errors':
+        specifier: workspace:^
+        version: link:../shared.net.errors
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

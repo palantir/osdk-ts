@@ -19,7 +19,11 @@ export type {
   CreateGroupRequest,
   ListGroupMembershipsResponse,
   ListGroupMembersResponse,
+  ListGroupsResponse,
+  ListUsersResponse,
   RemoveGroupMembersRequest,
+  SearchGroupsRequest,
+  SearchUsersRequest,
 } from "./_components.js";
 export * as Groups from "./public/Group.js";
 export * as GroupMembers from "./public/GroupMember.js";

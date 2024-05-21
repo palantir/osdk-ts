@@ -33,7 +33,10 @@
   },
   "dependencies": {
     "@osdk/gateway": "workspace:^",
-    "fetch-retry": "^6.0.0"
+    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.client.impl": "workspace:^",
+    "@osdk/shared.net.errors": "workspace:^",
+    "@osdk/shared.net.fetch": "workspace:^"
   },
   "devDependencies": {
     "ts-expect": "^1.3.0",

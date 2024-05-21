@@ -23,11 +23,11 @@ import type {
   VersionVersion,
 } from "@osdk/foundry.core";
 import type {
-  FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
-} from "@osdk/shared.net";
-import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type { ListVersionsResponse } from "../_components.js";
 
 //

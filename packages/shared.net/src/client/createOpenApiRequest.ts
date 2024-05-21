@@ -15,9 +15,8 @@
  */
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
-import { PalantirApiError } from "../PalantirApiError.js";
-import { UnknownError } from "../UnknownError.js";
-import { replaceHttpIfNotLocalhost } from "../util/index.js";
+import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
+import { replaceHttpIfNotLocalhost } from "../util/replaceHttpIfNotLocalhost.js";
 
 export function createOpenApiRequest<
   TExpectedResponse,

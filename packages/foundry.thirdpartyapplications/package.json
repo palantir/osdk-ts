@@ -25,15 +25,11 @@
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/foundry.core": "workspace:*"
-  },
-  "peerDependencies": {
-    "@osdk/client": "workspace:^",
-    "@osdk/shared.net": "workspace:^"
+    "@osdk/foundry.core": "workspace:*",
+    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.net.platformapi": "workspace:^"
   },
   "devDependencies": {
-    "@osdk/shared.net": "workspace:^",
     "typescript": "^5.4.5"
   },
   "publishConfig": {
@@ -54,7 +50,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.834.0",
+        "minVersion": "1.840.0",
         "maxVersion": "1.x.x"
       }
     }

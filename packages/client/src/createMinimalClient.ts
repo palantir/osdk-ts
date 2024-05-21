@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createSharedClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { Logger } from "pino";
 import type {
   MinimalClient,

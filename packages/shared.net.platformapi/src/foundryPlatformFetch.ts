@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import type { SharedClient, SharedClientContext } from "./ClientContext.js";
-import { symbolClientContext } from "./ClientContext.js";
-import { PalantirApiError } from "./PalantirApiError.js";
-import { UnknownError } from "./UnknownError.js";
+import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
+import { symbolClientContext } from "@osdk/shared.client";
+import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 
 export type FoundryPlatformMethod<F extends (...args: any[]) => any> = [
   method: number,

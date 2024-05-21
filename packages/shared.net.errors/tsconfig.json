@@ -1,0 +1,16 @@
+{
+  "extends": "../../monorepo/tsconfig/tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "build/esm",
+    "paths": {
+      "@osdk/shared.net.errors": [
+        "./src"
+      ]
+    }
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "references": []
+}

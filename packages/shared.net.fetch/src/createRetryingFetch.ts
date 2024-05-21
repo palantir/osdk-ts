@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import fetchRetry from "fetch-retry";
-import { PalantirApiError } from "../PalantirApiError.js";
 
 const INITIAL_DELAY = 1_000;
 const JITTER_FACTOR = 0.5;

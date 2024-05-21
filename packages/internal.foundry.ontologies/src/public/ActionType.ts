@@ -33,11 +33,11 @@ import type {
   ValidateActionResponse,
 } from "@osdk/internal.foundry.core";
 import type {
-  FoundryPlatformMethod as $FoundryPlatformMethod,
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
-} from "@osdk/shared.net";
-import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 
 //
 
@@ -145,8 +145,8 @@ const _applyActionBatch: $FoundryPlatformMethod<
  * Up to 20 actions may be applied in one call. Actions that only modify objects in Object Storage v2 and do not
  * call Functions may receive a higher limit.
  *
- * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) are not currently supported by
- * this endpoint.
+ * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) and
+ * [notifications](/docs/foundry/action-types/notifications/) are not currently supported by this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:read-data api:write-data`.

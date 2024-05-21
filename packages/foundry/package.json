@@ -27,12 +27,9 @@
   "dependencies": {
     "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.security": "workspace:*",
-    "@osdk/foundry.thirdpartyapplications": "workspace:*"
-  },
-  "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/shared.net": "workspace:^"
+    "@osdk/foundry.thirdpartyapplications": "workspace:*",
+    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.net.platformapi": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
@@ -55,7 +52,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.834.0",
+        "minVersion": "1.840.0",
         "maxVersion": "1.x.x"
       }
     }
