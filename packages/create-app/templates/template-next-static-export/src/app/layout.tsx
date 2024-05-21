@@ -15,31 +15,33 @@ function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div id="root">
-          <a
-            href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
-            target="_blank"
-          >
-            <Image
-              src="/palantir.svg"
-              alt="Palantir logo"
-              className={css.logo}
-              width={16}
-              height={16}
-              priority
-            />
-          </a>
-          <a href="https://nextjs.org/" target="_blank">
-            <Image
-              src="/next.svg"
-              alt="Next logo"
-              className={css.logo}
-              width={16}
-              height={16}
-              priority
-            />
-          </a>
-          {children}
+        <div id="root-container">
+          <div id="root">
+            <a
+              href="https://www.palantir.com/docs/foundry/ontology-sdk/overview/"
+              target="_blank"
+            >
+              <Image
+                src="/palantir.svg"
+                alt="Palantir logo"
+                className={css.logo}
+                width={16}
+                height={16}
+                priority
+              />
+            </a>
+            <a href="https://nextjs.org/" target="_blank">
+              <Image
+                src="/next.svg"
+                alt="Next logo"
+                className={css.logo}
+                width={16}
+                height={16}
+                priority
+              />
+            </a>
+            {children}
+          </div>
         </div>
       </body>
     </html>
