@@ -1,0 +1,42 @@
+{
+  "name": "@osdk/shared.client",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "require": "./index.cjs",
+      "import": "./index.mjs"
+    }
+  },
+  "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh both",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.{c,m}ts",
+    "index.cjs",
+    "index.mjs"
+  ],
+  "main": "index.cjs",
+  "module": "index.mjs",
+  "types": "index.d.mts",
+  "type": "module"
+}

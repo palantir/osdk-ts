@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { PalantirApiError } from "../PalantirApiError.js";
-import { UnknownError } from "../UnknownError.js";
+import { PalantirApiError, UnknownError } from "@osdk/shared.net.errors";
 
 /**
  * Wraps a fetch plugin so that all errors (including when statusCode is not in the 200s) are converted to either PalantirApiError or UnknownError.

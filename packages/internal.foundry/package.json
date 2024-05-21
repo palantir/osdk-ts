@@ -31,10 +31,10 @@
     "@osdk/internal.foundry.datasets": "workspace:*",
     "@osdk/internal.foundry.models": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",
-    "@osdk/internal.foundry.ontologiesv2": "workspace:*"
-  },
-  "peerDependencies": {
-    "@osdk/shared.net": "workspace:^"
+    "@osdk/internal.foundry.ontologiesv2": "workspace:*",
+    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.net": "workspace:^",
+    "@osdk/shared.net.platformapi": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
@@ -56,7 +56,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.834.0",
+        "minVersion": "1.840.0",
         "maxVersion": "1.x.x"
       }
     }

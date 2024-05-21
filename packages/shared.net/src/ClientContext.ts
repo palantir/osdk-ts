@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { SharedClientContext } from "@osdk/shared.client";
+
 /** @deprecated */
 export interface ClientContext<O extends { metadata: { userAgent: string } }>
   extends SharedClientContext
@@ -26,33 +28,4 @@ export interface ClientContext<O extends { metadata: { userAgent: string } }>
    * @deprecated use `baseUrl` instead
    */
   stack: string;
-}
-
-/**
- * Strict representation of ClientContext. This is the type that should be used.
- *
- * Upon next major version bump, this should be merged with `ClientContext`.
- */
-export interface SharedClientContext {
-  /**
-   * The base origin to use for requests (e.g. `https://api.example.com`)
-   */
-  baseUrl: string;
-
-  /**
-   * The fetch function to use for all requests.
-   */
-  fetch: typeof globalThis.fetch;
-
-  tokenProvider: () => Promise<string>;
-}
-
-// This allows us to reference the ctx as property referenced by a symbol
-// so that its not suggested when you do `client.` in the client code
-export const symbolClientContext = Symbol("ClientContext");
-
-export interface SharedClient<
-  T extends SharedClientContext = SharedClientContext,
-> {
-  [symbolClientContext]: T;
 }

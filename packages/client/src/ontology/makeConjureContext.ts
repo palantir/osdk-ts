@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.net";
+import type { SharedClientContext } from "@osdk/shared.client";
 import type { ConjureContext } from "conjure-lite";
 
 export function makeConjureContext(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { SharedClientContext } from "@osdk/shared.net";
+import type { SharedClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";

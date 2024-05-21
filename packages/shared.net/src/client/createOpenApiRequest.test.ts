@@ -15,8 +15,8 @@
  */
 
 import type { OpenApiRequest } from "@osdk/gateway/types";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import { describe, expect, expectTypeOf, it, vi } from "vitest";
-import { PalantirApiError } from "../PalantirApiError.js";
 import { createOpenApiRequest } from "./createOpenApiRequest.js";
 
 describe("createOpenApiRequest", () => {

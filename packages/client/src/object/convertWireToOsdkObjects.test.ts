@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createSharedClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
@@ -107,7 +107,7 @@ describe("convertWireToOsdkObjects", () => {
     );
     createSharedClientContext(
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
       "userAgent",
     );
 

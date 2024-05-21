@@ -133,7 +133,7 @@ export async function generatePlatformSdkV2(
     primaryPackagePath,
     ...[...model.namespaces].map(ns => ns.paths.packagePath),
   ];
-} // ^(.*?)(V2)?$
+}
 
 export async function generateComponents(
   ns: Namespace,

@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.core";
 import type {
-  FoundryPlatformMethod as $FoundryPlatformMethod,
+  Group,
+  PageSize,
+  PageToken,
+  PreviewMode,
+  PrincipalId,
+  SearchGroupsResponse,
+} from "@osdk/foundry.core";
+import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
-} from "@osdk/shared.net";
-import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net";
-import type { CreateGroupRequest } from "../_components.js";
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type {
+  CreateGroupRequest,
+  ListGroupsResponse,
+  SearchGroupsRequest,
+} from "../_components.js";
 
 //
 
@@ -72,6 +83,33 @@ export function deleteGroup(
   return $foundryPlatformFetch($ctx, _deleteGroup, ...args);
 }
 
+const _listGroups: $FoundryPlatformMethod<
+  ($queryParams?: {
+    pageSize?: PageSize | undefined;
+    pageToken?: PageToken | undefined;
+    preview?: PreviewMode | undefined;
+  }) => Promise<ListGroupsResponse>
+> = [0, "/v2/security/groups", 2];
+
+/**
+ * Lists all Groups
+ *
+ * Required Scopes: [api:security-read]
+ * URL: /v2/security/groups
+ */
+export function listGroups(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+      preview?: PreviewMode | undefined;
+    },
+  ]
+): Promise<ListGroupsResponse> {
+  return $foundryPlatformFetch($ctx, _listGroups, ...args);
+}
+
 const _getGroup: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
@@ -94,4 +132,25 @@ export function getGroup(
   ]
 ): Promise<Group> {
   return $foundryPlatformFetch($ctx, _getGroup, ...args);
+}
+
+const _searchGroups: $FoundryPlatformMethod<
+  (
+    $body: SearchGroupsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<SearchGroupsResponse>
+> = [1, "/v2/security/groups/search", 3];
+
+/**
+ * Required Scopes: []
+ * URL: /v2/security/groups/search
+ */
+export function searchGroups(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: SearchGroupsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<SearchGroupsResponse> {
+  return $foundryPlatformFetch($ctx, _searchGroups, ...args);
 }

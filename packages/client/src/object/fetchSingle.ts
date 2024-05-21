@@ -16,7 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/internal.foundry";
-import { PalantirApiError } from "@osdk/shared.net";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { Osdk } from "../index.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {

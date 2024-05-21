@@ -152,6 +152,14 @@ export type GroupMembershipExpiration = string;
 export type GroupName = LooselyBrandedString<"GroupName">;
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface GroupSearchFilter {
+  type: PrincipalFilterType;
+  value: string;
+}
+
+/**
  * Log Safety: SAFE
  */
 export type OrganizationRid = LooselyBrandedString<"OrganizationRid">;
@@ -180,6 +188,11 @@ export type PageToken = LooselyBrandedString<"PageToken">;
 export type PreviewMode = boolean;
 
 /**
+ * Log Safety: SAFE
+ */
+export type PrincipalFilterType = "queryString";
+
+/**
  * The ID of a Foundry Group or User.
  *
  * Log Safety: SAFE
@@ -205,6 +218,22 @@ export type Realm = LooselyBrandedString<"Realm">;
  * Log Safety: SAFE
  */
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface SearchGroupsResponse {
+  data: Array<Group>;
+  nextPageToken?: PageToken;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface SearchUsersResponse {
+  data: Array<User>;
+  nextPageToken?: PageToken;
+}
 
 /**
  * The size of the file or attachment in bytes.
@@ -284,6 +313,14 @@ export interface User {
  * Log Safety: SAFE
  */
 export type UserId = string;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface UserSearchFilter {
+  type: PrincipalFilterType;
+  value: string;
+}
 
 /**
  * Log Safety: UNSAFE

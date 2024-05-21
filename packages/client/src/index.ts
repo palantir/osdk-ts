@@ -17,9 +17,7 @@
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
 
-export { isOk } from "@osdk/shared.net";
-export type { ResultOrError } from "@osdk/shared.net";
-export { PalantirApiError } from "@osdk/shared.net";
+export { PalantirApiError } from "@osdk/shared.net.errors";
 export type {
   ActionEditResponse,
   ActionValidationResponse,
@@ -33,4 +31,6 @@ export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type { WhereClause } from "./query/WhereClause.js";
+export { isOk } from "./ResultOrError.js";
+export type { ResultOrError } from "./ResultOrError.js";
 export type { NOOP } from "./util/NOOP.js";
