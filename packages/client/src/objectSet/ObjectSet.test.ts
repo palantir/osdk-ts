@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
+import { Employee, Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -26,8 +27,6 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import { Employee } from "../generatedNoCheck/ontology/objects.js";
 import type { Result } from "../object/Result.js";
 import { isOk } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";

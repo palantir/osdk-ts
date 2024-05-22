@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);

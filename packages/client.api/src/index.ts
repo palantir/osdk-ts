@@ -14,4 +14,24 @@
  * limitations under the License.
  */
 
+export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
+export type {
+  ActionEditResponse,
+  Actions,
+  ActionSignature,
+  ActionSignatureFromDef,
+  ActionValidationResponse,
+  ApplyActionOptions,
+  OsdkActionParameters,
+} from "./actions/Actions.js";
+export type {
+  PropertyValueClientToWire,
+  PropertyValueWireToClient,
+} from "./mapping/PropertyValueMapping.js";
+export type { Attachment } from "./object/Attachment.js";
+export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
+export type { OsdkBase } from "./OsdkBase.js";
+export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+export type { NOOP } from "./util/NOOP.js";
+
 export {};

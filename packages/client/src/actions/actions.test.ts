@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import type {
+  ActionEditResponse,
+  ActionValidationResponse,
+} from "@osdk/client.api";
+import {
+  actionTakesAttachment,
+  createOffice,
+  moveOffice,
+  Ontology as MockOntology,
+} from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import {
   afterAll,
@@ -25,17 +35,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import {
-  actionTakesAttachment,
-  createOffice,
-  moveOffice,
-  Ontology as MockOntology,
-} from "../generatedNoCheck/index.js";
 import { Attachment } from "../object/Attachment.js";
-import type {
-  ActionEditResponse,
-  ActionValidationResponse,
-} from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 describe("actions", () => {

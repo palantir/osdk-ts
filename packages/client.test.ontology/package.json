@@ -26,13 +26,14 @@
     "transpile": "tsup",
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
+  "dependencies": {
+    "@osdk/client.api": "workspace:*"
+  },
   "peerDependencies": {
-    "@osdk/api": "workspace:*",
-    "@osdk/client": "workspace:*"
+    "@osdk/api": "workspace:*"
   },
   "devDependencies": {
     "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
     "@osdk/generator": "workspace:^",
     "@osdk/shared.test": "workspace:^",
     "typescript": "^5.4.5"

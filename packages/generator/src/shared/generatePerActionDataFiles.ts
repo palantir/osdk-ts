@@ -175,7 +175,7 @@ export async function generatePerActionDataFiles(
         path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
-          import type { ActionSignature, ApplyActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client';
+          import type { ActionSignature, ApplyActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client.api';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           ${importObjects}
 

@@ -22,6 +22,7 @@ describe("generateClientSdkPackage", () => {
     const versions = {
       osdkApiVersion: "^99.9.9",
       osdkClientVersion: "^88.8.8",
+      osdkClientApiVersion: "^66.6.6",
       osdkLegacyClientVersion: "^77.7.7",
       areTheTypesWrongVersion: "^0.15.2",
       tslibVersion: "^2.6.2",
@@ -79,7 +80,7 @@ describe("generateClientSdkPackage", () => {
               "devDependencies": {
                 "@arethetypeswrong/cli": "^0.15.2",
                 "@osdk/api": "^99.9.9",
-                "@osdk/client": "^88.8.8",
+                "@osdk/client.api": "^66.6.6",
                 "tslib": "^2.6.2",
                 "typescript": "^5.4.2",
               },
@@ -104,6 +105,7 @@ describe("generateClientSdkPackage", () => {
               "peerDependencies": {
                 "@osdk/api": "^99.9.9",
                 "@osdk/client": "^88.8.8",
+                "@osdk/client.api": "^66.6.6",
               },
               "scripts": {
                 "check": "npm exec attw $(npm pack)",

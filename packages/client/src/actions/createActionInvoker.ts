@@ -15,8 +15,8 @@
  */
 
 import type { ActionDefinition, OntologyDefinition } from "@osdk/api";
+import type { Actions, ActionSignature } from "@osdk/client.api";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { Actions, ActionSignature } from "./Actions.js";
 import { applyAction } from "./applyAction.js";
 
 export function createActionInvoker<A extends ActionDefinition<any, any>>(

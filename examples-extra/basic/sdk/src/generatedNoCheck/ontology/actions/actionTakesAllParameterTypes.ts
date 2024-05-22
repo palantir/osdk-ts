@@ -1,5 +1,5 @@
 import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person, Todo } from '../objects.js';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ActionValidationResponse } from "./Actions.js";
+import type { ActionValidationResponse } from "@osdk/client.api";
 
 export class ActionValidationError extends Error {
   constructor(public validation: ActionValidationResponse) {

@@ -19,10 +19,9 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { OsdkBase, OsdkObjectPrimaryKeyType } from "@osdk/client.api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
-import type { OsdkBase } from "./OsdkBase.js";
-import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
 

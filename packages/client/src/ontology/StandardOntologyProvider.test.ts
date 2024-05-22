@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { fetchPage } from "../object/fetchPage.js";
 import {
   createStandardOntologyProviderFactory,

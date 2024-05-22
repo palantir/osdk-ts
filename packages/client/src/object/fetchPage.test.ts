@@ -15,10 +15,10 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
+import type { FooInterface } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { FooInterface } from "../generatedNoCheck/index.js";
 import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
 import {
   createObjectSet,

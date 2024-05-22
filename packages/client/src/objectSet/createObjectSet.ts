@@ -18,9 +18,12 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type {
+  BaseObjectSet,
+  PropertyValueClientToWire,
+} from "@osdk/client.api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
-import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
@@ -33,7 +36,6 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
-import type { BaseObjectSet } from "./BaseObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 

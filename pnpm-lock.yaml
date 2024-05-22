@@ -164,10 +164,19 @@ importers:
       '@osdk/client':
         specifier: workspace:^
         version: link:../../../packages/client
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../../../packages/client.api
     devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.15.2
+        version: 0.15.3
       '@osdk/cli.cmd.typescript':
         specifier: workspace:^
         version: link:../../../packages/cli.cmd.typescript
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -180,6 +189,9 @@ importers:
       '@osdk/client':
         specifier: workspace:^
         version: link:../../packages/client
+      '@osdk/client.api':
+        specifier: workspace:^
+        version: link:../../packages/client.api
       '@osdk/legacy-client':
         specifier: workspace:^
         version: link:../../packages/legacy-client
@@ -193,6 +205,9 @@ importers:
         specifier: ^2.2.5
         version: 2.2.5(react@18.3.1)
     devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.15.2
+        version: 0.15.3
       '@osdk/cli.cmd.typescript':
         specifier: workspace:^
         version: link:../../packages/cli.cmd.typescript
@@ -232,6 +247,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.3
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -251,12 +269,18 @@ importers:
         specifier: workspace:^
         version: link:../../packages/legacy-client
     devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.15.2
+        version: 0.15.3
       '@osdk/cli.cmd.typescript':
         specifier: workspace:^
         version: link:../../packages/cli.cmd.typescript
       '@types/node':
         specifier: ^18.0.0
         version: 18.17.15
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -269,6 +293,9 @@ importers:
       '@osdk/client':
         specifier: workspace:^
         version: link:../../packages/client
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../../packages/client.api
       '@osdk/oauth':
         specifier: workspace:^
         version: link:../../packages/oauth
@@ -288,6 +315,9 @@ importers:
         specifier: ^1.3.3
         version: 1.3.3
     devDependencies:
+      '@arethetypeswrong/cli':
+        specifier: ^0.15.2
+        version: 0.15.3
       '@osdk/cli.cmd.typescript':
         specifier: workspace:^
         version: link:../../packages/cli.cmd.typescript
@@ -321,6 +351,9 @@ importers:
       tailwindcss:
         specifier: ^3.4.3
         version: 3.4.3
+      tslib:
+        specifier: ^2.6.2
+        version: 2.6.2
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
@@ -609,6 +642,9 @@ importers:
       consola:
         specifier: ^3.2.3
         version: 3.2.3
+      fast-deep-equal:
+        specifier: ^3.1.3
+        version: 3.1.3
       find-up:
         specifier: ^7.0.0
         version: 7.0.0
@@ -662,6 +698,9 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../client.api
       '@osdk/generator-converters':
         specifier: workspace:^
         version: link:../generator-converters
@@ -677,6 +716,9 @@ importers:
       '@osdk/shared.net.fetch':
         specifier: workspace:^
         version: link:../shared.net.fetch
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.14
       conjure-lite:
         specifier: ^0.4.4
         version: 0.4.4
@@ -696,18 +738,15 @@ importers:
         specifier: ^8.17.0
         version: 8.17.0
     devDependencies:
-      '@osdk/generator':
+      '@osdk/client.test.ontology':
         specifier: workspace:^
-        version: link:../generator
+        version: link:../client.test.ontology
       '@osdk/internal.foundry':
         specifier: workspace:^
         version: link:../internal.foundry
       '@osdk/shared.test':
         specifier: workspace:^
         version: link:../shared.test
-      '@types/geojson':
-        specifier: ^7946.0.14
-        version: 7946.0.14
       '@types/ws':
         specifier: ^8.5.10
         version: 8.5.10
@@ -735,18 +774,25 @@ importers:
 
   packages/client.api:
     devDependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@types/geojson':
+        specifier: ^7946.0.14
+        version: 7946.0.14
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
 
   packages/client.test.ontology:
+    dependencies:
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../client.api
     devDependencies:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
-      '@osdk/client':
-        specifier: workspace:^
-        version: link:../client
       '@osdk/generator':
         specifier: workspace:^
         version: link:../generator

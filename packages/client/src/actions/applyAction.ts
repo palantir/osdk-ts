@@ -15,13 +15,16 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  OsdkActionParameters,
+} from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
-import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
-import type { ApplyActionOptions, OsdkActionParameters } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 export async function applyAction<

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
+export type {
+  ActionEditResponse,
+  ActionReturnTypeForOptions,
+  ActionValidationResponse,
+  ApplyActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from "@osdk/client.api";
+export { PalantirApiError } from "@osdk/shared.net.errors";
+
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
 
-export { PalantirApiError } from "@osdk/shared.net.errors";
-export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
-export type {
-  ActionEditResponse,
-  ActionValidationResponse,
-  ApplyActionOptions,
-  OsdkActionParameters,
-} from "./actions/Actions.js";
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { OsdkObject } from "./OsdkObject.js";
@@ -33,4 +35,3 @@ export type { PageResult } from "./PageResult.js";
 export type { WhereClause } from "./query/WhereClause.js";
 export { isOk } from "./ResultOrError.js";
 export type { ResultOrError } from "./ResultOrError.js";
-export type { NOOP } from "./util/NOOP.js";

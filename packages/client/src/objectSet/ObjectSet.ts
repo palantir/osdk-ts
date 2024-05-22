@@ -20,7 +20,10 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
+import type {
+  BaseObjectSet,
+  PropertyValueClientToWire,
+} from "@osdk/client.api";
 import type { AggregateOptsThatErrors } from "../object/AggregateOptsThatErrors.js";
 import type {
   Augments,
@@ -33,7 +36,6 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import type { WhereClause } from "../query/WhereClause.js";
-import type { BaseObjectSet } from "./BaseObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>

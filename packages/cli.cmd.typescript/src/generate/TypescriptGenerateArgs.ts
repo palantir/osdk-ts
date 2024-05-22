@@ -27,4 +27,5 @@ export interface TypescriptGenerateArgs {
   asPackage?: boolean;
   packageName?: string;
   clean?: boolean;
+  internal: boolean;
 }

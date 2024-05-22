@@ -21,10 +21,6 @@ import type {
   ObjectSetActionDataType,
   OntologyDefinition,
 } from "@osdk/api";
-import type {
-  ActionResults,
-  ValidateActionResponseV2,
-} from "@osdk/internal.foundry";
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
 import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
 import type { OsdkBase } from "../OsdkBase.js";
@@ -32,6 +28,10 @@ import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/PartialBy.js";
+import type {
+  ActionResults,
+  ValidateActionResponseV2,
+} from "./ActionResults.js";
 import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
 
 export type ApplyActionOptions =
@@ -65,10 +65,9 @@ export type OsdkActionParameters<
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
-  ActionSignature<T["parameters"]>;
-// NonNullable<T["__OsdkActionType"]> extends never
-//   ? ActionSignature<T["parameters"]>
-//   : NonNullable<T["__OsdkActionType"]>;
+  NonNullable<T["__OsdkActionType"]> extends never
+    ? ActionSignature<T["parameters"]>
+    : NonNullable<T["__OsdkActionType"]>;
 
 export type Actions<O extends OntologyDefinition<any>> = {
   [K in keyof O["actions"]]: ActionSignatureFromDef<O["actions"][K]>;
