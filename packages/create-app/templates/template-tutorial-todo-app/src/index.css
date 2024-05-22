@@ -13,6 +13,12 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+#root-container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
 #root {
   max-width: 1280px;
   margin: 2rem auto;
@@ -31,6 +37,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
+  flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
 }
