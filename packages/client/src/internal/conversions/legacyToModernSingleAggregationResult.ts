@@ -16,10 +16,8 @@
 
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
-import type {
-  AggregationClause,
-  AggregationResultsWithoutGroups,
-} from "../../query/index.js";
+import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
+import type { AggregationClause } from "../../query/aggregations/AggregationsClause.js";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
 export function legacyToModernSingleAggregationResult<

@@ -19,11 +19,6 @@ import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { FooInterface } from "../generatedNoCheck/index.js";
-import type {
-  FetchPageArgs,
-  FetchPageResult,
-  SelectArgToKeys,
-} from "../object/fetchPage.js";
 import { fetchPage, objectSetToSearchJsonV2 } from "../object/fetchPage.js";
 import {
   createObjectSet,
@@ -32,6 +27,8 @@ import {
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import { MockOntology } from "../util/test/mockOntology.js";
+import type { FetchPageArgs, SelectArgToKeys } from "./FetchPageArgs.js";
+import type { FetchPageResult } from "./FetchPageResult.js";
 
 describe(fetchPage, () => {
   type Objects = typeof MockOntology["objects"];

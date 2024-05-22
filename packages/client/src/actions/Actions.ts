@@ -25,13 +25,14 @@ import type {
   ActionResults,
   ValidateActionResponseV2,
 } from "@osdk/internal.foundry";
-import type { ObjectSet } from "../index.js";
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
-import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
+import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
+import type { OsdkBase } from "../OsdkBase.js";
+import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/PartialBy.js";
-import type { ActionReturnTypeForOptions } from "./applyAction.js";
+import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
 
 export type ApplyActionOptions =
   | { returnEdits?: true; validateOnly?: false }
@@ -42,10 +43,10 @@ export type ApplyActionOptions =
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
-      | Osdk<TTargetType>
+      | OsdkBase<TTargetType>
       | OsdkObjectPrimaryKeyType<TTargetType>
     : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
-      ? ObjectSet<TTargetType>
+      ? BaseObjectSet<TTargetType>
     : APD["type"] extends keyof DataValueClientToWire
       ? DataValueClientToWire[APD["type"]]
     : never;
@@ -64,9 +65,10 @@ export type OsdkActionParameters<
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
-  NonNullable<T["__OsdkActionType"]> extends never
-    ? ActionSignature<T["parameters"]>
-    : NonNullable<T["__OsdkActionType"]>;
+  ActionSignature<T["parameters"]>;
+// NonNullable<T["__OsdkActionType"]> extends never
+//   ? ActionSignature<T["parameters"]>
+//   : NonNullable<T["__OsdkActionType"]>;
 
 export type Actions<O extends OntologyDefinition<any>> = {
   [K in keyof O["actions"]]: ActionSignatureFromDef<O["actions"][K]>;

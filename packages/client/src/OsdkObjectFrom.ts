@@ -21,11 +21,8 @@ import type {
 } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
-import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
-
-export type OsdkObjectPrimaryKeyType<
-  O extends ObjectTypeDefinition<any>,
-> = PropertyValueWireToClient[O["primaryKeyType"]];
+import type { OsdkBase } from "./OsdkBase.js";
+import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
 
@@ -90,6 +87,7 @@ export type Osdk<
   P extends string = "$all",
   Z extends string = never, // this is the underlying's props
 > =
+  & OsdkBase<Q>
   & {
     [
       PP in keyof Q["properties"] as (
@@ -108,20 +106,11 @@ export type Osdk<
     /** @deprecated use $apiName */
     __apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
-    $apiName: Q["apiName"] & {
-      __OsdkType?: Q["apiName"];
-    };
-
-    $objectType: string;
-
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
 
-    $primaryKey: Q extends ObjectTypeDefinition<any>
-      ? OsdkObjectPrimaryKeyType<Q>
-      : unknown;
     // $uniqueId: string; // will be dynamic
 
     $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>

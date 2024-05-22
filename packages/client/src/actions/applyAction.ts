@@ -20,20 +20,9 @@ import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
-import type {
-  ActionEditResponse,
-  ActionValidationResponse,
-  ApplyActionOptions,
-  OsdkActionParameters,
-} from "./Actions.js";
+import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
+import type { ApplyActionOptions, OsdkActionParameters } from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-
-// cannot specify both validateOnly and returnEdits as true
-
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { validateOnly: true } ? ActionValidationResponse
-    : Op extends { returnEdits: true } ? ActionEditResponse
-    : undefined;
 
 export async function applyAction<
   AD extends ActionDefinition<any, any>,

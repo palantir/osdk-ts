@@ -733,6 +733,30 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  packages/client.api:
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/client.test.ontology:
+    devDependencies:
+      '@osdk/api':
+        specifier: workspace:^
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:^
+        version: link:../client
+      '@osdk/generator':
+        specifier: workspace:^
+        version: link:../generator
+      '@osdk/shared.test':
+        specifier: workspace:^
+        version: link:../shared.test
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/create-app:
     dependencies:
       consola:

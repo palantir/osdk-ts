@@ -19,20 +19,21 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
-import { modernToLegacyWhereClause } from "../internal/conversions/index.js";
+import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { aggregate } from "../object/aggregate.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import {
   fetchPageInternal,
   fetchPageWithErrorsInternal,
-  type SelectArg,
 } from "../object/fetchPage.js";
+import { type SelectArg } from "../object/FetchPageArgs.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
-import { aggregate } from "../object/index.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
+import type { BaseObjectSet } from "./BaseObjectSet.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 
@@ -67,7 +68,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     objectType: objectType["apiName"] as string,
   },
 ): ObjectSet<Q> {
-  const base: ObjectSet<Q> = {
+  const base: Omit<ObjectSet<Q>, keyof BaseObjectSet<Q>> = {
     aggregate: (aggregate<Q, any>).bind(
       globalThis,
       clientCtx,
@@ -245,5 +246,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
 
   objectSetDefinitions.set(base, objectSet);
 
-  return base;
+  // we are using a type assertion because the marker symbol defined in BaseObjectSet isn't actually used
+  // at runtime.
+  return base as ObjectSet<Q>;
 }

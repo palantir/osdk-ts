@@ -17,7 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { describe, expectTypeOf, it } from "vitest";
 import type { Employee, FooInterface } from "./generatedNoCheck/index.js";
-import type { FetchPageResult } from "./object/fetchPage.js";
+import type { FetchPageResult } from "./object/FetchPageResult.js";
 import type { ConvertProps, Osdk, ValidToFrom } from "./OsdkObjectFrom.js";
 
 describe("ConvertProps", () => {

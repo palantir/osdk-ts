@@ -1,0 +1,55 @@
+{
+  "name": "@osdk/client.test.ontology",
+  "private": true,
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/esm/index.js",
+      "browser": "./build/browser/index.browser.js"
+    },
+    "./*": {
+      "import": "./build/esm/public/*.js",
+      "browser": "./build/browser/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node ./generateMockOntology.js",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "tsup",
+    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+  },
+  "peerDependencies": {
+    "@osdk/api": "workspace:*",
+    "@osdk/client": "workspace:*"
+  },
+  "devDependencies": {
+    "@osdk/api": "workspace:^",
+    "@osdk/client": "workspace:^",
+    "@osdk/generator": "workspace:^",
+    "@osdk/shared.test": "workspace:^",
+    "typescript": "^5.4.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
+}

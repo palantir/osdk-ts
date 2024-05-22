@@ -62,7 +62,9 @@ export function createClientInternal(
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
-      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
+      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
+        any
+      > as any;
     } else {
       throw new Error("not implemented");
     }

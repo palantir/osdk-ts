@@ -25,6 +25,7 @@ tsconfig.tsbuildinfo
 /tmp/
 
 packages/client/src/generatedNoCheck
+packages/client.test.ontology/src/generatedNoCheck
 packages/legacy-client/src/generatedNoCheck
 
 .log

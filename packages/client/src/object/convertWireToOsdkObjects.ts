@@ -28,7 +28,7 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 import type { WhereClause } from "../query/WhereClause.js";
 import { Attachment } from "./Attachment.js";
 import { createAsyncClientCache, createClientCache } from "./Cache.js";
-import type { SelectArg } from "./fetchPage.js";
+import type { SelectArg } from "./FetchPageArgs.js";
 import { fetchSingle, fetchSingleWithErrors } from "./fetchSingle.js";
 
 const OriginClient = Symbol();

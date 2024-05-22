@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-export type * from "./aggregations/AggregatableKeys.js";
-export type * from "./aggregations/AggregationResultsWithGroups.js";
-export type * from "./aggregations/AggregationResultsWithoutGroups.js";
-export type * from "./aggregations/AggregationsClause.js";
-export type * from "./aggregations/AggregationsResults.js";
-export type {
-  AllGroupByValues,
-  GroupByClause,
-} from "./aggregations/GroupByClause.js";
-export type {
-  AndWhereClause,
-  NotWhereClause,
-  OrWhereClause,
-  PossibleWhereClauseFilters,
-  WhereClause,
-} from "./WhereClause.js";
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("mytsup")).default(options, {
+    esmOnly: true,
+  })
+);
