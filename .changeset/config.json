@@ -3,7 +3,8 @@
   "changelog": "@changesets/cli/changelog",
   "commit": false,
   "fixed": [
-    ["@osdk/foundry.*", "@osdk/foundry"]
+    ["@osdk/foundry.*", "@osdk/foundry"],
+    ["@osdk/client.api", "@osdk/client"]
   ],
   "linked": [],
   "access": "restricted",
