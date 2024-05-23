@@ -149,14 +149,14 @@ export class MetadataClient {
         if (objectTypeRidManySide === objectTypeRid) {
           helper(
             manyToOneLinkMetadata,
-            "SOURCE",
+            "TARGET",
             objectTypeRidOneSide,
           );
         }
         if (objectTypeRidOneSide === objectTypeRid) {
           helper(
             oneToManyLinkMetadata,
-            "TARGET",
+            "SOURCE",
             objectTypeRidManySide,
           );
         }
