@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  DO_NOT_TRACK: 1
+
 on:
   push:
     branches: 
