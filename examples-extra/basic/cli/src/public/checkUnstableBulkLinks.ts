@@ -14,15 +14,33 @@
  * limitations under the License.
  */
 
-import { Employee } from "@osdk/examples.basic.sdk";
+import { Employee, WeatherStation } from "@osdk/examples.basic.sdk";
 import { client } from "../client.js";
 import { logger } from "../logger.js";
 
 export async function checkUnstableBulkLinks() {
+  // Test one to many
+  const stations = await client(WeatherStation).fetchPage();
+  for await (
+    const {
+      object,
+      linkApiName,
+      otherObjectApiName,
+      otherObjectPk,
+    } of client.__UNSTABLE_getBulkLinks(stations.data, [
+      "boundariesUsState",
+    ])
+  ) {
+    logger.info(
+      `Found link ${object.$objectType}:${object.$primaryKey} <- (${linkApiName}) -> ${otherObjectApiName}:${otherObjectPk}`,
+    );
+  }
+
   const { data: employees } = await client(Employee).fetchPage({
     pageSize: 100,
   });
 
+  // test many to many
   logger.debug("Fetching the bulk links");
 
   for await (
