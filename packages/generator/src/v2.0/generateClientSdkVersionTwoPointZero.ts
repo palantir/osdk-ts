@@ -123,7 +123,7 @@ export async function generateClientSdkVersionTwoPointZero(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
         import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
-        import { Osdk } from "@osdk/client";
+        import { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 

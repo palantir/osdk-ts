@@ -18,11 +18,12 @@ import type {
   AggregationGroupByV2,
   AggregationRangeV2,
 } from "@osdk/internal.foundry";
-import {
-  DurationMapping,
-  type GroupByRange,
+import type {
+  AllGroupByValues,
+  GroupByClause,
+  GroupByRange,
 } from "../../query/aggregations/GroupByClause.js";
-import type { AllGroupByValues, GroupByClause } from "../../query/index.js";
+import { DurationMapping } from "../../query/aggregations/GroupByClause.js";
 
 export function modernToLegacyGroupByClause(
   groupByClause: GroupByClause<any> | undefined,

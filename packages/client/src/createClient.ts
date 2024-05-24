@@ -20,9 +20,9 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { ActionSignatureFromDef } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
-import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
@@ -62,7 +62,9 @@ export function createClientInternal(
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
-      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
+      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
+        any
+      > as any;
     } else {
       throw new Error("not implemented");
     }

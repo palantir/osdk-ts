@@ -15,7 +15,7 @@
  */
 
 import type { ObjectTypePropertyDefinition } from "@osdk/api";
-import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
+import type { PropertyValueWireToClient } from "@osdk/client.api";
 
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
   T["multiplicity"] extends true ? Array<U> : U;

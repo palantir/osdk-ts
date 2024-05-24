@@ -15,12 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type {
-  AggregatableKeys,
-  AggregationClause,
-  GroupByClause,
-  WhereClause,
-} from "../../query/index.js";
+import type { WhereClause } from "../WhereClause.js";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
+import type { AggregationClause } from "./AggregationsClause.js";
+import type { GroupByClause } from "./GroupByClause.js";
 
 export type AggregateOpts<
   Q extends ObjectOrInterfaceDefinition,

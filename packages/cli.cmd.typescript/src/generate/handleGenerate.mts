@@ -25,9 +25,11 @@ import {
   __UNSTABLE_generateClientSdkPackage,
   generateClientSdkVersionOneDotOne,
   generateClientSdkVersionTwoPointZero,
+  getExpectedDependencies,
 } from "@osdk/generator";
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
+import deepEqual from "fast-deep-equal";
 import { findUp } from "find-up";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -128,7 +130,6 @@ async function generateClientSdk(
   args: TypescriptGenerateArgs,
 ) {
   const minimalFs = createNormalFs();
-  const dependencyVersions = await getDependencyVersions();
 
   try {
     if (args.clean) {
@@ -137,7 +138,51 @@ async function generateClientSdk(
     }
 
     if (!args.asPackage) {
-      await generateSourceFiles(args, ontology, createNormalFs());
+      await generateSourceFiles(args, ontology, minimalFs);
+
+      const packageJsonPath = await findUp("package.json", {
+        cwd: args.outDir,
+      });
+
+      if (!packageJsonPath) {
+        return true;
+      }
+      const packageJsonOriginal = JSON.parse(
+        await fs.promises.readFile(packageJsonPath, "utf-8"),
+      );
+      const packageJson = JSON.parse(
+        await fs.promises.readFile(packageJsonPath, "utf-8"),
+      );
+
+      const dependencyVersions = await getDependencyVersions();
+      if (args.internal) {
+        dependencyVersions.osdkApiVersion = "workspace:^";
+        dependencyVersions.osdkClientApiVersion = "workspace:^";
+        dependencyVersions.osdkClientVersion = "workspace:^";
+        dependencyVersions.osdkLegacyClientVersion = "workspace:^";
+      }
+
+      const expectedDeps = getExpectedDependencies(
+        args.beta ? "2.0" : "1.1",
+        dependencyVersions,
+      );
+
+      for (const [type, deps] of Object.entries(expectedDeps)) {
+        if (!(type in packageJson)) {
+          packageJson[type] = deps;
+        } else {
+          Object.assign(packageJson[type], deps);
+        }
+      }
+
+      // only write if changed
+      if (!deepEqual(packageJsonOriginal, packageJson)) {
+        await fs.promises.writeFile(
+          packageJsonPath,
+          JSON.stringify(packageJson, undefined, 2) + "\n",
+        );
+      }
+
       return true;
     }
 
@@ -148,7 +193,7 @@ async function generateClientSdk(
       args.outDir,
       ontology,
       minimalFs,
-      dependencyVersions,
+      await getDependencyVersions(),
       process.env.PACKAGE_CLI_VERSION!,
     );
     return true;
@@ -175,6 +220,7 @@ export async function getDependencyVersions() {
   const areTheTypesWrongVersion =
     ourPackageJson.dependencies["@arethetypeswrong/cli"];
   const osdkClientVersion = `^${process.env.PACKAGE_CLIENT_VERSION}`;
+  const osdkClientApiVersion = `^${process.env.PACKAGE_CLIENT_API_VERSION}`;
   const osdkApiVersion = `^${process.env.PACKAGE_API_VERSION}`;
   const osdkLegacyClientVersion =
     `^${process.env.PACKAGE_LEGACY_CLIENT_VERSION}`;
@@ -185,6 +231,7 @@ export async function getDependencyVersions() {
     areTheTypesWrongVersion,
     osdkApiVersion,
     osdkClientVersion,
+    osdkClientApiVersion,
     osdkLegacyClientVersion,
   };
 }

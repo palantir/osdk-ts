@@ -21,17 +21,18 @@ import type {
   ObjectSetActionDataType,
   OntologyDefinition,
 } from "@osdk/api";
-import type {
-  ActionResults,
-  ValidateActionResponseV2,
-} from "@osdk/internal.foundry";
-import type { ObjectSet } from "../index.js";
 import type { DataValueClientToWire } from "../mapping/DataValueMapping.js";
-import type { Osdk, OsdkObjectPrimaryKeyType } from "../OsdkObjectFrom.js";
+import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
+import type { OsdkBase } from "../OsdkBase.js";
+import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
 import type { PartialBy } from "../util/PartialBy.js";
-import type { ActionReturnTypeForOptions } from "./applyAction.js";
+import type {
+  ActionResults,
+  ValidateActionResponseV2,
+} from "./ActionResults.js";
+import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
 
 export type ApplyActionOptions =
   | { returnEdits?: true; validateOnly?: false }
@@ -42,10 +43,10 @@ export type ApplyActionOptions =
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
-      | Osdk<TTargetType>
+      | OsdkBase<TTargetType>
       | OsdkObjectPrimaryKeyType<TTargetType>
     : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
-      ? ObjectSet<TTargetType>
+      ? BaseObjectSet<TTargetType>
     : APD["type"] extends keyof DataValueClientToWire
       ? DataValueClientToWire[APD["type"]]
     : never;

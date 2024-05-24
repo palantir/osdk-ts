@@ -91,6 +91,10 @@ export const generateCommand: CommandModule<
             type: "boolean",
             description: "Clean the output directory before generating",
           },
+          internal: {
+            type: "boolean",
+            default: false,
+          },
         } as const,
       ).group(
         ["ontologyPath", "outDir", "version"],

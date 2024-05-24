@@ -17,13 +17,10 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/internal.foundry";
 import { PalantirApiError } from "@osdk/shared.net.errors";
-import type { Osdk } from "../index.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  fetchPage,
-  type FetchPageArgs,
-  type SelectArgToKeys,
-} from "./fetchPage.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import { fetchPage } from "./fetchPage.js";
+import { type FetchPageArgs, type SelectArgToKeys } from "./FetchPageArgs.js";
 import type { Result } from "./Result.js";
 
 export async function fetchSingle<

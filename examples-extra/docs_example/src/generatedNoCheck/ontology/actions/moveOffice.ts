@@ -1,5 +1,5 @@
 import type { ActionDefinition } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action

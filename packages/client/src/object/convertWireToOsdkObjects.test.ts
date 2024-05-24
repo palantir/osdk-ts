@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
+import { Employee, Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import {
-  Employee,
-  Ontology as MockOntology,
-} from "../generatedNoCheck/index.js";
 import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
