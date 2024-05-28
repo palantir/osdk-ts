@@ -78,7 +78,37 @@ export async function generateClientSdkVersionTwoPointZero(
       import * as Interfaces from "./ontology/interfaces${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
-      const _Ontology = {
+      export interface Ontology extends OntologyDefinition<${
+        stringUnionFrom(objectNames)
+      }> {
+        metadata: OntologyMetadata,
+        objects: {
+          ${
+        objectNames.map((objectName) => {
+          return `${objectName}: Objects.${objectName}`;
+        }).join(",\n")
+      }
+        },
+        actions: {
+          ${
+        actionNames.map((actionName) => {
+          return `${actionName}: typeof Actions.${actionName}`;
+        }).join(",\n")
+      }
+        },
+        queries: {
+          // TODO
+        },
+        interfaces: {
+          ${
+        interfaceNames.map((objectName) => {
+          return `${objectName}: Interfaces.${objectName}`;
+        }).join(",\n")
+      }
+      }
+    }
+
+      export const Ontology: Ontology = {
         metadata: OntologyMetadata,
         objects: {
           ${
@@ -106,11 +136,8 @@ export async function generateClientSdkVersionTwoPointZero(
       }
               
         }
-      } satisfies OntologyDefinition<${stringUnionFrom(objectNames)}>;
+      };
 
-      type _Ontology = typeof _Ontology;
-      export interface Ontology extends _Ontology {}
-      export const Ontology = _Ontology as Ontology;
     `,
     ),
   );

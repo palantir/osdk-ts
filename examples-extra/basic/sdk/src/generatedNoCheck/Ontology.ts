@@ -4,7 +4,42 @@ import * as Actions from './ontology/actions/index.js';
 import * as Interfaces from './ontology/interfaces.js';
 import * as Objects from './ontology/objects.js';
 
-const _Ontology = {
+export interface Ontology
+  extends OntologyDefinition<
+    | 'BoundariesUsState'
+    | 'BuilderDeploymentState'
+    | 'Employee'
+    | 'ObjectTypeWithAllPropertyTypes'
+    | 'Person'
+    | 'Todo'
+    | 'Venture'
+    | 'WeatherStation'
+  > {
+  metadata: OntologyMetadata;
+  objects: {
+    BoundariesUsState: Objects.BoundariesUsState;
+    BuilderDeploymentState: Objects.BuilderDeploymentState;
+    Employee: Objects.Employee;
+    ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes;
+    Person: Objects.Person;
+    Todo: Objects.Todo;
+    Venture: Objects.Venture;
+    WeatherStation: Objects.WeatherStation;
+  };
+  actions: {
+    actionTakesAllParameterTypes: typeof Actions.actionTakesAllParameterTypes;
+    assignEmployee1: typeof Actions.assignEmployee1;
+    createTodo: typeof Actions.createTodo;
+  };
+  queries: {
+    // TODO
+  };
+  interfaces: {
+    FooInterface: Interfaces.FooInterface;
+  };
+}
+
+export const Ontology: Ontology = {
   metadata: OntologyMetadata,
   objects: {
     BoundariesUsState: Objects.BoundariesUsState,
@@ -27,17 +62,4 @@ const _Ontology = {
   interfaces: {
     FooInterface: Interfaces.FooInterface,
   },
-} satisfies OntologyDefinition<
-  | 'BoundariesUsState'
-  | 'BuilderDeploymentState'
-  | 'Employee'
-  | 'ObjectTypeWithAllPropertyTypes'
-  | 'Person'
-  | 'Todo'
-  | 'Venture'
-  | 'WeatherStation'
->;
-
-type _Ontology = typeof _Ontology;
-export interface Ontology extends _Ontology {}
-export const Ontology = _Ontology as Ontology;
+};
