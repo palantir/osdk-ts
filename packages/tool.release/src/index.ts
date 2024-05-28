@@ -243,9 +243,11 @@ async function getGithubTokenOrFail() {
     );
 
     try {
-      return (await getStdoutOrThrow("gh", ["auth", "token"], {
+      const token = (await getStdoutOrThrow("gh", ["auth", "token"], {
         silent: true,
       })).trim();
+      consola.info("GitHub token was found through GitHub CLI.");
+      return token;
     } catch (e) {
       consola.error(
         "Unable to find GITHUB_TOKEN in environment or GitHub CLI, please add it to the environment",
@@ -257,6 +259,6 @@ async function getGithubTokenOrFail() {
       "Please add the GITHUB_TOKEN to the changesets action",
     );
   }
-  consola.info("GitHub token was found.");
+  consola.info("GitHub token was found in environment.");
   return githubToken;
 }
