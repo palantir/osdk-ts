@@ -36,7 +36,8 @@ import type {
   SearchObjectsError,
 } from "../generatedNoCheck/@test-app/osdk";
 
-import { apiServer, loadAll } from "@osdk/shared.test";
+import { fromAsyncIterator } from "@osdk/legacy-client";
+import { apiServer } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -64,7 +65,7 @@ describe("SearchObjects", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results with async iter", async () => {
-    const employees = await loadAll(
+    const employees = await fromAsyncIterator(
       client.ontology
         .objects.Employee.orderBy(emp => emp.employeeId.asc()).asyncIter(),
     );
@@ -319,7 +320,7 @@ describe("SearchObjects", () => {
   });
 
   it("orders objects in ascending order with a filter, and returns all results", async () => {
-    const result: Employee[] = await loadAll(
+    const result: Employee[] = await fromAsyncIterator(
       client.ontology
         .objects.Employee.where(emp => emp.employeeId.eq(50030))
         .orderBy(emp => emp.employeeId.asc())

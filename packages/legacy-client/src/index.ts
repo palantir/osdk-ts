@@ -388,3 +388,4 @@ export type {
   TokenValue,
   UnsubscribeFunction,
 } from "./oauth-client";
+export { fromAsyncIterator } from "./util";
