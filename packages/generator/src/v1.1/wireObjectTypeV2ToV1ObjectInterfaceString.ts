@@ -41,7 +41,7 @@ ${
   /** \@deprecated please migrate to \$apiName instead */
   readonly __apiName: "${objectTypeWithLinks.objectType.apiName}" & {${
     objectTypeWithLinks.linkTypes.map(linkType => {
-      return `/** \@deprecated please migrate to pivotTo(${linkType.apiName}) instead */ searchAround${
+      return `/** \@deprecated please migrate to pivotTo("${linkType.apiName}") instead */ searchAround${
         linkType.apiName.charAt(0).toUpperCase() + linkType.apiName.slice(1)
       }?: never`;
     })
