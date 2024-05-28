@@ -15,7 +15,7 @@
  */
 
 export function createFetchHeaderMutator(
-  fetchFn: typeof fetch = fetch,
+  fetchFn: typeof fetch | undefined = fetch,
   mutator: (headers: Headers) => Promise<Headers> | Headers,
 ): typeof fetch {
   return async function headerMutatedFetch(

@@ -20,5 +20,6 @@
     "mytsup",
     "pino",
     "todoapp"
-  ]
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

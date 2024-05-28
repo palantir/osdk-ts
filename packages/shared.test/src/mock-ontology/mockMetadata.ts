@@ -15,4 +15,5 @@
  */
 
 export const MOCK_ORIGIN = "https://mock.com";
-export const MOCK_BASE_URL = `${MOCK_ORIGIN}/api/v2/ontologies/`;
+export const MOCK_BASE_URL: `${typeof MOCK_ORIGIN}/api/v2/ontologies/` =
+  `${MOCK_ORIGIN}/api/v2/ontologies/`;

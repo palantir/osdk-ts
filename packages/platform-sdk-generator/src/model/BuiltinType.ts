@@ -23,7 +23,7 @@ export class BuiltinType extends SimpleType {
     super();
   }
 
-  get tsReferenceString() {
+  get tsReferenceString(): string {
     return convertIrPrimitiveTypeToTsTypeReference(
       this.primitiveType,
     );

@@ -45,7 +45,7 @@ interface CliArgs {
   corsProxy?: boolean;
 }
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<void> {
   const base: Argv<CliArgs> = yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))

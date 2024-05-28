@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-const consola = console;
+const consola: typeof console = console;
 export { consola };

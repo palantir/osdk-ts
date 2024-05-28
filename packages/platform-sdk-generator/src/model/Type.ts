@@ -36,7 +36,7 @@ export abstract class SimpleType extends Type {
     return new Set();
   }
 
-  get declaration() {
+  get declaration(): string {
     return this.tsReferenceString;
   }
 }

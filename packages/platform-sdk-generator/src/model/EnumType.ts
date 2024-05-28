@@ -21,7 +21,7 @@ export class EnumType extends SimpleType {
     super();
   }
 
-  get tsReferenceString() {
+  get tsReferenceString(): string {
     return this.values.map(a => `"${a}"`).join(" | ");
   }
 }

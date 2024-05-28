@@ -23,6 +23,8 @@ import {
   listInterfaceTypes,
   listOutgoingLinkTypesV2,
 } from "@osdk/gateway/requests";
+import type { OntologyFullMetadata } from "@osdk/gateway/types";
+import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import {
@@ -43,7 +45,9 @@ import {
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export function getOntology(ontologyApiName: string) {
+export function getOntology(
+  ontologyApiName: string,
+): OntologyFullMetadata {
   if (
     ontologyApiName !== fullOntology.ontology.apiName
     && ontologyApiName !== fullOntology.ontology.rid
@@ -123,7 +127,7 @@ type ConjureObjectTypeInfo = {
   typeGroups: [];
 };
 
-export const ontologyMetadataEndpoint = [
+export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   /**
    * Load ObjectSet Objects
    */

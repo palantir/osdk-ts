@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export function withoutRid<T extends { __rid?: any }>(o: T) {
+export function withoutRid<T extends { __rid?: any }>(o: T): Omit<T, "__rid"> {
   const { __rid, ...r } = o;
   return r;
 }

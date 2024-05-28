@@ -20,7 +20,7 @@ import { getPackages } from "@manypkg/get-packages";
 export async function getChangedPackages(
   cwd: string,
   previousVersions: Map<string, string>,
-) {
+): Promise<Package[]> {
   const { packages } = await getPackages(cwd);
   const changedPackages = new Set<Package>();
 

@@ -49,7 +49,7 @@ export async function generate(
   apiSpec: ApiSpec,
   outputDirectory: string,
   options: GenerateOptions,
-) {
+): Promise<void> {
   const project = new Project({
     compilerOptions: {
       declaration: true,

@@ -21,7 +21,7 @@ export class OptionalType extends SingleSubType {
     return `${this.subType.tsReferenceString} | undefined`;
   }
 
-  get declaration() {
+  get declaration(): string {
     return this.tsReferenceString;
   }
 

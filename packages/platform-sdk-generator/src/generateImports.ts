@@ -18,12 +18,12 @@ import type { Component } from "./model/Component.js";
 import type { Namespace } from "./model/Namespace.js";
 import { groupByAsMap } from "./util/groupByAsMap.js";
 
-export const SKIP = Symbol("SKIP");
+export const SKIP: unique symbol = Symbol("SKIP");
 
 export function generateImports(
   referencedComponents: Set<Component>,
   namespaceMapping: Map<Namespace, string | typeof SKIP>,
-) {
+): string {
   const groups = groupByAsMap(referencedComponents, "namespace");
   const imports = [...groups.entries()].filter(([ns]) =>
     namespaceMapping.get(ns) !== SKIP

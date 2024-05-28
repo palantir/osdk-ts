@@ -33,7 +33,7 @@ interface RunArgs {
   check: boolean;
 }
 
-export async function run({ outputDirectory, check }: RunArgs) {
+export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   const resolvedOutput = path.resolve(outputDirectory);
   const tmpDir = createTmpDir();
   await generateExamples(tmpDir);

@@ -32,7 +32,7 @@ export async function writeResource2(
   resource: Resource,
   filePath: string,
   model: Model,
-) {
+): Promise<void> {
   const { out, referencedTypes } = generateMethods(resource, model);
 
   return writeCode(

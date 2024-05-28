@@ -16,7 +16,7 @@
 
 import type { OntologyObjectV2 } from "@osdk/gateway/types";
 
-export function getMockTodoObject() {
+export function getMockTodoObject(): OntologyObjectV2 & { __apiName: "Todo" } {
   return {
     __apiName: "Todo" as const,
     __primaryKey: 1,
@@ -24,13 +24,13 @@ export function getMockTodoObject() {
     id: "123",
     body: "body",
     complete: false,
-  } satisfies OntologyObjectV2;
+  };
 }
 
-export function getMockTaskObject() {
+export function getMockTaskObject(): OntologyObjectV2 & { __apiName: "Task" } {
   return {
     __apiName: "Task" as const,
     __primaryKey: 1,
     id: 1,
-  } satisfies OntologyObjectV2;
+  };
 }

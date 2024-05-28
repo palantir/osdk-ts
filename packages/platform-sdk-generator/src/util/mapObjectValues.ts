@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
-export function mapObjectValues<K, R>(obj: Record<string, K>, fn: (v: K) => R) {
+export function mapObjectValues<K, R>(
+  obj: Record<string, K>,
+  fn: (v: K) => R,
+): { [k: string]: R } {
   return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, fn(v)]));
 }

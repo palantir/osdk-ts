@@ -195,7 +195,10 @@ export const aggResp4: AggregateObjectsResponseV2 = {
   accuracy: "ACCURATE",
 };
 
-export const aggregationRequestHandlers = {
+export const aggregationRequestHandlers: Record<
+  string,
+  AggregateObjectsResponseV2
+> = {
   [stableStringify(aggReq1)]: aggResp1,
   [stableStringify(aggReq2)]: aggResp2,
   [stableStringify(aggReq3)]: aggResp3,

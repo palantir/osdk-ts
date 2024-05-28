@@ -16,7 +16,7 @@
 
 import type { Documentation } from "./ir/index.js";
 
-export function getCleanedUpJsdoc(doc?: Documentation) {
+export function getCleanedUpJsdoc(doc?: Documentation): string {
   if (doc?.description?.includes("*/")) {
     throw "unsupported description";
   }

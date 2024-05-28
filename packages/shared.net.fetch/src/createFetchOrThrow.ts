@@ -28,7 +28,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
   return async function fetchOrThrow(
     url: RequestInfo | URL,
     requestInit?: RequestInit,
-  ) {
+  ): Promise<Response> {
     let response;
 
     try {

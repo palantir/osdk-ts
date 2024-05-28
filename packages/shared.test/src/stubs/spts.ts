@@ -16,7 +16,7 @@
 
 import type { SharedPropertyType } from "@osdk/gateway/types";
 
-export const fooSpt = {
+export const fooSpt: SharedPropertyType = {
   rid: "ri.sharedPropertyType.main.sharedPropertyType.1",
   apiName: "fooSpt",
   dataType: {

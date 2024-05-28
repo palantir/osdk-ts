@@ -16,6 +16,7 @@
 
 import type {
   StreamTimeSeriesPointsRequest,
+  StreamTimeSeriesPointsResponse,
   TimeSeriesPoint,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
@@ -73,7 +74,7 @@ const rangeBodyRequest: StreamTimeSeriesPointsRequest = {
   },
 };
 
-export const streamPointsnoBody = {
+export const streamPointsnoBody: StreamTimeSeriesPointsResponse = {
   data: [
     timeSeriesPoint1,
     timeSeriesPoint1,
@@ -81,30 +82,30 @@ export const streamPointsnoBody = {
     timeSeriesPoint3,
     timeSeriesPoint3,
   ],
-  nextPageToken: null,
 };
-export const streamPointsRange = {
+export const streamPointsRange: StreamTimeSeriesPointsResponse = {
   data: [timeSeriesPoint2, timeSeriesPoint3],
-  nextPageToken: null,
 };
-export const streamPointsFrom = {
+export const streamPointsFrom: StreamTimeSeriesPointsResponse = {
   data: [timeSeriesPoint1, timeSeriesPoint1, timeSeriesPoint2],
-  nextPageToken: null,
 };
 
-export const firstPointRequestHandlers = {
+export const firstPointRequestHandlers: Record<string, TimeSeriesPoint> = {
   [pointPrimaryKey1]: timeSeriesPoint1,
   [pointPrimaryKey2]: timeSeriesPoint2,
   [pointPrimaryKey3]: timeSeriesPoint3,
 };
 
-export const lastPointRequestHandlers = {
+export const lastPointRequestHandlers: Record<string, TimeSeriesPoint> = {
   [pointPrimaryKey1]: timeSeriesPoint3,
   [pointPrimaryKey2]: timeSeriesPoint2,
   [pointPrimaryKey3]: timeSeriesPoint1,
 };
 
-export const streamPointsRequestHandlers = {
+export const streamPointsRequestHandlers: Record<
+  string,
+  StreamTimeSeriesPointsResponse
+> = {
   [stableStringify(noBodyRequest)]: streamPointsnoBody,
   [stableStringify(rangeBodyRequest)]: streamPointsRange,
   [stableStringify(fromBodyRequest)]: streamPointsFrom,

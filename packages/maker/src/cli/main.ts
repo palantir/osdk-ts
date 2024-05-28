@@ -25,7 +25,9 @@ import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
 import { defineSharedPropertyType } from "../api/defineSpt.js";
 
-export default async function main(args: string[] = process.argv) {
+export default async function main(
+  args: string[] = process.argv,
+): Promise<void> {
   const commandLineOpts: {
     input: string;
     output: string;

@@ -15,13 +15,24 @@
  */
 
 import { PalantirApiError } from "@osdk/shared.net.errors";
+import type { RequestInitRetryParams } from "fetch-retry";
 import fetchRetry from "fetch-retry";
 
 const INITIAL_DELAY = 1_000;
 const JITTER_FACTOR = 0.5;
 const MAX_RETRIES = 3;
 
-export function createRetryingFetch(fetch: typeof globalThis.fetch) {
+export function createRetryingFetch(
+  fetch: typeof globalThis.fetch,
+): (
+  input: RequestInfo | URL,
+  init?:
+    | (
+      & RequestInit
+      & RequestInitRetryParams<typeof globalThis.fetch>
+    )
+    | undefined,
+) => ReturnType<typeof globalThis.fetch> {
   return fetchRetry(fetch, {
     retryDelay(attempt) {
       const delay = INITIAL_DELAY * 2 ** attempt;

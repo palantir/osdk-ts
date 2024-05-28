@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export function addAll<T>(s: Set<T>, a: Iterable<T>) {
+export function addAll<T>(s: Set<T>, a: Iterable<T>): void {
   for (const x of a) {
     s.add(x);
   }

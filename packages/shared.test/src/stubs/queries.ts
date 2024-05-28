@@ -109,7 +109,7 @@ export const queryTypeTwoDimensionalAggregationResponse: ExecuteQueryResponse =
     },
   };
 
-export const emptyBody = JSON.stringify({
+export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
 

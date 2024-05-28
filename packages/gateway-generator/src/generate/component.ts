@@ -27,7 +27,7 @@ export function generateComponents(
   project: Project,
   options: GenerateOptions,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/components`);
   components.forEach(component =>
     generateComponent(component, directory, options, addCopyright)
@@ -39,7 +39,7 @@ export function generateComponent(
   directory: Directory,
   options: GenerateOptions,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const sourceFile = directory.createSourceFile(`${component.name}.ts`);
   const referenceSet = new Set<string>();
 

@@ -41,7 +41,7 @@ export async function publishPackages(
   { tag, gitTag = true }: { tag?: string; gitTag?: boolean },
   config: Config,
   octokit: Octokit,
-) {
+): Promise<PublishedResult[]> {
   const releaseTag = tag && tag.length > 0 ? tag : "latest";
   const { packages, tool } = await getPackages(cwd);
 

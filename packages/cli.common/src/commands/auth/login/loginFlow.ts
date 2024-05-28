@@ -22,12 +22,14 @@ import { exit } from "node:process";
 import { parse } from "node:url";
 import open from "open";
 import type { LoginArgs } from "./LoginArgs.js";
-import type { TokenResponse } from "./token.js";
+import type { TokenResponse, TokenSuccessResponse } from "./token.js";
 import { isTokenErrorResponse } from "./token.js";
 
 const BROWSER_PROMPT_TIME_MS = 60 * 1000;
 
-export async function invokeLoginFlow(args: LoginArgs) {
+export async function invokeLoginFlow(
+  args: LoginArgs,
+): Promise<TokenSuccessResponse> {
   consola.start(`Authenticating using application id: ${args.clientId}`);
   const redirectUrl = "http://localhost:8080/auth/callback";
   const port = parse(redirectUrl).port;

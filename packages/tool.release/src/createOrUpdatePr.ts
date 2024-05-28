@@ -25,7 +25,7 @@ export async function createOrUpdatePr(
   body: string,
   base: string,
   head: string,
-) {
+): Promise<void> {
   const pullRequest = await getExistingPr(
     `${context.repo.owner}/${context.repo.repo}`,
     head,
