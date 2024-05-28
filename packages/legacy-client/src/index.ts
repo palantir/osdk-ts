@@ -374,6 +374,7 @@ export type {
 } from "./client/index.js";
 export {
   ConfidentialClientAuth,
+  fromAsyncIterator,
   OAuthToken,
   PublicClientAuth,
   UserTokenAuth,

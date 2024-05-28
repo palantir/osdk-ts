@@ -20,6 +20,7 @@ import type {
   LoadObjectSetResponseV2,
   OntologyObjectV2,
 } from "@osdk/gateway/types";
+import { fromAsyncIterator } from "@osdk/legacy-client";
 import { createClientContext, isOk } from "@osdk/shared.net";
 import type { ClientContext } from "@osdk/shared.net";
 import {
@@ -251,7 +252,7 @@ describe("OsdkObjectSet", () => {
   it("supports select methods - asyncIter", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockObjectPage([getMockTodoObject()]);
-    const result = await loadAll(
+    const result = await fromAsyncIterator(
       os.select(["id", "body", "complete"]).asyncIter(),
     );
     expect(fetch).toHaveBeenCalledOnce();
@@ -427,7 +428,7 @@ describe("OsdkObjectSet", () => {
     }
 
     mockObjectPage([getMockTodoObject()]);
-    const linkedTodosResponse = await loadAll(
+    const linkedTodosResponse = await fromAsyncIterator(
       taskResponse.value.linkedTodos.asyncIter(),
     );
 

@@ -40,6 +40,7 @@ import type {
   Result,
 } from "../generatedNoCheck/@test-app/osdk/index.js";
 
+import { fromAsyncIterator } from "@osdk/legacy-client";
 import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import type {
   Employee,
@@ -285,7 +286,7 @@ describe("LoadObjects", () => {
 
   it("Gets All Objects with async iter", async () => {
     let iter = 0;
-    const employees: Employee[] = await loadAll(
+    const employees: Employee[] = await fromAsyncIterator(
       client.ontology
         .objects.Employee.asyncIter(),
     );
@@ -371,7 +372,7 @@ describe("LoadObjects", () => {
       );
 
     const emp = assertOkOrThrow(result);
-    const peepsAll: Employee[] = await loadAll(
+    const peepsAll: Employee[] = await fromAsyncIterator(
       await emp.peeps
         .asyncIter(),
     );
@@ -509,7 +510,7 @@ describe("LoadObjects", () => {
   });
 
   it("Loads specified properties when loading all with async iter", async () => {
-    const employees = await loadAll(
+    const employees = await fromAsyncIterator(
       client.ontology.objects.Employee.select(["fullName"])
         .asyncIter(),
     );

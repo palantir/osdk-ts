@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-export * from "./fetchFormEncoded.js";
-export * from "./fromAsyncIterator.js";
-export * from "./generateCodeChallenge.js";
-export * from "./generateRandomString.js";
-export * from "./oauthUris.js";
+export async function fromAsyncIterator<T>(
+  gen: AsyncIterableIterator<T>,
+): Promise<T[]> {
+  const result: T[] = [];
+  for await (const r of gen) {
+    result.push(r);
+  }
+  return result;
+}
