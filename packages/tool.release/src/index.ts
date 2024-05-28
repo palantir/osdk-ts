@@ -257,5 +257,6 @@ async function getGithubTokenOrFail() {
       "Please add the GITHUB_TOKEN to the changesets action",
     );
   }
+  consola.info("GitHub token was found.");
   return githubToken;
 }
