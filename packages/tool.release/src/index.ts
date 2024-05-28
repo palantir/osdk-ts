@@ -239,7 +239,7 @@ async function getGithubTokenOrFail() {
   const githubToken = process.env.GITHUB_TOKEN;
   if (!githubToken) {
     consola.info(
-      "Unable to find GITHUB_TOKEN in environment, trying github cli...",
+      "Unable to find GITHUB_TOKEN in environment, trying GitHub CLI...",
     );
 
     try {
@@ -248,7 +248,7 @@ async function getGithubTokenOrFail() {
       })).trim();
     } catch (e) {
       consola.error(
-        "Unable to find GITHUB_TOKEN in environment or github cli, please add it to the environment",
+        "Unable to find GITHUB_TOKEN in environment or GitHub CLI, please add it to the environment",
       );
       consola.error("Output from gh auth token: ", e);
     }
