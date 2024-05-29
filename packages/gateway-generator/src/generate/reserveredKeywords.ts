@@ -62,13 +62,13 @@ const reservedKeywords = new Set([
   "yield",
 ]);
 
-export function addUnderscoreIfIsReservedKeyword(name: string) {
+export function addUnderscoreIfIsReservedKeyword(name: string): string {
   if (isReservedKeyword(name)) {
     return `${name}_`;
   }
   return name;
 }
 
-export function isReservedKeyword(name: string) {
+export function isReservedKeyword(name: string): boolean {
   return reservedKeywords.has(name);
 }

@@ -52,7 +52,7 @@ export class Component extends Type {
     return this.component.name;
   }
 
-  get declaration() {
+  get declaration(): string {
     const component = this.component;
     const dt = this.component.type;
     const isAlias = dt.type !== "object";

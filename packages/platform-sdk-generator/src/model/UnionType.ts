@@ -30,7 +30,7 @@ export class UnionType extends SimpleType {
     return new Set(Object.values(this.subTypes));
   }
 
-  get tsReferenceString() {
+  get tsReferenceString(): string {
     return Object.entries(this.subTypes).map(([name, type]) =>
       `{ ${this.discriminator}: "${name}" } & ${type.tsReferenceString}`
     ).join("|");

@@ -44,7 +44,7 @@ export class StaticOperation {
     this.auth = spec.auth;
   }
 
-  get referencedComponents() {
+  get referencedComponents(): Set<Component> {
     const ret = new Set<Component>();
     if (typeof this.responseType !== "string") {
       addAll(ret, this.responseType.referencedComponents);
@@ -56,7 +56,7 @@ export class StaticOperation {
     return ret;
   }
 
-  get responseMimeType() {
+  get responseMimeType(): string {
     const { body } = this.spec.response;
     if (body.type === "ok") {
       const { responseType } = body.ok;
@@ -74,7 +74,7 @@ export class StaticOperation {
     }
   }
 
-  get responseType() {
+  get responseType(): Type | "unknown" | "void" {
     const { body } = this.spec.response;
     if (body.type === "ok") {
       const { responseType, required } = body.ok;
@@ -93,7 +93,7 @@ export class StaticOperation {
     }
   }
 
-  get requestBodyInfo() {
+  get requestBodyInfo(): { type: Type | undefined; mimeType: string } {
     const requestType = this.spec.requestBody?.body.requestType;
     const mimeType = requestType == null
       ? ""
@@ -108,7 +108,7 @@ export class StaticOperation {
     return { mimeType, type };
   }
 
-  get requestMimeType() {
+  get requestMimeType(): string {
     const requestType = this.spec.requestBody?.body.requestType;
     const mimeType = requestType == null
       ? ""
@@ -119,7 +119,7 @@ export class StaticOperation {
     return mimeType;
   }
 
-  get requestType() {
+  get requestType(): Type | "unknown" {
     const requestType = this.spec.requestBody?.body.requestType;
 
     const type = requestType?.type === "component"
@@ -129,11 +129,17 @@ export class StaticOperation {
     return type;
   }
 
-  get parametersByType() {
+  get parametersByType(): Record<
+    "PATH" | "QUERY" | "HEADER",
+    | { name: string; type: Type; kind: "PATH" | "QUERY" | "HEADER" }[]
+    | undefined
+  > {
     return groupByAsObject(this.parameters, "kind");
   }
 
-  get parameters() {
+  get parameters(): Array<
+    { name: string; type: Type; kind: "PATH" | "QUERY" | "HEADER" }
+  > {
     type Params = Array<
       { name: string; type: Type; kind: "PATH" | "QUERY" | "HEADER" }
     >;

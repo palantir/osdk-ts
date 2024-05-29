@@ -24,7 +24,9 @@ import { generatePlatformSdkV2 } from "./generatePlatformSdkv2.js";
 import type { ApiSpec } from "./ir/index.js";
 import { updateSls } from "./updateSls.js";
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(
+  args: string[] = process.argv,
+): Promise<{ [x: string]: unknown; _: (string | number)[]; $0: string }> {
   const base = yargs(hideBin(args))
     .version(false)
     .command(new GenerateCommand())
@@ -42,7 +44,7 @@ export interface Options {
 }
 
 export class GenerateCommand implements CommandModule<{}, Options> {
-  public aliases = [];
+  public aliases = [] as const;
 
   public command = "generate";
 
@@ -72,7 +74,7 @@ export class GenerateCommand implements CommandModule<{}, Options> {
       });
   }
 
-  public handler = async (args: Arguments<Options>) => {
+  public handler = async (args: Arguments<Options>): Promise<void> => {
     const input = args.inputFile;
     const output = args.outputDir;
 

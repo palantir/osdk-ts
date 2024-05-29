@@ -32,8 +32,6 @@ export interface GenerateOpenApiArgs {
 }
 
 export class GenerateCommand implements CommandModule<{}, GenerateOpenApiArgs> {
-  public aliases = [];
-
   public command = "generate";
 
   public describe = "Generate TypeScript bindings for a OpenApi API";
@@ -62,7 +60,9 @@ export class GenerateCommand implements CommandModule<{}, GenerateOpenApiArgs> {
       });
   }
 
-  public handler = async (args: Arguments<GenerateOpenApiArgs>) => {
+  public handler = async (
+    args: Arguments<GenerateOpenApiArgs>,
+  ): Promise<void> => {
     const generateVisitors = args.generateVisitors ?? true;
     const input = args.inputFile;
     const output = args.outputDir;

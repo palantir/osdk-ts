@@ -17,6 +17,7 @@
 import { aggregateObjectSetV2, loadObjectSetV2 } from "@osdk/gateway/requests";
 import type { LoadObjectSetResponseV2 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
+import type { RequestHandler } from "msw";
 import { InvalidRequest } from "../errors.js";
 import { filterObjectsProperties } from "../filterObjects.js";
 import { aggregationRequestHandlers } from "../stubs/aggregationRequests.js";
@@ -28,7 +29,7 @@ import {
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export const objectSetHandlers = [
+export const objectSetHandlers: Array<RequestHandler> = [
   /**
    * Load ObjectSet Objects
    */

@@ -55,7 +55,7 @@ export async function run(
     osdkRegistryUrl,
     corsProxy,
   }: RunArgs,
-) {
+): Promise<void> {
   consola.log("");
   consola.start(
     `Creating project ${green(project)} using template ${green(template.id)}`,

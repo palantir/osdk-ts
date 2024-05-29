@@ -190,7 +190,7 @@ export const queryTypeTwoDimensionalAggregation: QueryTypeV2 = {
   version: "0.11.0",
 };
 
-export const queryTypes = [
+export const queryTypes: QueryTypeV2[] = [
   addOneQueryType,
   queryTypeReturnsStruct,
   queryTypeReturnsDate,

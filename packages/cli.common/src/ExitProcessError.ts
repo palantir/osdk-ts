@@ -19,7 +19,7 @@ export class ExitProcessError extends Error {
     public readonly errorCode: number,
     public readonly msg?: string,
     public readonly tip?: string,
-    public readonly originalError?: Error,
+    public readonly originalError?: Error | undefined,
   ) {
     super(msg);
   }

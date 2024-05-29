@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
+import type { RequestHandler } from "msw";
 import { http, HttpResponse } from "msw";
 import { ActionTypeWithUnsupportedTypes } from "../stubs/actionsTypes.js";
 import { defaultOntology } from "../stubs/ontologies.js";
 import { authHandlerMiddleware } from "./commonHandlers.js";
 
-export const unsupportedMetadataHandler = [
+export const unsupportedMetadataHandler: Array<RequestHandler> = [
   /**
    * List ActionTypes
    */

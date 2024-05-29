@@ -20,7 +20,7 @@ export async function addPackagesToPackageJson(
   packageJsonPath: string,
   packagesToAdd: string[],
   section: "dependencies" | "devDependencies" = "dependencies",
-) {
+): Promise<void> {
   const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
   Object.assign(
     packageJson[section],

@@ -16,10 +16,10 @@
 
 import { colorize } from "consola/utils";
 
-export function green(text: string) {
+export function green(text: string): string {
   return colorize("green", text);
 }
 
-export function italic(text: string) {
+export function italic(text: string): string {
   return colorize("italic", text);
 }

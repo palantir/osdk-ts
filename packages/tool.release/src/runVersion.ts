@@ -260,7 +260,11 @@ export async function getExistingPr(
   versionBranch: string,
   branch: string,
   octokit: Octokit,
-) {
+): Promise<
+  Awaited<
+    ReturnType<Octokit["rest"]["search"]["issuesAndPullRequests"]>
+  >["data"]["items"][0]
+> {
   const { data } = await octokit.rest.search.issuesAndPullRequests(
     {
       q: `repo:${repo}+state:open+head:${versionBranch}+base:${branch}+is:pull-request`,

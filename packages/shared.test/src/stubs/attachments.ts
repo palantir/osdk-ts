@@ -34,12 +34,13 @@ export const localAttachment2 = {
 export const attachmentPropertyName1: string = "attachment";
 export const attachmentPropertyName2: string = "attachment2";
 
-export const attachmentUploadRequest = {
-  [localAttachment1.filename]: attachmentMetadata,
-  [localAttachment2.filename]: undefined,
-};
+export const attachmentUploadRequest: Record<string, AttachmentV2 | undefined> =
+  {
+    [localAttachment1.filename]: attachmentMetadata,
+    [localAttachment2.filename]: undefined,
+  };
 
-export const attachmentUploadRequestBody = {
+export const attachmentUploadRequestBody: Record<string, Blob> = {
   [localAttachment1.filename]: new Blob([
     JSON.stringify({ name: "Hello World" }, null, 2),
   ], {
@@ -47,13 +48,21 @@ export const attachmentUploadRequestBody = {
   }),
 };
 
-export const attachmentMetadataRequest = {
+export const attachmentMetadataRequest: Record<
+  string,
+  AttachmentV2 | undefined
+> = {
   [attachmentPropertyName1]: attachmentMetadata,
   [attachmentPropertyName2]: undefined,
   [attachmentMetadata.rid]: attachmentMetadata,
 };
 
-export const attachmentContentRequest = {
+export const attachmentContentRequest: Record<
+  string,
+  string | {
+    name: string;
+  } | undefined
+> = {
   [attachmentPropertyName1]: "Hello World",
   [attachmentPropertyName2]: undefined,
   [attachmentMetadata.rid]: { name: "Hello World 2" },

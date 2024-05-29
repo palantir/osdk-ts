@@ -17,6 +17,6 @@
 import type { Component } from "./ir/index.js";
 import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
 
-export function isIgnoredType(component: Component) {
+export function isIgnoredType(component: Component): boolean {
   return isIgnoredNamespace(component.namespace);
 }

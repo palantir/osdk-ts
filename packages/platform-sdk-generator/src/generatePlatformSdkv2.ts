@@ -35,7 +35,7 @@ export async function generatePlatformSdkV2(
   ir: ir.ApiSpec,
   outputDir: string,
   packagePrefix: string,
-) {
+): Promise<string[]> {
   const npmOrg = "@osdk";
   const model = await Model.create(ir, { npmOrg, outputDir, packagePrefix });
 
@@ -138,7 +138,7 @@ export async function generatePlatformSdkV2(
 export async function generateComponents(
   ns: Namespace,
   outputDir: string,
-) {
+): Promise<string[]> {
   const referencedComponents = new Set<Component>();
   const ret = [];
 
@@ -174,7 +174,7 @@ export async function ensurePackageSetup(
   packagePath: string,
   packageName: string,
   packagesToAdd: string[],
-) {
+): Promise<{ srcDir: string; resourcesDir: string; packagePath: string }> {
   const srcDir = path.join(packagePath, "src");
   const resourcesDir = path.join(packagePath, "src", "public");
   const packageJsonPath = path.join(packagePath, "package.json");
@@ -271,7 +271,7 @@ async function createPackageJson(outputDir: string, name: string) {
   );
 }
 
-export function pluralize(s: string) {
+export function pluralize(s: string): string {
   const parts = s.split(/(?=[A-Z])/);
   if (!parts) throw new Error("Failed to pluralize");
 

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export function quoteMimeTypeOrEmpty(s: string) {
+export function quoteMimeTypeOrEmpty(s: string): string {
   return s === "application/json" ? "" : `"${s}"`;
 }

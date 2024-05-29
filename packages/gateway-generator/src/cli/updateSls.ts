@@ -29,7 +29,10 @@ export interface Manifest {
   };
 }
 
-export async function updateSls(manifest: Manifest, output: string) {
+export async function updateSls(
+  manifest: Manifest,
+  output: string,
+): Promise<void> {
   // the whole manifest shape is hand-jammed so lets have a quick sanity check to make sure we're ok
   if (manifest["manifest-version"] !== "1.0") {
     throw new Error(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/gateway/types";
+import type { GeoJsonObject, OntologyObjectV2 } from "@osdk/gateway/types";
 
 export const employee1 = {
   __rid:
@@ -55,7 +55,7 @@ export const employee3 = {
   employeeStatus: "TimeSeries<String>",
 };
 
-export const officeAreaGeoJson = {
+export const officeAreaGeoJson: GeoJsonObject = {
   coordinates: [
     [
       [1.0, 1.0],
@@ -68,7 +68,7 @@ export const officeAreaGeoJson = {
   type: "Polygon",
 };
 
-export const nycOffice = {
+export const nycOffice: OntologyObjectV2 = {
   __rid:
     "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
   __primaryKey: "NYC",
@@ -79,7 +79,7 @@ export const nycOffice = {
   occupiedArea: officeAreaGeoJson,
 };
 
-export const objectWithAllPropertyTypes1 = {
+export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
   __rid:
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 1,

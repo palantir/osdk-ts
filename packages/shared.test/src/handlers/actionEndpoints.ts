@@ -24,7 +24,7 @@ import type {
   SyncApplyActionResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import type { HttpResponseResolver, PathParams } from "msw";
+import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
 import type { BaseAPIError } from "../BaseError.js";
 import { ApplyActionFailedError, InvalidRequest } from "../errors.js";
 import { actionResponseMap } from "../stubs/actions.js";
@@ -36,7 +36,7 @@ import {
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export const actionHandlers = [
+export const actionHandlers: Array<RequestHandler> = [
   /**
    * List ActionTypes
    */

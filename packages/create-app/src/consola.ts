@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import type { ConsolaInstance } from "consola";
 import { consola as defaultConsola, createConsola } from "consola";
 
-export const consola = createConsola({
+export const consola: ConsolaInstance = createConsola({
   // https://github.com/unjs/consola/issues/251
   async prompt(...params) {
     const response = (await defaultConsola.prompt(...params)) as any;

@@ -36,6 +36,7 @@ import {
   uploadAttachment,
 } from "@osdk/gateway/requests";
 import type { LinkTypeSide } from "@osdk/gateway/types";
+import type { RequestHandler } from "msw";
 import {
   AttachmentNotFoundError,
   AttachmentSizeExceededLimitError,
@@ -85,7 +86,7 @@ import {
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-export const loadObjectsEndpoints = [
+export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * List ontologies
    */
@@ -639,4 +640,4 @@ export const loadObjectsEndpoints = [
 
     throw new OpenApiCallError(404, AttachmentNotFoundError);
   }),
-];
+] as const;

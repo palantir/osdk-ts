@@ -26,7 +26,7 @@ export function generateErrors(
   outputDir: string,
   project: Project,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/errors`);
   errors.forEach(error => generateError(error, directory, addCopyright));
 }
@@ -35,7 +35,7 @@ export function generateError(
   error: Error,
   directory: Directory,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const sourceFile = directory.createSourceFile(`${error.name}.ts`);
 
   const referenceSet = new Set<string>();

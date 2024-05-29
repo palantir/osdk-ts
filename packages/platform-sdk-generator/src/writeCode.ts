@@ -17,11 +17,14 @@
 import fs from "node:fs/promises";
 import * as Prettier from "prettier";
 
-export async function writeCode(filePath: string, code: string) {
+export async function writeCode(filePath: string, code: string): Promise<void> {
   return await fs.writeFile(filePath, await formatCode(filePath, code));
 }
 
-export async function formatCode(filePath: string, code: string) {
+export async function formatCode(
+  filePath: string,
+  code: string,
+): Promise<string> {
   try {
     return await Prettier.format(code, {
       parser: "typescript",

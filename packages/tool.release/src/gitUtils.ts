@@ -48,7 +48,7 @@ SOFTWARE.
 
 import { exec, getExecOutput } from "@actions/exec";
 
-export const setupUser = async () => {
+export const setupUser = async (): Promise<void> => {
   await exec("git", [
     "config",
     "user.name",
@@ -61,14 +61,14 @@ export const setupUser = async () => {
   ]);
 };
 
-export const pullBranch = async (branch: string) => {
+export const pullBranch = async (branch: string): Promise<void> => {
   await exec("git", ["pull", "origin", branch]);
 };
 
 export const push = async (
   branch: string,
   { force }: { force?: boolean } = {},
-) => {
+): Promise<void> => {
   await exec(
     "git",
     ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
@@ -77,11 +77,13 @@ export const push = async (
   );
 };
 
-export const pushTags = async () => {
+export const pushTags = async (): Promise<void> => {
   await exec("git", ["push", "origin", "--tags"]);
 };
 
-export const switchToMaybeExistingBranch = async (branch: string) => {
+export const switchToMaybeExistingBranch = async (
+  branch: string,
+): Promise<void> => {
   let { stderr } = await getExecOutput("git", ["checkout", branch], {
     ignoreReturnCode: true,
   });
@@ -98,11 +100,11 @@ export const switchToMaybeExistingBranch = async (branch: string) => {
 export const reset = async (
   pathSpec: string,
   mode: "hard" | "soft" | "mixed" = "hard",
-) => {
+): Promise<void> => {
   await exec("git", ["reset", `--${mode}`, pathSpec]);
 };
 
-export const commitAll = async (message: string) => {
+export const commitAll = async (message: string): Promise<void> => {
   await exec("git", ["add", "."]);
   await exec("git", ["commit", "-m", message]);
 };
