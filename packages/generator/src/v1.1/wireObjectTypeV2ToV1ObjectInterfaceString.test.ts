@@ -36,7 +36,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
       export interface Todo extends OntologyObject {
         /** @deprecated please migrate to $apiName instead */
         readonly __apiName: 'Todo' & {
-          /** @deprecated please migrate to pivotTo(Assignee) instead */ searchAroundAssignee?: never;
+          /** @deprecated please migrate to pivotTo("assignee") instead */ searchAroundAssignee?: never;
         };
         /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
@@ -85,7 +85,9 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
 
       export interface Todo extends OntologyObject {
         /** @deprecated please migrate to $apiName instead */
-        readonly __apiName: 'Todo' & { /** @deprecated please migrate to pivotTo(this) instead */ searchAroundThis?: never };
+        readonly __apiName: 'Todo' & {
+          /** @deprecated please migrate to pivotTo("this") instead */ searchAroundThis?: never;
+        };
         /** @deprecated please migrate to $primaryKey instead */
         readonly __primaryKey: number;
         readonly $apiName: 'Todo';
