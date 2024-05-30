@@ -16,7 +16,7 @@ export function useProjectTasks(project: MockProject | undefined) {
 
   const createTask: (
     title: string,
-  ) => Promise<MockTask["__primaryKey"] | undefined> = useCallback(
+  ) => Promise<MockTask["$primaryKey"] | undefined> = useCallback(
     async (title) => {
       if (project == null) {
         return undefined;
@@ -24,7 +24,7 @@ export function useProjectTasks(project: MockProject | undefined) {
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createTask({
         title,
-        projectId: project.__primaryKey,
+        projectId: project.$primaryKey,
       });
       await mutate();
       return id;
@@ -38,7 +38,7 @@ export function useProjectTasks(project: MockProject | undefined) {
         return;
       }
       // Try to implement this with the Ontology SDK!
-      await Mocks.deleteTask(task.__primaryKey);
+      await Mocks.deleteTask(task.$primaryKey);
       await mutate();
     },
     [project, mutate],
