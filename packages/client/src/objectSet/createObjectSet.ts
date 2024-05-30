@@ -153,32 +153,6 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       } while (nextPageToken != null);
     },
 
-    get: (isObjectTypeDefinition(objectType)
-      ? async <A extends SelectArg<Q>>(
-        primaryKey: Q extends ObjectTypeDefinition<any>
-          ? PropertyValueClientToWire[Q["primaryKeyType"]]
-          : never,
-        options: A,
-      ) => {
-        const withPk: WireObjectSet = {
-          type: "filter",
-          objectSet: objectSet,
-          where: {
-            type: "eq",
-            field: objectType.primaryKeyApiName,
-            value: primaryKey,
-          },
-        };
-
-        return await fetchSingle(
-          clientCtx,
-          objectType,
-          options,
-          withPk,
-        ) as Osdk<Q>;
-      }
-      : undefined) as ObjectSet<Q>["get"],
-
     fetchOne: (isObjectTypeDefinition(objectType)
       ? async <A extends SelectArg<Q>>(
         primaryKey: Q extends ObjectTypeDefinition<any>
