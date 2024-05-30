@@ -1,54 +1,54 @@
 export interface MockProject {
-  __apiName: string;
-  __primaryKey: string;
+  $apiName: string;
+  $primaryKey: string;
   id: string;
   name: string;
   tasks: MockTask[];
 }
 
 export interface MockTask {
-  __apiName: string;
-  __primaryKey: string;
+  $apiName: string;
+  $primaryKey: string;
   id: string;
   title: string;
 }
 
 const projects: MockProject[] = [
   {
-    __apiName: "MockProject",
-    __primaryKey: "1",
+    $apiName: "MockProject",
+    $primaryKey: "1",
     id: "1",
     name: "Fake Project",
     tasks: [
       {
-        __apiName: "MockTask",
-        __primaryKey: "1",
+        $apiName: "MockTask",
+        $primaryKey: "1",
         id: "1",
         title: "Try to",
       },
       {
-        __apiName: "MockTask",
-        __primaryKey: "2",
+        $apiName: "MockTask",
+        $primaryKey: "2",
         id: "2",
         title: "Implement this",
       },
       {
-        __apiName: "MockTask",
-        __primaryKey: "3",
+        $apiName: "MockTask",
+        $primaryKey: "3",
         id: "3",
         title: "With the Ontology SDK!",
       },
     ],
   },
   {
-    __apiName: "MockProject",
-    __primaryKey: "2",
+    $apiName: "MockProject",
+    $primaryKey: "2",
     id: "2",
     name: "Yet Another Fake Project",
     tasks: [
       {
-        __apiName: "MockTask",
-        __primaryKey: "4",
+        $apiName: "MockTask",
+        $primaryKey: "4",
         id: "4",
         title: "More tasks here",
       },
@@ -78,12 +78,12 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<MockTask["__primaryKey"]> {
+}): Promise<MockTask["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({
-    __apiName: "MockProject",
-    __primaryKey: id,
+    $apiName: "MockProject",
+    $primaryKey: id,
     id,
     name,
     tasks: [],
@@ -105,14 +105,14 @@ async function createTask({
 }: {
   title: string;
   projectId: string;
-}): Promise<MockTask["__primaryKey"]> {
+}): Promise<MockTask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
   if (project == null) {
     throw new Error(`Project ${projectId} not found!`);
   }
   const id = randomId();
-  project.tasks.unshift({ __apiName: "MockTask", __primaryKey: id, id, title });
+  project.tasks.unshift({ $apiName: "MockTask", $primaryKey: id, id, title });
   return id;
 }
 
