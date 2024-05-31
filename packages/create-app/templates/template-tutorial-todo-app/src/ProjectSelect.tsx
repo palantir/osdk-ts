@@ -22,13 +22,14 @@ function ProjectSelect({
     [projects, onSelectProject],
   );
 
+  // ...
+
   return (
     <select value={project?.id} onChange={handleSelect}>
-      <option hidden disabled selected>
+      <option hidden disabled value="">
         -- select a project --
       </option>
-
-      {projects.map((p) => (
+      {projects.map((p: MockProject) => (
         <option key={p.id} value={p.id}>
           {p.name}
         </option>
