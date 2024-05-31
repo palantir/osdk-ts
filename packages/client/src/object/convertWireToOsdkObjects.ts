@@ -19,14 +19,14 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { Attachment } from "@osdk/client.api";
+import { Ontologies, type OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import type { OsdkObject } from "../OsdkObject.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { WhereClause } from "../query/WhereClause.js";
-import { Attachment } from "./Attachment.js";
 import { createAsyncClientCache, createClientCache } from "./Cache.js";
 import type { SelectArg } from "./FetchPageArgs.js";
 import { fetchSingle, fetchSingleWithErrors } from "./fetchSingle.js";
@@ -204,6 +204,7 @@ function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
 // preprocess the ontology definition to more quickly apply object conversions when needed
 function createConverter<Q extends ObjectTypeDefinition<any, any>>(
   objDef: Q,
+  client: MinimalClient,
 ) {
   const steps: Array<(o: Record<string, any>) => void> = [];
 
@@ -215,9 +216,36 @@ function createConverter<Q extends ObjectTypeDefinition<any, any>>(
       steps.push((o) => {
         if (o[key] != null) {
           if (Array.isArray(o[key])) {
-            o[key] = o[key].map((a: any) => new Attachment(a.rid));
+            o[key] = o[key].map((a: any) => {
+              return {
+                rid: a.rid,
+                getMetadata() {
+                  return Ontologies.Attachments.getAttachment(
+                    client,
+                    a.rid,
+                  );
+                },
+                read() {
+                  return Ontologies.Attachments.getAttachmentContent(
+                    client,
+                    a.rid,
+                  );
+                },
+              } as Attachment;
+            });
           } else {
-            o[key] = new Attachment(o[key].rid);
+            o[key] = {
+              rid: o[key].rid,
+              getMetadata() {
+                return Ontologies.Attachments.getAttachment(client, o[key].rid);
+              },
+              read() {
+                return Ontologies.Attachments.getAttachmentContent(
+                  client,
+                  o[key].rid,
+                );
+              },
+            } as Attachment;
           }
         }
       });
@@ -239,7 +267,7 @@ const protoConverterCache = createClientCache(
     objectDef: AugmentedObjectTypeDefinition<any, any>,
   ): [{}, ((o: Record<string, any>) => void) | undefined] => {
     const proto = createPrototype(objectDef, client);
-    const converter = createConverter(objectDef);
+    const converter = createConverter(objectDef, client);
     return [proto, converter];
   },
 );

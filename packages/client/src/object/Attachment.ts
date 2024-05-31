@@ -15,6 +15,8 @@
  */
 
 import type { Attachment as IAttachment } from "@osdk/client.api";
+import { Ontologies } from "@osdk/internal.foundry";
+import type { MinimalClient } from "../MinimalClientContext.js";
 
 export class Attachment implements IAttachment {
   constructor(public rid: string) {}
