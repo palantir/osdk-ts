@@ -31,10 +31,10 @@ function DeleteProjectDialog({
     <Dialog
       isOpen={isOpen}
       buttons={[
-        <button disabled={isDeleting} onClick={handleSubmit}>
+        <button disabled={isDeleting} onClick={handleSubmit} key="delete">
           Delete
         </button>,
-        <button disabled={isDeleting} onClick={onClose}>
+        <button disabled={isDeleting} onClick={onClose} key="cancel">
           Cancel
         </button>,
       ]}
