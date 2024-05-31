@@ -17,3 +17,15 @@
 export interface Attachment {
   rid: string;
 }
+
+export interface AttachmentMetadata {
+  rid: string;
+  filename: string;
+  sizeBytes: string;
+  mediaType: string;
+}
+
+export type AttachmentSignature = {
+  readMetadata(): Promise<AttachmentMetadata>;
+  read(): Promise<ReadableStream>;
+};

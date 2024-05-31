@@ -19,6 +19,7 @@ import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import { Attachment } from "./Attachment.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);
@@ -67,7 +68,6 @@ describe("OsdkObject", () => {
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
       const employee = result.data[0];
-
       const lead = await employee.$link.lead.get({ select: ["employeeId"] });
       expect(lead.employeeId).toBe(stubData.employee2.employeeId);
 
