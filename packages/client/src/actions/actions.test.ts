@@ -18,6 +18,7 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   Attachment,
+  AttachmentArg,
 } from "@osdk/client.api";
 import {
   actionTakesAttachment,
@@ -136,7 +137,7 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment }>();
+      .toEqualTypeOf<{ attachment: AttachmentArg }>();
 
     const attachment = { rid: "attachment.rid" };
     const result = await client(actionTakesAttachment)({

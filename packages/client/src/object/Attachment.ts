@@ -14,14 +14,30 @@
  * limitations under the License.
  */
 
-import type { Attachment as IAttachment } from "@osdk/client.api";
+import type {
+  Attachment as IAttachment,
+  AttachmentArg,
+  AttachmentMetadata,
+} from "@osdk/client.api";
 import { Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export class Attachment implements IAttachment {
   constructor(public rid: string) {}
+
+  getMetadata(): Promise<AttachmentMetadata> {
+    return Promise.resolve({} as any);
+  }
+
+  read(): Promise<Blob> {
+    return Promise.resolve({} as any);
+  }
 }
 
 export function isAttachment(o: any): o is Attachment {
   return o instanceof Attachment;
+}
+
+export function isAttachmentArg(o: any): o is AttachmentArg {
+  return "rid" in o || "data" in o;
 }
