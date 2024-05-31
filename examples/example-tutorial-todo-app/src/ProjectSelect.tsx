@@ -24,7 +24,7 @@ function ProjectSelect({
 
   return (
     <select value={project?.id} onChange={handleSelect}>
-      <option hidden disabled selected>
+      <option hidden disabled value="">
         -- select a project --
       </option>
 
