@@ -47,23 +47,6 @@ export type DefaultToFalse<B extends boolean | undefined> = false extends B
 
 export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
   /** Load the linked object
-   * @deprecated use fetchOne instead
-   */
-  get: <
-    const A extends SelectArg<
-      T,
-      ObjectOrInterfacePropertyKeysFrom2<T>,
-      boolean
-    >,
-  >(
-    options?: A,
-  ) => Promise<
-    DefaultToFalse<A["includeRid"]> extends false
-      ? Osdk<T, SelectArgToKeys<T, A>>
-      : Osdk<T, SelectArgToKeys<T, A> | "$rid">
-  >;
-
-  /** Load the linked object
    */
   fetchOne: <
     const A extends SelectArg<

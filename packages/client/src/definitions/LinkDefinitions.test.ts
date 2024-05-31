@@ -68,35 +68,35 @@ describe("LinkDefinitions", () => {
         > {
           constructor(private accessor: SingleLinkAccessor<T>) {}
 
-          public get() {
-            return this.accessor.get<A>();
+          public fetchOne() {
+            return this.accessor.fetchOne<A>();
           }
         }
 
-        // e.g. .lead.get({});
-        expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["get"]>>>()
+        // e.g. .lead.fetchOne({});
+        expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>>()
           .toEqualTypeOf<Osdk<PersonDef, "$all">>();
 
-        // e.g. .lead.get();
+        // e.g. .lead.fetchOne();
         expectTypeOf<
           Awaited<
-            ReturnType<Helper<PersonDef, SelectArg<PersonDef>>["get"]>
+            ReturnType<Helper<PersonDef, SelectArg<PersonDef>>["fetchOne"]>
           >
         >()
           .toEqualTypeOf<Osdk<PersonDef, "$all">>();
 
-        // e.g. .lead.get({ select: [] });
+        // e.g. .lead.fetchOne({ select: [] });
         expectTypeOf<
           Awaited<
-            ReturnType<Helper<PersonDef, { select: [] }>["get"]>
+            ReturnType<Helper<PersonDef, { select: [] }>["fetchOne"]>
           >
         >()
           .toEqualTypeOf<Osdk<PersonDef, "$all">>();
 
-        // e.g. .lead.get({ select: ["name"] });
+        // e.g. .lead.fetchOne({ select: ["name"] });
         expectTypeOf<
           Awaited<
-            ReturnType<Helper<PersonDef, { select: ["name"] }>["get"]>
+            ReturnType<Helper<PersonDef, { select: ["name"] }>["fetchOne"]>
           >
         >()
           .toEqualTypeOf<Osdk<PersonDef, "name">>();
