@@ -32,6 +32,7 @@ export type {
   Attachment,
   AttachmentMetadata,
   AttachmentSignature,
+  AttachmentUpload,
 } from "./object/Attachment.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";

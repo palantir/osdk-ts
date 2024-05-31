@@ -18,6 +18,11 @@ export interface Attachment {
   rid: string;
 }
 
+export interface AttachmentUpload {
+  data: ReadableStream;
+  fileName: string;
+}
+
 export interface AttachmentMetadata {
   rid: string;
   filename: string;

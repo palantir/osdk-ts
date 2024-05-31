@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "@osdk/internal.foundry";
-import { isAttachment } from "../object/Attachment.js";
+import { type DataValue, Ontologies } from "@osdk/internal.foundry";
+import { isAttachment, isAttachmentUpload } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";

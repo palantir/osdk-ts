@@ -21,8 +21,9 @@ import type {
   OsdkActionParameters,
 } from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { Attachment, isAttachmentUpload } from "../object/Attachment.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
@@ -70,10 +71,27 @@ function remapActionParams<AD extends ActionDefinition<any, any>>(
   }
 
   const parameterMap: { [parameterName: string]: any } = {};
-  const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
-    acc[key] = toDataValue(value);
-    return acc;
-  }, parameterMap);
+  const remappedParams = Object.entries(params).reduce(
+    (acc, [key, value]) => {
+      // if (isAttachmentUpload(value)) {
+      //   const attachment = await Ontologies.Attachments.uploadAttachment(
+      //     client,
+      //     {
+      //       filename: value.fileName,
+      //     },
+      //     {
+      //       "Content-Length": value.data as unknown as string,
+      //       "Content-Type": value.data as unknown as string,
+      //     },
+      //   );
+      //   acc[key] = toDataValue(new Attachment(attachment.rid));
+      //   return acc;
+      // }
+      acc[key] = toDataValue(value);
+      return acc;
+    },
+    parameterMap,
+  );
 
   return remappedParams;
 }

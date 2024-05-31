@@ -35,6 +35,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
+import type { AttachmentUpload } from "../object/Attachment.js";
 import { Attachment } from "../object/Attachment.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
@@ -136,9 +137,10 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment }>();
+      .toEqualTypeOf<{ attachment: Attachment | AttachmentUpload }>();
 
     const attachment = new Attachment("attachment.rid");
+
     const result = await client(actionTakesAttachment)({
       attachment,
     });

@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-import type { Attachment as IAttachment } from "@osdk/client.api";
+import type {
+  Attachment as IAttachment,
+  AttachmentUpload as IAttachmentUpload,
+} from "@osdk/client.api";
 
 export class Attachment implements IAttachment {
   constructor(public rid: string) {}
 }
 
+export class AttachmentUpload implements IAttachmentUpload {
+  constructor(public data: ReadableStream, public fileName: string) {}
+}
+
 export function isAttachment(o: any): o is Attachment {
   return o instanceof Attachment;
+}
+
+export function isAttachmentUpload(o: any): o is AttachmentUpload {
+  return o instanceof AttachmentUpload;
 }
