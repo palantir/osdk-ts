@@ -22,6 +22,21 @@ import type {
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
+export const InterfaceDefinitions = Symbol(
+  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
+);
+
+export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
+  extends ObjectTypeDefinition<K, N>
+{
+  rid: string;
+
+  // we keep this here so we can depend on these synchronously
+  [InterfaceDefinitions]: {
+    [key: string]: { def: InterfaceDefinition<any> };
+  };
+}
+
 export interface OntologyProvider {
   /**
    * Returns the current known definition for the object.
@@ -32,7 +47,7 @@ export interface OntologyProvider {
    */
   getObjectDefinition: (
     apiName: string,
-  ) => Promise<ObjectTypeDefinition<any> & { rid: string }>;
+  ) => Promise<FetchedObjectTypeDefinition<any>>;
 
   /**
    * Returns the current known definition for the interface.
