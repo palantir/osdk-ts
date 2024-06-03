@@ -124,6 +124,8 @@ export class StaticOperation {
 
     const type = requestType?.type === "component"
       ? this.model.getType(requestType.component.type.type)
+      : requestType?.type === "binary"
+      ? this.model.getType(requestType)
       : "unknown"; // FIXME
 
     return type;

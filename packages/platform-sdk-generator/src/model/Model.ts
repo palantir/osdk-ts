@@ -20,6 +20,7 @@ import type * as ir from "../ir/index.js";
 import { isIgnoredNamespace } from "../isIgnoredNamespace.js";
 import { isIgnoredType } from "../isIgnoredType.js";
 import { mapObjectValues } from "../util/mapObjectValues.js";
+import { BinaryType } from "./BinaryType.js";
 import { BuiltinType } from "./BuiltinType.js";
 import { Component } from "./Component.js";
 import { EnumType } from "./EnumType.js";
@@ -85,8 +86,7 @@ export class Model {
         return new BuiltinType({ type: "any", any: {} });
         throw new Error("Method not implemented.");
       case "binary":
-        // throw new Error("Method not implemented.");
-        return new BuiltinType({ type: "any", any: {} });
+        return new BinaryType();
       default:
         const foo: never = dt;
         throw new Error("Method not implemented.");
