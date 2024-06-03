@@ -140,7 +140,6 @@ describe("actions", () => {
       .toEqualTypeOf<{ attachment: Attachment | AttachmentUpload }>();
 
     const attachment = new Attachment("attachment.rid");
-
     const result = await client(actionTakesAttachment)({
       attachment,
     });

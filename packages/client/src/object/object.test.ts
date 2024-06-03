@@ -72,7 +72,6 @@ describe("OsdkObject", () => {
       const lead = await employee.$link.lead.fetchOne({
         select: ["employeeId"],
       });
-
       expect(lead.employeeId).toBe(stubData.employee2.employeeId);
 
       // ensure that the select was performed
