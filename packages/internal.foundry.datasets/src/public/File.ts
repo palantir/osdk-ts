@@ -100,6 +100,7 @@ export function listFiles(
 const _uploadFile: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
+    $body: Blob,
     $queryParams: {
       filePath: FilePath;
       branchId?: BranchId | undefined;
@@ -107,7 +108,7 @@ const _uploadFile: $FoundryPlatformMethod<
       transactionRid?: TransactionRid | undefined;
     },
   ) => Promise<File>
-> = [1, "/v1/datasets/{0}/files:upload", 2, "*/*"];
+> = [1, "/v1/datasets/{0}/files:upload", 3, "*/*"];
 
 /**
  * Uploads a File to an existing Dataset.
@@ -138,7 +139,7 @@ export function uploadFile(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: DatasetRid,
-
+    $body: Blob,
     $queryParams: {
       filePath: FilePath;
       branchId?: BranchId | undefined;
