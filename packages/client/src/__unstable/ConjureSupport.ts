@@ -88,10 +88,10 @@ export class MetadataClient {
 
   forObjectByApiName = strongMemoAsync(
     async (objectApiName: string) => {
-      return this.forObjectByRid(
-        (await this.#client.ontologyProvider.getObjectDefinition(objectApiName))
-          .rid,
+      const objectDef = await this.#client.ontologyProvider.getObjectDefinition(
+        objectApiName,
       );
+      return this.forObjectByRid(objectDef.rid);
     },
   );
 
@@ -220,7 +220,7 @@ export const metadataCacheClient = weakMemoAsync(
 function createObjectPropertyMapping(conjureOT: ObjectType) {
   invariant(
     conjureOT.primaryKeys.length === 1,
-    "only one primary key supported",
+    `only one primary key supported, got ${conjureOT.primaryKeys.length}`,
   );
   const pkRid = conjureOT.primaryKeys[0];
 
@@ -228,7 +228,7 @@ function createObjectPropertyMapping(conjureOT: ObjectType) {
     a.rid === pkRid
   );
   if (!pkProperty) {
-    throw new Error("Could not find PK property");
+    throw new Error(`Could not find PK property by rid: ${pkRid}`);
   }
 
   const propertyIdToApiNameMapping: Record<string, string> = Object
