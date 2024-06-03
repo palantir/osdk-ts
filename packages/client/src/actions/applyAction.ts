@@ -37,7 +37,6 @@ export async function applyAction<
   parameters?: OsdkActionParameters<AD["parameters"]>,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
-  // console.error("HI", actionParams);
   const response = await OntologiesV2.Actions.applyActionV2(
     addUserAgent(client, action),
     client.ontologyRid,
