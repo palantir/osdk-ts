@@ -119,6 +119,7 @@ export function getVersion(
 const _uploadVersion: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    $body: Blob,
     $queryParams: {
       version: VersionVersion;
       preview?: PreviewMode | undefined;
@@ -127,7 +128,7 @@ const _uploadVersion: $FoundryPlatformMethod<
 > = [
   1,
   "/v2/thirdPartyApplications/{0}/website/versions/upload",
-  2,
+  3,
   "application/octet-stream",
 ];
 
@@ -139,7 +140,7 @@ export function uploadVersion(
   $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
-
+    $body: Blob,
     $queryParams: {
       version: VersionVersion;
       preview?: PreviewMode | undefined;
