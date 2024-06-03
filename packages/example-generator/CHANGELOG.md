@@ -1,5 +1,13 @@
 # @osdk/example-generator
 
+## 0.5.1
+
+### Patch Changes
+
+- Updated dependencies [1ee2d4f]
+- Updated dependencies [843f932]
+  - @osdk/create-app@0.16.1
+
 ## 0.5.0
 
 ### Minor Changes
