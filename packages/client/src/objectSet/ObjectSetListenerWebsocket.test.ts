@@ -425,7 +425,7 @@ function createMockWebSocketConstructor(
       }),
       close: vi.fn(),
       _eventEmitter: eventEmitter,
-      readyState: WebSocket.CONNECTING,
+      readyState: OriginalWebSocket.CONNECTING,
     } satisfies RawWebSocketPlus as any as MockedWebSocket;
     // ^ we only implement some things but the type system wants to think its the full deal,
     // thus the satisfies plus the cast
@@ -443,8 +443,8 @@ function createMockWebSocketConstructor(
 
 function setWebSocketState(ws: MockedWebSocket, readyState: "open" | "close") {
   const newState = readyState === "open"
-    ? WebSocket.OPEN
-    : WebSocket.CLOSED;
+    ? ImportedWebSocket.OPEN
+    : ImportedWebSocket.CLOSED;
 
   if (newState === ws.readyState) return;
 
