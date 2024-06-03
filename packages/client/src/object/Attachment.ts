@@ -24,7 +24,7 @@ export class Attachment implements IAttachment {
 }
 
 export class AttachmentUpload implements IAttachmentUpload {
-  constructor(public data: ReadableStream, public fileName: string) {}
+  constructor(public data: Blob, public fileName: string) {}
 }
 
 export function isAttachment(o: any): o is Attachment {

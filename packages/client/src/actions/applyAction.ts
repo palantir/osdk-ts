@@ -37,12 +37,13 @@ export async function applyAction<
   parameters?: OsdkActionParameters<AD["parameters"]>,
   options: Op = {} as Op,
 ): Promise<ActionReturnTypeForOptions<Op>> {
+  // console.error("HI", actionParams);
   const response = await OntologiesV2.Actions.applyActionV2(
     addUserAgent(client, action),
     client.ontologyRid,
     action.apiName,
     {
-      parameters: remapActionParams(parameters),
+      parameters: await remapActionParams(parameters, client),
       options: {
         mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
         returnEdits: options?.returnEdits ? "ALL" : "NONE",
@@ -63,34 +64,37 @@ export async function applyAction<
     : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
-function remapActionParams<AD extends ActionDefinition<any, any>>(
+async function remapActionParams<AD extends ActionDefinition<any, any>>(
   params: OsdkActionParameters<AD["parameters"]> | undefined,
-): Record<string, DataValue> {
+  client: MinimalClient,
+): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
   }
 
   const parameterMap: { [parameterName: string]: any } = {};
   const remappedParams = Object.entries(params).reduce(
-    (acc, [key, value]) => {
-      // if (isAttachmentUpload(value)) {
-      //   const attachment = await Ontologies.Attachments.uploadAttachment(
-      //     client,
-      //     {
-      //       filename: value.fileName,
-      //     },
-      //     {
-      //       "Content-Length": value.data as unknown as string,
-      //       "Content-Type": value.data as unknown as string,
-      //     },
-      //   );
-      //   acc[key] = toDataValue(new Attachment(attachment.rid));
-      //   return acc;
-      // }
+    async (promisedAcc, [key, value]) => {
+      const acc = await promisedAcc;
+      if (isAttachmentUpload(value)) {
+        const attachment = await Ontologies.Attachments.uploadAttachment(
+          client,
+          value.data,
+          {
+            filename: value.fileName,
+          },
+          {
+            "Content-Length": value.data.size.toString(),
+            "Content-Type": value.data.type,
+          },
+        );
+        acc[key] = toDataValue(new Attachment(attachment.rid));
+        return acc;
+      }
       acc[key] = toDataValue(value);
       return acc;
     },
-    parameterMap,
+    Promise.resolve(parameterMap),
   );
 
   return remappedParams;

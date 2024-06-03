@@ -19,7 +19,7 @@ export interface Attachment {
 }
 
 export interface AttachmentUpload {
-  data: ReadableStream;
+  data: Blob;
   fileName: string;
 }
 
