@@ -121,7 +121,7 @@ export async function osdkObjectSetExample() {
     .fetchPage();
   const employeeLead = await filteredEmployees
     .data[0].$link
-    .lead.get();
+    .lead.fetchOne();
   console.log(employeeLead.fullName);
 
   // When fetching a page of employees, you can down select properties you want, and also order the results

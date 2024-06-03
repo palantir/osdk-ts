@@ -31,11 +31,11 @@ export async function fetchEmployeeLead(
       select: ["adUsername", "businessTitle", "employeeNumber"],
     });
 
-  const lead = await result.data[0].$link.lead.get({
+  const lead = await result.data[0].$link.lead.fetchOne({
     select: ["adUsername"],
     includeRid: false,
   });
-  const lead2 = await result.data[0].$link.lead.get({});
+  const lead2 = await result.data[0].$link.lead.fetchOne({});
   const peeps = await result.data[0].$link.peeps.fetchPage({});
 
   // const result = await client

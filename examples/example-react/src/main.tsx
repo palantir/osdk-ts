@@ -6,27 +6,30 @@ import Home from "./Home";
 import Login from "./Login";
 import "./index.css";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <AuthenticatedRoute />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-    ],
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    // This is the route defined in your application's redirect URL
-    path: "/auth/callback",
-    element: <AuthCallback />,
-  },
-]);
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <AuthenticatedRoute />,
+      children: [
+        {
+          path: "/",
+          element: <Home />,
+        },
+      ],
+    },
+    {
+      path: "/login",
+      element: <Login />,
+    },
+    {
+      // This is the route defined in your application's redirect URL
+      path: "/auth/callback",
+      element: <AuthCallback />,
+    },
+  ],
+  { basename: import.meta.env.BASE_URL },
+);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <RouterProvider router={router} />,

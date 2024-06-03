@@ -72,13 +72,15 @@ export async function typeChecks(client: Client) {
     const employee = page.data[0];
 
     // lead is an employee
-    const lead = await employee.$link.lead.get();
+    const lead = await employee.$link.lead.fetchOne();
     expectType<
       TypeOf<typeof lead, Osdk<Ontology["objects"]["Employee"]>>
     >(true);
 
     // lead is an employee but we downselect to just their adUsername
-    const leadName = await employee.$link.lead.get({ select: ["adUsername"] });
+    const leadName = await employee.$link.lead.fetchOne({
+      select: ["adUsername"],
+    });
     expectType<TypeOf<typeof leadName.adUsername, string>>(true);
 
     // jobProfile is not available on the select-ed Person
@@ -104,7 +106,7 @@ export async function typeChecks(client: Client) {
     expectType<TypeOf<{ jobProfile: any }[], typeof peeps>>(false);
 
     // peepById is just a singular employee again, and only grab the adUsername
-    const peepById = await employee.$link.peeps.get("peepPK", {
+    const peepById = await employee.$link.peeps.fetchOne("peepPK", {
       select: ["adUsername"],
     });
     expectType<
