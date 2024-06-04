@@ -126,7 +126,6 @@ describe("OsdkObject", () => {
       expect((peep as any).employeeStatus).toBeUndefined();
     });
     it("gives $rid access when requested", async () => {
-      // slightly weird request here to hit the existing mocks for employee2
       const result = await client(MockOntology.objects.Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage(
