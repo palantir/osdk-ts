@@ -1,5 +1,12 @@
 # @osdk/create-app
 
+## 0.16.1
+
+### Patch Changes
+
+- 1ee2d4f: Fix runtime warnings on AipNow template
+- 843f932: update the mock objects to the new TypeScript 1.1.1 syntax version
+
 ## 0.16.0
 
 ### Minor Changes
