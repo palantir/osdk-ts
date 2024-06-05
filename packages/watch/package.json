@@ -9,12 +9,12 @@
   },
   "exports": {
     ".": {
-      "import": "./build/esm/index.js",
-      "browser": "./build/browser/index.browser.js"
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js"
     },
     "./*": {
-      "import": "./build/esm/public/*.js",
-      "browser": "./build/browser/public/*.js"
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js"
     }
   },
   "scripts": {
