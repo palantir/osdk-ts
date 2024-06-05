@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react";
-import { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
+import { TutorialTask } from "./types";
 
 interface TaskListItemProps {
-  task: MockTask;
-  deleteTask: (task: MockTask) => Promise<void>;
+  task: TutorialTask;
+  deleteTask: (task: TutorialTask) => Promise<void>;
 }
 
 function TaskListItem({ task, deleteTask }: TaskListItemProps) {

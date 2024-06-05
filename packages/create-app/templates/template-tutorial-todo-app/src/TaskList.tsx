@@ -1,10 +1,10 @@
-import { MockProject } from "./mocks";
 import css from "./TaskList.module.css";
 import TaskListItem from "./TaskListItem";
+import { TutorialProject } from "./types";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
-  project: MockProject;
+  project: TutorialProject;
 }
 
 function TaskList({ project }: TaskListProps) {

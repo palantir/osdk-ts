@@ -1,9 +1,12 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks, { MockProject, MockTask } from "./mocks";
+import Mocks from "./mocks";
+import { TutorialProject, TutorialTask } from "./types";
 
-export function useProjectTasks(project: MockProject | undefined) {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<MockTask[]>(
+export function useProjectTasks(project: TutorialProject | undefined) {
+  const { data, isLoading, isValidating, error, mutate } = useSWR<
+    TutorialTask[]
+  >(
     project != null ? `projects/${project.id}/tasks` : null,
     // Try to implement this with the Ontology SDK!
     async () => {
@@ -16,8 +19,8 @@ export function useProjectTasks(project: MockProject | undefined) {
 
   const createTask: (
     title: string,
-  ) => Promise<MockTask["$primaryKey"] | undefined> = useCallback(
-    async (title) => {
+  ) => Promise<TutorialTask["$primaryKey"] | undefined> = useCallback(
+    async (title: string) => {
       if (project == null) {
         return undefined;
       }
@@ -32,8 +35,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     [project, mutate],
   );
 
-  const deleteTask: (task: MockTask) => Promise<void> = useCallback(
-    async (task) => {
+  const deleteTask: (task: TutorialTask) => Promise<void> = useCallback(
+    async (task: TutorialTask) => {
       if (project == null) {
         return;
       }
