@@ -123,7 +123,8 @@ export type Osdk<
   }
   // We are hiding the $rid field if it wasnt requested as we want to discourage its use
   & (IsNever<P> extends true ? {}
-    : P extends "$rid" ? { $rid: string }
+    : string extends P ? {}
+    : "$rid" extends P ? { $rid: string }
     : {});
 
 export type OsdkObjectOrInterfaceFrom<
