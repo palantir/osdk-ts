@@ -62,7 +62,6 @@ describe(toDataValue, () => {
       timestamp: "2024-01-01T00:00:00Z",
     };
     const convertedBasic = await toDataValue(basic, clientCtx);
-    console.log("WHAT", convertedBasic);
     expect(convertedBasic).toEqual(basic);
   });
 
