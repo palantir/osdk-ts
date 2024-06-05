@@ -31,7 +31,7 @@ export function createAttachmentReader(
       return Ontologies.Attachments.getAttachmentContent(
         client,
         attachment.rid,
-      ) as unknown as Promise<ReadableStream>;
+      ) as Promise<Blob>;
     },
     readMetadata() {
       return Ontologies.Attachments.getAttachment(client, attachment.rid);

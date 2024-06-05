@@ -32,5 +32,5 @@ export interface AttachmentMetadata {
 
 export type AttachmentSignature = {
   readMetadata(): Promise<AttachmentMetadata>;
-  read(): Promise<ReadableStream>;
+  read(): Promise<Blob>;
 };

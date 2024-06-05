@@ -75,22 +75,7 @@ async function remapActionParams<AD extends ActionDefinition<any, any>>(
   const remappedParams = Object.entries(params).reduce(
     async (promisedAcc, [key, value]) => {
       const acc = await promisedAcc;
-      if (isAttachmentUpload(value)) {
-        const attachment = await Ontologies.Attachments.uploadAttachment(
-          client,
-          value.data,
-          {
-            filename: value.fileName,
-          },
-          {
-            "Content-Length": value.data.size.toString(),
-            "Content-Type": value.data.type,
-          },
-        );
-        acc[key] = toDataValue(new Attachment(attachment.rid));
-        return acc;
-      }
-      acc[key] = toDataValue(value);
+      acc[key] = await toDataValue(value, client);
       return acc;
     },
     Promise.resolve(parameterMap),

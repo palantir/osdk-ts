@@ -15,15 +15,21 @@
  */
 
 import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { MockedFunction } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment } from "../object/Attachment.js";
+import { createMinimalClient } from "../createMinimalClient.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
 describe(toDataValue, () => {
   let client: Client;
+  let clientCtx: MinimalClient;
+
+  const mockFetch: MockedFunction<typeof globalThis.fetch> = vi.fn();
 
   beforeAll(async () => {
     apiServer.listen();
@@ -32,13 +38,20 @@ describe(toDataValue, () => {
       MockOntology.metadata.ontologyRid,
       async () => "myAccessToken",
     );
+
+    clientCtx = createMinimalClient(
+      MockOntology.metadata,
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+      {},
+    );
   });
 
   afterAll(() => {
     apiServer.close();
   });
 
-  it("converts passthrough values correctly", () => {
+  it("converts passthrough values correctly", async () => {
     // basic pass through types
     const basic = {
       null: undefined,
@@ -48,26 +61,30 @@ describe(toDataValue, () => {
       string: "string",
       timestamp: "2024-01-01T00:00:00Z",
     };
-    expect(toDataValue(basic)).toEqual(basic);
+    const convertedBasic = await toDataValue(basic, clientCtx);
+    console.log("WHAT", convertedBasic);
+    expect(convertedBasic).toEqual(basic);
   });
 
-  it("recursively converts arrays and sets into array types", () => {
+  it("recursively converts arrays and sets into array types", async () => {
     const attachment = new Attachment("rid");
     const attachmentArray = [attachment];
     const attachmentSet = new Set(attachmentArray);
 
-    expect(toDataValue({
+    const recursiveConversion = await toDataValue({
       attachment,
       attachmentArray,
       attachmentSet,
-    })).toEqual({
+    }, clientCtx);
+
+    expect(recursiveConversion).toEqual({
       attachment: "rid",
       attachmentArray: ["rid"],
       attachmentSet: ["rid"],
     });
   });
 
-  it("recursively handles structs", () => {
+  it("recursively handles structs", async () => {
     const attachment = new Attachment("rid");
     const struct = {
       inner: {
@@ -75,15 +92,22 @@ describe(toDataValue, () => {
       },
     };
 
-    expect(toDataValue(struct)).toEqual({ inner: { attachment: "rid" } });
+    const recursiveConversion = await toDataValue(struct, clientCtx);
+
+    expect(recursiveConversion).toEqual({
+      inner: { attachment: "rid" },
+    });
   });
 
-  it("maps an ontology object into just its primary key", () => {
+  it("maps an ontology object into just its primary key", async () => {
     const employee = stubData.employee1;
-    expect(toDataValue(employee)).toEqual(stubData.employee1.__primaryKey);
+    const ontologyConversion = await toDataValue(employee, clientCtx);
+    expect(ontologyConversion).toEqual(
+      stubData.employee1.__primaryKey,
+    );
   });
 
-  it("passes through object set definitions", () => {
+  it("passes through object set definitions", async () => {
     const clientObjectSet = client(MockOntology.objects.Task).where({ id: 0 });
     const definition = getWireObjectSet(clientObjectSet);
 
@@ -101,8 +125,23 @@ describe(toDataValue, () => {
       },
     }
   `;
+    const objectSetConversion = await toDataValue(clientObjectSet, clientCtx);
+    expect(objectSetConversion).toMatchInlineSnapshot(
+      expected,
+    );
 
-    expect(toDataValue(clientObjectSet)).toMatchInlineSnapshot(expected);
-    expect(toDataValue(definition)).toMatchInlineSnapshot(expected);
+    const defintionConversion = await toDataValue(definition, clientCtx);
+    expect(defintionConversion).toMatchInlineSnapshot(expected);
+  });
+
+  it("converts attachment uploads correctly", async () => {
+    const blob =
+      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+    const attachmentUpload = new AttachmentUpload(blob, "file1.txt");
+    const converted = await toDataValue(attachmentUpload, clientCtx);
+
+    expect(converted).toEqual(
+      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    );
   });
 });
