@@ -1,3 +1,5 @@
+import { TutorialProject, TutorialTask } from "./types";
+
 export interface MockProject {
   $apiName: string;
   $primaryKey: string;
@@ -13,7 +15,7 @@ export interface MockTask {
   title: string;
 }
 
-const projects: MockProject[] = [
+const projects: TutorialProject[] = [
   {
     $apiName: "MockProject",
     $primaryKey: "1",
@@ -67,7 +69,7 @@ function randomId(): string {
   return `${Math.floor(Math.random() * 2 ** 31)}`;
 }
 
-async function getProjects(): Promise<MockProject[]> {
+async function getProjects(): Promise<TutorialProject[]> {
   await delay();
   const result = [...projects];
   result.sort((p1, p2) => p1.name.localeCompare(p2.name));
@@ -78,7 +80,7 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<TutorialTask["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({
@@ -105,7 +107,7 @@ async function createTask({
 }: {
   title: string;
   projectId: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<TutorialTask["$primaryKey"]> {
   await delay();
   const project = projects.find((p) => p.id === projectId);
   if (project == null) {
