@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment } from "../object/Attachment.js";
+import type { Attachment, AttachmentArg } from "../object/Attachment.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
@@ -40,7 +40,7 @@ export interface DataValueWireToClient {
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: Attachment;
+  attachment: AttachmentArg;
   boolean: boolean;
   byte: number;
   datetime: string;

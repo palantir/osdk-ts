@@ -21,8 +21,9 @@ import type {
   OsdkActionParameters,
 } from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { isAttachmentArg } from "../object/Attachment.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
@@ -41,7 +42,7 @@ export async function applyAction<
     client.ontologyRid,
     action.apiName,
     {
-      parameters: remapActionParams(parameters),
+      parameters: await remapActionParams(parameters, client),
       options: {
         mode: options?.validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
         returnEdits: options?.returnEdits ? "ALL" : "NONE",
@@ -62,18 +63,43 @@ export async function applyAction<
     : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
-function remapActionParams<AD extends ActionDefinition<any, any>>(
+async function remapActionParams<AD extends ActionDefinition<any, any>>(
   params: OsdkActionParameters<AD["parameters"]> | undefined,
-): Record<string, DataValue> {
+  client: MinimalClient,
+): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
   }
 
   const parameterMap: { [parameterName: string]: any } = {};
-  const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
-    acc[key] = toDataValue(value);
-    return acc;
-  }, parameterMap);
+  const remappedParams = Object.entries(params).reduce(
+    async (acc, [key, value]) => {
+      // attachments just send the rid directly
+      if (isAttachmentArg(value)) {
+        if ("rid" in value) {
+          acc[key] = value.rid;
+        } else {
+          // call omni api to create attachment
+          const attachment = await Ontologies.Attachments.uploadAttachment(
+            client,
+            {
+              // Need to add readablestream support to omniapi
+              filename: value.data.toString(),
+            },
+            {
+              "Content-Length": "",
+              "Content-Type": "",
+            },
+          );
+          acc[key] = attachment.rid;
+        }
+      } else {
+        acc[key] = toDataValue(value);
+        return acc;
+      }
+    },
+    parameterMap,
+  );
 
   return remappedParams;
 }

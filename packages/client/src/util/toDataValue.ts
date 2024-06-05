@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "@osdk/internal.foundry";
-import { isAttachment } from "../object/Attachment.js";
+import { type DataValue, Ontologies } from "@osdk/internal.foundry";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { isAttachment, isAttachmentArg } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -34,11 +35,6 @@ export function toDataValue(value: any): DataValue {
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
     return Array.from(value, toDataValue);
-  }
-
-  // attachments just send the rid directly
-  if (isAttachment(value)) {
-    return value.rid;
   }
 
   // objects just send the JSON'd primaryKey

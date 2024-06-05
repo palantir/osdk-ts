@@ -16,4 +16,18 @@
 
 export interface Attachment {
   rid: string;
+  getMetadata(): Promise<AttachmentMetadata>;
+
+  read(): Promise<Blob>;
+}
+
+export type AttachmentArg = {
+  rid: string;
+} | { data: ReadableStream };
+
+export interface AttachmentMetadata {
+  rid: string;
+  filename: string;
+  sizeBytes: string;
+  mediaType: string;
 }

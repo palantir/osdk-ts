@@ -43,6 +43,9 @@ export async function typeChecks(client: Client) {
     );
   }
 
+  const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
+    .fetchOne(1);
+
   // just a demo of aggregations
   {
     const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
