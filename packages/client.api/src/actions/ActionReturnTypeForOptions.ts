@@ -18,11 +18,13 @@ import type {
   ActionEditResponse,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
 } from "./Actions.js";
 
 // cannot specify both validateOnly and returnEdits as true
 
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { validateOnly: true } ? ActionValidationResponse
-    : Op extends { returnEdits: true } ? ActionEditResponse
-    : undefined;
+export type ActionReturnTypeForOptions<
+  Op extends ApplyActionOptions | ApplyBatchActionOptions,
+> = Op extends { validateOnly: true } ? ActionValidationResponse
+  : Op extends { returnEdits: true } ? ActionEditResponse
+  : undefined;

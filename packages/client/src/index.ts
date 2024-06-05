@@ -19,6 +19,7 @@ export type {
   ActionReturnTypeForOptions,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
   NOOP,
   OsdkActionParameters,
 } from "@osdk/client.api";
