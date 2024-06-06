@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { createPlatformClient } from "@osdk/client";
 import type { Client } from "@osdk/client/unstable-do-not-use";
 import { createClient } from "@osdk/client/unstable-do-not-use";
 import invariant from "tiny-invariant";
@@ -29,4 +30,13 @@ export const client: Client = createClient(
   async () => process.env.FOUNDRY_USER_TOKEN!,
   { logger },
   loggingFetch,
+);
+
+/**
+ * Generally consumers wont need this and will use their createClient() but
+ * I want to use this to be sure everything works.
+ */
+export const platformClient = createPlatformClient(
+  process.env.FOUNDRY_STACK,
+  async () => process.env.FOUNDRY_USER_TOKEN!,
 );
