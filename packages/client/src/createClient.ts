@@ -19,8 +19,12 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "@osdk/client.api";
+import type {
+  ActionSignatureFromDef,
+  QuerySignatureFromDef,
+} from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
@@ -51,10 +55,12 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>,
+      | ActionDefinition<any, any, any>
+      | QueryDefinition<any, any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -65,6 +71,8 @@ export function createClientInternal(
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
         any
       > as any;
+    } else if (o.type === "query") {
+      return undefined as any;
     } else {
       throw new Error("not implemented");
     }

@@ -32,6 +32,7 @@ export type { Attachment } from "./object/Attachment.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+export type { QuerySignatureFromDef } from "./queries/Queries.js";
 export type { NOOP } from "./util/NOOP.js";
 
 export {};
