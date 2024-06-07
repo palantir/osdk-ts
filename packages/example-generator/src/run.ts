@@ -192,11 +192,17 @@ const UPDATE_PACKAGE_JSON: Mutator = {
   mutate: (template, content) => ({
     type: "modify",
     newContent: content.replace(
+      // Use locally generated SDK in the monorepo
       "\"@osdk/examples.one.dot.one\": \"latest\"",
       "\"@osdk/examples.one.dot.one\": \"workspace:*\"",
     ).replace(
+      // Follow monorepo package naming convention
       `"name": "${templateExampleId(template)}"`,
       `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
+    ).replace(
+      // Monorepo uses eslint 9 whereas templates are still on eslint 8
+      "\"lint\": \"eslint",
+      "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
     ),
   }),
 };
