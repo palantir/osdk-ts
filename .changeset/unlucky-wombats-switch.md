@@ -1,5 +1,5 @@
 ---
-"@osdk/create-app": minor
+"@osdk/create-app": patch
 ---
 
 React/Vue router respects vite base path
