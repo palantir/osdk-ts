@@ -23,14 +23,20 @@ export class Attachment implements IAttachment {
   constructor(public rid: string) {}
 }
 
-export class AttachmentUpload implements IAttachmentUpload {
-  constructor(public data: Blob, public fileName: string) {}
-}
-
 export function isAttachment(o: any): o is Attachment {
   return o instanceof Attachment;
 }
 
-export function isAttachmentUpload(o: any): o is AttachmentUpload {
-  return o instanceof AttachmentUpload;
+export function isAttachmentUpload(o: any): o is IAttachmentUpload {
+  return o instanceof Blob && "name" in o;
+}
+
+export function createAttachmentUpload(
+  data: Blob,
+  name: string,
+): IAttachmentUpload {
+  const attachmentUpload = Object.create(data);
+  Object.assign(attachmentUpload, { name });
+
+  return attachmentUpload as IAttachmentUpload;
 }

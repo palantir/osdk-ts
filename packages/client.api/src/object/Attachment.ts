@@ -18,9 +18,8 @@ export interface Attachment {
   rid: string;
 }
 
-export interface AttachmentUpload {
-  data: Blob;
-  fileName: string;
+export interface AttachmentUpload extends Blob {
+  name: string;
 }
 
 export interface AttachmentMetadata {
@@ -30,7 +29,7 @@ export interface AttachmentMetadata {
   mediaType: string;
 }
 
-export type AttachmentSignature = {
-  readMetadata(): Promise<AttachmentMetadata>;
-  read(): Promise<Blob>;
-};
+export interface AttachmentSignature {
+  fetchMetadata(): Promise<AttachmentMetadata>;
+  fetchContents(): Promise<Blob>;
+}

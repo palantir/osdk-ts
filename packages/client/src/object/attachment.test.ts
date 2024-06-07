@@ -44,7 +44,8 @@ describe("attachments", () => {
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();
-    const attachmentMetadata = await client(object1.attachment!).readMetadata();
+    const attachmentMetadata = await client(object1.attachment!)
+      .fetchMetadata();
     expect(attachmentMetadata.filename).toEqual("file1.txt");
     expect(attachmentMetadata.mediaType).toEqual("application/json");
     expect(attachmentMetadata.sizeBytes).toEqual(18);
@@ -61,7 +62,7 @@ describe("attachments", () => {
 
     const object1 = result.data[0];
     expect(object1.attachment).toBeDefined();
-    const attachmentContent = await client(object1.attachment!).read();
+    const attachmentContent = await client(object1.attachment!).fetchContents();
     const attachmentText = await attachmentContent.text();
     expect(JSON.parse(attachmentText)).toEqual({
       name: "Hello World 2",

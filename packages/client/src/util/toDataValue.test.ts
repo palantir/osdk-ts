@@ -21,7 +21,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import { Attachment, createAttachmentUpload } from "../object/Attachment.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -136,7 +136,7 @@ describe(toDataValue, () => {
   it("converts attachment uploads correctly", async () => {
     const blob =
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
-    const attachmentUpload = new AttachmentUpload(blob, "file1.txt");
+    const attachmentUpload = createAttachmentUpload(blob, "file1.txt");
     const converted = await toDataValue(attachmentUpload, clientCtx);
 
     expect(converted).toEqual(

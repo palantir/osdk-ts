@@ -27,13 +27,13 @@ export function createAttachmentReader(
   attachment: Attachment,
 ): AttachmentSignature {
   return {
-    read() {
+    fetchContents() {
       return Ontologies.Attachments.getAttachmentContent(
         client,
         attachment.rid,
       ) as Promise<Blob>;
     },
-    readMetadata() {
+    fetchMetadata() {
       return Ontologies.Attachments.getAttachment(client, attachment.rid);
     },
   };

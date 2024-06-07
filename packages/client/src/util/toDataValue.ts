@@ -58,13 +58,13 @@ export async function toDataValue(
   if (isAttachmentUpload(value)) {
     const attachment = await Ontologies.Attachments.uploadAttachment(
       client,
-      value.data,
+      value,
       {
-        filename: value.fileName,
+        filename: value.name,
       },
       {
-        "Content-Length": value.data.size.toString(),
-        "Content-Type": value.data.type,
+        "Content-Length": value.size.toString(),
+        "Content-Type": value.type,
       },
     );
     return await toDataValue(new Attachment(attachment.rid), client);

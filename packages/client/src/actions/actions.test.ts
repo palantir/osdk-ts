@@ -17,6 +17,8 @@
 import type {
   ActionEditResponse,
   ActionValidationResponse,
+  Attachment as IAttachment,
+  AttachmentUpload,
 } from "@osdk/client.api";
 import {
   actionTakesAttachment,
@@ -35,7 +37,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import { Attachment, createAttachmentUpload } from "../object/Attachment.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 describe("actions", () => {
@@ -136,7 +138,7 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment | AttachmentUpload }>();
+      .toEqualTypeOf<{ attachment: IAttachment | AttachmentUpload }>();
 
     const attachment = new Attachment("attachment.rid");
     const result = await client(actionTakesAttachment)({
@@ -152,11 +154,11 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment | AttachmentUpload }>();
+      .toEqualTypeOf<{ attachment: IAttachment | AttachmentUpload }>();
     const blob =
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
 
-    const attachment = new AttachmentUpload(blob, "file1.txt");
+    const attachment = createAttachmentUpload(blob, "file1.txt");
     const result = await client(actionTakesAttachment)({
       attachment,
     });
