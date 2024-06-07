@@ -1,6 +1,6 @@
 ---
-"@osdk/example-generator": minor
-"@osdk/create-app": minor
+"@osdk/example-generator": patch
+"@osdk/create-app": patch
 ---
 
 Remove platform specific commands in template scripts
