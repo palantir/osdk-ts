@@ -146,7 +146,7 @@ export async function osdkObjectSetExample() {
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,
-  }], { returnEdits: true });
+  }], { $returnEdits: true });
 
   if (actionResults.type === "edits") {
     console.log("Edited employee: ", actionResults.edits);
