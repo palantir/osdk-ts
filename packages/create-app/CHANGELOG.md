@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 0.16.2
+
+### Patch Changes
+
+- 524f1fe: Update global layout styles
+- 524f1fe: Remove platform specific commands in template scripts
+- 524f1fe: React/Vue router respects vite base path
+
 ## 0.16.1
 
 ### Patch Changes

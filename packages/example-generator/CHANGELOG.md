@@ -1,5 +1,15 @@
 # @osdk/example-generator
 
+## 0.5.2
+
+### Patch Changes
+
+- 524f1fe: Remove platform specific commands in template scripts
+- Updated dependencies [524f1fe]
+- Updated dependencies [524f1fe]
+- Updated dependencies [524f1fe]
+  - @osdk/create-app@0.16.2
+
 ## 0.5.1
 
 ### Patch Changes
