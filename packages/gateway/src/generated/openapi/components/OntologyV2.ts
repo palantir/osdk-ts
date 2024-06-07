@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
-import type { OntologyApiName } from "./OntologyApiName";
-import type { OntologyRid } from "./OntologyRid";
+import type { DisplayName } from "./DisplayName.js";
+import type { OntologyApiName } from "./OntologyApiName.js";
+import type { OntologyRid } from "./OntologyRid.js";
 
 /** Metadata about an Ontology. */
 export interface OntologyV2 {

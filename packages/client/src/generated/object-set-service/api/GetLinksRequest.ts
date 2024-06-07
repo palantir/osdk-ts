@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 import type { DirectedRelation } from "./DirectedRelation.js";
 import type { ObjectIdentifier } from "./ObjectIdentifier.js";
 import type { ObjectSetContext } from "./ObjectSetContext.js";
+import type { ResponseOptions } from "./ResponseOptions.js";
 export interface GetLinksRequest {
   objectIdentifiers: Array<ObjectIdentifier>;
   objectSetContext: ObjectSetContext;
   directedRelation: DirectedRelation;
-  pageSize: string;
+  pageSize: number;
+  responseOptions: ResponseOptions | undefined;
 }

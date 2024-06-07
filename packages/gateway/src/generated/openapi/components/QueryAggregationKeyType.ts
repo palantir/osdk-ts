@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { BooleanType } from "./BooleanType";
-import type { DateType } from "./DateType";
-import type { DoubleType } from "./DoubleType";
-import type { IntegerType } from "./IntegerType";
-import type { QueryAggregationRangeType } from "./QueryAggregationRangeType";
-import type { StringType } from "./StringType";
-import type { TimestampType } from "./TimestampType";
+import type { BooleanType } from "./BooleanType.js";
+import type { DateType } from "./DateType.js";
+import type { DoubleType } from "./DoubleType.js";
+import type { IntegerType } from "./IntegerType.js";
+import type { QueryAggregationRangeType } from "./QueryAggregationRangeType.js";
+import type { StringType } from "./StringType.js";
+import type { TimestampType } from "./TimestampType.js";
 
 export interface QueryAggregationKeyType_Boolean extends BooleanType {
   type: "boolean";

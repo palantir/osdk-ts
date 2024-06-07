@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-import type { PreviewMode, PrincipalId, User } from "@osdk/foundry.common";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
-} from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+  PageSize,
+  PageToken,
+  PreviewMode,
+  PrincipalId,
+  SearchUsersResponse,
+  User,
+} from "@osdk/foundry.core";
+import type {
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type { ListUsersResponse, SearchUsersRequest } from "../_components.js";
 
 //
 
-const _deleteUser: $OmniMethod<
+const _deleteUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -37,17 +46,44 @@ const _deleteUser: $OmniMethod<
  * URL: /v2/security/users/{userId}
  */
 export function deleteUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteUser, ...args);
+  return $foundryPlatformFetch($ctx, _deleteUser, ...args);
 }
 
-const _getUser: $OmniMethod<
+const _listUsers: $FoundryPlatformMethod<
+  ($queryParams?: {
+    pageSize?: PageSize | undefined;
+    pageToken?: PageToken | undefined;
+    preview?: PreviewMode | undefined;
+  }) => Promise<ListUsersResponse>
+> = [0, "/v2/security/users", 2];
+
+/**
+ * Lists all Users
+ *
+ * Required Scopes: [api:security-read]
+ * URL: /v2/security/users
+ */
+export function listUsers(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+      preview?: PreviewMode | undefined;
+    },
+  ]
+): Promise<ListUsersResponse> {
+  return $foundryPlatformFetch($ctx, _listUsers, ...args);
+}
+
+const _getUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -61,32 +97,32 @@ const _getUser: $OmniMethod<
  * URL: /v2/security/users/{userId}
  */
 export function getUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<User> {
-  return $omniFetch($ctx, _getUser, ...args);
+  return $foundryPlatformFetch($ctx, _getUser, ...args);
 }
 
-const _meUsers: $OmniMethod<
+const _getCurrentUser: $FoundryPlatformMethod<
   ($queryParams?: { preview?: PreviewMode | undefined }) => Promise<User>
-> = [0, "/v2/security/users/me", 2];
+> = [0, "/v2/security/users/getCurrent", 2];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/users/me
+ * URL: /v2/security/users/getCurrent
  */
-export function meUsers(
-  $ctx: $ClientContext<any>,
+export function getCurrentUser(
+  $ctx: $Client | $ClientContext,
   ...args: [$queryParams?: { preview?: PreviewMode | undefined }]
 ): Promise<User> {
-  return $omniFetch($ctx, _meUsers, ...args);
+  return $foundryPlatformFetch($ctx, _getCurrentUser, ...args);
 }
 
-const _profilePictureUser: $OmniMethod<
+const _profilePictureUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -104,12 +140,33 @@ const _profilePictureUser: $OmniMethod<
  * URL: /v2/security/users/{userId}/profilePicture
  */
 export function profilePictureUser(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<unknown> {
-  return $omniFetch($ctx, _profilePictureUser, ...args);
+  return $foundryPlatformFetch($ctx, _profilePictureUser, ...args);
+}
+
+const _searchUsers: $FoundryPlatformMethod<
+  (
+    $body: SearchUsersRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<SearchUsersResponse>
+> = [1, "/v2/security/users/search", 3];
+
+/**
+ * Required Scopes: []
+ * URL: /v2/security/users/search
+ */
+export function searchUsers(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: SearchUsersRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<SearchUsersResponse> {
+  return $foundryPlatformFetch($ctx, _searchUsers, ...args);
 }

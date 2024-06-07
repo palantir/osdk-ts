@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "@osdk/shared.net";
+import type { SharedClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 
-/*
- * We don't yet know exactly what the client context will look like,
- * so for now its a subset of the full ontology shape. This will change.
- */
-export interface MinimalClient
-  extends ClientContext<{ metadata: { userAgent: string } }>
-{
+export interface MinimalClient extends SharedClientContext {
   ontologyRid: string;
   ontologyProvider: OntologyProvider;
   logger?: Logger;

@@ -20,7 +20,7 @@ export function generateRequestType(
   outputDir: string,
   project: Project,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/request`);
   const sourceFile = directory.createSourceFile(`OpenApiRequest.ts`);
 

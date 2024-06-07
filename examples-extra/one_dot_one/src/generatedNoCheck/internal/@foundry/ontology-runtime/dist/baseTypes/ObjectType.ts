@@ -24,7 +24,7 @@ import type {
   StructType as OG_StructType,
   TimestampType as OG_TimestampType,
 } from '@osdk/legacy-client';
-import { OntologyObject } from './OntologyObject';
+import { OntologyObject } from './OntologyObject.js';
 
 /** @deprecated submodule imports arent public api **/
 export type BaseType = OG_BaseType;

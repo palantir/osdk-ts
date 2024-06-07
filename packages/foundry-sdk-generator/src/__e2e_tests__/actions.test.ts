@@ -24,7 +24,7 @@ import {
   FoundryClient,
   ReturnEditsMode,
   visitError,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   ActionError,
   ActionResponse,
@@ -32,12 +32,12 @@ import type {
   ErrorVisitor,
   GetObjectError,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   Employee,
   Office,
-} from "../generatedNoCheck/@test-app/osdk/ontology/objects";
-import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/ontology/objects/index.js";
+import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils.js";
 
 describe("test", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

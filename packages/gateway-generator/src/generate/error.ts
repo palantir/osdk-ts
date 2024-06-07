@@ -16,17 +16,17 @@
 
 import type { Directory, Project, SourceFile } from "ts-morph";
 import { CodeBlockWriter } from "ts-morph";
-import type { Error, ParameterValue } from "../spec";
-import { generateDocumentation } from "./common";
-import { getDocs, getJsDocs } from "./getJsDocs";
-import { generateType } from "./types";
+import type { Error, ParameterValue } from "../spec/index.js";
+import { generateDocumentation } from "./common.js";
+import { getDocs, getJsDocs } from "./getJsDocs.js";
+import { generateType } from "./types.js";
 
 export function generateErrors(
   errors: Error[],
   outputDir: string,
   project: Project,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/errors`);
   errors.forEach(error => generateError(error, directory, addCopyright));
 }
@@ -35,7 +35,7 @@ export function generateError(
   error: Error,
   directory: Directory,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const sourceFile = directory.createSourceFile(`${error.name}.ts`);
 
   const referenceSet = new Set<string>();

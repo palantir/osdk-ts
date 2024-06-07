@@ -16,10 +16,10 @@
 
 import type { Directory, Project, SourceFile } from "ts-morph";
 import { VariableDeclarationKind } from "ts-morph";
-import type { Component } from "../spec";
-import type { GenerateOptions } from "./GenerateOptions";
-import { getJsDocs } from "./getJsDocs";
-import { generateType, isOptional } from "./types";
+import type { Component } from "../spec/Component.js";
+import type { GenerateOptions } from "./GenerateOptions.js";
+import { getJsDocs } from "./getJsDocs.js";
+import { generateType, isOptional } from "./types.js";
 
 export function generateComponents(
   components: Component[],
@@ -27,7 +27,7 @@ export function generateComponents(
   project: Project,
   options: GenerateOptions,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/components`);
   components.forEach(component =>
     generateComponent(component, directory, options, addCopyright)
@@ -39,7 +39,7 @@ export function generateComponent(
   directory: Directory,
   options: GenerateOptions,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const sourceFile = directory.createSourceFile(`${component.name}.ts`);
   const referenceSet = new Set<string>();
 

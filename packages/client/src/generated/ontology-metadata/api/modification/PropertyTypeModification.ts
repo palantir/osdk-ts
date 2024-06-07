@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +19,18 @@ import type { RuleSetBindingModification } from "../formatting/RuleSetBindingMod
 import type { ObjectTypeFieldApiName } from "../ObjectTypeFieldApiName.js";
 import type { PropertyTypeDisplayMetadata } from "../PropertyTypeDisplayMetadata.js";
 import type { PropertyTypeId } from "../PropertyTypeId.js";
-import type { Type } from "../Type.js";
 import type { TypeClass } from "../TypeClass.js";
 import type { DataConstraintsModification } from "./DataConstraintsModification.js";
 import type { InlineActionTypeModification } from "./InlineActionTypeModification.js";
 import type { PropertyTypeStatusModification } from "./PropertyTypeStatusModification.js";
+import type { TypeForModification } from "./TypeForModification.js";
 import type { ValueTypeReferenceModification } from "./ValueTypeReferenceModification.js";
 export interface PropertyTypeModification {
   displayMetadata: PropertyTypeDisplayMetadata;
   id: PropertyTypeId;
   ruleSetBinding: RuleSetBindingModification | undefined;
   baseFormatter: BaseFormatter | undefined;
-  type: Type;
+  type: TypeForModification;
   typeClasses: Array<TypeClass>;
   indexedForSearch: boolean;
   apiName: ObjectTypeFieldApiName | undefined;

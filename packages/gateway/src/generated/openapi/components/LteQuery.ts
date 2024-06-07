@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1.js";
+
 /** Returns objects where the specified field is less than or equal to a value. */
 export interface LteQuery {
-  field: string;
+  field: FieldNameV1;
   /** Less than or equal to value */
   value: any;
 }

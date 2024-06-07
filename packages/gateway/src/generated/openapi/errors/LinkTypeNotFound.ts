@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkTypeApiName } from "../components/LinkTypeApiName";
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { LinkTypeApiName } from "../components/LinkTypeApiName.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
 
 /** The link type is not found, or the user does not have access to it. */
 export interface LinkTypeNotFound {

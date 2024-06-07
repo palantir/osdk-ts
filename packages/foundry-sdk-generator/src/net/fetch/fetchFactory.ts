@@ -15,8 +15,8 @@
  */
 
 import type { Auth } from "@osdk/legacy-client";
-import { AuthenticatedFetch } from "./authenticatedFetch";
-import { RetryingFetch } from "./retryingFetch";
+import { AuthenticatedFetch } from "./authenticatedFetch.js";
+import { RetryingFetch } from "./retryingFetch.js";
 
 export class FetchFactory {
   public constructor(private fetchFunction?: typeof globalThis.fetch) {}

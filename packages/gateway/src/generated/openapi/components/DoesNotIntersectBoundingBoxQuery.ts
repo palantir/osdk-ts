@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { BoundingBoxValue } from "./BoundingBoxValue";
+import type { BoundingBoxValue } from "./BoundingBoxValue.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field does not intersect the bounding box provided.
  */
 export interface DoesNotIntersectBoundingBoxQuery {
-  field: string;
+  field: PropertyApiName;
   value: BoundingBoxValue;
 }

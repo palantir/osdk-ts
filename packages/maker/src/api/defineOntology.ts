@@ -26,7 +26,24 @@ export let namespace: string;
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-) {
+): Promise<
+  {
+    sharedPropertyTypes: { [k: string]: Gateway.SharedPropertyType };
+    interfaceTypes: { [k: string]: Gateway.InterfaceType };
+    objectTypes: Record<
+      Gateway.ObjectTypeApiName,
+      Gateway.ObjectTypeFullMetadata
+    >;
+    actionTypes: Record<Gateway.ActionTypeApiName, Gateway.ActionTypeV2>;
+    queryTypes: Record<Gateway.QueryApiName, Gateway.QueryTypeV2>;
+    ontology: {
+      apiName: string;
+      description: string;
+      displayName: string;
+      rid: string;
+    };
+  }
+> {
   namespace = ns;
   ontologyDefinition = {
     actionTypes: {},

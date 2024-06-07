@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "..";
-import type { OsdkMetadata } from "../OsdkMetadata";
-import type { OntologyDefinition } from "./OntologyDefinition";
-import type { VersionString } from "./VersionString";
-import type { WirePropertyTypes } from "./WirePropertyTypes";
+import type { ObjectOrInterfaceDefinition } from "../index.js";
+import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { VersionString } from "./VersionString.js";
+import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
 export type ObjectTypeDefinitionFrom<
   O extends OntologyDefinition<any>,
@@ -73,8 +73,37 @@ export interface ObjectTypeDefinition<
   primaryKeyApiName: keyof this["properties"];
   primaryKeyType: WirePropertyTypes;
 
+  /**
+   * Optional because they may not exist on legacy.
+   */
   implements?: string[];
+
+  /**
+   * Optional because they may not exist on legacy.
+   */
+  interfaceMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* InterfaceType property api name */ string,
+      /* ObjectType property api name */ string
+    >
+  >;
+
+  /**
+   * Optional because they may not exist on legacy.
+   */
+  inverseInterfaceMap?: Record<
+    /* InterfaceType api name */ string,
+    Record<
+      /* ObjectType property api name */ string,
+      /* InterfaceType property api name */ string
+    >
+  >;
+
+  /* no longer used */
   spts?: Record<string, string>;
+
+  /* no longer used */
   inverseSpts?: Record<string, string>;
 }
 

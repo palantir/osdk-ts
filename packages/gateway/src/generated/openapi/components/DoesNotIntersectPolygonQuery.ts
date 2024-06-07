@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { PolygonValue } from "./PolygonValue";
+import type { PolygonValue } from "./PolygonValue.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field does not intersect the polygon provided.
  */
 export interface DoesNotIntersectPolygonQuery {
-  field: string;
+  field: PropertyApiName;
   value: PolygonValue;
 }

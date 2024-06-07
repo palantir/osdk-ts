@@ -16,14 +16,17 @@
 
 import type { OntologyDefinition } from "@osdk/api";
 import { type ClientContext, PalantirApiError } from "@osdk/shared.net";
-import type { OntologyObject, ParameterValue } from "../baseTypes";
-import type { GetLinkedObjectError, LinkedObjectNotFound } from "../errors";
-import { isErr, type Result } from "../Result";
+import type { OntologyObject, ParameterValue } from "../baseTypes/index.js";
+import type {
+  GetLinkedObjectError,
+  LinkedObjectNotFound,
+} from "../errors/index.js";
+import { isErr, type Result } from "../Result.js";
 import {
   listLinkedObjects,
   listLinkedObjectsWithoutErrors,
-} from "./listLinkedObjects";
-import { createErrorResponse } from "./util/ResponseCreators";
+} from "./listLinkedObjects.js";
+import { createErrorResponse } from "./util/ResponseCreators.js";
 
 /**
  * Wrapper around listLinkedObjects that validates that only a single object was found

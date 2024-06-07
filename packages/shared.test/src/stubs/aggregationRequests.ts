@@ -19,7 +19,7 @@ import type {
   AggregateObjectsResponseV2,
 } from "@osdk/gateway/types";
 import stableStringify from "json-stable-stringify";
-import { employeeObjectType } from "./objectTypes";
+import { employeeObjectType } from "./objectTypes.js";
 
 export const aggReq1: AggregateObjectSetRequestV2 = {
   aggregation: [
@@ -120,6 +120,7 @@ export const aggResp1: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 export const aggResp2: AggregateObjectsResponseV2 = {
   data: [
@@ -137,6 +138,7 @@ export const aggResp2: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 export const aggResp3: AggregateObjectsResponseV2 = {
   excludedItems: 5,
@@ -172,6 +174,7 @@ export const aggResp3: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 
 export const aggResp4: AggregateObjectsResponseV2 = {
@@ -189,9 +192,13 @@ export const aggResp4: AggregateObjectsResponseV2 = {
       ],
     },
   ],
+  accuracy: "ACCURATE",
 };
 
-export const aggregationRequestHandlers = {
+export const aggregationRequestHandlers: Record<
+  string,
+  AggregateObjectsResponseV2
+> = {
   [stableStringify(aggReq1)]: aggResp1,
   [stableStringify(aggReq2)]: aggResp2,
   [stableStringify(aggReq3)]: aggResp3,

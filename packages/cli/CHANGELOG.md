@@ -1,5 +1,22 @@
 # @osdk/cli
 
+## 0.21.0
+
+### Patch Changes
+
+- Updated dependencies [c9f3214]
+- Updated dependencies [c9f3214]
+  - @osdk/generator@1.11.0
+  - @osdk/gateway@2.3.0
+  - @osdk/api@1.8.0
+  - @osdk/shared.net@1.11.0
+
+## 0.20.0
+
+### Minor Changes
+
+- 3955502: Updates archiver dependency
+
 ## 0.19.0
 
 ### Minor Changes

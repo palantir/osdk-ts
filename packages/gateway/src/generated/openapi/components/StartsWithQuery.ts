@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { PropertyApiName } from "./PropertyApiName.js";
+
 /** Returns objects where the specified field starts with the provided value. */
 export interface StartsWithQuery {
-  field: string;
+  field: PropertyApiName;
   value: string;
 }

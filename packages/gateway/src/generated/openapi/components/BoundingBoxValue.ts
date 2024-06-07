@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WithinBoundingBoxPoint } from "./WithinBoundingBoxPoint";
+import type { WithinBoundingBoxPoint } from "./WithinBoundingBoxPoint.js";
 
 /**
  * The top left and bottom right coordinate points that make up the bounding box.

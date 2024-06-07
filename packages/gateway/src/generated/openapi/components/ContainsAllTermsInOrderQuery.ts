@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import type { PropertyApiName } from "./PropertyApiName.js";
+
 /**
  * Returns objects where the specified field contains all of the terms in the order provided,
  * but they do have to be adjacent to each other.
  */
 export interface ContainsAllTermsInOrderQuery {
-  field: string;
+  field: PropertyApiName;
   value: string;
 }

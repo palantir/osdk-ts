@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+import type { Employee } from "@osdk/client.test.ontology";
+import { Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);
@@ -39,7 +41,7 @@ describe("OsdkObject", () => {
       client = createClient(
         "https://stack.palantir.com",
         MockOntology.metadata.ontologyRid,
-        () => "myAccessToken",
+        async () => "myAccessToken",
       );
     });
 
@@ -68,7 +70,9 @@ describe("OsdkObject", () => {
       }).fetchPage();
       const employee = result.data[0];
 
-      const lead = await employee.$link.lead.get({ $select: ["employeeId"] });
+      const lead = await employee.$link.lead.fetchOne({
+        $select: ["employeeId"],
+      });
       expect(lead.employeeId).toBe(stubData.employee2.employeeId);
 
       // ensure that the select was performed
@@ -98,7 +102,7 @@ describe("OsdkObject", () => {
       expect((peepsResult.data[0] as any).office).toBeUndefined();
     });
 
-    it("traverses the link from an lead to their peep by primaryKey", async () => {
+    it("traverses the link from an lead to their peep by primaryKey with fetchOne", async () => {
       // slightly weird request here to hit the existing mocks for employee2
       const employees = await client(MockOntology.objects.Employee).where({
         $and: [
@@ -109,14 +113,31 @@ describe("OsdkObject", () => {
       const lead = employees.data[0];
       expect(lead).toBeDefined();
 
-      const peep = await lead.$link.peeps.get(stubData.employee1.employeeId, {
-        $select: ["employeeId"],
-      });
+      const peep = await lead.$link.peeps.fetchOne(
+        stubData.employee1.employeeId,
+        {
+          $select: ["employeeId"],
+        },
+      );
       expect(peep).toBeDefined();
 
       // ensure that select worked
       expect(peep.employeeId).toBeDefined();
       expect((peep as any).employeeStatus).toBeUndefined();
+    });
+    it("gives $rid access when requested", async () => {
+      const result = await client(MockOntology.objects.Employee).where({
+        employeeId: stubData.employee1.employeeId,
+      }).fetchPage(
+        {
+          $includeRid: true,
+        },
+      );
+      const leadRid = result.data[0].$rid;
+      expect(leadRid).toBeDefined();
+      expect(leadRid).toBe(
+        "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+      );
     });
   });
 });

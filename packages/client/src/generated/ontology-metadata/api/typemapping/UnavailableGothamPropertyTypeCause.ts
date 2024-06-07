@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 import type { GothamPropertyTypeUnavailableDeprecated } from "./GothamPropertyTypeUnavailableDeprecated.js";
 import type { GothamPropertyTypeUnavailableInTransfer } from "./GothamPropertyTypeUnavailableInTransfer.js";
 import type { GothamPropertyTypeUnavailableIsComposite } from "./GothamPropertyTypeUnavailableIsComposite.js";
+import type { GothamPropertyTypeUnavailableIsCompositeWithCustomValidators } from "./GothamPropertyTypeUnavailableIsCompositeWithCustomValidators.js";
+import type { GothamPropertyTypeUnavailableIsCompositeWithEnumValues } from "./GothamPropertyTypeUnavailableIsCompositeWithEnumValues.js";
 import type { GothamPropertyTypeUnavailableNonIndexedProperty } from "./GothamPropertyTypeUnavailableNonIndexedProperty.js";
 import type { GothamPropertyTypeUnavailableSystemProperty } from "./GothamPropertyTypeUnavailableSystemProperty.js";
 import type { GothamPropertyTypeUnavailableUnknown } from "./GothamPropertyTypeUnavailableUnknown.js";
@@ -26,6 +28,18 @@ export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailabl
   type: "gothamPropertyTypeUnavailableIsComposite";
   gothamPropertyTypeUnavailableIsComposite:
     GothamPropertyTypeUnavailableIsComposite;
+}
+
+export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithEnumValues {
+  type: "gothamPropertyTypeUnavailableIsCompositeWithEnumValues";
+  gothamPropertyTypeUnavailableIsCompositeWithEnumValues:
+    GothamPropertyTypeUnavailableIsCompositeWithEnumValues;
+}
+
+export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithCustomValidators {
+  type: "gothamPropertyTypeUnavailableIsCompositeWithCustomValidators";
+  gothamPropertyTypeUnavailableIsCompositeWithCustomValidators:
+    GothamPropertyTypeUnavailableIsCompositeWithCustomValidators;
 }
 
 export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableInTransfer {
@@ -70,6 +84,8 @@ export interface UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailabl
 }
 export type UnavailableGothamPropertyTypeCause =
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsComposite
+  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithEnumValues
+  | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableIsCompositeWithCustomValidators
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableInTransfer
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableDeprecated
   | UnavailableGothamPropertyTypeCause_gothamPropertyTypeUnavailableSystemProperty

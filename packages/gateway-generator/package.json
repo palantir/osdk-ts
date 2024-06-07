@@ -11,19 +11,16 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
-      "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/esm/index.js",
+      "browser": "./build/browser/index.browser.js"
     },
     "./*": {
-      "types": "./build/types/public/*.d.ts",
-      "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/esm/public/*.js",
+      "browser": "./build/browser/public/*.js"
     }
   },
   "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -31,12 +28,12 @@
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute"
+    "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
     "find-up": "^7.0.0",
     "ts-morph": "^19.0.0",
-    "yaml": "^2.4.1",
+    "yaml": "^2.4.2",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -51,14 +48,16 @@
     "gateway-generator": "./bin/gateway-generator.cjs"
   },
   "files": [
-    "build/types",
-    "build/js",
+    "build/cjs",
+    "build/esm",
+    "build/browser",
     "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.cjs",
-  "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts"
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
 }

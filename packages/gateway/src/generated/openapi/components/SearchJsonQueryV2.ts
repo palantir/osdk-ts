@@ -14,54 +14,54 @@
  * limitations under the License.
  */
 
-import type { AndQueryV2 } from "./AndQueryV2";
-import type { ContainsAllTermsInOrderPrefixLastTerm } from "./ContainsAllTermsInOrderPrefixLastTerm";
-import type { ContainsAllTermsInOrderQuery } from "./ContainsAllTermsInOrderQuery";
-import type { ContainsAllTermsQuery } from "./ContainsAllTermsQuery";
-import type { ContainsAnyTermQuery } from "./ContainsAnyTermQuery";
-import type { ContainsQuery } from "./ContainsQuery";
-import type { DoesNotIntersectBoundingBoxQuery } from "./DoesNotIntersectBoundingBoxQuery";
-import type { DoesNotIntersectPolygonQuery } from "./DoesNotIntersectPolygonQuery";
-import type { EqualsQuery } from "./EqualsQuery";
-import type { GteQuery } from "./GteQuery";
-import type { GtQuery } from "./GtQuery";
-import type { IntersectsBoundingBoxQuery } from "./IntersectsBoundingBoxQuery";
-import type { IntersectsPolygonQuery } from "./IntersectsPolygonQuery";
-import type { IsNullQuery } from "./IsNullQuery";
-import type { LteQuery } from "./LteQuery";
-import type { LtQuery } from "./LtQuery";
-import type { NotQueryV2 } from "./NotQueryV2";
-import type { OrQueryV2 } from "./OrQueryV2";
-import type { StartsWithQuery } from "./StartsWithQuery";
-import type { WithinBoundingBoxQuery } from "./WithinBoundingBoxQuery";
-import type { WithinDistanceOfQuery } from "./WithinDistanceOfQuery";
-import type { WithinPolygonQuery } from "./WithinPolygonQuery";
+import type { AndQueryV2 } from "./AndQueryV2.js";
+import type { ContainsAllTermsInOrderPrefixLastTerm } from "./ContainsAllTermsInOrderPrefixLastTerm.js";
+import type { ContainsAllTermsInOrderQuery } from "./ContainsAllTermsInOrderQuery.js";
+import type { ContainsAllTermsQuery } from "./ContainsAllTermsQuery.js";
+import type { ContainsAnyTermQuery } from "./ContainsAnyTermQuery.js";
+import type { ContainsQueryV2 } from "./ContainsQueryV2.js";
+import type { DoesNotIntersectBoundingBoxQuery } from "./DoesNotIntersectBoundingBoxQuery.js";
+import type { DoesNotIntersectPolygonQuery } from "./DoesNotIntersectPolygonQuery.js";
+import type { EqualsQueryV2 } from "./EqualsQueryV2.js";
+import type { GteQueryV2 } from "./GteQueryV2.js";
+import type { GtQueryV2 } from "./GtQueryV2.js";
+import type { IntersectsBoundingBoxQuery } from "./IntersectsBoundingBoxQuery.js";
+import type { IntersectsPolygonQuery } from "./IntersectsPolygonQuery.js";
+import type { IsNullQueryV2 } from "./IsNullQueryV2.js";
+import type { LteQueryV2 } from "./LteQueryV2.js";
+import type { LtQueryV2 } from "./LtQueryV2.js";
+import type { NotQueryV2 } from "./NotQueryV2.js";
+import type { OrQueryV2 } from "./OrQueryV2.js";
+import type { StartsWithQuery } from "./StartsWithQuery.js";
+import type { WithinBoundingBoxQuery } from "./WithinBoundingBoxQuery.js";
+import type { WithinDistanceOfQuery } from "./WithinDistanceOfQuery.js";
+import type { WithinPolygonQuery } from "./WithinPolygonQuery.js";
 
-export interface SearchJsonQueryV2_Lt extends LtQuery {
+export interface SearchJsonQueryV2_Lt extends LtQueryV2 {
   type: "lt";
 }
 
-export interface SearchJsonQueryV2_Gt extends GtQuery {
+export interface SearchJsonQueryV2_Gt extends GtQueryV2 {
   type: "gt";
 }
 
-export interface SearchJsonQueryV2_Lte extends LteQuery {
+export interface SearchJsonQueryV2_Lte extends LteQueryV2 {
   type: "lte";
 }
 
-export interface SearchJsonQueryV2_Gte extends GteQuery {
+export interface SearchJsonQueryV2_Gte extends GteQueryV2 {
   type: "gte";
 }
 
-export interface SearchJsonQueryV2_Eq extends EqualsQuery {
+export interface SearchJsonQueryV2_Eq extends EqualsQueryV2 {
   type: "eq";
 }
 
-export interface SearchJsonQueryV2_IsNull extends IsNullQuery {
+export interface SearchJsonQueryV2_IsNull extends IsNullQueryV2 {
   type: "isNull";
 }
 
-export interface SearchJsonQueryV2_Contains extends ContainsQuery {
+export interface SearchJsonQueryV2_Contains extends ContainsQueryV2 {
   type: "contains";
 }
 

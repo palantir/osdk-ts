@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { Duration } from "./Duration";
+import type { Duration } from "./Duration.js";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /**
  * Divides objects into groups according to an interval. Note that this grouping applies only on date types.
  * The interval uses the ISO 8601 notation. For example, "PT1H2M34S" represents a duration of 3754 seconds.
  */
 export interface AggregationDurationGrouping {
-  field: string;
+  field: FieldNameV1;
   duration: Duration;
 }

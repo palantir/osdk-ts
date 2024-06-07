@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
+import { Employee, Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -24,11 +25,11 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
-import { Ontology as MockOntology } from "../generatedNoCheck/Ontology.js";
-import { Employee } from "../generatedNoCheck/ontology/objects.js";
-import { createClient } from "../index.js";
-import type { Client, Osdk } from "../index.js";
+import type { Client } from "../Client.js";
+import { createClient } from "../createClient.js";
+import type { Result } from "../object/Result.js";
 import { isOk } from "../object/Result.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 
 describe("ObjectSet", () => {
   let client: Client;
@@ -38,7 +39,7 @@ describe("ObjectSet", () => {
     client = createClient(
       "https://stack.palantir.com",
       MockOntology.metadata.ontologyRid,
-      () => "myAccessToken",
+      async () => "myAccessToken",
     );
   });
 
@@ -144,8 +145,8 @@ describe("ObjectSet", () => {
     `);
   });
 
-  it("allows fetching by PK from a base object set", async () => {
-    const employee = await client(MockOntology.objects.Employee).get(
+  it("allows fetching by PK from a base object set - fetchOne", async () => {
+    const employee = await client(MockOntology.objects.Employee).fetchOne(
       stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
@@ -154,8 +155,23 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
-  it("allows fetching by PK from a base object set with selected properties", async () => {
-    const employee = await client(MockOntology.objects.Employee).get(
+  it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
+    const employeeResult = await client(MockOntology.objects.Employee)
+      .fetchOneWithErrors(
+        stubData.employee1.employeeId,
+      );
+    expectTypeOf<typeof employeeResult>().toMatchTypeOf<
+      Result<Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>>
+    >;
+
+    if (isOk(employeeResult)) {
+      const employee = employeeResult.value;
+      expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+    }
+  });
+
+  it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
+    const employee = await client(MockOntology.objects.Employee).fetchOne(
       stubData.employee1.employeeId,
       { $select: ["fullName"] },
     );
@@ -165,18 +181,57 @@ describe("ObjectSet", () => {
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
-  it("throws when fetching by PK with an object that does not exist", async () => {
-    await expect(client(MockOntology.objects.Employee).get(-1)).rejects
+  it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
+    const employeeResult = await client(MockOntology.objects.Employee)
+      .fetchOneWithErrors(
+        stubData.employee1.employeeId,
+        { $select: ["fullName"] },
+      );
+    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+      Result<Osdk<Employee, "fullName">>
+    >;
+
+    if (isOk(employeeResult)) {
+      const employee = employeeResult.value;
+      expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+    }
+  });
+
+  it("throws when fetching by PK with an object that does not exist - fetchOne", async () => {
+    await expect(client(MockOntology.objects.Employee).fetchOne(-1)).rejects
       .toThrow();
   });
 
-  it("allows fetching by PK from a pivoted object set", async () => {
+  it("throws when fetching by PK with an object that does not exist - fetchOneWithErrors", async () => {
+    const employeeResult = await client(MockOntology.objects.Employee)
+      .fetchOneWithErrors(-1);
+
+    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+      Result<Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>>
+    >;
+
+    expect("error" in employeeResult);
+  });
+
+  it("allows fetching by PK from a pivoted object set - fetchOne", async () => {
     const employee = await client(MockOntology.objects.Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
-      .pivotTo("peeps").get(stubData.employee1.employeeId);
+      .pivotTo("peeps").fetchOne(stubData.employee1.employeeId);
 
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+  });
+
+  it("allows fetching by PK from a pivoted object set - fetchOneWithErrors", async () => {
+    const employeeResult = await client(MockOntology.objects.Employee).where({
+      employeeId: stubData.employee2.employeeId,
+    })
+      .pivotTo("peeps").fetchOneWithErrors(stubData.employee1.employeeId);
+
+    if (isOk(employeeResult)) {
+      const employee = employeeResult.value;
+      expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
+    }
   });
 
   it(" object set union works with fetchPageWithErrors", async () => {

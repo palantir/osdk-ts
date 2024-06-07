@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LinkedInterfaceTypeApiName } from "./LinkedInterfaceTypeApiName";
-import type { LinkedObjectTypeApiName } from "./LinkedObjectTypeApiName";
+import type { LinkedInterfaceTypeApiName } from "./LinkedInterfaceTypeApiName.js";
+import type { LinkedObjectTypeApiName } from "./LinkedObjectTypeApiName.js";
 
 export interface InterfaceLinkTypeLinkedEntityApiName_InterfaceTypeApiName
   extends LinkedInterfaceTypeApiName

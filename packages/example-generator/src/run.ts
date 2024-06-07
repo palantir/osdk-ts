@@ -33,7 +33,7 @@ interface RunArgs {
   check: boolean;
 }
 
-export async function run({ outputDirectory, check }: RunArgs) {
+export async function run({ outputDirectory, check }: RunArgs): Promise<void> {
   const resolvedOutput = path.resolve(outputDirectory);
   const tmpDir = createTmpDir();
   await generateExamples(tmpDir);
@@ -192,11 +192,17 @@ const UPDATE_PACKAGE_JSON: Mutator = {
   mutate: (template, content) => ({
     type: "modify",
     newContent: content.replace(
+      // Use locally generated SDK in the monorepo
       "\"@osdk/examples.one.dot.one\": \"latest\"",
       "\"@osdk/examples.one.dot.one\": \"workspace:*\"",
     ).replace(
+      // Follow monorepo package naming convention
       `"name": "${templateExampleId(template)}"`,
       `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
+    ).replace(
+      // Monorepo uses eslint 9 whereas templates are still on eslint 8
+      "\"lint\": \"eslint",
+      "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
     ),
   }),
 };
@@ -209,23 +215,10 @@ const UPDATE_README: Mutator = {
   }),
 };
 
-// We re-export ontology object submodules from the root in this locally generated SDK
-const UPDATE_SUBMODULE_IMPORTS: Mutator = {
-  filePattern: "./**/*.ts*",
-  mutate: (_template, content) => ({
-    type: "modify",
-    newContent: content.replace(
-      "@osdk/examples.one.dot.one/ontology/objects",
-      "@osdk/examples.one.dot.one",
-    ),
-  }),
-};
-
 const MUTATORS: Mutator[] = [
   DELETE_NPM_RC,
   UPDATE_PACKAGE_JSON,
   UPDATE_README,
-  UPDATE_SUBMODULE_IMPORTS,
 ];
 
 function templateCanonicalId(template: Template): string {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,3 @@
  */
 
 export type { AggregationEntityName } from "./AggregationEntityName.js";
-export type { LoggableArrayPropertyValue } from "./LoggableArrayPropertyValue.js";
-export type { LoggableFoundryObjectReference } from "./LoggableFoundryObjectReference.js";
-export type { LoggableMediaReference } from "./LoggableMediaReference.js";
-export type { LoggableMediaReferencePropertyValue } from "./LoggableMediaReferencePropertyValue.js";
-export type { LoggableMediaValueReference } from "./LoggableMediaValueReference.js";
-export type { LoggableMediaViewItemReference } from "./LoggableMediaViewItemReference.js";
-export type { LoggableObjectLocatorV2 } from "./LoggableObjectLocatorV2.js";
-export type { LoggableObjectPrimaryKeyV2 } from "./LoggableObjectPrimaryKeyV2.js";
-export type { LoggablePropertyValue } from "./LoggablePropertyValue.js";

@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-import type { Auth } from "../Auth";
+import type { Auth } from "../Auth.js";
 import type {
   AuthSubscription,
   RefreshResponse,
   SignInResponse,
   SignOutResponse,
   UnsubscribeFunction,
-} from "../OAuthClient";
-import type { OAuthToken } from "../OAuthToken";
-import type { Token } from "../Token";
+} from "../OAuthClient.js";
+import type { OAuthToken } from "../OAuthToken.js";
+import type { Token } from "../Token.js";
 import {
   generateAuthRequest,
   getTokenWithCodeVerifier,
   refreshTokenPublicClient,
   revokeTokenPublicClient,
-} from "./PublicClientFlowProvider";
+} from "./PublicClientFlowProvider.js";
 
 export class PublicClientAuth implements Auth {
   private palantirRefreshToken = "palantir_refresh_token" as const;
@@ -132,10 +132,12 @@ export class PublicClientAuth implements Auth {
           this.options.fetchFn,
           this.options.multipassContextPath,
         );
-        localStorage.setItem(
-          this.palantirRefreshToken,
-          this.token.refreshToken,
-        );
+        if (this.token.refreshToken != null) {
+          localStorage.setItem(
+            this.palantirRefreshToken,
+            this.token.refreshToken,
+          );
+        }
         shouldMakeAuthRequest = false;
       } catch (e) {
         // eslint-disable-next-line no-console
@@ -310,7 +312,12 @@ export class PublicClientAuth implements Auth {
         this.options.fetchFn,
         this.options.multipassContextPath,
       );
-      localStorage.setItem(this.palantirRefreshToken, this.token.refreshToken);
+      if (this.token.refreshToken != null) {
+        localStorage.setItem(
+          this.palantirRefreshToken,
+          this.token.refreshToken,
+        );
+      }
       return true;
     } catch (e) {
       // eslint-disable-next-line no-console

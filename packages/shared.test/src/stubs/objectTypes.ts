@@ -208,7 +208,7 @@ export const objectTypeWithAllPropertyTypes: ObjectType = {
   status: "ACTIVE",
 };
 
-export const ObjectTypes = [
+export const ObjectTypes: ObjectType[] = [
   employeeObjectType,
   objectTypeWithAllPropertyTypes,
   officeObjectType,

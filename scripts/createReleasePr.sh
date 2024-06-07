@@ -14,5 +14,5 @@ if [[ $(git rev-parse --abbrev-ref HEAD | sed -E 's/^changeset-release\/.*$/ABOR
 fi
 
 pnpm exec turbo transpile --filter "./packages/tool.release"
-node ./packages/tool.release/build/js/index.mjs --repo palantir/osdk-ts
+node ./packages/tool.release/build/esm/index.js --repo palantir/osdk-ts
 echo "WARNING: You are probably on the pr branch"

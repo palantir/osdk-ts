@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { PropertyApiName } from "../components/PropertyApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
 
 /**
  * Primary keys consisting of multiple properties are not supported by this API. If you need support for this,

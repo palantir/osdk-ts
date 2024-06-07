@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 /**
  * @internal

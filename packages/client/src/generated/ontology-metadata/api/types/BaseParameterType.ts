@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import type { LongListType } from "./LongListType.js";
 import type { LongType } from "./LongType.js";
 import type { MarkingListType } from "./MarkingListType.js";
 import type { MarkingType } from "./MarkingType.js";
+import type { MediaReferenceType } from "./MediaReferenceType.js";
 import type { ObjectReferenceListType } from "./ObjectReferenceListType.js";
 import type { ObjectReferenceType } from "./ObjectReferenceType.js";
 import type { ObjectSetRidType } from "./ObjectSetRidType.js";
@@ -139,6 +140,11 @@ export interface BaseParameterType_markingList {
   type: "markingList";
   markingList: MarkingListType;
 }
+
+export interface BaseParameterType_mediaReference {
+  type: "mediaReference";
+  mediaReference: MediaReferenceType;
+}
 /**
  * All of the possible types for Parameters.
  */
@@ -163,4 +169,5 @@ export type BaseParameterType =
   | BaseParameterType_attachment
   | BaseParameterType_attachmentList
   | BaseParameterType_marking
-  | BaseParameterType_markingList;
+  | BaseParameterType_markingList
+  | BaseParameterType_mediaReference;

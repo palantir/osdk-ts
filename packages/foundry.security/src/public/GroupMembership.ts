@@ -19,17 +19,18 @@ import type {
   PageToken,
   PreviewMode,
   PrincipalId,
-} from "@osdk/foundry.common";
-import type { ListGroupMembershipsResponse } from "@osdk/foundry.security";
+} from "@osdk/foundry.core";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
-} from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type { ListGroupMembershipsResponse } from "../_components.js";
 
 //
 
-const _listGroupMemberships: $OmniMethod<
+const _listGroupMemberships: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: {
@@ -48,7 +49,7 @@ const _listGroupMemberships: $OmniMethod<
  * URL: /v2/security/users/{userId}/groupMemberships
  */
 export function listGroupMemberships(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
 
@@ -60,5 +61,5 @@ export function listGroupMemberships(
     },
   ]
 ): Promise<ListGroupMembershipsResponse> {
-  return $omniFetch($ctx, _listGroupMemberships, ...args);
+  return $foundryPlatformFetch($ctx, _listGroupMemberships, ...args);
 }

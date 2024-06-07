@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PropertyApiName } from "../components/PropertyApiName";
-import type { PropertyFilter } from "../components/PropertyFilter";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { PropertyFilter } from "../components/PropertyFilter.js";
 
 /**
  * One of the requested property filters does not support multiple values. Please include only a single value for

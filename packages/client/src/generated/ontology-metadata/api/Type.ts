@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import type { MarkingPropertyType } from "./MarkingPropertyType.js";
 import type { MediaReferencePropertyType } from "./MediaReferencePropertyType.js";
 import type { ShortPropertyType } from "./ShortPropertyType.js";
 import type { StringPropertyType } from "./StringPropertyType.js";
+import type { StructPropertyType } from "./StructPropertyType.js";
 import type { TimestampPropertyType } from "./TimestampPropertyType.js";
 import type { VectorPropertyType } from "./VectorPropertyType.js";
 export interface Type_array {
@@ -139,6 +140,11 @@ export interface Type_geotimeSeriesReference {
   type: "geotimeSeriesReference";
   geotimeSeriesReference: GeotimeSeriesReferencePropertyType;
 }
+
+export interface Type_struct {
+  type: "struct";
+  struct: StructPropertyType;
+}
 /**
  * Wrapper type for the various supported property types.
  *
@@ -166,4 +172,5 @@ export type Type =
   | Type_cipherText
   | Type_mediaReference
   | Type_vector
-  | Type_geotimeSeriesReference;
+  | Type_geotimeSeriesReference
+  | Type_struct;

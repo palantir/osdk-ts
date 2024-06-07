@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName";
+import type { DisplayName } from "./DisplayName.js";
 
 /**
  * A possible value for the parameter. This is defined in the **Ontology Manager** by Actions admins.

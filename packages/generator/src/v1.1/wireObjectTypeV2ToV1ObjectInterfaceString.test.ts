@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { formatTs } from "../util/test/formatTs";
-import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString";
+import { formatTs } from "../util/test/formatTs.js";
+import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
+import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString.js";
 
 describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
   it("generates object interface", async () => {
@@ -77,6 +77,7 @@ describe("wireObjectTypeV2ToObjectInterfaceStringV1", () => {
           objectTypeApiName: "Todo",
         }],
         implementsInterfaces: [],
+        implementsInterfaces2: {},
         sharedPropertyTypeMapping: {},
       },
     );

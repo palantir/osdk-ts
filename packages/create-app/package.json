@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app",
-  "version": "0.14.0",
+  "version": "0.16.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -10,17 +10,16 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
-      "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs"
+      "import": "./build/esm/index.js",
+      "browser": "./build/browser/index.browser.js"
     },
     "./*": {
-      "types": "./build/types/public/*.d.ts",
-      "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs"
+      "import": "./build/esm/public/*.js",
+      "browser": "./build/browser/public/*.js"
     }
   },
   "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -28,7 +27,7 @@
     "test:watch": "vitest",
     "transpile": "tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "tsc-absolute"
+    "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
     "consola": "^3.2.3",
@@ -50,14 +49,15 @@
     "create-osdk-app": "bin/createOsdkApp.mjs"
   },
   "files": [
-    "build/types",
-    "build/js",
+    "build/cjs",
+    "build/esm",
+    "build/browser",
     "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
-  "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
   "type": "module"
 }

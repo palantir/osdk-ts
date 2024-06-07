@@ -15,59 +15,82 @@
  */
 
 import type { ActionDefinition } from "@osdk/api";
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  OsdkActionParameters,
+} from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { applyActionV2 } from "@osdk/internal.foundry/OntologiesV2_Action";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
-import type {
-  ActionEditResponse,
-  ActionValidationResponse,
-  ApplyActionOptions,
-  OsdkActionParameters,
-} from "./Actions.js";
 import { ActionValidationError } from "./ActionValidationError.js";
-
-// cannot specify both validateOnly and returnEdits as true
-
-export type ActionReturnTypeForOptions<Op extends ApplyActionOptions> =
-  Op extends { $validateOnly: true } ? ActionValidationResponse
-    : Op extends { $returnEdits: true } ? ActionEditResponse
-    : undefined;
 
 export async function applyAction<
   AD extends ActionDefinition<any, any>,
-  Op extends ApplyActionOptions,
+  P extends OsdkActionParameters<AD["parameters"]> | OsdkActionParameters<
+    AD["parameters"]
+  >[],
+  Op extends P extends OsdkActionParameters<
+    AD["parameters"]
+  >[] ? ApplyBatchActionOptions
+    : ApplyActionOptions,
 >(
   client: MinimalClient,
   action: AD,
-  parameters?: OsdkActionParameters<AD["parameters"]>,
+  parameters?: P,
   options: Op = {} as Op,
-): Promise<ActionReturnTypeForOptions<Op>> {
-  const response = await applyActionV2(
-    addUserAgent(client, action),
-    client.ontologyRid,
-    action.apiName,
-    {
-      parameters: remapActionParams(parameters),
-      options: {
-        mode: options?.$validateOnly ? "VALIDATE_ONLY" : "VALIDATE_AND_EXECUTE",
-        returnEdits: options?.$returnEdits ? "ALL" : "NONE",
+): Promise<
+  ActionReturnTypeForOptions<Op>
+> {
+  if (Array.isArray(parameters)) {
+    const response = await OntologiesV2.Actions.applyActionBatchV2(
+      addUserAgent(client, action),
+      client.ontologyRid,
+      action.apiName,
+      {
+        requests: parameters ? remapBatchActionParams(parameters) : [],
+        options: {
+          returnEdits: options?.$returnEdits ? "ALL" : "NONE",
+        },
       },
-    },
-  );
+    );
 
-  if (options?.$validateOnly) {
-    return response.validation as ActionReturnTypeForOptions<Op>;
+    return (options?.$returnEdits
+      ? response.edits
+      : undefined) as ActionReturnTypeForOptions<Op>;
+  } else {
+    const response = await OntologiesV2.Actions.applyActionV2(
+      addUserAgent(client, action),
+      client.ontologyRid,
+      action.apiName,
+      {
+        parameters: remapActionParams(
+          parameters as OsdkActionParameters<AD["parameters"]>,
+        ),
+        options: {
+          mode: (options as ApplyActionOptions)?.$validateOnly
+            ? "VALIDATE_ONLY"
+            : "VALIDATE_AND_EXECUTE",
+          returnEdits: options?.$returnEdits ? "ALL" : "NONE",
+        },
+      },
+    );
+
+    if ((options as ApplyActionOptions)?.$validateOnly) {
+      return response.validation as ActionReturnTypeForOptions<Op>;
+    }
+
+    if (response.validation?.result === "INVALID") {
+      throw new ActionValidationError(response.validation);
+    }
+
+    return (options?.$returnEdits
+      ? response.edits
+      : undefined) as ActionReturnTypeForOptions<Op>;
   }
-
-  if (response.validation?.result === "INVALID") {
-    throw new ActionValidationError(response.validation);
-  }
-
-  return (options?.$returnEdits
-    ? response.edits
-    : undefined) as ActionReturnTypeForOptions<Op>;
 }
 
 function remapActionParams<AD extends ActionDefinition<any, any>>(
@@ -82,6 +105,19 @@ function remapActionParams<AD extends ActionDefinition<any, any>>(
     acc[key] = toDataValue(value);
     return acc;
   }, parameterMap);
+
+  return remappedParams;
+}
+
+function remapBatchActionParams<
+  AD extends ActionDefinition<any, any>,
+>(params: OsdkActionParameters<AD["parameters"]>[]) {
+  const remappedParams: { parameters: { [parameterName: string]: any } }[] =
+    params.map(
+      param => {
+        return { parameters: remapActionParams<AD>(param) };
+      },
+    );
 
   return remappedParams;
 }

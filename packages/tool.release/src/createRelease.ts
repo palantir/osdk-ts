@@ -55,7 +55,7 @@ import type { GithubContext } from "./runVersion.js";
 export const createRelease = async (
   context: GithubContext,
   { pkg, tagName }: { pkg: Package; tagName: string },
-) => {
+): Promise<void> => {
   try {
     const changelog = await fs.promises.readFile(
       path.join(pkg.dir, "CHANGELOG.md"),

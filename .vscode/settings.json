@@ -13,5 +13,14 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.experimental.useFlatConfig": true
+  "eslint.experimental.useFlatConfig": true,
+  "cSpell.words": [
+    "bbox",
+    "codegen",
+    "Datasources",
+    "mytsup",
+    "pino",
+    "todoapp"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

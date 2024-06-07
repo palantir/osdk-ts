@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { BoundingBoxValue } from "./BoundingBoxValue";
+import type { BoundingBoxValue } from "./BoundingBoxValue.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field contains a point within the bounding box provided.
  */
 export interface WithinBoundingBoxQuery {
-  field: string;
+  field: PropertyApiName;
   value: BoundingBoxValue;
 }

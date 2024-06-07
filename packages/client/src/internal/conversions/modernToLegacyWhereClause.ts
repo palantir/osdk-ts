@@ -20,14 +20,12 @@ import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 import type {
   AndWhereClause,
+  GeoFilter_Intersects,
+  GeoFilter_Within,
   NotWhereClause,
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "../../query/index.js";
-import type {
-  GeoFilter_Intersects,
-  GeoFilter_Within,
 } from "../../query/WhereClause.js";
 import { DistanceUnitMapping } from "../../query/WhereClause.js";
 

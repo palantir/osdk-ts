@@ -14,17 +14,29 @@
  * limitations under the License.
  */
 
-import type { Group, PreviewMode, PrincipalId } from "@osdk/foundry.common";
-import type { CreateGroupRequest } from "@osdk/foundry.security";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
-} from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+  Group,
+  PageSize,
+  PageToken,
+  PreviewMode,
+  PrincipalId,
+  SearchGroupsResponse,
+} from "@osdk/foundry.core";
+import type {
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type {
+  CreateGroupRequest,
+  ListGroupsResponse,
+  SearchGroupsRequest,
+} from "../_components.js";
 
 //
 
-const _createGroup: $OmniMethod<
+const _createGroup: $FoundryPlatformMethod<
   (
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -38,16 +50,16 @@ const _createGroup: $OmniMethod<
  * URL: /v2/security/groups
  */
 export function createGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Group> {
-  return $omniFetch($ctx, _createGroup, ...args);
+  return $foundryPlatformFetch($ctx, _createGroup, ...args);
 }
 
-const _deleteGroup: $OmniMethod<
+const _deleteGroup: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -61,17 +73,44 @@ const _deleteGroup: $OmniMethod<
  * URL: /v2/security/groups/{groupId}
  */
 export function deleteGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteGroup, ...args);
+  return $foundryPlatformFetch($ctx, _deleteGroup, ...args);
 }
 
-const _getGroup: $OmniMethod<
+const _listGroups: $FoundryPlatformMethod<
+  ($queryParams?: {
+    pageSize?: PageSize | undefined;
+    pageToken?: PageToken | undefined;
+    preview?: PreviewMode | undefined;
+  }) => Promise<ListGroupsResponse>
+> = [0, "/v2/security/groups", 2];
+
+/**
+ * Lists all Groups
+ *
+ * Required Scopes: [api:security-read]
+ * URL: /v2/security/groups
+ */
+export function listGroups(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $queryParams?: {
+      pageSize?: PageSize | undefined;
+      pageToken?: PageToken | undefined;
+      preview?: PreviewMode | undefined;
+    },
+  ]
+): Promise<ListGroupsResponse> {
+  return $foundryPlatformFetch($ctx, _listGroups, ...args);
+}
+
+const _getGroup: $FoundryPlatformMethod<
   (
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -85,12 +124,33 @@ const _getGroup: $OmniMethod<
  * URL: /v2/security/groups/{groupId}
  */
 export function getGroup(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     groupId: PrincipalId,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Group> {
-  return $omniFetch($ctx, _getGroup, ...args);
+  return $foundryPlatformFetch($ctx, _getGroup, ...args);
+}
+
+const _searchGroups: $FoundryPlatformMethod<
+  (
+    $body: SearchGroupsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<SearchGroupsResponse>
+> = [1, "/v2/security/groups/search", 3];
+
+/**
+ * Required Scopes: []
+ * URL: /v2/security/groups/search
+ */
+export function searchGroups(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: SearchGroupsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<SearchGroupsResponse> {
+  return $foundryPlatformFetch($ctx, _searchGroups, ...args);
 }

@@ -21,7 +21,7 @@ import { FailedWithUserMessage } from "./FailedWithUserMessage.js";
 export function mutateReleasePlan(
   releasePlan: ReleasePlan,
   releaseType: "patch" | "main",
-) {
+): void {
   for (const changeSet of releasePlan.changesets) {
     for (const release of changeSet.releases) {
       if (releaseType === "main" && release.type === "patch") {

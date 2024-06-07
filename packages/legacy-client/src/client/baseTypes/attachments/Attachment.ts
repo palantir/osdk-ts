@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Result } from "../../../client/Result";
-import type { AttachmentsError } from "../../errors";
+import type { Result } from "../../../client/Result.js";
+import type { AttachmentsError } from "../../errors/index.js";
 
 export interface Attachment {
   type: "Attachment";

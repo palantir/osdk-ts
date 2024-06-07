@@ -19,17 +19,17 @@ import type { ClientContext } from "@osdk/shared.net";
 import type {
   FilteredPropertiesTerminalOperationsWithGet,
   ObjectSetDefinition,
-} from "..";
-import type { SelectableProperties } from "../interfaces/utils/OmitProperties";
-import { getObject, getObjectWithoutErrors } from "../net/getObject";
-import { loadAllObjects } from "../net/loadObjects";
+} from "../index.js";
+import type { SelectableProperties } from "../interfaces/utils/OmitProperties.js";
+import { getObject, getObjectWithoutErrors } from "../net/getObject.js";
+import { loadAllObjects } from "../net/loadObjects.js";
 import {
   loadObjectsIterator,
   loadObjectsPage,
   loadObjectsPageOrThrows,
-} from "../net/loadObjectsPage";
-import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject";
-import type { OrderByClause } from "./filters";
+} from "../net/loadObjectsPage.js";
+import type { OsdkLegacyObjectFrom } from "../OsdkLegacyObject.js";
+import type { OrderByClause } from "./filters/index.js";
 
 export function createFilteredPropertiesObjectSetWithGetTerminalOperationsStep<
   O extends OntologyDefinition<any>,

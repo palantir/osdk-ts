@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,12 +31,7 @@ export async function modifySystemEntityMetadata(
   ontologyRid: OntologyRid,
   request: SystemEntityMetadataModificationRequest,
 ): Promise<SystemEntityMetadataModificationResponse> {
-  return conjureFetch(
-    ctx,
-    `/entityMetadata/system/modify?${new URLSearchParams({
-      "ontologyRid": ontologyRid,
-    })}`,
-    "POST",
-    request,
-  );
+  return conjureFetch(ctx, `/entityMetadata/system/modify`, "POST", request, {
+    ontologyRid,
+  });
 }

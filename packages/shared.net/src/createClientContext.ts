@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import type { ClientContext } from "./ClientContext.js";
-import { PalantirApiError } from "./PalantirApiError.js";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
   createFetchHeaderMutator,
   createFetchOrThrow,
   createRetryingFetch,
-} from "./util/index.js";
+} from "@osdk/shared.net.fetch";
+import type { ClientContext } from "./ClientContext.js";
 
 /**
  * The goal of the thin client is to provide a way to tree shake as much as possible.
  */
+
 export function createClientContext<
   T extends { metadata: { userAgent: string } },
 >(
   ontology: T,
-  stack: string,
+  baseUrl: string,
   tokenProvider: () => Promise<string> | string,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
 ): ClientContext<T> {
-  if (stack.length === 0) {
-    throw new Error("stack cannot be empty");
+  if (baseUrl.length === 0) {
+    throw new Error("baseUrl cannot be empty");
   }
 
   const retryingFetchWithAuthOrThrow = createFetchHeaderMutator(
@@ -48,7 +50,7 @@ export function createClientContext<
         "Fetch-User-Agent",
         [
           headers.get("Fetch-User-Agent"),
-          ontology.metadata.userAgent,
+          ontology.metadata.userAgent, // only used by legacy-client
           userAgent,
         ].filter(x => x && x?.length > 0).join(" "),
       );
@@ -81,9 +83,16 @@ export function createClientContext<
   };
 
   return {
+    ...createSharedClientContext(
+      baseUrl,
+      async () => await tokenProvider(),
+      [
+        ontology.metadata.userAgent, // only used by legacy-client
+        userAgent,
+      ].filter(x => x && x?.length > 0).join(" "),
+      fetchFn,
+    ),
     ontology,
-    stack,
-    fetch: fetchWrapper,
-    tokenProvider,
+    stack: baseUrl, // legacy support
   };
 }

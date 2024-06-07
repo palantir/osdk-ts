@@ -22,6 +22,9 @@ import * as importPlugin from "eslint-plugin-import";
 import * as tseslint from "typescript-eslint";
 
 export default tseslint.config(
+  {
+    ignores: ["**/tsup.config.bundled_*"],
+  },
   { files: ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"] },
   tseslint.configs.base,
   {

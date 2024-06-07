@@ -16,12 +16,15 @@
 
 import {
   getInterfaceType,
+  getObjectTypeFullMetadata,
   getObjectTypeV2,
   getOntologyFullMetadata,
   getOutgoingLinkTypeV2,
   listInterfaceTypes,
   listOutgoingLinkTypesV2,
 } from "@osdk/gateway/requests";
+import type { OntologyFullMetadata } from "@osdk/gateway/types";
+import type { RequestHandler } from "msw";
 import { http as rest, HttpResponse } from "msw";
 import invariant from "tiny-invariant";
 import {
@@ -30,16 +33,21 @@ import {
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   OntologyNotFoundError,
-} from "../errors";
+} from "../errors.js";
 import {
   defaultOntology,
   defaultOntologyForConjure,
   fullOntology,
-} from "../stubs/ontologies";
-import { authHandlerMiddleware } from "./commonHandlers";
-import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+} from "../stubs/ontologies.js";
+import { authHandlerMiddleware } from "./commonHandlers.js";
+import {
+  handleOpenApiCall,
+  OpenApiCallError,
+} from "./util/handleOpenApiCall.js";
 
-export function getOntology(ontologyApiName: string) {
+export function getOntology(
+  ontologyApiName: string,
+): OntologyFullMetadata {
   if (
     ontologyApiName !== fullOntology.ontology.apiName
     && ontologyApiName !== fullOntology.ontology.rid
@@ -93,7 +101,7 @@ type ConjureObjectTypeInfo = {
     "visibility": "PROMINENT";
   };
   id: string;
-  primaryKeys: [];
+  primaryKeys: string[];
   propertyTypes: Record<string, unknown>;
   rid: string;
   titlePropertyTypeRid: string;
@@ -119,7 +127,7 @@ type ConjureObjectTypeInfo = {
   typeGroups: [];
 };
 
-export const ontologyMetadataEndpoint = [
+export const ontologyMetadataEndpoint: Array<RequestHandler> = [
   /**
    * Load ObjectSet Objects
    */
@@ -142,6 +150,17 @@ export const ontologyMetadataEndpoint = [
       );
 
       return objectType;
+    },
+  ),
+
+  handleOpenApiCall(
+    getObjectTypeFullMetadata,
+    ["ontologyApiName", "objectTypeApiName"],
+    (req) => {
+      return getObjectDef(
+        req.params.ontologyApiName,
+        req.params.objectTypeApiName,
+      );
     },
   ),
 
@@ -259,7 +278,7 @@ export const ontologyMetadataEndpoint = [
         const body = await request.json();
         invariant(
           Object.entries(body.linkTypeVersions).length === 0,
-          "Currently dont support loading links via tests",
+          "Currently don't support loading links via tests",
         );
         invariant(body.loadRedacted === false, "unsupported for tests");
         invariant(
@@ -318,19 +337,25 @@ export const ontologyMetadataEndpoint = [
                     "pluralDisplayName": "Employees",
                     "visibility": "PROMINENT",
                   },
-                  id: "we dont track this",
-                  primaryKeys: [],
-                  propertyTypes: {}, // dont care right now
+                  id: "we don't track this",
+                  primaryKeys: [entry.objectType.primaryKey],
+                  propertyTypes: Object.fromEntries(
+                    Object.entries(entry.objectType.properties)
+                      .map(([k, v]) => [k, {
+                        ...v,
+                        rid: k,
+                      }]),
+                  ), // don't care right now
                   implementsInterfaces: entry
                     .implementsInterfaces as string[],
-                  implementsInterfaces2: [], // dont care right now
+                  implementsInterfaces2: [], // don't care right now
                   rid: entry.objectType.rid,
                   redacted: null,
                   "status": {
                     "type": "active",
                     "active": {},
                   },
-                  titlePropertyTypeRid: "we dont track this",
+                  titlePropertyTypeRid: "we don't track this",
                   "traits": {
                     "eventMetadata": null,
                     "actionLogMetadata": null,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "./DataValue";
-import type { ParameterId } from "./ParameterId";
+import type { DataValue } from "./DataValue.js";
+import type { ParameterId } from "./ParameterId.js";
 
 export interface BatchApplyActionRequestItem {
   parameters: Record<ParameterId, DataValue>;

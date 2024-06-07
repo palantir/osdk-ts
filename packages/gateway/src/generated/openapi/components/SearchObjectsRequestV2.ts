@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import type { PageSize } from "./PageSize";
-import type { PageToken } from "./PageToken";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2";
-import type { SearchOrderBy } from "./SearchOrderBy";
+import type { PageSize } from "./PageSize.js";
+import type { PageToken } from "./PageToken.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { SearchJsonQueryV2 } from "./SearchJsonQueryV2.js";
+import type { SearchOrderByV2 } from "./SearchOrderByV2.js";
 
 export interface SearchObjectsRequestV2 {
   where?: SearchJsonQueryV2;
-  orderBy?: SearchOrderBy;
+  orderBy?: SearchOrderByV2;
   pageSize?: PageSize;
   pageToken?: PageToken;
   /**

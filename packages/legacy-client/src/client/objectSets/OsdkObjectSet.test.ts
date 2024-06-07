@@ -37,10 +37,10 @@ import {
   type MockedFunction,
   vi,
 } from "vitest";
-import { USER_AGENT } from "../../USER_AGENT";
-import type { ObjectSetDefinition } from "../baseTypes";
-import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject";
-import { createBaseOsdkObjectSet } from "./OsdkObjectSet";
+import { USER_AGENT } from "../../USER_AGENT.js";
+import type { ObjectSetDefinition } from "../baseTypes/index.js";
+import { convertWireToOsdkObject } from "../objects/convertWireToOsdkObject.js";
+import { createBaseOsdkObjectSet } from "./OsdkObjectSet.js";
 
 describe("OsdkObjectSet", () => {
   const origin = "https://mock.com";
@@ -106,7 +106,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the count aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.count().compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the min aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.min(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -134,7 +134,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the max aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.max(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -148,7 +148,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the sum aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.sum(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -162,7 +162,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the avg aggregation", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.avg(s => s.points).compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
@@ -176,7 +176,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates the groupBy clauses", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.groupBy(s => s.complete.exact()).groupBy(s => s.body.exact())
       .count().compute();
     expect(fetch).toHaveBeenCalledOnce();
@@ -194,7 +194,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates complex aggregation queries", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await (os.aggregate(b => ({
       foo: b.complete.approximateDistinct(),
       bar: b.body.approximateDistinct(),
@@ -215,7 +215,7 @@ describe("OsdkObjectSet", () => {
 
   it("creates approximateDistinct queries", async () => {
     const os = createBaseObjectSet(client, "Todo");
-    mockAggregateResponse({ data: [] });
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
     await os.approximateDistinct(s => s.complete).compute();
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(

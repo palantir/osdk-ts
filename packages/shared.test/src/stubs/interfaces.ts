@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { fooSpt } from "./spts";
+import type { InterfaceType } from "@osdk/gateway/types";
+import { fooSpt } from "./spts.js";
 
-export const FooInterface = {
+export const FooInterface: InterfaceType = {
   apiName: "FooInterface",
   displayName: "Foo Interface",
   rid: "ri.interface.main.interface.1",

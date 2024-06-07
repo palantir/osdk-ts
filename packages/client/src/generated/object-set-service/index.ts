@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,3 +17,4 @@
 export * as api from "./api/index.js";
 export * as audit from "./audit/index.js";
 export * as errors from "./errors/index.js";
+export * as loggable from "./loggable/index.js";

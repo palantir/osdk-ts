@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { FieldNameV1 } from "./FieldNameV1.js";
+
 /** Returns objects where the specified field contains the provided value as a substring. */
 export interface PhraseQuery {
-  field: string;
+  field: FieldNameV1;
   value: string;
 }

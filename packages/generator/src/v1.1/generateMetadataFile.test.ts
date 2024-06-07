@@ -15,9 +15,9 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles";
-import { TodoWireOntology } from "../util/test/TodoWireOntology";
-import { generateMetadataFile } from "./generateMetadataFile";
+import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
+import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
+import { generateMetadataFile } from "./generateMetadataFile.js";
 
 describe(generateMetadataFile, () => {
   it("generates metadata", async () => {
@@ -125,6 +125,7 @@ describe(generateMetadataFile, () => {
             },
             linkTypes: [],
             implementsInterfaces: [],
+            implementsInterfaces2: {},
             sharedPropertyTypeMapping: {},
           },
         },

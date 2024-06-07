@@ -1,6 +1,6 @@
 import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from '@osdk/api';
 import type { OntologyObject, SingleLink } from '@osdk/legacy-client';
-import type { Person } from './Person';
+import type { Person } from './Person.js';
 
 /**
  * Its a todo item.
@@ -23,7 +23,7 @@ export interface Todo extends OntologyObject {
   readonly Assignee: SingleLink<Person>;
 }
 
-import type { PersonDef } from './Person';
+import type { PersonDef } from './Person.js';
 
 export interface TodoDef extends ObjectTypeDefinition<'Todo', Todo> {
   apiName: 'Todo';

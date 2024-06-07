@@ -20,7 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypePropertyDefinition,
 } from "@osdk/api";
-import type { DistanceUnit } from "@osdk/internal.foundry/types";
+import type { DistanceUnit } from "@osdk/internal.foundry";
 
 export type PossibleWhereClauseFilters =
   | "$gt"

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./ApiErrors";
-export * from "./Errors";
-export * from "./handlers";
+export * from "./ApiErrors.js";
+export * from "./Errors.js";
+export * from "./handlers/index.js";

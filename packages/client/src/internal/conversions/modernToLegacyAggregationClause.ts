@@ -15,7 +15,7 @@
  */
 
 import type { AggregationV2 } from "@osdk/internal.foundry";
-import type { AggregationClause } from "../../query/index.js";
+import type { AggregationClause } from "../../query/aggregations/AggregationsClause.js";
 
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,

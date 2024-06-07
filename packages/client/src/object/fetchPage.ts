@@ -15,7 +15,6 @@
  */
 
 import type {
-  BrandedApiName,
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
@@ -31,59 +30,13 @@ import type {
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
 } from "@osdk/internal.foundry";
-import { loadObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
-import {
-  searchObjectsForInterface,
-} from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
-import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
-import type { PageResult } from "../PageResult.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
+import type { Augment, Augments, FetchPageArgs } from "./FetchPageArgs.js";
+import type { FetchPageResult } from "./FetchPageResult.js";
 import type { Result } from "./Result.js";
-
-export interface SelectArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean = false,
-> {
-  $select?: readonly L[];
-  $includeRid?: R;
-}
-
-export interface OrderByArg<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
-> {
-  $orderBy?: {
-    [K in L]?: "asc" | "desc";
-  };
-}
-
-export type SelectArgToKeys<
-  Q extends ObjectOrInterfaceDefinition,
-  A extends SelectArg<Q, any, any>,
-> = A extends SelectArg<Q, never> ? "$all"
-  : A["$select"] extends readonly string[] ? A["$select"][number]
-  : "$all";
-
-export interface FetchPageArgs<
-  Q extends ObjectOrInterfaceDefinition,
-  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean = false,
-  A extends Augments = {},
-> extends
-  SelectArg<Q, K, R>,
-  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
-{
-  $nextPageToken?: string;
-  $pageSize?: number;
-  $augment?: A;
-}
 
 export function augment<
   X extends ObjectOrInterfaceDefinition,
@@ -94,39 +47,6 @@ export function augment<
 ): Augment<X, T> {
   return { [type.apiName]: properties } as any;
 }
-
-export type Augment<
-  X extends ObjectOrInterfaceDefinition,
-  T extends string,
-> = X extends ObjectOrInterfaceDefinition<infer Z>
-  ? Z extends BrandedApiName<infer ZZ, any> ? { [K in Z]: T[] } : never
-  : never;
-
-export type Augments = Record<string, string[]>;
-
-export interface FetchInterfacePageArgs<
-  Q extends InterfaceDefinition<any, any>,
-  K extends ObjectOrInterfacePropertyKeysFrom2<Q> =
-    ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean = false,
-> extends
-  SelectArg<Q, K, R>,
-  OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
-{
-  $nextPageToken?: string;
-  $pageSize?: number;
-  $augment?: Augments;
-}
-
-export type FetchPageResult<
-  Q extends ObjectOrInterfaceDefinition,
-  L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-  R extends boolean,
-> = PageResult<
-  ObjectOrInterfacePropertyKeysFrom2<Q> extends L
-    ? (DefaultToFalse<R> extends false ? Osdk<Q> : Osdk<Q, "$all" | "$rid">)
-    : (DefaultToFalse<R> extends false ? Osdk<Q, L> : Osdk<Q, L | "$rid">)
->;
 
 /** @internal */
 export function objectSetToSearchJsonV2(
@@ -168,7 +88,7 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const result = await searchObjectsForInterface(
+  const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
     addUserAgent(client, interfaceType),
     client.ontologyRid,
     interfaceType.apiName,
@@ -305,7 +225,7 @@ export async function fetchObjectPage<
   args: FetchPageArgs<Q, L, R>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R>> {
-  const r = await loadObjectSetV2(
+  const r = await OntologiesV2.OntologyObjectSets.loadObjectSetV2(
     addUserAgent(client, objectType),
     client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {

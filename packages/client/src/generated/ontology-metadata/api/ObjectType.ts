@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ import type { InterfaceTypeRid } from "./InterfaceTypeRid.js";
 import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
 import type { ObjectTypeDisplayMetadata } from "./ObjectTypeDisplayMetadata.js";
 import type { ObjectTypeId } from "./ObjectTypeId.js";
+import type { ObjectTypeInterfaceImplementation } from "./ObjectTypeInterfaceImplementation.js";
 import type { ObjectTypeRid } from "./ObjectTypeRid.js";
 import type { ObjectTypeStatus } from "./ObjectTypeStatus.js";
 import type { ObjectTypeTraits } from "./ObjectTypeTraits.js";
@@ -41,5 +42,6 @@ export interface ObjectType {
   status: ObjectTypeStatus;
   redacted: boolean | undefined;
   implementsInterfaces: Array<InterfaceTypeRid>;
+  implementsInterfaces2: Array<ObjectTypeInterfaceImplementation>;
   typeGroups: Array<TypeGroupRid>;
 }

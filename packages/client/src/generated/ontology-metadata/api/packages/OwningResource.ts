@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
+import type { CompassProjectRid } from "../CompassProjectRid.js";
 import type { UseCaseRid } from "../UseCaseRid.js";
 export interface OwningResource_useCase {
   type: "useCase";
   useCase: UseCaseRid;
 }
+
+export interface OwningResource_compassProject {
+  type: "compassProject";
+  compassProject: CompassProjectRid;
+}
 /**
  * The resource that owns the ontology package.
  */
-export type OwningResource = OwningResource_useCase;
+export type OwningResource =
+  | OwningResource_useCase
+  | OwningResource_compassProject;

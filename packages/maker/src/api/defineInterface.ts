@@ -29,7 +29,15 @@ export function defineInterface(
       SharedPropertyType | PropertyTypeType
     >;
   },
-) {
+): {
+  apiName: string;
+  displayName: string;
+  extendsInterfaces: never[];
+  links: {};
+  properties: { [k: string]: SharedPropertyType };
+  rid: string;
+  description: string;
+} {
   invariant(
     ontologyDefinition.interfaceTypes[apiName] === undefined,
     `Interface ${apiName} already exists`,

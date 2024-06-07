@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName";
-import type { OrderByDirection } from "./OrderByDirection";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { OrderByDirection } from "./OrderByDirection.js";
 
 /** Computes the total count of objects. */
 export interface CountAggregationV2 {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Documentation, Safety } from "./Common";
-import type { DataType } from "./DataTypes";
+import type { Documentation, Safety } from "./Common.js";
+import type { DataType } from "./DataTypes.js";
 
 export interface ParameterValue {
   type: DataType;

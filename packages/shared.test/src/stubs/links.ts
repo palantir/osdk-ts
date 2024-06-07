@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-import { employee1, employee2, employee3 } from "./objects";
+import type {
+  ListOutgoingLinkTypesResponseV2,
+  OntologyObjectV2,
+} from "@osdk/gateway/types";
+import type { PagedBodyResponse } from "../handlers/endpointUtils.js";
+import { employee1, employee2, employee3 } from "./objects.js";
 
-export const employeePeepLinks = {
+export const employeePeepLinks: Record<
+  string,
+  PagedBodyResponse<OntologyObjectV2>
+> = {
   [employee2.__primaryKey.toString()]: {
     data: [employee1, employee3],
   },
 };
 
-export const employeeLeadLinks = {
+export const employeeLeadLinks: Record<
+  string,
+  PagedBodyResponse<OntologyObjectV2>
+> = {
   [employee1.__primaryKey.toString()]: {
     data: [employee2],
   },
@@ -32,7 +43,11 @@ export const employeeLeadLinks = {
 };
 
 export const linkResponseMap: {
-  [objectType: string]: { [linkType: string]: any };
+  [objectType: string]: {
+    [linkType: string]: {
+      [pk: string]: PagedBodyResponse<OntologyObjectV2>;
+    };
+  };
 } = {
   Employee: {
     peeps: employeePeepLinks,

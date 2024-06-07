@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import type { AggregateObjectsResponseItemV2 } from "./AggregateObjectsResponseItemV2";
-import type { AggregationAccuracy } from "./AggregationAccuracy";
+import type { AggregateObjectsResponseItemV2 } from "./AggregateObjectsResponseItemV2.js";
+import type { AggregationAccuracy } from "./AggregationAccuracy.js";
 
 export interface AggregateObjectsResponseV2 {
   excludedItems?: number;
-  accuracy?: AggregationAccuracy;
+  accuracy: AggregationAccuracy;
   data: ReadonlyArray<AggregateObjectsResponseItemV2>;
 }

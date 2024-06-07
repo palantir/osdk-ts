@@ -21,8 +21,10 @@ import type {
   OntologyDefinition,
   VersionBound,
 } from "@osdk/api";
-import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes";
-import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
+import type { ObjectTypeWithAllPropertyTypesDef } from "./ObjectTypeWithAllPropertyTypes.js";
+import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes.js";
+import type { ObjectTypeWithReservedNamesDef } from "./ObjectTypeWithReservedNames.js";
+import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames.js";
 
 const osdkMetadata = {
   extraUserAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
@@ -169,10 +171,12 @@ export const MockOntology = {
     userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
   },
   objects: {
-    Task,
-    Todo,
-    ObjectTypeWithAllPropertyTypes,
-    ObjectTypeWithReservedNames,
+    Task: Task as TaskDef,
+    Todo: Todo as TodoDef,
+    ObjectTypeWithAllPropertyTypes:
+      ObjectTypeWithAllPropertyTypes as ObjectTypeWithAllPropertyTypesDef, // forces the type to be imported allowing attw to work
+    ObjectTypeWithReservedNames:
+      ObjectTypeWithReservedNames as ObjectTypeWithReservedNamesDef, // forces the type to be imported allowing attw to work
   },
   actions: {
     createTask: {
@@ -193,7 +197,7 @@ export const MockOntology = {
         Todo: { modified: false, created: true },
       },
     },
-    updateTask,
+    updateTask: updateTask as ActionDef$updateTask,
   },
   queries: {
     queryTakesNoParameters: {
@@ -272,7 +276,7 @@ export const MockOntology = {
           union: [
             { type: "string", nullable: false },
             { type: "integer", nullable: false },
-          ],
+          ] as const,
 
           nullable: false,
         },
@@ -283,7 +287,7 @@ export const MockOntology = {
           union: [
             { type: "string", nullable: false },
             { type: "integer", nullable: false },
-          ],
+          ] as const,
 
           nullable: true,
         },
@@ -379,15 +383,7 @@ export const MockOntology = {
       },
     },
   },
-} satisfies OntologyDefinition<
-  | "Task"
-  | "Todo"
-  | "ObjectTypeWithAllPropertyTypes"
-  | "ObjectTypeWithReservedNames",
-  "createTask" | "updateTask" | "createTodo",
-  any,
-  any
->;
+} as const satisfies OntologyDefinition<any, any, any, any>;
 type capture = typeof MockOntology;
 export interface MockOntology extends capture {
 }

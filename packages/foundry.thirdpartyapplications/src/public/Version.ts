@@ -21,17 +21,18 @@ import type {
   ThirdPartyApplicationRid,
   Version,
   VersionVersion,
-} from "@osdk/foundry.common";
-import type { ListVersionsResponse } from "@osdk/foundry.thirdpartyapplications";
+} from "@osdk/foundry.core";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
-} from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type { ListVersionsResponse } from "../_components.js";
 
 //
 
-const _deleteVersion: $OmniMethod<
+const _deleteVersion: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     versionVersion: VersionVersion,
@@ -46,7 +47,7 @@ const _deleteVersion: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/{versionVersion}
  */
 export function deleteVersion(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     versionVersion: VersionVersion,
@@ -54,10 +55,10 @@ export function deleteVersion(
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<void> {
-  return $omniFetch($ctx, _deleteVersion, ...args);
+  return $foundryPlatformFetch($ctx, _deleteVersion, ...args);
 }
 
-const _listVersions: $OmniMethod<
+const _listVersions: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $queryParams?: {
@@ -75,7 +76,7 @@ const _listVersions: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions
  */
 export function listVersions(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
 
@@ -86,10 +87,10 @@ export function listVersions(
     },
   ]
 ): Promise<ListVersionsResponse> {
-  return $omniFetch($ctx, _listVersions, ...args);
+  return $foundryPlatformFetch($ctx, _listVersions, ...args);
 }
 
-const _getVersion: $OmniMethod<
+const _getVersion: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     versionVersion: VersionVersion,
@@ -104,7 +105,7 @@ const _getVersion: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/{versionVersion}
  */
 export function getVersion(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     versionVersion: VersionVersion,
@@ -112,12 +113,13 @@ export function getVersion(
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Version> {
-  return $omniFetch($ctx, _getVersion, ...args);
+  return $foundryPlatformFetch($ctx, _getVersion, ...args);
 }
 
-const _uploadVersion: $OmniMethod<
+const _uploadVersion: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
+    $body: Blob,
     $queryParams: {
       version: VersionVersion;
       preview?: PreviewMode | undefined;
@@ -126,7 +128,7 @@ const _uploadVersion: $OmniMethod<
 > = [
   1,
   "/v2/thirdPartyApplications/{0}/website/versions/upload",
-  2,
+  3,
   "application/octet-stream",
 ];
 
@@ -135,15 +137,15 @@ const _uploadVersion: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/upload
  */
 export function uploadVersion(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
-
+    $body: Blob,
     $queryParams: {
       version: VersionVersion;
       preview?: PreviewMode | undefined;
     },
   ]
 ): Promise<Version> {
-  return $omniFetch($ctx, _uploadVersion, ...args);
+  return $foundryPlatformFetch($ctx, _uploadVersion, ...args);
 }

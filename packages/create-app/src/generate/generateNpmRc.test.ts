@@ -18,8 +18,8 @@ import { expect, test } from "vitest";
 import { generateNpmRc } from "./generateNpmRc.js";
 
 const expected = `
-//registry.com:_authToken=\${FOUNDRY_TOKEN}
-@myapp:registry=https://registry.com
+//registry.com/:_authToken=\${FOUNDRY_TOKEN}
+@myapp:registry=https://registry.com/
 `.trimStart();
 
 test("it generates .npmrc for packge and registry", () => {

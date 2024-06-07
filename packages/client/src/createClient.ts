@@ -20,8 +20,9 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { ActionSignatureFromDef } from "@osdk/client.api";
+import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
-import type { ActionSignatureFromDef } from "./actions/Actions.js";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
@@ -29,21 +30,18 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import type { UnstableClient } from "./UnstableClient.js";
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
-  stack: string,
+  baseUrl: string,
   ontologyRid: string,
-  tokenProvider: () => Promise<string> | string,
+  tokenProvider: () => Promise<string>,
   options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
 ): Client {
   const clientCtx: MinimalClient = createMinimalClient(
-    {
-      ontologyRid,
-    },
-    stack,
+    { ontologyRid },
+    baseUrl,
     tokenProvider,
     options,
     fetchFn,
@@ -64,16 +62,18 @@ export function createClientInternal(
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
-      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<any>;
+      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
+        any
+      > as any;
     } else {
       throw new Error("not implemented");
     }
   }
 
   const client: Client = Object.defineProperties<Client>(
-    clientFn as UnstableClient,
+    clientFn as Client,
     {
-      ctx: {
+      [symbolClientContext]: {
         value: clientCtx,
       },
     } satisfies Record<keyof Client, PropertyDescriptor>,

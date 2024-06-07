@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyV2 } from "./OntologyV2";
+import type { OntologyV2 } from "./OntologyV2.js";
 
 export interface ListOntologiesV2Response {
   /** The list of Ontologies the user has access to. */

@@ -88,7 +88,7 @@ export {
   TimestampType,
   visitError,
   visitInternalBucketing,
-} from "./client";
+} from "./client/index.js";
 export type {
   ActionArgs,
   ActionEditedPropertiesNotFound,
@@ -371,13 +371,13 @@ export type {
   WithinPolygonWhereClause,
   WrappedActionReturnType,
   WrappedQueryReturnType,
-} from "./client";
+} from "./client/index.js";
 export {
   ConfidentialClientAuth,
   OAuthToken,
   PublicClientAuth,
   UserTokenAuth,
-} from "./oauth-client";
+} from "./oauth-client/index.js";
 export type {
   Auth,
   AuthSubscription,
@@ -387,4 +387,4 @@ export type {
   Token,
   TokenValue,
   UnsubscribeFunction,
-} from "./oauth-client";
+} from "./oauth-client/index.js";

@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-import type { InterfaceTypeApiName } from "./InterfaceTypeApiName";
-import type { LinkTypeSideV2 } from "./LinkTypeSideV2";
-import type { ObjectTypeV2 } from "./ObjectTypeV2";
-import type { PropertyApiName } from "./PropertyApiName";
-import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName";
+import type { InterfaceTypeApiName } from "./InterfaceTypeApiName.js";
+import type { LinkTypeSideV2 } from "./LinkTypeSideV2.js";
+import type { ObjectTypeInterfaceImplementation } from "./ObjectTypeInterfaceImplementation.js";
+import type { ObjectTypeV2 } from "./ObjectTypeV2.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { SharedPropertyTypeApiName } from "./SharedPropertyTypeApiName.js";
 
 export interface ObjectTypeFullMetadata {
   objectType: ObjectTypeV2;
   linkTypes: ReadonlyArray<LinkTypeSideV2>;
   /** A list of interfaces that this object type implements. */
   implementsInterfaces: ReadonlyArray<InterfaceTypeApiName>;
+  /** A list of interfaces that this object type implements and how it implements them. */
+  implementsInterfaces2: Record<
+    InterfaceTypeApiName,
+    ObjectTypeInterfaceImplementation
+  >;
   /**
    * A map from shared property type API name to backing local property API name for the shared property types
    * present on this object type.

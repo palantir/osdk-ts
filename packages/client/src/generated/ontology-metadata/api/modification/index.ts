@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,15 @@ export type { ActionLogRequiredModification } from "./ActionLogRequiredModificat
 export type { ActionLogRequirednessModification } from "./ActionLogRequirednessModification.js";
 export type { ActionTypeModification } from "./ActionTypeModification.js";
 export type { ActivePropertyTypeStatusModification } from "./ActivePropertyTypeStatusModification.js";
+export type { ArrayPropertyTypeModification } from "./ArrayPropertyTypeModification.js";
 export type { CheckExistingUniqueIdentifiersRequest } from "./CheckExistingUniqueIdentifiersRequest.js";
 export type { CheckExistingUniqueIdentifiersResponse } from "./CheckExistingUniqueIdentifiersResponse.js";
 export type { CompassFolderRid } from "./CompassFolderRid.js";
 export type { CompassNamespaceRid } from "./CompassNamespaceRid.js";
 export type { DataConstraintsModification } from "./DataConstraintsModification.js";
 export type { DeprecatedPropertyTypeStatusModification } from "./DeprecatedPropertyTypeStatusModification.js";
+export type { EditsHistoryConfigModification } from "./EditsHistoryConfigModification.js";
+export type { EditsHistoryModification } from "./EditsHistoryModification.js";
 export type { EditsResolutionStrategyModification } from "./EditsResolutionStrategyModification.js";
 export type { EntityConfigModification } from "./EntityConfigModification.js";
 export type { EntityModificationHistoryPageItem } from "./EntityModificationHistoryPageItem.js";
@@ -43,6 +46,9 @@ export type { GetModifiedEntitiesResponse } from "./GetModifiedEntitiesResponse.
 export type { ImportSharedPropertyTypesRequest } from "./ImportSharedPropertyTypesRequest.js";
 export type { ImportSharedPropertyTypesResponse } from "./ImportSharedPropertyTypesResponse.js";
 export type { InlineActionTypeModification } from "./InlineActionTypeModification.js";
+export type { InterfaceLinkTypeImplementationModification } from "./InterfaceLinkTypeImplementationModification.js";
+export type { InterfaceLinkTypeModification } from "./InterfaceLinkTypeModification.js";
+export type { InterfacePropertyImplementationModification } from "./InterfacePropertyImplementationModification.js";
 export type { InterfaceTypeModification } from "./InterfaceTypeModification.js";
 export type { LinkDefinitionModification } from "./LinkDefinitionModification.js";
 export type { LinkTypeCreate } from "./LinkTypeCreate.js";
@@ -66,6 +72,7 @@ export type { ModificationHistoryPageItem } from "./ModificationHistoryPageItem.
 export type { ModificationHistoryPageItemSummary } from "./ModificationHistoryPageItemSummary.js";
 export type { ModificationHistoryPageToken } from "./ModificationHistoryPageToken.js";
 export type { ModificationType } from "./ModificationType.js";
+export type { NoEditsHistoryModification } from "./NoEditsHistoryModification.js";
 export type { NoneEntityProvenance } from "./NoneEntityProvenance.js";
 export type { ObjectStorageV1Modification } from "./ObjectStorageV1Modification.js";
 export type { ObjectStorageV2Modification } from "./ObjectStorageV2Modification.js";
@@ -80,6 +87,7 @@ export type { ObjectTypeDatasourceUpdate } from "./ObjectTypeDatasourceUpdate.js
 export type { ObjectTypeDelete } from "./ObjectTypeDelete.js";
 export type { ObjectTypeEntityMetadataModifyRequest } from "./ObjectTypeEntityMetadataModifyRequest.js";
 export type { ObjectTypeGeotimeSeriesDatasourceModification } from "./ObjectTypeGeotimeSeriesDatasourceModification.js";
+export type { ObjectTypeInterfaceImplementationModification } from "./ObjectTypeInterfaceImplementationModification.js";
 export type { ObjectTypeMediaDatasourceModification } from "./ObjectTypeMediaDatasourceModification.js";
 export type { ObjectTypeMediaSetViewDatasourceModification } from "./ObjectTypeMediaSetViewDatasourceModification.js";
 export type { ObjectTypeModification } from "./ObjectTypeModification.js";
@@ -116,7 +124,10 @@ export type { ReadOnlyV1V2Modification } from "./ReadOnlyV1V2Modification.js";
 export type { SensorTraitModification } from "./SensorTraitModification.js";
 export type { SharedPropertyTypeModification } from "./SharedPropertyTypeModification.js";
 export type { StorageBackendModification } from "./StorageBackendModification.js";
+export type { StructFieldTypeModification } from "./StructFieldTypeModification.js";
+export type { StructPropertyTypeModification } from "./StructPropertyTypeModification.js";
 export type { TimeSeriesMetadataModification } from "./TimeSeriesMetadataModification.js";
+export type { TypeForModification } from "./TypeForModification.js";
 export type { TypeGroupModification } from "./TypeGroupModification.js";
 export type { ValidationRuleModificationWithIdInRequest } from "./ValidationRuleModificationWithIdInRequest.js";
 export type { ValueTypeReferenceModification } from "./ValueTypeReferenceModification.js";

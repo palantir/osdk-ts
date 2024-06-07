@@ -16,7 +16,7 @@
 
 import type { InterfaceDefinition } from "@osdk/api";
 import type { InterfaceType } from "@osdk/gateway/types";
-import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   interfaceType: InterfaceType,

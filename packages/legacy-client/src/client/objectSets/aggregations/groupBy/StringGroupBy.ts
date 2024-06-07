@@ -18,8 +18,8 @@ import type {
   Bucketing,
   BucketKey,
   ExactValueBucketing,
-} from "../Aggregations";
-import { GroupKeyType } from "./GroupKeyType";
+} from "../Aggregations.js";
+import { GroupKeyType } from "./GroupKeyType.js";
 
 export interface StringGroupBy<TBucketKey extends BucketKey> {
   /** Divides objects into groups according to an exact value.

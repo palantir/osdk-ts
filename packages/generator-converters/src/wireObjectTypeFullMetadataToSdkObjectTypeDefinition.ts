@@ -16,8 +16,8 @@
 
 import type { ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
-import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition";
-import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition";
+import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
+import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
   objectTypeWithLink: ObjectTypeFullMetadata,
@@ -31,6 +31,25 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
       `Primary key ${objectTypeWithLink.objectType.primaryKey} not found in ${objectTypeWithLink.objectType.apiName}`,
     );
   }
+
+  // saved ontology.json files may not have this implementsInterfaces2 so we need to handle
+  if (
+    objectTypeWithLink.implementsInterfaces2 == null
+    && objectTypeWithLink.implementsInterfaces != null
+  ) {
+    throw new Error(
+      "Your ontology.json file is missing the implementsInterfaces2 field. Please regenerate it.",
+    );
+  }
+
+  const interfaceMap = objectTypeWithLink.implementsInterfaces2
+    ? Object.fromEntries(
+      Object.entries(objectTypeWithLink.implementsInterfaces2).map(
+        ([interfaceApiName, impl]) => [interfaceApiName, impl.properties],
+      ),
+    )
+    : undefined;
+
   return {
     type: "object",
     apiName: objectTypeWithLink.objectType.apiName,
@@ -58,13 +77,23 @@ export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
       ]),
     ),
     spts: objectTypeWithLink.sharedPropertyTypeMapping,
-    inverseSpts: objectTypeWithLink.sharedPropertyTypeMapping
+    inverseSpts: invertProps(objectTypeWithLink.sharedPropertyTypeMapping),
+    implements: objectTypeWithLink.implementsInterfaces as string[],
+    interfaceMap,
+    inverseInterfaceMap: interfaceMap
       ? Object.fromEntries(
-        Object.entries(objectTypeWithLink.sharedPropertyTypeMapping).map((
-          [k, v],
-        ) => [v, k]),
+        Object.entries(interfaceMap).map((
+          [interfaceApiName, props],
+        ) => [interfaceApiName, invertProps(props)]),
       )
       : undefined,
-    implements: objectTypeWithLink.implementsInterfaces as string[],
   };
+}
+function invertProps(
+  a?: Record<string, string>,
+): typeof a extends undefined ? typeof a : Record<string, string> {
+  return (a
+    ? Object.fromEntries(Object.entries(a).map(([k, v]) => [v, k]))
+    : undefined) as typeof a extends undefined ? typeof a
+      : Record<string, string>;
 }

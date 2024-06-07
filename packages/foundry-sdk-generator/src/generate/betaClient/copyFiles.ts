@@ -18,7 +18,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import type { Project } from "ts-morph";
 import { Node } from "ts-morph";
-import { withoutTrailingIndex } from "./getModuleSourceFile";
+import { withoutTrailingIndex } from "./getModuleSourceFile.js";
 const KNOWN_EXTERNAL = new Set(["geojson"]);
 
 export async function copyFiles(
@@ -89,16 +89,27 @@ export async function copyFiles(
   }
 
   for (const dir of dirs) {
+    const buildDirsToTry = ["build/cjs", "build/esm"];
     const packageName = getPackageName(dir);
-    for (const file of getTypeFiles(path.join(dir, "build"))) {
-      // drop the trailing ".d.ts"
-      const indexOfPackageName = file.indexOf(packageName);
-      const tsPath = file.slice(
-        indexOfPackageName + packageName.length + "/build/types".length,
-        -5,
-      );
 
-      const newModulePath = `internal/${packageName}${tsPath}`;
+    const relativeBuildDir = buildDirsToTry.find((buildDir) => {
+      try {
+        fs.statSync(path.join(dir, buildDir));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    });
+
+    if (!relativeBuildDir) {
+      throw new Error("Couldnt find the right build dir");
+    }
+
+    for (const file of getTypeFiles(path.join(dir, relativeBuildDir))) {
+      const absoluteBuildDir = path.join(dir, relativeBuildDir);
+      const tsPath = path.relative(absoluteBuildDir, file).slice(0, -5); // drop the trailing ".d.ts"
+
+      const newModulePath = `internal/${packageName}/${tsPath}`;
 
       const fileContents = fs.readFileSync(file).toString();
       const sourceFile = project.createSourceFile(

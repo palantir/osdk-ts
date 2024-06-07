@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { NonNumericSeriesValueMetadata } from "./NonNumericSeriesValueMetadata.js";
 import type { NumericOrNonNumericSeriesValueMetadata } from "./NumericOrNonNumericSeriesValueMetadata.js";
+import type { NumericOrNonNumericSeriesValueMetadataV2 } from "./NumericOrNonNumericSeriesValueMetadataV2.js";
 import type { NumericSeriesValueMetadata } from "./NumericSeriesValueMetadata.js";
 export interface SeriesValueMetadata_numeric {
   type: "numeric";
@@ -31,7 +32,13 @@ export interface SeriesValueMetadata_numericOrNonNumeric {
   type: "numericOrNonNumeric";
   numericOrNonNumeric: NumericOrNonNumericSeriesValueMetadata;
 }
+
+export interface SeriesValueMetadata_numericOrNonNumericV2 {
+  type: "numericOrNonNumericV2";
+  numericOrNonNumericV2: NumericOrNonNumericSeriesValueMetadataV2;
+}
 export type SeriesValueMetadata =
   | SeriesValueMetadata_numeric
   | SeriesValueMetadata_enum
-  | SeriesValueMetadata_numericOrNonNumeric;
+  | SeriesValueMetadata_numericOrNonNumeric
+  | SeriesValueMetadata_numericOrNonNumericV2;

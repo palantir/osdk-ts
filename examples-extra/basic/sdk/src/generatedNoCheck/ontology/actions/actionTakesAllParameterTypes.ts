@@ -1,5 +1,11 @@
 import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person, Todo } from '../objects.js';
 
@@ -39,17 +45,22 @@ export type ActionDef$actionTakesAllParameterTypes$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type actionTakesAllParameterTypes$Params = NOOP<
-  OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>
->;
+export type actionTakesAllParameterTypes$Params =
+  | NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>[];
 
 // Represents a fqn of the action
 export interface actionTakesAllParameterTypes {
   /**
    * An action which takes different types of parameters
    */
-  <OP extends ApplyActionOptions>(
-    args: actionTakesAllParameterTypes$Params,
+  <
+    P extends actionTakesAllParameterTypes$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
     options?: OP,
   ): Promise<ActionReturnTypeForOptions<OP>>;
 }

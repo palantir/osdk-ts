@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { AttachmentV2 } from "./AttachmentV2";
-import type { ListAttachmentsResponseV2 } from "./ListAttachmentsResponseV2";
+import type { AttachmentV2 } from "./AttachmentV2.js";
+import type { ListAttachmentsResponseV2 } from "./ListAttachmentsResponseV2.js";
 
 export interface AttachmentMetadataResponse_Single extends AttachmentV2 {
   type: "single";

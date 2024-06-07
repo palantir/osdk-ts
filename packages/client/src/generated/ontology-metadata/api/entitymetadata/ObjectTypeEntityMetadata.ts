@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { ObjectTypeGothamMapping } from "../typemapping/ObjectTypeGothamMapping.js";
 import type { ActionLogRequirednessMetadata } from "./ActionLogRequirednessMetadata.js";
+import type { EditsHistory } from "./EditsHistory.js";
 import type { EditsResolutionStrategies } from "./EditsResolutionStrategies.js";
 import type { EntityConfig } from "./EntityConfig.js";
 import type { ObjectTypeAlias } from "./ObjectTypeAlias.js";
@@ -36,4 +37,5 @@ export interface ObjectTypeEntityMetadata {
   provenance: EntityProvenance | undefined;
   editsResolutionStrategies: EditsResolutionStrategies;
   aliases: Array<ObjectTypeAlias>;
+  editsHistory: EditsHistory;
 }

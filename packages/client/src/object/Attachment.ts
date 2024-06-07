@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-export interface Attachment {
-  rid: string;
-}
+import type { Attachment as IAttachment } from "@osdk/client.api";
 
-export class Attachment implements Attachment {
+export class Attachment implements IAttachment {
   constructor(public rid: string) {}
 }
 

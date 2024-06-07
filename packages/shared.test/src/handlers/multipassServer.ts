@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
+import type { RequestHandler } from "msw";
 import { http, HttpResponse } from "msw";
 
-export const multipassServerHandlers = [
+export const multipassServerHandlers: Array<RequestHandler> = [
   http.post(
     "https://stack.palantir.com/multipass/api/oauth2/token",
     async (req) => {

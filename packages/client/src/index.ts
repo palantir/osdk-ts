@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-export type { Client } from "./Client.js";
-export { createClient } from "./createClient.js";
-
-export { isOk } from "@osdk/shared.net";
-export type { ResultOrError } from "@osdk/shared.net";
 export type {
   ActionEditResponse,
+  ActionReturnTypeForOptions,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
   OsdkActionParameters,
-} from "./actions/Actions.js";
+} from "@osdk/client.api";
+export { PalantirApiError } from "@osdk/shared.net.errors";
+
+export type { Client } from "./Client.js";
+export { createClient } from "./createClient.js";
+export { createPlatformClient } from "./createPlatformClient.js";
+
 export { ActionValidationError } from "./actions/ActionValidationError.js";
-export type { ActionReturnTypeForOptions } from "./actions/applyAction.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
 export type { WhereClause } from "./query/WhereClause.js";
-export type { NOOP } from "./util/NOOP.js";
+export { isOk } from "./ResultOrError.js";
+export type { ResultOrError } from "./ResultOrError.js";

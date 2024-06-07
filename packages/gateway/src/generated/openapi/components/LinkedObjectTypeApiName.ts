@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "./ObjectTypeApiName";
+import type { ObjectTypeApiName } from "./ObjectTypeApiName.js";
 
 /** A reference to the linked object type. */
 export interface LinkedObjectTypeApiName {

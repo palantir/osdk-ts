@@ -15,7 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { parseStreamedResponse } from "./parseStreamedResponse";
+import { parseStreamedResponse } from "./parseStreamedResponse.js";
 
 describe(parseStreamedResponse, () => {
   const utf8encoder = new TextEncoder();

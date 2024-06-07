@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
 
 /**
- * The user does not have permission to view objects of this `ObjectType`.
+ * The provided token does not have permission to view any data sources backing this object type. Ensure the object
+ * type has backing data sources configured and visible.
  */
 export interface ViewObjectPermissionDenied {
   errorCode: "PERMISSION_DENIED";

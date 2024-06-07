@@ -19,7 +19,7 @@ import type { MockedFunction } from "vitest";
 export function mockFetchResponse(
   fetch: MockedFunction<typeof globalThis.fetch>,
   response: any,
-) {
+): void {
   fetch.mockResolvedValueOnce({
     json: () => Promise.resolve(response),
     blob: () => Promise.resolve(response),

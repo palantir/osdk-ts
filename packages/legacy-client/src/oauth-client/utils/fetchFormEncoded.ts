@@ -28,5 +28,11 @@ export async function fetchFormEncoded(
     cache: "no-cache",
   });
 
+  if (!response.ok) {
+    throw new Error(
+      `Response was not ok: ${response.status} ${response.statusText}`,
+    );
+  }
+
   return response;
 }

@@ -16,10 +16,10 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { MinimalFs } from "./MinimalFs";
-import { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne";
-import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero";
-import type { WireOntologyDefinition } from "./WireOntologyDefinition";
+import type { MinimalFs } from "./MinimalFs.js";
+import { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne.js";
+import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
+import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
 export async function generateClientSdkPackage(
   packageName: string,
@@ -124,21 +124,69 @@ export interface DependencyVersions {
   areTheTypesWrongVersion: string;
   osdkApiVersion: string;
   osdkClientVersion: string;
+  osdkClientApiVersion: string;
   osdkLegacyClientVersion: string;
+}
+
+export function getExpectedDependencies(
+  sdkVersion: "2.0" | "1.1",
+  {
+    osdkApiVersion,
+    osdkClientVersion,
+    osdkClientApiVersion,
+    osdkLegacyClientVersion,
+  }: DependencyVersions,
+) {
+  return {
+    devDependencies: {
+      "@osdk/api": osdkApiVersion,
+      ...(sdkVersion
+          === "2.0"
+        ? { "@osdk/client.api": osdkClientApiVersion }
+        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
+    },
+    peerDependencies: {
+      "@osdk/api": osdkApiVersion,
+      ...(sdkVersion === "2.0"
+        ? {
+          "@osdk/client.api": osdkClientApiVersion,
+          "@osdk/client": osdkClientVersion,
+        }
+        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
+    },
+  };
+}
+
+function getExpectedDependenciesFull(
+  sdkVersion: "2.0" | "1.1",
+  dependencyVersions: DependencyVersions,
+) {
+  const {
+    typescriptVersion,
+    tslibVersion,
+    areTheTypesWrongVersion,
+  } = dependencyVersions;
+
+  const base = getExpectedDependencies(sdkVersion, dependencyVersions);
+
+  return {
+    devDependencies: {
+      ...base.devDependencies,
+      "typescript": typescriptVersion,
+      "tslib": tslibVersion,
+      "@arethetypeswrong/cli": areTheTypesWrongVersion,
+    },
+    peerDependencies: {
+      ...base.peerDependencies,
+    },
+  };
 }
 
 export function getPackageJsonContents(
   name: string,
   version: string,
   sdkVersion: "2.0" | "1.1",
-  {
-    typescriptVersion,
-    tslibVersion,
-    areTheTypesWrongVersion,
-    osdkApiVersion,
-    osdkClientVersion,
-    osdkLegacyClientVersion,
-  }: DependencyVersions,
+  dependencyVersions: DependencyVersions,
 ) {
   const esmPrefix = "./dist/module";
   const commonjsPrefix = "./dist/commonjs";
@@ -166,22 +214,7 @@ export function getPackageJsonContents(
         `tsc -p ${esmPrefix}/tsconfig.json && tsc -p ${commonjsPrefix}/tsconfig.json`,
       check: "npm exec attw $(npm pack)",
     },
-    devDependencies: {
-      "typescript": typescriptVersion,
-      "tslib": tslibVersion,
-      "@arethetypeswrong/cli": areTheTypesWrongVersion,
-      "@osdk/api": osdkApiVersion,
-      ...(sdkVersion
-          === "2.0"
-        ? { "@osdk/client": osdkClientVersion }
-        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
-    },
-    peerDependencies: {
-      "@osdk/api": osdkApiVersion,
-      ...(sdkVersion === "2.0"
-        ? { "@osdk/client": osdkClientVersion }
-        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
-    },
+    ...getExpectedDependenciesFull(sdkVersion, dependencyVersions),
     files: [
       "**/*.js",
       "**/*.d.ts",

@@ -24,7 +24,7 @@ interface CliArgs {
   check: boolean;
 }
 
-export async function cli(args: string[] = process.argv) {
+export async function cli(args: string[] = process.argv): Promise<void> {
   const base: Argv<CliArgs> = yargs(hideBin(args))
     .version(false)
     .strict()

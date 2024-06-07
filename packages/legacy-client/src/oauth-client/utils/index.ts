@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from "./fetchFormEncoded";
-export * from "./generateCodeChallenge";
-export * from "./generateRandomString";
-export * from "./oauthUris";
+export * from "./fetchFormEncoded.js";
+export * from "./generateCodeChallenge.js";
+export * from "./generateRandomString.js";
+export * from "./oauthUris.js";

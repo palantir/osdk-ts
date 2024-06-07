@@ -17,28 +17,30 @@
 import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
-  OntologyDefinition,
 } from "@osdk/api";
-import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
-import type { AggregateOptsThatErrors } from "../object/aggregate.js";
+import type {
+  BaseObjectSet,
+  PropertyValueClientToWire,
+} from "@osdk/client.api";
+import type { AggregateOptsThatErrors } from "../object/AggregateOptsThatErrors.js";
 import type {
   Augments,
   FetchPageArgs,
-  FetchPageResult,
   SelectArg,
-} from "../object/fetchPage.js";
+} from "../object/FetchPageArgs.js";
+import type { FetchPageResult } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults, WhereClause } from "../query/index.js";
+import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
+import type { WhereClause } from "../query/WhereClause.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
-import type { ObjectSetListener } from "./ObjectSetListener.js";
 
-export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> {
+export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
+  extends BaseObjectSet<Q>
+{
   fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
@@ -92,10 +94,17 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
-  get: Q extends ObjectTypeDefinition<any>
+  fetchOne: Q extends ObjectTypeDefinition<any>
     ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L>,
     ) => Promise<Osdk<Q, L>>
+    : never;
+
+  fetchOneWithErrors: Q extends ObjectTypeDefinition<any>
+    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+      primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
+      options?: SelectArg<Q, L>,
+    ) => Promise<Result<Osdk<Q, L>>>
     : never;
 }

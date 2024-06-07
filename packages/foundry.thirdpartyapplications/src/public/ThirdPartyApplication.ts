@@ -18,16 +18,17 @@ import type {
   PreviewMode,
   ThirdPartyApplication,
   ThirdPartyApplicationRid,
-} from "@osdk/foundry.common";
+} from "@osdk/foundry.core";
 import type {
-  ClientContext as $ClientContext,
-  OmniMethod as $OmniMethod,
-} from "@osdk/shared.net";
-import { omniFetch as $omniFetch } from "@osdk/shared.net";
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 
 //
 
-const _getThirdPartyApplication: $OmniMethod<
+const _getThirdPartyApplication: $FoundryPlatformMethod<
   (
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -41,12 +42,12 @@ const _getThirdPartyApplication: $OmniMethod<
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}
  */
 export function getThirdPartyApplication(
-  $ctx: $ClientContext<any>,
+  $ctx: $Client | $ClientContext,
   ...args: [
     thirdPartyApplicationRid: ThirdPartyApplicationRid,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<ThirdPartyApplication> {
-  return $omniFetch($ctx, _getThirdPartyApplication, ...args);
+  return $foundryPlatformFetch($ctx, _getThirdPartyApplication, ...args);
 }

@@ -21,11 +21,11 @@ import {
   isOntologyObject,
   LocalDate,
   Timestamp,
-} from "../../baseTypes";
+} from "../../baseTypes/index.js";
 import type {
   ObjectSetDefinition,
   PrimitiveParameterValue,
-} from "../../baseTypes";
+} from "../../baseTypes/index.js";
 
 export function getParameterValueMapping(
   value: any,

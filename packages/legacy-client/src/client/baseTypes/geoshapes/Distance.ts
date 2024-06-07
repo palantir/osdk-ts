@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DistanceUnit } from "./DistanceUnit";
+import { DistanceUnit } from "./DistanceUnit.js";
 
 export interface Distance {
   value: number;

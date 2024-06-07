@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "../../WireOntologyDefinition";
+import type { WireOntologyDefinition } from "../../WireOntologyDefinition.js";
 
 export const TodoWireOntology = {
   ontology: {
@@ -110,6 +110,7 @@ export const TodoWireOntology = {
         foreignKeyPropertyApiName: "email",
       }],
       implementsInterfaces: [],
+      implementsInterfaces2: {},
       sharedPropertyTypeMapping: {},
     },
     Person: {
@@ -139,6 +140,7 @@ export const TodoWireOntology = {
         foreignKeyPropertyApiName: "id",
       }],
       implementsInterfaces: [],
+      implementsInterfaces2: {},
       sharedPropertyTypeMapping: {},
     },
   },

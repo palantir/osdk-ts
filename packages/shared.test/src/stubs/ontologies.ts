@@ -15,11 +15,11 @@
  */
 
 import type { Ontology, OntologyFullMetadata } from "@osdk/gateway/types";
-import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes";
-import { FooInterface } from "./interfaces";
-import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes";
-import { queryTypes } from "./queryTypes";
-import { fooSpt } from "./spts";
+import { actionTypes, ActionTypeWithUnsupportedTypes } from "./actionsTypes.js";
+import { FooInterface } from "./interfaces.js";
+import { objectTypesWithLinkTypes } from "./objectTypesWithLinkTypes.js";
+import { queryTypes } from "./queryTypes.js";
+import { fooSpt } from "./spts.js";
 
 export const defaultOntology: Ontology = {
   apiName: "default-ontology",
@@ -29,13 +29,13 @@ export const defaultOntology: Ontology = {
 };
 
 export const defaultOntologyForConjure = {
-  apiName: defaultOntology.apiName,
-  displayName: defaultOntology.displayName,
-  description: defaultOntology.description,
+  apiName: defaultOntology.apiName as string,
+  displayName: defaultOntology.displayName as string,
+  description: defaultOntology.description as string,
   currentOntologyVersion: "0000000c-aaaa-bbbb-cccc-ddddeeeeffff",
   defaultBranchRid:
     "ri.ontology.main.branch.99999999-8888-7777-6666-555555555555",
-};
+} as const;
 
 export const fullOntology: OntologyFullMetadata = {
   ontology: defaultOntology,

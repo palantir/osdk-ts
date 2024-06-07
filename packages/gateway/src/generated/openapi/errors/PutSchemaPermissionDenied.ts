@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId";
-import type { DatasetRid } from "../components/DatasetRid";
+import type { BranchId } from "../components/BranchId.js";
+import type { DatasetRid } from "../components/DatasetRid.js";
 
 /** todo */
 export interface PutSchemaPermissionDenied {

@@ -15,11 +15,11 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { getModifiedEntityTypes } from "../shared/getEditedEntities";
-import { formatTs } from "../util/test/formatTs";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { getTypeScriptTypeFromDataType } from "./generateActions";
+import type { MinimalFs } from "../MinimalFs.js";
+import { getModifiedEntityTypes } from "../shared/getEditedEntities.js";
+import { formatTs } from "../util/test/formatTs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { getTypeScriptTypeFromDataType } from "./generateActions.js";
 
 export async function generateBatchActions(
   ontology: WireOntologyDefinition,

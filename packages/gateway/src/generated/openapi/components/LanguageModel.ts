@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { LanguageModelApiName } from "./LanguageModelApiName";
-import type { LanguageModelSource } from "./LanguageModelSource";
+import type { LanguageModelApiName } from "./LanguageModelApiName.js";
+import type { LanguageModelSource } from "./LanguageModelSource.js";
 
 /** Represents a language model. */
 export interface LanguageModel {

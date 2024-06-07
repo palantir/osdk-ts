@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { TimeUnit } from "./TimeUnit";
+import type { PropertyApiName } from "./PropertyApiName.js";
+import type { TimeUnit } from "./TimeUnit.js";
 
 /**
  * Divides objects into groups according to an interval. Note that this grouping applies only on date and timestamp types.
  * When grouping by `YEARS`, `QUARTERS`, `MONTHS`, or `WEEKS`, the `value` must be set to `1`.
  */
 export interface AggregationDurationGroupingV2 {
-  field: string;
+  field: PropertyApiName;
   value: number;
   unit: TimeUnit;
 }

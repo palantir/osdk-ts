@@ -1,2 +1,2 @@
-export * from './getTodoCount';
-export * from './queryTakesAllParameterTypes';
+export * from './getTodoCount.js';
+export * from './queryTakesAllParameterTypes.js';

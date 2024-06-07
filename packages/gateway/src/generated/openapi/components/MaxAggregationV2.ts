@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName";
-import type { OrderByDirection } from "./OrderByDirection";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { OrderByDirection } from "./OrderByDirection.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /** Computes the maximum value for the provided field. */
 export interface MaxAggregationV2 {
-  field: string;
+  field: PropertyApiName;
   name?: AggregationMetricName;
   direction?: OrderByDirection;
 }

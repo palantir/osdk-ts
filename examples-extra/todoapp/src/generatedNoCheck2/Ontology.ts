@@ -3,7 +3,22 @@ import { OntologyMetadata } from './OntologyMetadata';
 import * as Actions from './ontology/actions/index';
 import * as Objects from './ontology/objects';
 
-const _Ontology = {
+export interface Ontology extends OntologyDefinition<'Todo'> {
+  metadata: OntologyMetadata;
+  objects: {
+    Todo: Objects.Todo;
+  };
+  actions: {
+    completeTodo: typeof Actions.completeTodo;
+    createTodo: typeof Actions.createTodo;
+  };
+  queries: {
+    // TODO
+  };
+  interfaces: {};
+}
+
+export const Ontology: Ontology = {
   metadata: OntologyMetadata,
   objects: {
     Todo: Objects.Todo,
@@ -16,8 +31,4 @@ const _Ontology = {
     // TODO
   },
   interfaces: {},
-} satisfies OntologyDefinition<'Todo'>;
-
-type _Ontology = typeof _Ontology;
-export interface Ontology extends _Ontology {}
-export const Ontology = _Ontology as Ontology;
+};

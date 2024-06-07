@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ApproximateDistinctAggregationV2 } from "./ApproximateDistinctAggregationV2";
-import type { ApproximatePercentileAggregationV2 } from "./ApproximatePercentileAggregationV2";
-import type { AvgAggregationV2 } from "./AvgAggregationV2";
-import type { CountAggregationV2 } from "./CountAggregationV2";
-import type { MaxAggregationV2 } from "./MaxAggregationV2";
-import type { MinAggregationV2 } from "./MinAggregationV2";
-import type { SumAggregationV2 } from "./SumAggregationV2";
+import type { ApproximateDistinctAggregationV2 } from "./ApproximateDistinctAggregationV2.js";
+import type { ApproximatePercentileAggregationV2 } from "./ApproximatePercentileAggregationV2.js";
+import type { AvgAggregationV2 } from "./AvgAggregationV2.js";
+import type { CountAggregationV2 } from "./CountAggregationV2.js";
+import type { MaxAggregationV2 } from "./MaxAggregationV2.js";
+import type { MinAggregationV2 } from "./MinAggregationV2.js";
+import type { SumAggregationV2 } from "./SumAggregationV2.js";
 
 export interface AggregationV2_Max extends MaxAggregationV2 {
   type: "max";

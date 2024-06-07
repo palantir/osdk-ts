@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { AggregationMetricName } from "./AggregationMetricName";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { FieldNameV1 } from "./FieldNameV1.js";
 
 /** Computes the maximum value for the provided field. */
 export interface MaxAggregation {
-  field: string;
+  field: FieldNameV1;
   name?: AggregationMetricName;
 }

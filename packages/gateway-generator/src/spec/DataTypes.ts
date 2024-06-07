@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { PrimitiveType } from "./BuiltInTypes";
-import type { Documentation, Safety } from "./Common";
+import type { PrimitiveType } from "./BuiltInTypes.js";
+import type { Documentation, Safety } from "./Common.js";
 
 export interface ObjectSpec {
   properties: {

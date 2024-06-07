@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { createFetchHeaderMutator } from "@osdk/shared.net";
+import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 export function addUserAgent(

@@ -1,5 +1,17 @@
 # @osdk/create-app
 
+## 0.16.0
+
+### Minor Changes
+
+- 82e333d: Make tutorial app not depend on OSDK imports
+
+## 0.15.0
+
+### Minor Changes
+
+- 7ed0984: Always include trailing slash for registry urls in .npmrc
+
 ## 0.14.0
 
 ### Minor Changes

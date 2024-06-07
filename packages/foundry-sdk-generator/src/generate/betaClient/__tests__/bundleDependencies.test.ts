@@ -16,8 +16,8 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { outputModule } from "../bundleDependencies";
-import { ProjectMinifier } from "../minifyBundle";
+import { outputModule } from "../bundleDependencies.js";
+import { ProjectMinifier } from "../minifyBundle.js";
 
 describe("minify project", () => {
   it("minifies a project", () => {

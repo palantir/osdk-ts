@@ -30,7 +30,7 @@ import {
   Polygon,
   Timestamp,
   visitError,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 import type {
   ErrorVisitor,
   GetObjectError,
@@ -38,14 +38,14 @@ import type {
   ListObjectsError,
   Page,
   Result,
-} from "../generatedNoCheck/@test-app/osdk";
+} from "../generatedNoCheck/@test-app/osdk/index.js";
 
 import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
-} from "../generatedNoCheck/@test-app/osdk/ontology/objects";
-import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils";
+} from "../generatedNoCheck/@test-app/osdk/ontology/objects/index.js";
+import { assertErrOrThrow, assertOkOrThrow } from "./resultUtils.js";
 
 describe("LoadObjects", () => {
   let client: FoundryClient<ConfidentialClientAuth>;

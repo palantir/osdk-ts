@@ -36,6 +36,7 @@ import {
   uploadAttachment,
 } from "@osdk/gateway/requests";
 import type { LinkTypeSide } from "@osdk/gateway/types";
+import type { RequestHandler } from "msw";
 import {
   AttachmentNotFoundError,
   AttachmentSizeExceededLimitError,
@@ -45,44 +46,47 @@ import {
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
   QueryNotFoundError,
-} from "../errors";
+} from "../errors.js";
 import {
   filterObjectProperties,
   filterObjectsProperties,
-} from "../filterObjects";
+} from "../filterObjects.js";
 import {
   attachmentContentRequest,
   attachmentMetadataRequest,
   attachmentUploadRequest,
   attachmentUploadRequestBody,
-} from "../stubs/attachments";
-import { linkResponseMap } from "../stubs/links";
-import { linkTypesResponseMap } from "../stubs/linkTypes";
-import { loadRequestHandlersV2 } from "../stubs/loadRequests";
-import { objectLoadResponseMap } from "../stubs/objects";
+} from "../stubs/attachments.js";
+import { linkResponseMap } from "../stubs/links.js";
+import { linkTypesResponseMap } from "../stubs/linkTypes.js";
+import { loadRequestHandlersV2 } from "../stubs/loadRequests.js";
+import { objectLoadResponseMap } from "../stubs/objects.js";
 import {
   employeeObjectType,
   equipmentObjectType,
   objectTypeWithAllPropertyTypes,
   objectTypeWithTimestampPrimaryKey,
   officeObjectType,
-} from "../stubs/objectTypes";
-import { ObjectTypesV2 } from "../stubs/objectTypeV2";
-import { defaultOntology } from "../stubs/ontologies";
-import { queryRequestHandlers } from "../stubs/queries";
-import { queryTypes } from "../stubs/queryTypes";
+} from "../stubs/objectTypes.js";
+import { ObjectTypesV2 } from "../stubs/objectTypeV2.js";
+import { defaultOntology } from "../stubs/ontologies.js";
+import { queryRequestHandlers } from "../stubs/queries.js";
+import { queryTypes } from "../stubs/queryTypes.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
-} from "../stubs/timeseriesRequests";
+} from "../stubs/timeseriesRequests.js";
 import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
-} from "./endpointUtils";
-import { getOntology } from "./ontologyMetadataEndpoints";
-import { handleOpenApiCall, OpenApiCallError } from "./util/handleOpenApiCall";
+} from "./endpointUtils.js";
+import { getOntology } from "./ontologyMetadataEndpoints.js";
+import {
+  handleOpenApiCall,
+  OpenApiCallError,
+} from "./util/handleOpenApiCall.js";
 
-export const loadObjectsEndpoints = [
+export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * List ontologies
    */
@@ -636,4 +640,4 @@ export const loadObjectsEndpoints = [
 
     throw new OpenApiCallError(404, AttachmentNotFoundError);
   }),
-];
+] as const;

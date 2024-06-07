@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { AggregationGroupKey } from "./AggregationGroupKey";
-import type { AggregationGroupValue } from "./AggregationGroupValue";
-import type { AggregationMetricResult } from "./AggregationMetricResult";
+import type { AggregationGroupKey } from "./AggregationGroupKey.js";
+import type { AggregationGroupValue } from "./AggregationGroupValue.js";
+import type { AggregationMetricResult } from "./AggregationMetricResult.js";
 
 export interface AggregateObjectsResponseItem {
   group: Record<AggregationGroupKey, AggregationGroupValue>;

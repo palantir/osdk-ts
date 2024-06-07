@@ -1,5 +1,8 @@
 name: CI
 
+env:
+  DO_NOT_TRACK: 1
+
 on:
   push:
     branches: 
@@ -21,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         with:
           version: 8.7.4
 
@@ -51,7 +54,7 @@ jobs:
       issues: write
     strategy:
       matrix:
-        node: [18, 20, 21]
+        node: [18, 20, 22]
 
     steps:
       - name: Check out code
@@ -59,7 +62,7 @@ jobs:
         with:
           fetch-depth: 2
 
-      - uses: pnpm/action-setup@v3
+      - uses: pnpm/action-setup@v4
         with:
           version: 8.7.4
 

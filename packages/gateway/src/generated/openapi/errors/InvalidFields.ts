@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-/** TBD */
+/**
+ * The value of the given field does not match the expected pattern. For example, an Ontology object property `id`
+ * should be written `properties.id`.
+ */
 export interface InvalidFields {
   errorCode: "INVALID_ARGUMENT";
   errorName: "InvalidFields";

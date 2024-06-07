@@ -20,53 +20,19 @@ import type {
   AggregateObjectsResponseV2,
   ObjectSet,
 } from "@osdk/internal.foundry";
-import { aggregateObjectSetV2 } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectSet";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
-import {
-  legacyToModernSingleAggregationResult,
-  modernToLegacyAggregationClause,
-  modernToLegacyGroupByClause,
-  modernToLegacyWhereClause,
-} from "../internal/conversions/index.js";
+import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
+import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";
+import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
+import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type {
-  AggregationResultsWithGroups,
-  AggregationsResults,
-  GroupByClause,
-} from "../query/index.js";
+import type { AggregationResultsWithGroups } from "../query/aggregations/AggregationResultsWithGroups.js";
+import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
-
-export type AggregateOptsThatErrors<
-  Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
-> =
-  & AO
-  & {
-    $select:
-      & Pick<
-        AO["$select"],
-        keyof AggregateOpts<Q>["$select"] & keyof AO["$select"]
-      >
-      & Record<
-        Exclude<keyof AO["$select"], keyof AggregateOpts<Q>["$select"]>,
-        never
-      >;
-  }
-  & (unknown extends AO["$groupBy"] ? {}
-    : Exclude<AO["$groupBy"], undefined> extends never ? {}
-    : {
-      $groupBy:
-        & Pick<
-          AO["$groupBy"],
-          keyof GroupByClause<Q> & keyof AO["$groupBy"]
-        >
-        & Record<
-          Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>,
-          never
-        >;
-    });
+import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
 
 /** @deprecated use `aggregate` */
 export async function aggregateOrThrow<
@@ -110,7 +76,7 @@ export async function aggregate<
   if (req.$where) {
     body.where = modernToLegacyWhereClause(req.$where);
   }
-  const result = await aggregateObjectSetV2(
+  const result = await OntologiesV2.OntologyObjectSets.aggregateObjectSetV2(
     addUserAgent(clientCtx, objectType),
     clientCtx.ontologyRid,
     {

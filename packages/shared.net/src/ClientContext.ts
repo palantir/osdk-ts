@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-export interface ClientContext<O extends { metadata: { userAgent: string } }> {
+import type { SharedClientContext } from "@osdk/shared.client";
+
+/** @deprecated */
+export interface ClientContext<O extends { metadata: { userAgent: string } }>
+  extends SharedClientContext
+{
   /** @deprecated */
   ontology: O;
 
   /**
    * The base origin to use for requests (e.g. `https://api.example.com`)
+   * @deprecated use `baseUrl` instead
    */
   stack: string;
-
-  /**
-   * The fetch function to use for all requests.
-   *
-   * TODO: Document what is needed to get retry logic
-   */
-  fetch: typeof globalThis.fetch;
-
-  tokenProvider: () => Promise<string> | string;
 }

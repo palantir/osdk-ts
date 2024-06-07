@@ -1,2 +1,2 @@
-export * from './ObjectSetDefinition';
-export * from './OntologyObjectSet';
+export * from './ObjectSetDefinition.js';
+export * from './OntologyObjectSet.js';

@@ -17,14 +17,19 @@
 import type {
   AttributeName,
   AttributeValues,
+  Group,
   GroupMember,
   GroupMembership,
   GroupMembershipExpiration,
   GroupName,
+  GroupSearchFilter,
   OrganizationRid,
+  PageSize,
   PageToken,
   PrincipalId,
-} from "@osdk/foundry.common";
+  User,
+  UserSearchFilter,
+} from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -65,8 +70,42 @@ export interface ListGroupMembershipsResponse {
 }
 
 /**
+ * Log Safety: UNSAFE
+ */
+export interface ListGroupsResponse {
+  data: Array<Group>;
+  nextPageToken?: PageToken;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ListUsersResponse {
+  data: Array<User>;
+  nextPageToken?: PageToken;
+}
+
+/**
  * Log Safety: SAFE
  */
 export interface RemoveGroupMembersRequest {
   principalIds: Array<PrincipalId>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface SearchGroupsRequest {
+  where: GroupSearchFilter;
+  pageSize?: PageSize;
+  pageToken?: PageToken;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface SearchUsersRequest {
+  where: UserSearchFilter;
+  pageSize?: PageSize;
+  pageToken?: PageToken;
 }

@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-import type { Token, TokenValue } from "./Token";
+import type { Token, TokenValue } from "./Token.js";
+
+interface TokenResponse {
+  access_token: TokenValue;
+  token_type: string;
+  expires_in: number;
+  refresh_token?: string;
+}
+
 export class OAuthToken implements Token {
   accessToken: TokenValue;
   tokenType: string;
-  refreshToken: string;
+  refreshToken?: string;
   /** The epoch milliseconds when the access token will expire. */
   expiresAt: number;
 
-  constructor(tokenResponse: {
-    access_token: TokenValue;
-    token_type: string;
-    refresh_token: string;
-    expires_in: number;
-  }) {
+  constructor(tokenResponse: TokenResponse) {
+    this.checkTokenResponse(tokenResponse);
+
     this.accessToken = tokenResponse.access_token;
     this.tokenType = tokenResponse.token_type;
     this.refreshToken = tokenResponse.refresh_token;
@@ -43,5 +48,17 @@ export class OAuthToken implements Token {
   /** Whether the access token has expired. */
   get isExpired(): boolean {
     return Date.now() >= this.expiresAt;
+  }
+
+  private checkTokenResponse(tokenResponse: TokenResponse): void {
+    if (tokenResponse.access_token == null) {
+      throw new Error("missing access_token");
+    }
+    if (tokenResponse.token_type == null) {
+      throw new Error("missing token_type");
+    }
+    if (tokenResponse.expires_in == null) {
+      throw new Error("missing expires_in");
+    }
   }
 }

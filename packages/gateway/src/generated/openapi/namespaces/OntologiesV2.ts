@@ -14,67 +14,65 @@
  * limitations under the License.
  */
 
-import type { ActionTypeApiName } from "../components/ActionTypeApiName";
-import type { ActionTypeV2 } from "../components/ActionTypeV2";
-import type { AggregateObjectSetRequestV2 } from "../components/AggregateObjectSetRequestV2";
-import type { AggregateObjectsRequestV2 } from "../components/AggregateObjectsRequestV2";
-import type { AggregateObjectsResponseV2 } from "../components/AggregateObjectsResponseV2";
-import type { ApplyActionRequestV2 } from "../components/ApplyActionRequestV2";
-import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid";
-import type { AsyncApplyActionRequestV2 } from "../components/AsyncApplyActionRequestV2";
-import type { AsyncApplyActionResponseV2 } from "../components/AsyncApplyActionResponseV2";
-import type { AttachmentMetadataResponse } from "../components/AttachmentMetadataResponse";
-import type { AttachmentRid } from "../components/AttachmentRid";
-import type { AttachmentV2 } from "../components/AttachmentV2";
-import type { BatchApplyActionRequestV2 } from "../components/BatchApplyActionRequestV2";
-import type { BatchApplyActionResponseV2 } from "../components/BatchApplyActionResponseV2";
-import type { CountObjectsResponseV2 } from "../components/CountObjectsResponseV2";
-import type { DeploymentApiName } from "../components/DeploymentApiName";
-import type { DeploymentMetadata } from "../components/DeploymentMetadata";
-import type { ExecuteQueryRequest } from "../components/ExecuteQueryRequest";
-import type { ExecuteQueryResponse } from "../components/ExecuteQueryResponse";
-import type { InterfaceType } from "../components/InterfaceType";
-import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName";
-import type { LinkTypeApiName } from "../components/LinkTypeApiName";
-import type { LinkTypeSideV2 } from "../components/LinkTypeSideV2";
-import type { ListActionTypesResponseV2 } from "../components/ListActionTypesResponseV2";
-import type { ListDeploymentsResponse } from "../components/ListDeploymentsResponse";
-import type { ListInterfaceTypesResponse } from "../components/ListInterfaceTypesResponse";
-import type { ListLinkedObjectsResponseV2 } from "../components/ListLinkedObjectsResponseV2";
-import type { ListObjectsResponseV2 } from "../components/ListObjectsResponseV2";
-import type { ListObjectTypesV2Response } from "../components/ListObjectTypesV2Response";
-import type { ListOntologiesV2Response } from "../components/ListOntologiesV2Response";
-import type { ListOutgoingLinkTypesResponseV2 } from "../components/ListOutgoingLinkTypesResponseV2";
-import type { ListQueryTypesResponseV2 } from "../components/ListQueryTypesResponseV2";
-import type { LoadObjectSetRequestV2 } from "../components/LoadObjectSetRequestV2";
-import type { LoadObjectSetResponseV2 } from "../components/LoadObjectSetResponseV2";
-import type { ObjectSet } from "../components/ObjectSet";
-import type { ObjectSetRid } from "../components/ObjectSetRid";
-import type { ObjectTypeApiName } from "../components/ObjectTypeApiName";
-import type { ObjectTypeV2 } from "../components/ObjectTypeV2";
-import type { OntologyFullMetadata } from "../components/OntologyFullMetadata";
-import type { OntologyIdentifier } from "../components/OntologyIdentifier";
-import type { OntologyObjectV2 } from "../components/OntologyObjectV2";
-import type { OntologyV2 } from "../components/OntologyV2";
-import type { OrderBy } from "../components/OrderBy";
-import type { PageSize } from "../components/PageSize";
-import type { PageToken } from "../components/PageToken";
-import type { PreviewMode } from "../components/PreviewMode";
-import type { PropertyApiName } from "../components/PropertyApiName";
-import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString";
-import type { QueryApiName } from "../components/QueryApiName";
-import type { QueryTypeV2 } from "../components/QueryTypeV2";
-import type { SdkPackageName } from "../components/SdkPackageName";
-import type { SearchObjectsForInterfaceRequest } from "../components/SearchObjectsForInterfaceRequest";
-import type { SearchObjectsRequestV2 } from "../components/SearchObjectsRequestV2";
-import type { SearchObjectsResponseV2 } from "../components/SearchObjectsResponseV2";
-import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName";
-import type { StreamTimeSeriesPointsRequest } from "../components/StreamTimeSeriesPointsRequest";
-import type { SyncApplyActionResponseV2 } from "../components/SyncApplyActionResponseV2";
-import type { TimeSeriesPoint } from "../components/TimeSeriesPoint";
-import type { TransformDataRequest } from "../components/TransformDataRequest";
-import type { TransformDataResponse } from "../components/TransformDataResponse";
-import type { OpenApiRequest } from "../request";
+import type { ActionTypeApiName } from "../components/ActionTypeApiName.js";
+import type { ActionTypeV2 } from "../components/ActionTypeV2.js";
+import type { AggregateObjectSetRequestV2 } from "../components/AggregateObjectSetRequestV2.js";
+import type { AggregateObjectsRequestV2 } from "../components/AggregateObjectsRequestV2.js";
+import type { AggregateObjectsResponseV2 } from "../components/AggregateObjectsResponseV2.js";
+import type { ApplyActionRequestV2 } from "../components/ApplyActionRequestV2.js";
+import type { ArtifactRepositoryRid } from "../components/ArtifactRepositoryRid.js";
+import type { AsyncApplyActionRequestV2 } from "../components/AsyncApplyActionRequestV2.js";
+import type { AsyncApplyActionResponseV2 } from "../components/AsyncApplyActionResponseV2.js";
+import type { AttachmentMetadataResponse } from "../components/AttachmentMetadataResponse.js";
+import type { AttachmentRid } from "../components/AttachmentRid.js";
+import type { AttachmentV2 } from "../components/AttachmentV2.js";
+import type { BatchApplyActionRequestV2 } from "../components/BatchApplyActionRequestV2.js";
+import type { BatchApplyActionResponseV2 } from "../components/BatchApplyActionResponseV2.js";
+import type { CountObjectsResponseV2 } from "../components/CountObjectsResponseV2.js";
+import type { CreateTemporaryObjectSetRequestV2 } from "../components/CreateTemporaryObjectSetRequestV2.js";
+import type { CreateTemporaryObjectSetResponseV2 } from "../components/CreateTemporaryObjectSetResponseV2.js";
+import type { ExecuteQueryRequest } from "../components/ExecuteQueryRequest.js";
+import type { ExecuteQueryResponse } from "../components/ExecuteQueryResponse.js";
+import type { InterfaceType } from "../components/InterfaceType.js";
+import type { InterfaceTypeApiName } from "../components/InterfaceTypeApiName.js";
+import type { LinkTypeApiName } from "../components/LinkTypeApiName.js";
+import type { LinkTypeSideV2 } from "../components/LinkTypeSideV2.js";
+import type { ListActionTypesResponseV2 } from "../components/ListActionTypesResponseV2.js";
+import type { ListInterfaceTypesResponse } from "../components/ListInterfaceTypesResponse.js";
+import type { ListLinkedObjectsResponseV2 } from "../components/ListLinkedObjectsResponseV2.js";
+import type { ListObjectsResponseV2 } from "../components/ListObjectsResponseV2.js";
+import type { ListObjectTypesV2Response } from "../components/ListObjectTypesV2Response.js";
+import type { ListOntologiesV2Response } from "../components/ListOntologiesV2Response.js";
+import type { ListOutgoingLinkTypesResponseV2 } from "../components/ListOutgoingLinkTypesResponseV2.js";
+import type { ListQueryTypesResponseV2 } from "../components/ListQueryTypesResponseV2.js";
+import type { LoadObjectSetRequestV2 } from "../components/LoadObjectSetRequestV2.js";
+import type { LoadObjectSetResponseV2 } from "../components/LoadObjectSetResponseV2.js";
+import type { ObjectSet } from "../components/ObjectSet.js";
+import type { ObjectSetRid } from "../components/ObjectSetRid.js";
+import type { ObjectTypeApiName } from "../components/ObjectTypeApiName.js";
+import type { ObjectTypeFullMetadata } from "../components/ObjectTypeFullMetadata.js";
+import type { ObjectTypeV2 } from "../components/ObjectTypeV2.js";
+import type { OntologyFullMetadata } from "../components/OntologyFullMetadata.js";
+import type { OntologyIdentifier } from "../components/OntologyIdentifier.js";
+import type { OntologyObjectV2 } from "../components/OntologyObjectV2.js";
+import type { OntologyV2 } from "../components/OntologyV2.js";
+import type { OrderBy } from "../components/OrderBy.js";
+import type { PageSize } from "../components/PageSize.js";
+import type { PageToken } from "../components/PageToken.js";
+import type { PreviewMode } from "../components/PreviewMode.js";
+import type { PropertyApiName } from "../components/PropertyApiName.js";
+import type { PropertyValueEscapedString } from "../components/PropertyValueEscapedString.js";
+import type { QueryApiName } from "../components/QueryApiName.js";
+import type { QueryTypeV2 } from "../components/QueryTypeV2.js";
+import type { SdkPackageName } from "../components/SdkPackageName.js";
+import type { SearchObjectsForInterfaceRequest } from "../components/SearchObjectsForInterfaceRequest.js";
+import type { SearchObjectsRequestV2 } from "../components/SearchObjectsRequestV2.js";
+import type { SearchObjectsResponseV2 } from "../components/SearchObjectsResponseV2.js";
+import type { SelectedPropertyApiName } from "../components/SelectedPropertyApiName.js";
+import type { StreamTimeSeriesPointsRequest } from "../components/StreamTimeSeriesPointsRequest.js";
+import type { SyncApplyActionResponseV2 } from "../components/SyncApplyActionResponseV2.js";
+import type { TimeSeriesPoint } from "../components/TimeSeriesPoint.js";
+import type { OpenApiRequest } from "../request/OpenApiRequest.js";
 
 /**
  * Lists the Ontologies visible to the current user.
@@ -393,22 +391,6 @@ export function searchObjectsV2<TResponse>(
   );
 }
 
-/** Temporary endpoint for search. */
-export function deprecatedSearchObjectsV2<TResponse>(
-  _request: OpenApiRequest<SearchObjectsResponseV2, TResponse>,
-  ontology: OntologyIdentifier,
-  objectType: ObjectTypeApiName,
-  request: SearchObjectsRequestV2,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/objects/${objectType}/_search`,
-    request,
-    __undefined,
-    __undefined,
-  );
-}
-
 /**
  * Perform functions on object fields in the specified ontology and object type.
  *
@@ -422,7 +404,6 @@ export function aggregateObjectsV2<TResponse>(
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -430,24 +411,6 @@ export function aggregateObjectsV2<TResponse>(
     `/v2/ontologies/${ontology}/objects/${objectType}/aggregate`,
     request,
     queryParameters,
-    __undefined,
-  );
-}
-
-/**
- * Temporary endpoint for aggregations
- */
-export function deprecatedAggregateObjectsV2<TResponse>(
-  _request: OpenApiRequest<AggregateObjectsResponseV2, TResponse>,
-  ontology: OntologyIdentifier,
-  objectType: ObjectTypeApiName,
-  request: AggregateObjectsRequestV2,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/objects/${objectType}/_aggregate`,
-    request,
-    __undefined,
     __undefined,
   );
 }
@@ -854,6 +817,28 @@ export function streamPoints<TResponse>(
 }
 
 /**
+ * Gets the full metadata for a specific object type with the given API name.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ */
+export function getObjectTypeFullMetadata<TResponse>(
+  _request: OpenApiRequest<ObjectTypeFullMetadata, TResponse>,
+  ontology: OntologyIdentifier,
+  objectType: ObjectTypeApiName,
+  queryParameters?: {
+    preview?: PreviewMode;
+  },
+): Promise<TResponse> {
+  return _request(
+    "GET",
+    `/v2/ontologies/${ontology}/objectTypes/${objectType}/fullMetadata`,
+    __undefined,
+    queryParameters,
+    __undefined,
+  );
+}
+
+/**
  * Applies an action using the given parameters.
  *
  * Changes to the Ontology are eventually consistent and may take some time to be visible.
@@ -1014,6 +999,26 @@ export function executeQueryV2<TResponse>(
 }
 
 /**
+ * Creates a temporary `ObjectSet` from the given definition.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the
+ * following operation scopes: `api:read-data api:write-data`.
+ */
+export function createTemporaryObjectSetV2<TResponse>(
+  _request: OpenApiRequest<CreateTemporaryObjectSetResponseV2, TResponse>,
+  ontology: OntologyIdentifier,
+  request: CreateTemporaryObjectSetRequestV2,
+): Promise<TResponse> {
+  return _request(
+    "POST",
+    `/v2/ontologies/${ontology}/objectSets/createTemporary`,
+    request,
+    __undefined,
+    __undefined,
+  );
+}
+
+/**
  * Gets the definition of the `ObjectSet` with the given RID.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
@@ -1072,7 +1077,6 @@ export function aggregateObjectSetV2<TResponse>(
   queryParameters?: {
     artifactRepository?: ArtifactRepositoryRid;
     packageName?: SdkPackageName;
-    preview?: PreviewMode;
   },
 ): Promise<TResponse> {
   return _request(
@@ -1080,59 +1084,6 @@ export function aggregateObjectSetV2<TResponse>(
     `/v2/ontologies/${ontology}/objectSets/aggregate`,
     request,
     queryParameters,
-    __undefined,
-  );
-}
-
-/**
- * Fetches a list of the available model deployments within a given Ontology.
- */
-export function listDeployments<TResponse>(
-  _request: OpenApiRequest<ListDeploymentsResponse, TResponse>,
-  ontology: OntologyIdentifier,
-): Promise<TResponse> {
-  return _request(
-    "GET",
-    `/v2/ontologies/${ontology}/models/deployments`,
-    __undefined,
-    __undefined,
-    __undefined,
-  );
-}
-
-/**
- * Fetches information about a model deployment within a given Ontology.
- */
-export function getDeployment<TResponse>(
-  _request: OpenApiRequest<DeploymentMetadata, TResponse>,
-  ontology: OntologyIdentifier,
-  deployment: DeploymentApiName,
-): Promise<TResponse> {
-  return _request(
-    "GET",
-    `/v2/ontologies/${ontology}/models/deployments/${deployment}`,
-    __undefined,
-    __undefined,
-    __undefined,
-  );
-}
-
-/**
- * Use a given model deployment to transform the provided data.
- *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
- */
-export function transformDeployment<TResponse>(
-  _request: OpenApiRequest<TransformDataResponse, TResponse>,
-  ontology: OntologyIdentifier,
-  deployment: DeploymentApiName,
-  request: TransformDataRequest,
-): Promise<TResponse> {
-  return _request(
-    "POST",
-    `/v2/ontologies/${ontology}/models/deployments/${deployment}/transform`,
-    request,
-    __undefined,
     __undefined,
   );
 }

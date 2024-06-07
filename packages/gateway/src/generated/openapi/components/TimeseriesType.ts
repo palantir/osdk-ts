@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimeSeriesItemType } from "./TimeSeriesItemType";
+import type { TimeSeriesItemType } from "./TimeSeriesItemType.js";
 
 export interface TimeseriesType {
   itemType: TimeSeriesItemType;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createClientContext } from "@osdk/shared.net";
+import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { Logger } from "pino";
 import type {
   MinimalClient,
@@ -30,8 +30,8 @@ import { USER_AGENT } from "./util/UserAgent.js";
 
 export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
-  stack: string,
-  tokenProvider: () => Promise<string> | string,
+  baseUrl: string,
+  tokenProvider: () => Promise<string>,
   options: OntologyCachingOptions & { logger?: Logger } = {},
   fetchFn: (
     input: RequestInfo | URL,
@@ -41,34 +41,34 @@ export function createMinimalClient(
 ) {
   if (process?.env?.NODE_ENV !== "production") {
     try {
-      new URL(stack);
+      new URL(baseUrl);
     } catch (e) {
-      const hint = !stack.startsWith("http://") || !stack.startsWith("https://")
-        ? ". Did you forget to add 'http://' or 'https://'?"
-        : "";
-      throw new Error(`Invalid stack URL: ${stack}${hint}`);
+      const hint =
+        !baseUrl.startsWith("http://") || !baseUrl.startsWith("https://")
+          ? ". Did you forget to add 'http://' or 'https://'?"
+          : "";
+      throw new Error(`Invalid stack URL: ${baseUrl}${hint}`);
     }
   }
-  const clientCtx: MinimalClient = {
-    ...createClientContext(
-      {
-        metadata: {
-          ...metadata,
-          userAgent: "", // ontology specific user agent injected elsewhere
-        },
-      },
-      stack,
+
+  const minimalClient: MinimalClient = {
+    ...createSharedClientContext(
+      baseUrl,
       tokenProvider,
       USER_AGENT,
       fetchFn,
     ),
     objectSetFactory,
     ontologyRid: metadata.ontologyRid,
-    ontologyProvider: undefined as any,
     logger: options.logger,
-  };
-  clientCtx.ontologyProvider = createStandardOntologyProviderFactory(
-    options,
-  )(clientCtx);
-  return clientCtx;
+  } satisfies Omit<
+    MinimalClient,
+    "ontologyProvider"
+  > as any;
+
+  return Object.assign(minimalClient, {
+    ontologyProvider: createStandardOntologyProviderFactory(
+      options,
+    )(minimalClient),
+  });
 }

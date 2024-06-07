@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import type { CenterPoint } from "./CenterPoint";
+import type { CenterPoint } from "./CenterPoint.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
 
 /**
  * Returns objects where the specified field contains a point within the distance provided of the center point.
  */
 export interface WithinDistanceOfQuery {
-  field: string;
+  field: PropertyApiName;
   value: CenterPoint;
 }

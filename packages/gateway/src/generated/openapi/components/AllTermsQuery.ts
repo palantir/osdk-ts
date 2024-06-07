@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import type { Fuzzy } from "./Fuzzy";
+import type { FieldNameV1 } from "./FieldNameV1.js";
+import type { Fuzzy } from "./Fuzzy.js";
 
 /**
  * Returns objects where the specified field contains all of the whitespace separated words in any
  * order in the provided value. This query supports fuzzy matching.
  */
 export interface AllTermsQuery {
-  field: string;
+  field: FieldNameV1;
   value: string;
   fuzzy?: Fuzzy;
 }

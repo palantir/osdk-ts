@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ChatMessage } from "./ChatMessage";
+import type { ChatMessage } from "./ChatMessage.js";
 
 export interface ChatCompletionChoice {
   message?: ChatMessage;

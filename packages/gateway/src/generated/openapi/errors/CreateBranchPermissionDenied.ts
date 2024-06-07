@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId";
-import type { DatasetRid } from "../components/DatasetRid";
+import type { BranchId } from "../components/BranchId.js";
+import type { DatasetRid } from "../components/DatasetRid.js";
 
 /** The provided token does not have permission to create a branch of this dataset. */
 export interface CreateBranchPermissionDenied {

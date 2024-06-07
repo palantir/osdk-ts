@@ -20,8 +20,8 @@ import type {
   GeoShape,
   LocalDate,
   Timestamp,
-} from "../../baseTypes";
-import type { WhereClause } from "./Filters";
+} from "../../baseTypes/index.js";
+import type { WhereClause } from "./Filters.js";
 
 export interface ArrayFilter<
   T extends

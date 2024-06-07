@@ -1,7 +1,6 @@
 {
   "name": "@osdk/foundry",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -9,31 +8,28 @@
   },
   "exports": {
     ".": {
-      "types": "./build/types/index.d.ts",
-      "browser": "./build/js/index.browser.mjs",
-      "import": "./build/js/index.mjs",
-      "require": "./build/js/index.cjs"
+      "import": "./build/esm/index.js",
+      "browser": "./build/browser/index.browser.js"
     },
     "./*": {
-      "types": "./build/types/public/*.d.ts",
-      "browser": "./build/js/public/*.browser.mjs",
-      "import": "./build/js/public/*.mjs",
-      "require": "./build/js/public/*.cjs"
+      "import": "./build/esm/public/*.js",
+      "browser": "./build/browser/public/*.js"
     }
   },
   "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "tsup",
-    "typecheck": "tsc-absolute"
+    "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/foundry.common": "workspace:*",
+    "@osdk/foundry.core": "workspace:*",
     "@osdk/foundry.security": "workspace:*",
     "@osdk/foundry.thirdpartyapplications": "workspace:*",
-    "@osdk/shared.net": "workspace:^"
+    "@osdk/shared.client": "workspace:^",
+    "@osdk/shared.net.platformapi": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.4.5"
@@ -42,20 +38,21 @@
     "access": "public"
   },
   "files": [
-    "build/types",
-    "build/js",
+    "build/cjs",
+    "build/esm",
+    "build/browser",
     "CHANGELOG.md",
     "package.json",
     "templates",
     "*.d.ts"
   ],
   "main": "./build/js/index.cjs",
-  "module": "./build/js/index.mjs",
-  "types": "./build/types/index.d.ts",
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.824.0",
+        "minVersion": "1.845.0",
         "maxVersion": "1.x.x"
       }
     }

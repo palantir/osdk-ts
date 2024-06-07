@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 import { type ConjureContext, conjureFetch } from "conjure-lite";
-import type { EntityRid } from "../../modification/EntityRid.js";
 import type { OntologyPackageRid } from "../../OntologyPackageRid.js";
+import type { PackagedEntityRid } from "../../PackagedEntityRid.js";
 
 /**
  * Gets all entities in the specified package.
@@ -24,6 +24,6 @@ import type { OntologyPackageRid } from "../../OntologyPackageRid.js";
 export async function getAllEntitiesInPackage(
   ctx: ConjureContext,
   packageRid: OntologyPackageRid,
-): Promise<Array<EntityRid>> {
+): Promise<Array<PackagedEntityRid>> {
   return conjureFetch(ctx, `/ontology/packages/${packageRid}/entities`, "GET");
 }

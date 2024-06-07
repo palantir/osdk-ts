@@ -36,22 +36,22 @@ import type {
   Response,
   ResponseType,
   StaticOperation,
-} from "../spec";
-import { InputType } from "../spec";
+} from "../spec/index.js";
+import { InputType } from "../spec/index.js";
 import {
   sanitizeParameterName,
   shouldSanitizePameterName,
   visitTypeUnion,
-} from "./common";
-import { getJsDocs } from "./getJsDocs";
-import { generateType, isOptional } from "./types";
+} from "./common.js";
+import { getJsDocs } from "./getJsDocs.js";
+import { generateType, isOptional } from "./types.js";
 
 export function generateNamespaces(
   namespaces: Namespace[],
   outputDir: string,
   project: Project,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const directory = project.createDirectory(`${outputDir}/namespaces`);
   namespaces.forEach(namespace =>
     generateNamespace(namespace, directory, addCopyright)
@@ -66,7 +66,7 @@ export function generateNamespace(
   namespace: Namespace,
   directory: Directory,
   addCopyright: (sf: SourceFile) => void,
-) {
+): void {
   const sourceFile = directory.createSourceFile(`${namespace.name}.ts`);
 
   const referenceSet = new Set<string>();
@@ -133,7 +133,7 @@ export function generateResource(
   resource: Resource,
   sourceFile: SourceFile,
   referenceSet: Set<string>,
-) {
+): SourceFile {
   const getMethods = resource.staticOperations.map(staticOperation =>
     generateOperationAsFunction(staticOperation, referenceSet)
   );

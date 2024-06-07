@@ -1,4 +1,4 @@
-export * from './Errors';
-export * from './OntologyMetadata';
+export * from './Errors.js';
+export * from './OntologyMetadata.js';
 
-// export * from "./Result";
+// export * from "./Result.js";

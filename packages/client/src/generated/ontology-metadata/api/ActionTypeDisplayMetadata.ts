@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 
 import type { ActionTypeRichTextComponent } from "./ActionTypeRichTextComponent.js";
 import type { ButtonDisplayMetadata } from "./ButtonDisplayMetadata.js";
+import type { Icon } from "./Icon.js";
 import type { TypeClass } from "./TypeClass.js";
 export interface ActionTypeDisplayMetadata {
   displayName: string;
   description: string;
+  icon: Icon | undefined;
   typeClasses: Array<TypeClass>;
   successMessage: Array<ActionTypeRichTextComponent>;
   submitButtonDisplayMetadata: ButtonDisplayMetadata | undefined;

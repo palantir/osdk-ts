@@ -15,17 +15,17 @@
  */
 
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs";
-import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles";
-import { sanitizeMetadata } from "../shared/sanitizeMetadata";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst";
+import type { MinimalFs } from "../MinimalFs.js";
+import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
+import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 import {
   wireObjectTypeV2ToSdkObjectConst,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst";
-import { formatTs } from "../util/test/formatTs";
-import { verifyOutdir } from "../util/verifyOutdir";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition";
-import { generateOntologyMetadataFile } from "./generateMetadata";
+} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
+import { formatTs } from "../util/test/formatTs.js";
+import { verifyOutdir } from "../util/verifyOutdir.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { generateOntologyMetadataFile } from "./generateMetadata.js";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,
@@ -78,7 +78,37 @@ export async function generateClientSdkVersionTwoPointZero(
       import * as Interfaces from "./ontology/interfaces${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
-      const _Ontology = {
+      export interface Ontology extends OntologyDefinition<${
+        stringUnionFrom(objectNames)
+      }> {
+        metadata: OntologyMetadata,
+        objects: {
+          ${
+        objectNames.map((objectName) => {
+          return `${objectName}: Objects.${objectName}`;
+        }).join(",\n")
+      }
+        },
+        actions: {
+          ${
+        actionNames.map((actionName) => {
+          return `${actionName}: typeof Actions.${actionName}`;
+        }).join(",\n")
+      }
+        },
+        queries: {
+          // TODO
+        },
+        interfaces: {
+          ${
+        interfaceNames.map((objectName) => {
+          return `${objectName}: Interfaces.${objectName}`;
+        }).join(",\n")
+      }
+      }
+    }
+
+      export const Ontology: Ontology = {
         metadata: OntologyMetadata,
         objects: {
           ${
@@ -106,11 +136,8 @@ export async function generateClientSdkVersionTwoPointZero(
       }
               
         }
-      } satisfies OntologyDefinition<${stringUnionFrom(objectNames)}>;
+      };
 
-      type _Ontology = typeof _Ontology;
-      export interface Ontology extends _Ontology {}
-      export const Ontology = _Ontology as Ontology;
     `,
     ),
   );
@@ -123,7 +150,7 @@ export async function generateClientSdkVersionTwoPointZero(
       path.join(outDir, "ontology", `objects`, `${name}.ts`),
       await formatTs(`
         import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
-        import { Osdk } from "@osdk/client";
+        import { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 

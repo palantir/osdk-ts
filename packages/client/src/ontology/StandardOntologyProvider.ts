@@ -22,15 +22,14 @@ import {
   __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
   wireObjectTypeFullMetadataToSdkObjectTypeDefinition,
 } from "@osdk/generator-converters";
-import { listInterfaceTypes } from "@osdk/internal.foundry/OntologiesV2_OntologyObjectV2";
-import { getOntologyFullMetadata } from "@osdk/internal.foundry/OntologiesV2_OntologyV2";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   ListInterfaceTypesResponse,
   OntologyFullMetadata,
-} from "@osdk/internal.foundry/types";
+} from "@osdk/internal.foundry";
 import deepEqual from "fast-deep-equal";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createAsyncCache } from "../object/Cache.js";
+import { createAsyncClientCache } from "../object/Cache.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
 import type { OntologyProviderFactory } from "./OntologyProvider.js";
@@ -44,12 +43,12 @@ const alwaysRevalidateDefault = false;
 // SLLLLLLOOOOOOOWWWW
 async function fullOntologyLoad(client: MinimalClient) {
   return await Promise.all([
-    listInterfaceTypes(
+    OntologiesV2.OntologyObjectsV2.listInterfaceTypes(
       client,
       client.ontologyRid,
       { pageSize: 200, preview: true },
     ),
-    getOntologyFullMetadata(
+    OntologiesV2.OntologiesV2.getOntologyFullMetadata(
       client,
       client.ontologyRid,
     ),
@@ -92,7 +91,8 @@ export const createStandardOntologyProviderFactory: (
             true,
           ),
           implements: fullCacheLocal[0].data.map((i) => i.apiName),
-        } as ObjectTypeDefinition<any, any>;
+          rid: fullCacheLocal[1].objectTypes[key].objectType.rid,
+        } as ObjectTypeDefinition<any, any> & { rid: string };
       } else {
         return await loadFullObjectMetadata(client, key);
       }
@@ -122,7 +122,7 @@ export const createStandardOntologyProviderFactory: (
         skipCache?: boolean,
       ) => Promise<N>,
     ) {
-      const cache = createAsyncCache<string, N>((client, key) =>
+      const cache = createAsyncClientCache<string, N>((client, key) =>
         fn(client, key, false)
       );
       return async (apiName: string) => {

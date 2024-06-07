@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { BranchId } from "../components/BranchId";
-import type { DatasetRid } from "../components/DatasetRid";
+import type { BranchId } from "../components/BranchId.js";
+import type { DatasetRid } from "../components/DatasetRid.js";
 
 /** A transaction is already open on this dataset and branch. A branch of a dataset can only have one open transaction at a time. */
 export interface OpenTransactionAlreadyExists {

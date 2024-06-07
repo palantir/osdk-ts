@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "@osdk/internal.foundry/types";
+import type { DataValue } from "@osdk/internal.foundry";
 import { isAttachment } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";

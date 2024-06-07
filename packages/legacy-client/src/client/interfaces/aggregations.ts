@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { LocalDate, OntologyObject, Timestamp } from "../baseTypes";
+import type {
+  LocalDate,
+  OntologyObject,
+  Timestamp,
+} from "../baseTypes/index.js";
 import type {
   AggregatableProperty,
   ApproximateDistinctCountAggregatableProperty,
@@ -29,8 +33,8 @@ import type {
   NumericGroupBy,
   StringGroupBy,
   TimestampGroupBy,
-} from "../objectSets/aggregations";
-import type { OmitMetadataProperties } from "./utils/OmitProperties";
+} from "../objectSets/aggregations/index.js";
+import type { OmitMetadataProperties } from "./utils/OmitProperties.js";
 
 export declare type ObjectTypesGroupByFunction<
   T extends OntologyObject,

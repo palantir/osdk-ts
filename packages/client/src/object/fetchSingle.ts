@@ -15,15 +15,13 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ObjectSet } from "@osdk/internal.foundry/types";
-import { PalantirApiError } from "@osdk/shared.net";
-import type { Osdk } from "../index.js";
+import type { ObjectSet } from "@osdk/internal.foundry";
+import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  fetchPage,
-  type FetchPageArgs,
-  type SelectArgToKeys,
-} from "./fetchPage.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
+import { fetchPage } from "./fetchPage.js";
+import { type FetchPageArgs, type SelectArgToKeys } from "./FetchPageArgs.js";
+import type { Result } from "./Result.js";
 
 export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
@@ -56,4 +54,32 @@ export async function fetchSingle<
   }
 
   return result.data[0] as any;
+}
+
+export async function fetchSingleWithErrors<
+  Q extends ObjectOrInterfaceDefinition,
+  const A extends FetchPageArgs<Q, any, any>,
+>(
+  client: MinimalClient,
+  objectType: Q,
+  args: A,
+  objectSet: ObjectSet,
+): Promise<
+  Result<
+    Osdk<
+      Q,
+      A["$includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+        : SelectArgToKeys<Q, A>
+    >
+  >
+> {
+  try {
+    const result = await fetchSingle(client, objectType, args, objectSet);
+    return { value: result as any };
+  } catch (e) {
+    if (e instanceof Error) {
+      return { error: e };
+    }
+    return { error: e as Error };
+  }
 }

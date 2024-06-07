@@ -121,7 +121,7 @@ export async function osdkObjectSetExample() {
     .fetchPage();
   const employeeLead = await filteredEmployees
     .data[0].$link
-    .lead.get();
+    .lead.fetchOne();
   console.log(employeeLead.fullName);
 
   // When fetching a page of employees, you can down select properties you want, and also order the results
@@ -142,8 +142,18 @@ export async function osdkObjectSetExample() {
     newCompensation: 1000000,
   }, { $returnEdits: true });
 
+  const actionResults1 = await client(promoteEmployee)([{
+    employeeId: employeeLead.employeeId,
+    newTitle: "Architect",
+    newCompensation: 1000000,
+  }], { returnEdits: true });
+
   if (actionResults.type === "edits") {
     console.log("Edited employee: ", actionResults.edits);
+  }
+
+  if (actionResults1.type === "edits") {
+    console.log("Edited employee: ", actionResults1.edits);
   }
 
   // You can also just run validation to make sure the parameters you passed in for valid

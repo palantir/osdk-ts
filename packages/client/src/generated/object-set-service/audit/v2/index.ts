@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 export type { AuditFoundryLink } from "./AuditFoundryLink.js";
 export type { AuditFoundryObject } from "./AuditFoundryObject.js";
+export type { AuditFoundryObjectList } from "./AuditFoundryObjectList.js";
+export type { AuditFoundryObjectVersionList } from "./AuditFoundryObjectVersionList.js";
 export type { AuditPatchableFoundryEntity } from "./AuditPatchableFoundryEntity.js";
 export type { InternalObjectSetLoadPatchableEntitiesRequestParams } from "./InternalObjectSetLoadPatchableEntitiesRequestParams.js";
 export type { InternalObjectSetLoadPatchableEntitiesResultParams } from "./InternalObjectSetLoadPatchableEntitiesResultParams.js";
@@ -51,6 +53,8 @@ export type { ObjectSetServiceV2GetAllObjectsInitialPageRequestParams } from "./
 export type { ObjectSetServiceV2GetAllObjectsInitialPageResultParams } from "./ObjectSetServiceV2GetAllObjectsInitialPageResultParams.js";
 export type { ObjectSetServiceV2GetAllObjectsNextPageRequestParams } from "./ObjectSetServiceV2GetAllObjectsNextPageRequestParams.js";
 export type { ObjectSetServiceV2GetAllObjectsNextPageResultParams } from "./ObjectSetServiceV2GetAllObjectsNextPageResultParams.js";
+export type { ObjectSetServiceV2GetBulkLinksPageRequestParams } from "./ObjectSetServiceV2GetBulkLinksPageRequestParams.js";
+export type { ObjectSetServiceV2GetBulkLinksPageResultParams } from "./ObjectSetServiceV2GetBulkLinksPageResultParams.js";
 export type { ObjectSetServiceV2GetLinksRequestParams } from "./ObjectSetServiceV2GetLinksRequestParams.js";
 export type { ObjectSetServiceV2GetLinksResultParams } from "./ObjectSetServiceV2GetLinksResultParams.js";
 export type { ObjectSetServiceV2GetTopObjectsInitialPageRequestParams } from "./ObjectSetServiceV2GetTopObjectsInitialPageRequestParams.js";
@@ -61,6 +65,8 @@ export type { ObjectSetServiceV2LoadObjectsRequestParams } from "./ObjectSetServ
 export type { ObjectSetServiceV2LoadObjectsResultParams } from "./ObjectSetServiceV2LoadObjectsResultParams.js";
 export type { ObjectSetSuggestServiceSuggestRequestParams } from "./ObjectSetSuggestServiceSuggestRequestParams.js";
 export type { ObjectSetSuggestServiceSuggestResultParams } from "./ObjectSetSuggestServiceSuggestResultParams.js";
+export type { VersionedObjectSetServiceCheckBulkOperationPermissionsRequestParams } from "./VersionedObjectSetServiceCheckBulkOperationPermissionsRequestParams.js";
+export type { VersionedObjectSetServiceCheckBulkOperationPermissionsResultParams } from "./VersionedObjectSetServiceCheckBulkOperationPermissionsResultParams.js";
 export type { VersionedObjectSetServiceCreateVersionedObjectSetRequestParams } from "./VersionedObjectSetServiceCreateVersionedObjectSetRequestParams.js";
 export type { VersionedObjectSetServiceCreateVersionedObjectSetResultParams } from "./VersionedObjectSetServiceCreateVersionedObjectSetResultParams.js";
 export type { VersionedObjectSetServiceCreateVersionedObjectSetWithParentRequestParams } from "./VersionedObjectSetServiceCreateVersionedObjectSetWithParentRequestParams.js";

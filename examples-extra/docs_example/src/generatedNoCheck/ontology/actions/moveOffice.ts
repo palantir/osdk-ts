@@ -1,5 +1,11 @@
 import type { ActionDefinition } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -30,14 +36,24 @@ export type ActionDef$moveOffice$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type moveOffice$Params = NOOP<OsdkActionParameters<ActionDef$moveOffice$Params>>;
+export type moveOffice$Params =
+  | NOOP<OsdkActionParameters<ActionDef$moveOffice$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$moveOffice$Params>>[];
 
 // Represents a fqn of the action
 export interface moveOffice {
   /**
    * Update an office's physical location
    */
-  <OP extends ApplyActionOptions>(args: moveOffice$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+  <
+    P extends moveOffice$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$moveOffice$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Represents the definition of the action

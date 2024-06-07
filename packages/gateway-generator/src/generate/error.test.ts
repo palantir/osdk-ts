@@ -16,8 +16,8 @@
 
 import { Project } from "ts-morph";
 import { describe, expect, it } from "vitest";
-import { addCopyrightForTest } from "./component.test";
-import { generateError } from "./error";
+import { addCopyrightForTest } from "./component.test.js";
+import { generateError } from "./error.js";
 
 describe("Errors", () => {
   it("should generate an error interface", () => {

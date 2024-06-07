@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export type * from "./_components.js";
-export * as Group from "./public/Group.js";
-export * as GroupMember from "./public/GroupMember.js";
-export * as GroupMembership from "./public/GroupMembership.js";
-export * as User from "./public/User.js";
+export type {
+  AddGroupMembersRequest,
+  CreateGroupRequest,
+  ListGroupMembershipsResponse,
+  ListGroupMembersResponse,
+  ListGroupsResponse,
+  ListUsersResponse,
+  RemoveGroupMembersRequest,
+  SearchGroupsRequest,
+  SearchUsersRequest,
+} from "./_components.js";
+export * as Groups from "./public/Group.js";
+export * as GroupMembers from "./public/GroupMember.js";
+export * as GroupMemberships from "./public/GroupMembership.js";
+export * as Users from "./public/User.js";

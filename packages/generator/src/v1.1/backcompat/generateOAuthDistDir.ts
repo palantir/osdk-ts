@@ -15,13 +15,13 @@
  */
 
 import * as path from "node:path";
-import type { MinimalFs } from "../../MinimalFs";
-import { formatTs } from "../../util/test/formatTs";
-import { generateConfidentialClientDir } from "./internal-foundry-oauth-dist/generateConfidentialClientDir";
-import { generatePublicClientDir } from "./internal-foundry-oauth-dist/generatePublicClientDir";
-import { generateUserTokenDir } from "./internal-foundry-oauth-dist/generateUserTokenDir";
-import { reexportConsts } from "./util/reexportConsts";
-import { reexportTypes } from "./util/reexportTypes";
+import type { MinimalFs } from "../../MinimalFs.js";
+import { formatTs } from "../../util/test/formatTs.js";
+import { generateConfidentialClientDir } from "./internal-foundry-oauth-dist/generateConfidentialClientDir.js";
+import { generatePublicClientDir } from "./internal-foundry-oauth-dist/generatePublicClientDir.js";
+import { generateUserTokenDir } from "./internal-foundry-oauth-dist/generateUserTokenDir.js";
+import { reexportConsts } from "./util/reexportConsts.js";
+import { reexportTypes } from "./util/reexportTypes.js";
 export async function generateOAuthClientDistDir(
   outDir: string,
   fs: MinimalFs,

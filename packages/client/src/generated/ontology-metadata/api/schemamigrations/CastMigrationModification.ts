@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { PropertyTypeRid } from "../PropertyTypeRid.js";
 import type { Type } from "../Type.js";
+import type { CastResolutionStrategy } from "./CastResolutionStrategy.js";
 
 /**
  * Migration to cast a property to another type.
@@ -23,4 +24,5 @@ import type { Type } from "../Type.js";
 export interface CastMigrationModification {
   property: PropertyTypeRid;
   target: Type;
+  resolutionStrategy: CastResolutionStrategy | undefined;
 }

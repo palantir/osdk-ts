@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Documentation } from "../spec";
+import type { Documentation } from "../spec/index.js";
 
 export type TypeUnionVisitor<T extends { type: string }, R> =
   & {
@@ -34,7 +34,7 @@ export function visitTypeUnion<T extends { type: string }, R>(
   return visitor.unknown(value);
 }
 
-export function generateDocumentation(documentation: Documentation) {
+export function generateDocumentation(documentation: Documentation): string {
   if (Object.keys(documentation).length === 0) {
     return "";
   }

@@ -19,15 +19,15 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { OsdkBase, OsdkObjectPrimaryKeyType } from "@osdk/client.api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
-import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
-
-export type OsdkObjectPrimaryKeyType<
-  O extends ObjectTypeDefinition<any>,
-> = PropertyValueWireToClient[O["primaryKeyType"]];
 
 type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
+
+type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
+  T["apiName"]["__Unbranded"]
+>;
 
 /**
  * DO NOT EXPORT FROM PACKAGE
@@ -41,20 +41,22 @@ export type ConvertProps<
   P extends string = "$all",
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition<any> ? (
-      (NonNullable<
-        TO["spts"]
-      >[
-        P extends "$all"
-          ? keyof FROM["properties"] extends keyof TO["spts"]
-            ? keyof FROM["properties"]
-          : never
-          : DropRidAndAll<P>
-      ])
+      (
+        TO["interfaceMap"][ApiNameAsString<FROM>][
+          P extends "$all"
+            ? keyof FROM["properties"] extends
+              keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+              ? keyof FROM["properties"]
+            : never
+            : DropRidAndAll<P>
+        ]
+      )
     )
   : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
     : FROM extends ObjectTypeDefinition<any>
-      ? DropRidAndAll<P> extends keyof FROM["inverseSpts"]
-        ? NonNullable<FROM["inverseSpts"]>[DropRidAndAll<P>]
+      ? DropRidAndAll<P> extends keyof FROM["inverseInterfaceMap"][
+        ApiNameAsString<TO>
+      ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropRidAndAll<P>]
       : never
     : never
   : never;
@@ -84,6 +86,7 @@ export type Osdk<
   P extends string = "$all",
   Z extends string = never, // this is the underlying's props
 > =
+  & OsdkBase<Q>
   & {
     [
       PP in keyof Q["properties"] as (
@@ -102,20 +105,11 @@ export type Osdk<
     /** @deprecated use $apiName */
     __apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
 
-    $apiName: Q["apiName"] & {
-      __OsdkType?: Q["apiName"];
-    };
-
-    $objectType: string;
-
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
       : unknown;
 
-    $primaryKey: Q extends ObjectTypeDefinition<any>
-      ? OsdkObjectPrimaryKeyType<Q>
-      : unknown;
     // $uniqueId: string; // will be dynamic
 
     $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
@@ -129,7 +123,8 @@ export type Osdk<
   }
   // We are hiding the $rid field if it wasnt requested as we want to discourage its use
   & (IsNever<P> extends true ? {}
-    : P extends "$rid" ? { $rid: string }
+    : string extends P ? {}
+    : "$rid" extends P ? { $rid: string }
     : {});
 
 export type OsdkObjectOrInterfaceFrom<

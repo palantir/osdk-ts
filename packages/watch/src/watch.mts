@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import chalk from "chalk";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import { watchTree } from "turbotree";
 import type { PackageInfo, Trigger, WatchExpression } from "turbotree";
-import { chalk } from "zx";
 
 const q = [chalk.green, chalk.yellow, chalk.blue, chalk.magenta, chalk.cyan];
 const nextChalk = () => {

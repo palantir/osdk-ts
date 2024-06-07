@@ -16,7 +16,10 @@
     "**/src/generatedNoCheck/",
     "**/src/generatedNoCheck2/",
     "pnpm-lock.yaml",
-    ".vscode/settings.json"
+    ".vscode/settings.json",
+    "examples/",
+    "examples-extra/**/dist",
+    "**/tsup.config.bundled_*"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",

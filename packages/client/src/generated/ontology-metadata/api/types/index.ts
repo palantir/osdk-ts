@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,11 @@ export type { MarkingListType } from "./MarkingListType.js";
 export type { MarkingListValue } from "./MarkingListValue.js";
 export type { MarkingType } from "./MarkingType.js";
 export type { MarkingValue } from "./MarkingValue.js";
+export type { MediaReference } from "./MediaReference.js";
+export type { MediaReferenceType } from "./MediaReferenceType.js";
+export type { MediaReferenceValue } from "./MediaReferenceValue.js";
+export type { MediaViewItemReference } from "./MediaViewItemReference.js";
+export type { MimeType } from "./MimeType.js";
 export type { MultipleChoiceItemLayoutOptions } from "./MultipleChoiceItemLayoutOptions.js";
 export type { NowValue } from "./NowValue.js";
 export type { NullValue } from "./NullValue.js";

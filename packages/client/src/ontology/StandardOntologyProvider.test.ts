@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import { Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import { Ontology as MockOntology } from "../generatedNoCheck/index.js";
 import { fetchPage } from "../object/fetchPage.js";
 import {
   createStandardOntologyProviderFactory,
@@ -36,7 +36,7 @@ describe(createStandardOntologyProviderFactory, () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
       {
         alwaysRevalidate: false,
       },
@@ -59,11 +59,7 @@ describe(createStandardOntologyProviderFactory, () => {
         ]
         : [
           "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/outgoingLinkTypes",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
-          "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
-          "/ontology-metadata/api/ontology/ontology/loadEntities",
+          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata",
           "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
         ],
     );
@@ -81,7 +77,7 @@ describe(createStandardOntologyProviderFactory, () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
-      () => "myAccessToken",
+      async () => "myAccessToken",
       {
         alwaysRevalidate: true,
       },
@@ -103,11 +99,7 @@ describe(createStandardOntologyProviderFactory, () => {
       ]
       : [
         "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/outgoingLinkTypes",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
-        "/ontology-metadata/api/ontology/ontology/ontologies/load/all",
-        "/ontology-metadata/api/ontology/ontology/loadEntities",
+        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata",
         "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
       ];
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ export type { CombinedOntologyHistoryPageItemSummary } from "./CombinedOntologyH
 export type { CombinedOntologyHistoryPageToken } from "./CombinedOntologyHistoryPageToken.js";
 export type { DayOfWeek } from "./DayOfWeek.js";
 export type { DayTime } from "./DayTime.js";
+export type { EditsHistory } from "./EditsHistory.js";
+export type { EditsHistoryConfig } from "./EditsHistoryConfig.js";
 export type { EditsResolutionStrategies } from "./EditsResolutionStrategies.js";
 export type { EditsResolutionStrategy } from "./EditsResolutionStrategy.js";
 export type { EntityConfig } from "./EntityConfig.js";
@@ -50,6 +52,7 @@ export type { LinkTypeSystemEntityMetadataModification } from "./LinkTypeSystemE
 export type { LoadEntityMetadataRequest } from "./LoadEntityMetadataRequest.js";
 export type { LoadEntityMetadataResponse } from "./LoadEntityMetadataResponse.js";
 export type { MigrationConfiguration } from "./MigrationConfiguration.js";
+export type { NoEditsHistory } from "./NoEditsHistory.js";
 export type { ObjectDbConfig } from "./ObjectDbConfig.js";
 export type { ObjectDbType } from "./ObjectDbType.js";
 export type { ObjectDbTypeConfig } from "./ObjectDbTypeConfig.js";

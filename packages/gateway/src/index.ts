@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export * from "./generated/openapi/index";
+export * from "./generated/openapi/index.js";
