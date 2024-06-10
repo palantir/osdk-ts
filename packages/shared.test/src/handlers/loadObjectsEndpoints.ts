@@ -572,13 +572,13 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
 
     const getAttachmentMetadataResponse =
       attachmentMetadataRequest[propertyName];
-
     if (getAttachmentMetadataResponse) {
       return {
         ...getAttachmentMetadataResponse,
         type: "single" as const,
       };
     }
+
     throw new OpenApiCallError(404, AttachmentNotFoundError);
   }),
 
