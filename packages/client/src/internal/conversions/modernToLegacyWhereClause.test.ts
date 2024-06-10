@@ -59,7 +59,7 @@ describe(modernToLegacyWhereClause, () => {
           {
             geoPoint: {
               $within: {
-                bbox: [-5, 5, -10, 10],
+                $bbox: [-5, 5, -10, 10],
               },
             },
           },
@@ -91,7 +91,7 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>(
           {
             geoPoint: {
-              $within: { distance: [5, "km"], of: [-5, 5] },
+              $within: { $distance: [5, "km"], $of: [-5, 5] },
             },
           },
         )).toMatchInlineSnapshot(`
@@ -125,7 +125,7 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>(
           {
             geoPoint: {
-              $within: { distance: [5, "km"], of: pointAsGeoJsonPoint },
+              $within: { $distance: [5, "km"], $of: pointAsGeoJsonPoint },
             },
           },
         )).toMatchInlineSnapshot(`
@@ -153,7 +153,7 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>(
           {
             geoPoint: {
-              $within: { polygon: [[[0, 1], [3, 2], [0, 1]]] },
+              $within: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
             },
           },
         )).toMatchInlineSnapshot(`
@@ -256,7 +256,7 @@ describe(modernToLegacyWhereClause, () => {
           {
             geoShape: {
               $intersects: {
-                bbox: [-5, 5, -10, 10],
+                $bbox: [-5, 5, -10, 10],
               },
             },
           },
@@ -288,7 +288,7 @@ describe(modernToLegacyWhereClause, () => {
         expect(modernToLegacyWhereClause<ObjAllProps>(
           {
             geoShape: {
-              $intersects: { polygon: [[[0, 1], [3, 2], [0, 1]]] },
+              $intersects: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
             },
           },
         )).toMatchInlineSnapshot(`

@@ -35,13 +35,13 @@ import type {
 import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
 
 export type ApplyActionOptions =
-  | { returnEdits?: true; validateOnly?: false }
+  | { $returnEdits?: true; $validateOnly?: false }
   | {
-    validateOnly?: true;
-    returnEdits?: false;
+    $validateOnly?: true;
+    $returnEdits?: false;
   };
 
-export type ApplyBatchActionOptions = { returnEdits?: boolean };
+export type ApplyBatchActionOptions = { $returnEdits?: boolean };
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?

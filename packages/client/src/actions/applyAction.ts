@@ -53,12 +53,12 @@ export async function applyAction<
       {
         requests: parameters ? remapBatchActionParams(parameters) : [],
         options: {
-          returnEdits: options?.returnEdits ? "ALL" : "NONE",
+          returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
       },
     );
 
-    return (options?.returnEdits
+    return (options?.$returnEdits
       ? response.edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
@@ -71,15 +71,15 @@ export async function applyAction<
           parameters as OsdkActionParameters<AD["parameters"]>,
         ),
         options: {
-          mode: (options as ApplyActionOptions)?.validateOnly
+          mode: (options as ApplyActionOptions)?.$validateOnly
             ? "VALIDATE_ONLY"
             : "VALIDATE_AND_EXECUTE",
-          returnEdits: options?.returnEdits ? "ALL" : "NONE",
+          returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
       },
     );
 
-    if ((options as ApplyActionOptions)?.validateOnly) {
+    if ((options as ApplyActionOptions)?.$validateOnly) {
       return response.validation as ActionReturnTypeForOptions<Op>;
     }
 
@@ -87,7 +87,7 @@ export async function applyAction<
       throw new ActionValidationError(response.validation);
     }
 
-    return (options?.returnEdits
+    return (options?.$returnEdits
       ? response.edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   }

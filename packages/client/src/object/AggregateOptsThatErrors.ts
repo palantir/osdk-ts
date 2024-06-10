@@ -24,26 +24,26 @@ export type AggregateOptsThatErrors<
 > =
   & AO
   & {
-    select:
+    $select:
       & Pick<
-        AO["select"],
-        keyof AggregateOpts<Q>["select"] & keyof AO["select"]
+        AO["$select"],
+        keyof AggregateOpts<Q>["$select"] & keyof AO["$select"]
       >
       & Record<
-        Exclude<keyof AO["select"], keyof AggregateOpts<Q>["select"]>,
+        Exclude<keyof AO["$select"], keyof AggregateOpts<Q>["$select"]>,
         never
       >;
   }
-  & (unknown extends AO["groupBy"] ? {}
-    : Exclude<AO["groupBy"], undefined> extends never ? {}
+  & (unknown extends AO["$groupBy"] ? {}
+    : Exclude<AO["$groupBy"], undefined> extends never ? {}
     : {
-      groupBy:
+      $groupBy:
         & Pick<
-          AO["groupBy"],
-          keyof GroupByClause<Q> & keyof AO["groupBy"]
+          AO["$groupBy"],
+          keyof GroupByClause<Q> & keyof AO["$groupBy"]
         >
         & Record<
-          Exclude<keyof AO["groupBy"], keyof GroupByClause<Q>>,
+          Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>,
           never
         >;
     });

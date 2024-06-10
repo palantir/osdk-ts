@@ -41,7 +41,7 @@ export async function runAssignEmployeeToVentureTest() {
           "employee-1": emp,
           "venture-1": venture,
         }, {
-          validateOnly: true,
+          $validateOnly: true,
         });
 
         console.log(r);

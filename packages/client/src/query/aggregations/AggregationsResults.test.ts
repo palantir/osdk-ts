@@ -42,11 +42,11 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     queries: {};
   }["objects"]["Todo"],
   {
-    select: {
+    $select: {
       locationCity: "approximateDistinct";
       text: "approximateDistinct";
     };
-    groupBy: {
+    $groupBy: {
       text: "exact";
     };
   }

@@ -28,12 +28,12 @@ export async function fetchEmployeeLead(
   })
     .pivotTo("lead")
     .fetchPage({
-      select: ["adUsername", "businessTitle", "employeeNumber"],
+      $select: ["adUsername", "businessTitle", "employeeNumber"],
     });
 
   const lead = await result.data[0].$link.lead.fetchOne({
-    select: ["adUsername"],
-    includeRid: false,
+    $select: ["adUsername"],
+    $includeRid: false,
   });
   const lead2 = await result.data[0].$link.lead.fetchOne({});
   const peeps = await result.data[0].$link.peeps.fetchPage({});
