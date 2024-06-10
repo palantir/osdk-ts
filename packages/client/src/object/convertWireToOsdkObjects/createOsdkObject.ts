@@ -71,17 +71,22 @@ export function createOsdkObject<
   objectDef: Q,
   rawObj: OntologyObjectV2,
 ) {
-  const kk = Object.create(objectPrototypeCache.get(client, objectDef), {
-    [RawObject]: {
-      value: rawObj,
-      writable: true, // so we can allow updates
+  // We use multiple layers of prototypes to maximize reuse and also to keep
+  // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
+  const objectHolderPrototype = Object.create(
+    objectPrototypeCache.get(client, objectDef),
+    {
+      [RawObject]: {
+        value: rawObj,
+        writable: true, // so we can allow updates
+      },
     },
-  });
+  );
 
   // we separate the holder out so we can update
-  // the underlying data without having to return a new
+  // the underlying data without having to return a new object
   // we also need the holder so we can customize the console.log output
-  const holder: ObjectHolder<Q> = Object.create(kk);
+  const holder: ObjectHolder<Q> = Object.create(objectHolderPrototype);
 
   const osdkObject: any = new Proxy(holder, {
     ownKeys(target) {

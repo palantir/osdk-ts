@@ -82,7 +82,9 @@ function $asFactory(
     }
 
     if (newDef.type === "object") {
-      throw new Error(`'${newDef.apiName}' is not an interface.`);
+      throw new Error(
+        `'${newDef.apiName}' is not an interface nor is it '${objDef.apiName}', which is the object type.`,
+      );
     }
 
     const underlying = this[UnderlyingOsdkObject];
