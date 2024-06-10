@@ -538,16 +538,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       throw new OpenApiCallError(400, InvalidRequest("Invalid parameters"));
     }
 
-    // eslint-disable-next-line no-console
-    console.error("WE HERE");
     const getAttachmentMetadataResponse =
       attachmentMetadataRequest[attachmentRid];
-    // eslint-disable-next-line no-console
-    console.error(
-      "whats in this",
-      attachmentRid.toString(),
-      getAttachmentMetadataResponse,
-    );
     if (getAttachmentMetadataResponse) {
       return getAttachmentMetadataResponse;
     }
@@ -587,7 +579,6 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         type: "single" as const,
       };
     }
-
     throw new OpenApiCallError(404, AttachmentNotFoundError);
   }),
 
