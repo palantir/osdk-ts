@@ -17,14 +17,17 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { WhereClause } from "../WhereClause.js";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregationClause } from "./AggregationsClause.js";
+import type {
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "./AggregationsClause.js";
 import type { GroupByClause } from "./GroupByClause.js";
 
 export type AggregateOpts<
   Q extends ObjectOrInterfaceDefinition,
   KK extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > = {
-  $select: AggregationClause<Q, KK>;
+  $select: OrderedAggregationClause<Q, KK>;
   $where?: WhereClause<Q>;
   $groupBy?: GroupByClause<Q>;
 };

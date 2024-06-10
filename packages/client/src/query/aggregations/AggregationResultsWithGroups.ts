@@ -20,12 +20,12 @@ import type {
   AggregationCountResult,
   AggregationResultsWithoutGroups,
 } from "./AggregationResultsWithoutGroups.js";
-import type { AggregationClause } from "./AggregationsClause.js";
+import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 import type { GroupByClause, GroupByRange } from "./GroupByClause.js";
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends AggregationClause<Q>,
+  A extends UnorderedAggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
 > = (
   & {

@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { PropertyValueWireToClient } from "@osdk/client.api";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
 
 type StringAggregateOption = "approximateDistinct";
@@ -25,9 +26,13 @@ type NumericAggregateOption =
   | "avg"
   | "approximateDistinct";
 
+type AGG_FOR_TYPE<T> = T extends string ? StringAggregateOption
+  : T extends number ? NumericAggregateOption
+  : never;
+
 type totalCountOption = { $count?: true };
 
-export type AggregationClause<
+export type UnorderedAggregationClause<
   Q extends ObjectOrInterfaceDefinition,
   K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > =
@@ -40,3 +45,17 @@ export type AggregationClause<
       : never;
   }
   & totalCountOption;
+
+export type OrderedAggregationClause<
+  Q extends ObjectOrInterfaceDefinition,
+  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
+> = {
+  [
+    KK in K as `${KK & string}:${AGG_FOR_TYPE<
+      PropertyValueWireToClient[Q["properties"][KK]["type"]]
+    >}`
+  ]?:
+    | "unordered"
+    | "asc"
+    | "desc";
+};

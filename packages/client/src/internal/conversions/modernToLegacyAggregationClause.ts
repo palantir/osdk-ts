@@ -15,10 +15,10 @@
  */
 
 import type { AggregationV2 } from "@osdk/internal.foundry";
-import type { AggregationClause } from "../../query/aggregations/AggregationsClause.js";
+import type { UnorderedAggregationClause } from "../../query/aggregations/AggregationsClause.js";
 
 export function modernToLegacyAggregationClause<
-  AC extends AggregationClause<any>,
+  AC extends UnorderedAggregationClause<any>,
 >(select: AC) {
   return Object.entries(select).flatMap<AggregationV2>(([k, v]) => {
     if (k === "$count") {

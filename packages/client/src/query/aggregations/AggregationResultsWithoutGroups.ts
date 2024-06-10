@@ -17,14 +17,16 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
 import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
-import type { AggregationClause } from "./AggregationsClause.js";
+import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 
-type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
-  AC[P] extends readonly string[] | string ? P : never;
+type SubselectKeys<
+  AC extends UnorderedAggregationClause<any>,
+  P extends keyof AC,
+> = AC[P] extends readonly string[] | string ? P : never;
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  AC extends AggregationClause<Q>,
+  AC extends UnorderedAggregationClause<Q>,
 > = {
   [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
     readonly string[] | string ? {
@@ -36,5 +38,5 @@ export type AggregationResultsWithoutGroups<
 
 export type AggregationCountResult<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends AggregationClause<Q>,
+  A extends UnorderedAggregationClause<Q>,
 > = "$count" extends keyof A ? { $count: number } : {};
