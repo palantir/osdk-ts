@@ -31,9 +31,9 @@ export type AggregationResultsWithGroups<
   & {
     $group: {
       [P in keyof G & keyof Q["properties"]]: G[P] extends
-        { ranges: GroupByRange<number>[] }
+        { $ranges: GroupByRange<number>[] }
         ? { startValue: number; endValue: number }
-        : G[P] extends { ranges: GroupByRange<string>[] }
+        : G[P] extends { $ranges: GroupByRange<string>[] }
           ? { startValue: string; endValue: string }
         : OsdkObjectPropertyType<
           Q["properties"][P]

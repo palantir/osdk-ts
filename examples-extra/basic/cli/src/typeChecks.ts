@@ -47,18 +47,18 @@ export async function typeChecks(client: Client) {
   {
     const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
       .aggregate({
-        select: {
+        $select: {
           integer: "sum",
           float: "sum",
           decimal: "sum",
           short: ["max"],
           string: "approximateDistinct",
         },
-        groupBy: {
+        $groupBy: {
           string: "exact",
           stringArray: "exact",
         },
-        orderBy: {
+        $orderBy: {
           group: "string",
         },
       });
@@ -78,8 +78,9 @@ export async function typeChecks(client: Client) {
     >(true);
 
     // lead is an employee but we downselect to just their adUsername
+
     const leadName = await employee.$link.lead.fetchOne({
-      select: ["adUsername"],
+      $select: ["adUsername"],
     });
     expectType<TypeOf<typeof leadName.adUsername, string>>(true);
 
@@ -88,7 +89,7 @@ export async function typeChecks(client: Client) {
 
     // peeps is a page of employees, but only get the adUsername and employeeNumber
     const peeps = await employee.$link.peeps.fetchPage({
-      select: ["adUsername", "employeeNumber"],
+      $select: ["adUsername", "employeeNumber"],
     });
     expectType<
       TypeOf<
@@ -106,8 +107,9 @@ export async function typeChecks(client: Client) {
     expectType<TypeOf<{ jobProfile: any }[], typeof peeps>>(false);
 
     // peepById is just a singular employee again, and only grab the adUsername
+
     const peepById = await employee.$link.peeps.fetchOne("peepPK", {
-      select: ["adUsername"],
+      $select: ["adUsername"],
     });
     expectType<
       TypeOf<

@@ -22,6 +22,7 @@ export type {
   ActionSignatureFromDef,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./actions/Actions.js";
 export type {

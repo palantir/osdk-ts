@@ -57,7 +57,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
   >(
     options?: A,
   ) => Promise<
-    DefaultToFalse<A["includeRid"]> extends false
+    DefaultToFalse<A["$includeRid"]> extends false
       ? Osdk<T, SelectArgToKeys<T, A>>
       : Osdk<T, SelectArgToKeys<T, A> | "$rid">
   >;
@@ -74,7 +74,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
     options?: A,
   ) => Promise<
     Result<
-      DefaultToFalse<A["includeRid"]> extends false
+      DefaultToFalse<A["$includeRid"]> extends false
         ? Osdk<T, SelectArgToKeys<T, A>>
         : Osdk<T, SelectArgToKeys<T, A> | "$rid">
     >

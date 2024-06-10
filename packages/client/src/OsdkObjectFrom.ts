@@ -71,11 +71,11 @@ type UnderlyingProps<
   Q extends ObjectOrInterfaceDefinition,
   P extends string,
   Z extends string,
-  NEWQ extends ValidToFrom<Q>,
+  NEW_Q extends ValidToFrom<Q>,
 > =
   & Z
   & Q extends InterfaceDefinition<any, any>
-  ? NEWQ extends ObjectTypeDefinition<any> ? ConvertProps<Q, NEWQ, P>
+  ? NEW_Q extends ObjectTypeDefinition<any> ? ConvertProps<Q, NEW_Q, P>
   : Z
   : Z;
 
@@ -115,15 +115,16 @@ export type Osdk<
     $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
       : never;
 
-    $as: <NEWQ extends ValidToFrom<Q>>(type: NEWQ | string) => Osdk<
-      NEWQ,
-      ConvertProps<Q, NEWQ, P>,
-      UnderlyingProps<Q, P, Z, NEWQ>
+    $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
+      NEW_Q,
+      ConvertProps<Q, NEW_Q, P>,
+      UnderlyingProps<Q, P, Z, NEW_Q>
     >;
   }
-  // We are hiding the $rid field if it wasnt requested as we want to discourage its use
+  // We are hiding the $rid field if it wasn't requested as we want to discourage its use
   & (IsNever<P> extends true ? {}
-    : P extends "$rid" ? { $rid: string }
+    : string extends P ? {}
+    : "$rid" extends P ? { $rid: string }
     : {});
 
 export type OsdkObjectOrInterfaceFrom<

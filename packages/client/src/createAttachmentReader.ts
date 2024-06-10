@@ -34,6 +34,8 @@ export function createAttachmentReader(
       ) as Promise<Blob>;
     },
     fetchMetadata() {
+      // eslint-disable-next-line no-console
+      console.log("creating reader", attachment);
       return Ontologies.Attachments.getAttachment(client, attachment.rid);
     },
   };

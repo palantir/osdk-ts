@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { Employee, Ontology as MockOntology } from "@osdk/client.test.ontology";
+import {
+  Employee,
+  FooInterface,
+  Ontology as MockOntology,
+} from "@osdk/client.test.ontology";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
+import * as util from "node:util";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
@@ -43,7 +50,7 @@ describe("convertWireToOsdkObjects", () => {
   it("configures properties correctly", async () => {
     const { data: [employee] } = await client(Employee).fetchPage();
 
-    expect(Object.keys(employee)).toEqual([
+    expect(Object.keys(employee).sort()).toEqual([
       "employeeId",
       "fullName",
       "office",
@@ -53,7 +60,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
-    ]);
+    ].sort());
 
     expect(Object.keys(employee.$as)).toEqual([]);
     expect(Object.keys(employee.$link)).toEqual([
@@ -67,7 +74,10 @@ describe("convertWireToOsdkObjects", () => {
     const employees = await client(MockOntology.objects.Employee).fetchPage();
     expect(employees.data.length).toBeGreaterThanOrEqual(2);
     const [a, b] = employees.data;
-    expect(Object.getPrototypeOf(a)).toBe(Object.getPrototypeOf(b));
+
+    expect(Object.getPrototypeOf(Object.getPrototypeOf(a))).toBe(
+      Object.getPrototypeOf(Object.getPrototypeOf(b)),
+    );
   });
 
   it("converts attachments as expected", async () => {
@@ -109,7 +119,7 @@ describe("convertWireToOsdkObjects", () => {
     );
 
     let object = {
-      __apiName: "Employee",
+      __apiName: Employee.apiName,
       __primaryKey: 0,
     } as const;
     const prototypeBefore = Object.getPrototypeOf(object);
@@ -121,5 +131,104 @@ describe("convertWireToOsdkObjects", () => {
     const prototypeAfter = Object.getPrototypeOf(object2);
 
     expect(prototypeBefore).not.toBe(prototypeAfter);
+  });
+
+  it("updates interface when underlying changes", async () => {
+    const clientCtx = createMinimalClient(
+      MockOntology.metadata,
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
+
+    let objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      fullName: "Steve",
+      employeeId: "5",
+    } satisfies OntologyObjectV2;
+
+    const [obj] = (await convertWireToOsdkObjects(
+      clientCtx,
+      [objectFromWire],
+      undefined,
+    )) as Osdk<Employee>[];
+
+    expect(obj.fullName).toEqual("Steve");
+    expect(Object.keys(obj).sort()).toEqual([
+      "$apiName",
+      "$objectType",
+      "$primaryKey",
+      "employeeId",
+      "fullName",
+    ].sort());
+
+    const objAsFoo = obj.$as(FooInterface);
+    expect(objAsFoo).toMatchObject({
+      fooSpt: obj.fullName,
+      $apiName: FooInterface.apiName,
+      $primaryKey: obj.$primaryKey,
+      $objectType: obj.$objectType,
+    });
+
+    console.log(obj);
+    console.log(objAsFoo);
+
+    (obj as any).$updateInternalValues({
+      fullName: "Bob",
+    });
+    expect(obj.fullName).toEqual("Bob");
+    expect(objAsFoo.fooSpt).toEqual(obj.fullName);
+
+    expect(Object.keys(objAsFoo).sort()).toEqual([
+      "$apiName",
+      "$objectType",
+      "$primaryKey",
+      "fooSpt",
+    ].sort());
+
+    expect(obj).toBe(objAsFoo.$as(Employee));
+    expect(objAsFoo).toBe(obj.$as(FooInterface));
+  });
+
+  it("reconstitutes interfaces properly", async () => {
+    const clientCtx = createMinimalClient(
+      MockOntology.metadata,
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
+
+    let objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      fooSpt: "Steve",
+    } satisfies OntologyObjectV2;
+
+    const [objAsFoo] = (await convertWireToOsdkObjects(
+      clientCtx,
+      [objectFromWire],
+      FooInterface.apiName,
+    )) as Osdk<FooInterface>[];
+
+    expect(objAsFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "fooSpt": "Steve",
+      }
+    `);
+
+    const obj = objAsFoo.$as(Employee);
+    expect(obj.fullName).toEqual("Steve");
+
+    expect(obj).toMatchInlineSnapshot(`
+      {
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "employeeId": 0,
+        "fullName": "Steve",
+      }
+    `);
   });
 });

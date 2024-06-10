@@ -29,7 +29,7 @@ export async function runAggregationsTest() {
 
   const testAggregateCountNoGroup = await client(BoundariesUsState)
     .aggregate({
-      select: { $count: true, latitude: ["min", "max", "avg"] },
+      $select: { $count: true, latitude: ["min", "max", "avg"] },
     });
 
   // Should be 51 because it includes DC
@@ -41,31 +41,31 @@ export async function runAggregationsTest() {
   );
   const testAggregateCountWithGroups = await client(BoundariesUsState)
     .aggregate({
-      select: { $count: true, latitude: ["min", "max", "avg"] },
-      groupBy: {
+      $select: { $count: true, latitude: ["min", "max", "avg"] },
+      $groupBy: {
         usState: "exact",
         longitude: {
-          fixedWidth: 10,
+          $fixedWidth: 10,
         },
       },
     });
 
   const testAggregateCountWithFixedGroups = await client(BoundariesUsState)
     .aggregate({
-      select: { $count: true, latitude: ["min", "max", "avg"] },
-      groupBy: {
+      $select: { $count: true, latitude: ["min", "max", "avg"] },
+      $groupBy: {
         longitude: {
-          exactWithLimit: 40,
+          $exactWithLimit: 40,
         },
       },
     });
 
   const testAggregateCountWithRangeGroups = await client(BoundariesUsState)
     .aggregate({
-      select: { $count: true },
-      groupBy: {
+      $select: { $count: true },
+      $groupBy: {
         latitude: {
-          ranges: [[34, 39], [
+          $ranges: [[34, 39], [
             39,
             42,
           ], [43, 45]],

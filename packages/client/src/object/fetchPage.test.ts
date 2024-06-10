@@ -42,7 +42,7 @@ describe(fetchPage, () => {
     > {
       public fetchPage<
         L extends SelectArgToKeys<T, A>,
-        R extends A["includeRid"] extends true ? true : false,
+        R extends A["$includeRid"] extends true ? true : false,
       >() {
         return fetchPage<T, L, R>({} as any, {} as any, {} as any);
       }
@@ -54,7 +54,7 @@ describe(fetchPage, () => {
 
     // e.g. fetchPage({ select: [] });
     expectTypeOf<
-      Awaited<ReturnType<Helper<TodoDef, { select: [] }>["fetchPage"]>>
+      Awaited<ReturnType<Helper<TodoDef, { $select: [] }>["fetchPage"]>>
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
@@ -68,10 +68,10 @@ describe(fetchPage, () => {
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
-    // e.g. fetchPage({ select: ["text"]}
+    // e.g. fetchPage({ $select: ["text"]}
     expectTypeOf<
       Awaited<
-        ReturnType<Helper<TodoDef, { select: ["text"] }>["fetchPage"]>
+        ReturnType<Helper<TodoDef, { $select: ["text"] }>["fetchPage"]>
       >
     >()
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "text">>>();

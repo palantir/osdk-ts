@@ -101,7 +101,7 @@ type ConjureObjectTypeInfo = {
     "visibility": "PROMINENT";
   };
   id: string;
-  primaryKeys: [];
+  primaryKeys: string[];
   propertyTypes: Record<string, unknown>;
   rid: string;
   titlePropertyTypeRid: string;
@@ -278,7 +278,7 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
         const body = await request.json();
         invariant(
           Object.entries(body.linkTypeVersions).length === 0,
-          "Currently dont support loading links via tests",
+          "Currently don't support loading links via tests",
         );
         invariant(body.loadRedacted === false, "unsupported for tests");
         invariant(
@@ -337,19 +337,25 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
                     "pluralDisplayName": "Employees",
                     "visibility": "PROMINENT",
                   },
-                  id: "we dont track this",
-                  primaryKeys: [],
-                  propertyTypes: {}, // dont care right now
+                  id: "we don't track this",
+                  primaryKeys: [entry.objectType.primaryKey],
+                  propertyTypes: Object.fromEntries(
+                    Object.entries(entry.objectType.properties)
+                      .map(([k, v]) => [k, {
+                        ...v,
+                        rid: k,
+                      }]),
+                  ), // don't care right now
                   implementsInterfaces: entry
                     .implementsInterfaces as string[],
-                  implementsInterfaces2: [], // dont care right now
+                  implementsInterfaces2: [], // don't care right now
                   rid: entry.objectType.rid,
                   redacted: null,
                   "status": {
                     "type": "active",
                     "active": {},
                   },
-                  titlePropertyTypeRid: "we dont track this",
+                  titlePropertyTypeRid: "we don't track this",
                   "traits": {
                     "eventMetadata": null,
                     "actionLogMetadata": null,

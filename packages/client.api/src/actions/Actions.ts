@@ -35,11 +35,13 @@ import type {
 import type { ActionReturnTypeForOptions } from "./ActionReturnTypeForOptions.js";
 
 export type ApplyActionOptions =
-  | { returnEdits?: true; validateOnly?: false }
+  | { $returnEdits?: true; $validateOnly?: false }
   | {
-    validateOnly?: true;
-    returnEdits?: false;
+    $validateOnly?: true;
+    $returnEdits?: false;
   };
+
+export type ApplyBatchActionOptions = { $returnEdits?: boolean };
 
 type BaseType<APD extends ActionParameterDefinition<any, any>> =
   APD["type"] extends ObjectActionDataType<any, infer TTargetType> ?
@@ -81,11 +83,15 @@ type ActionParametersDefinition = Record<
 export type ActionSignature<
   X extends Record<any, ActionParameterDefinition<any, any>>,
 > = <
-  OP extends ApplyActionOptions,
+  A extends NOOP<OsdkActionParameters<X>> | NOOP<OsdkActionParameters<X>>[],
+  OP extends A extends NOOP<OsdkActionParameters<X>>[] ? ApplyBatchActionOptions
+    : ApplyActionOptions,
 >(
-  args: NOOP<OsdkActionParameters<X>>,
+  args: A,
   options?: OP,
-) => Promise<ActionReturnTypeForOptions<OP>>;
+) => Promise<
+  ActionReturnTypeForOptions<OP>
+>;
 
 export type ActionEditResponse = ActionResults;
 export type ActionValidationResponse = ValidateActionResponseV2;

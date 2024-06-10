@@ -20,15 +20,14 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
-
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
 > {
-  select?: readonly L[];
-  includeRid?: R;
+  $select?: readonly L[];
+  $includeRid?: R;
 }
 
 export interface OrderByArg<
@@ -36,7 +35,7 @@ export interface OrderByArg<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
 > {
-  orderBy?: {
+  $orderBy?: {
     [K in L]?: "asc" | "desc";
   };
 }
@@ -45,7 +44,7 @@ export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
   A extends SelectArg<Q, any, any>,
 > = A extends SelectArg<Q, never> ? "$all"
-  : A["select"] extends readonly string[] ? A["select"][number]
+  : A["$select"] extends readonly string[] ? A["$select"][number]
   : "$all";
 
 export interface FetchPageArgs<
@@ -58,19 +57,16 @@ export interface FetchPageArgs<
   SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
-  nextPageToken?: string;
-  pageSize?: number;
-  augment?: A;
+  $nextPageToken?: string;
+  $pageSize?: number;
+  $augment?: A;
 }
 
 export type Augment<
   X extends ObjectOrInterfaceDefinition,
   T extends string,
 > = X extends ObjectOrInterfaceDefinition<infer Z>
-  ? Z extends BrandedApiName<infer ZZ, any> ? {
-      [K in Z]: T[];
-    }
-  : never
+  ? Z extends BrandedApiName<infer ZZ, any> ? { [K in Z]: T[] } : never
   : never;
 
 export type Augments = Record<string, string[]>;
@@ -84,7 +80,7 @@ export interface FetchInterfacePageArgs<
   SelectArg<Q, K, R>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
-  nextPageToken?: string;
-  pageSize?: number;
-  augment?: Augments;
+  $nextPageToken?: string;
+  $pageSize?: number;
+  $augment?: Augments;
 }

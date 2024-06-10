@@ -19,6 +19,7 @@ export type {
   ActionReturnTypeForOptions,
   ActionValidationResponse,
   ApplyActionOptions,
+  ApplyBatchActionOptions,
   NOOP,
   OsdkActionParameters,
 } from "@osdk/client.api";
@@ -26,6 +27,7 @@ export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
+export { createPlatformClient } from "./createPlatformClient.js";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";

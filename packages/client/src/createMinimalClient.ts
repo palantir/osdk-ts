@@ -34,7 +34,7 @@ export function createMinimalClient(
   tokenProvider: () => Promise<string>,
   options: OntologyCachingOptions & { logger?: Logger } = {},
   fetchFn: (
-    input: RequestInfo | URL,
+    input: Request | URL | string,
     init?: RequestInit | undefined,
   ) => Promise<Response> = global.fetch,
   objectSetFactory: ObjectSetFactory<any, any> = createObjectSet,

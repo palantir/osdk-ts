@@ -21,8 +21,8 @@ export async function runGeoQueriesTest() {
   const result = await client(WeatherStation).where({
     geohash: {
       $within: {
-        distance: [1000, "miles"],
-        of: [0, 0],
+        $distance: [1000, "miles"],
+        $of: [0, 0],
       },
     },
   }).fetchPage();
@@ -33,7 +33,7 @@ export async function runGeoQueriesTest() {
   const intersectResult = await client(BoundariesUsState).where({
     geometry10M: {
       $intersects: {
-        polygon: [
+        $polygon: [
           [
             [
               -75.09653518696345,
