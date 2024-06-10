@@ -20,14 +20,20 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
+
+export type NullabilityAdherence = false | "throw" | "drop";
+export type NullabilityAdherenceDefault = "throw";
+
 export interface SelectArg<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q> =
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
+  S extends NullabilityAdherence = NullabilityAdherenceDefault,
 > {
   $select?: readonly L[];
   $includeRid?: R;
+  $__EXPERIMENTAL_strictNonNull?: S;
 }
 
 export interface OrderByArg<
@@ -53,8 +59,9 @@ export interface FetchPageArgs<
     ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean = false,
   A extends Augments = {},
+  S extends NullabilityAdherence = NullabilityAdherenceDefault,
 > extends
-  SelectArg<Q, K, R>,
+  SelectArg<Q, K, R, S>,
   OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>>
 {
   $nextPageToken?: string;

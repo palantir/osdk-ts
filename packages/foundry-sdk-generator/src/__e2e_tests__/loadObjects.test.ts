@@ -267,7 +267,7 @@ describe("LoadObjects", () => {
         pageToken: employees.nextPageToken,
       });
     const secondEmployeesPage = assertOkOrThrow(secondResult);
-    expect(secondEmployeesPage.data.length).toEqual(1);
+    expect(secondEmployeesPage.data.length).toEqual(2);
     expect(secondEmployeesPage.data[0].employeeId).toEqual(50032);
   });
 
@@ -277,10 +277,10 @@ describe("LoadObjects", () => {
       .objects.Employee.all();
     const employees = assertOkOrThrow(result);
     for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50030 + iter);
+      expect(emp.$primaryKey).toEqual(50030 + iter);
       iter += 1;
     }
-    expect(iter).toEqual(3);
+    expect(iter).toEqual(4);
   });
 
   it("Gets All Objects with async iter", async () => {
@@ -290,10 +290,10 @@ describe("LoadObjects", () => {
         .objects.Employee.asyncIter(),
     );
     for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50030 + iter);
+      expect(emp.$primaryKey).toEqual(50030 + iter);
       iter += 1;
     }
-    expect(iter).toEqual(3);
+    expect(iter).toEqual(4);
   });
 
   it("Links with a cardinality of ONE are loaded properly", async () => {
