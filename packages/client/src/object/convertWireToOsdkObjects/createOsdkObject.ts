@@ -107,11 +107,9 @@ export function createOsdkObject<
         if (propDef) {
           if (propDef.type === "attachment") {
             if (Array.isArray(rawValue)) {
-              return rawValue.map(a => new Attachment(a));
+              return rawValue.map(a => new Attachment(a.rid));
             }
-            // eslint-disable-next-line no-console
-            console.log("rawstuff", rawValue);
-            return new Attachment(rawValue);
+            return new Attachment(rawValue.rid);
           }
         }
         return rawValue;
