@@ -56,8 +56,6 @@ export async function toDataValue(
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
-    // eslint-disable-next-line no-console
-    console.log("so we here");
     const attachment = await Ontologies.Attachments.uploadAttachment(
       client,
       value,
@@ -69,8 +67,6 @@ export async function toDataValue(
         "Content-Type": value.type,
       },
     );
-    // eslint-disable-next-line no-console
-    console.log("please be a rid", attachment.rid);
     return await toDataValue(new Attachment(attachment.rid), client);
   }
 

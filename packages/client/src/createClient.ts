@@ -66,8 +66,6 @@ export function createClientInternal(
     : never
   {
     if (isAttachment(o)) {
-      // eslint-disable-next-line no-console
-      console.log("please help", o);
       return createAttachmentReader(clientCtx, o) as any;
     }
     if (o.type === "object" || o.type === "interface") {
