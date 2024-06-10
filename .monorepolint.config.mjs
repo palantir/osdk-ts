@@ -239,16 +239,16 @@ function standardPackageRules(shared, options) {
               ...(options.esmOnly ? {} : {
                 "require": "./build/cjs/index.cjs",
               }),
+              "browser": "./build/browser/index.js",
               "import": "./build/esm/index.js",
-              "browser": "./build/browser/index.browser.js",
             },
 
             "./*": {
               ...(options.esmOnly ? {} : {
                 require: "./build/cjs/public/*.cjs",
               }),
-              import: "./build/esm/public/*.js",
               browser: "./build/browser/public/*.js",
+              import: "./build/esm/public/*.js",
             },
           },
           publishConfig: {

@@ -147,12 +147,20 @@ export function createAsyncClientCache<K, V extends {}>(
 /**
  * A simple cache that can be used to store values for a given client.
  */
-interface SimpleCache<K, V> {
+export interface SimpleCache<K, V> {
   get: (key: K) => V;
   set: <X extends V>(key: K, value: X) => X;
   remove: (key: K) => boolean;
 }
 
+/**
+ * Create a new cache with a factory function.
+ * @param fn A factory function that will be used to create the value if it does not exist in the cache.
+ */
+export function createSimpleCache<K, V>(
+  map: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
+  fn: (k: K) => V,
+): SimpleCache<K, V>;
 /**
  * Create a new cache without a factory function.
  */
@@ -162,14 +170,6 @@ export function createSimpleCache<K, V>(
   K,
   V | undefined
 >;
-/**
- * Create a new cache with a factory function.
- * @param fn A factory function that will be used to create the value if it does not exist in the cache.
- */
-export function createSimpleCache<K, V>(
-  map: Map<K, V> | (K extends object ? WeakMap<K, V> : never),
-  fn: (k: K) => V,
-): SimpleCache<K, V>;
 export function createSimpleCache<K, V>(
   map: Map<K, V> | (K extends object ? WeakMap<K, V> : never) =
     new Map() as any,
