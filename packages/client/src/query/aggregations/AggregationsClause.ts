@@ -26,28 +26,32 @@ type NumericAggregateOption =
   | "avg"
   | "approximateDistinct";
 
-type AGG_FOR_TYPE<T> = T extends string ? StringAggregateOption
-  : T extends number ? NumericAggregateOption
+type AGG_FOR_TYPE<T> = string extends T ? StringAggregateOption
+  : number extends T ? NumericAggregateOption
   : never;
 
-export type UnorderedAggregationClause<
+export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
-  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
-> =
+> = keyof (
   & {
     [
-      KK in K as `${KK & string}:${AGG_FOR_TYPE<
-        PropertyValueWireToClient[Q["properties"][KK]["type"]]
-      >}`
-    ]?: "unordered";
+      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
+          PropertyValueWireToClient[Q["properties"][KK]["type"]]
+        >
+        // | "min" // this is supposed to fix something?
+        // | "max"
+        // | "sum"
+        // | "avg"
+        // | "approximateDistinct"
+      }`
+    ]?: any;
   }
-  & {
-    "$count"?: "unordered";
-  };
+  & { $count?: any }
+);
 
-export type OrderedAggregationClause<
-  Q extends ObjectOrInterfaceDefinition,
-  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
-> = {
-  [KK in keyof UnorderedAggregationClause<Q, K>]?: "unordered" | "asc" | "desc";
+export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
+  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
+
+export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
+  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
 };
