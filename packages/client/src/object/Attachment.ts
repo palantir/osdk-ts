@@ -35,8 +35,7 @@ export function createAttachmentUpload(
   data: Blob,
   name: string,
 ): IAttachmentUpload {
-  const attachmentUpload = Object.create(data);
-  Object.assign(attachmentUpload, { name });
+  const attachmentUpload = Object.create(data, { name: { value: name } });
 
   return attachmentUpload as IAttachmentUpload;
 }

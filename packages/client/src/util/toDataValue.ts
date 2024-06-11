@@ -32,7 +32,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
  * @see DataValue for the expected payloads
  */
 export async function toDataValue(
-  value: any,
+  value: unknown,
   client: MinimalClient,
 ): Promise<DataValue> {
   if (value == null) {

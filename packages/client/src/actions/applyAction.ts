@@ -108,17 +108,12 @@ async function remapActionParams<AD extends ActionDefinition<any, any>>(
     return {};
   }
 
-  const parameterMap: { [parameterName: string]: any } = {};
-  const remappedParams = Object.entries(params).reduce(
-    async (promisedAcc, [key, value]) => {
-      const acc = await promisedAcc;
-      acc[key] = await toDataValue(value, client);
-      return acc;
-    },
-    Promise.resolve(parameterMap),
-  );
+  const parameterMap: { [parameterName: string]: unknown } = {};
+  for (const [key, value] of Object.entries(params)) {
+    parameterMap[key] = await toDataValue(value, client);
+  }
 
-  return remappedParams;
+  return parameterMap;
 }
 
 async function remapBatchActionParams<
