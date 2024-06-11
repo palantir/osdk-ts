@@ -27,7 +27,8 @@ export type AggregateOpts<
   Q extends ObjectOrInterfaceDefinition,
   KK extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > = {
-  $select: OrderedAggregationClause<Q, KK>;
+  $select: UnorderedAggregationClause<Q, KK>;
+  // | OrderedAggregationClause<Q, KK>;
   $where?: WhereClause<Q>;
   $groupBy?: GroupByClause<Q>;
 };

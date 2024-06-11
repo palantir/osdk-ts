@@ -30,32 +30,24 @@ type AGG_FOR_TYPE<T> = T extends string ? StringAggregateOption
   : T extends number ? NumericAggregateOption
   : never;
 
-type totalCountOption = { $count?: true };
-
 export type UnorderedAggregationClause<
   Q extends ObjectOrInterfaceDefinition,
   K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > =
   & {
-    [P in K]?: Q["properties"][P]["type"] extends "string"
-      ? StringAggregateOption | StringAggregateOption[]
-      : Q["properties"][P]["type"] extends
-        "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
-        ? NumericAggregateOption | NumericAggregateOption[]
-      : never;
+    [
+      KK in K as `${KK & string}:${AGG_FOR_TYPE<
+        PropertyValueWireToClient[Q["properties"][KK]["type"]]
+      >}`
+    ]?: "unordered";
   }
-  & totalCountOption;
+  & {
+    "$count"?: "unordered";
+  };
 
 export type OrderedAggregationClause<
   Q extends ObjectOrInterfaceDefinition,
   K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
 > = {
-  [
-    KK in K as `${KK & string}:${AGG_FOR_TYPE<
-      PropertyValueWireToClient[Q["properties"][KK]["type"]]
-    >}`
-  ]?:
-    | "unordered"
-    | "asc"
-    | "desc";
+  [KK in keyof UnorderedAggregationClause<Q, K>]?: "unordered" | "asc" | "desc";
 };

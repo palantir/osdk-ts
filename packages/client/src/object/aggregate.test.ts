@@ -189,10 +189,11 @@ describe("aggregate", () => {
       },
       {
         $select: {
-          text: "approximateDistinct",
-          priority: "avg",
-          id: ["max", "avg"],
-          $count: true,
+          "text:approximateDistinct": "unordered",
+          "priority:avg": "unordered",
+          "id:max": "unordered",
+          "id:avg": "unordered",
+          "$count": "unordered",
         },
       },
     );
@@ -258,8 +259,8 @@ describe("aggregate", () => {
     expectType<
       AggregateOptsThatErrors<TodoDef, {
         $select: {
-          id: "approximateDistinct";
-          $count: true;
+          "id:approximateDistinct": "unordered";
+          "$count": "unordered";
         };
         $groupBy: {
           text: "exact";
@@ -273,8 +274,8 @@ describe("aggregate", () => {
       }>
     >({
       $select: {
-        id: "approximateDistinct",
-        $count: true,
+        "id:approximateDistinct": "unordered",
+        "$count": "unordered",
       },
       $groupBy: {
         text: "exact",
@@ -290,9 +291,9 @@ describe("aggregate", () => {
     expectType<
       AggregateOptsThatErrors<TodoDef, {
         $select: {
-          id: "approximateDistinct";
-          wrongSelectKey: "don't work";
-          $count: true;
+          "id:approximateDistinct": "unordered";
+          "wrongSelectKey": "don't work";
+          "$count": "unordered";
         };
         $groupBy: {
           wrongKey: "don't work";
@@ -310,7 +311,7 @@ describe("aggregate", () => {
         id: "approximateDistinct",
         // @ts-expect-error
         wrongSelectKey: "don't work",
-        $count: true,
+        "$count": "unordered",
       },
       $groupBy: {
         // @ts-expect-error
@@ -328,9 +329,9 @@ describe("aggregate", () => {
     expectTypeOf<
       typeof aggregate<TodoDef, {
         $select: {
-          id: "approximateDistinct";
-          wrongSelectKey: "wrongKey";
-          $count: true;
+          "id:approximateDistinct": "unordered";
+          "wrongSelectKey": "wrong key";
+          "$count": "unordered";
         };
         $groupBy: {
           text: "exact";
@@ -352,10 +353,10 @@ describe("aggregate", () => {
       },
       {
         $select: {
-          id: "approximateDistinct",
+          "id:approximateDistinct": "unordered",
           // @ts-expect-error
-          wrongSelectKey: "wrongKey",
-          $count: true,
+          "wrongSelectKey": "don't work",
+          "$count": "unordered",
         },
         $groupBy: {
           text: "exact",
@@ -456,8 +457,8 @@ describe("aggregate", () => {
       }["objects"]["Todo"]
     > = {
       $select: {
-        locationCity: "approximateDistinct",
-        text: "approximateDistinct",
+        "locationCity:approximateDistinct": "unordered",
+        "text:approximateDistinct": "unordered",
       },
     };
 
