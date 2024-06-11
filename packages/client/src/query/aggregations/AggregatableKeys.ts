@@ -15,6 +15,32 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { PropertyValueWireToClient } from "@osdk/client.api";
+
+type StringAggregateOption = "approximateDistinct";
+type NumericAggregateOption =
+  | "min"
+  | "max"
+  | "sum"
+  | "avg"
+  | "approximateDistinct";
+
+type AGG_FOR_TYPE<T> = string extends T ? StringAggregateOption
+  : number extends T ? NumericAggregateOption
+  : never;
+
+export type ValidAggregationKeys<
+  Q extends ObjectOrInterfaceDefinition,
+> = keyof (
+  & {
+    [
+      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
+        PropertyValueWireToClient[Q["properties"][KK]["type"]]
+      >}`
+    ]?: any;
+  }
+  & { $count?: any }
+);
 
 export type AggregatableKeys<
   Q extends ObjectOrInterfaceDefinition,
