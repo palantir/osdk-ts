@@ -16,24 +16,31 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
-import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
 import type { UnorderedAggregationClause } from "./AggregationsClause.js";
-
-type SubselectKeys<
-  AC extends UnorderedAggregationClause<any>,
-  P extends keyof AC,
-> = AC[P] extends readonly string[] | string ? P : never;
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   AC extends UnorderedAggregationClause<Q>,
 > = {
-  [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
-    readonly string[] | string ? {
-      [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
-        : OsdkObjectPropertyType<Q["properties"][P]>;
-    }
-    : never;
+  [
+    AGG_KEY
+      in keyof AC as (AGG_KEY extends `${infer PREFIX}:${infer _}` ? PREFIX
+        : never)
+  ]: {
+    [
+      AGG_KEY2
+        in keyof AC as (AGG_KEY2 extends
+          `${infer PROP_NAME}:${infer METRIC_NAME}`
+          ? (AGG_KEY extends `${PROP_NAME}:${string}` ? METRIC_NAME : never)
+          : never)
+    ]: AGG_KEY2 extends `${infer PROP_NAME}:${infer METRIC_NAME}`
+      ? (AGG_KEY extends `${PROP_NAME}:${string}` ? (
+          METRIC_NAME extends "approximateDistinct" ? number
+            : (OsdkObjectPropertyType<Q["properties"][PROP_NAME]>)
+        )
+        : never)
+      : never;
+  };
 };
 
 export type AggregationCountResult<

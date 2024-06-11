@@ -36,14 +36,8 @@ export type ValidAggregationKeys<
   & {
     [
       KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
-          PropertyValueWireToClient[Q["properties"][KK]["type"]]
-        >
-        // | "min" // this is supposed to fix something?
-        // | "max"
-        // | "sum"
-        // | "avg"
-        // | "approximateDistinct"
-      }`
+        PropertyValueWireToClient[Q["properties"][KK]["type"]]
+      >}`
     ]?: any;
   }
   & { $count?: any }

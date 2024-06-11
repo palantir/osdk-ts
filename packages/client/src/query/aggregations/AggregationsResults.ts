@@ -22,11 +22,12 @@ import type {
   AggregationCountResult,
   AggregationResultsWithoutGroups,
 } from "./AggregationResultsWithoutGroups.js";
+import type { ValidAggregationKeys } from "./AggregationsClause.js";
 
 export type AggregationsResults<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
-> = Exclude<keyof AO["$select"], AggregatableKeys<Q> | "$count"> extends never
+> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never
   ? unknown extends AO["$groupBy"] // groupBy is missing
     ?
       & AggregationResultsWithoutGroups<Q, AO["$select"]>
@@ -43,5 +44,5 @@ export type AggregationsResults<
   >}`
   : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<
     keyof AO["$select"] & string,
-    AggregatableKeys<Q> | "$count"
+    ValidAggregationKeys<Q>
   >}`;
