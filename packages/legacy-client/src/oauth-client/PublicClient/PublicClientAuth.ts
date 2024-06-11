@@ -142,10 +142,11 @@ export class PublicClientAuth implements Auth {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(
-          "Failed to get OAuth2 token using PCKE, removing PCKE and starting a new auth flow",
+          "Failed to get OAuth2 token using PCKE, removing PCKE",
           e,
         );
         localStorage.removeItem(this.palantirPcke);
+        throw e;
       }
     }
 
