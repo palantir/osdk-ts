@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
-import type { DataValue } from "@osdk/internal.foundry";
-import { isAttachment } from "../object/Attachment.js";
+import { type DataValue, Ontologies } from "@osdk/internal.foundry";
+import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import {
+  Attachment,
+  isAttachment,
+  isAttachmentUpload,
+} from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -25,7 +31,10 @@ import { isWireObjectSet } from "./WireObjectSet.js";
  *
  * @see DataValue for the expected payloads
  */
-export function toDataValue(value: any): DataValue {
+export async function toDataValue(
+  value: unknown,
+  client: MinimalClient,
+): Promise<DataValue> {
   if (value == null) {
     // typeof null is 'object' so do this first
     return value;
@@ -33,7 +42,11 @@ export function toDataValue(value: any): DataValue {
 
   // arrays and sets are both sent over the wire as arrays
   if (Array.isArray(value) || value instanceof Set) {
-    return Array.from(value, toDataValue);
+    const promiseArray = Array.from(
+      value,
+      async (innerValue) => await toDataValue(innerValue, client),
+    );
+    return Promise.all(promiseArray);
   }
 
   // attachments just send the rid directly
@@ -41,9 +54,25 @@ export function toDataValue(value: any): DataValue {
     return value.rid;
   }
 
+  // For uploads, we need to upload ourselves first to get the RID of the attachment
+  if (isAttachmentUpload(value)) {
+    const attachment = await Ontologies.Attachments.uploadAttachment(
+      client,
+      value,
+      {
+        filename: value.name,
+      },
+      {
+        "Content-Length": value.size.toString(),
+        "Content-Type": value.type,
+      },
+    );
+    return await toDataValue(new Attachment(attachment.rid), client);
+  }
+
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
-    return toDataValue(value.__primaryKey);
+    return await toDataValue(value.__primaryKey, client);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
@@ -60,10 +89,14 @@ export function toDataValue(value: any): DataValue {
 
   // struct
   if (typeof value === "object") {
-    return Object.entries(value).reduce((acc, [key, structValue]) => {
-      acc[key] = toDataValue(structValue);
-      return acc;
-    }, {} as { [key: string]: DataValue });
+    return Object.entries(value).reduce(
+      async (promisedAcc, [key, structValue]) => {
+        const acc = await promisedAcc;
+        acc[key] = await toDataValue(structValue, client);
+        return acc;
+      },
+      Promise.resolve({} as { [key: string]: DataValue }),
+    );
   }
 
   // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp

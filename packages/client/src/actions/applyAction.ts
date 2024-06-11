@@ -22,8 +22,9 @@ import type {
   OsdkActionParameters,
 } from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
+import { Attachment, isAttachmentUpload } from "../object/Attachment.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
@@ -51,7 +52,9 @@ export async function applyAction<
       client.ontologyRid,
       action.apiName,
       {
-        requests: parameters ? remapBatchActionParams(parameters) : [],
+        requests: parameters
+          ? await remapBatchActionParams(parameters, client)
+          : [],
         options: {
           returnEdits: options?.$returnEdits ? "ALL" : "NONE",
         },
@@ -67,14 +70,18 @@ export async function applyAction<
       client.ontologyRid,
       action.apiName,
       {
-        parameters: remapActionParams(
+        parameters: await remapActionParams(
           parameters as OsdkActionParameters<AD["parameters"]>,
+          client,
         ),
         options: {
           mode: (options as ApplyActionOptions)?.$validateOnly
             ? "VALIDATE_ONLY"
             : "VALIDATE_AND_EXECUTE",
-          returnEdits: options?.$returnEdits ? "ALL" : "NONE",
+          returnEdits: options
+              ?.$returnEdits
+            ? "ALL"
+            : "NONE",
         },
       },
     );
@@ -93,31 +100,30 @@ export async function applyAction<
   }
 }
 
-function remapActionParams<AD extends ActionDefinition<any, any>>(
+async function remapActionParams<AD extends ActionDefinition<any, any>>(
   params: OsdkActionParameters<AD["parameters"]> | undefined,
-): Record<string, DataValue> {
+  client: MinimalClient,
+): Promise<Record<string, DataValue>> {
   if (params == null) {
     return {};
   }
 
-  const parameterMap: { [parameterName: string]: any } = {};
-  const remappedParams = Object.entries(params).reduce((acc, [key, value]) => {
-    acc[key] = toDataValue(value);
-    return acc;
-  }, parameterMap);
+  const parameterMap: { [parameterName: string]: unknown } = {};
+  for (const [key, value] of Object.entries(params)) {
+    parameterMap[key] = await toDataValue(value, client);
+  }
 
-  return remappedParams;
+  return parameterMap;
 }
 
-function remapBatchActionParams<
+async function remapBatchActionParams<
   AD extends ActionDefinition<any, any>,
->(params: OsdkActionParameters<AD["parameters"]>[]) {
-  const remappedParams: { parameters: { [parameterName: string]: any } }[] =
-    params.map(
-      param => {
-        return { parameters: remapActionParams<AD>(param) };
-      },
-    );
+>(params: OsdkActionParameters<AD["parameters"]>[], client: MinimalClient) {
+  const remappedParams = await Promise.all(params.map(
+    async param => {
+      return { parameters: await remapActionParams<AD>(param, client) };
+    },
+  ));
 
   return remappedParams;
 }

@@ -19,7 +19,11 @@ import type {
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "@osdk/client.api";
+import type {
+  ActionSignatureFromDef,
+  Attachment,
+  AttachmentSignature,
+} from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { ObjectSet } from "./objectSet/ObjectSet.js";
@@ -42,6 +46,8 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends ActionDefinition<any, any, any>>(
     o: CheckVersionBound<Q>,
   ): ActionSignatureFromDef<Q>;
+
+  (o: Attachment): AttachmentSignature;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
