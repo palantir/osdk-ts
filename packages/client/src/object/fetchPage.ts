@@ -93,11 +93,11 @@ async function fetchInterfacePage<
     client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-      augmentedProperties: args.augment ?? {},
+      augmentedProperties: args.$augment ?? {},
       augmentedSharedPropertyTypes: {},
       otherInterfaceTypes: [],
       selectedObjectTypes: [],
-      selectedSharedPropertyTypes: args.select as undefined | string[] ?? [],
+      selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
       where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
     }),
     { preview: true },
@@ -106,7 +106,7 @@ async function fetchInterfacePage<
     client,
     result.data as OntologyObjectV2[], // drop readonly
     interfaceType.apiName,
-    !args.includeRid,
+    !args.$includeRid,
   );
   return result as any;
 }
@@ -195,17 +195,17 @@ function applyFetchArgs<
   args: FetchPageArgs<any, any, any>,
   body: X,
 ): X {
-  if (args?.nextPageToken) {
-    body.pageToken = args.nextPageToken;
+  if (args?.$nextPageToken) {
+    body.pageToken = args.$nextPageToken;
   }
 
-  if (args?.pageSize != null) {
-    body.pageSize = args.pageSize;
+  if (args?.$pageSize != null) {
+    body.pageSize = args.$pageSize;
   }
 
-  if (args?.orderBy != null) {
+  if (args?.$orderBy != null) {
     body.orderBy = {
-      fields: Object.entries(args.orderBy).map(([field, direction]) => ({
+      fields: Object.entries(args.$orderBy).map(([field, direction]) => ({
         field,
         direction,
       })),
@@ -231,8 +231,8 @@ export async function fetchObjectPage<
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
-      select: ((args?.select as string[] | undefined) ?? []), // FIXME?
-      excludeRid: !args?.includeRid,
+      select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
+      excludeRid: !args?.$includeRid,
     }),
   );
 

@@ -15,104 +15,54 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
 } from "@osdk/api";
-import {
-  __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition,
-  wireObjectTypeFullMetadataToSdkObjectTypeDefinition,
-} from "@osdk/generator-converters";
-import { OntologiesV2 } from "@osdk/internal.foundry";
-import type {
-  ListInterfaceTypesResponse,
-  OntologyFullMetadata,
-} from "@osdk/internal.foundry";
-import deepEqual from "fast-deep-equal";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createAsyncClientCache } from "../object/Cache.js";
 import { loadFullObjectMetadata } from "./loadFullObjectMetadata.js";
 import { loadInterfaceDefinition } from "./loadInterfaceDefinition.js";
-import type { OntologyProviderFactory } from "./OntologyProvider.js";
+import {
+  type FetchedObjectTypeDefinition,
+  InterfaceDefinitions,
+  type OntologyProviderFactory,
+} from "./OntologyProvider.js";
 
 export interface OntologyCachingOptions {
-  alwaysRevalidate?: boolean; // defaults to false
 }
 
-const alwaysRevalidateDefault = false;
-
-// SLLLLLLOOOOOOOWWWW
-async function fullOntologyLoad(client: MinimalClient) {
-  return await Promise.all([
-    OntologiesV2.OntologyObjectsV2.listInterfaceTypes(
-      client,
-      client.ontologyRid,
-      { pageSize: 200, preview: true },
-    ),
-    OntologiesV2.OntologiesV2.getOntologyFullMetadata(
-      client,
-      client.ontologyRid,
-    ),
-  ]);
-}
-export const USE_FULL_ONTOLOGY = false;
 export const createStandardOntologyProviderFactory: (
   opts: OntologyCachingOptions,
 ) => OntologyProviderFactory = (client) => {
-  const alwaysRevalidate = client.alwaysRevalidate ?? alwaysRevalidateDefault;
-
   return (client) => {
-    let fullCache:
-      | Promise<[ListInterfaceTypesResponse, OntologyFullMetadata]>
-      | [ListInterfaceTypesResponse, OntologyFullMetadata]
-      | undefined;
-
-    async function initLocalCache(client: MinimalClient, skipCache: boolean) {
-      if (skipCache) {
-        return await fullOntologyLoad(client);
-      }
-
-      if (!fullCache) {
-        fullCache = fullOntologyLoad(client);
-      }
-      return await fullCache;
-    }
-
     async function loadObject(
       client: MinimalClient,
       key: string,
-      skipCache = false,
-    ) {
-      if (USE_FULL_ONTOLOGY) {
-        const fullCacheLocal = await initLocalCache(client, skipCache);
+    ): Promise<FetchedObjectTypeDefinition<any, any> & { rid: string }> {
+      let objectDef = await loadFullObjectMetadata(client, key);
 
-        return {
-          ...wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-            fullCacheLocal[1].objectTypes[key],
-            true,
-          ),
-          implements: fullCacheLocal[0].data.map((i) => i.apiName),
-          rid: fullCacheLocal[1].objectTypes[key].objectType.rid,
-        } as ObjectTypeDefinition<any, any> & { rid: string };
-      } else {
-        return await loadFullObjectMetadata(client, key);
-      }
+      // ensure we have all of the interfaces loaded
+      const interfaceDefs = Object.fromEntries<
+        { def: InterfaceDefinition<any>; handler: undefined }
+      >(
+        (await Promise.all<InterfaceDefinition<any, any>>(
+          objectDef.implements?.map((i) => ret.getInterfaceDefinition(i)) ?? [],
+        )).map(i => [i.apiName, { def: i, handler: undefined }]),
+      );
+
+      const fullObjectDef = {
+        ...objectDef,
+        [InterfaceDefinitions]: interfaceDefs,
+      };
+
+      return fullObjectDef;
     }
 
     async function loadInterface(
       client: MinimalClient,
       key: string,
-      skipCache = false,
     ) {
-      if (USE_FULL_ONTOLOGY) {
-        const fullCacheLocal = await initLocalCache(client, skipCache);
-
-        return __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-          fullCacheLocal[1].interfaceTypes[key],
-          true,
-        );
-      } else {
-        return loadInterfaceDefinition(client, key);
-      }
+      return loadInterfaceDefinition(client, key);
     }
 
     function makeGetter<N extends ObjectOrInterfaceDefinition>(
@@ -126,29 +76,17 @@ export const createStandardOntologyProviderFactory: (
         fn(client, key, false)
       );
       return async (apiName: string) => {
-        const n = alwaysRevalidate
-          ? await fn(client, apiName, true)
-          : await cache.get(client, apiName);
-
-        if (alwaysRevalidate) {
-          const og = cache.getOrUndefined(client, apiName);
-          if (deepEqual(og, n)) {
-            return og!; // ! because we can be sure `n` would throw if it were undefined
-          } else {
-            return cache.set(client, apiName, n);
-          }
-        }
-
-        return n;
+        return await cache.get(client, apiName);
       };
     }
 
-    return {
+    const ret = {
       getObjectDefinition: makeGetter(loadObject),
       getInterfaceDefinition: makeGetter(loadInterface),
-      maybeSeed(definition) {
+      maybeSeed(definition: any) {
         // not using this for now
       },
     };
+    return ret;
   };
 };

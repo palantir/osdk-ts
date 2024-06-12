@@ -22,6 +22,8 @@ import type {
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
+  Attachment,
+  AttachmentSignature,
   QuerySignatureFromDef,
 } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
@@ -50,6 +52,7 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends QueryDefinition<any, any>>(
     o: CheckVersionBound<Q>,
   ): QuerySignatureFromDef<Q>;
+  (o: Attachment): AttachmentSignature;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.

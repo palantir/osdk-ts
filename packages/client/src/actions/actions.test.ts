@@ -17,6 +17,8 @@
 import type {
   ActionEditResponse,
   ActionValidationResponse,
+  Attachment as IAttachment,
+  AttachmentUpload,
 } from "@osdk/client.api";
 import {
   actionTakesAttachment,
@@ -24,7 +26,7 @@ import {
   moveOffice,
   Ontology as MockOntology,
 } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
+import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
   beforeAll,
@@ -35,7 +37,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment } from "../object/Attachment.js";
+import { Attachment, createAttachmentUpload } from "../object/Attachment.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 describe("actions", () => {
@@ -59,7 +61,7 @@ describe("actions", () => {
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
-    }, { returnEdits: true });
+    }, { $returnEdits: true });
 
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
     expect(result).toMatchInlineSnapshot(`
@@ -88,6 +90,13 @@ describe("actions", () => {
 
     expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
     expect(undefinedResult).toBeUndefined();
+
+    const clientCreateOffice = client(createOffice);
+    expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
+      officeId: "NYC",
+      address: "123 Main Street",
+      capacity: 100,
+    }], { $returnEdits: true });
   });
 
   it("returns validation directly on validateOnly mode", async () => {
@@ -96,7 +105,7 @@ describe("actions", () => {
       newAddress: "456 Pike Place",
       newCapacity: 40,
     }, {
-      validateOnly: true,
+      $validateOnly: true,
     });
     expectTypeOf<typeof result>().toEqualTypeOf<ActionValidationResponse>();
 
@@ -116,7 +125,7 @@ describe("actions", () => {
         newAddress: "456 Pike Place",
         newCapacity: 40,
       }, {
-        returnEdits: true,
+        $returnEdits: true,
       });
       expect.fail("Should not reach here");
     } catch (e) {
@@ -136,7 +145,11 @@ describe("actions", () => {
       actionTakesAttachment,
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<{ attachment: Attachment }>();
+      .toEqualTypeOf<
+        { attachment: IAttachment | AttachmentUpload } | {
+          attachment: IAttachment | AttachmentUpload;
+        }[]
+      >();
 
     const attachment = new Attachment("attachment.rid");
     const result = await client(actionTakesAttachment)({
@@ -145,5 +158,63 @@ describe("actions", () => {
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
+  });
+
+  it("Accepts attachment uploads", async () => {
+    const clientBoundActionTakesAttachment = client(
+      actionTakesAttachment,
+    );
+    expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
+      .toEqualTypeOf<
+        { attachment: IAttachment | AttachmentUpload } | {
+          attachment: IAttachment | AttachmentUpload;
+        }[]
+      >();
+    const blob =
+      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+
+    const attachment = createAttachmentUpload(blob, "file1.txt");
+    const result = await client(actionTakesAttachment)({
+      attachment,
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+  it("conditionally returns edits in batch mode", async () => {
+    const result = await client(moveOffice)([
+      {
+        officeId: "SEA",
+        newAddress: "456 Good Place",
+        newCapacity: 40,
+      },
+      {
+        officeId: "NYC",
+        newAddress: "123 Main Street",
+        newCapacity: 80,
+      },
+    ], { $returnEdits: true });
+
+    expect(result).toMatchInlineSnapshot(` 
+    {
+  "addedLinksCount": 0,
+  "addedObjectCount": 0,
+  "deletedLinksCount": 0,
+  "deletedObjectsCount": 0,
+  "edits": [
+    {
+      "objectType": "Office",
+      "primaryKey": "SEA",
+      "type": "modifyObject",
+    },
+    {
+      "objectType": "Office",
+      "primaryKey": "NYC",
+      "type": "modifyObject",
+    },
+  ],
+  "modifiedObjectsCount": 2,
+  "type": "edits",
+}`);
   });
 });

@@ -1,5 +1,11 @@
 import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client.api';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee, Venture } from '../objects.js';
 
@@ -18,14 +24,24 @@ export type ActionDef$assignEmployee1$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type assignEmployee1$Params = NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>;
+export type assignEmployee1$Params =
+  | NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>[];
 
 // Represents a fqn of the action
 export interface assignEmployee1 {
   /**
    * Assigns an employee to a venture
    */
-  <OP extends ApplyActionOptions>(args: assignEmployee1$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+  <
+    P extends assignEmployee1$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Represents the definition of the action

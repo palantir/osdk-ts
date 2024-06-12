@@ -23,14 +23,18 @@ import type {
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
+  AttachmentSignature,
   QuerySignatureFromDef,
 } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
 import type { Client } from "./Client.js";
+import { createAttachmentReader } from "./createAttachmentReader.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import type { Attachment } from "./object/Attachment.js";
+import { isAttachment } from "./object/Attachment.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
@@ -56,13 +60,18 @@ export function createClientInternal(
     T extends
       | ObjectOrInterfaceDefinition
       | ActionDefinition<any, any, any>
-      | QueryDefinition<any, any>,
+      | QueryDefinition<any, any>
+      | Attachment,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
     : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+    : T extends Attachment ? AttachmentSignature
     : never
   {
+    if (isAttachment(o)) {
+      return createAttachmentReader(clientCtx, o) as any;
+    }
     if (o.type === "object" || o.type === "interface") {
       clientCtx.ontologyProvider.maybeSeed(o);
       return objectSetFactory(o, clientCtx) as any;

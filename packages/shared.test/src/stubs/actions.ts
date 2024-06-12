@@ -152,6 +152,14 @@ export const actionRequestWithAttachment: ApplyActionRequestV2 = {
   parameters: { attachment: "attachment.rid" },
 };
 
+export const actionRequestWithAttachmentUpload: ApplyActionRequestV2 = {
+  options: { mode: "VALIDATE_AND_EXECUTE", returnEdits: "NONE" },
+  parameters: {
+    attachment:
+      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+  },
+};
+
 export const actionRequestMoveOfficeBatch: BatchApplyActionRequestV2 = {
   requests: [{
     parameters: {
@@ -358,5 +366,6 @@ export const actionResponseMap: {
   },
   actionTakesAttachment: {
     [stableStringify(actionRequestWithAttachment)]: actionResponse,
+    [stableStringify(actionRequestWithAttachmentUpload)]: actionResponse,
   },
 };

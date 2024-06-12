@@ -34,7 +34,7 @@ export async function fetchSingle<
 ): Promise<
   Osdk<
     Q,
-    A["includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+    A["$includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
       : SelectArgToKeys<Q, A>
   >
 > {
@@ -68,7 +68,7 @@ export async function fetchSingleWithErrors<
   Result<
     Osdk<
       Q,
-      A["includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
+      A["$includeRid"] extends true ? SelectArgToKeys<Q, A> | "$rid"
         : SelectArgToKeys<Q, A>
     >
   >

@@ -103,7 +103,7 @@ describe("ObjectSet", () => {
   it("orders objects in ascending order without a filter, and returns all results", async () => {
     const { data: employees } = await client(MockOntology.objects.Employee)
       .fetchPage({
-        orderBy: { "employeeId": "asc" },
+        $orderBy: { "employeeId": "asc" },
       });
 
     expect(employees).toMatchInlineSnapshot(`
@@ -173,7 +173,7 @@ describe("ObjectSet", () => {
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
     const employee = await client(MockOntology.objects.Employee).fetchOne(
       stubData.employee1.employeeId,
-      { select: ["fullName"] },
+      { $select: ["fullName"] },
     );
     expectTypeOf<typeof employee>().toEqualTypeOf<
       Osdk<Employee, "fullName">
@@ -185,7 +185,7 @@ describe("ObjectSet", () => {
     const employeeResult = await client(MockOntology.objects.Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
-        { select: ["fullName"] },
+        { $select: ["fullName"] },
       );
     expectTypeOf<typeof employeeResult>().toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>

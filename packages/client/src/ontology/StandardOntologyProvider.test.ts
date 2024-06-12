@@ -21,7 +21,6 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import { fetchPage } from "../object/fetchPage.js";
 import {
   createStandardOntologyProviderFactory,
-  USE_FULL_ONTOLOGY,
 } from "./StandardOntologyProvider.js";
 
 describe(createStandardOntologyProviderFactory, () => {
@@ -37,9 +36,6 @@ describe(createStandardOntologyProviderFactory, () => {
       MockOntology.metadata,
       "https://stack.palantir.com",
       async () => "myAccessToken",
-      {
-        alwaysRevalidate: false,
-      },
     );
 
     let loads: string[] = [];
@@ -50,19 +46,11 @@ describe(createStandardOntologyProviderFactory, () => {
     await fetchPage(client, MockOntology.objects.Employee, {});
 
     // first load should lookup employee and its link types
-    expect(loads).toEqual(
-      USE_FULL_ONTOLOGY
-        ? [
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
-        ]
-        : [
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata",
-          "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
-        ],
-    );
+    expect(loads).toEqual([
+      "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
+      "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata",
+      "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
+    ]);
 
     loads = [];
 
@@ -71,44 +59,5 @@ describe(createStandardOntologyProviderFactory, () => {
     expect(loads).toEqual([
       "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
     ]);
-  });
-
-  it("properly works when alwaysRevalidate: true", async () => {
-    const client = createMinimalClient(
-      MockOntology.metadata,
-      "https://stack.palantir.com",
-      async () => "myAccessToken",
-      {
-        alwaysRevalidate: true,
-      },
-    );
-
-    let loads: string[] = [];
-    apiServer.events.on("request:start", ({ request }) => {
-      loads.push(new URL(request.url).pathname);
-    });
-
-    const loadSequenceWithoutCaching = USE_FULL_ONTOLOGY
-      ? [
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
-        // annoyingly happens once for interface load and once for object type load, but its temporary
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/fullMetadata",
-      ]
-      : [
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectTypes/Employee/fullMetadata",
-        "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/interfaceTypes/FooInterface",
-      ];
-
-    await fetchPage(client, MockOntology.objects.Employee, {});
-    expect(loads).toEqual(loadSequenceWithoutCaching);
-
-    // we expect it to reload ontology info
-    loads = [];
-    await fetchPage(client, MockOntology.objects.Employee, {});
-    expect(loads).toEqual(loadSequenceWithoutCaching);
   });
 });

@@ -63,18 +63,18 @@ export async function aggregate<
   req: AggregateOptsThatErrors<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
-    aggregation: modernToLegacyAggregationClause<AO["select"]>(
-      req.select,
+    aggregation: modernToLegacyAggregationClause<AO["$select"]>(
+      req.$select,
     ),
     groupBy: [],
     where: undefined,
   };
 
-  if (req.groupBy) {
-    body.groupBy = modernToLegacyGroupByClause(req.groupBy);
+  if (req.$groupBy) {
+    body.groupBy = modernToLegacyGroupByClause(req.$groupBy);
   }
-  if (req.where) {
-    body.where = modernToLegacyWhereClause(req.where);
+  if (req.$where) {
+    body.where = modernToLegacyWhereClause(req.$where);
   }
   const result = await OntologiesV2.OntologyObjectSets.aggregateObjectSetV2(
     addUserAgent(clientCtx, objectType),
@@ -86,7 +86,7 @@ export async function aggregate<
     },
   );
 
-  if (!req.groupBy) {
+  if (!req.$groupBy) {
     invariant(
       result.data.length === 1,
       "no group by clause should mean only one data result",
@@ -94,13 +94,13 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult<AO["select"]>(
+      ...legacyToModernSingleAggregationResult<AO["$select"]>(
         result.data[0],
       ),
     } as any;
   }
 
-  const ret: AggregationResultsWithGroups<Q, AO["select"], any> = result.data
+  const ret: AggregationResultsWithGroups<Q, AO["$select"], any> = result.data
     .map((entry) => {
       return {
         $group: entry.group as any,

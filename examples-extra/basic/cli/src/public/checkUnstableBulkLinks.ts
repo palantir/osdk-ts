@@ -37,7 +37,7 @@ export async function checkUnstableBulkLinks() {
   }
 
   const { data: employees } = await client(Employee).fetchPage({
-    pageSize: 100,
+    $pageSize: 100,
   });
 
   // test many to many

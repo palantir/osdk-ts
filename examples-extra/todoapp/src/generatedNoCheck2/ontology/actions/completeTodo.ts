@@ -1,5 +1,11 @@
 import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
-import type { ActionReturnTypeForOptions, ApplyActionOptions, NOOP, OsdkActionParameters } from '@osdk/client.api';
+import type {
+  ActionReturnTypeForOptions,
+  ApplyActionOptions,
+  ApplyBatchActionOptions,
+  NOOP,
+  OsdkActionParameters,
+} from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { Todo } from '../objects';
 
@@ -19,14 +25,24 @@ export type ActionDef$completeTodo$Params = {
 };
 
 // Represents the runtime arguments for the action
-export type completeTodo$Params = NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>;
+export type completeTodo$Params =
+  | NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>
+  | NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>[];
 
 // Represents a fqn of the action
 export interface completeTodo {
   /**
    * Completes Todo
    */
-  <OP extends ApplyActionOptions>(args: completeTodo$Params, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+  <
+    P extends completeTodo$Params,
+    OP extends P extends NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>[]
+      ? ApplyBatchActionOptions
+      : ApplyActionOptions,
+  >(
+    args: P,
+    options?: OP,
+  ): Promise<ActionReturnTypeForOptions<OP>>;
 }
 
 // Represents the definition of the action

@@ -32,7 +32,7 @@ export async function fetchEmployeePageByAdUsernameAndLimit(
       { employeeNumber: { $gte: 5 } },
     ],
   }).fetchPage({
-    select: ["adUsername", "employeeNumber", "jobProfile"],
+    $select: ["adUsername", "employeeNumber", "jobProfile"],
   });
 
   console.log(`fetchEmployeePageByAdUsernameAndLimit('${adUsername}')`);

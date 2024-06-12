@@ -14,229 +14,16 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { getWireObjectSet } from "../objectSet/createObjectSet.js";
-import type { OsdkObject } from "../OsdkObject.js";
+import {
+  type FetchedObjectTypeDefinition,
+  InterfaceDefinitions,
+} from "../ontology/OntologyProvider.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { WhereClause } from "../query/WhereClause.js";
-import { Attachment } from "./Attachment.js";
-import { createAsyncClientCache, createClientCache } from "./Cache.js";
-import type { SelectArg } from "./FetchPageArgs.js";
-import { fetchSingle, fetchSingleWithErrors } from "./fetchSingle.js";
-
-const OriginClient = Symbol();
-const UnderlyingObject = Symbol();
-const InterfaceDefinitions = Symbol();
-
-class LinkFetcherProxyHandler<Q extends AugmentedObjectTypeDefinition<any, any>>
-  implements ProxyHandler<any>
-{
-  constructor(
-    private readonly objDef: Q,
-    private readonly primaryKey: any,
-    private readonly client: MinimalClient,
-  ) {}
-
-  get(_target: any, p: string | symbol) {
-    const linkDef = this.objDef.links[p as string];
-    if (linkDef == null) {
-      return;
-    }
-
-    const objectSet = this.client.objectSetFactory(this.objDef, this.client)
-      .where({
-        [this.objDef.primaryKeyApiName]: this.primaryKey,
-      } as WhereClause<Q>).pivotTo(p as string);
-
-    if (!linkDef.multiplicity) {
-      return {
-        fetchOne: <A extends SelectArg<any>>(options?: A) =>
-          fetchSingle(
-            this.client,
-            this.objDef,
-            options ?? {},
-            getWireObjectSet(objectSet),
-          ),
-        fetchOneWithErrors: <A extends SelectArg<any>>(options?: A) =>
-          fetchSingleWithErrors(
-            this.client,
-            this.objDef,
-            options ?? {},
-            getWireObjectSet(objectSet),
-          ),
-      };
-    } else {
-      return objectSet;
-    }
-  }
-
-  ownKeys(): ArrayLike<string | symbol> {
-    return Object.keys(this.objDef.links);
-  }
-
-  getOwnPropertyDescriptor(
-    target: any,
-    p: string | symbol,
-  ): PropertyDescriptor | undefined {
-    return {
-      enumerable: true,
-      configurable: true,
-      get: () => {
-        return this.get(target, p);
-      },
-    };
-  }
-}
-
-function createPrototype<Q extends AugmentedObjectTypeDefinition<any, any>>(
-  objDef: Q,
-  client: MinimalClient,
-) {
-  if (process.env.NODE_ENV !== "production") {
-    invariant(objDef.type === "object", "Expected object definition");
-  }
-
-  const sharedPropertyDefs = {
-    $as: { value: $as },
-  };
-  // we can get away with a single interface proto
-  const interfaceProto = Object.defineProperties({}, sharedPropertyDefs);
-
-  const objectProto = Object.defineProperties({}, {
-    $link: {
-      get: function() {
-        return new Proxy(
-          {},
-          new LinkFetcherProxyHandler(objDef, this["$primaryKey"], client),
-        );
-      },
-    },
-    ...sharedPropertyDefs,
-  });
-
-  // We use the exact same logic for both the interface rep and the underlying rep
-  function $as<NEWQ extends ObjectOrInterfaceDefinition<any>>(
-    this: OsdkObject<any> & { [UnderlyingObject]: any },
-    newDef: NEWQ | string,
-  ) {
-    if (typeof newDef === "string") {
-      if (newDef === objDef.apiName) {
-        return this[UnderlyingObject];
-      }
-
-      // this is sufficient to determine if we implement the interface
-      if (objDef.interfaceMap?.[newDef] == null) {
-        throw new Error(`Object does not implement interface '${newDef}'.`);
-      }
-
-      // We dont need this currently but we may need it when we have interface links so
-      // we will keep it for now
-      const def = objDef[InterfaceDefinitions][newDef];
-      if (!def) {
-        throw new Error(`Object does not implement interface '${newDef}'.`);
-      }
-      newDef = def as NEWQ;
-    } else if (newDef.apiName === objDef.apiName) {
-      return this[UnderlyingObject];
-    }
-
-    if (newDef.type !== "interface" && newDef.apiName !== this.$apiName) {
-      throw new Error(
-        `'${newDef.apiName}' is not an interface of '${this.$objectType}'.`,
-      );
-    }
-
-    const underlying = this[UnderlyingObject];
-
-    const common = { enumerable: true, configurable: true };
-
-    // if we use a proxy here instead we can probably pull off interfaces reflecting the underlying object even if its updated
-
-    // we are defining every time because it creates properties in the exact same order
-    // keeping the meta classes down to one per interface/objecttype pair
-    return Object.create(interfaceProto, {
-      $apiName: {
-        value: newDef.apiName,
-        ...common,
-      },
-      $objectType: {
-        value: objDef.apiName,
-        ...common,
-      },
-      $primaryKey: {
-        value: this["$primaryKey"],
-        ...common,
-      },
-      ...Object.fromEntries(
-        Object.keys(newDef.properties).map(p => {
-          const value =
-            (underlying as any)[objDef.interfaceMap![newDef.apiName][p]];
-          return [p, {
-            value,
-            enumerable: value !== undefined,
-          }];
-        }),
-      ),
-      [UnderlyingObject]: {
-        value: underlying,
-      },
-    });
-  }
-
-  return objectProto;
-}
-
-// preprocess the ontology definition to more quickly apply object conversions when needed
-function createConverter<Q extends ObjectTypeDefinition<any, any>>(
-  objDef: Q,
-) {
-  const steps: Array<(o: Record<string, any>) => void> = [];
-
-  for (
-    const [key, value] of Object.entries(objDef.properties)
-  ) {
-    // attachments need a wrapper to provide functionality and to identify them at serialization time
-    if (value.type === "attachment") {
-      steps.push((o) => {
-        if (o[key] != null) {
-          if (Array.isArray(o[key])) {
-            o[key] = o[key].map((a: any) => new Attachment(a.rid));
-          } else {
-            o[key] = new Attachment(o[key].rid);
-          }
-        }
-      });
-    }
-  }
-
-  return steps.length > 0
-    ? (o: Record<string, any>) => {
-      for (const step of steps) {
-        step(o);
-      }
-    }
-    : undefined;
-}
-
-const protoConverterCache = createClientCache(
-  (
-    client: MinimalClient,
-    objectDef: AugmentedObjectTypeDefinition<any, any>,
-  ): [{}, ((o: Record<string, any>) => void) | undefined] => {
-    const proto = createPrototype(objectDef, client);
-    const converter = createConverter(objectDef);
-    return [proto, converter];
-  },
-);
-
-const isAfterFeb2024OrNewApis = false;
+import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the
@@ -262,133 +49,84 @@ export async function convertWireToOsdkObjects(
 ): Promise<Osdk<ObjectOrInterfaceDefinition>[]> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
-  if (forceRemoveRid) {
-    for (const obj of objects) {
-      delete obj.__rid;
-    }
-  }
-  fixObjectPropertiesInline(objects);
+  fixObjectPropertiesInline(objects, forceRemoveRid);
 
-  /*
-    We need to create a local cache for the life of this function.
-    Because the user may have their global cache set to "alwaysRevalidate",
-    we want to be able to avoid making N calls to load object/interface information.
-
-    Our local cache will delegate to the global one but since it also caches,
-    we can short circuit the `alwaysRevalidate` logic.
-
-    This tradeoff is slightly less accurate than `alwaysRevalidate` but is close
-    enough given we got back objects at T-3 and if the types are inconsistent for
-    T-2 and T-1, then they are guarenteed wrong for T-3. No matter what
-    the user will get a failure case here. So we avoid the extra work.
-   */
-  const localObjectCache = createLocalObjectCacheAndInitiatePreseed(
-    objects,
-    client,
-  );
-
-  for (const obj of objects) {
-    const objectDef = await localObjectCache.get(
-      client,
-      obj.$apiName,
+  const ret = [];
+  for (const rawObj of objects) {
+    const objectDef = await client.ontologyProvider.getObjectDefinition(
+      rawObj.$apiName,
     );
-    if (objectDef == null) {
-      throw new Error(
-        `Failed to find ontology definition for '${obj.$apiName}'`,
-      );
-    }
+    invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
     if (interfaceApiName !== undefined) {
       // API returns interface spt names but we cache by real values
-      if (objectDef.interfaceMap?.[interfaceApiName] == null) {
-        const warning =
-          "Interfaces are only supported 'as views' but your metadata object is missing the correct information. This suggests your interfaces have not been migrated to the newer version yet and you cannot use this version of the SDK.";
-        if (client.logger) {
-          client.logger.warn(warning);
-        } else {
-          // eslint-disable-next-line no-console
-          console.error(`WARNING! ${warning}`);
-        }
-        throw new Error(warning);
-      }
-
-      for (
-        const [sptProp, regularProp] of Object.entries(
-          objectDef.interfaceMap[interfaceApiName],
-        )
-      ) {
-        if (sptProp in obj) {
-          const value = obj[sptProp];
-          delete obj[sptProp];
-          if (value !== undefined) {
-            obj[regularProp] = value;
-          }
-        }
-      }
+      reframeAsObjectInPlace(objectDef, interfaceApiName, client, rawObj);
     }
 
-    internalConvertObjectInPlace(objectDef, client, obj);
+    const osdkObject: any = createOsdkObject(client, objectDef, rawObj);
+    ret.push(interfaceApiName ? osdkObject.$as(interfaceApiName) : osdkObject);
   }
-
-  const ret = interfaceApiName
-    ? objects.map(o => o.$as(interfaceApiName))
-    // we did the conversion so we can cast
-    : objects as unknown as Osdk<ObjectOrInterfaceDefinition>[];
 
   client.logger?.debug(`END convertWireToOsdkObjects()`);
   return ret;
 }
 
-function createLocalObjectCacheAndInitiatePreseed(
-  objects: OntologyObjectV2[],
+/**
+ * Takes a raw object from the wire (contextually as an interface) and
+ * updates the fields to reflect the underlying objectDef instead
+ * @param objectDef
+ * @param interfaceApiName
+ * @param client
+ * @param rawObj
+ */
+function reframeAsObjectInPlace(
+  objectDef: FetchedObjectTypeDefinition<any, unknown>,
+  interfaceApiName: string,
   client: MinimalClient,
+  rawObj: OntologyObjectV2,
 ) {
-  // local cache delegates to the global one
-  const localInterfaceCache = createAsyncClientCache((
-    client,
-    apiName: string,
-  ) => client.ontologyProvider.getInterfaceDefinition(apiName));
-
-  const localObjectCache = createAsyncClientCache(
-    async (client, apiName: string) => {
-      // first delegate to the global cache
-      const objectDef = await client.ontologyProvider.getObjectDefinition(
-        apiName,
-      ) as unknown as AugmentedObjectTypeDefinition<any>;
-
-      // ensure we have all of the interfaces loaded
-      const interfaceDefs = Object.fromEntries((await Promise.all(
-        objectDef.implements?.map(i => localInterfaceCache.get(client, i))
-          ?? [],
-      )).map(i => [i.apiName, i]));
-
-      // save interfaces for later if not the first time
-      if (objectDef[InterfaceDefinitions] == null) {
-        Object.defineProperty(objectDef, InterfaceDefinitions, {
-          value: interfaceDefs,
-          enumerable: false,
-          configurable: false,
-          writable: false,
-        });
-      }
-      return objectDef;
-    },
-  );
-
-  const uniqueApiNames = new Set<string>();
-  for (const { $apiName } of objects) {
-    if (uniqueApiNames.has($apiName)) continue;
-    uniqueApiNames.add($apiName);
-    // preseed the object cache without blocking
-    // N.B localObjectCache will preseed the interface cache
-    localObjectCache.get(client, $apiName);
+  if (objectDef.interfaceMap?.[interfaceApiName] == null) {
+    const warning =
+      "Interfaces are only supported 'as views' but your metadata object is missing the correct information. This suggests your interfaces have not been migrated to the newer version yet and you cannot use this version of the SDK.";
+    if (client.logger) {
+      client.logger.warn(warning);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`WARNING! ${warning}`);
+    }
+    throw new Error(warning);
   }
 
-  return localObjectCache;
+  const newProps: Record<string, any> = {};
+  for (
+    const [sptProp, regularProp] of Object.entries(
+      objectDef.interfaceMap[interfaceApiName],
+    )
+  ) {
+    if (sptProp in rawObj) {
+      const value = rawObj[sptProp];
+      delete rawObj[sptProp];
+      if (value !== undefined) {
+        newProps[regularProp] = value;
+      }
+    }
+  }
+  Object.assign(rawObj, newProps);
+
+  if (!(objectDef.primaryKeyApiName in rawObj)) {
+    rawObj[objectDef.primaryKeyApiName] = rawObj.$primaryKey;
+  }
 }
 
-function fixObjectPropertiesInline(objs: OntologyObjectV2[]) {
+function fixObjectPropertiesInline(
+  objs: OntologyObjectV2[],
+  forceRemoveRid: boolean,
+) {
   for (const obj of objs) {
+    if (forceRemoveRid) {
+      delete obj.__rid;
+    }
+
     if (obj.__rid) {
       obj.$rid = obj.__rid;
       delete obj.__rid;
@@ -404,49 +142,8 @@ function fixObjectPropertiesInline(objs: OntologyObjectV2[]) {
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey = obj.__primaryKey;
 
-    // After Feb 2024 (unless we have new apis):
-    if (isAfterFeb2024OrNewApis) {
-      delete obj.__apiName;
-      delete obj.__primaryKey;
-    } else {
-      // Hide these from things like `console.log` so that people
-      // don't think to use them.
-      Object.defineProperties(obj, {
-        "__apiName": {
-          enumerable: false,
-        },
-        "__primaryKey": {
-          enumerable: false,
-        },
-      });
-    }
-  }
-}
-
-interface AugmentedObjectTypeDefinition<K extends string, N = unknown>
-  extends ObjectTypeDefinition<K, N>
-{
-  [InterfaceDefinitions]: { [key: string]: InterfaceDefinition<any> };
-}
-
-function internalConvertObjectInPlace(
-  objectDef: AugmentedObjectTypeDefinition<any, any>,
-  client: MinimalClient,
-  obj: OntologyObjectV2,
-) {
-  const [proto, converter] = protoConverterCache.get(
-    client,
-    objectDef as AugmentedObjectTypeDefinition<any, any>,
-  );
-
-  Object.setPrototypeOf(obj, proto);
-
-  Object.defineProperties(obj, {
-    [OriginClient]: { value: client },
-    [UnderlyingObject]: { value: obj },
-  });
-
-  if (converter) {
-    converter(obj);
+    // we don't want people to use these
+    delete obj.__apiName;
+    delete obj.__primaryKey;
   }
 }
