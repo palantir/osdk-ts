@@ -23,8 +23,9 @@ import type {
 import type { GroupByClause } from "./GroupByClause.js";
 
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
-  $select: UnorderedAggregationClause<Q>;
-  // | OrderedAggregationClause<Q>;
+  $select:
+    | UnorderedAggregationClause<Q>
+    | OrderedAggregationClause<Q>;
   $where?: WhereClause<Q>;
   $groupBy?: GroupByClause<Q>;
 };

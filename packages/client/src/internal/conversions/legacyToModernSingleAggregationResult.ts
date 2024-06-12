@@ -17,11 +17,14 @@
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
-import type { UnorderedAggregationClause } from "../../query/aggregations/AggregationsClause.js";
+import type {
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "../../query/aggregations/AggregationsClause.js";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
 export function legacyToModernSingleAggregationResult<
-  AC extends UnorderedAggregationClause<any>,
+  AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
 ): AggregationResultsWithoutGroups<any, AC> {

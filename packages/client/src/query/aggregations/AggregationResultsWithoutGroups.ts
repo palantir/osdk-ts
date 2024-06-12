@@ -16,11 +16,14 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
-import type { UnorderedAggregationClause } from "./AggregationsClause.js";
+import type {
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "./AggregationsClause.js";
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  AC extends UnorderedAggregationClause<Q>,
+  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = {
   [
     AGG_KEY
@@ -45,5 +48,5 @@ export type AggregationResultsWithoutGroups<
 
 export type AggregationCountResult<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends UnorderedAggregationClause<Q>,
+  A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = "$count" extends keyof A ? { $count: number } : {};
