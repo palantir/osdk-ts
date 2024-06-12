@@ -39,6 +39,7 @@ export type ObjectOrInterfaceDefinition<
   | ObjectTypeDefinition<K>
   | InterfaceDefinition<K, L>;
 
+/** @deprecated */
 export type ObjectOrInterfacePropertyKeysFrom<
   O extends OntologyDefinition<any, any>,
   K extends ObjectOrInterfaceKeysFrom<O>,

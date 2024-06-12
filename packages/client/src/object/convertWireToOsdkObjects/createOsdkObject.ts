@@ -17,6 +17,7 @@
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
+import type { Osdk } from "../../OsdkObjectFrom.js";
 import { Attachment } from "../Attachment.js";
 import { createClientCache } from "../Cache.js";
 import { get$as } from "./getDollarAs.js";
@@ -70,7 +71,7 @@ export function createOsdkObject<
   client: MinimalClient,
   objectDef: Q,
   rawObj: OntologyObjectV2,
-) {
+): Osdk<Q, string, never> {
   // We use multiple layers of prototypes to maximize reuse and also to keep
   // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
   const objectHolderPrototype = Object.create(

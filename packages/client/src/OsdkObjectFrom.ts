@@ -22,8 +22,17 @@ import type {
 import type { OsdkBase, OsdkObjectPrimaryKeyType } from "@osdk/client.api";
 import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
+import type { UnionIfTrue } from "./object/FetchPageResult.js";
 
-type DropRidAndAll<T extends string> = Exclude<T, "$rid" | "$all">;
+type DropDollarOptions<T extends string> = Exclude<
+  T,
+  "$rid" | "$all" | "$notStrict"
+>;
+
+type DropDollarAll<T extends string> = Exclude<
+  T,
+  "$all"
+>;
 
 type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
   T["apiName"]["__Unbranded"]
@@ -42,24 +51,35 @@ export type ConvertProps<
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition<any> ? (
       (
-        TO["interfaceMap"][ApiNameAsString<FROM>][
-          P extends "$all"
-            ? keyof FROM["properties"] extends
-              keyof TO["interfaceMap"][ApiNameAsString<FROM>]
-              ? keyof FROM["properties"]
-            : never
-            : DropRidAndAll<P>
-        ]
+        UnionIfTrue<
+          TO["interfaceMap"][ApiNameAsString<FROM>][
+            P extends "$all" ? (
+                keyof FROM["properties"] extends
+                  keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+                  ? keyof FROM["properties"]
+                  : never
+              )
+              : DropDollarOptions<P>
+          ],
+          P extends "$notStrict" ? true : false,
+          "$notStrict"
+        >
       )
     )
-  : TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
-    : FROM extends ObjectTypeDefinition<any>
-      ? DropRidAndAll<P> extends keyof FROM["inverseInterfaceMap"][
-        ApiNameAsString<TO>
-      ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropRidAndAll<P>]
+  : UnionIfTrue<
+    TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
+      : FROM extends ObjectTypeDefinition<any>
+        ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][
+          ApiNameAsString<TO>
+        ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][
+            DropDollarOptions<P>
+          ]
+        : never
       : never
-    : never
-  : never;
+      : never,
+    P extends "$notStrict" ? true : false,
+    "$notStrict"
+  >;
 
 /** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
@@ -67,6 +87,10 @@ export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
   ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
   : InterfaceDefinition<any, any>;
 
+/**
+ * @param P The properties to add from Q
+ * @param Z The existing underlying properties
+ */
 type UnderlyingProps<
   Q extends ObjectOrInterfaceDefinition,
   P extends string,
@@ -98,8 +122,14 @@ export type Osdk<
       )
     ]: IsNever<P> extends true
       // when we don't know what properties, we will show all but ensure they are `| undefined`
-      ? OsdkObjectPropertyType<Q["properties"][PP]> | undefined
-      : OsdkObjectPropertyType<Q["properties"][PP]>;
+      ? OsdkObjectPropertyType<
+        Q["properties"][PP],
+        false // P is never so we do not have to check for "$notStrict"
+      >
+      : OsdkObjectPropertyType<
+        Q["properties"][PP],
+        P extends "$notStrict" ? false : true
+      >;
   }
   & {
     /** @deprecated use $apiName */

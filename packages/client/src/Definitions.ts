@@ -27,8 +27,16 @@ type MaybeNullable<T extends ObjectTypePropertyDefinition, U> =
 type Raw<T> = T extends Array<any> ? T[0] : T;
 type Converted<T> = T extends Array<any> ? T[1] : T;
 
-export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition> =
-  MaybeNullable<
+/**
+ * @param {T} ObjectTypePropertyDefinition in literal form
+ * @param {STRICTLY_ENFORCE_NULLABLE}  S for strict. If false, always `|undefined`
+ */
+export type OsdkObjectPropertyType<
+  T extends ObjectTypePropertyDefinition,
+  STRICTLY_ENFORCE_NULLABLE extends boolean = true,
+> = STRICTLY_ENFORCE_NULLABLE extends false
+  ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined
+  : MaybeNullable<
     T,
     MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>
   >;

@@ -141,7 +141,9 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       do {
         const result = await base.fetchPage({ $nextPageToken });
 
-        for (const obj of result.data) {
+        for (
+          const obj of result.data
+        ) {
           yield obj as Osdk<Q, "$all">;
         }
       } while ($nextPageToken != null);
