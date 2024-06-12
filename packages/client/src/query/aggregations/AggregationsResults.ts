@@ -15,7 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregatableKeys , ValidAggregationKeys } from "./AggregatableKeys.js";
+import type {
+  AggregatableKeys,
+  ValidAggregationKeys,
+} from "./AggregatableKeys.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
 import type {

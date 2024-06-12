@@ -35,7 +35,7 @@ export type AggregateOptsThatErrors<
       >;
   }
   & (unknown extends AO["$groupBy"] ? {}
-    : Exclude<keyof AO["$groupBy"], undefined> extends never ? {}
+    : Exclude<AO["$groupBy"], undefined> extends never ? {}
     : {
       $groupBy:
         & Pick<

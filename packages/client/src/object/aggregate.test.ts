@@ -21,6 +21,7 @@ import { expectType } from "ts-expect";
 import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
+import { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
 import { aggregate } from "./aggregate.js";
 import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
@@ -198,6 +199,14 @@ describe("aggregate", () => {
       },
     );
 
+    // so apparently something in this test file is the issue - not the types
+    // it all works if you change aggregate to take in the AO directly instead of wrapping in AggregateOptsThatErrors
+    // TypeScript for some reason doesn't infer the structure of the original AO correctly, but only within this test file
+    // why is this happening? maybe because we're splicing the types in the middle
+
+    // This should not be of type WithGroups...
+    // Might be related to the $groupBy thing that I worked around by adding keyof
+    // Issue is that $groupBy keeps being assumed to exist when it never did in the first place
     expectType<number>(notGrouped.text.approximateDistinct);
     expectType<number | undefined>(notGrouped.priority.avg);
     expectType<number | undefined>(notGrouped.id.max);
