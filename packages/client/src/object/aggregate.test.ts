@@ -232,6 +232,7 @@ describe("aggregate", () => {
         $select: {
           "id:approximateDistinct": "unordered",
           "priority:max": "unordered",
+          "$count": "unordered",
         },
         $groupBy: {
           text: "exact",

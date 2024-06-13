@@ -24,7 +24,10 @@ import type {
   BaseObjectSet,
   PropertyValueClientToWire,
 } from "@osdk/client.api";
-import type { AggregateOptsThatErrors } from "../object/AggregateOptsThatErrors.js";
+import type {
+  AggregateOptsThatErrors,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+} from "../object/AggregateOptsThatErrors.js";
 import type {
   Augments,
   FetchPageArgs,
@@ -73,7 +76,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends MinimalObjectSet<Q>
 {
   aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrors<Q, AO>,
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
   where: (

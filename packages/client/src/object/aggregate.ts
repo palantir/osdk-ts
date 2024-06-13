@@ -32,7 +32,7 @@ import type { AggregationResultsWithGroups } from "../query/aggregations/Aggrega
 import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
-import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
+import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./AggregateOptsThatErrors.js";
 
 /** @deprecated use `aggregate` */
 export async function aggregateOrThrow<
@@ -45,7 +45,7 @@ export async function aggregateOrThrow<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AggregateOptsThatErrors<Q, AO>,
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
 }
@@ -60,7 +60,7 @@ export async function aggregate<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AggregateOptsThatErrors<Q, AO>,
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
