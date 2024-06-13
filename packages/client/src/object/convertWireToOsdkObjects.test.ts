@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Attachment } from "@osdk/client.api";
 import {
   Employee,
   FooInterface,
@@ -23,12 +24,18 @@ import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import { symbolClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
@@ -90,12 +97,14 @@ describe("convertWireToOsdkObjects", () => {
 
     const { attachment, attachmentArray } = withValues.data[0];
 
-    expect(attachment).toBeInstanceOf(Attachment);
+    expectTypeOf(attachment).toMatchTypeOf<
+      Attachment | undefined
+    >;
     expect(attachment?.rid).toEqual(
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     );
     expect(Array.isArray(attachmentArray)).toBeTruthy();
-    expect(attachmentArray![0]).toBeInstanceOf(Attachment);
+    expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
 
     const withoutValues = await client(
       MockOntology.objects.objectTypeWithAllPropertyTypes,

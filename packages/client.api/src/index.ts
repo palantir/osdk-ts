@@ -32,7 +32,6 @@ export type {
 export type {
   Attachment,
   AttachmentMetadata,
-  AttachmentSignature,
   AttachmentUpload,
 } from "./object/Attachment.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";

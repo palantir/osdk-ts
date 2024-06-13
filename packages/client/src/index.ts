@@ -29,6 +29,8 @@ export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 
+export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
+
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { OsdkObject } from "./OsdkObject.js";

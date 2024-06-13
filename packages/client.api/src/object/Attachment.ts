@@ -16,6 +16,8 @@
 
 export interface Attachment {
   rid: string;
+  fetchMetadata(): Promise<AttachmentMetadata>;
+  fetchContents(): Promise<Blob>;
 }
 /**
  * This interface should also accept the File object from
@@ -30,9 +32,4 @@ export interface AttachmentMetadata {
   filename: string;
   sizeBytes: string;
   mediaType: string;
-}
-
-export interface AttachmentSignature {
-  fetchMetadata(): Promise<AttachmentMetadata>;
-  fetchContents(): Promise<Blob>;
 }

@@ -21,7 +21,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { Attachment, createAttachmentUpload } from "../object/Attachment.js";
+import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet } from "../objectSet/createObjectSet.js";
 import { toDataValue } from "./toDataValue.js";
 
@@ -66,7 +66,7 @@ describe(toDataValue, () => {
   });
 
   it("recursively converts arrays and sets into array types", async () => {
-    const attachment = new Attachment("rid");
+    const attachment = "rid";
     const attachmentArray = [attachment];
     const attachmentSet = new Set(attachmentArray);
 
@@ -84,10 +84,9 @@ describe(toDataValue, () => {
   });
 
   it("recursively handles structs", async () => {
-    const attachment = new Attachment("rid");
     const struct = {
       inner: {
-        attachment,
+        attachment: "rid",
       },
     };
 

@@ -14,27 +14,24 @@
  * limitations under the License.
  */
 
-import type {
-  Attachment,
-  AttachmentMetadata,
-  AttachmentSignature,
-} from "@osdk/client.api";
+import type { Attachment } from "@osdk/client.api";
 import { Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
-export function createAttachmentReader(
+export function createAttachmentFromRid(
   client: MinimalClient,
-  attachment: Attachment,
-): AttachmentSignature {
+  rid: string,
+): Attachment {
   return {
-    fetchContents() {
+    rid,
+    async fetchContents() {
       return Ontologies.Attachments.getAttachmentContent(
         client,
-        attachment.rid,
+        rid,
       ) as Promise<Blob>;
     },
-    fetchMetadata() {
-      return Ontologies.Attachments.getAttachment(client, attachment.rid);
+    async fetchMetadata() {
+      return Ontologies.Attachments.getAttachment(client, rid);
     },
   };
 }

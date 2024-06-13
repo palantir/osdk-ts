@@ -40,7 +40,7 @@ export interface DataValueWireToClient {
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: Attachment | AttachmentUpload;
+  attachment: string | AttachmentUpload;
   boolean: boolean;
   byte: number;
   datetime: string;
