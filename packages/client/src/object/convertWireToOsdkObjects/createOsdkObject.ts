@@ -15,6 +15,7 @@
  */
 
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import { createAttachmentFromRid } from "../../createAttachmentReader.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { Osdk } from "../../OsdkObjectFrom.js";
@@ -108,9 +109,9 @@ export function createOsdkObject<
         if (propDef) {
           if (propDef.type === "attachment") {
             if (Array.isArray(rawValue)) {
-              return rawValue.map(a => new Attachment(a.rid));
+              return rawValue.map(a => createAttachmentFromRid(client, a.rid));
             }
-            return new Attachment(rawValue.rid);
+            return createAttachmentFromRid(client, rawValue.rid);
           }
         }
         return rawValue;

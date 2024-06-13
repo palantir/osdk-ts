@@ -17,6 +17,12 @@
 export interface Attachment {
   rid: string;
 }
+
+export interface AttachmentWrapper extends Attachment {
+  rid: string;
+  fetchMetadata(): Promise<AttachmentMetadata>;
+  fetchContents(): Promise<Blob>;
+}
 /**
  * This interface should also accept the File object from
  * the W3C FileApi https://www.w3.org/TR/FileAPI/#file-section

@@ -46,8 +46,6 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends ActionDefinition<any, any, any>>(
     o: CheckVersionBound<Q>,
   ): ActionSignatureFromDef<Q>;
-
-  (o: Attachment): AttachmentSignature;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
