@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-export interface Attachment {
-  rid: string;
-}
-
-export interface AttachmentWrapper extends Attachment {
+export interface AttachmentWrapper {
   rid: string;
   fetchMetadata(): Promise<AttachmentMetadata>;
   fetchContents(): Promise<Blob>;

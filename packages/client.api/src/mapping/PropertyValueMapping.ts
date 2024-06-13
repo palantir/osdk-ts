@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { Attachment, AttachmentWrapper } from "../object/Attachment.js";
+import type {
+  AttachmentUpload,
+  AttachmentWrapper,
+} from "../object/Attachment.js";
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we return
@@ -44,7 +47,7 @@ export interface PropertyValueWireToClient {
  * Map from the PropertyDefinition type to the typescript type that we accept
  */
 export interface PropertyValueClientToWire {
-  attachment: Attachment | { rid: string };
+  attachment: string | AttachmentUpload;
   boolean: boolean;
   byte: number;
   datetime: string;

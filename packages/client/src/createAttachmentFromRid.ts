@@ -15,30 +15,12 @@
  */
 
 import type {
-  Attachment,
   AttachmentMetadata,
   AttachmentSignature,
   AttachmentWrapper,
 } from "@osdk/client.api";
 import { Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
-
-export function createAttachmentReader(
-  client: MinimalClient,
-  attachment: Attachment,
-): AttachmentSignature {
-  return {
-    fetchContents() {
-      return Ontologies.Attachments.getAttachmentContent(
-        client,
-        attachment.rid,
-      ) as Promise<Blob>;
-    },
-    fetchMetadata() {
-      return Ontologies.Attachments.getAttachment(client, attachment.rid);
-    },
-  };
-}
 
 export function createAttachmentFromRid(
   client: MinimalClient,

@@ -30,7 +30,6 @@ export type {
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
 export type {
-  Attachment,
   AttachmentMetadata,
   AttachmentSignature,
   AttachmentUpload,

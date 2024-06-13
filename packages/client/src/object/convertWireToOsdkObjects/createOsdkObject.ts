@@ -15,7 +15,7 @@
  */
 
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
-import { createAttachmentFromRid } from "../../createAttachmentReader.js";
+import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { Osdk } from "../../OsdkObjectFrom.js";
