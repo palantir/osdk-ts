@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
@@ -39,8 +40,10 @@ export function legacyToModernSingleAggregationResult<
         "assumed we were getting a `${key}.${type}`",
       );
       if (!(parts[0] in accumulator)) {
+        // @ts-expect-error TODO fixme
         accumulator[parts[0]] = {};
       }
+      // @ts-expect-error TODO fixme
       accumulator[parts[0]][parts[1]] = curValue.value;
 
       return accumulator;
