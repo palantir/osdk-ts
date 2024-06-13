@@ -37,5 +37,11 @@ export const AttachmentProperty = (
     read() {
       return getAttachment(clientCtx, attachmentRid);
     },
+    fetchMetadata() {
+      return getAttachmentMetadata(clientCtx, attachmentRid);
+    },
+    fetchContents() {
+      return getAttachment(clientCtx, attachmentRid);
+    },
   };
 };

@@ -21,13 +21,23 @@ export interface Attachment {
   type: "Attachment";
   attachmentRid: string | undefined;
   /**
+   * @deprecated
    * Get the metadata of an attachment.
    */
   getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>>;
   /**
+   * @deprecated
    * Read the content of an attachment.
    */
   read(): Promise<Result<Blob, AttachmentsError>>;
+  /**
+   * Get the metadata of an attachment.
+   */
+  fetchMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>>;
+  /**
+   * Read the content of an attachment.
+   */
+  fetchContents(): Promise<Result<Blob, AttachmentsError>>;
 }
 
 export interface AttachmentMetadata {
