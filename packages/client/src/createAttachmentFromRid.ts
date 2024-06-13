@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-import type {
-  AttachmentMetadata,
-  AttachmentSignature,
-  AttachmentWrapper,
-} from "@osdk/client.api";
+import type { Attachment } from "@osdk/client.api";
 import { Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
 export function createAttachmentFromRid(
   client: MinimalClient,
   rid: string,
-): AttachmentWrapper {
+): Attachment {
   return {
     rid,
     async fetchContents() {

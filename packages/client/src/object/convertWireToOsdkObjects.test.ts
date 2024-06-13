@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentWrapper } from "@osdk/client.api";
+import type { Attachment } from "@osdk/client.api";
 import {
   Employee,
   FooInterface,
@@ -98,13 +98,13 @@ describe("convertWireToOsdkObjects", () => {
     const { attachment, attachmentArray } = withValues.data[0];
 
     expectTypeOf(attachment).toMatchTypeOf<
-      AttachmentWrapper | undefined
+      Attachment | undefined
     >;
     expect(attachment?.rid).toEqual(
       "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
     );
     expect(Array.isArray(attachmentArray)).toBeTruthy();
-    expectTypeOf(attachmentArray![0]).toMatchTypeOf<AttachmentWrapper>;
+    expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
 
     const withoutValues = await client(
       MockOntology.objects.objectTypeWithAllPropertyTypes,

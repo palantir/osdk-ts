@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { AttachmentWrapper } from "@osdk/client.api";
+import type { Attachment } from "@osdk/client.api";
 import { describe, expectTypeOf, it } from "vitest";
 import type { OsdkObjectPropertyType } from "../Definitions.js";
 
@@ -30,12 +30,12 @@ describe("Object definitions", () => {
     } as const;
 
     expectTypeOf<OsdkObjectPropertyType<typeof attachment>>().toEqualTypeOf<
-      AttachmentWrapper
+      Attachment
     >();
 
     expectTypeOf<OsdkObjectPropertyType<typeof attachmentArray>>()
       .toEqualTypeOf<
-        AttachmentWrapper[]
+        Attachment[]
       >();
   });
 });
