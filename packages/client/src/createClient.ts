@@ -20,10 +20,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  ActionSignatureFromDef,
-  AttachmentSignature,
-} from "@osdk/client.api";
+import type { ActionSignatureFromDef } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import { createActionInvoker } from "./actions/createActionInvoker.js";

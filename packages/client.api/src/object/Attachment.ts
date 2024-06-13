@@ -33,8 +33,3 @@ export interface AttachmentMetadata {
   sizeBytes: string;
   mediaType: string;
 }
-
-export interface AttachmentSignature {
-  fetchMetadata(): Promise<AttachmentMetadata>;
-  fetchContents(): Promise<Blob>;
-}
