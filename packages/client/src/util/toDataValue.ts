@@ -15,13 +15,8 @@
  */
 
 import { type DataValue, Ontologies } from "@osdk/internal.foundry";
-import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  Attachment,
-  isAttachment,
-  isAttachmentUpload,
-} from "../object/Attachment.js";
+import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -49,11 +44,6 @@ export async function toDataValue(
     return Promise.all(promiseArray);
   }
 
-  // attachments just send the rid directly
-  if (isAttachment(value)) {
-    return value.rid;
-  }
-
   // For uploads, we need to upload ourselves first to get the RID of the attachment
   if (isAttachmentUpload(value)) {
     const attachment = await Ontologies.Attachments.uploadAttachment(
@@ -67,7 +57,7 @@ export async function toDataValue(
         "Content-Type": value.type,
       },
     );
-    return await toDataValue(new Attachment(attachment.rid), client);
+    return await toDataValue(attachment.rid, client);
   }
 
   // objects just send the JSON'd primaryKey

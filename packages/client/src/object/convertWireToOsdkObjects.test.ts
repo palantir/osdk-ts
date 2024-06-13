@@ -36,7 +36,6 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {

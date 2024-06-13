@@ -19,7 +19,6 @@ import { createAttachmentFromRid } from "../../createAttachmentReader.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { Osdk } from "../../OsdkObjectFrom.js";
-import { Attachment } from "../Attachment.js";
 import { createClientCache } from "../Cache.js";
 import { get$as } from "./getDollarAs.js";
 import { get$link } from "./getDollarLink.js";

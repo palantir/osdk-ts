@@ -24,7 +24,6 @@ import type {
 import type { DataValue } from "@osdk/internal.foundry";
 import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { Attachment, isAttachmentUpload } from "../object/Attachment.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";

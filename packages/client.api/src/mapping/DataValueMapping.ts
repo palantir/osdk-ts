@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type {
+  AttachmentUpload,
+  AttachmentWrapper,
+} from "../object/Attachment.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return
  */
 export interface DataValueWireToClient {
-  attachment: Attachment;
+  attachment: AttachmentWrapper;
   boolean: boolean;
   byte: number;
   datetime: string;
@@ -40,7 +43,7 @@ export interface DataValueWireToClient {
  * Map from the DataValue type to the typescript type that we accept
  */
 export interface DataValueClientToWire {
-  attachment: Attachment | AttachmentUpload;
+  attachment: string | AttachmentUpload;
   boolean: boolean;
   byte: number;
   datetime: string;
