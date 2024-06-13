@@ -17,8 +17,8 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { PropertyValueWireToClient } from "@osdk/client.api";
 
-type StringAggregateOption = "approximateDistinct";
-type NumericAggregateOption =
+export type StringAggregateOption = "approximateDistinct";
+export type NumericAggregateOption =
   | "min"
   | "max"
   | "sum"

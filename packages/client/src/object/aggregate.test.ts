@@ -21,7 +21,6 @@ import { expectType } from "ts-expect";
 import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
 import { aggregate } from "./aggregate.js";
 import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";

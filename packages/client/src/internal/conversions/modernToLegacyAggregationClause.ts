@@ -16,33 +16,41 @@
 
 import type { AggregationV2 } from "@osdk/internal.foundry";
 import type {
+  NumericAggregateOption,
+  StringAggregateOption,
+} from "../../query/aggregations/AggregatableKeys.js";
+import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
 } from "../../query/aggregations/AggregationsClause.js";
+
+const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
+  dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
 
 export function modernToLegacyAggregationClause<
   AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
 >(select: AC) {
   return Object.entries(select).flatMap<AggregationV2>(([k, v]) => {
     if (k === "$count") {
-      if (v) return { type: "count", name: "count" };
-      return [];
-    } else if (Array.isArray(v)) {
-      return v.map((v2) => {
-        return {
-          type: v2,
-          name: `${k}.${v2}`,
-          field: k,
-        };
-      });
-    } else {
-      return [
-        {
-          type: v as "min" | "max" | "sum" | "avg" | "approximateDistinct", // FIXME v has additional possible values
-          name: `${k}.${v}`,
-          field: k,
-        },
-      ];
+      return {
+        type: "count",
+        name: "count",
+        direction: directionFieldMap(v),
+      };
     }
+
+    // k is property:metric
+    const colonPos = k.lastIndexOf(":");
+    const property = k.slice(0, colonPos);
+    const metric = k.slice(colonPos + 1);
+
+    return [
+      {
+        type: metric as StringAggregateOption | NumericAggregateOption,
+        name: `${property}.${metric}`,
+        field: property,
+        direction: directionFieldMap(v),
+      },
+    ];
   });
 }
