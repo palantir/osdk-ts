@@ -18,7 +18,7 @@ import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
+import { describe, expect, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
@@ -195,6 +195,29 @@ describe("aggregate", () => {
           "id:avg": "unordered",
           "$count": "unordered",
         },
+      },
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate",
+      {
+        body: JSON.stringify({
+          "objectSet": { "type": "base", "objectType": "ToDo" },
+          "groupBy": [],
+          "aggregation": [
+            {
+              "type": "approximateDistinct",
+              "name": "text.approximateDistinct",
+              "field": "text",
+            },
+            { "type": "avg", "name": "priority.avg", "field": "priority" },
+            { "type": "max", "name": "id.max", "field": "id" },
+            { "type": "avg", "name": "id.avg", "field": "id" },
+            { "type": "count", "name": "count" },
+          ],
+        }),
+        method: "POST",
+        headers: expect.anything(),
       },
     );
 

@@ -25,7 +25,6 @@ import type {
   PropertyValueClientToWire,
 } from "@osdk/client.api";
 import type {
-  AggregateOptsThatErrors,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
 } from "../object/AggregateOptsThatErrors.js";
 import type {

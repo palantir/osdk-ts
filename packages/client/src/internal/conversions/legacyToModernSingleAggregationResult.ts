@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
