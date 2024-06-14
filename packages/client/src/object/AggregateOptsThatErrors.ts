@@ -26,6 +26,7 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
 > = SingleKeyObject<AO["$groupBy"]> extends never ? (
     AO["$select"] extends UnorderedAggregationClause<Q>
       ? AggregateOptsThatErrors<Q, AO>
+      : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO>
       : {
         $groupBy: AO["$groupBy"];
         $select: UnorderedAggregationClause<Q>;
