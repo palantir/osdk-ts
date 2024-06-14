@@ -133,38 +133,38 @@ const mockOntology = {
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
 
+const aggregationResponse: AggregateObjectsResponseV2 = {
+  accuracy: "APPROXIMATE",
+  data: [
+    {
+      group: {
+        text: "hello",
+      },
+      metrics: [
+        {
+          name: "text.approximateDistinct",
+          value: 1,
+        },
+        {
+          name: "priority.avg",
+          value: 1,
+        },
+        {
+          name: "id.max",
+          value: 1,
+        },
+        {
+          name: "id.avg",
+          value: 1,
+        },
+      ],
+    },
+  ],
+};
+
 describe("aggregate", () => {
   it("works", async () => {
     const mockFetch: Mock = vi.fn();
-
-    const aggregationResponse: AggregateObjectsResponseV2 = {
-      accuracy: "APPROXIMATE",
-      data: [
-        {
-          group: {
-            text: "hello",
-          },
-          metrics: [
-            {
-              name: "text.approximateDistinct",
-              value: 1,
-            },
-            {
-              name: "priority.avg",
-              value: 1,
-            },
-            {
-              name: "id.max",
-              value: 1,
-            },
-            {
-              name: "id.avg",
-              value: 1,
-            },
-          ],
-        },
-      ],
-    };
 
     mockFetch.mockResolvedValue({
       ok: true,
@@ -421,6 +421,169 @@ describe("aggregate", () => {
       // @ts-expect-error
       date: { $duration: [1, "seconds"] },
     });
+  });
+
+  it("works with $orderBy (no groups)", async () => {
+    const mockFetch: Mock = vi.fn();
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => new Promise((resolve) => resolve(aggregationResponse)),
+    });
+
+    const clientCtx = createMinimalClient(
+      mockOntology.metadata,
+      "https://host.com",
+      async () => "",
+      {},
+      mockFetch,
+    );
+
+    const notGrouped = await aggregate(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        $select: {
+          "text:approximateDistinct": "asc",
+          "priority:avg": "desc",
+          "id:max": "asc",
+          "id:avg": "unordered",
+          "$count": "unordered",
+        },
+      },
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate",
+      {
+        body: JSON.stringify({
+          "objectSet": { "type": "base", "objectType": "ToDo" },
+          "groupBy": [],
+          "aggregation": [
+            {
+              "type": "approximateDistinct",
+              "name": "text.approximateDistinct",
+              "field": "text",
+              direction: "ASC",
+            },
+            {
+              "type": "avg",
+              "name": "priority.avg",
+              "field": "priority",
+              direction: "DESC",
+            },
+            {
+              "type": "max",
+              "name": "id.max",
+              "field": "id",
+              direction: "ASC",
+            },
+            { "type": "avg", "name": "id.avg", "field": "id" },
+            { "type": "count", "name": "count" },
+          ],
+        }),
+        method: "POST",
+        headers: expect.anything(),
+      },
+    );
+
+    expectType<number>(notGrouped.text.approximateDistinct);
+    expectType<number>(notGrouped.priority.avg);
+    expectType<number>(notGrouped.id.max);
+    expectType<number>(notGrouped.id.avg);
+    expectType<number>(notGrouped.$count);
+    expectType<
+      TypeOf<
+        {
+          other: any;
+        },
+        typeof notGrouped
+      >
+    >(false); // subselect should hide unused keys
+  });
+
+  it("works with $orderBy (1 group)", async () => {
+    const mockFetch: Mock = vi.fn();
+
+    mockFetch.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: () => new Promise((resolve) => resolve(aggregationResponse)),
+    });
+
+    const clientCtx = createMinimalClient(
+      mockOntology.metadata,
+      "https://host.com",
+      async () => "",
+      {},
+      mockFetch,
+    );
+
+    const grouped = await aggregate(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        $select: {
+          "id:max": "desc",
+          "text:approximateDistinct": "asc",
+          "id:avg": "unordered",
+          "$count": "unordered",
+        },
+        $groupBy: {
+          priority: "exact",
+        },
+      },
+    );
+
+    expect(mockFetch).toHaveBeenCalledWith(
+      "https://host.com/api/v2/ontologies/ri.a.b.c.d/objectSets/aggregate",
+      {
+        body: JSON.stringify({
+          "objectSet": { "type": "base", "objectType": "ToDo" },
+          "groupBy": [{ "type": "exact", "field": "priority" }],
+          "aggregation": [
+            {
+              "type": "max",
+              "name": "id.max",
+              "field": "id",
+              direction: "DESC",
+            },
+            {
+              "type": "approximateDistinct",
+              "name": "text.approximateDistinct",
+              "field": "text",
+              direction: "ASC",
+            },
+            { "type": "avg", "name": "id.avg", "field": "id" },
+            { "type": "count", "name": "count" },
+          ],
+        }),
+        method: "POST",
+        headers: expect.anything(),
+      },
+    );
+
+    expectType<number>(grouped[0].text.approximateDistinct);
+    expectType<number>(grouped[0].id.max);
+    expectType<number>(grouped[0].id.avg);
+    expectType<number>(grouped[0].$count);
+    expectType<
+      TypeOf<
+        {
+          other: any;
+        },
+        typeof grouped
+      >
+    >(false); // subselect should hide unused keys
   });
 
   it("works with where: todo", async () => {
