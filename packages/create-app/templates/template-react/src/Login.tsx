@@ -18,6 +18,8 @@ function Login() {
     } catch (e: unknown) {
       console.error(e);
       setError((e as Error).message ?? e);
+    } finally {
+      setIsLoggingIn(false);
     }
   }, []);
 
