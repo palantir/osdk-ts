@@ -23,7 +23,9 @@ import { createMinimalClient } from "../createMinimalClient.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
 import { aggregate } from "./aggregate.js";
-import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
+import type {
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+} from "./AggregateOptsThatErrors.js";
 
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
@@ -281,7 +283,7 @@ describe("aggregate", () => {
     expectType<boolean>(grouped[0].$group.boolean);
 
     expectType<
-      AggregateOptsThatErrors<TodoDef, {
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<TodoDef, {
         $select: {
           "id:approximateDistinct": "unordered";
           "$count": "unordered";
@@ -313,7 +315,7 @@ describe("aggregate", () => {
     });
 
     expectType<
-      AggregateOptsThatErrors<TodoDef, {
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<TodoDef, {
         $select: {
           "id:approximateDistinct": "unordered";
           "wrongSelectKey": "don't work";

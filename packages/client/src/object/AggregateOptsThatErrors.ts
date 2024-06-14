@@ -35,7 +35,7 @@ export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
   )
   : AggregateOptsThatErrors<Q, AO>;
 
-export type AggregateOptsThatErrors<
+type AggregateOptsThatErrors<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
 > =
