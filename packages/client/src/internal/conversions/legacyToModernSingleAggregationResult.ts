@@ -39,10 +39,8 @@ export function legacyToModernSingleAggregationResult<
         "assumed we were getting a `${key}.${type}`",
       );
       if (!(parts[0] in accumulator)) {
-        // @ts-expect-error TODO fixme
         accumulator[parts[0]] = {};
       }
-      // @ts-expect-error TODO fixme
       accumulator[parts[0]][parts[1]] = curValue.value;
 
       return accumulator;
