@@ -586,6 +586,39 @@ describe("aggregate", () => {
     >(false); // subselect should hide unused keys
   });
 
+  it("prohibits ordered select with multiple groupBy", async () => {
+    const clientCtx = createMinimalClient(
+      mockOntology.metadata,
+      "https://host.com",
+      async () => "",
+      {},
+      vi.fn(),
+    );
+
+    aggregate(
+      clientCtx,
+      Todo,
+      {
+        type: "base",
+        objectType: "ToDo",
+      },
+      {
+        $select: {
+          // @ts-expect-error
+          "id:max": "desc",
+          // @ts-expect-error
+          "text:approximateDistinct": "asc",
+          "id:avg": "unordered",
+          "$count": "unordered",
+        },
+        $groupBy: {
+          priority: "exact",
+          timestamp: "exact",
+        },
+      },
+    );
+  });
+
   it("works with where: todo", async () => {
     type f = AggregateOpts<
       {
