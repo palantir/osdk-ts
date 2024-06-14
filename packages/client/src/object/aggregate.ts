@@ -94,7 +94,7 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult<AO["$select"]>(
+      ...legacyToModernSingleAggregationResult(
         result.data[0],
       ),
     } as any;

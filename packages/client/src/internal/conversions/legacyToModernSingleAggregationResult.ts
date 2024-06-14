@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
+import type {
+  NumericAggregateOption,
+  StringAggregateOption,
+} from "../../query/aggregations/AggregatableKeys.js";
 import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
 import type {
   OrderedAggregationClause,
@@ -24,12 +29,13 @@ import type {
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
 export function legacyToModernSingleAggregationResult<
-  AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
+  Q extends ObjectOrInterfaceDefinition,
+  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 >(
   entry: ArrayElement<AggregateObjectsResponseV2["data"]>,
-): AggregationResultsWithoutGroups<any, AC> {
+): AggregationResultsWithoutGroups<Q, AC> {
   return entry.metrics.reduce(
-    (accumulator, curValue) => {
+    (accumulator: AggregationResultsWithoutGroups<Q, AC>, curValue) => {
       const parts = curValue.name.split(".");
       if (parts[0] === "count") {
         return accumulator;
@@ -38,13 +44,17 @@ export function legacyToModernSingleAggregationResult<
         parts.length === 2,
         "assumed we were getting a `${key}.${type}`",
       );
-      if (!(parts[0] in accumulator)) {
-        accumulator[parts[0]] = {};
+      const property = parts[0] as keyof AggregationResultsWithoutGroups<Q, AC>;
+      const metricType = parts[1] as
+        | StringAggregateOption
+        | NumericAggregateOption;
+      if (!(property in accumulator)) {
+        accumulator[property] = {} as any; // fixme?
       }
-      accumulator[parts[0]][parts[1]] = curValue.value;
+      (accumulator[property] as any)[metricType] = curValue.value; // fixme?
 
       return accumulator;
     },
-    {} as AggregationResultsWithoutGroups<any, any>,
+    {} as AggregationResultsWithoutGroups<Q, AC>,
   );
 }
