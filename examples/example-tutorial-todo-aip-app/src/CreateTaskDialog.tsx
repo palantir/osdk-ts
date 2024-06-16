@@ -32,7 +32,7 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const handleTaskDescriptionRecommendation = useCallback(async () => {
     const recommendedDescription = await getRecommendedTaskDescription(name);
     setDescription(recommendedDescription);
-  }, [project, getRecommendedTaskDescription, name]);
+  }, [getRecommendedTaskDescription, name]);
 
   useEffect(() => setName("New task"), [isOpen]);
 

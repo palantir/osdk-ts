@@ -28,7 +28,7 @@ function Home() {
     updateProjectDescription(
       project,
     );
-  }, [project]);
+  }, [project, updateProjectDescription]);
 
   useEffect(() => {
     if (project == null && projects != null && projects.length > 0) {
