@@ -1,6 +1,6 @@
+import aipLogo from "/aip-logo.svg";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
-import aipLogo from "/aip-logo.svg";
 import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
@@ -32,7 +32,7 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const handleTaskDescriptionRecommendation = useCallback(async () => {
     const recommendedDescription = await getRecommendedTaskDescription(name);
     setDescription(recommendedDescription);
-  }, [project, getRecommendedTaskDescription]);
+  }, [project, getRecommendedTaskDescription, name]);
 
   useEffect(() => setName("New task"), [isOpen]);
 

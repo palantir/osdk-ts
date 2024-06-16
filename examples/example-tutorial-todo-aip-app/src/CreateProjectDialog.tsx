@@ -58,7 +58,7 @@ function CreateProjectDialog({
         </button>,
       ]}
     >
-            <div className={css.project}>
+      <div className={css.project}>
         <label className={css.label}>
           Project name:{" "}
           <input type="text" value={name} onChange={handleChangeProjectName} />
@@ -73,7 +73,6 @@ function CreateProjectDialog({
         </label>
       </div>
     </Dialog>
-
   );
 }
 export default CreateProjectDialog;
