@@ -1,0 +1,11 @@
+.task {
+    display: flex;
+    flex-direction: column;
+    align-content: space-between;
+    gap: 10px;
+}
+.label {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+}
