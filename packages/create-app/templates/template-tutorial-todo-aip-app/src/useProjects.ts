@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import useSWR from "swr";
-import Mocks, { MockProject } from "./mocks";
+import type { MockProject } from "./mocks";
+import Mocks from "./mocks";
 
 function useProjects() {
   const { data, isLoading, isValidating, error, mutate } = useSWR<
@@ -12,13 +13,35 @@ function useProjects() {
 
   const createProject: (
     name: string,
-    description?: string,
+    description: string,
   ) => Promise<MockProject["$primaryKey"]> = useCallback(
     async (name: string, description: string) => {
       // Try to implement this with the Ontology SDK!
       const id = await Mocks.createProject({ name, description });
       await mutate();
       return id;
+    },
+    [mutate],
+  );
+
+  const getRecommendedProjectDescription: (
+    project: MockProject,
+  ) => Promise<string> = useCallback(
+    async (project) => {
+      // Try to implement this with the Ontology SDK!
+      return Mocks.getRecommendedProjectDescription(project);
+    },
+    [],
+  );
+
+  const updateProjectDescription: (
+    project: MockProject,
+  ) => Promise<void> = useCallback(
+    async (project) => {
+      // Try to implement this with the Ontology SDK!
+      const description = await Mocks.getRecommendedProjectDescription(project);
+      await Mocks.updateProjectDescription(project, description);
+      await mutate();
     },
     [mutate],
   );
@@ -39,6 +62,8 @@ function useProjects() {
     isError: error,
     createProject,
     deleteProject,
+    getRecommendedProjectDescription,
+    updateProjectDescription,
   };
 }
 

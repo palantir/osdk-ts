@@ -1,11 +1,29 @@
 .task {
-    display: flex;
-    flex-direction: column;
-    align-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
     gap: 10px;
+    width: 500px;
 }
 .label {
   display: flex;
-  justify-content: space-between;
   gap: 5px;
+}
+
+.input {
+  width: 300px;
+}
+.aip {
+  border: 1px solid #ccc;
+  padding: 2px;
+}
+
+.image {
+  width: 15px;
+  height: 15px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
 }

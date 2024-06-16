@@ -33,3 +33,20 @@
 .projectTitle {
   font-size: 1.5em;
 }
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  height: 15px;
+  width: 15px;
+  border-radius: 1em;
+}
+
+.aip {
+  border: 1px solid #ccc;
+  padding: 2px;
+  width: 50%;
+}

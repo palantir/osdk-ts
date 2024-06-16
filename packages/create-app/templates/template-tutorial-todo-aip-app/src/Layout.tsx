@@ -1,4 +1,4 @@
-import todoAppLogo from "/todo-app.svg";
+import todoAppLogo from "/todo-aip-app.svg";
 import React from "react";
 import css from "./Layout.module.css";
 
@@ -11,7 +11,7 @@ function Layout({ children }: LayoutProps) {
     <>
       <div className={css.header}>
         <img src={todoAppLogo} className={css.logo} alt="Todo App logo" />
-        <div className={css.title}>Ontology SDK Tutorial - Todo App</div>
+        <div className={css.title}>Ontology SDK Tutorial - Todo App Powered by AIP</div>
       </div>
       {children}
     </>
