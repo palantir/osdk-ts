@@ -1,23 +1,34 @@
+import aipLogo from "/aip-logo.svg";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
 import DeleteProjectButton from "./DeleteProjectButton";
 import css from "./Home.module.css";
 import Layout from "./Layout";
-import { MockProject } from "./mocks";
+import type { MockProject } from "./mocks";
 import ProjectSelect from "./ProjectSelect";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";
 
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
-  const { projects } = useProjects();
+  const { projects, updateProjectDescription } = useProjects();
   const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
     (p: MockProject) => setProjectId(p.id),
     [],
   );
+
+  const handleProjectDescriptionRecommendation = useCallback(async () => {
+    if (project == null) {
+      return;
+    }
+    // Try to implement this with the Ontology SDK!
+    updateProjectDescription(
+      project,
+    );
+  }, [project]);
 
   useEffect(() => {
     if (project == null && projects != null && projects.length > 0) {
@@ -51,7 +62,21 @@ function Home() {
       {project != null && (
         <div className={css.projectCard} key={project.id}>
           <h1 className={css.projectTitle}>{project.name}</h1>
-          <span>{project.description}</span>
+          <div className={css.description}>
+            <span>{project.description}</span>
+            <button
+              className={css.aip}
+              title="Click here to update project description based on AIP Logic"
+              type="button"
+              onClick={handleProjectDescriptionRecommendation}
+            >
+              <img
+                src={aipLogo}
+                alt="AIP"
+                className={css.image}
+              />
+            </button>
+          </div>
           <TaskList project={project} />
           <CreateTaskButton project={project} />
         </div>

@@ -102,6 +102,24 @@ async function createProject({
   return id;
 }
 
+async function getRecommendedProjectDescription(
+  project: MockProject,
+): Promise<string> {
+  await delay();
+  if (project.tasks.length === 0) {
+    throw new Error("Project description recommendation requires tasks");
+  }
+  return `AIP Logic dummy description for project`;
+}
+
+async function updateProjectDescription(
+  project: MockProject,
+  description: string,
+): Promise<void> {
+  await delay();
+  project.description = description;
+}
+
 async function deleteProject(id: string): Promise<void> {
   await delay();
   const idx = projects.findIndex((p) => p.id === id);
@@ -135,6 +153,16 @@ async function createTask({
   return id;
 }
 
+async function getRecommendedTaskDescription(
+  taskName: string,
+): Promise<string> {
+  await delay();
+  if (taskName.length === 0) {
+    throw new Error("Task name must not be empty");
+  }
+  return `dummy description for task`;
+}
+
 async function deleteTask(id: string): Promise<void> {
   await delay();
   for (const project of projects) {
@@ -148,9 +176,12 @@ async function deleteTask(id: string): Promise<void> {
 const Mocks = {
   getProjects,
   createProject,
+  getRecommendedProjectDescription,
   deleteProject,
   createTask,
   deleteTask,
+  getRecommendedTaskDescription,
+  updateProjectDescription,
 };
 
 export default Mocks;

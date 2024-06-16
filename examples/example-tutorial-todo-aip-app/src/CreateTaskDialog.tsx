@@ -1,7 +1,9 @@
-import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
+import { useCallback, useEffect, useState } from "react";
+import aipLogo from "/aip-logo.svg";
 import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
-import { MockProject } from "./mocks";
+import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskDialogProps {
@@ -11,7 +13,9 @@ interface CreateTaskDialogProps {
 }
 
 function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
-  const { createTask } = useProjectTasks(project);
+  const { createTask, getRecommendedTaskDescription } = useProjectTasks(
+    project,
+  );
 
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");
@@ -24,6 +28,11 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
     (e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value),
     [],
   );
+
+  const handleTaskDescriptionRecommendation = useCallback(async () => {
+    const recommendedDescription = await getRecommendedTaskDescription(name);
+    setDescription(recommendedDescription);
+  }, [project, getRecommendedTaskDescription]);
 
   useEffect(() => setName("New task"), [isOpen]);
 
@@ -53,16 +62,37 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
       <div className={css.task}>
         <label className={css.label}>
           Task name:{" "}
-          <input type="text" value={name} onChange={handleChangeTaskName} />
         </label>
+        <input
+          type="text"
+          value={name}
+          onChange={handleChangeTaskName}
+          className={css.input}
+        />
+
         <label className={css.label}>
           Task description:{" "}
+        </label>
+        <div className={css.container}>
           <input
             type="text"
             value={description}
             onChange={handleChangeTaskDescription}
+            className={css.input}
           />
-        </label>
+          <button
+            className={css.aip}
+            title="Click here to get AIP task description recommendation"
+            type="button"
+            onClick={handleTaskDescriptionRecommendation}
+          >
+            <img
+              src={aipLogo}
+              alt="AIP"
+              className={css.image}
+            />
+          </button>
+        </div>
       </div>
     </Dialog>
   );
