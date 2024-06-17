@@ -26,9 +26,8 @@ export type AggregationResultsWithoutGroups<
   AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = {
   [
-    AGG_KEY
-      in keyof AC as (AGG_KEY extends `${infer PREFIX}:${infer _}` ? PREFIX
-        : never)
+    AGG_KEY in keyof AC as (AGG_KEY extends `${infer PREFIX}:${string}` ? PREFIX
+      : never)
   ]: {
     [
       AGG_KEY2
