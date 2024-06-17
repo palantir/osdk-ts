@@ -49,8 +49,8 @@ export function modernToLegacyAggregationClause<
         {
           type: metric as StringAggregateOption | NumericAggregateOption,
           name: `${property}.${metric}`,
-          field: property,
           direction: directionFieldMap(aggregationType),
+          field: property,
         },
       ];
     },
