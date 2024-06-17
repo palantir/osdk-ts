@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.4.0-beta.0
+
+### Minor Changes
+
+- af1d316: Added support to omni api code gen for binary type bodies in requests.
+
 ## 0.3.0
 
 ### Minor Changes

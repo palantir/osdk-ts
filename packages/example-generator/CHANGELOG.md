@@ -1,5 +1,21 @@
 # @osdk/example-generator
 
+## 0.6.0-beta.0
+
+### Minor Changes
+
+- 2f5cfac: Remove platform specific commands in template scripts
+
+### Patch Changes
+
+- Updated dependencies [e660cbd]
+- Updated dependencies [78c24a1]
+- Updated dependencies [af8675a]
+- Updated dependencies [4ee6e25]
+- Updated dependencies [2f5cfac]
+- Updated dependencies [8da6d12]
+  - @osdk/create-app@0.17.0-beta.0
+
 ## 0.5.0
 
 ### Minor Changes

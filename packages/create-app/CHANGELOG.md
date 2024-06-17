@@ -1,5 +1,16 @@
 # @osdk/create-app
 
+## 0.17.0-beta.0
+
+### Minor Changes
+
+- e660cbd: Fix runtime warnings on AipNow template
+- 78c24a1: update the mock objects to the new TypeScript 1.1.1 syntax version
+- af8675a: Fix login page not redirecting when oauth redirect not required
+- 4ee6e25: Update global layout styles
+- 2f5cfac: Remove platform specific commands in template scripts
+- 8da6d12: React/Vue router respects vite base path
+
 ## 0.16.0
 
 ### Minor Changes
