@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import type { GroupByClause } from "@osdk/client.api";
 import { describe, it } from "vitest";
+import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
+import type { AggregationsResults } from "./AggregationsResults.js";
 
-export type F = GroupByClause<
+type T_AGG_RESULTS_TEST_1 = AggregationsResults<
   {
     metadata: any;
     objects: {
@@ -39,9 +40,48 @@ export type F = GroupByClause<
     };
     actions: {};
     queries: {};
-  }["objects"]["Todo"]
+  }["objects"]["Todo"],
+  {
+    $select: {
+      locationCity: "approximateDistinct";
+      text: "approximateDistinct";
+    };
+    $groupBy: {
+      text: "exact";
+    };
+  }
 >;
 
-describe("GroupByClause", () => {
+type Q = AggregationResultsWithoutGroups<
+  {
+    metadata: any;
+    objects: {
+      Todo: {
+        type: "object";
+        apiName: "Todo";
+        primaryKeyApiName: "id";
+        primaryKeyType: "double";
+        links: {};
+        properties: {
+          text: {
+            type: "string";
+          };
+          id: {
+            type: "double";
+          };
+        };
+      };
+    };
+    actions: {};
+    queries: {};
+  }["objects"]["Todo"],
+  {
+    locationCity: "approximateDistinct";
+    id: ["max", "sum"];
+    text: "approximateDistinct";
+  }
+>;
+
+describe("AggregationResults", () => {
   it("works", () => {});
 });

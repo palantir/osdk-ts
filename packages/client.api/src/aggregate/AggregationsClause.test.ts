@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  AggregationResultsWithoutGroups,
-  AggregationsResults,
-} from "@osdk/client.api";
 import { describe, it } from "vitest";
+import type { AggregatableKeys } from "./AggregatableKeys.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
-type T_AGG_RESULTS_TEST_1 = AggregationsResults<
+export type huh = AggregatableKeys<
   {
     metadata: any;
     objects: {
@@ -42,19 +40,10 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
     };
     actions: {};
     queries: {};
-  }["objects"]["Todo"],
-  {
-    $select: {
-      locationCity: "approximateDistinct";
-      text: "approximateDistinct";
-    };
-    $groupBy: {
-      text: "exact";
-    };
-  }
+  }["objects"]["Todo"]
 >;
 
-type Q = AggregationResultsWithoutGroups<
+export type Q = AggregationClause<
   {
     metadata: any;
     objects: {
@@ -76,14 +65,9 @@ type Q = AggregationResultsWithoutGroups<
     };
     actions: {};
     queries: {};
-  }["objects"]["Todo"],
-  {
-    locationCity: "approximateDistinct";
-    id: ["max", "sum"];
-    text: "approximateDistinct";
-  }
+  }["objects"]["Todo"]
 >;
 
-describe("AggregationResults", () => {
+describe("AggregationClause", () => {
   it("works", () => {});
 });
