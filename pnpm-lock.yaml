@@ -782,14 +782,13 @@ importers:
         version: 3.23.8
 
   packages/client.api:
-    dependencies:
-      '@osdk/internal.foundry':
-        specifier: workspace:^
-        version: link:../internal.foundry
     devDependencies:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/internal.foundry':
+        specifier: workspace:^
+        version: link:../internal.foundry
       '@types/geojson':
         specifier: ^7946.0.14
         version: 7946.0.14
