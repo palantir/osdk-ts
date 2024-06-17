@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.3.1
+
+### Patch Changes
+
+- 68c0b42: Do not restart auth flow on failed auth callback
+
 ## 2.3.0
 
 ### Minor Changes
