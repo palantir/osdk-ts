@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.16.3
+
+### Patch Changes
+
+- 68c0b42: Fix login page not redirecting when oauth redirect not required
+
 ## 0.16.2
 
 ### Patch Changes
