@@ -62,7 +62,8 @@ describe("AttachmentsTest", () => {
         blob,
       );
     const attachment = assertOkOrThrow(result);
-    const result2: Result<Blob, AttachmentsError> = await attachment.read();
+    const result2: Result<Blob, AttachmentsError> = await attachment
+      .fetchContents();
     const attachmentContent = assertOkOrThrow(result2);
     const attachmentContentText = await attachmentContent.text();
     expect(JSON.parse(attachmentContentText)).toEqual({
@@ -93,7 +94,7 @@ describe("AttachmentsTest", () => {
       );
     const obj = assertOkOrThrow(result);
     const result2: Result<AttachmentMetadata, AttachmentsError> | undefined =
-      await obj.attachment?.getMetadata();
+      await obj.attachment?.fetchMetadata();
     const attachmentMetadata = assertOkOrThrow(result2!);
 
     expect(attachmentMetadata.filename).toEqual("file1.txt");
@@ -111,7 +112,7 @@ describe("AttachmentsTest", () => {
       );
     const obj = assertOkOrThrow(result);
     const result2: Result<AttachmentMetadata, AttachmentsError> | undefined =
-      await obj.attachment2?.getMetadata();
+      await obj.attachment2?.fetchMetadata();
     const attachmentError = assertErrOrThrow(result2!);
 
     expect(attachmentError).toBeDefined();
@@ -125,7 +126,7 @@ describe("AttachmentsTest", () => {
       );
     const obj = assertOkOrThrow(result);
     const result2: Result<Blob, AttachmentsError> | undefined = await obj
-      .attachment?.read();
+      .attachment?.fetchContents();
     const attachmentContent = assertOkOrThrow(result2!);
 
     const attachmentContentText = await attachmentContent.text();
@@ -141,7 +142,7 @@ describe("AttachmentsTest", () => {
       );
     const obj = assertOkOrThrow(result);
     const result2: Result<Blob, AttachmentsError> | undefined = await obj
-      .attachment2?.read();
+      .attachment2?.fetchContents();
     const attachmentError = assertErrOrThrow(result2!);
 
     expect(attachmentError).toBeDefined();
