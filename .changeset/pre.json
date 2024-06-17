@@ -54,5 +54,32 @@
     "@osdk/tests.verify-fallback-package": "0.0.3",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
-  "changesets": []
+  "changesets": [
+    "cuddly-pens-smash",
+    "dirty-hotels-build",
+    "early-coats-sip",
+    "eight-hats-joke",
+    "fast-parents-learn",
+    "four-ways-add",
+    "great-geese-fail",
+    "itchy-radios-own",
+    "khaki-plants-sort",
+    "large-ads-listen",
+    "nervous-parrots-admire",
+    "nervous-pets-return",
+    "pink-insects-itch",
+    "plenty-peaches-scream",
+    "pretty-cherries-hunt",
+    "pretty-dingos-smash",
+    "purple-cameras-invite",
+    "rotten-shirts-cross",
+    "serious-glasses-try",
+    "shy-cougars-remain",
+    "smart-feet-chew",
+    "tasty-kiwis-attack",
+    "thin-eggs-prove",
+    "tough-hats-push",
+    "unlucky-wombats-switch",
+    "wild-plums-yell"
+  ]
 }
