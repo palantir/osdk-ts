@@ -48,5 +48,13 @@
 .aip {
   border: 1px solid #ccc;
   padding: 2px;
-  width: 50%;
+  gap: 10px;
+  width: fit-content;
+}
+
+.aipText {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
 }

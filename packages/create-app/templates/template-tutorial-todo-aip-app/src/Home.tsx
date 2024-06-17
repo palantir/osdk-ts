@@ -70,11 +70,14 @@ function Home() {
               type="button"
               onClick={handleProjectDescriptionRecommendation}
             >
-              <img
-                src={aipLogo}
-                alt="AIP"
-                className={css.image}
-              />
+              <div className={css.aipText}>
+                <span>Get description recommendation</span>
+                <img
+                  src={aipLogo}
+                  alt="AIP"
+                  className={css.image}
+                />
+              </div>
             </button>
           </div>
           <TaskList project={project} />
