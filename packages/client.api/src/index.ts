@@ -62,6 +62,8 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
+export type { Result } from "./object/Result.js";
+export { isOk } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";

@@ -28,6 +28,7 @@ import type {
   LinkedType,
   LinkNames,
   PropertyValueClientToWire,
+  Result,
   WhereClause,
 } from "@osdk/client.api";
 import type {
@@ -41,7 +42,6 @@ import type {
   FetchPageResult,
   SingleOsdkResult,
 } from "../object/FetchPageResult.js";
-import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
