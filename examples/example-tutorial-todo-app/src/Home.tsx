@@ -30,7 +30,7 @@ function Home() {
       <div className={css.tutorialBannerWrapper}>
         <div className={css.tutorialBanner}>
           <p className={css.tutorialBannerTitle}>
-            💡 Welcome to this tutorial!
+            💡 Welcome to To-do app tutorial!
           </p>
           <p>
             The To-do App is implemented with mock in-memory data.
