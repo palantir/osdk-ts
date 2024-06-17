@@ -25,6 +25,8 @@ import type {
   AggregateOptsThatErrors,
   AggregationsResults,
   BaseObjectSet,
+  LinkedType,
+  LinkNames,
   PropertyValueClientToWire,
   WhereClause,
 } from "@osdk/client.api";
@@ -41,7 +43,6 @@ import type {
 } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>

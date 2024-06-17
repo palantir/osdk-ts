@@ -65,6 +65,7 @@ export type {
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
 export {};

@@ -20,6 +20,8 @@ import type {
 } from "@osdk/api";
 import type {
   BaseObjectSet,
+  LinkedType,
+  LinkNames,
   PropertyValueClientToWire,
 } from "@osdk/client.api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
@@ -36,7 +38,6 @@ import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 
 function isObjectTypeDefinition(
