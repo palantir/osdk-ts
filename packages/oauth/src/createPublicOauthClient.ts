@@ -228,7 +228,7 @@ export function createPublicOauthClient(
       if (process?.env?.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
         console.warn(
-          "Failed to get OAuth2 token using PCKE, removing PCKE and starting a new auth flow",
+          "Failed to get OAuth2 token using PKCE, removing PKCE and starting a new auth flow",
           e,
         );
       }
