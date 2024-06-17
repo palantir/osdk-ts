@@ -6,7 +6,7 @@
 .tutorialBanner {
   flex: 1;
   width: 0;
-  background: #646cff;
+  background: rgba(121, 97, 219, 0.7);
   color: #ffffff;
   border-radius: 1em;
   padding: 1em;
@@ -40,15 +40,17 @@
 }
 
 .image {
-  height: 15px;
-  width: 15px;
-  border-radius: 1em;
+  height: 16px;
+  width: 16px;
 }
 
 .aip {
+  background-color: #7961DB;
+  color: #ffffff;
   border: 1px solid #ccc;
   padding: 2px;
   gap: 10px;
+  height: 30px;
   width: fit-content;
 }
 

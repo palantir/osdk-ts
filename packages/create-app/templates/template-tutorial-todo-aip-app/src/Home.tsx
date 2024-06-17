@@ -1,4 +1,4 @@
-import aipLogo from "/aip-logo.svg";
+import aipLogo from "/aip-icon.svg";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
@@ -71,12 +71,12 @@ function Home() {
               onClick={handleProjectDescriptionRecommendation}
             >
               <div className={css.aipText}>
-                <span>Get description recommendation</span>
                 <img
                   src={aipLogo}
                   alt="AIP"
                   className={css.image}
                 />
+                <span>Get description recommendation</span>
               </div>
             </button>
           </div>

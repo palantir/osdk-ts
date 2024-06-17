@@ -1,4 +1,4 @@
-import aipLogo from "/aip-logo.svg";
+import aipLogo from "/aip-icon.svg";
 import type { ChangeEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import css from "./CreateTaskDialog.module.css";
@@ -51,11 +51,11 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
     <Dialog
       isOpen={isOpen}
       buttons={[
-        <button disabled={isCreating} onClick={handleSubmit} key="create">
-          Create task
-        </button>,
         <button disabled={isCreating} onClick={onClose} key="cancel">
           Cancel
+        </button>,
+        <button disabled={isCreating} onClick={handleSubmit} key="create">
+          Create task
         </button>,
       ]}
     >
