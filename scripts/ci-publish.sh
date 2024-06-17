@@ -14,7 +14,7 @@ if [ -f "${SCRIPT_DIR}/../.changeset/pre.json" ]; then
     MODE=$($JQ --raw-output .mode "${SCRIPT_DIR}/../.changeset/pre.json")
     
     if [ "$MODE" == "pre" ]; then
-        TAG=$(JQ --raw-output .tag "${SCRIPT_DIR}/../.changeset/pre.json")
+        TAG=$($JQ --raw-output .tag "${SCRIPT_DIR}/../.changeset/pre.json")
     else
         echo "Invalid mode for releasing: $MODE"
         exit 100
