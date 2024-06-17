@@ -41,8 +41,3 @@ export type AggregationResultsWithoutGroups<
           : OsdkObjectPropertyType<Q["properties"][PropName]>;
     };
 };
-
-export type AggregationCountResult<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
-> = "$count" extends keyof A ? { $count: number } : {};

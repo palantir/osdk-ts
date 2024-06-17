@@ -16,10 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { OsdkObjectPropertyType } from "../../Definitions.js";
-import type {
-  AggregationCountResult,
-  AggregationResultsWithoutGroups,
-} from "./AggregationResultsWithoutGroups.js";
+import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
@@ -43,6 +40,5 @@ export type AggregationResultsWithGroups<
         >;
     };
   }
-  & AggregationCountResult<Q, A>
   & AggregationResultsWithoutGroups<Q, A>
 )[];
