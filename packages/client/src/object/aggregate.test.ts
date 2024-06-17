@@ -18,8 +18,17 @@ import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
-import { describe, expect, expectTypeOf, it, type Mock, vi } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+  type Mock,
+  vi,
+} from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
+import type { MinimalClient } from "../MinimalClientContext.js";
 import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
 import { aggregate } from "./aggregate.js";
@@ -135,6 +144,27 @@ const mockOntology = {
 type mockOntology = typeof mockOntology;
 interface MockOntology extends mockOntology {}
 
+let mockFetch: Mock;
+let clientCtx: MinimalClient;
+
+beforeEach(() => {
+  mockFetch = vi.fn();
+
+  mockFetch.mockResolvedValue({
+    ok: true,
+    status: 200,
+    json: () => new Promise((resolve) => resolve(aggregationResponse)),
+  });
+
+  clientCtx = createMinimalClient(
+    mockOntology.metadata,
+    "https://host.com",
+    async () => "",
+    {},
+    mockFetch,
+  );
+});
+
 const aggregationResponse: AggregateObjectsResponseV2 = {
   accuracy: "APPROXIMATE",
   data: [
@@ -166,22 +196,6 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
 
 describe("aggregate", () => {
   it("works", async () => {
-    const mockFetch: Mock = vi.fn();
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => new Promise((resolve) => resolve(aggregationResponse)),
-    });
-
-    const clientCtx = createMinimalClient(
-      mockOntology.metadata,
-      "https://host.com",
-      async () => "",
-      {},
-      mockFetch,
-    );
-
     const notGrouped = await aggregate(
       clientCtx,
       Todo,
@@ -426,22 +440,6 @@ describe("aggregate", () => {
   });
 
   it("works with $orderBy (no groups)", async () => {
-    const mockFetch: Mock = vi.fn();
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => new Promise((resolve) => resolve(aggregationResponse)),
-    });
-
-    const clientCtx = createMinimalClient(
-      mockOntology.metadata,
-      "https://host.com",
-      async () => "",
-      {},
-      mockFetch,
-    );
-
     const notGrouped = await aggregate(
       clientCtx,
       Todo,
@@ -510,22 +508,6 @@ describe("aggregate", () => {
   });
 
   it("works with $orderBy (1 group)", async () => {
-    const mockFetch: Mock = vi.fn();
-
-    mockFetch.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => new Promise((resolve) => resolve(aggregationResponse)),
-    });
-
-    const clientCtx = createMinimalClient(
-      mockOntology.metadata,
-      "https://host.com",
-      async () => "",
-      {},
-      mockFetch,
-    );
-
     const grouped = await aggregate(
       clientCtx,
       Todo,
@@ -589,14 +571,6 @@ describe("aggregate", () => {
   });
 
   it("prohibits ordered select with multiple groupBy", async () => {
-    const clientCtx = createMinimalClient(
-      mockOntology.metadata,
-      "https://host.com",
-      async () => "",
-      {},
-      vi.fn(),
-    );
-
     aggregate(
       clientCtx,
       Todo,
