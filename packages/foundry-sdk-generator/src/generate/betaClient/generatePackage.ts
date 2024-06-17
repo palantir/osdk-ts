@@ -51,7 +51,7 @@ export async function generatePackage(
   const inMemoryFileSystem: { [fileName: string]: string } = {};
   await generateClientSdkVersionOneDotOne(
     ontology,
-    `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
+    `typescript-osdk/${options.packageVersion} ${USER_AGENT}`,
     {
       writeFile: async (path, contents) => {
         inMemoryFileSystem[normalize(path)] = contents;

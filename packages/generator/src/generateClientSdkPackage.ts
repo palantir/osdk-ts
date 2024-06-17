@@ -42,7 +42,7 @@ export async function generateClientSdkPackage(
       ? generateClientSdkVersionTwoPointZero
       : undefined!)(
         ontology,
-        `typescript-sdk/${packageVersion} osdk-cli/${cliVersion}`,
+        `typescript-osdk/${packageVersion} osdk-cli/${cliVersion}`,
         minimalFs,
         outDir,
         packageType,

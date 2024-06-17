@@ -26,7 +26,7 @@ describe(generateMetadataFile, () => {
 
     await generateMetadataFile(
       TodoWireOntology,
-      "typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0",
+      "typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -53,7 +53,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'ridHere';
           ontologyApiName: 'OntologyApiName';
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0';
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0';
         };
         objects: {
           Todo: typeof Todo;
@@ -70,7 +70,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'ridHere' as const,
           ontologyApiName: 'OntologyApiName' as const,
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0' as const,
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0' as const,
         },
         objects: {
           Todo,
@@ -163,7 +163,7 @@ describe(generateMetadataFile, () => {
         interfaceTypes: {},
         sharedPropertyTypes: {},
       },
-      "typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0",
+      "typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -190,7 +190,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid';
           ontologyApiName: 'apiName';
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0';
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0';
         };
         objects: {
           foo: typeof foo;
@@ -207,7 +207,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid' as const,
           ontologyApiName: 'apiName' as const,
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0' as const,
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0' as const,
         },
         objects: {
           foo,
@@ -252,7 +252,7 @@ describe(generateMetadataFile, () => {
         interfaceTypes: {},
         sharedPropertyTypes: {},
       },
-      "typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0",
+      "typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0",
       helper.minimalFiles,
       BASE_PATH,
     );
@@ -274,7 +274,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid';
           ontologyApiName: 'apiName';
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0';
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0';
         };
         objects: {};
         actions: {};
@@ -283,7 +283,7 @@ describe(generateMetadataFile, () => {
         metadata: {
           ontologyRid: 'rid' as const,
           ontologyApiName: 'apiName' as const,
-          userAgent: 'typescript-sdk/0.0.0 typescript-sdk-generator/0.0.0' as const,
+          userAgent: 'typescript-osdk/0.0.0 typescript-osdk-generator/0.0.0' as const,
         },
         objects: {},
         actions: {},

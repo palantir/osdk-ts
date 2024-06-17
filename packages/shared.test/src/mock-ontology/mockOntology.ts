@@ -25,7 +25,7 @@ import { ObjectTypeWithAllPropertyTypes } from "./ObjectTypeWithAllPropertyTypes
 import { ObjectTypeWithReservedNames } from "./ObjectTypeWithReservedNames";
 
 const osdkMetadata = {
-  extraUserAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+  extraUserAgent: "typescript-osdk/0.0.0 osdk-cli/0.0.0",
 };
 
 const Task: TaskDef = {
@@ -166,7 +166,7 @@ export const MockOntology = {
   metadata: {
     ontologyRid: "",
     ontologyApiName: "Ontology",
-    userAgent: "typescript-sdk/0.0.0 osdk-cli/0.0.0",
+    userAgent: "typescript-osdk/0.0.0 osdk-cli/0.0.0",
   },
   objects: {
     Task,
