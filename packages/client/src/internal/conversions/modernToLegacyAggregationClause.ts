@@ -30,27 +30,29 @@ const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
 export function modernToLegacyAggregationClause<
   AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
 >(select: AC) {
-  return Object.entries(select).flatMap<AggregationV2>(([k, v]) => {
-    if (k === "$count") {
-      return {
-        type: "count",
-        name: "count",
-        direction: directionFieldMap(v),
-      };
-    }
+  return Object.entries(select).flatMap<AggregationV2>(
+    ([propAndMetric, aggregationType]) => {
+      if (propAndMetric === "$count") {
+        return {
+          type: "count",
+          name: "count",
+          direction: directionFieldMap(aggregationType),
+        };
+      }
 
-    // k is property:metric
-    const colonPos = k.lastIndexOf(":");
-    const property = k.slice(0, colonPos);
-    const metric = k.slice(colonPos + 1);
+      // k is property:metric
+      const colonPos = propAndMetric.lastIndexOf(":");
+      const property = propAndMetric.slice(0, colonPos);
+      const metric = propAndMetric.slice(colonPos + 1);
 
-    return [
-      {
-        type: metric as StringAggregateOption | NumericAggregateOption,
-        name: `${property}.${metric}`,
-        field: property,
-        direction: directionFieldMap(v),
-      },
-    ];
-  });
+      return [
+        {
+          type: metric as StringAggregateOption | NumericAggregateOption,
+          name: `${property}.${metric}`,
+          field: property,
+          direction: directionFieldMap(aggregationType),
+        },
+      ];
+    },
+  );
 }
