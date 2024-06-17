@@ -33,7 +33,7 @@ import {
 
 export class PublicClientAuth implements Auth {
   private palantirRefreshToken = "palantir_refresh_token" as const;
-  private palantirPcke = "palantir_pcke" as const;
+  private palantirPkce = "palantir_pkce" as const;
 
   private nextSubscriberId = 0;
   private onSignInSubscribers: { [id: string]: () => void } = {};
@@ -119,8 +119,8 @@ export class PublicClientAuth implements Auth {
     }
 
     // 2. If there is no refresh token we are likely trying to perform the callback
-    const pcke = localStorage.getItem(this.palantirPcke);
-    if (pcke && shouldMakeAuthRequest) {
+    const pkce = sessionStorage.getItem(this.palantirPkce);
+    if (pkce && shouldMakeAuthRequest) {
       try {
         const callbackUrl = window.location.href;
         this.token = await getTokenWithCodeVerifier(
@@ -128,7 +128,7 @@ export class PublicClientAuth implements Auth {
           this.options.redirectUrl,
           callbackUrl,
           this.options.url,
-          pcke,
+          pkce,
           this.options.fetchFn,
           this.options.multipassContextPath,
         );
@@ -142,10 +142,11 @@ export class PublicClientAuth implements Auth {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.warn(
-          "Failed to get OAuth2 token using PCKE, removing PCKE and starting a new auth flow",
+          "Failed to get OAuth2 token using PKCE, removing PKCE",
           e,
         );
-        localStorage.removeItem(this.palantirPcke);
+        sessionStorage.removeItem(this.palantirPkce);
+        throw e;
       }
     }
 
@@ -158,7 +159,7 @@ export class PublicClientAuth implements Auth {
         this.options.multipassContextPath,
         this.options.scopes,
       );
-      localStorage.setItem(this.palantirPcke, authorizeRequest.codeVerifier);
+      sessionStorage.setItem(this.palantirPkce, authorizeRequest.codeVerifier);
       window.location.href = authorizeRequest.url;
 
       // Give time for redirect to happen
@@ -216,7 +217,7 @@ export class PublicClientAuth implements Auth {
     this.clearRefreshTimeout();
 
     // Clean up local storage
-    localStorage.removeItem(this.palantirPcke);
+    sessionStorage.removeItem(this.palantirPkce);
     localStorage.removeItem(this.palantirRefreshToken);
 
     // Remove all references to this token
