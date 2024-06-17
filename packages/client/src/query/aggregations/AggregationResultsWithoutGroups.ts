@@ -21,28 +21,25 @@ import type {
   UnorderedAggregationClause,
 } from "./AggregationsClause.js";
 
+type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
+  ? PropName
+  : T extends "$count" ? T
+  : never;
+
+type ExtractMetricNameForPropName<T, PropName extends string> = T extends
+  `${PropName}:${infer MetricName}` ? MetricName : never;
+
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
   AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = {
-  [
-    AGG_KEY in keyof AC as (AGG_KEY extends `${infer PREFIX}:${string}` ? PREFIX
-      : never)
-  ]: {
-    [
-      AGG_KEY2
-        in keyof AC as (AGG_KEY2 extends
-          `${infer PROP_NAME}:${infer METRIC_NAME}`
-          ? (AGG_KEY extends `${PROP_NAME}:${string}` ? METRIC_NAME : never)
-          : never)
-    ]: AGG_KEY2 extends `${infer PROP_NAME}:${infer METRIC_NAME}`
-      ? (AGG_KEY extends `${PROP_NAME}:${string}` ? (
-          METRIC_NAME extends "approximateDistinct" ? number
-            : (OsdkObjectPropertyType<Q["properties"][PROP_NAME]>)
-        )
-        : never)
-      : never;
-  };
+  [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
+    ? number
+    : {
+      [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
+        MetricName extends "approximateDistinct" ? number
+          : OsdkObjectPropertyType<Q["properties"][PropName]>;
+    };
 };
 
 export type AggregationCountResult<
