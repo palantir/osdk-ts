@@ -15,8 +15,8 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
+import type { GroupByClause } from "../groupby/GroupByClause.js";
+import type { AggregateOpts } from "./AggregateOpts.js";
 
 export type AggregateOptsThatErrors<
   Q extends ObjectOrInterfaceDefinition,

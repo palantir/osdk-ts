@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
+import type { AggregatableKeys, AggregationClause } from "@osdk/client.api";
 import { describe, it } from "vitest";
-import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregationClause } from "./AggregationsClause.js";
 
 export type huh = AggregatableKeys<
   {

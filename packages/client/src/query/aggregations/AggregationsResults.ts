@@ -15,8 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregateOpts } from "./AggregateOpts.js";
+import type { AggregatableKeys, AggregateOpts } from "@osdk/client.api";
 import type { AggregationResultsWithGroups } from "./AggregationResultsWithGroups.js";
 import type {
   AggregationCountResult,

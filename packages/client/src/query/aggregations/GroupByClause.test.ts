@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { GroupByClause } from "@osdk/client.api";
 import { describe, it } from "vitest";
-import type { GroupByClause } from "./GroupByClause.js";
 
 export type F = GroupByClause<
   {

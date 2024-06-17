@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import type { AggregationClause } from "@osdk/client.api";
 import type { AggregationV2 } from "@osdk/internal.foundry";
-import type { AggregationClause } from "../../query/aggregations/AggregationsClause.js";
 
 export function modernToLegacyAggregationClause<
   AC extends AggregationClause<any>,

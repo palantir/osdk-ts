@@ -15,9 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
-import type { BBox, Position } from "geojson";
-import invariant from "tiny-invariant";
+import { DistanceUnitMapping } from "@osdk/client.api";
 import type {
   AndWhereClause,
   GeoFilter_Intersects,
@@ -26,8 +24,10 @@ import type {
   OrWhereClause,
   PossibleWhereClauseFilters,
   WhereClause,
-} from "../../query/WhereClause.js";
-import { DistanceUnitMapping } from "../../query/WhereClause.js";
+} from "@osdk/client.api";
+import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
+import type { BBox, Position } from "geojson";
+import invariant from "tiny-invariant";
 
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,

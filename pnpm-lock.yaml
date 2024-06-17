@@ -782,6 +782,10 @@ importers:
         version: 3.23.8
 
   packages/client.api:
+    dependencies:
+      '@osdk/internal.foundry':
+        specifier: workspace:^
+        version: link:../internal.foundry
     devDependencies:
       '@osdk/api':
         specifier: workspace:^

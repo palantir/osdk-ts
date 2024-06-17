@@ -15,6 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { AggregateOpts, AggregateOptsThatErrors } from "@osdk/client.api";
 import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
@@ -27,12 +28,10 @@ import { modernToLegacyAggregationClause } from "../internal/conversions/modernT
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
 import type { AggregationResultsWithGroups } from "../query/aggregations/AggregationResultsWithGroups.js";
 import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
-import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
 
 /** @deprecated use `aggregate` */
 export async function aggregateOrThrow<

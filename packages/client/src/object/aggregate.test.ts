@@ -15,15 +15,17 @@
  */
 
 import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
+import type {
+  AggregateOpts,
+  AggregateOptsThatErrors,
+  GroupByClause,
+} from "@osdk/client.api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import { describe, expectTypeOf, it, type Mock, vi } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
 import { aggregate } from "./aggregate.js";
-import type { AggregateOptsThatErrors } from "./AggregateOptsThatErrors.js";
 
 interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";

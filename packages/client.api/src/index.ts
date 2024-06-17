@@ -25,6 +25,27 @@ export type {
   ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./actions/Actions.js";
+export type { AggregatableKeys } from "./aggregate/AggregatableKeys.js";
+export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
+export type { AggregateOptsThatErrors } from "./aggregate/AggregateOptsThatErrors.js";
+export type { AggregationClause } from "./aggregate/AggregationsClause.js";
+export type {
+  AndWhereClause,
+  GeoFilter,
+  GeoFilter_Intersects,
+  GeoFilter_Within,
+  NotWhereClause,
+  OrWhereClause,
+  PossibleWhereClauseFilters,
+  WhereClause,
+} from "./aggregate/WhereClause.js";
+export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
+export type {
+  AllGroupByValues,
+  GroupByClause,
+  GroupByRange,
+} from "./groupby/GroupByClause.js";
+export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,

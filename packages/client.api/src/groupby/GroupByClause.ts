@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregatableKeys } from "./AggregatableKeys.js";
+import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
