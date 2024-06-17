@@ -19,8 +19,11 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { OsdkBase, OsdkObjectPrimaryKeyType } from "@osdk/client.api";
-import type { OsdkObjectPropertyType } from "./Definitions.js";
+import type {
+  OsdkBase,
+  OsdkObjectPrimaryKeyType,
+  OsdkObjectPropertyType,
+} from "@osdk/client.api";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 

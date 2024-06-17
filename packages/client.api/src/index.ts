@@ -28,7 +28,13 @@ export type {
 export type { AggregatableKeys } from "./aggregate/AggregatableKeys.js";
 export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
 export type { AggregateOptsThatErrors } from "./aggregate/AggregateOptsThatErrors.js";
+export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";
+export type {
+  AggregationCountResult,
+  AggregationResultsWithoutGroups,
+} from "./aggregate/AggregationResultsWithoutGroups.js";
 export type { AggregationClause } from "./aggregate/AggregationsClause.js";
+export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type {
   AndWhereClause,
   GeoFilter,
@@ -40,6 +46,7 @@ export type {
   WhereClause,
 } from "./aggregate/WhereClause.js";
 export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
+export type { OsdkObjectPropertyType } from "./Definitions.js";
 export type {
   AllGroupByValues,
   GroupByClause,

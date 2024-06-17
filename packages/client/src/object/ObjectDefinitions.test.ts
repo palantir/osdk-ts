@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import type { Attachment } from "@osdk/client.api";
+import type { Attachment, OsdkObjectPropertyType } from "@osdk/client.api";
 import { describe, expectTypeOf, it } from "vitest";
-import type { OsdkObjectPropertyType } from "../Definitions.js";
 
 describe("Object definitions", () => {
   it("correctly upgrades attachment types at conversion time", () => {

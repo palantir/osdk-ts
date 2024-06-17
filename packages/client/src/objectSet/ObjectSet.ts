@@ -23,6 +23,7 @@ import type {
 import type {
   AggregateOpts,
   AggregateOptsThatErrors,
+  AggregationsResults,
   BaseObjectSet,
   PropertyValueClientToWire,
   WhereClause,
@@ -40,7 +41,6 @@ import type {
 } from "../object/FetchPageResult.js";
 import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
 import type { LinkedType, LinkNames } from "./LinkUtils.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>

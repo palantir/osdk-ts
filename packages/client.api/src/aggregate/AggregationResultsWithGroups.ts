@@ -15,16 +15,13 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type {
-  AggregationClause,
-  GroupByClause,
-  GroupByRange,
-} from "@osdk/client.api";
-import type { OsdkObjectPropertyType } from "../../Definitions.js";
+import type { OsdkObjectPropertyType } from "../Definitions.js";
+import type { GroupByClause, GroupByRange } from "../groupby/GroupByClause.js";
 import type {
   AggregationCountResult,
   AggregationResultsWithoutGroups,
 } from "./AggregationResultsWithoutGroups.js";
+import type { AggregationClause } from "./AggregationsClause.js";
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,

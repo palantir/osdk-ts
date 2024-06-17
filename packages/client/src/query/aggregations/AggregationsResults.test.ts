@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type {
+  AggregationResultsWithoutGroups,
+  AggregationsResults,
+} from "@osdk/client.api";
 import { describe, it } from "vitest";
-import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
-import type { AggregationsResults } from "./AggregationsResults.js";
 
 type T_AGG_RESULTS_TEST_1 = AggregationsResults<
   {

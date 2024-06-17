@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypePropertyDefinition } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "@osdk/client.api";
 import { describe, expectTypeOf, it } from "vitest";
-import type { OsdkObjectPropertyType } from "./Definitions.js";
 
 describe("OsdkObjectPropertyType", () => {
   describe("{ nullable: false } property", () => {
