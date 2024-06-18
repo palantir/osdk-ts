@@ -14,32 +14,13 @@
  * limitations under the License.
  */
 
-import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { QueryObjectResponse } from "../queries/queryObjectResponse.js";
+import type {
+  Attachment,
+  AttachmentUpload,
+  QueryObjectResponse,
+} from "@osdk/client.api";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
 
-/**
- * Map from the DataValue type to the typescript type that we return
- */
-export interface DataValueWireToClient {
-  attachment: Attachment;
-  boolean: boolean;
-  byte: number;
-  datetime: string;
-  decimal: string;
-  float: number;
-  double: number;
-  integer: number;
-  long: string;
-  marking: string;
-  null: null;
-  short: number;
-  string: string;
-  timestamp: string;
-}
-
-/**
- * Map from the DataValue type to the typescript type that we accept
- */
 export interface DataValueClientToWire {
   attachment: Attachment | AttachmentUpload;
   boolean: boolean;
@@ -60,5 +41,5 @@ export interface DataValueClientToWire {
   threeDimensionalAggregation: Record<any, Record<any, any>>;
   struct: Record<string, any>;
   object: QueryObjectResponse<any>;
-  objectSet: never;
+  objectSet: ObjectSet<any>;
 }

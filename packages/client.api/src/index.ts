@@ -26,6 +26,10 @@ export type {
   OsdkActionParameters,
 } from "./actions/Actions.js";
 export type {
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "./mapping/DataValueMapping.js";
+export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
@@ -38,7 +42,12 @@ export type {
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
-export type { QuerySignatureFromDef } from "./queries/Queries.js";
+export type {
+  QueryParameterType,
+  QueryReturnType,
+  QuerySignatureFromDef,
+} from "./queries/Queries.js";
+export type { QueryObjectResponse } from "./queries/queryObjectResponse.js";
 export type { NOOP } from "./util/NOOP.js";
 
 export {};

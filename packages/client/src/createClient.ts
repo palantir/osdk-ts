@@ -38,6 +38,7 @@ import { isAttachment } from "./object/Attachment.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { createQueryInvoker } from "./queries/createQueryInvoker.js";
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
@@ -81,7 +82,9 @@ export function createClientInternal(
         any
       > as any;
     } else if (o.type === "query") {
-      return undefined as any;
+      return createQueryInvoker(clientCtx, o) as QuerySignatureFromDef<
+        any
+      > as any;
     } else {
       throw new Error("not implemented");
     }

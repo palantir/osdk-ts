@@ -19,7 +19,7 @@ import type {
   QueryDataTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
-import type { NOOP } from "../index.js";
+import type { DataValueClientToWire, NOOP } from "../index.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
 
 export type Queries<O extends OntologyDefinition<any>> = {
@@ -36,7 +36,10 @@ export type QueryParameterType<
   T extends Record<any, QueryDataTypeDefinition<any>>,
 > = NOOP<PartialByNotStrict<{ [K in keyof T]: T[K] }, OptionalQueryParams<T>>>;
 
-export type QueryReturnType<T extends QueryDataTypeDefinition<any>> = T;
+export type QueryReturnType<T extends QueryDataTypeDefinition<any>> =
+  T["type"] extends keyof DataValueClientToWire
+    ? DataValueClientToWire[T["type"]]
+    : never;
 
 type OptionalQueryParams<T extends Record<any, QueryDataTypeDefinition<any>>> =
   {

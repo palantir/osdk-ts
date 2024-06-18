@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { OsdkMetadata } from "../OsdkMetadata.js";
+
 export interface QueryDefinition<Q extends string, K extends string> {
   type: "query";
   apiName: Q;
@@ -22,6 +24,7 @@ export interface QueryDefinition<Q extends string, K extends string> {
   version: string;
   parameters: Record<string, QueryParameterDefinition<K>>;
   output: QueryDataTypeDefinition<K>;
+  osdkMetadata?: OsdkMetadata;
 }
 
 export type QueryParameterDefinition<K extends string> = {
