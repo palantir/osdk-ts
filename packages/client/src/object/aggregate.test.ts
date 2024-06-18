@@ -24,6 +24,7 @@ import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
+  beforeAll,
   beforeEach,
   describe,
   expect,
@@ -147,7 +148,7 @@ interface MockOntology extends mockOntology {}
 let mockFetch: Mock;
 let clientCtx: MinimalClient;
 
-beforeEach(() => {
+beforeAll(() => {
   mockFetch = vi.fn();
 
   mockFetch.mockResolvedValue({
