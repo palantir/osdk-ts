@@ -38,7 +38,6 @@ export function modernToLegacyAggregationClause<
         };
       }
 
-      // k is property:metric
       const colonPos = propAndMetric.lastIndexOf(":");
       const property = propAndMetric.slice(0, colonPos);
       const metric = propAndMetric.slice(colonPos + 1);
