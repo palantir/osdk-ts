@@ -25,15 +25,20 @@ export type {
   ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./actions/Actions.js";
-export type { AggregatableKeys } from "./aggregate/AggregatableKeys.js";
-export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
-export type { AggregateOptsThatErrors } from "./aggregate/AggregateOptsThatErrors.js";
-export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";
 export type {
-  AggregationCountResult,
-  AggregationResultsWithoutGroups,
-} from "./aggregate/AggregationResultsWithoutGroups.js";
-export type { AggregationClause } from "./aggregate/AggregationsClause.js";
+  AggregatableKeys,
+  NumericAggregateOption,
+  StringAggregateOption,
+  ValidAggregationKeys,
+} from "./aggregate/AggregatableKeys.js";
+export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
+export type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "./aggregate/AggregateOptsThatErrors.js";
+export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";
+export type { AggregationResultsWithoutGroups } from "./aggregate/AggregationResultsWithoutGroups.js";
+export type {
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
 export type {
   AndWhereClause,

@@ -17,7 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type {
   AggregateOpts,
-  AggregateOptsThatErrors,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "@osdk/client.api";
@@ -47,7 +47,7 @@ export async function aggregateOrThrow<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AggregateOptsThatErrors<Q, AO>,
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
 }
@@ -62,7 +62,7 @@ export async function aggregate<
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-  req: AggregateOptsThatErrors<Q, AO>,
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
 ): Promise<AggregationsResults<Q, AO>> {
   const body: AggregateObjectsRequestV2 = {
     aggregation: modernToLegacyAggregationClause<AO["$select"]>(
@@ -96,7 +96,7 @@ export async function aggregate<
 
     return {
       ...aggregationToCountResult(result.data[0]),
-      ...legacyToModernSingleAggregationResult<AO["$select"]>(
+      ...legacyToModernSingleAggregationResult(
         result.data[0],
       ),
     } as any;

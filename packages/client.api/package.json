@@ -33,6 +33,7 @@
     "@osdk/api": "workspace:^",
     "@osdk/internal.foundry": "workspace:^",
     "@types/geojson": "^7946.0.14",
+    "type-fest": "^4.18.2",
     "typescript": "^5.4.5"
   },
   "publishConfig": {

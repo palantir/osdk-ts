@@ -15,10 +15,27 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { SingleKeyObject } from "type-fest";
 import type { GroupByClause } from "../groupby/GroupByClause.js";
 import type { AggregateOpts } from "./AggregateOpts.js";
+import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 
-export type AggregateOptsThatErrors<
+export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+  Q extends ObjectOrInterfaceDefinition,
+  AO extends AggregateOpts<Q>,
+> = SingleKeyObject<AO["$groupBy"]> extends never ? (
+    AO["$select"] extends UnorderedAggregationClause<Q>
+      ? AggregateOptsThatErrors<Q, AO>
+      : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO>
+      : {
+        $groupBy: AO["$groupBy"];
+        $select: UnorderedAggregationClause<Q>;
+        $where?: AO["$where"];
+      }
+  )
+  : AggregateOptsThatErrors<Q, AO>;
+
+type AggregateOptsThatErrors<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
 > =

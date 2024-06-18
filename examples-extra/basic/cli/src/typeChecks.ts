@@ -48,11 +48,11 @@ export async function typeChecks(client: Client) {
     const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
       .aggregate({
         $select: {
-          integer: "sum",
-          float: "sum",
-          decimal: "sum",
-          short: ["max"],
-          string: "approximateDistinct",
+          "integer:sum": "unordered",
+          "float:sum": "unordered",
+          "decimal:sum": "unordered",
+          "short:max": "unordered",
+          "string:approximateDistinct": "unordered",
         },
         $groupBy: {
           string: "exact",

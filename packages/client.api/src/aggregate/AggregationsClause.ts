@@ -15,28 +15,11 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregatableKeys } from "@osdk/client.api";
+import type { ValidAggregationKeys } from "@osdk/client.api";
 
-type StringAggregateOption = "approximateDistinct";
-type NumericAggregateOption =
-  | "min"
-  | "max"
-  | "sum"
-  | "avg"
-  | "approximateDistinct";
+export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
+  { [AK in ValidAggregationKeys<Q>]?: "unordered" };
 
-type totalCountOption = { $count?: true };
-
-export type AggregationClause<
-  Q extends ObjectOrInterfaceDefinition,
-  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
-> =
-  & {
-    [P in K]?: Q["properties"][P]["type"] extends "string"
-      ? StringAggregateOption | StringAggregateOption[]
-      : Q["properties"][P]["type"] extends
-        "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
-        ? NumericAggregateOption | NumericAggregateOption[]
-      : never;
-  }
-  & totalCountOption;
+export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
+  [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
+};

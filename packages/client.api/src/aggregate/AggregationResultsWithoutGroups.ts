@@ -15,26 +15,29 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { AggregationClause } from "@osdk/client.api";
+import type {
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "@osdk/client.api";
 import type { OsdkObjectPropertyType } from "../Definitions.js";
-import type { StringArrayToUnion } from "../util/StringArrayToUnion.js";
 
-type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
-  AC[P] extends readonly string[] | string ? P : never;
+type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
+  ? PropName
+  : T extends "$count" ? T
+  : never;
+
+type ExtractMetricNameForPropName<T, PropName extends string> = T extends
+  `${PropName}:${infer MetricName}` ? MetricName : never;
 
 export type AggregationResultsWithoutGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  AC extends AggregationClause<Q>,
+  AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
 > = {
-  [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends
-    readonly string[] | string ? {
-      [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number
-        : OsdkObjectPropertyType<Q["properties"][P]>;
-    }
-    : never;
+  [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count"
+    ? number
+    : {
+      [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
+        MetricName extends "approximateDistinct" ? number
+          : OsdkObjectPropertyType<Q["properties"][PropName]>;
+    };
 };
-
-export type AggregationCountResult<
-  Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends AggregationClause<Q>,
-> = "$count" extends keyof A ? { $count: number } : {};

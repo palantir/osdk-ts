@@ -22,7 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   AggregateOpts,
-  AggregateOptsThatErrors,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   AggregationsResults,
   BaseObjectSet,
   LinkedType,
@@ -81,7 +81,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends MinimalObjectSet<Q>
 {
   aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrors<Q, AO>,
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
   where: (
