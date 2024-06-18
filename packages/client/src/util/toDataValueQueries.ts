@@ -42,8 +42,8 @@ export async function toDataValueQueries<T extends string>(
     return value;
   }
 
-  // arrays and sets are both sent over the wire as arrays
-  if (Array.isArray(value) || value instanceof Set) {
+  // LOOK AT: For some reason, query parameter types do not specify arrays as an allowed type
+  if (Array.isArray(value)) {
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
@@ -52,78 +52,94 @@ export async function toDataValueQueries<T extends string>(
     return Promise.all(promiseArray);
   }
 
-  // attachments just send the rid directly
-  if (isAttachment(value) && desiredType.type === "attachment") {
-    return value.rid;
-  }
+  switch (desiredType.type) {
+    case "attachment":
+      // attachments just send the rid directly
+      if (isAttachment(value)) {
+        return value.rid;
+      }
 
-  // For uploads, we need to upload ourselves first to get the RID of the attachment
-  if (isAttachmentUpload(value)) {
-    const attachment = await Ontologies.Attachments.uploadAttachment(
-      client,
-      value,
-      {
-        filename: value.name,
-      },
-      {
-        "Content-Length": value.size.toString(),
-        "Content-Type": value.type,
-      },
-    );
-    return await toDataValueQueries(
-      new Attachment(attachment.rid),
-      client,
-      desiredType,
-    );
-  }
+      // For uploads, we need to upload ourselves first to get the RID of the attachment
+      if (isAttachmentUpload(value)) {
+        const attachment = await Ontologies.Attachments.uploadAttachment(
+          client,
+          value,
+          {
+            filename: value.name,
+          },
+          {
+            "Content-Length": value.size.toString(),
+            "Content-Type": value.type,
+          },
+        );
+        return await toDataValueQueries(
+          new Attachment(attachment.rid),
+          client,
+          desiredType,
+        );
+      }
 
-  // objects just send the JSON'd primaryKey
-  if (isOntologyObjectV2(value)) {
-    return await toDataValueQueries(value.__primaryKey, client, desiredType);
-  }
+    case "set":
+      if (value instanceof Set) {
+        const promiseArray = Array.from(
+          value,
+          async (innerValue) =>
+            await toDataValueQueries(innerValue, client, desiredType),
+        );
+        return Promise.all(promiseArray);
+      }
+    case "object":
+      // objects just send the JSON'd primaryKey
+      if (isOntologyObjectV2(value)) {
+        return await toDataValueQueries(
+          value.__primaryKey,
+          client,
+          desiredType,
+        );
+      }
+    case "objectSet":
+      // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
+      if (isWireObjectSet(value)) {
+        return value;
+      }
+      if (isObjectSet(value)) {
+        return getWireObjectSet(value);
+      }
 
-  // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
-  if (isWireObjectSet(value)) {
-    return value;
+    case "twoDimensionalAggregation":
+      return {
+        groups: Object.entries(value).map(([key, values]) => ({
+          key,
+          values,
+        })),
+      };
+    case "threeDimensionalAggregation":
+      return {
+        groups: Object.entries(value).map(([key, values]) => ({
+          key,
+          groups: Object.entries(values).map(([key, value]) => ({
+            key,
+            value,
+          })),
+        })),
+      };
+    case "struct":
+      return Object.entries(value).reduce(
+        async (promisedAcc, [key, structValue]) => {
+          const acc = await promisedAcc;
+          acc[key] = await toDataValueQueries(structValue, client, desiredType);
+          return acc;
+        },
+        Promise.resolve({} as { [key: string]: DataValue }),
+      );
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "string":
+    case "timestamp":
+      return value;
   }
-  if (isObjectSet(value)) {
-    return getWireObjectSet(value);
-  }
-
-  if (desiredType.type === "twoDimensionalAggregation") {
-    return {
-      groups: Object.entries(value).map(([key, values]) => ({
-        key,
-        values,
-      })),
-    };
-  }
-
-  if (desiredType.type === "threeDimensionalAggregation") {
-    return {
-      groups: Object.entries(value).map(([key, values]) => ({
-        key,
-        groups: Object.entries(values).map(([key, value]) => ({ key, value })),
-      })),
-    };
-  }
-
-  // TODO (during queries implementation)
-  // two dimensional aggregation
-  // three dimensional aggregation
-
-  // struct
-  if (typeof value === "object" && desiredType.type === "struct") {
-    return Object.entries(value).reduce(
-      async (promisedAcc, [key, structValue]) => {
-        const acc = await promisedAcc;
-        acc[key] = await toDataValueQueries(structValue, client, desiredType);
-        return acc;
-      },
-      Promise.resolve({} as { [key: string]: DataValue }),
-    );
-  }
-
-  // expected to pass through - boolean, byte, date, decimal, float, double, integer, long, short, string, timestamp
-  return value;
 }
