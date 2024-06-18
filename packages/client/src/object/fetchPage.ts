@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { Result } from "@osdk/client.api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -41,7 +42,6 @@ import type {
   NullabilityAdherence,
 } from "./FetchPageArgs.js";
 import type { FetchPageResult } from "./FetchPageResult.js";
-import type { Result } from "./Result.js";
 
 export function augment<
   X extends ObjectOrInterfaceDefinition,

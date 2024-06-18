@@ -15,16 +15,28 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { WhereClause } from "../WhereClause.js";
-import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregationClause } from "./AggregationsClause.js";
-import type { GroupByClause } from "./GroupByClause.js";
+import type { AggregatableKeys } from "@osdk/client.api";
 
-export type AggregateOpts<
+type StringAggregateOption = "approximateDistinct";
+type NumericAggregateOption =
+  | "min"
+  | "max"
+  | "sum"
+  | "avg"
+  | "approximateDistinct";
+
+type totalCountOption = { $count?: true };
+
+export type AggregationClause<
   Q extends ObjectOrInterfaceDefinition,
-  KK extends AggregatableKeys<Q> = AggregatableKeys<Q>,
-> = {
-  $select: AggregationClause<Q, KK>;
-  $where?: WhereClause<Q>;
-  $groupBy?: GroupByClause<Q>;
-};
+  K extends AggregatableKeys<Q> = AggregatableKeys<Q>,
+> =
+  & {
+    [P in K]?: Q["properties"][P]["type"] extends "string"
+      ? StringAggregateOption | StringAggregateOption[]
+      : Q["properties"][P]["type"] extends
+        "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short"
+        ? NumericAggregateOption | NumericAggregateOption[]
+      : never;
+  }
+  & totalCountOption;

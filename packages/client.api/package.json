@@ -26,10 +26,12 @@
   },
   "peerDependencies": {
     "@osdk/api": "workspace:^",
+    "@osdk/internal.foundry": "workspace:^",
     "@types/geojson": "^7946.0.14"
   },
   "devDependencies": {
     "@osdk/api": "workspace:^",
+    "@osdk/internal.foundry": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "typescript": "^5.4.5"
   },

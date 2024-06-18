@@ -25,6 +25,34 @@ export type {
   ApplyBatchActionOptions,
   OsdkActionParameters,
 } from "./actions/Actions.js";
+export type { AggregatableKeys } from "./aggregate/AggregatableKeys.js";
+export type { AggregateOpts } from "./aggregate/AggregateOpts.js";
+export type { AggregateOptsThatErrors } from "./aggregate/AggregateOptsThatErrors.js";
+export type { AggregationResultsWithGroups } from "./aggregate/AggregationResultsWithGroups.js";
+export type {
+  AggregationCountResult,
+  AggregationResultsWithoutGroups,
+} from "./aggregate/AggregationResultsWithoutGroups.js";
+export type { AggregationClause } from "./aggregate/AggregationsClause.js";
+export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
+export type {
+  AndWhereClause,
+  GeoFilter,
+  GeoFilter_Intersects,
+  GeoFilter_Within,
+  NotWhereClause,
+  OrWhereClause,
+  PossibleWhereClauseFilters,
+  WhereClause,
+} from "./aggregate/WhereClause.js";
+export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
+export type { OsdkObjectPropertyType } from "./Definitions.js";
+export type {
+  AllGroupByValues,
+  GroupByClause,
+  GroupByRange,
+} from "./groupby/GroupByClause.js";
+export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,
@@ -34,9 +62,12 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
+export type { Result } from "./object/Result.js";
+export { isOk } from "./object/Result.js";
 export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
 export {};

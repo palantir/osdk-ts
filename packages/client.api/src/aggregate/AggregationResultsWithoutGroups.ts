@@ -15,9 +15,9 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { OsdkObjectPropertyType } from "../../Definitions.js";
-import type { StringArrayToUnion } from "../../util/StringArrayToUnion.js";
-import type { AggregationClause } from "./AggregationsClause.js";
+import type { AggregationClause } from "@osdk/client.api";
+import type { OsdkObjectPropertyType } from "../Definitions.js";
+import type { StringArrayToUnion } from "../util/StringArrayToUnion.js";
 
 type SubselectKeys<AC extends AggregationClause<any>, P extends keyof AC> =
   AC[P] extends readonly string[] | string ? P : never;

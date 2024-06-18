@@ -15,6 +15,8 @@
  */
 
 import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
+import type { Result } from "@osdk/client.api";
+import { isOk } from "@osdk/client.api";
 import {
   Employee,
   FooInterface,
@@ -32,8 +34,6 @@ import {
 import type { InterfaceDefinition } from "../../../api/build/cjs/index.cjs";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type { Result } from "../object/Result.js";
-import { isOk } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 describe("ObjectSet", () => {
