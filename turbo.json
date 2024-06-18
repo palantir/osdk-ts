@@ -1,6 +1,8 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "globalDependencies": ["config/tsconfig.base.json"],
+
+  "tasks": {
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck/**/*", "src/generatedNoCheck2/**/*"],
@@ -135,7 +137,5 @@
     "check": {
       "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test", "check-attw"]
     }
-  },
-
-  "globalDependencies": ["config/tsconfig.base.json"]
+  }
 }
