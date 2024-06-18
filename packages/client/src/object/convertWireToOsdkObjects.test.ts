@@ -14,21 +14,28 @@
  * limitations under the License.
  */
 
+import type { Attachment } from "@osdk/client.api";
 import {
   Employee,
   FooInterface,
   Ontology as MockOntology,
 } from "@osdk/client.test.ontology";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import { symbolClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { apiServer } from "@osdk/shared.test";
-import * as util from "node:util";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import { Attachment } from "./Attachment.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {
@@ -90,9 +97,14 @@ describe("convertWireToOsdkObjects", () => {
 
     const { attachment, attachmentArray } = withValues.data[0];
 
-    expect(attachment).toBeInstanceOf(Attachment);
+    expectTypeOf(attachment).toMatchTypeOf<
+      Attachment | undefined
+    >;
+    expect(attachment?.rid).toEqual(
+      "ri.attachments.main.attachment.86016861-707f-4292-b258-6a7108915a75",
+    );
     expect(Array.isArray(attachmentArray)).toBeTruthy();
-    expect(attachmentArray![0]).toBeInstanceOf(Attachment);
+    expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
 
     const withoutValues = await client(
       MockOntology.objects.objectTypeWithAllPropertyTypes,
@@ -127,6 +139,9 @@ describe("convertWireToOsdkObjects", () => {
       clientCtx,
       [object],
       undefined,
+      undefined,
+      undefined,
+      false,
     );
     const prototypeAfter = Object.getPrototypeOf(object2);
 
@@ -230,5 +245,178 @@ describe("convertWireToOsdkObjects", () => {
         "fullName": "Steve",
       }
     `);
+  });
+
+  describe("selection keys", () => {
+    it("throws when required is missing", async () => {
+      let object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      await expect(() =>
+        convertWireToOsdkObjects(
+          client[symbolClientContext],
+          [object],
+          undefined,
+          undefined,
+          ["employeeId"],
+          "throw",
+        )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+      );
+    });
+
+    it("does not throw when optional is missing", async () => {
+      let object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      await expect(
+        convertWireToOsdkObjects(
+          client[symbolClientContext],
+          [object],
+          undefined,
+          undefined,
+          ["fullName"],
+          "throw",
+        ),
+      ).resolves.to.not.toBeUndefined();
+    });
+
+    it("filters when it should", async () => {
+      const object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      const result = await convertWireToOsdkObjects(
+        client[symbolClientContext],
+        [object],
+        undefined,
+        undefined,
+        ["employeeId"],
+        "drop",
+      );
+
+      expect(result.length).toBe(0);
+    });
+
+    it("does not filter when it shouldn't", async () => {
+      const object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      const result = await convertWireToOsdkObjects(
+        client[symbolClientContext],
+        [object],
+        undefined,
+        undefined,
+        ["fullName"],
+        "drop",
+      );
+
+      expect(result.length).toBe(1);
+    });
+  });
+
+  describe("without selection keys", () => {
+    it("throws when required is missing", async () => {
+      let object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      await expect(() =>
+        convertWireToOsdkObjects(
+          client[symbolClientContext],
+          [object],
+          undefined,
+          undefined,
+          undefined,
+          "throw",
+        )
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+      );
+    });
+
+    it("does not throw when required is present", async () => {
+      let object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+        "employeeId": 0,
+      } as const;
+
+      await expect(
+        convertWireToOsdkObjects(
+          client[symbolClientContext],
+          [object],
+          undefined,
+          undefined,
+          undefined,
+          "throw",
+        ),
+      ).resolves.to.not.toBeUndefined();
+    });
+
+    it("filters when it should", async () => {
+      const object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+      } as const;
+
+      const result = await convertWireToOsdkObjects(
+        client[symbolClientContext],
+        [object],
+        undefined,
+        undefined,
+        undefined,
+        "drop",
+      );
+
+      expect(result.length).toBe(0);
+    });
+
+    it("does not filter when it shouldn't", async () => {
+      const object = {
+        __apiName: "Employee",
+        __primaryKey: 0,
+        "employeeId": 0,
+      } as const;
+
+      const result = await convertWireToOsdkObjects(
+        client[symbolClientContext],
+        [object],
+        undefined,
+        undefined,
+        undefined,
+        "drop",
+      );
+
+      expect(result.length).toBe(1);
+    });
+  });
+
+  it("behaves correctly when converting", async () => {
+    const object = {
+      __apiName: "Employee",
+      __primaryKey: 0,
+      fooSpt: "hi",
+    } as const;
+
+    const result = await convertWireToOsdkObjects(
+      client[symbolClientContext],
+      [object],
+      "FooInterface",
+      undefined,
+      ["fooSpt"],
+      "drop",
+    );
+
+    expect(result.length).toBe(1);
   });
 });

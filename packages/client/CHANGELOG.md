@@ -1,5 +1,28 @@
 # @osdk/client
 
+## 0.20.0-beta.0
+
+### Minor Changes
+
+- 564adbf: Fixing attachment creation when converting objects from the wire
+- 505b993: Experimental subscription no longer fires outOfDate when first subscribing
+- a6119bd: Attachments reworked so that you can now fetch directly from object properties. Also added a helper to create an attachment object directly from a rid.
+- f6d8850: Removed get, which is now replaced by fetchOne(). This has the exact same functionality and is essentially just a rename.
+- 527e8ab: Objects that are $as are now linked directly to changes from source object
+- a519655: Fixed issue accessing $rid when requested on an object.
+- 5378312: Added batch action support for 2.0 client
+- b3563e0: OSDK learns \_\_EXPERIMENTAL_strictNonNull to throw, drop objects, or return `| undefined` for properties, allowing for correct typesafety.
+- dd6033a: Adds a createPlatformClient if you only need platform apis
+- 4dbac7e: Fixes link direction for experiental bulk loads
+- 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
+- 44add10: Standardize the use of dollar signs as prefixes for object properties that are specific to the OSDK.
+
+### Patch Changes
+
+- Updated dependencies [a6119bd]
+- Updated dependencies [413e511]
+  - @osdk/client.api@0.20.0-beta.0
+
 ## 0.19.0
 
 ### Minor Changes

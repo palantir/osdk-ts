@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -24,6 +28,7 @@ import {
 } from "../ontology/OntologyProvider.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
+import type { NullabilityAdherence } from "./FetchPageArgs.js";
 
 /**
  * If interfaceApiName is not undefined, converts the instances of the
@@ -46,10 +51,19 @@ export async function convertWireToOsdkObjects(
   objects: OntologyObjectV2[],
   interfaceApiName: string | undefined,
   forceRemoveRid: boolean = false,
+  selectedProps?: ReadonlyArray<string>,
+  strictNonNull: NullabilityAdherence = false,
 ): Promise<Osdk<ObjectOrInterfaceDefinition>[]> {
   client.logger?.debug(`START convertWireToOsdkObjects()`);
 
-  fixObjectPropertiesInline(objects, forceRemoveRid);
+  fixObjectPropertiesInPlace(objects, forceRemoveRid);
+
+  const ifaceDef = interfaceApiName
+    ? await client.ontologyProvider.getInterfaceDefinition(interfaceApiName)
+    : undefined;
+  const ifaceSelected = ifaceDef
+    ? (selectedProps ?? Object.keys(ifaceDef.properties))
+    : undefined;
 
   const ret = [];
   for (const rawObj of objects) {
@@ -58,17 +72,59 @@ export async function convertWireToOsdkObjects(
     );
     invariant(objectDef, `Missing definition for '${rawObj.$apiName}'`);
 
-    if (interfaceApiName !== undefined) {
+    // default value for when we are checking an object
+    let objProps;
+
+    let conforming = true;
+    if (ifaceDef && ifaceSelected) {
       // API returns interface spt names but we cache by real values
-      reframeAsObjectInPlace(objectDef, interfaceApiName, client, rawObj);
+      invariantInterfacesAsViews(objectDef, ifaceDef.apiName, client);
+
+      conforming &&= isConforming(client, ifaceDef, rawObj, ifaceSelected);
+
+      reframeAsObjectInPlace(objectDef, ifaceDef.apiName, rawObj);
+
+      objProps = convertInterfacePropNamesToObjectPropNames(
+        objectDef,
+        ifaceDef.apiName,
+        ifaceSelected,
+      );
+    } else {
+      objProps = selectedProps ?? Object.keys(objectDef.properties);
     }
 
-    const osdkObject: any = createOsdkObject(client, objectDef, rawObj);
-    ret.push(interfaceApiName ? osdkObject.$as(interfaceApiName) : osdkObject);
+    conforming &&= isConforming(client, objectDef, rawObj, objProps);
+
+    if (strictNonNull === "throw" && !conforming) {
+      throw new Error(
+        "Unable to safely convert objects as some non nullable properties are null",
+      );
+    } else if (strictNonNull === "drop" && !conforming) {
+      continue;
+    }
+
+    let osdkObject = createOsdkObject(client, objectDef, rawObj);
+    if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
+
+    ret.push(osdkObject);
   }
 
   client.logger?.debug(`END convertWireToOsdkObjects()`);
   return ret;
+}
+
+/**
+ * Utility function that lets us take down selected property names from an interface
+ * and convert them to an array of property names on an object.
+ */
+function convertInterfacePropNamesToObjectPropNames(
+  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
+  interfaceApiName: string,
+  ifacePropsToMap: readonly string[],
+) {
+  return ifacePropsToMap.map((ifaceProp) =>
+    objectDef.interfaceMap[interfaceApiName][ifaceProp]
+  );
 }
 
 /**
@@ -80,23 +136,10 @@ export async function convertWireToOsdkObjects(
  * @param rawObj
  */
 function reframeAsObjectInPlace(
-  objectDef: FetchedObjectTypeDefinition<any, unknown>,
+  objectDef: FetchedObjectTypeDefinition<any, unknown> & { interfaceMap: {} },
   interfaceApiName: string,
-  client: MinimalClient,
   rawObj: OntologyObjectV2,
 ) {
-  if (objectDef.interfaceMap?.[interfaceApiName] == null) {
-    const warning =
-      "Interfaces are only supported 'as views' but your metadata object is missing the correct information. This suggests your interfaces have not been migrated to the newer version yet and you cannot use this version of the SDK.";
-    if (client.logger) {
-      client.logger.warn(warning);
-    } else {
-      // eslint-disable-next-line no-console
-      console.error(`WARNING! ${warning}`);
-    }
-    throw new Error(warning);
-  }
-
   const newProps: Record<string, any> = {};
   for (
     const [sptProp, regularProp] of Object.entries(
@@ -118,7 +161,52 @@ function reframeAsObjectInPlace(
   }
 }
 
-function fixObjectPropertiesInline(
+function isConforming(
+  client: MinimalClient,
+  def:
+    | InterfaceDefinition<any, any>
+    | ObjectTypeDefinition<any, unknown>,
+  obj: OntologyObjectV2,
+  propsToCheck: readonly string[],
+) {
+  for (const propName of propsToCheck) {
+    if (def.properties[propName].nullable === false && obj[propName] == null) {
+      if (process.env.NODE_ENV !== "production") {
+        client.logger?.debug(
+          {
+            obj: {
+              $objectType: obj["$objectType"],
+              $primaryKey: obj["$primaryKey"],
+            },
+          },
+          `Found object that does not conform to its definition. Expected ${def.apiName}'s ${propName} to not be null.`,
+        );
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
+function invariantInterfacesAsViews(
+  objectDef: FetchedObjectTypeDefinition<any, unknown>,
+  interfaceApiName: string,
+  client: MinimalClient,
+): asserts objectDef is typeof objectDef & { interfaceMap: {} } {
+  if (objectDef.interfaceMap?.[interfaceApiName] == null) {
+    const warning =
+      "Interfaces are only supported 'as views' but your metadata object is missing the correct information. This suggests your interfaces have not been migrated to the newer version yet and you cannot use this version of the SDK.";
+    if (client.logger) {
+      client.logger.warn(warning);
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(`WARNING! ${warning}`);
+    }
+    throw new Error(warning);
+  }
+}
+
+function fixObjectPropertiesInPlace(
   objs: OntologyObjectV2[],
   forceRemoveRid: boolean,
 ) {

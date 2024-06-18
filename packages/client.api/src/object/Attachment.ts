@@ -16,4 +16,20 @@
 
 export interface Attachment {
   rid: string;
+  fetchMetadata(): Promise<AttachmentMetadata>;
+  fetchContents(): Promise<Blob>;
+}
+/**
+ * This interface should also accept the File object from
+ * the W3C FileApi https://www.w3.org/TR/FileAPI/#file-section
+ */
+export interface AttachmentUpload extends Blob {
+  name: string;
+}
+
+export interface AttachmentMetadata {
+  rid: string;
+  filename: string;
+  sizeBytes: string;
+  mediaType: string;
 }

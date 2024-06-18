@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-import type { Attachment as IAttachment } from "@osdk/client.api";
+import type { AttachmentUpload } from "@osdk/client.api";
 
-export class Attachment implements IAttachment {
-  constructor(public rid: string) {}
+export function isAttachmentUpload(o: any): o is AttachmentUpload {
+  return o instanceof Blob && "name" in o;
 }
 
-export function isAttachment(o: any): o is Attachment {
-  return o instanceof Attachment;
+export function createAttachmentUpload(
+  data: Blob,
+  name: string,
+): AttachmentUpload {
+  const attachmentUpload = Object.create(data, { name: { value: name } });
+
+  return attachmentUpload as AttachmentUpload;
 }

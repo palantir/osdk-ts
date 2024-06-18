@@ -16,9 +16,9 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { SingleKeyObject } from "type-fest";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { UnorderedAggregationClause } from "../query/aggregations/AggregationsClause.js";
-import type { GroupByClause } from "../query/aggregations/GroupByClause.js";
+import type { GroupByClause } from "../groupby/GroupByClause.js";
+import type { AggregateOpts } from "./AggregateOpts.js";
+import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 
 export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
   Q extends ObjectOrInterfaceDefinition,

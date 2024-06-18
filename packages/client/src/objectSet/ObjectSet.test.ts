@@ -15,7 +15,13 @@
  */
 
 import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
-import { Employee, Ontology as MockOntology } from "@osdk/client.test.ontology";
+import type { Result } from "@osdk/client.api";
+import { isOk } from "@osdk/client.api";
+import {
+  Employee,
+  FooInterface,
+  Ontology as MockOntology,
+} from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -25,10 +31,9 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
+import type { InterfaceDefinition } from "../../../api/build/cjs/index.cjs";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type { Result } from "../object/Result.js";
-import { isOk } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 
 describe("ObjectSet", () => {
@@ -207,7 +212,7 @@ describe("ObjectSet", () => {
       .fetchOneWithErrors(-1);
 
     expectTypeOf<typeof employeeResult>().toEqualTypeOf<
-      Result<Osdk<Employee, ObjectOrInterfacePropertyKeysFrom2<Employee>>>
+      Result<Osdk<Employee>>
     >;
 
     expect("error" in employeeResult);
@@ -247,5 +252,176 @@ describe("ObjectSet", () => {
       }
       expect(iter).toEqual(2);
     }
+  });
+
+  describe.each(["fetchPage", "fetchPageWithErrors"] as const)("%s", (k) => {
+    describe("strictNonNull: \"drop\"", () => {
+      describe("includeRid: true", () => {
+        it("drops bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: "drop",
+            $includeRid: true,
+          } as const;
+          const result = k === "fetchPage"
+            ? await client(Employee).fetchPage(opts)
+            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+
+          expect(result.data).toHaveLength(3);
+          expectTypeOf(result.data[0]).toEqualTypeOf<
+            Osdk<Employee, "$rid" | "$all">
+          >();
+        });
+      });
+
+      describe("includeRid: false", () => {
+        it("drops bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: "drop",
+            $includeRid: false,
+          } as const;
+          const result = k === "fetchPage"
+            ? await client(Employee).fetchPage(opts)
+            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+
+          expect(result.data).toHaveLength(3);
+          expectTypeOf(result.data[0]).toEqualTypeOf<Osdk<Employee>>();
+        });
+      });
+    });
+
+    describe("strictNonNull: false", () => {
+      describe("includeRid: true", () => {
+        it("returns bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: false,
+            $includeRid: true,
+          } as const;
+          const result = k === "fetchPage"
+            ? await client(Employee).fetchPage(opts)
+            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+
+          expect(result.data).toHaveLength(4);
+          expectTypeOf(result.data[0]).toEqualTypeOf<
+            Osdk<Employee, "$all" | "$notStrict" | "$rid">
+          >();
+        });
+      });
+
+      describe("includeRid: false", () => {
+        it("returns bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: false,
+            includeRid: false,
+          } as const;
+          const result = k === "fetchPage"
+            ? await client(Employee).fetchPage(opts)
+            : (await client(Employee).fetchPageWithErrors(opts)).value!;
+
+          expect(result.data).toHaveLength(4);
+          expectTypeOf(result.data[0]).toEqualTypeOf<
+            Osdk<Employee, "$all" | "$notStrict">
+          >();
+        });
+      });
+    });
+  });
+
+  describe("strictNonNull: \"throw\"", () => {
+    it("throws when getting bad data", () => {
+      expect(() =>
+        client(Employee).fetchPage({
+          $__EXPERIMENTAL_strictNonNull: "throw",
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+      );
+    });
+  });
+
+  describe.each(["fetchOne", "fetchOneWithErrors"] as const)("%s", (k) => {
+    describe("strictNonNull: false", () => {
+      describe("includeRid: true", () => {
+        it("returns bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: false,
+            $includeRid: true,
+          } as const;
+          const result = k === "fetchOne"
+            ? await client(Employee).fetchOne(50033, opts)
+            : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
+
+          expect(result).not.toBeUndefined();
+          expectTypeOf(result).toEqualTypeOf<
+            Osdk<Employee, "$all" | "$notStrict" | "$rid">
+          >();
+        });
+      });
+
+      describe("includeRid: false", () => {
+        it("returns bad data", async () => {
+          const opts = {
+            $__EXPERIMENTAL_strictNonNull: false,
+            includeRid: false,
+          } as const;
+          const result = k === "fetchOne"
+            ? await client(Employee).fetchOne(50033, opts)
+            : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
+
+          expect(result).not.toBeUndefined();
+          expectTypeOf(result).toEqualTypeOf<
+            Osdk<Employee, "$all" | "$notStrict">
+          >();
+        });
+      });
+    });
+  });
+
+  describe("strictNonNull: \"throw\"", () => {
+    it("throws when getting bad data", () => {
+      expect(() =>
+        client(Employee).fetchPage({
+          $__EXPERIMENTAL_strictNonNull: "throw",
+        })
+      ).rejects.toThrowErrorMatchingInlineSnapshot(
+        `[Error: Unable to safely convert objects as some non nullable properties are null]`,
+      );
+    });
+  });
+
+  describe("conversions", () => {
+    describe("strictNonNull: false", () => {
+      it("returns bad data", async () => {
+        const result = await client(Employee).fetchPage({
+          $__EXPERIMENTAL_strictNonNull: false,
+        });
+
+        const empNotStrict = result.data[0];
+
+        expectTypeOf(empNotStrict).toEqualTypeOf<
+          Osdk<Employee, "$all" | "$notStrict">
+        >();
+        expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<
+          number | undefined
+        >();
+
+        // We don't have a proper definition that has
+        // a non-null property on an interface so
+        // we cheese it here to be sure the types work
+        type CheesedProp<
+          T extends InterfaceDefinition<any>,
+          K extends keyof T["properties"],
+        > = T & { properties: { [KK in K]: { nullable: false } } };
+
+        type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;
+        const CheesedFoo: CheesedFoo = FooInterface as CheesedFoo;
+
+        const cheesedFooNotStrict = result.data[0].$as(CheesedFoo);
+        expectTypeOf(cheesedFooNotStrict).toEqualTypeOf<
+          Osdk<CheesedFoo, "$all" | "$notStrict", never>
+        >();
+
+        cheesedFooNotStrict.fooSpt;
+      });
+    });
   });
 });

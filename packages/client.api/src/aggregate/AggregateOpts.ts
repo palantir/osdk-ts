@@ -15,12 +15,12 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { WhereClause } from "../WhereClause.js";
+import type { GroupByClause } from "../groupby/GroupByClause.js";
 import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
 } from "./AggregationsClause.js";
-import type { GroupByClause } from "./GroupByClause.js";
+import type { WhereClause } from "./WhereClause.js";
 
 export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
   $select:

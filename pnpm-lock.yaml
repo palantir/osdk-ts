@@ -786,9 +786,15 @@ importers:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+      '@osdk/internal.foundry':
+        specifier: workspace:^
+        version: link:../internal.foundry
       '@types/geojson':
         specifier: ^7946.0.14
         version: 7946.0.14
+      type-fest:
+        specifier: ^4.18.2
+        version: 4.18.2
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

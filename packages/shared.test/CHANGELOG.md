@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.5.0-beta.0
+
+### Minor Changes
+
+- 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
+
 ## 1.4.0
 
 ### Minor Changes

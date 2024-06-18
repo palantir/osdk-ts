@@ -22,6 +22,7 @@ export type {
   ApplyBatchActionOptions,
   NOOP,
   OsdkActionParameters,
+  WhereClause,
 } from "@osdk/client.api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
@@ -29,11 +30,12 @@ export type { Client } from "./Client.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 
+export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
+
 export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { InterfaceObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type { Osdk } from "./OsdkObjectFrom.js";
 export type { PageResult } from "./PageResult.js";
-export type { WhereClause } from "./query/WhereClause.js";
 export { isOk } from "./ResultOrError.js";
 export type { ResultOrError } from "./ResultOrError.js";

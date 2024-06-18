@@ -21,24 +21,28 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
-  BaseObjectSet,
-  PropertyValueClientToWire,
-} from "@osdk/client.api";
-import type {
+  AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-} from "../object/AggregateOptsThatErrors.js";
+  AggregationsResults,
+  BaseObjectSet,
+  LinkedType,
+  LinkNames,
+  PropertyValueClientToWire,
+  Result,
+  WhereClause,
+} from "@osdk/client.api";
 import type {
   Augments,
   FetchPageArgs,
+  NullabilityAdherence,
+  NullabilityAdherenceDefault,
   SelectArg,
 } from "../object/FetchPageArgs.js";
-import type { FetchPageResult } from "../object/FetchPageResult.js";
-import type { Result } from "../object/Result.js";
+import type {
+  FetchPageResult,
+  SingleOsdkResult,
+} from "../object/FetchPageResult.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
-import type { WhereClause } from "../query/WhereClause.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -47,17 +51,19 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherenceDefault,
   >(
-    args?: FetchPageArgs<Q, L, R, A>,
-  ) => Promise<FetchPageResult<Q, L, R>>;
+    args?: FetchPageArgs<Q, L, R, A, S>,
+  ) => Promise<FetchPageResult<Q, L, R, S>>;
 
   fetchPageWithErrors: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherenceDefault,
   >(
-    args?: FetchPageArgs<Q, L, R, A>,
-  ) => Promise<Result<FetchPageResult<Q, L, R>>>;
+    args?: FetchPageArgs<Q, L, R, A, S>,
+  ) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
 
   where: (
     clause: WhereClause<Q>,
@@ -96,17 +102,23 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
-  fetchOne: Q extends ObjectTypeDefinition<any>
-    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+  fetchOne: Q extends ObjectTypeDefinition<any> ? <
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+      S extends false | "throw" = NullabilityAdherenceDefault,
+    >(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
-      options?: SelectArg<Q, L>,
-    ) => Promise<Osdk<Q, L>>
+      options?: SelectArg<Q, L, R, S>,
+    ) => Promise<SingleOsdkResult<Q, L, R, S>>
     : never;
 
-  fetchOneWithErrors: Q extends ObjectTypeDefinition<any>
-    ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>>(
+  fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
+      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      R extends boolean,
+      S extends false | "throw" = NullabilityAdherenceDefault,
+    >(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
-      options?: SelectArg<Q, L>,
-    ) => Promise<Result<Osdk<Q, L>>>
+      options?: SelectArg<Q, L, R, S>,
+    ) => Promise<Result<SingleOsdkResult<Q, L, R, S>>>
     : never;
 }

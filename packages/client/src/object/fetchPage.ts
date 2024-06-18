@@ -20,6 +20,7 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
+import type { Result } from "@osdk/client.api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -34,9 +35,13 @@ import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type { Augment, Augments, FetchPageArgs } from "./FetchPageArgs.js";
+import type {
+  Augment,
+  Augments,
+  FetchPageArgs,
+  NullabilityAdherence,
+} from "./FetchPageArgs.js";
 import type { FetchPageResult } from "./FetchPageResult.js";
-import type { Result } from "./Result.js";
 
 export function augment<
   X extends ObjectOrInterfaceDefinition,
@@ -82,12 +87,13 @@ async function fetchInterfacePage<
   Q extends InterfaceDefinition<any, any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   interfaceType: Q,
-  args: FetchPageArgs<Q, L, R>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R>> {
+): Promise<FetchPageResult<Q, L, R, S>> {
   const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
     addUserAgent(client, interfaceType),
     client.ontologyRid,
@@ -117,12 +123,13 @@ export async function fetchPageInternal<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   A extends Augments,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A> = {},
-): Promise<FetchPageResult<Q, L, R>> {
+  args: FetchPageArgs<Q, L, R, A, S> = {},
+): Promise<FetchPageResult<Q, L, R, S>> {
   if (objectType.type === "interface") {
     return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
   } else {
@@ -136,12 +143,13 @@ export async function fetchPageWithErrorsInternal<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   A extends Augments,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
   objectSet: ObjectSet,
-  args: FetchPageArgs<Q, L, R, A> = {},
-): Promise<Result<FetchPageResult<Q, L, R>>> {
+  args: FetchPageArgs<Q, L, R, A, S> = {},
+): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   try {
     const result = await fetchPageInternal(client, objectType, objectSet, args);
     return { value: result };
@@ -157,15 +165,16 @@ export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<FetchPageResult<Q, L, R>> {
+): Promise<FetchPageResult<Q, L, R, S>> {
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
@@ -173,15 +182,16 @@ export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R>,
+  args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet = {
     type: "base",
     objectType: objectType["apiName"] as string,
   },
-): Promise<Result<FetchPageResult<Q, L, R>>> {
+): Promise<Result<FetchPageResult<Q, L, R, S>>> {
   return fetchPageWithErrorsInternal(client, objectType, objectSet, args);
 }
 
@@ -192,7 +202,7 @@ function applyFetchArgs<
     pageSize?: PageSize;
   },
 >(
-  args: FetchPageArgs<any, any, any>,
+  args: FetchPageArgs<any, any, any, any, any>,
   body: X,
 ): X {
   if (args?.$nextPageToken) {
@@ -219,12 +229,13 @@ export async function fetchObjectPage<
   Q extends ObjectTypeDefinition<any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
+  S extends NullabilityAdherence,
 >(
   client: MinimalClient,
   objectType: Q,
-  args: FetchPageArgs<Q, L, R>,
+  args: FetchPageArgs<Q, L, R, Augments, S>,
   objectSet: ObjectSet,
-): Promise<FetchPageResult<Q, L, R>> {
+): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.loadObjectSetV2(
     addUserAgent(client, objectType),
     client.ontologyRid,
@@ -241,7 +252,10 @@ export async function fetchObjectPage<
       client,
       r.data as OntologyObjectV2[],
       undefined,
+      undefined,
+      args.$select,
+      args.$__EXPERIMENTAL_strictNonNull,
     ),
     nextPageToken: r.nextPageToken,
-  }) as Promise<FetchPageResult<Q, L, R>>;
+  }) as Promise<FetchPageResult<Q, L, R, S>>;
 }

@@ -15,17 +15,15 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  AggregationResultsWithoutGroups,
+  NumericAggregateOption,
+  OrderedAggregationClause,
+  StringAggregateOption,
+  UnorderedAggregationClause,
+} from "@osdk/client.api";
 import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
-import type {
-  NumericAggregateOption,
-  StringAggregateOption,
-} from "../../query/aggregations/AggregatableKeys.js";
-import type { AggregationResultsWithoutGroups } from "../../query/aggregations/AggregationResultsWithoutGroups.js";
-import type {
-  OrderedAggregationClause,
-  UnorderedAggregationClause,
-} from "../../query/aggregations/AggregationsClause.js";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
 export function legacyToModernSingleAggregationResult<

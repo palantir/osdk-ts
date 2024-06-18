@@ -17,6 +17,7 @@
 import type {
   ActionEditResponse,
   ActionValidationResponse,
+  AttachmentUpload,
 } from "@osdk/client.api";
 import {
   actionTakesAttachment,
@@ -24,7 +25,7 @@ import {
   moveOffice,
   Ontology as MockOntology,
 } from "@osdk/client.test.ontology";
-import { apiServer } from "@osdk/shared.test";
+import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
   beforeAll,
@@ -35,7 +36,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment } from "../object/Attachment.js";
+import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 describe("actions", () => {
@@ -144,10 +145,33 @@ describe("actions", () => {
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<
-        { attachment: Attachment } | { attachment: Attachment }[]
+        { attachment: string | AttachmentUpload } | {
+          attachment: string | AttachmentUpload;
+        }[]
       >();
 
-    const attachment = new Attachment("attachment.rid");
+    const result = await client(actionTakesAttachment)({
+      attachment: "attachment.rid",
+    });
+
+    expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
+    expect(result).toBeUndefined();
+  });
+
+  it("Accepts attachment uploads", async () => {
+    const clientBoundActionTakesAttachment = client(
+      actionTakesAttachment,
+    );
+    expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
+      .toEqualTypeOf<
+        { attachment: string | AttachmentUpload } | {
+          attachment: string | AttachmentUpload;
+        }[]
+      >();
+    const blob =
+      stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
+
+    const attachment = createAttachmentUpload(blob, "file1.txt");
     const result = await client(actionTakesAttachment)({
       attachment,
     });
@@ -155,7 +179,6 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
     expect(result).toBeUndefined();
   });
-
   it("conditionally returns edits in batch mode", async () => {
     const result = await client(moveOffice)([
       {

@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import type { AggregationV2 } from "@osdk/internal.foundry";
 import type {
   NumericAggregateOption,
-  StringAggregateOption,
-} from "../../query/aggregations/AggregatableKeys.js";
-import type {
   OrderedAggregationClause,
+  StringAggregateOption,
   UnorderedAggregationClause,
-} from "../../query/aggregations/AggregationsClause.js";
+} from "@osdk/client.api";
+import type { AggregationV2 } from "@osdk/internal.foundry";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
