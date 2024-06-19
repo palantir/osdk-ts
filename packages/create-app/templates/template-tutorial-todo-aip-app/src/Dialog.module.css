@@ -4,3 +4,8 @@
   margin-top: 1em;
   justify-content: flex-end;
 }
+
+.dialog {
+  border: 1px solid black;
+  border-radius: 10px;
+}
