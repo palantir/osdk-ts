@@ -20,17 +20,11 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  BaseObjectSet,
-  LinkedType,
-  LinkNames,
-  PropertyValueClientToWire,
-  Result,
-  WhereClause,
-} from "@osdk/client.api";
+import type { AggregateOpts } from "../aggregate/AggregateOpts.js";
+import type { AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy } from "../aggregate/AggregateOptsThatErrors.js";
+import type { AggregationsResults } from "../aggregate/AggregationsResults.js";
+import type { WhereClause } from "../aggregate/WhereClause.js";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 import type {
   Augments,
   FetchPageArgs,
@@ -42,7 +36,10 @@ import type {
   FetchPageResult,
   SingleOsdkResult,
 } from "../object/FetchPageResult.js";
+import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
+import type { LinkedType, LinkNames } from "../util/LinkUtils.js";
+import type { BaseObjectSet } from "./BaseObjectSet.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>

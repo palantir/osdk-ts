@@ -19,6 +19,7 @@ import type {
   ObjectTypeKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
+import type { Osdk } from "@osdk/client.api";
 import {
   type ObjectSet,
   OntologiesV2,
@@ -53,7 +54,6 @@ import { loadAllOntologies } from "../generated/ontology-metadata/api/OntologyMe
 import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
   getObjectSetBaseType,

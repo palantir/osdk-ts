@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { OsdkObject } from "../../OsdkObject.js";
+import type { OsdkObject } from "@osdk/client.api";
 
 export const UnderlyingOsdkObject = Symbol(
   process.env.MODE !== "production" ? "Underlying Object" : undefined,

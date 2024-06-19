@@ -24,6 +24,9 @@
     "transpile": "tsup",
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
+  "dependencies": {
+    "@osdk/api": "workspace:^"
+  },
   "peerDependencies": {
     "@osdk/api": "workspace:^",
     "@osdk/internal.foundry": "workspace:^",

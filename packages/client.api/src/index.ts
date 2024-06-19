@@ -76,3 +76,40 @@ export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
 export {};
+export type {
+  DefaultToFalse,
+  OsdkObjectLinksEntry,
+  OsdkObjectLinksObject,
+  SingleLinkAccessor,
+} from "./definitions/LinkDefinitions.js";
+export type {
+  Augment,
+  Augments,
+  FetchInterfacePageArgs,
+  FetchPageArgs,
+  NullabilityAdherence,
+  NullabilityAdherenceDefault,
+  OrderByArg,
+  SelectArg,
+  SelectArgToKeys,
+} from "./object/FetchPageArgs.js";
+export type {
+  FetchPageResult,
+  RespectNullability,
+  SingleOsdkResult,
+  UnionIfFalse,
+  UnionIfTrue,
+} from "./object/FetchPageResult.js";
+export type {
+  InterfaceObjectSet,
+  MinimalObjectSet,
+  ObjectSet,
+} from "./objectSet/ObjectSet.js";
+export type { OsdkObject } from "./OsdkObject.js";
+export type {
+  ConvertProps,
+  Osdk,
+  OsdkObjectOrInterfaceFrom,
+  ValidToFrom,
+} from "./OsdkObjectFrom.js";
+export type { PageResult } from "./PageResult.js";

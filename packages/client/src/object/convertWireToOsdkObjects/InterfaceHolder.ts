@@ -15,8 +15,8 @@
  */
 
 import type { InterfaceDefinition } from "@osdk/api";
+import type { Osdk } from "@osdk/client.api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import type { Osdk } from "../../OsdkObjectFrom.js";
 import type {
   InterfaceDefRef,
   UnderlyingOsdkObject,
