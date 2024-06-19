@@ -14,13 +14,21 @@
   width: 300px;
 }
 .aip {
+  background-color: #7961DB;
   border: 1px solid #ccc;
-  padding: 2px;
+  padding: 2px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processing {
+  cursor: progress;
 }
 
 .image {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 .container {

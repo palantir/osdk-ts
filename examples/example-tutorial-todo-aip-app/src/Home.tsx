@@ -1,4 +1,4 @@
-import aipLogo from "/aip-logo.svg";
+import aipLogo from "/aip-icon.svg";
 import { useCallback, useEffect, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
@@ -14,6 +14,7 @@ function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
   const { projects, updateProjectDescription } = useProjects();
   const project = projects?.find((p) => p.id === projectId);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const handleSelectProject = useCallback(
     (p: MockProject) => setProjectId(p.id),
@@ -24,10 +25,9 @@ function Home() {
     if (project == null) {
       return;
     }
-    // Try to implement this with the Ontology SDK!
-    updateProjectDescription(
-      project,
-    );
+    setIsProcessing(true);
+    await updateProjectDescription(project);
+    setIsProcessing(false);
   }, [project, updateProjectDescription]);
 
   useEffect(() => {
@@ -41,11 +41,11 @@ function Home() {
       <div className={css.tutorialBannerWrapper}>
         <div className={css.tutorialBanner}>
           <p className={css.tutorialBannerTitle}>
-            💡 Welcome to this tutorial!
+            💡 Welcome to the To-do AIP tutorial!
           </p>
           <p>
-            The Todo App below has been implemented with fake in memory data.
-            Can you solve how to switch it to use the Ontology SDK instead?
+            The application is implemented with mock in memory data. Can you
+            solve how to change it to use the Ontology SDK instead?
           </p>
         </div>
       </div>
@@ -65,16 +65,20 @@ function Home() {
           <div className={css.description}>
             <span>{project.description}</span>
             <button
-              className={css.aip}
+              disabled={isProcessing}
+              className={`${css.aip} ${isProcessing ? css.processing : ""}`}
               title="Click here to update project description based on AIP Logic"
               type="button"
               onClick={handleProjectDescriptionRecommendation}
             >
-              <img
-                src={aipLogo}
-                alt="AIP"
-                className={css.image}
-              />
+              <div className={css.aipText}>
+                <img
+                  src={aipLogo}
+                  alt="AIP"
+                  className={css.image}
+                />
+                <span>Get description recommendation</span>
+              </div>
             </button>
           </div>
           <TaskList project={project} />

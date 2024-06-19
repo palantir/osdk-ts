@@ -54,6 +54,10 @@
   width: fit-content;
 }
 
+.processing {
+  cursor: progress;
+}
+
 .aipText {
   display: flex;
   gap: 10px;
