@@ -40,6 +40,7 @@ export type {
   UnorderedAggregationClause,
 } from "./aggregate/AggregationsClause.js";
 export type { AggregationsResults } from "./aggregate/AggregationsResults.js";
+export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type {
   AndWhereClause,
   GeoFilter,
@@ -50,14 +51,19 @@ export type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "./aggregate/WhereClause.js";
-export { DistanceUnitMapping } from "./aggregate/WhereClause.js";
 export type { OsdkObjectPropertyType } from "./Definitions.js";
+export type {
+  DefaultToFalse,
+  OsdkObjectLinksEntry,
+  OsdkObjectLinksObject,
+  SingleLinkAccessor,
+} from "./definitions/LinkDefinitions.js";
+export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,
   GroupByClause,
   GroupByRange,
 } from "./groupby/GroupByClause.js";
-export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,
@@ -67,21 +73,6 @@ export type {
   AttachmentMetadata,
   AttachmentUpload,
 } from "./object/Attachment.js";
-export type { Result } from "./object/Result.js";
-export { isOk } from "./object/Result.js";
-export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
-export type { OsdkBase } from "./OsdkBase.js";
-export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
-export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-export type { NOOP } from "./util/NOOP.js";
-
-export {};
-export type {
-  DefaultToFalse,
-  OsdkObjectLinksEntry,
-  OsdkObjectLinksObject,
-  SingleLinkAccessor,
-} from "./definitions/LinkDefinitions.js";
 export type {
   Augment,
   Augments,
@@ -100,11 +91,15 @@ export type {
   UnionIfFalse,
   UnionIfTrue,
 } from "./object/FetchPageResult.js";
+export { isOk } from "./object/Result.js";
+export type { Result } from "./object/Result.js";
+export type { BaseObjectSet } from "./objectSet/BaseObjectSet.js";
 export type {
   InterfaceObjectSet,
   MinimalObjectSet,
   ObjectSet,
 } from "./objectSet/ObjectSet.js";
+export type { OsdkBase } from "./OsdkBase.js";
 export type { OsdkObject } from "./OsdkObject.js";
 export type {
   ConvertProps,
@@ -112,4 +107,9 @@ export type {
   OsdkObjectOrInterfaceFrom,
   ValidToFrom,
 } from "./OsdkObjectFrom.js";
+export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
+export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
+export type { NOOP } from "./util/NOOP.js";
+
+export {};
