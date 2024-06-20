@@ -33,7 +33,7 @@ function Home() {
             💡 Welcome to To-do app tutorial!
           </p>
           <p>
-            The To-do App is implemented with mock in-memory data.
+            The To Do App is implemented with mock in-memory data.
             Can you solve how to switch it to use the Ontology SDK instead?
           </p>
         </div>
