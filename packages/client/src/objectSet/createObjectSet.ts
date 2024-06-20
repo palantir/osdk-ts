@@ -20,7 +20,10 @@ import type {
 } from "@osdk/api";
 import type {
   BaseObjectSet,
+  LinkedType,
+  LinkNames,
   PropertyValueClientToWire,
+  Result,
 } from "@osdk/client.api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
@@ -33,10 +36,8 @@ import {
 } from "../object/fetchPage.js";
 import { type SelectArg } from "../object/FetchPageArgs.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
-import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { MinimalObjectSet, ObjectSet } from "./ObjectSet.js";
 
 function isObjectTypeDefinition(

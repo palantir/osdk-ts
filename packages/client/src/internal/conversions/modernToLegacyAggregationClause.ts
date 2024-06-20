@@ -14,32 +14,42 @@
  * limitations under the License.
  */
 
+import type {
+  NumericAggregateOption,
+  OrderedAggregationClause,
+  StringAggregateOption,
+  UnorderedAggregationClause,
+} from "@osdk/client.api";
 import type { AggregationV2 } from "@osdk/internal.foundry";
-import type { AggregationClause } from "../../query/aggregations/AggregationsClause.js";
+
+const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
+  dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
 
 export function modernToLegacyAggregationClause<
-  AC extends AggregationClause<any>,
+  AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
 >(select: AC) {
-  return Object.entries(select).flatMap<AggregationV2>(([k, v]) => {
-    if (k === "$count") {
-      if (v) return { type: "count", name: "count" };
-      return [];
-    } else if (Array.isArray(v)) {
-      return v.map((v2) => {
+  return Object.entries(select).flatMap<AggregationV2>(
+    ([propAndMetric, aggregationType]) => {
+      if (propAndMetric === "$count") {
         return {
-          type: v2,
-          name: `${k}.${v2}`,
-          field: k,
+          type: "count",
+          name: "count",
+          direction: directionFieldMap(aggregationType),
         };
-      });
-    } else {
+      }
+
+      const colonPos = propAndMetric.lastIndexOf(":");
+      const property = propAndMetric.slice(0, colonPos);
+      const metric = propAndMetric.slice(colonPos + 1);
+
       return [
         {
-          type: v as "min" | "max" | "sum" | "avg" | "approximateDistinct", // FIXME v has additional possible values
-          name: `${k}.${v}`,
-          field: k,
+          type: metric as StringAggregateOption | NumericAggregateOption,
+          name: `${property}.${metric}`,
+          direction: directionFieldMap(aggregationType),
+          field: property,
         },
       ];
-    }
-  });
+    },
+  );
 }

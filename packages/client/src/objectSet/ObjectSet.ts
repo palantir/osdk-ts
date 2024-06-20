@@ -21,10 +21,16 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
+  AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults,
   BaseObjectSet,
+  LinkedType,
+  LinkNames,
   PropertyValueClientToWire,
+  Result,
+  WhereClause,
 } from "@osdk/client.api";
-import type { AggregateOptsThatErrors } from "../object/AggregateOptsThatErrors.js";
 import type {
   Augments,
   FetchPageArgs,
@@ -36,12 +42,7 @@ import type {
   FetchPageResult,
   SingleOsdkResult,
 } from "../object/FetchPageResult.js";
-import type { Result } from "../object/Result.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
-import type { AggregateOpts } from "../query/aggregations/AggregateOpts.js";
-import type { AggregationsResults } from "../query/aggregations/AggregationsResults.js";
-import type { WhereClause } from "../query/WhereClause.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
@@ -80,7 +81,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends MinimalObjectSet<Q>
 {
   aggregate: <AO extends AggregateOpts<Q>>(
-    req: AggregateOptsThatErrors<Q, AO>,
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
   where: (
