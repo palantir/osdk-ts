@@ -8,7 +8,7 @@ interface DialogProps {
 
 function Dialog({ children, isOpen, buttons }: PropsWithChildren<DialogProps>) {
   return (
-    <dialog open={isOpen} className={css.dialog}>
+    <dialog open={isOpen}>
       {children}
       {buttons != null && buttons.length > 0 && (
         <div className={css.buttons}>{buttons}</div>

@@ -1,13 +1,3 @@
 .label {
   margin-left: 0.5em;
 }
-
-.checked {
-  text-decoration: line-through;
-}
-
-.delete {
-  border: 1px solid #ccc;
-  padding: 2px;
-}
-

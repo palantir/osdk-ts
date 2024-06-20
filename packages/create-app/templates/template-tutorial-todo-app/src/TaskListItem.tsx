@@ -20,17 +20,14 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
 
   return (
     <li>
-      <label
-        className={`${css.label} ${isDeleting ? css.checked : ""}`}
-        htmlFor={`${task.id}`}
-      >
-        <input
-          type="checkbox"
-          onChange={handleClick}
-          checked={isDeleting}
-          className={css.delete}
-          title="Delete task"
-        />
+      <input
+        id={`${task.id}`}
+        type="checkbox"
+        onClick={handleClick}
+        checked={isDeleting}
+        disabled={isDeleting}
+      />
+      <label className={css.label} htmlFor={`${task.id}`}>
         {task.title}
       </label>
     </li>
