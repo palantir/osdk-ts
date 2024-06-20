@@ -73,6 +73,7 @@ function createInterfaceProxyHandler(
 
       switch (p) {
         case "$primaryKey":
+        case "$title":
         case "$objectType":
           return Reflect.getOwnPropertyDescriptor(underlying, p);
 
@@ -100,6 +101,7 @@ function createInterfaceProxyHandler(
         "$apiName",
         "$objectType",
         "$primaryKey",
+        "$title",
         ...Object.keys(newDef.properties),
       ];
     },
@@ -114,6 +116,7 @@ function createInterfaceProxyHandler(
         case "$as":
         case UnderlyingOsdkObject:
         case "$primaryKey":
+        case "$title":
         case "$objectType":
           return underlying[p as string];
       }

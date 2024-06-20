@@ -229,9 +229,11 @@ function fixObjectPropertiesInPlace(
 
     // copying over for now as its always returned. In the future, this should just be inferred from underlying
     obj.$primaryKey = obj.__primaryKey;
+    obj.$title = obj.__title;
 
     // we don't want people to use these
     delete obj.__apiName;
     delete obj.__primaryKey;
+    delete obj.__title;
   }
 }
