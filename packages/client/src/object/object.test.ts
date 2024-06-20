@@ -27,8 +27,10 @@ function asV2Object(o: any, includeRid?: boolean) {
   o.$apiName = o.__apiName;
   o.$objectType = o.__apiName;
   o.$primaryKey = o.__primaryKey;
+  o.$title = o.__title;
   delete o.__apiName;
   delete o.__primaryKey;
+  delete o.__title;
   return o;
 }
 

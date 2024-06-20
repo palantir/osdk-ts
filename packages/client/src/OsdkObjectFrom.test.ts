@@ -224,6 +224,7 @@ describe("Osdk", () => {
         | "__primaryKey"
         | "$objectType"
         | "$primaryKey"
+        | "$title"
       >
     >().toEqualTypeOf<
       { fooSpt: string | undefined }
