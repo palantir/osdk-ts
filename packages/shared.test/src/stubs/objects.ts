@@ -90,6 +90,7 @@ export const nycOffice: OntologyObjectV2 = {
     "ri.phonograph2-objects.main.object.c0c0c0c0-c0c0-c0c0-c0c0-c0c0c0c0c0c0",
   __primaryKey: "NYC",
   __apiName: "Office",
+  __title: "New York City",
   officeId: "NYC",
   name: "New York City",
   entrance: { type: "Point", coordinates: [1.1, 1.1] },
@@ -101,6 +102,7 @@ export const objectWithAllPropertyTypes1: OntologyObjectV2 = {
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 1,
   __apiName: "objectTypeWithAllPropertyTypes",
+  __title: "1",
   id: 1,
   string: "string",
   boolean: true,
@@ -175,6 +177,7 @@ export const objectWithAllPropertyTypesEmptyEntries = {
     "ri.phonograph2-objects.main.object.401ac022-89eb-4591-8b7e-0a912b9efb44",
   __primaryKey: 2,
   __apiName: "objectTypeWithAllPropertyTypes",
+  __title: "2",
   id: 2,
 };
 
