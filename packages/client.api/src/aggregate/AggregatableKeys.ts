@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { PropertyValueClientToWire } from "@osdk/client.api";
+import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 
 export type StringAggregateOption = "approximateDistinct";
 export type NumericAggregateOption =
