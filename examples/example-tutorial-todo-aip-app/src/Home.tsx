@@ -44,8 +44,9 @@ function Home() {
             💡 Welcome to the To-do AIP tutorial!
           </p>
           <p>
-            The application is implemented with mock in memory data. Can you
-            solve how to change it to use the Ontology SDK instead?
+            The application is implemented with mock in memory data.
+            <br />Can you solve how to change it to use the Ontology SDK
+            instead?
           </p>
         </div>
       </div>
