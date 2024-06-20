@@ -55,4 +55,11 @@ export const TEMPLATES: readonly Template[] = [
     buildDirectory: "./dist",
     hidden: true,
   },
+  {
+    id: "template-tutorial-todo-aip-app",
+    label: "Tutorial: Todo AIP App",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    hidden: true,
+  },
 ];

@@ -78,7 +78,7 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<MockProject["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({

@@ -1,0 +1,37 @@
+.task {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 10px;
+    width: 500px;
+}
+.label {
+  display: flex;
+  gap: 5px;
+}
+
+.input {
+  width: 300px;
+}
+.aip {
+  background-color: #7961DB;
+  border: 1px solid #ccc;
+  padding: 2px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processing {
+  cursor: progress;
+}
+
+.image {
+  width: 16px;
+  height: 16px;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+}
