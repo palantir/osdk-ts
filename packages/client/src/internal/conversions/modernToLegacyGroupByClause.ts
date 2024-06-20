@@ -15,15 +15,15 @@
  */
 
 import type {
-  AggregationGroupByV2,
-  AggregationRangeV2,
-} from "@osdk/internal.foundry";
-import type {
   AllGroupByValues,
   GroupByClause,
   GroupByRange,
-} from "../../query/aggregations/GroupByClause.js";
-import { DurationMapping } from "../../query/aggregations/GroupByClause.js";
+} from "@osdk/client.api";
+import { DurationMapping } from "@osdk/client.api";
+import type {
+  AggregationGroupByV2,
+  AggregationRangeV2,
+} from "@osdk/internal.foundry";
 
 export function modernToLegacyGroupByClause(
   groupByClause: GroupByClause<any> | undefined,

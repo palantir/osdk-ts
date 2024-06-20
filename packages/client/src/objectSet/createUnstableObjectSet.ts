@@ -15,11 +15,10 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { LinkedType, LinkNames, WhereClause } from "@osdk/client.api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { WhereClause } from "../query/WhereClause.js";
 import { createObjectSet } from "./createObjectSet.js";
-import type { LinkedType, LinkNames } from "./LinkUtils.js";
 import type { ObjectSet as OGObjectSet } from "./ObjectSet.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import { ObjectSetListenerWebsocket } from "./ObjectSetListenerWebsocket.js";

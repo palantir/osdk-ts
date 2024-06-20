@@ -75,6 +75,12 @@ export async function getTokenWithCodeVerifier(
   multipassContextPath?: string,
 ): Promise<OAuthToken> {
   const parsedUrl = new URLSearchParams(url.substring(url.indexOf("?")));
+
+  const error = parsedUrl.get("error");
+  if (error) {
+    throw new Error("Error received from server: " + error);
+  }
+
   const code = parsedUrl.get("code");
   if (!code) {
     throw new Error("Code parameter missing in URL: " + url);

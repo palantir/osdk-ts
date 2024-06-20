@@ -19,17 +19,17 @@ import { client } from "./client.js";
 
 export async function runAggregationGroupByDatesTest() {
   const groupedTimestamps = await client(BuilderDeploymentState).aggregate({
-    $select: { $count: true },
+    $select: { $count: "unordered" },
     $groupBy: { currentTimestamp: { $duration: [10, "seconds"] } },
   });
 
   const groupedDates = await client(BuilderDeploymentState).aggregate({
-    $select: { $count: true },
+    $select: { $count: "unordered" },
     $groupBy: { date: { $duration: [10, "days"] } },
   });
 
   const rangedDates = await client(BuilderDeploymentState).aggregate({
-    $select: { $count: true },
+    $select: { $count: "unordered" },
     $groupBy: {
       date: {
         $ranges: [["2008-03-01", "2009-11-05"], ["2015-10-01", "2018-11-05"]],
@@ -38,7 +38,7 @@ export async function runAggregationGroupByDatesTest() {
   });
 
   const rangedTimestamps = await client(BuilderDeploymentState).aggregate({
-    $select: { $count: true },
+    $select: { $count: "unordered" },
     $groupBy: {
       currentTimestamp: {
         $ranges: [["2023-04-02T17:28:00Z", "2023-04-03T18:28:00Z"], [

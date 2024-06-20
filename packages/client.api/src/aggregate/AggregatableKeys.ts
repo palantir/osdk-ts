@@ -15,16 +15,35 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { WhereClause } from "../WhereClause.js";
-import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregationClause } from "./AggregationsClause.js";
-import type { GroupByClause } from "./GroupByClause.js";
+import type { PropertyValueClientToWire } from "@osdk/client.api";
 
-export type AggregateOpts<
+export type StringAggregateOption = "approximateDistinct";
+export type NumericAggregateOption =
+  | "min"
+  | "max"
+  | "sum"
+  | "avg"
+  | "approximateDistinct";
+
+type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
+  : string extends T ? StringAggregateOption
+  : never;
+
+export type ValidAggregationKeys<
   Q extends ObjectOrInterfaceDefinition,
-  KK extends AggregatableKeys<Q> = AggregatableKeys<Q>,
-> = {
-  $select: AggregationClause<Q, KK>;
-  $where?: WhereClause<Q>;
-  $groupBy?: GroupByClause<Q>;
+> = keyof (
+  & {
+    [
+      KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<
+        PropertyValueClientToWire[Q["properties"][KK]["type"]]
+      >}`
+    ]?: any;
+  }
+  & { $count?: any }
+);
+
+export type AggregatableKeys<
+  Q extends ObjectOrInterfaceDefinition,
+> = keyof {
+  [P in keyof Q["properties"]]: any;
 };

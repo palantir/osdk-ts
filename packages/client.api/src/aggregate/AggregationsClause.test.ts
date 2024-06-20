@@ -16,7 +16,7 @@
 
 import { describe, it } from "vitest";
 import type { AggregatableKeys } from "./AggregatableKeys.js";
-import type { AggregationClause } from "./AggregationsClause.js";
+import type { UnorderedAggregationClause } from "./AggregationsClause.js";
 
 export type huh = AggregatableKeys<
   {
@@ -43,7 +43,7 @@ export type huh = AggregatableKeys<
   }["objects"]["Todo"]
 >;
 
-export type Q = AggregationClause<
+export type Q = UnorderedAggregationClause<
   {
     metadata: any;
     objects: {

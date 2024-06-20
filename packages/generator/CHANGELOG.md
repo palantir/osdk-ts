@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 1.12.0-beta.0
+
+### Minor Changes
+
+- 5378312: Added batch action support for 2.0 client
+- 0ecd42b: Generates 2.0's Ontology.ts in a typescript 5.5.0-beta safe way
+
 ## 1.11.0
 
 ### Minor Changes

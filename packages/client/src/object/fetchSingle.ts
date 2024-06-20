@@ -15,13 +15,13 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { Result } from "@osdk/client.api";
 import type { ObjectSet } from "@osdk/internal.foundry";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import type { Osdk } from "../OsdkObjectFrom.js";
 import { fetchPage } from "./fetchPage.js";
 import { type FetchPageArgs, type SelectArgToKeys } from "./FetchPageArgs.js";
-import type { Result } from "./Result.js";
 
 export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,

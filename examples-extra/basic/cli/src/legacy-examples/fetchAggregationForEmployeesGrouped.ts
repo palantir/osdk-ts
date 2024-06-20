@@ -25,9 +25,11 @@ export async function fetchAggregationForEmployeesGrouped(
 ) {
   const result = await client(Employee).aggregate({
     $select: {
-      locationCity: "approximateDistinct",
-      locationName: "approximateDistinct",
-      employeeNumber: ["avg", "max", "min"],
+      "locationCity:approximateDistinct": "unordered",
+      "locationName:approximateDistinct": "unordered",
+      "employeeNumber:avg": "unordered",
+      "employeeNumber:max": "unordered",
+      "employeeNumber:min": "unordered",
     },
     $groupBy: {
       locationType: "exact",
