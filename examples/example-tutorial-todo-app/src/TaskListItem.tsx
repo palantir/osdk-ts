@@ -1,4 +1,3 @@
-import trashIcon from "/trash.svg";
 import { useCallback, useState } from "react";
 import { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
@@ -21,15 +20,13 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
 
   return (
     <li>
-      <button
+      <input
+        id={`${task.id}`}
+        type="checkbox"
         onClick={handleClick}
+        checked={isDeleting}
         disabled={isDeleting}
-        className={css.delete}
-        title="Delete task"
-      >
-        {isDeleting ? "Deleting..." : ""}
-        <img src={trashIcon} alt="AIP Logo" />
-      </button>
+      />
       <label className={css.label} htmlFor={`${task.id}`}>
         {task.title}
       </label>
