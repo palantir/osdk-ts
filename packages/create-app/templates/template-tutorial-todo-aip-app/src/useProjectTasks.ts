@@ -39,6 +39,7 @@ export function useProjectTasks(project: MockProject | undefined) {
       if (project == null) {
         return;
       }
+      await sleep(1000);
       // Try to implement this with the Ontology SDK!
       await Mocks.deleteTask(task.$primaryKey);
       await mutate();
@@ -67,4 +68,8 @@ export function useProjectTasks(project: MockProject | undefined) {
     deleteTask,
     getRecommendedTaskDescription,
   };
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }

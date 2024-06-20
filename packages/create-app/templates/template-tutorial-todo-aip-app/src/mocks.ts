@@ -21,7 +21,7 @@ const projects: MockProject[] = [
     $primaryKey: "1",
     id: "1",
     name: "Mock Project",
-    description: "This is a moke description",
+    description: "This is a mock description",
     tasks: [
       {
         $apiName: "MockTask",
@@ -109,7 +109,7 @@ async function getRecommendedProjectDescription(
   if (project.tasks.length === 0) {
     throw new Error("Project description recommendation requires tasks");
   }
-  return `AIP Logic dummy description for project`;
+  return `AIP Logic mock description for project`;
 }
 
 async function updateProjectDescription(
@@ -160,7 +160,7 @@ async function getRecommendedTaskDescription(
   if (taskName.length === 0) {
     throw new Error("Task name must not be empty");
   }
-  return `dummy description for task`;
+  return `Mock AIP description for task`;
 }
 
 async function deleteTask(id: string): Promise<void> {
