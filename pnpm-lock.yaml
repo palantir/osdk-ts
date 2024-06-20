@@ -38,8 +38,8 @@ importers:
         specifier: 0.5.0-alpha.137
         version: 0.5.0-alpha.137
       '@monorepolint/core':
-        specifier: 0.5.0-alpha.137
-        version: 0.5.0-alpha.137
+        specifier: 0.5.0-beta.7
+        version: 0.5.0-beta.7
       '@monorepolint/rules':
         specifier: 0.5.0-alpha.137
         version: 0.5.0-alpha.137
@@ -2902,7 +2902,7 @@ packages:
     hasBin: true
     dependencies:
       '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/core': 0.5.0-alpha.137
+      '@monorepolint/core': 0.5.0-beta.7
       '@monorepolint/utils': 0.5.0-alpha.137
       chalk: 5.3.0
       tslib: 2.6.2
@@ -2918,12 +2918,21 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@monorepolint/core@0.5.0-alpha.137:
-    resolution: {integrity: sha512-gbN+CX/7RJ5BPL2SoX1XL0+/nQu28OGoyOuN2G3smzDwjDWTxKUIa7akxEc1pc+6ABFYDNVuJAOtZMZrDo+7eA==}
+  /@monorepolint/config@0.5.0-beta.7:
+    resolution: {integrity: sha512-6unZFNk18YdBTuKzc38OCW7cFvJMNEMqh1QdCJJmEeIhjxYxRpyiIELEoD9gykfjlplCy9wtWfzCzib2f/aqpQ==}
     engines: {node: '>=18'}
     dependencies:
-      '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/utils': 0.5.0-alpha.137
+      '@monorepolint/utils': 0.5.0-beta.7
+      chalk: 5.3.0
+      tslib: 2.6.2
+    dev: true
+
+  /@monorepolint/core@0.5.0-beta.7:
+    resolution: {integrity: sha512-NCr0Sz2oMbMplfPZtoVQ2GVE3eHbK+/c9MwnzhIxOgIXCd1kGuWvXlVOBVnKYpOQPxb3Zh5aaYGPHWpstc1Shg==}
+    engines: {node: '>=18'}
+    dependencies:
+      '@monorepolint/config': 0.5.0-beta.7
+      '@monorepolint/utils': 0.5.0-beta.7
       chalk: 5.3.0
       tslib: 2.6.2
     dev: true
@@ -2933,7 +2942,7 @@ packages:
     engines: {node: '>=18'}
     dependencies:
       '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/core': 0.5.0-alpha.137
+      '@monorepolint/core': 0.5.0-beta.7
       '@monorepolint/utils': 0.5.0-alpha.137
       globby: 14.0.1
       jest-diff: 29.7.0
@@ -2945,6 +2954,18 @@ packages:
 
   /@monorepolint/utils@0.5.0-alpha.137:
     resolution: {integrity: sha512-16Cap06ObJt75HmpKA6LBmy+4yKZYiqMrciWF5W5JFpwWuAQ/y4KAUFr6QfSujLv8j1c/KyuA2BbDJKTR42cKA==}
+    engines: {node: '>=18'}
+    dependencies:
+      find-packages: 10.0.4
+      find-up: 7.0.0
+      glob: 10.3.12
+      micromatch: 4.0.5
+      read-yaml-file: 2.1.0
+      tslib: 2.6.2
+    dev: true
+
+  /@monorepolint/utils@0.5.0-beta.7:
+    resolution: {integrity: sha512-MB8Xmm2eAOG+hix3Cgf7MavEoIeaFppz1nTf4YFz76RhA6Oa/DrT1c+tf3mIvz/zuKVVfCxNqn0vBxl3CO8vqw==}
     engines: {node: '>=18'}
     dependencies:
       find-packages: 10.0.4
@@ -6524,6 +6545,7 @@ packages:
 
   /glob@7.1.6:
     resolution: {integrity: sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==}
+    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
@@ -6535,6 +6557,7 @@ packages:
 
   /glob@7.2.3:
     resolution: {integrity: sha512-nFR0zLpU2YCaRxwoCJvL6UvCH2JFyFVIvwTLsIf21AuHlMskA1hhTdk+LlYJtOlYt9v6dvszD2BGRqBL+iQK9Q==}
+    deprecated: Glob versions prior to v9 are no longer supported
     dependencies:
       fs.realpath: 1.0.0
       inflight: 1.0.6
