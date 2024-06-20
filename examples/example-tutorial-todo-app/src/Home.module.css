@@ -6,7 +6,8 @@
 .tutorialBanner {
   flex: 1;
   width: 0;
-  background: hsl(35, 100%, 70%);
+  background: #646cff;
+  color: #ffffff;
   border-radius: 1em;
   padding: 1em;
   box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
