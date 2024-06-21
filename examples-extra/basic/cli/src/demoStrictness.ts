@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/client";
+import type { Osdk } from "@osdk/client.api";
 import {
   BoundariesUsState,
   Employee,

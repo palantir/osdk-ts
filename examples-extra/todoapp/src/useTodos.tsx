@@ -1,5 +1,6 @@
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { ActionValidationError, type Osdk } from "@osdk/client";
+import { ActionValidationError } from "@osdk/client";
+import type { Osdk } from "@osdk/client.api";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";

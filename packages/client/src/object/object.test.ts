@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/client.api";
 import type { Employee } from "@osdk/client.test.ontology";
 import { Ontology as MockOntology } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
 
 function asV2Object(o: any, includeRid?: boolean) {
   o = includeRid ? { ...o } : withoutRid(o);

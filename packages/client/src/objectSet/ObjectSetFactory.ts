@@ -15,9 +15,9 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { ObjectSet } from "@osdk/client.api";
 import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import type { ObjectSet } from "./ObjectSet.js";
 
 export type ObjectSetFactory<
   Q extends ObjectOrInterfaceDefinition,

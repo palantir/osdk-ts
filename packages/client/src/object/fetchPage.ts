@@ -20,7 +20,14 @@ import type {
   ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { Result } from "@osdk/client.api";
+import type {
+  Augment,
+  Augments,
+  FetchPageArgs,
+  FetchPageResult,
+  NullabilityAdherence,
+  Result,
+} from "@osdk/client.api";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -35,13 +42,6 @@ import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
-import type {
-  Augment,
-  Augments,
-  FetchPageArgs,
-  NullabilityAdherence,
-} from "./FetchPageArgs.js";
-import type { FetchPageResult } from "./FetchPageResult.js";
 
 export function augment<
   X extends ObjectOrInterfaceDefinition,

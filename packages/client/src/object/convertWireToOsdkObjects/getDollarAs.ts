@@ -15,12 +15,11 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { Osdk, OsdkObject } from "@osdk/client.api";
 import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
-import type { OsdkObject } from "../../OsdkObject.js";
-import type { Osdk } from "../../OsdkObjectFrom.js";
 import { createSimpleCache } from "../Cache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";

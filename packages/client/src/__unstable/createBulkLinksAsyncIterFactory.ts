@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OsdkObject } from "@osdk/client.api";
 import invariant from "tiny-invariant";
 import type { DirectedLinkTypeRid } from "../generated/object-set-service/api/DirectedLinkTypeRid.js";
 import type { FoundryObjectReference } from "../generated/object-set-service/api/FoundryObjectReference.js";
@@ -23,7 +24,6 @@ import { getBulkLinksPage } from "../generated/object-set-service/api/ObjectSetS
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "../objectSet/conjureUnionType.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
-import type { OsdkObject } from "../OsdkObject.js";
 import {
   applyPageToken,
   getResults,
