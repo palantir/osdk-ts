@@ -15,12 +15,14 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { WhereClause } from "@osdk/client.api";
-import type { OsdkObjectLinksObject } from "../../definitions/LinkDefinitions.js";
+import type {
+  ObjectSet,
+  Osdk,
+  OsdkObjectLinksObject,
+  SelectArg,
+  WhereClause,
+} from "@osdk/client.api";
 import { getWireObjectSet } from "../../objectSet/createObjectSet.js";
-import type { ObjectSet } from "../../objectSet/ObjectSet.js";
-import type { Osdk } from "../../OsdkObjectFrom.js";
-import type { SelectArg } from "../FetchPageArgs.js";
 import { fetchSingle, fetchSingleWithErrors } from "../fetchSingle.js";
 import { ClientRef, ObjectDefRef, RawObject } from "./InternalSymbols.js";
 import type {

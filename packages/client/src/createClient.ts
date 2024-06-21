@@ -20,7 +20,11 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "@osdk/client.api";
+import type {
+  ActionSignatureFromDef,
+  MinimalObjectSet,
+  ObjectSet,
+} from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import { createActionInvoker } from "./actions/createActionInvoker.js";
@@ -28,7 +32,6 @@ import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
-import type { MinimalObjectSet, ObjectSet } from "./objectSet/ObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 
 export function createClientInternal(

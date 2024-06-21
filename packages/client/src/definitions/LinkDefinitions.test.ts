@@ -15,16 +15,16 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import { describe, expectTypeOf, it } from "vitest";
-import type { SelectArg } from "../object/FetchPageArgs.js";
-import type { ObjectSet } from "../objectSet/ObjectSet.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
-import type { MockOntology } from "../util/test/mockOntology.js";
 import type {
   DefaultToFalse,
+  ObjectSet,
+  Osdk,
   OsdkObjectLinksObject,
+  SelectArg,
   SingleLinkAccessor,
-} from "./LinkDefinitions.js";
+} from "@osdk/client.api";
+import { describe, expectTypeOf, it } from "vitest";
+import type { MockOntology } from "../util/test/mockOntology.js";
 
 describe("LinkDefinitions", () => {
   type Objects = typeof MockOntology["objects"];

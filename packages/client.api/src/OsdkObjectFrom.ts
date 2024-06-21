@@ -19,13 +19,11 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  OsdkBase,
-  OsdkObjectPrimaryKeyType,
-  OsdkObjectPropertyType,
-} from "@osdk/client.api";
+import type { OsdkObjectPropertyType } from "./Definitions.js";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
+import type { OsdkBase } from "./OsdkBase.js";
+import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,

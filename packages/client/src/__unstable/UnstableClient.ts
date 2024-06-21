@@ -20,10 +20,9 @@ import type {
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
+import type { MinimalObjectSet, Osdk } from "@osdk/client.api";
 import type { CheckVersionBound, Client } from "../Client.js";
 import type { UNSTABLE_ObjectSet } from "../objectSet/createUnstableObjectSet.js";
-import type { MinimalObjectSet } from "../objectSet/ObjectSet.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
 import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
 
 export interface UnstableClient extends Client {

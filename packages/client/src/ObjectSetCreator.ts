@@ -19,8 +19,8 @@ import type {
   ObjectOrInterfaceKeysFrom,
   OntologyDefinition,
 } from "@osdk/api";
+import type { ObjectSet } from "@osdk/client.api";
 import type { Client } from "./Client.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
 
 /**
  * A type that creates an object set for each object in the ontology.

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Client, ObjectSet, Osdk, PageResult } from "@osdk/client";
+import type { Client } from "@osdk/client";
+import type { ObjectSet, Osdk, PageResult } from "@osdk/client.api";
 import type { Employee } from "@osdk/examples.basic.sdk";
 import { Ontology } from "@osdk/examples.basic.sdk";
 import type { TypeOf } from "ts-expect";

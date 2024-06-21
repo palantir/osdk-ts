@@ -15,8 +15,8 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { Osdk } from "@osdk/client.api";
 import type { inspect, InspectOptionsStylized } from "node:util";
-import type { Osdk } from "../../OsdkObjectFrom.js";
 import type { HolderBase } from "./InternalSymbols.js";
 import {
   InterfaceDefRef,
