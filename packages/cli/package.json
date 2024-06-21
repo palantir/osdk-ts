@@ -49,7 +49,7 @@
     "@osdk/cli.common": "workspace:^",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.38",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.29",
     "ts-expect": "^1.3.0",
