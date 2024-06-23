@@ -28,6 +28,12 @@
 
 .projectCard {
   margin: 2em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  /* margin: 0.5em; */
+  gap: 0.5em;
+  border-radius: 5px;
+
 }
 
 .projectTitle {
@@ -51,7 +57,6 @@
   padding: 2px;
   gap: 10px;
   height: 30px;
-  width: fit-content;
 }
 
 .processing {
@@ -60,7 +65,16 @@
 
 .aipText {
   display: flex;
+  justify-content: center;
   gap: 10px;
   align-items: center;
   padding: 0 10px;
+}
+
+.textArea {
+  border: none;
+  color: gray;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
 }

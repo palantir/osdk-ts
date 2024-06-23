@@ -19,15 +19,9 @@ function CreateProjectDialog({
   const { createProject } = useProjects();
 
   const [name, setName] = useState<string>("New project");
-  const [description, setDescription] = useState<string>("");
 
   const handleChangeProjectName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
-    [],
-  );
-
-  const handleChangeProjectDescription = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value),
     [],
   );
 
@@ -38,13 +32,13 @@ function CreateProjectDialog({
   const handleSubmit = useCallback(async () => {
     setIsCreating(true);
     try {
-      const projectId = await createProject(name, description);
+      const projectId = await createProject(name);
       onProjectCreated?.(projectId);
     } finally {
       setIsCreating(false);
       onClose();
     }
-  }, [onProjectCreated, onClose, createProject, name, description]);
+  }, [onProjectCreated, onClose, createProject, name]);
 
   return (
     <Dialog
@@ -62,14 +56,6 @@ function CreateProjectDialog({
         <label className={css.label}>
           Project name:{" "}
           <input type="text" value={name} onChange={handleChangeProjectName} />
-        </label>
-        <label className={css.label}>
-          Project description:{" "}
-          <input
-            type="text"
-            value={description}
-            onChange={handleChangeProjectDescription}
-          />
         </label>
       </div>
     </Dialog>

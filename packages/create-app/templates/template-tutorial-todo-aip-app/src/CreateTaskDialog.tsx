@@ -1,6 +1,6 @@
 import aipLogo from "/aip-icon.svg";
 import type { ChangeEvent } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import css from "./CreateTaskDialog.module.css";
 import Dialog from "./Dialog";
 import type { MockProject } from "./mocks";
@@ -20,6 +20,8 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const [name, setName] = useState<string>("New task");
   const [description, setDescription] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleChangeTaskName = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setName(e.target.value),
@@ -27,7 +29,7 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   );
 
   const handleChangeTaskDescription = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => setDescription(e.target.value),
+    (e: ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value),
     [],
   );
 
@@ -39,8 +41,14 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   }, [getRecommendedTaskDescription, name]);
 
   useEffect(() => setName("New task"), [isOpen]);
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const textArea = textAreaRef.current;
+      textArea.style.height = "auto";
+      textArea.style.height = `${textArea.scrollHeight}px`;
+    }
+  }, [description]);
 
-  const [isCreating, setIsCreating] = useState(false);
   const handleSubmit = useCallback(async () => {
     setIsCreating(true);
     try {
@@ -52,54 +60,62 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   }, [onClose, createTask, name, description]);
 
   return (
-    <Dialog
-      isOpen={isOpen}
-      buttons={[
-        <button disabled={isCreating} onClick={onClose} key="cancel">
-          Cancel
-        </button>,
-        <button disabled={isCreating} onClick={handleSubmit} key="create">
-          Create task
-        </button>,
-      ]}
-    >
-      <div className={css.task}>
-        <label className={css.label}>
-          Task name:{" "}
-        </label>
-        <input
-          type="text"
-          value={name}
-          onChange={handleChangeTaskName}
-          className={css.input}
-        />
-
-        <label className={css.label}>
-          Task description:{" "}
-        </label>
-        <div className={css.container}>
-          <input
-            type="text"
-            value={description}
-            onChange={handleChangeTaskDescription}
-            className={css.input}
-          />
-          <button
-            disabled={isProcessing}
-            className={`${css.aip} ${isProcessing ? css.processing : ""}`}
-            title="Click here to get AIP task description recommendation"
-            type="button"
-            onClick={handleTaskDescriptionRecommendation}
+    <>
+      {isOpen && (
+        <div className={css.dialogContainer}>
+          <Dialog
+            isOpen={isOpen}
+            buttons={[
+              <button disabled={isCreating} onClick={onClose} key="cancel">
+                Cancel
+              </button>,
+              <button disabled={isCreating} onClick={handleSubmit} key="create">
+                Create task
+              </button>,
+            ]}
           >
-            <img
-              src={aipLogo}
-              alt="AIP"
-              className={css.image}
-            />
-          </button>
+            <div className={css.task}>
+              <label className={css.label}>
+                Task name:{" "}
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={handleChangeTaskName}
+                className={css.input}
+              />
+
+              <label className={css.label}>
+                Task description:{" "}
+              </label>
+              <div className={css.container}>
+                <textarea
+                  ref={textAreaRef}
+                  value={description}
+                  onChange={handleChangeTaskDescription}
+                  className={css.textArea}
+                  rows={2}
+                />
+                <button
+                  disabled={isProcessing}
+                  className={`${css.aip} ${isProcessing ? css.processing : ""}`}
+                  title="Click here to get AIP task description recommendation"
+                  type="button"
+                  onClick={handleTaskDescriptionRecommendation}
+                >
+                  <img
+                    src={aipLogo}
+                    alt="AIP"
+                    className={css.image}
+                  />
+                </button>
+              </div>
+            </div>
+          </Dialog>
         </div>
-      </div>
-    </Dialog>
+      )}
+    </>
   );
 }
+
 export default CreateTaskDialog;

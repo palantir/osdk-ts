@@ -1,18 +1,25 @@
 .task {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: auto min-content;
     gap: 10px;
     width: 500px;
 }
 .label {
   display: flex;
   gap: 5px;
+  resize: none;
 }
 
 .input {
   width: 300px;
 }
+
+.textArea {
+  width: 300px;
+  resize: vertical;
+}
+
 .aip {
   background-color: #7961DB;
   border: 1px solid #ccc;
@@ -33,5 +40,17 @@
 
 .container {
   display: flex;
+  align-items:flex-start;
+}
+
+.dialogContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimmed background */
 }

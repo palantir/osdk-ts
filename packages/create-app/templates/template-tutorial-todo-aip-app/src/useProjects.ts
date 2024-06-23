@@ -13,11 +13,10 @@ function useProjects() {
 
   const createProject: (
     name: string,
-    description: string,
   ) => Promise<MockProject["$primaryKey"]> = useCallback(
-    async (name: string, description: string) => {
+    async (name: string) => {
       // Try to implement this with the Ontology SDK!
-      const id = await Mocks.createProject({ name, description });
+      const id = await Mocks.createProject({ name });
       await mutate();
       return id;
     },

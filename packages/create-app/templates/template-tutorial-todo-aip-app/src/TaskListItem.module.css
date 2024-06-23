@@ -1,5 +1,21 @@
+.li {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  margin: 0.5em;
+  gap: 0.5em;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
 .label {
+  display: flex;
+  flex-direction: row;
   margin-left: 0.5em;
+  gap: 5px;
+  align-items: flex-start;
 }
 
 .checked {
@@ -9,4 +25,19 @@
 .delete {
   border: 1px solid #ccc;
   padding: 2px;
+}
+
+.task {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.textArea {
+  border: none;
+  background-color: #f9f9f9;
+  color: gray;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
 }

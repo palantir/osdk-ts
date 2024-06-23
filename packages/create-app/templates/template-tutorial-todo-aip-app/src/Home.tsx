@@ -1,5 +1,5 @@
 import aipLogo from "/aip-icon.svg";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CreateProjectButton from "./CreateProjectButton";
 import CreateTaskButton from "./CreateTaskButton";
 import DeleteProjectButton from "./DeleteProjectButton";
@@ -15,6 +15,7 @@ function Home() {
   const { projects, updateProjectDescription } = useProjects();
   const project = projects?.find((p) => p.id === projectId);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSelectProject = useCallback(
     (p: MockProject) => setProjectId(p.id),
@@ -35,6 +36,14 @@ function Home() {
       setProjectId(projects[0].id);
     }
   }, [project, projects]);
+
+  useEffect(() => {
+    if (textAreaRef.current) {
+      const textArea = textAreaRef.current;
+      textArea.style.height = "auto";
+      textArea.style.height = `${textArea.scrollHeight}px`;
+    }
+  }, [project?.description]);
 
   return (
     <Layout>
@@ -64,7 +73,12 @@ function Home() {
         <div className={css.projectCard} key={project.id}>
           <h1 className={css.projectTitle}>{project.name}</h1>
           <div className={css.description}>
-            <span>{project.description}</span>
+            <textarea
+              ref={textAreaRef}
+              readOnly
+              value={project.description}
+              className={css.textArea}
+            />
             <button
               disabled={isProcessing}
               className={`${css.aip} ${isProcessing ? css.processing : ""}`}
@@ -78,7 +92,7 @@ function Home() {
                   alt="AIP"
                   className={css.image}
                 />
-                <span>Get description recommendation</span>
+                Get description recommendation
               </div>
             </button>
           </div>
