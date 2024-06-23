@@ -50,7 +50,7 @@ function Home() {
       <div className={css.tutorialBannerWrapper}>
         <div className={css.tutorialBanner}>
           <p className={css.tutorialBannerTitle}>
-            💡 Welcome to the To-do AIP tutorial!
+            💡 Welcome to the To Do AIP App tutorial!
           </p>
           <p>
             The application is implemented with mock in memory data.
