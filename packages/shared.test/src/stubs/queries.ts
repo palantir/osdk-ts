@@ -21,6 +21,7 @@ import type {
 import { employee1 } from "./objects.js";
 import {
   addOneQueryType,
+  queryTypeAcceptsObjects,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -66,6 +67,14 @@ export const queryTypeReturnsDateResponse: ExecuteQueryResponse = {
 };
 
 export const queryTypeReturnsObjectResponse: ExecuteQueryResponse = {
+  value: employee1.__primaryKey,
+};
+
+export const queryTypeAcceptsObjectRequest: ExecuteQueryRequest = {
+  parameters: {},
+};
+
+export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
   value: employee1.__primaryKey,
 };
 
@@ -139,5 +148,9 @@ export const queryRequestHandlers: {
   },
   [queryTypeThreeDimensionalAggregation.apiName]: {
     [emptyBody]: queryTypeThreeDimensionalAggregationResponse,
+  },
+  [queryTypeAcceptsObjects.apiName]: {
+    [JSON.stringify(queryTypeAcceptsObjectRequest)]:
+      queryTypeAcceptsObjectResponse,
   },
 };

@@ -62,6 +62,9 @@ export async function applyQuery<
         : {},
     },
   );
+
+  // eslint-disable-next-line no-console
+  console.log("I got a response,", response, query);
   const remappedResponse = await remapQueryResponse(
     client,
     query.output,
@@ -77,13 +80,14 @@ async function remapQueryParams(
 ): Promise<{ [parameterId: string]: any }> {
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
+    // eslint-disable-next-line no-console
+    console.log("thisiswhatagain?", key, value);
     parameterMap[key] = await toDataValueQueries(
       value,
       client,
       paramTypes[key],
     );
   }
-
   return parameterMap;
 }
 
@@ -104,8 +108,14 @@ async function remapQueryResponse<
       throw new Error("Got null response when nullable was not allowed");
     }
   }
-
-  if (responseDataType.multiplicity !== false) {
+  // eslint-disable-next-line no-console
+  console.log("lookiehere", responseDataType);
+  // eslint-disable-next-line no-console
+  console.log("lookiehere2", responseValue);
+  if (
+    responseDataType.multiplicity != null
+    && responseDataType.multiplicity !== false
+  ) {
     const withoutMultiplicity = { ...responseDataType, multiplicity: false };
     for (let i = 0; i < responseValue.length; i++) {
       responseValue[i] = remapQueryResponse(
@@ -210,21 +220,21 @@ async function remapQueryResponse<
       return responseValue as QueryReturnType<typeof responseDataType>;
     }
     case "twoDimensionalAggregation": {
-      const result: Record<any, any> = {};
+      const result: { key: any; value: any }[] = [];
       for (const { key, value } of responseValue.groups) {
-        result[key] = value;
+        result.push({ key, value });
       }
       return result as QueryReturnType<typeof responseDataType>;
     }
 
     case "threeDimensionalAggregation": {
-      const result: Record<any, Record<any, any>> = {};
+      const result: { key: any; groups: { key: any; value: any }[] }[] = [];
       for (const { key, groups } of responseValue.groups) {
-        const subresult: Record<any, any> = {};
-        result[key] = subresult;
+        const subresult: { key: any; value: any }[] = [];
         for (const { key: subkey, value } of groups) {
-          subresult[subkey] = value;
+          subresult.push({ key: subkey, value });
         }
+        result.push({ key, groups: subresult });
       }
       return result as QueryReturnType<typeof responseDataType>;
     }

@@ -20,9 +20,7 @@ export interface Ontology extends OntologyDefinition<'Employee' | 'equipment' | 
     promoteEmployee: typeof Actions.promoteEmployee;
     promoteEmployeeObject: typeof Actions.promoteEmployeeObject;
   };
-  queries: {
-    // TODO
-  };
+  queries: {};
   interfaces: {};
 }
 
@@ -43,8 +41,6 @@ export const Ontology: Ontology = {
     promoteEmployee: Actions.promoteEmployee,
     promoteEmployeeObject: Actions.promoteEmployeeObject,
   },
-  queries: {
-    // TODO
-  },
+  queries: {},
   interfaces: {},
 };

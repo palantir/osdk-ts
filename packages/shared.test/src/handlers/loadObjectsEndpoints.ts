@@ -485,15 +485,22 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
         );
       }
 
+      // eslint-disable-next-line no-console
+      console.error("here i am", parsedBody, queryApiName);
+
       const queryResponses = queryRequestHandlers[queryApiName];
       if (!queryResponses) {
         throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
       }
 
       const queryResponse = queryResponses[JSON.stringify(parsedBody)];
+
+      // eslint-disable-next-line no-console
+      console.error("here i am2", queryResponse, req);
       if (
         req.params.ontologyApiName === defaultOntology.apiName
-        && queryResponse
+        || req.params.ontologyApiName === defaultOntology.rid
+          && queryResponse
       ) {
         return queryResponse;
       }
