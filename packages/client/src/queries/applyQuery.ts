@@ -62,13 +62,14 @@ export async function applyQuery<
         : {},
     },
   );
-
+  const objectOutputDefs = await getRequiredDefinitions(query.output, client);
   // eslint-disable-next-line no-console
   console.log("I got a response,", response, query);
   const remappedResponse = await remapQueryResponse(
     client,
     query.output,
     response.value,
+    objectOutputDefs,
   );
   return remappedResponse;
 }
@@ -98,7 +99,7 @@ async function remapQueryResponse<
   client: MinimalClient,
   responseDataType: T,
   responseValue: DataValue,
-  // definitions: Map<string, ObjectOrInterfaceDefinition>,
+  definitions: Map<string, ObjectOrInterfaceDefinition>,
 ): Promise<QueryReturnType<T>> {
   // handle null responses
   if (responseValue == null) {
@@ -122,6 +123,7 @@ async function remapQueryResponse<
         responseValue[i],
         withoutMultiplicity,
         client,
+        definitions,
       );
     }
     return responseValue as QueryReturnType<typeof responseDataType>;
@@ -138,6 +140,7 @@ async function remapQueryResponse<
           responseValue[i],
           responseDataType.set,
           client,
+          definitions,
         );
       }
 
@@ -213,6 +216,7 @@ async function remapQueryResponse<
             responseValue[key],
             subtype,
             client,
+            definitions,
           );
         }
       }
@@ -243,25 +247,28 @@ async function remapQueryResponse<
   return responseValue as QueryReturnType<typeof responseDataType>;
 }
 
-export function getRequiredDefinitions(
+async function getRequiredDefinitions(
   dataType: QueryDataTypeDefinition<any>,
-): Set<string> {
-  const result = new Set<string>();
+  client: MinimalClient,
+): Promise<Map<string, ObjectOrInterfaceDefinition>> {
+  const result = new Map<string, ObjectOrInterfaceDefinition>();
   switch (dataType.type) {
     case "objectSet":
-      result.add(dataType.objectSet);
+      const objectDef = await client.ontologyProvider.getObjectDefinition(
+        dataType.objectSet,
+      );
+      result.set(dataType.objectSet, objectDef);
       break;
 
     case "set":
-      for (const s of getRequiredDefinitions(dataType.set)) {
-        result.add(s);
-      }
-      break;
+      return getRequiredDefinitions(dataType.set, client);
 
     case "struct":
       for (const value of Object.values(dataType.struct)) {
-        for (const s of getRequiredDefinitions(value)) {
-          result.add(s);
+        for (
+          const [type, objectDef] of await getRequiredDefinitions(value, client)
+        ) {
+          result.set(type, objectDef);
         }
       }
       break;
