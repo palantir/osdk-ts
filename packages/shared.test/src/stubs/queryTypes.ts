@@ -213,6 +213,28 @@ export const queryTypeAcceptsObjects: QueryTypeV2 = {
   version: "0.11.0",
 };
 
+export const queryTypeAcceptsObjectSets: QueryTypeV2 = {
+  apiName: "queryAcceptsObjectSets",
+  description: "description of the query that takes objectSet types",
+  displayName: "QueryAcceptsObjectSets",
+  parameters: {
+    objectSet: {
+      dataType: {
+        type: "objectSet",
+        objectApiName: "Employee",
+        objectTypeApiName: "Employee",
+      },
+    },
+  },
+  output: {
+    type: "objectSet",
+    objectApiName: "Employee",
+    objectTypeApiName: "Employee",
+  },
+  rid:
+    "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+  version: "0.11.0",
+};
 export const queryTypes: QueryTypeV2[] = [
   addOneQueryType,
   queryTypeReturnsStruct,
@@ -222,4 +244,5 @@ export const queryTypes: QueryTypeV2[] = [
   queryTypeTwoDimensionalAggregation,
   queryTypeThreeDimensionalAggregation,
   queryTypeAcceptsObjects,
+  queryTypeAcceptsObjectSets,
 ];

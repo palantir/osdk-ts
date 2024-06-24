@@ -15,26 +15,36 @@
  */
 
 import type { OsdkMetadata } from "../OsdkMetadata.js";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
-export interface QueryDefinition<Q extends string, K extends string> {
+export interface QueryDefinition<
+  Q extends string,
+  K extends string,
+> {
   type: "query";
   apiName: Q;
   description?: string;
   displayName?: string;
   version: string;
-  parameters: Record<string, QueryParameterDefinition<K>>;
-  output: QueryDataTypeDefinition<K>;
+  parameters: Record<string, QueryParameterDefinition<K, any>>;
+  output: QueryDataTypeDefinition<K, any>;
   osdkMetadata?: OsdkMetadata;
 }
 
-export type QueryParameterDefinition<K extends string> = {
+export type QueryParameterDefinition<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> = {
   description?: string;
-} & QueryDataTypeDefinition<K>;
+} & QueryDataTypeDefinition<K, T_Target>;
 
-export type QueryDataTypeDefinition<K extends string> =
+export type QueryDataTypeDefinition<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> =
   | PrimitiveDataType
-  | ObjectQueryDataType<K>
-  | ObjectSetQueryDataType<K>
+  | ObjectQueryDataType<K, T_Target>
+  | ObjectSetQueryDataType<K, T_Target>
   | SetQueryDataType<K>
   | UnionQueryDataType<K>
   | StructQueryDataType<K>
@@ -62,16 +72,20 @@ export type PrimitiveDataType<
   Q extends WireQueryDataTypes = WireQueryDataTypes,
 > = BaseQueryDataTypeDefinition<Q>;
 
-export interface ObjectQueryDataType<K extends string>
-  extends BaseQueryDataTypeDefinition<"object">
-{
+export interface ObjectQueryDataType<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> extends BaseQueryDataTypeDefinition<"object"> {
   object: K;
+  __OsdkTargetType?: T_Target;
 }
 
-export interface ObjectSetQueryDataType<K extends string>
-  extends BaseQueryDataTypeDefinition<"objectSet">
-{
+export interface ObjectSetQueryDataType<
+  K extends string,
+  T_Target extends ObjectTypeDefinition<any> = never,
+> extends BaseQueryDataTypeDefinition<"objectSet"> {
   objectSet: K;
+  __OsdkTargetType?: T_Target;
 }
 
 export interface SetQueryDataType<K extends string>

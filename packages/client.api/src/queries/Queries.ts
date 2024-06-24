@@ -42,37 +42,40 @@ export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> =
     ) => Promise<QueryReturnType<T["output"]>>;
 
 export type QueryParameterType<
-  T extends Record<any, QueryDataTypeDefinition<any>>,
+  T extends Record<any, QueryDataTypeDefinition<any, any>>,
 > = NOOP<PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>>;
 
-export type QueryReturnType<T extends QueryDataTypeDefinition<any>> =
+export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> =
   T["type"] extends keyof DataValueClientToWire
     ? DataValueClientToWire[T["type"]]
     : never;
 
-type OptionalQueryParams<T extends Record<any, QueryDataTypeDefinition<any>>> =
-  {
-    [K in keyof T]: T[K] extends { nullable: true } ? never : K;
-  }[keyof T];
+type OptionalQueryParams<
+  T extends Record<any, QueryDataTypeDefinition<any, any>>,
+> = {
+  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
+}[keyof T];
 
-type NotOptionalParams<T extends Record<any, QueryDataTypeDefinition<any>>> = {
+type NotOptionalParams<
+  T extends Record<any, QueryDataTypeDefinition<any, any>>,
+> = {
   [K in keyof T]: MaybeArrayType<T[K]>;
 };
 
-type MaybeArrayType<T extends QueryDataTypeDefinition<any>> =
+type MaybeArrayType<T extends QueryDataTypeDefinition<any, any>> =
   T["multiplicity"] extends true ? Array<BaseType<T>>
     : BaseType<T>;
 
-// type BaseType<T extends QueryDataTypeDefinition<any>> = T extends
-//   ObjectQueryDataType<any, infer TTargetType>
-//   ? OsdkBase<TTargetType> | OsdkObjectPrimaryKeyType<TTargetType>
-//   : T extends ObjectSetQueryDataType<any, infer TTargetType>
-//     ? BaseObjectSet<TTargetType>
-//   : T["type"] extends keyof DataValueClientToWire
-//     ? DataValueClientToWire[T["type"]]
-//   : never;
-type BaseType<T extends QueryDataTypeDefinition<any>> = T extends
-  ObjectQueryDataType<any> | ObjectSetQueryDataType<any> ? never
+type BaseType<T extends QueryDataTypeDefinition<any, any>> = T extends
+  ObjectQueryDataType<any, infer TTargetType>
+  ? OsdkBase<TTargetType> | OsdkObjectPrimaryKeyType<TTargetType>
+  : T extends ObjectSetQueryDataType<any, infer TTargetType>
+    ? BaseObjectSet<TTargetType>
   : T["type"] extends keyof DataValueClientToWire
     ? DataValueClientToWire[T["type"]]
   : never;
+// type BaseType<T extends QueryDataTypeDefinition<any>> = T extends
+//   ObjectQueryDataType<any> | ObjectSetQueryDataType<any> ? never
+//   : T["type"] extends keyof DataValueClientToWire
+//     ? DataValueClientToWire[T["type"]]
+//   : never;

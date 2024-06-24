@@ -18,7 +18,7 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/gateway/types";
-import { employee1 } from "./objects.js";
+import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
   queryTypeAcceptsObjects,
@@ -71,11 +71,23 @@ export const queryTypeReturnsObjectResponse: ExecuteQueryResponse = {
 };
 
 export const queryTypeAcceptsObjectRequest: ExecuteQueryRequest = {
-  parameters: {},
+  parameters: { object: employee1.__primaryKey },
 };
 
 export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
-  value: employee1.__primaryKey,
+  value: employee2.__primaryKey,
+};
+
+export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    employees: { type: "base", objectType: "employee" },
+  },
+};
+
+export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
+  value: {
+    employees: { type: "base", objectType: "employee" },
+  },
 };
 
 export const queryTypeThreeDimensionalAggregationResponse:

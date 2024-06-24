@@ -207,6 +207,7 @@ export async function generateClientSdkVersionTwoPointZero(
     fs,
     queriesDir,
     importExt,
+    true,
   );
 }
 

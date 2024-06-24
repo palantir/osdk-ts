@@ -52,6 +52,23 @@ describe("queries", () => {
   });
 
   it("accepts objects", async () => {
+    const employee = await client(MockOntology.objects.Employee).fetchOne(
+      50030,
+    );
+    const result = await client(queryAcceptsObject)({ object: employee });
+    expect(result).toEqual({
+      apiName: "Employee",
+      objectType: "Employee",
+      primaryKey: 50031,
+    });
+
+    // Should also accept primary keys
+    const result2 = await client(queryAcceptsObject)({ object: 50030 });
+    expect(result2).toEqual({
+      apiName: "Employee",
+      objectType: "Employee",
+      primaryKey: 50031,
+    });
   });
 
   it("no params work", async () => {

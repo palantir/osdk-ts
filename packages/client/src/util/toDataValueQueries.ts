@@ -24,7 +24,7 @@ import {
   isAttachmentUpload,
 } from "../object/Attachment.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
+import { isOntologyObjectV2, isOsdkBaseObject } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -103,8 +103,8 @@ export async function toDataValueQueries<T extends string>(
   }
 
   // objects just send the JSON'd primaryKey
-  if (isOntologyObjectV2(value) && desiredType.type === "object") {
-    return value.__primaryKey;
+  if (isOsdkBaseObject(value) && desiredType.type === "object") {
+    return value.$primaryKey;
   }
 
   if (desiredType.type === "objectSet") {

@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
+import type { OsdkBase } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 
 export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
   return o && typeof o === "object" && typeof o.__apiName === "string"
     && o.__primaryKey != null;
+}
+
+export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
+  return o && typeof o === "object" && typeof o.$apiName === "string"
+    && o.$primaryKey != null;
 }

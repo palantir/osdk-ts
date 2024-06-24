@@ -1,10 +1,10 @@
 import { QueryDefinition } from '@osdk/api';
-
+import { Todo } from '../objects.js';
 export const queryTakesAllParameterTypes = {
-  type: 'query',
   apiName: 'queryTakesAllParameterTypes',
   description: 'description of the query that takes all parameter types',
   displayName: 'qTAPT',
+  type: 'query',
   version: 'version',
   parameters: {
     double: { description: 'a double parameter', type: 'double', nullable: false },
@@ -16,8 +16,18 @@ export const queryTakesAllParameterTypes = {
     date: { type: 'date', nullable: false },
     string: { type: 'string', nullable: false },
     timestamp: { type: 'timestamp', nullable: false },
-    object: { type: 'object', object: 'Todo', nullable: false },
-    objectSet: { type: 'objectSet', objectSet: 'Todo', nullable: false },
+    object: {
+      type: 'object',
+      object: 'Todo',
+      nullable: false,
+      __OsdkTargetType: Todo,
+    },
+    objectSet: {
+      type: 'object',
+      object: 'Todo',
+      nullable: false,
+      __OsdkTargetType: Todo,
+    },
     array: { description: 'an array of strings', type: 'string', nullable: false, multiplicity: true },
     set: { description: 'a set of strings', type: 'set', set: { type: 'string', nullable: false }, nullable: false },
     unionNonNullable: {
