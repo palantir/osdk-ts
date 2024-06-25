@@ -64,8 +64,6 @@ export async function applyQuery<
     },
   );
   const objectOutputDefs = await getRequiredDefinitions(query.output, client);
-  // eslint-disable-next-line no-console
-  console.log("I got a response,", response, query);
   const remappedResponse = await remapQueryResponse(
     client,
     query.output,
@@ -82,8 +80,6 @@ async function remapQueryParams(
 ): Promise<{ [parameterId: string]: any }> {
   const parameterMap: { [parameterName: string]: unknown } = {};
   for (const [key, value] of Object.entries(params)) {
-    // eslint-disable-next-line no-console
-    console.log("thisiswhatagain?", key, value);
     parameterMap[key] = await toDataValueQueries(
       value,
       client,
@@ -110,10 +106,7 @@ async function remapQueryResponse<
       throw new Error("Got null response when nullable was not allowed");
     }
   }
-  // eslint-disable-next-line no-console
-  console.log("lookiehere", responseDataType);
-  // eslint-disable-next-line no-console
-  console.log("lookiehere2", responseValue);
+
   if (
     responseDataType.multiplicity != null
     && responseDataType.multiplicity !== false

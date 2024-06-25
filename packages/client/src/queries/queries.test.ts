@@ -101,7 +101,6 @@ describe("queries", () => {
     const result = await client(incrementPersonAge)({
       person: { firstName: "John", lastName: "Doe", age: 42 },
     });
-    console.error(result);
     expect(result).toEqual({
       firstName: "John",
       lastName: "Doe",
