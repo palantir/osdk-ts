@@ -29,6 +29,7 @@
   "dependencies": {
     "@osdk/api": "workspace:^",
     "@osdk/client": "workspace:^",
+    "@osdk/client.api": "workspace:*",
     "@osdk/examples.basic.sdk": "workspace:^",
     "@osdk/foundry": "workspace:^",
     "@osdk/internal.foundry": "workspace:^",

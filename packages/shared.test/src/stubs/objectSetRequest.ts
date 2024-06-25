@@ -23,6 +23,7 @@ import {
   employee1,
   employee2,
   employee3,
+  employeeFailsStrict,
   nycOffice,
   objectWithAllPropertyTypes1,
   objectWithAllPropertyTypesEmptyEntries,
@@ -88,6 +89,19 @@ const eqSearchBody: LoadObjectSetRequestV2 = {
       type: "eq",
       field: "employeeId",
       value: 50030,
+    },
+  },
+  select: [],
+};
+
+const eqSearchBodyBadObject: LoadObjectSetRequestV2 = {
+  objectSet: {
+    type: "filter",
+    objectSet: { type: "base", objectType: employeeObjectType.apiName },
+    where: {
+      type: "eq",
+      field: "employeeId",
+      value: 50033,
     },
   },
   select: [],
@@ -409,11 +423,17 @@ const employee2ToToEmployee1PeepByPk: LoadObjectSetRequestV2 = {
 export const loadObjectSetRequestHandlers: {
   [key: string]: LoadObjectSetResponseV2["data"];
 } = {
-  [stableStringify(baseObjectSet)]: [employee1, employee2, employee3],
+  [stableStringify(baseObjectSet)]: [
+    employee1,
+    employee2,
+    employee3,
+    employeeFailsStrict,
+  ],
   [stableStringify(unionedObjectSet)]: [employee1, employee2],
   [stableStringify(intersectedObjectSet)]: [employee3],
   [stableStringify(subtractedObjectSet)]: [employee2, employee3],
   [stableStringify(eqSearchBody)]: [employee1],
+  [stableStringify(eqSearchBodyBadObject)]: [employeeFailsStrict],
   [stableStringify(eqSearchBodyWithSelect)]: [employee1],
   [stableStringify(andSearchBody)]: [employee2],
   [stableStringify(geoPointSearchBody)]: [nycOffice],

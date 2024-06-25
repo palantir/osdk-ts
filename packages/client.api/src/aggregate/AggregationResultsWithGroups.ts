@@ -15,31 +15,25 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { OsdkObjectPropertyType } from "../../Definitions.js";
+import type { OsdkObjectPropertyType } from "../Definitions.js";
+import type { GroupByClause, GroupByRange } from "../groupby/GroupByClause.js";
+import type { AggregationResultsWithoutGroups } from "./AggregationResultsWithoutGroups.js";
 import type {
-  AggregationCountResult,
-  AggregationResultsWithoutGroups,
-} from "./AggregationResultsWithoutGroups.js";
-import type { AggregationClause } from "./AggregationsClause.js";
-import type { GroupByClause, GroupByRange } from "./GroupByClause.js";
+  OrderedAggregationClause,
+  UnorderedAggregationClause,
+} from "./AggregationsClause.js";
 
 export type AggregationResultsWithGroups<
   Q extends ObjectOrInterfaceDefinition<any, any>,
-  A extends AggregationClause<Q>,
+  A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,
   G extends GroupByClause<Q> | undefined,
 > = (
   & {
     $group: {
       [P in keyof G & keyof Q["properties"]]: G[P] extends
-        { $ranges: GroupByRange<number>[] }
-        ? { startValue: number; endValue: number }
-        : G[P] extends { $ranges: GroupByRange<string>[] }
-          ? { startValue: string; endValue: string }
-        : OsdkObjectPropertyType<
-          Q["properties"][P]
-        >;
+        { $ranges: GroupByRange<infer T>[] } ? { startValue: T; endValue: T }
+        : OsdkObjectPropertyType<Q["properties"][P], true>;
     };
   }
-  & AggregationCountResult<Q, A>
   & AggregationResultsWithoutGroups<Q, A>
 )[];

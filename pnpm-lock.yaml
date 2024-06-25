@@ -124,6 +124,9 @@ importers:
       '@osdk/client':
         specifier: workspace:^
         version: link:../../../packages/client
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../../../packages/client.api
       '@osdk/examples.basic.sdk':
         specifier: workspace:^
         version: link:../sdk
@@ -782,13 +785,20 @@ importers:
         version: 3.23.8
 
   packages/client.api:
-    devDependencies:
+    dependencies:
       '@osdk/api':
         specifier: workspace:^
         version: link:../api
+    devDependencies:
+      '@osdk/internal.foundry':
+        specifier: workspace:^
+        version: link:../internal.foundry
       '@types/geojson':
         specifier: ^7946.0.14
         version: 7946.0.14
+      type-fest:
+        specifier: ^4.18.2
+        version: 4.18.2
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

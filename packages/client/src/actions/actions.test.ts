@@ -17,7 +17,6 @@
 import type {
   ActionEditResponse,
   ActionValidationResponse,
-  Attachment as IAttachment,
   AttachmentUpload,
 } from "@osdk/client.api";
 import {
@@ -37,7 +36,7 @@ import {
 } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
-import { Attachment, createAttachmentUpload } from "../object/Attachment.js";
+import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
 describe("actions", () => {
@@ -146,14 +145,13 @@ describe("actions", () => {
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<
-        { attachment: IAttachment | AttachmentUpload } | {
-          attachment: IAttachment | AttachmentUpload;
+        { attachment: string | AttachmentUpload } | {
+          attachment: string | AttachmentUpload;
         }[]
       >();
 
-    const attachment = new Attachment("attachment.rid");
     const result = await client(actionTakesAttachment)({
-      attachment,
+      attachment: "attachment.rid",
     });
 
     expectTypeOf<typeof result>().toEqualTypeOf<undefined>();
@@ -166,8 +164,8 @@ describe("actions", () => {
     );
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<
-        { attachment: IAttachment | AttachmentUpload } | {
-          attachment: IAttachment | AttachmentUpload;
+        { attachment: string | AttachmentUpload } | {
+          attachment: string | AttachmentUpload;
         }[]
       >();
     const blob =

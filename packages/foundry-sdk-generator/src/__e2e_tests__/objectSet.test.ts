@@ -61,10 +61,14 @@ describe("Object Sets", () => {
     const employeesPage = assertOkOrThrow(result);
     const employees = employeesPage.data;
     for (const emp of employees) {
-      expect(emp.employeeId).toEqual(50030 + iter);
+      expect(emp.$primaryKey).toEqual(50030 + iter);
+      if (emp.employeeId) {
+        // one of the objects is invalid intentionally, so we don't want to check it
+        expect(emp.employeeId).toEqual(50030 + iter);
+      }
       iter += 1;
     }
-    expect(iter).toEqual(3);
+    expect(iter).toEqual(4);
   });
 
   it("objects set union", async () => {
@@ -214,7 +218,7 @@ describe("Object Sets", () => {
   it("object set page gets all elements", async () => {
     const objectSet: ObjectSet<Employee> = client.ontology.objects.Employee;
     const pageResults = await fetchAllPages(objectSet, 1);
-    expect(pageResults.length).toEqual(3);
+    expect(pageResults.length).toEqual(4);
   });
 
   it("object set page respects page size", async () => {

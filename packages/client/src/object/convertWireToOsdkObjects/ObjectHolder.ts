@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import type { Osdk } from "../../OsdkObjectFrom.js";
 import type { DollarAsFn } from "./getDollarAs.js";
 import type { get$link } from "./getDollarLink.js";
 import type {

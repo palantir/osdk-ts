@@ -43,8 +43,8 @@ type T_AGG_RESULTS_TEST_1 = AggregationsResults<
   }["objects"]["Todo"],
   {
     $select: {
-      locationCity: "approximateDistinct";
-      text: "approximateDistinct";
+      "locationCity:approximateDistinct": "unordered";
+      "text:approximateDistinct": "unordered";
     };
     $groupBy: {
       text: "exact";
@@ -76,9 +76,10 @@ type Q = AggregationResultsWithoutGroups<
     queries: {};
   }["objects"]["Todo"],
   {
-    locationCity: "approximateDistinct";
-    id: ["max", "sum"];
-    text: "approximateDistinct";
+    "locationCity:approximateDistinct": "unordered";
+    "id:max": "unordered";
+    "id:sum": "unordered";
+    "text:approximateDistinct": "unordered";
   }
 >;
 

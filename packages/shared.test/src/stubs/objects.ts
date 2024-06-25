@@ -55,6 +55,19 @@ export const employee3 = {
   employeeStatus: "TimeSeries<String>",
 };
 
+export const employeeFailsStrict = {
+  __rid:
+    "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+  __primaryKey: 50033,
+  __apiName: "Employee",
+  employeeId: undefined,
+  fullName: "Jack Smith",
+  office: "LON",
+  class: "Red",
+  startDate: "2015-05-15",
+  employeeStatus: "TimeSeries<String>",
+};
+
 export const officeAreaGeoJson: GeoJsonObject = {
   coordinates: [
     [
@@ -170,6 +183,7 @@ export const objectLoadResponseMap: {
     [employee1.__primaryKey.toString()]: employee1,
     [employee2.__primaryKey.toString()]: employee2,
     [employee3.__primaryKey.toString()]: employee3,
+    [employeeFailsStrict.__primaryKey.toString()]: employeeFailsStrict,
   },
   Office: {
     [nycOffice.__primaryKey.toString()]: nycOffice,

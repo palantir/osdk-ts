@@ -18,7 +18,7 @@ const projects: MockProject[] = [
     $apiName: "MockProject",
     $primaryKey: "1",
     id: "1",
-    name: "Fake Project",
+    name: "Mock Project",
     tasks: [
       {
         $apiName: "MockTask",
@@ -44,7 +44,7 @@ const projects: MockProject[] = [
     $apiName: "MockProject",
     $primaryKey: "2",
     id: "2",
-    name: "Yet Another Fake Project",
+    name: "Yet another mock project",
     tasks: [
       {
         $apiName: "MockTask",

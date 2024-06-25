@@ -15,10 +15,14 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type {
+  ConvertProps,
+  FetchPageResult,
+  Osdk,
+  ValidToFrom,
+} from "@osdk/client.api";
 import type { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { describe, expectTypeOf, it } from "vitest";
-import type { FetchPageResult } from "./object/FetchPageResult.js";
-import type { ConvertProps, Osdk, ValidToFrom } from "./OsdkObjectFrom.js";
 
 describe("ConvertProps", () => {
   describe("converts from an interface to a concrete", () => {
@@ -29,6 +33,24 @@ describe("ConvertProps", () => {
     it("handles $all", () => {
       expectTypeOf<ConvertProps<FooInterface, Employee, "$all">>()
         .toEqualTypeOf<"fullName">();
+    });
+
+    it("converts non-strict nullness for handles single prop", () => {
+      expectTypeOf<
+        ConvertProps<
+          FooInterface,
+          Employee,
+          | "fooSpt"
+          | "$notStrict"
+        >
+      >()
+        .toEqualTypeOf<"fullName" | "$notStrict">();
+    });
+    it("converts non-strict nullness for $all", () => {
+      expectTypeOf<
+        ConvertProps<FooInterface, Employee, "$all" | "$notStrict">
+      >()
+        .toEqualTypeOf<"fullName" | "$notStrict">();
     });
   });
 
@@ -43,6 +65,27 @@ describe("ConvertProps", () => {
         expectTypeOf<ConvertProps<Employee, FooInterface, "peeps">>()
           .toEqualTypeOf<never>();
       });
+
+      it("resolves to never for unused when not strict", () => {
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "peeps" | "$notStrict">
+        >()
+          .toEqualTypeOf<never>();
+      });
+
+      it("converts non-strict nullness for single prop", () => {
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "fullName" | "$notStrict">
+        >()
+          .toEqualTypeOf<"fooSpt" | "$notStrict">();
+      });
+
+      it("converts non-strict nullness for $all", () => {
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "$all" | "$notStrict">
+        >()
+          .toEqualTypeOf<"$all" | "$notStrict">();
+      });
     });
 
     describe("multiprop", () => {
@@ -51,6 +94,17 @@ describe("ConvertProps", () => {
           ConvertProps<Employee, FooInterface, "peeps" | "fullName">
         >()
           .toEqualTypeOf<"fooSpt">();
+      });
+
+      it("resolves to known only when not strict", () => {
+        expectTypeOf<
+          ConvertProps<
+            Employee,
+            FooInterface,
+            "peeps" | "fullName" | "$notStrict"
+          >
+        >()
+          .toEqualTypeOf<"fooSpt" | "$notStrict">();
       });
     });
 
@@ -88,7 +142,7 @@ describe("Osdk", () => {
     it("can't properly compare the retained types without it", () => {
       type InvalidPropertyName = "not a real prop";
 
-      // This should fail but it doesnt. We dont actively capture Z
+      // This should fail but it doesn't. We don't actively capture Z
       // (and we cant)
       expectTypeOf<
         OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
@@ -117,18 +171,42 @@ describe("Osdk", () => {
     });
   });
 
+  describe("$notStrict", () => {
+    describe("is present", () => {
+      it("makes { nullable: false } as `|undefined`", () => {
+        expectTypeOf<
+          Osdk<Employee, "employeeId" | "$notStrict">["employeeId"]
+        >()
+          .toEqualTypeOf<number | undefined>();
+        expectTypeOf<
+          GetUnderlyingProps<
+            OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
+          >
+        >().toEqualTypeOf<"fullName">();
+      });
+    });
+
+    describe("is absent", () => {
+      it("makes { nullable: false } as NOT `|undefined`", () => {
+        expectTypeOf<
+          Osdk<Employee, "employeeId">["employeeId"]
+        >()
+          .toEqualTypeOf<number>();
+        expectTypeOf<
+          GetUnderlyingProps<
+            OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>
+          >
+        >().toEqualTypeOf<"fullName">();
+      });
+    });
+  });
+
   it("Converts into self properly", () => {
     expectTypeOf<
       GetUnderlyingProps<
         OsdkAsHelper<FooInterface, "fooSpt", "fullName", FooInterface>
       >
     >().toEqualTypeOf<"fullName">();
-
-    type z = Osdk<FooInterface, "fooSpt">;
-    type FM<T extends any[]> = T extends (infer P)[] ? P : never;
-    type zz = Awaited<
-      Promise<FetchPageResult<FooInterface, "fooSpt", false>>
-    >["data"];
   });
 
   it("retains original props if set", () => {

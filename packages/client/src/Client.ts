@@ -24,11 +24,11 @@ import type {
   ActionSignatureFromDef,
   Attachment,
   AttachmentSignature,
+  ObjectSet,
   QuerySignatureFromDef,
 } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
 export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
@@ -52,11 +52,10 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends QueryDefinition<any, any>>(
     o: CheckVersionBound<Q>,
   ): QuerySignatureFromDef<Q>;
-  (o: Attachment): AttachmentSignature;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "0.19.0";
+const MaxOsdkVersion = "0.20.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");

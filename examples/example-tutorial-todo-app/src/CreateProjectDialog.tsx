@@ -39,11 +39,11 @@ function CreateProjectDialog({
     <Dialog
       isOpen={isOpen}
       buttons={[
-        <button disabled={isCreating} onClick={handleSubmit} key="create">
-          Create project
-        </button>,
         <button disabled={isCreating} onClick={onClose} key="cancel">
           Cancel
+        </button>,
+        <button disabled={isCreating} onClick={handleSubmit} key="create">
+          Create project
         </button>,
       ]}
     >

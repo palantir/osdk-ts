@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Client, Osdk } from "@osdk/client";
+import type { Client } from "@osdk/client";
+import type { Osdk } from "@osdk/client.api";
 import { Employee } from "@osdk/examples.basic.sdk";
 import { expectType } from "ts-expect";
 

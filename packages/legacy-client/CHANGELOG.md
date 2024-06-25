@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.4.0-beta.0
+
+### Minor Changes
+
+- c1924df: Do not restart auth flow on failed auth callback
+
 ## 2.3.0
 
 ### Minor Changes
