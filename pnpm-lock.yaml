@@ -704,6 +704,12 @@ importers:
       '@osdk/client.api':
         specifier: workspace:*
         version: link:../client.api
+      '@osdk/client.unstable':
+        specifier: workspace:*
+        version: link:../client.unstable
+      '@osdk/client.unstable.osw':
+        specifier: workspace:*
+        version: link:../client.unstable.osw
       '@osdk/generator-converters':
         specifier: workspace:^
         version: link:../generator-converters
@@ -818,6 +824,26 @@ importers:
       '@osdk/shared.test':
         specifier: workspace:^
         version: link:../shared.test
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/client.unstable:
+    dependencies:
+      conjure-lite:
+        specifier: ^0.4.4
+        version: 0.4.4
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/client.unstable.osw:
+    dependencies:
+      conjure-lite:
+        specifier: ^0.4.4
+        version: 0.4.4
+    devDependencies:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5

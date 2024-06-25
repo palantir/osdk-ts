@@ -53,6 +53,8 @@ const esmOnlyPackages = [
   "@osdk/cli",
   "@osdk/client",
   "@osdk/client.api",
+  "@osdk/client.unstable",
+  "@osdk/client.unstable.osw",
   "@osdk/create-app",
   "@osdk/example-generator",
   "@osdk/foundry.*",

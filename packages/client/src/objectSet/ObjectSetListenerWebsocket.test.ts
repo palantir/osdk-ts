@@ -16,6 +16,10 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { Ontology } from "@osdk/client.test.ontology";
+import type {
+  ObjectSetSubscribeRequests,
+  StreamMessage_subscribeResponses,
+} from "@osdk/client.unstable.osw";
 import { apiServer } from "@osdk/shared.test";
 import ImportedWebSocket from "isomorphic-ws";
 import { http, HttpResponse } from "msw";
@@ -33,8 +37,6 @@ import {
 } from "vitest";
 import { z } from "zod";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequests.js";
-import type { StreamMessage_subscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "./conjureUnionType.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";

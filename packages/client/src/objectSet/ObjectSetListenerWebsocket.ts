@@ -20,6 +20,26 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { Osdk } from "@osdk/client.api";
+import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
+import {
+  createTemporaryObjectSet,
+  loadAllOntologies,
+  loadOntologyEntities,
+} from "@osdk/client.unstable";
+import type {
+  FoundryObject,
+  Message,
+  Message_objectSetChanged,
+  ObjectSetSubscribeRequest,
+  ObjectSetSubscribeRequests,
+  ObjectSetSubscribeResponses,
+  ObjectUpdate_object,
+  RefreshObjectSet,
+  StreamMessage,
+  StreamMessage_objectSetChanged,
+  SubscriptionClosed,
+} from "@osdk/client.unstable.osw";
+import { batchEnableWatcher } from "@osdk/client.unstable.osw";
 import {
   type ObjectSet,
   OntologiesV2,
@@ -30,28 +50,6 @@ import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
-import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
-import type {
-  StreamMessage,
-  SubscriptionClosed,
-} from "../generated/object-set-watcher/objectsetwatcher/api/index.js";
-import type {
-  Message,
-  Message_objectSetChanged,
-} from "../generated/object-set-watcher/objectsetwatcher/api/Message.js";
-import type { FoundryObject } from "../generated/object-set-watcher/objectsetwatcher/api/object/FoundryObject.js";
-import type { ObjectSetSubscribeRequest } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequest.js";
-import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequests.js";
-import type { ObjectSetSubscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponses.js";
-import { batchEnableWatcher } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetWatchService.js";
-import type {
-  ObjectUpdate_object,
-} from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
-import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
-import type { StreamMessage_objectSetChanged } from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
-import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
-import { loadAllOntologies } from "../generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
-import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
