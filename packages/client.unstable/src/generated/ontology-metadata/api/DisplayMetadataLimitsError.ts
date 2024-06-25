@@ -29,8 +29,17 @@ import type { ObjectTypeDescriptionTooLongError } from "./ObjectTypeDescriptionT
 import type { ObjectTypeDisplayNameTooLongError } from "./ObjectTypeDisplayNameTooLongError.js";
 import type { PropertyTypeDescriptionTooLongError } from "./PropertyTypeDescriptionTooLongError.js";
 import type { PropertyTypeDisplayNameTooLongError } from "./PropertyTypeDisplayNameTooLongError.js";
+import type { RuleSetDescriptionTooLongError } from "./RuleSetDescriptionTooLongError.js";
+import type { RuleSetNamedTypeNameTooLongError } from "./RuleSetNamedTypeNameTooLongError.js";
+import type { RuleSetNameTooLongError } from "./RuleSetNameTooLongError.js";
 import type { SharedPropertyTypeDescriptionTooLongError } from "./SharedPropertyTypeDescriptionTooLongError.js";
 import type { SharedPropertyTypeDisplayNameTooLongError } from "./SharedPropertyTypeDisplayNameTooLongError.js";
+import type { TypeGroupDescriptionTooLongError } from "./TypeGroupDescriptionTooLongError.js";
+import type { TypeGroupDisplayNameTooLongError } from "./TypeGroupDisplayNameTooLongError.js";
+import type { WorkflowArchetypeVersionTooLongError } from "./WorkflowArchetypeVersionTooLongError.js";
+import type { WorkflowArchetypIdTooLongError } from "./WorkflowArchetypIdTooLongError.js";
+import type { WorkflowDescriptionTooLongError } from "./WorkflowDescriptionTooLongError.js";
+import type { WorkflowDisplayNameTooLongError } from "./WorkflowDisplayNameTooLongError.js";
 export interface DisplayMetadataLimitsError_objectTypeDisplayNameError {
   type: "objectTypeDisplayNameError";
   objectTypeDisplayNameError: ObjectTypeDisplayNameTooLongError;
@@ -117,6 +126,51 @@ export interface DisplayMetadataLimitsError_interfaceLinkTypeDescriptionError {
   type: "interfaceLinkTypeDescriptionError";
   interfaceLinkTypeDescriptionError: InterfaceLinkTypeDescriptionTooLongError;
 }
+
+export interface DisplayMetadataLimitsError_ruleSetNameError {
+  type: "ruleSetNameError";
+  ruleSetNameError: RuleSetNameTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_ruleSetDescriptionError {
+  type: "ruleSetDescriptionError";
+  ruleSetDescriptionError: RuleSetDescriptionTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_ruleSetNamedTypeNameError {
+  type: "ruleSetNamedTypeNameError";
+  ruleSetNamedTypeNameError: RuleSetNamedTypeNameTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_workflowDisplayNameError {
+  type: "workflowDisplayNameError";
+  workflowDisplayNameError: WorkflowDisplayNameTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_workflowDescriptionError {
+  type: "workflowDescriptionError";
+  workflowDescriptionError: WorkflowDescriptionTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_workflowArchetypeIdError {
+  type: "workflowArchetypeIdError";
+  workflowArchetypeIdError: WorkflowArchetypIdTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_workflowArchetypeVersionError {
+  type: "workflowArchetypeVersionError";
+  workflowArchetypeVersionError: WorkflowArchetypeVersionTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_typeGroupDisplayNameError {
+  type: "typeGroupDisplayNameError";
+  typeGroupDisplayNameError: TypeGroupDisplayNameTooLongError;
+}
+
+export interface DisplayMetadataLimitsError_typeGroupDescriptionError {
+  type: "typeGroupDescriptionError";
+  typeGroupDescriptionError: TypeGroupDescriptionTooLongError;
+}
 export type DisplayMetadataLimitsError =
   | DisplayMetadataLimitsError_objectTypeDisplayNameError
   | DisplayMetadataLimitsError_objectTypeDescriptionError
@@ -134,4 +188,13 @@ export type DisplayMetadataLimitsError =
   | DisplayMetadataLimitsError_interfaceTypeDisplayNameError
   | DisplayMetadataLimitsError_interfaceTypeDescriptionError
   | DisplayMetadataLimitsError_interfaceLinkTypeDisplayNameError
-  | DisplayMetadataLimitsError_interfaceLinkTypeDescriptionError;
+  | DisplayMetadataLimitsError_interfaceLinkTypeDescriptionError
+  | DisplayMetadataLimitsError_ruleSetNameError
+  | DisplayMetadataLimitsError_ruleSetDescriptionError
+  | DisplayMetadataLimitsError_ruleSetNamedTypeNameError
+  | DisplayMetadataLimitsError_workflowDisplayNameError
+  | DisplayMetadataLimitsError_workflowDescriptionError
+  | DisplayMetadataLimitsError_workflowArchetypeIdError
+  | DisplayMetadataLimitsError_workflowArchetypeVersionError
+  | DisplayMetadataLimitsError_typeGroupDisplayNameError
+  | DisplayMetadataLimitsError_typeGroupDescriptionError;

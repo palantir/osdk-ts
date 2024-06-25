@@ -41,3 +41,4 @@ export { getSuggestedRolesForObjectTypeDatasource } from "./OntologyPermissionSe
 export { getWorkflowPermissions } from "./OntologyPermissionService/getWorkflowPermissions.js";
 export { updateEntitiesInPackage } from "./OntologyPermissionService/updateEntitiesInPackage.js";
 export { updateEntityRoles } from "./OntologyPermissionService/updateEntityRoles.js";
+export { updatePackageRoles } from "./OntologyPermissionService/updatePackageRoles.js";

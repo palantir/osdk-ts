@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import type { AddInterfaceLinkRule } from "./AddInterfaceLinkRule.js";
+import type { AddInterfaceRule } from "./AddInterfaceRule.js";
 import type { AddLinkRule } from "./AddLinkRule.js";
 import type { AddObjectRule } from "./AddObjectRule.js";
 import type { AddOrModifyObjectRule } from "./AddOrModifyObjectRule.js";
 import type { BatchedFunctionRule } from "./BatchedFunctionRule.js";
+import type { DeleteInterfaceLinkRule } from "./DeleteInterfaceLinkRule.js";
 import type { DeleteLinkRule } from "./DeleteLinkRule.js";
 import type { DeleteObjectRule } from "./DeleteObjectRule.js";
 import type { FunctionRule } from "./FunctionRule.js";
+import type { ModifyInterfaceRule } from "./ModifyInterfaceRule.js";
 import type { ModifyObjectRule } from "./ModifyObjectRule.js";
 export interface LogicRule_addObjectRule {
   type: "addObjectRule";
@@ -42,6 +46,16 @@ export interface LogicRule_deleteObjectRule {
   deleteObjectRule: DeleteObjectRule;
 }
 
+export interface LogicRule_addInterfaceRule {
+  type: "addInterfaceRule";
+  addInterfaceRule: AddInterfaceRule;
+}
+
+export interface LogicRule_modifyInterfaceRule {
+  type: "modifyInterfaceRule";
+  modifyInterfaceRule: ModifyInterfaceRule;
+}
+
 export interface LogicRule_addLinkRule {
   type: "addLinkRule";
   addLinkRule: AddLinkRule;
@@ -50,6 +64,16 @@ export interface LogicRule_addLinkRule {
 export interface LogicRule_deleteLinkRule {
   type: "deleteLinkRule";
   deleteLinkRule: DeleteLinkRule;
+}
+
+export interface LogicRule_addInterfaceLinkRule {
+  type: "addInterfaceLinkRule";
+  addInterfaceLinkRule: AddInterfaceLinkRule;
+}
+
+export interface LogicRule_deleteInterfaceLinkRule {
+  type: "deleteInterfaceLinkRule";
+  deleteInterfaceLinkRule: DeleteInterfaceLinkRule;
 }
 
 export interface LogicRule_functionRule {
@@ -66,7 +90,11 @@ export type LogicRule =
   | LogicRule_addOrModifyObjectRule
   | LogicRule_modifyObjectRule
   | LogicRule_deleteObjectRule
+  | LogicRule_addInterfaceRule
+  | LogicRule_modifyInterfaceRule
   | LogicRule_addLinkRule
   | LogicRule_deleteLinkRule
+  | LogicRule_addInterfaceLinkRule
+  | LogicRule_deleteInterfaceLinkRule
   | LogicRule_functionRule
   | LogicRule_batchedFunctionRule;

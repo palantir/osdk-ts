@@ -51,8 +51,6 @@ export type { LoadAllOntologiesAuditRecord } from "./LoadAllOntologiesAuditRecor
 export type { LoadAllOntologyBranchesWithProposalAuditRecord } from "./LoadAllOntologyBranchesWithProposalAuditRecord.js";
 export type { LoadAllSharedPropertyTypesFromOntologyAuditRecord } from "./LoadAllSharedPropertyTypesFromOntologyAuditRecord.js";
 export type { LoadAllTypeGroupsFromOntologyAuditRecord } from "./LoadAllTypeGroupsFromOntologyAuditRecord.js";
-export type { LoadCustomObjectTypeTraitAuditRecord } from "./LoadCustomObjectTypeTraitAuditRecord.js";
-export type { LoadCustomObjectTypeTraitsAuditRecord } from "./LoadCustomObjectTypeTraitsAuditRecord.js";
 export type { LoadEntityMetadataAuditRecord } from "./LoadEntityMetadataAuditRecord.js";
 export type { LoadObjectTypeSchemaMigrationsAuditRecord } from "./LoadObjectTypeSchemaMigrationsAuditRecord.js";
 export type { LoadOntologyBranchWithProposalAuditRecord } from "./LoadOntologyBranchWithProposalAuditRecord.js";
@@ -118,6 +116,8 @@ export type { OntologyMetadataServiceCreateOntologyRequestParams } from "./Ontol
 export type { OntologyMetadataServiceCreateOntologyResultParams } from "./OntologyMetadataServiceCreateOntologyResultParams.js";
 export type { OntologyMetadataServiceGetActionTypesForObjectTypeRequestParams } from "./OntologyMetadataServiceGetActionTypesForObjectTypeRequestParams.js";
 export type { OntologyMetadataServiceGetActionTypesForObjectTypesResultParams } from "./OntologyMetadataServiceGetActionTypesForObjectTypesResultParams.js";
+export type { OntologyMetadataServiceGetActionTypeUsageRequestParams } from "./OntologyMetadataServiceGetActionTypeUsageRequestParams.js";
+export type { OntologyMetadataServiceGetActionTypeUsageResultParams } from "./OntologyMetadataServiceGetActionTypeUsageResultParams.js";
 export type { OntologyMetadataServiceGetDeprecationUsageRequestParams } from "./OntologyMetadataServiceGetDeprecationUsageRequestParams.js";
 export type { OntologyMetadataServiceGetDeprecationUsageResultParams } from "./OntologyMetadataServiceGetDeprecationUsageResultParams.js";
 export type { OntologyMetadataServiceGetEntityModificationHistoryRequestParams } from "./OntologyMetadataServiceGetEntityModificationHistoryRequestParams.js";
@@ -151,7 +151,6 @@ export type { OntologyMetadataServiceGetUsageSettingsByUserRequestParams } from 
 export type { OntologyMetadataServiceGetUsageSettingsByUserResultParams } from "./OntologyMetadataServiceGetUsageSettingsByUserResultParams.js";
 export type { OntologyMetadataServiceGetUsageV2RequestParams } from "./OntologyMetadataServiceGetUsageV2RequestParams.js";
 export type { OntologyMetadataServiceGetUsageV2ResultParams } from "./OntologyMetadataServiceGetUsageV2ResultParams.js";
-export type { OntologyMetadataServiceLoadAllCustomObjectTypeTraitsPageRequestParams } from "./OntologyMetadataServiceLoadAllCustomObjectTypeTraitsPageRequestParams.js";
 export type { OntologyMetadataServiceLoadAllInterfaceTypesFromOntologyRequestParams } from "./OntologyMetadataServiceLoadAllInterfaceTypesFromOntologyRequestParams.js";
 export type { OntologyMetadataServiceLoadAllInterfaceTypesFromOntologyResultParams } from "./OntologyMetadataServiceLoadAllInterfaceTypesFromOntologyResultParams.js";
 export type { OntologyMetadataServiceLoadAllObjectTypesFromOntologyRequestParams } from "./OntologyMetadataServiceLoadAllObjectTypesFromOntologyRequestParams.js";
@@ -170,7 +169,6 @@ export type { OntologyMetadataServiceLoadAllSharedPropertyTypesFromOntologyResul
 export type { OntologyMetadataServiceLoadAllTypeGroupsFromOntologyRequestParams } from "./OntologyMetadataServiceLoadAllTypeGroupsFromOntologyRequestParams.js";
 export type { OntologyMetadataServiceLoadAllTypeGroupsFromOntologyResultParams } from "./OntologyMetadataServiceLoadAllTypeGroupsFromOntologyResultParams.js";
 export type { OntologyMetadataServiceLoadAllWorkflowsPageRequestParams } from "./OntologyMetadataServiceLoadAllWorkflowsPageRequestParams.js";
-export type { OntologyMetadataServiceLoadCustomObjectTypeTraitsPageResultParams } from "./OntologyMetadataServiceLoadCustomObjectTypeTraitsPageResultParams.js";
 export type { OntologyMetadataServiceLoadOntologyDatasourcesRequestParams } from "./OntologyMetadataServiceLoadOntologyDatasourcesRequestParams.js";
 export type { OntologyMetadataServiceLoadOntologyDatasourcesResultParams } from "./OntologyMetadataServiceLoadOntologyDatasourcesResultParams.js";
 export type { OntologyMetadataServiceLoadOntologyEntitiesRequestParams } from "./OntologyMetadataServiceLoadOntologyEntitiesRequestParams.js";

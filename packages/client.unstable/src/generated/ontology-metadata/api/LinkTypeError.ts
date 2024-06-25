@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+import type { DeletedObjectTypesStillInUseError } from "./DeletedObjectTypesStillInUseError.js";
 import type { LinkTypeRidsNotFoundError } from "./LinkTypeRidsNotFoundError.js";
 import type { LinkTypesAlreadyExistError } from "./LinkTypesAlreadyExistError.js";
 import type { LinkTypesNotFoundError } from "./LinkTypesNotFoundError.js";
+import type { ReferencedObjectTypesNotFoundError } from "./ReferencedObjectTypesNotFoundError.js";
 export interface LinkTypeError_linkTypesAlreadyExist {
   type: "linkTypesAlreadyExist";
   linkTypesAlreadyExist: LinkTypesAlreadyExistError;
@@ -31,7 +33,19 @@ export interface LinkTypeError_linkTypeRidsNotFound {
   type: "linkTypeRidsNotFound";
   linkTypeRidsNotFound: LinkTypeRidsNotFoundError;
 }
+
+export interface LinkTypeError_referencedObjectTypesNotFound {
+  type: "referencedObjectTypesNotFound";
+  referencedObjectTypesNotFound: ReferencedObjectTypesNotFoundError;
+}
+
+export interface LinkTypeError_deletedObjectsStillInUse {
+  type: "deletedObjectsStillInUse";
+  deletedObjectsStillInUse: DeletedObjectTypesStillInUseError;
+}
 export type LinkTypeError =
   | LinkTypeError_linkTypesAlreadyExist
   | LinkTypeError_linkTypesNotFound
-  | LinkTypeError_linkTypeRidsNotFound;
+  | LinkTypeError_linkTypeRidsNotFound
+  | LinkTypeError_referencedObjectTypesNotFound
+  | LinkTypeError_deletedObjectsStillInUse;

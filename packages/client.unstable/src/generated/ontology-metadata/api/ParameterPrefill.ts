@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { InterfaceParameterPropertyValue } from "./InterfaceParameterPropertyValue.js";
 import type { ObjectParameterPropertyValue } from "./ObjectParameterPropertyValue.js";
 import type { ObjectQueryPrefill } from "./ObjectQueryPrefill.js";
 import type { ObjectQueryPropertyValue } from "./ObjectQueryPropertyValue.js";
@@ -34,6 +35,11 @@ export interface ParameterPrefill_staticObject {
 export interface ParameterPrefill_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
   objectParameterPropertyValue: ObjectParameterPropertyValue;
+}
+
+export interface ParameterPrefill_interfaceParameterPropertyValue {
+  type: "interfaceParameterPropertyValue";
+  interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
 export interface ParameterPrefill_objectQueryPrefill {
@@ -62,6 +68,7 @@ export type ParameterPrefill =
   | ParameterPrefill_staticValue
   | ParameterPrefill_staticObject
   | ParameterPrefill_objectParameterPropertyValue
+  | ParameterPrefill_interfaceParameterPropertyValue
   | ParameterPrefill_objectQueryPrefill
   | ParameterPrefill_objectQueryPropertyValue
   | ParameterPrefill_objectSetRidPrefill

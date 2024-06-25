@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import type { PropertyTypeRid } from "../../api/PropertyTypeRid.js";
 import type { Type } from "../../api/Type.js";
 
 /**
+ * Note: This error does not block the branch from getting merged.
+ *
  * Indicates that there is a change to the Type of a PropertyType (such as changing from an
  * Integer to a String) that does not have a required schema migration associated with it.
  * Validation only looks at migrations with `SourceSchemaVersion.latestVersion()`, other

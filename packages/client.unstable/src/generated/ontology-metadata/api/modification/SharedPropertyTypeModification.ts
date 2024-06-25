@@ -21,6 +21,7 @@ import type { SharedPropertyTypeDisplayMetadata } from "../SharedPropertyTypeDis
 import type { TypeClass } from "../TypeClass.js";
 import type { SharedPropertyTypeGothamMappingModification } from "../typemapping/SharedPropertyTypeGothamMappingModification.js";
 import type { DataConstraintsModification } from "./DataConstraintsModification.js";
+import type { EntityProvenanceModification } from "./EntityProvenanceModification.js";
 import type { TypeForModification } from "./TypeForModification.js";
 import type { ValueTypeReferenceModification } from "./ValueTypeReferenceModification.js";
 export interface SharedPropertyTypeModification {
@@ -33,5 +34,6 @@ export interface SharedPropertyTypeModification {
   dataConstraints: DataConstraintsModification | undefined;
   gothamMapping: SharedPropertyTypeGothamMappingModification | undefined;
   valueType: ValueTypeReferenceModification | undefined;
+  provenance: EntityProvenanceModification | undefined;
   aliases: Array<SharedPropertyTypeAlias> | undefined;
 }

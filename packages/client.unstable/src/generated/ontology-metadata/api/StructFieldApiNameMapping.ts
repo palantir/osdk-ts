@@ -19,7 +19,7 @@ import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 import type { StructFieldName } from "./StructFieldName.js";
 
 /**
- * A mapping from struct property field name to its api name.
+ * A mapping from the backing column struct field names to the struct property type field api names.
  */
 export interface StructFieldApiNameMapping {
   column: ColumnName;

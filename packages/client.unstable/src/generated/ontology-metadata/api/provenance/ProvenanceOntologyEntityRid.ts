@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
  */
 
 import type { ActionTypeRid } from "../ActionTypeRid.js";
+import type { FunctionReference } from "../FunctionReference.js";
 import type { LinkTypeRid } from "../LinkTypeRid.js";
+import type { NotepadReference } from "../NotepadReference.js";
 import type { ObjectTypeRid } from "../ObjectTypeRid.js";
+import type { QuiverDashboardReference } from "../QuiverDashboardReference.js";
 import type { ValueTypeReference } from "../ValueTypeReference.js";
+import type { WorkshopReference } from "../WorkshopReference.js";
 import type { PropertyTypeRidWithObjectTypeRid } from "./PropertyTypeRidWithObjectTypeRid.js";
 export interface ProvenanceOntologyEntityRid_propertyType {
   type: "propertyType";
@@ -43,6 +47,26 @@ export interface ProvenanceOntologyEntityRid_versionedValueType {
   type: "versionedValueType";
   versionedValueType: ValueTypeReference;
 }
+
+export interface ProvenanceOntologyEntityRid_versionedFunction {
+  type: "versionedFunction";
+  versionedFunction: FunctionReference;
+}
+
+export interface ProvenanceOntologyEntityRid_workshop {
+  type: "workshop";
+  workshop: WorkshopReference;
+}
+
+export interface ProvenanceOntologyEntityRid_notepad {
+  type: "notepad";
+  notepad: NotepadReference;
+}
+
+export interface ProvenanceOntologyEntityRid_quiverDashboard {
+  type: "quiverDashboard";
+  quiverDashboard: QuiverDashboardReference;
+}
 /**
  * The resource identifier of an Ontology entity.
  */
@@ -51,4 +75,8 @@ export type ProvenanceOntologyEntityRid =
   | ProvenanceOntologyEntityRid_objectType
   | ProvenanceOntologyEntityRid_linkType
   | ProvenanceOntologyEntityRid_actionType
-  | ProvenanceOntologyEntityRid_versionedValueType;
+  | ProvenanceOntologyEntityRid_versionedValueType
+  | ProvenanceOntologyEntityRid_versionedFunction
+  | ProvenanceOntologyEntityRid_workshop
+  | ProvenanceOntologyEntityRid_notepad
+  | ProvenanceOntologyEntityRid_quiverDashboard;

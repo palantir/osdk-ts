@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { BaseFormatter } from "./BaseFormatter.js";
 import type { DataConstraints } from "./DataConstraints.js";
+import type { EntityProvenance } from "./entitymetadata/provenance/EntityProvenance.js";
 import type { SharedPropertyTypeAlias } from "./entitymetadata/SharedPropertyTypeAlias.js";
 import type { ObjectTypeFieldApiName } from "./ObjectTypeFieldApiName.js";
 import type { SharedPropertyTypeDisplayMetadata } from "./SharedPropertyTypeDisplayMetadata.js";
@@ -40,4 +41,5 @@ export interface SharedPropertyType {
   gothamMapping: SharedPropertyTypeGothamMapping | undefined;
   valueType: ValueTypeReference | undefined;
   aliases: Array<SharedPropertyTypeAlias>;
+  provenance: EntityProvenance | undefined;
 }

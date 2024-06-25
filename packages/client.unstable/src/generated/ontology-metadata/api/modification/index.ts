@@ -30,6 +30,7 @@ export type { DeprecatedPropertyTypeStatusModification } from "./DeprecatedPrope
 export type { EditsHistoryConfigModification } from "./EditsHistoryConfigModification.js";
 export type { EditsHistoryModification } from "./EditsHistoryModification.js";
 export type { EditsResolutionStrategyModification } from "./EditsResolutionStrategyModification.js";
+export type { EnabledObjectStoragesStatus } from "./EnabledObjectStoragesStatus.js";
 export type { EntityConfigModification } from "./EntityConfigModification.js";
 export type { EntityModificationHistoryPageItem } from "./EntityModificationHistoryPageItem.js";
 export type { EntityProvenanceModification } from "./EntityProvenanceModification.js";

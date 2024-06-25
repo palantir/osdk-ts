@@ -16,7 +16,6 @@
 
 import type { PropertyTypeRid } from "../PropertyTypeRid.js";
 import type { Type } from "../Type.js";
-import type { CastResolutionStrategy } from "./CastResolutionStrategy.js";
 
 /**
  * Migration to cast a property to another type.
@@ -24,5 +23,4 @@ import type { CastResolutionStrategy } from "./CastResolutionStrategy.js";
 export interface CastMigrationModification {
   property: PropertyTypeRid;
   target: Type;
-  resolutionStrategy: CastResolutionStrategy | undefined;
 }

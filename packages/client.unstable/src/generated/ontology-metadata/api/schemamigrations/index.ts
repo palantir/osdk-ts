@@ -21,13 +21,10 @@ export type { BulkLoadObjectTypeSchemaMigrationsRequest } from "./BulkLoadObject
 export type { BulkLoadObjectTypeSchemaMigrationsResponse } from "./BulkLoadObjectTypeSchemaMigrationsResponse.js";
 export type { CastMigration } from "./CastMigration.js";
 export type { CastMigrationModification } from "./CastMigrationModification.js";
-export type { CastResolutionStrategy } from "./CastResolutionStrategy.js";
 export type { DeleteTransitionModification } from "./DeleteTransitionModification.js";
 export type { DropAllPatchesMigration } from "./DropAllPatchesMigration.js";
 export type { DropDatasourceMigration } from "./DropDatasourceMigration.js";
-export type { DropInvalidValuesStrategy } from "./DropInvalidValuesStrategy.js";
 export type { DropPropertyMigration } from "./DropPropertyMigration.js";
-export type { FailOnInvalidValuesStrategy } from "./FailOnInvalidValuesStrategy.js";
 export type { InitializationSource } from "./InitializationSource.js";
 export type { InitializePatchesMigration } from "./InitializePatchesMigration.js";
 export type { InitializePatchesMigrationModification } from "./InitializePatchesMigrationModification.js";

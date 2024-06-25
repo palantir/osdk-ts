@@ -32,8 +32,10 @@ import type { MediaReferenceValue } from "./MediaReferenceValue.js";
 import type { NullValue } from "./NullValue.js";
 import type { ObjectLocatorListValue } from "./ObjectLocatorListValue.js";
 import type { ObjectLocatorValue } from "./ObjectLocatorValue.js";
+import type { ObjectTypeValue } from "./ObjectTypeValue.js";
 import type { StringListValue } from "./StringListValue.js";
 import type { StringValue } from "./StringValue.js";
+import type { TimeSeriesReferenceValue } from "./TimeSeriesReferenceValue.js";
 import type { TimestampListValue } from "./TimestampListValue.js";
 import type { TimestampValue } from "./TimestampValue.js";
 export interface DataValue_boolean {
@@ -96,6 +98,11 @@ export interface DataValue_dateList {
   dateList: DateListValue;
 }
 
+export interface DataValue_timeSeriesReference {
+  type: "timeSeriesReference";
+  timeSeriesReference: TimeSeriesReferenceValue;
+}
+
 export interface DataValue_timestamp {
   type: "timestamp";
   timestamp: TimestampValue;
@@ -119,6 +126,11 @@ export interface DataValue_objectLocator {
 export interface DataValue_objectLocatorList {
   type: "objectLocatorList";
   objectLocatorList: ObjectLocatorListValue;
+}
+
+export interface DataValue_objectType {
+  type: "objectType";
+  objectType: ObjectTypeValue;
 }
 
 export interface DataValue_attachment {
@@ -158,11 +170,13 @@ export type DataValue =
   | DataValue_stringList
   | DataValue_date
   | DataValue_dateList
+  | DataValue_timeSeriesReference
   | DataValue_timestamp
   | DataValue_timestampList
   | DataValue_null
   | DataValue_objectLocator
   | DataValue_objectLocatorList
+  | DataValue_objectType
   | DataValue_attachment
   | DataValue_attachmentList
   | DataValue_marking
