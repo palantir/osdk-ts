@@ -848,6 +848,26 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
+  packages/client.unstable:
+    dependencies:
+      conjure-lite:
+        specifier: ^0.4.4
+        version: 0.4.4
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
+  packages/client.unstable.osw:
+    dependencies:
+      conjure-lite:
+        specifier: ^0.4.4
+        version: 0.4.4
+    devDependencies:
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/create-app:
     dependencies:
       consola:
