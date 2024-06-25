@@ -486,13 +486,11 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       }
 
       const queryResponses = queryRequestHandlers[queryApiName];
-
       if (!queryResponses) {
         throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
       }
 
       const queryResponse = queryResponses[JSON.stringify(parsedBody)];
-
       if (
         req.params.ontologyApiName === defaultOntology.apiName
         || req.params.ontologyApiName === defaultOntology.rid
