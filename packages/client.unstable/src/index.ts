@@ -34,3 +34,11 @@ export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetSe
 export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/OntologyMetadataService/getLinkTypesForObjectTypes.js";
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
 export { loadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
+
+export type {
+  OntologyIrInterfaceType,
+  OntologyIrInterfaceTypeBlockDataV2,
+  OntologyIrOntologyBlockDataV2,
+  OntologyIrSharedPropertyType,
+  OntologyIrSharedPropertyTypeBlockDataV2,
+} from "./blockDataIr.js";
