@@ -20,7 +20,7 @@ import {
   type FetchedObjectTypeDefinition,
   InterfaceDefinitions,
 } from "../../ontology/OntologyProvider.js";
-import { createSimpleCache } from "../Cache.js";
+import { createSimpleCache } from "../SimpleCache.js";
 import { createOsdkInterface } from "./createOsdkInterface.js";
 import type { InterfaceHolder } from "./InterfaceHolder.js";
 import { UnderlyingOsdkObject } from "./InternalSymbols.js";

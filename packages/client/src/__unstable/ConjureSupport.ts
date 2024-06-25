@@ -26,7 +26,10 @@ import {
   loadOntologyEntities,
 } from "../generated/ontology-metadata/api/OntologyMetadataService.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createSimpleAsyncCache, createSimpleCache } from "../object/Cache.js";
+import {
+  createSimpleAsyncCache,
+  createSimpleCache,
+} from "../object/SimpleCache.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
 
 export type ObjectPropertyMapping = {
