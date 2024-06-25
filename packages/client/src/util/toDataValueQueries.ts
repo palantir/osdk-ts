@@ -15,14 +15,11 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
+import { Attachment } from "@osdk/client.api";
 import { type DataValue, Ontologies } from "@osdk/internal.foundry";
 import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import {
-  Attachment,
-  isAttachment,
-  isAttachmentUpload,
-} from "../object/Attachment.js";
+import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2, isOsdkBaseObject } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
@@ -58,11 +55,6 @@ export async function toDataValueQueries<T extends string>(
         await toDataValueQueries(innerValue, client, desiredType["set"]),
     );
     return Promise.all(promiseArray);
-  }
-
-  // attachments just send the rid directly
-  if (isAttachment(value) && desiredType.type === "attachment") {
-    return value.rid;
   }
 
   // For uploads, we need to upload ourselves first to get the RID of the attachment

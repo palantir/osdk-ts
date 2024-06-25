@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
-import type { QuerySignatureFromDef } from "@osdk/client.api";
+import type { ObjectSet, QuerySignatureFromDef } from "@osdk/client.api";
+import type { Employee } from "@osdk/client.test.ontology";
 import {
   addOne,
   incrementPersonAge,
   Ontology as MockOntology,
   queryAcceptsObject,
+  queryAcceptsObjectSets,
   returnsDate,
   returnsTimestamp,
   threeDimensionalAggregationFunction,
   twoDimensionalAggregationFunction,
 } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import {
+  afterAll,
+  beforeAll,
+  describe,
+  expect,
+  expectTypeOf,
+  it,
+} from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -69,6 +78,15 @@ describe("queries", () => {
       objectType: "Employee",
       primaryKey: 50031,
     });
+  });
+
+  it("accepts objectSets", async () => {
+    const employeeObjectSet = client(MockOntology.objects.Employee);
+    const result = await client(queryAcceptsObjectSets)({
+      objectSet: employeeObjectSet,
+    });
+
+    expectTypeOf<typeof result>().toMatchTypeOf<ObjectSet<Employee>>();
   });
 
   it("no params work", async () => {

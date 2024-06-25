@@ -21,6 +21,7 @@ import type {
   QueryParameterDefinition,
 } from "@osdk/api";
 import type {
+  Attachment,
   DataValueWireToClient,
   QueryObjectResponse,
   QueryParameterType,
@@ -31,8 +32,8 @@ import type {
   ObjectSet as WireObjectSet,
 } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
+import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { Attachment } from "../object/Attachment.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { addUserAgent } from "../util/addUserAgent.js";
 import { toDataValue } from "../util/toDataValue.js";
@@ -71,7 +72,7 @@ export async function applyQuery<
     response.value,
     objectOutputDefs,
   );
-  return remappedResponse;
+  return remappedResponse as QueryReturnType<QD["output"]>;
 }
 
 async function remapQueryParams(
@@ -148,7 +149,7 @@ async function remapQueryResponse<
     }
 
     case "attachment": {
-      return new Attachment(responseValue) as QueryReturnType<
+      return createAttachmentFromRid(client, responseValue) as QueryReturnType<
         typeof responseDataType
       >;
     }
@@ -161,52 +162,31 @@ async function remapQueryResponse<
         typeof responseDataType
       >;
     }
-    //   const def = definitions.get(responseDataType.object);
-    //   const withPk: WireObjectSet = {
-    //     type: "filter",
-    //     objectSet: {
-    //       type: "base",
-    //       objectType: responseDataType.object,
-    //     },
-    //     where: {
-    //       type: "eq",
-    //       field: def?.properties["pr"],
-    //       value: primaryKey,
-    //     },
-    //   };
-    // }
 
-    // return await fetchSingle(
-    //   clientCtx,
-    //   objectType,
-    //   options,
-    //   withPk,
-    // ) as Osdk<Q>;
     case "objectSet": {
-      throw new Error("not implemented");
-      // const def = definitions.get(responseDataType.objectSet);
-      // if (!def) {
-      //   throw new Error(
-      //     `Missing definition for ${responseDataType.objectSet}`,
-      //   );
-      // }
-      // if (typeof responseValue === "string") {
-      //   return createObjectSet(def, client, {
-      //     type: "intersect",
-      //     objectSets: [
-      //       { type: "base", objectType: responseDataType.objectSet },
-      //       { type: "reference", reference: responseValue },
-      //     ],
-      //   }) as unknown as QueryReturnType<typeof responseDataType>;
-      // }
+      const def = definitions.get(responseDataType.objectSet);
+      if (!def) {
+        throw new Error(
+          `Missing definition for ${responseDataType.objectSet}`,
+        );
+      }
+      if (typeof responseValue === "string") {
+        return createObjectSet(def, client, {
+          type: "intersect",
+          objectSets: [
+            { type: "base", objectType: responseDataType.objectSet },
+            { type: "reference", reference: responseValue },
+          ],
+        }) as QueryReturnType<typeof responseDataType>;
+      }
 
-      // return createObjectSet(
-      //   def,
-      //   client,
-      //   responseValue,
-      // ) as unknown as QueryReturnType<
-      //   typeof responseDataType
-      // >;
+      return createObjectSet(
+        def,
+        client,
+        responseValue,
+      ) as QueryReturnType<
+        typeof responseDataType
+      >;
     }
     case "struct": {
       // figure out what keys need to be fixed up

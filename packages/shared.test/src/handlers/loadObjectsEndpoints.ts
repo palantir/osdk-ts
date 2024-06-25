@@ -489,6 +489,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       console.error("here i am", parsedBody, queryApiName);
 
       const queryResponses = queryRequestHandlers[queryApiName];
+      // eslint-disable-next-line no-console
+      console.error("hereiam3", queryResponses);
       if (!queryResponses) {
         throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
       }

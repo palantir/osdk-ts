@@ -79,8 +79,8 @@ export async function generatePerQueryDataFiles(
                     }`
                   : parameter.dataType.type === "objectSet"
                   ? `{
-                      type: "object",
-                      object: "${parameter.dataType.objectTypeApiName}",
+                      type: "objectSet",
+                      objectSet: "${parameter.dataType.objectTypeApiName}",
                       nullable: false,
                       __OsdkTargetType: ${
                     getObjectDefIdentifier(
@@ -111,8 +111,8 @@ export async function generatePerQueryDataFiles(
                 }`
               : query.output.type === "objectSet"
               ? `{
-                  type: "object",
-                  object: "${query.output.objectTypeApiName}",
+                  type: "objectSet",
+                  objectSet: "${query.output.objectTypeApiName}",
                   nullable: false,
                   __OsdkTargetType: ${
                 getObjectDefIdentifier(

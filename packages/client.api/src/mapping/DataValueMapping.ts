@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ObjectSet } from "../index.js";
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
 import type { QueryObjectResponse } from "../queries/queryObjectResponse.js";
 
@@ -35,6 +36,18 @@ export interface DataValueWireToClient {
   short: number;
   string: string;
   timestamp: string;
+  object: QueryObjectResponse<any>;
+  objectSet: ObjectSet<any>;
+  twoDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    value: allowedBucketTypes;
+  }[];
+  threeDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    groups: { key: allowedBucketKeyTypes; value: allowedBucketTypes }[];
+  }[];
+  struct: Record<string, any>;
+  set: Set<any>;
 }
 
 /**

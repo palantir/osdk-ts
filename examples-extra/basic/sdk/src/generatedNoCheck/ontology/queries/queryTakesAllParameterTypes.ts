@@ -23,8 +23,8 @@ export const queryTakesAllParameterTypes = {
       __OsdkTargetType: Todo,
     },
     objectSet: {
-      type: 'object',
-      object: 'Todo',
+      type: 'objectSet',
+      objectSet: 'Todo',
       nullable: false,
       __OsdkTargetType: Todo,
     },

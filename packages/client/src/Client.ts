@@ -22,8 +22,6 @@ import type {
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
-  Attachment,
-  AttachmentSignature,
   ObjectSet,
   QuerySignatureFromDef,
 } from "@osdk/client.api";

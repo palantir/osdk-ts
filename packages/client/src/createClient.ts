@@ -23,7 +23,6 @@ import type {
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
-  AttachmentSignature,
   MinimalObjectSet,
   ObjectSet,
   QuerySignatureFromDef,

@@ -22,6 +22,7 @@ import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
   queryTypeAcceptsObjects,
+  queryTypeAcceptsObjectSets,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -80,13 +81,13 @@ export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
 
 export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
   parameters: {
-    employees: { type: "base", objectType: "employee" },
+    objectSet: { type: "base", objectType: "Employee" },
   },
 };
 
 export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
   value: {
-    employees: { type: "base", objectType: "employee" },
+    objectSet: { type: "base", objectType: "Employee" },
   },
 };
 
@@ -164,5 +165,9 @@ export const queryRequestHandlers: {
   [queryTypeAcceptsObjects.apiName]: {
     [JSON.stringify(queryTypeAcceptsObjectRequest)]:
       queryTypeAcceptsObjectResponse,
+  },
+  [queryTypeAcceptsObjectSets.apiName]: {
+    [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
+      queryTypeAcceptsObjectSetResponse,
   },
 };
