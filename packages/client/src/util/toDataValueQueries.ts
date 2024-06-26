@@ -15,13 +15,11 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
-import { Attachment } from "@osdk/client.api";
 import { type DataValue, Ontologies } from "@osdk/internal.foundry";
-import type { SharedClient, SharedClientContext } from "@osdk/shared.client";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isOntologyObjectV2, isOsdkBaseObject } from "./isOntologyObjectV2.js";
+import { isOsdkBaseObject } from "./isOntologyObjectV2.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -35,11 +33,10 @@ export async function toDataValueQueries<T extends string>(
   desiredType: QueryDataTypeDefinition<T>,
 ): Promise<DataValue> {
   if (value == null) {
-    // typeof null is 'object' so do this first
     return value;
   }
-  // LOOK AT: For some reason, query parameter types do not specify arrays as an allowed type
-  if (Array.isArray(value)) {
+
+  if (Array.isArray(value) && desiredType.multiplicity) {
     const promiseArray = Array.from(
       value,
       async (innerValue) =>
@@ -48,104 +45,95 @@ export async function toDataValueQueries<T extends string>(
     return Promise.all(promiseArray);
   }
 
-  if (value instanceof Set && desiredType.type === "set") {
-    const promiseArray = Array.from(
-      value,
-      async (innerValue) =>
-        await toDataValueQueries(innerValue, client, desiredType["set"]),
-    );
-    return Promise.all(promiseArray);
-  }
-
-  // For uploads, we need to upload ourselves first to get the RID of the attachment
-  if (isAttachmentUpload(value) && desiredType.type === "attachment") {
-    const attachment = await Ontologies.Attachments.uploadAttachment(
-      client,
-      value,
-      {
-        filename: value.name,
-      },
-      {
-        "Content-Length": value.size.toString(),
-        "Content-Type": value.type,
-      },
-    );
-    return attachment.rid;
-  }
-
-  if (desiredType.type === "twoDimensionalAggregation") {
-    return {
-      groups: Object.entries(value).map(([key, values]) => ({
-        key,
-        values,
-      })),
-    };
-  }
-
-  if (desiredType.type === "threeDimensionalAggregation") {
-    return {
-      groups: Object.entries(value).map(([key, values]) => ({
-        key,
-        groups: Object.entries(values).map(([key, value]) => ({
-          key,
+  switch (desiredType.type) {
+    case "attachment": {
+      if (isAttachmentUpload(value)) {
+        const attachment = await Ontologies.Attachments.uploadAttachment(
+          client,
           value,
-        })),
-      })),
-    };
-  }
+          {
+            filename: value.name,
+          },
+          {
+            "Content-Length": value.size.toString(),
+            "Content-Type": value.type,
+          },
+        );
+        return attachment.rid;
+      }
 
-  // objects just send the JSON'd primaryKey
-  if (isOsdkBaseObject(value) && desiredType.type === "object") {
-    return value.$primaryKey;
-  }
-
-  if (desiredType.type === "objectSet") {
-    // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
-    if (isWireObjectSet(value)) {
+      // If it's not an upload, it's just an attachment rid string which we can pass through
       return value;
     }
-    if (isObjectSet(value)) {
-      return getWireObjectSet(value);
+    case "twoDimensionalAggregation": {
+      if (Array.isArray(value)) {
+        return {
+          groups: value,
+        };
+      }
     }
-  }
+    case "threeDimensionalAggregation": {
+      return {
+        groups: Object.entries(value).map(([key, values]) => ({
+          key,
+          groups: Object.entries(values).map(([key, value]) => ({
+            key,
+            value,
+          })),
+        })),
+      };
+    }
 
-  if (desiredType.type === "struct") {
-    const structMap: { [key: string]: unknown } = {};
-    for (const [key, structValue] of Object.entries(value)) {
-      structMap[key] = await toDataValueQueries(
-        structValue,
-        client,
-        desiredType["struct"][key],
-      );
+    case "set": {
+      if (value instanceof Set) {
+        const promiseArray = Array.from(
+          value,
+          async (innerValue) =>
+            await toDataValueQueries(innerValue, client, desiredType["set"]),
+        );
+        return Promise.all(promiseArray);
+      }
+      break;
     }
-    return structMap;
+    case "object": {
+      if (isOsdkBaseObject(value)) {
+        return value.$primaryKey;
+      }
+      break;
+    }
+    case "objectSet": {
+      // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
+      if (isWireObjectSet(value)) {
+        return value;
+      }
+      if (isObjectSet(value)) {
+        return getWireObjectSet(value);
+      }
+      break;
+    }
+
+    case "struct": {
+      if (typeof value === "object") {
+        const structMap: { [key: string]: unknown } = {};
+        for (const [key, structValue] of Object.entries(value)) {
+          structMap[key] = await toDataValueQueries(
+            structValue,
+            client,
+            desiredType["struct"][key],
+          );
+        }
+        return structMap;
+      }
+    }
+    case "boolean":
+    case "date":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "string":
+    case "timestamp":
+      return value;
   }
   return value;
-
-  // switch (desiredType.type) {
-  //   case "boolean":
-  //   case "date":
-  //   case "double":
-  //   case "float":
-  //   case "integer":
-  //   case "long":
-  //   case "string":
-  //   case "timestamp":
-  //     return value;
-  //   case "attachment": {
-  //   }
-  //   case "twoDimensionalAggregation": {
-  //   }
-  //   case "threeDimensionalAggregation": {
-  //   }
-  //   case "set": {
-  //   }
-  //   case "object": {
-  //   }
-  //   case "objectSet": {
-  //   }
-
-  //   case "struct": {
-  //   }
-  // }
 }

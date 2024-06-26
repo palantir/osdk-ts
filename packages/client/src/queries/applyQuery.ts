@@ -15,7 +15,9 @@
  */
 
 import type {
+  InterfaceDefinition,
   ObjectOrInterfaceDefinition,
+  ObjectTypeDefinition,
   QueryDataTypeDefinition,
   QueryDefinition,
   QueryParameterDefinition,
@@ -23,6 +25,8 @@ import type {
 import type {
   Attachment,
   DataValueWireToClient,
+  OsdkBase,
+  OsdkObjectPrimaryKeyType,
   QueryObjectResponse,
   QueryParameterType,
   QueryReturnType,
@@ -91,7 +95,7 @@ async function remapQueryParams(
 
 async function remapQueryResponse<
   K extends string,
-  T extends QueryDataTypeDefinition<K>,
+  T extends QueryDataTypeDefinition<K, any>,
 >(
   client: MinimalClient,
   responseDataType: T,
@@ -125,7 +129,7 @@ async function remapQueryResponse<
 
   switch (responseDataType.type) {
     case "union": {
-      throw new Error("Union return types are not supported");
+      throw new Error("Union return types are not yet supported");
     }
 
     case "set": {
@@ -147,10 +151,15 @@ async function remapQueryResponse<
       >;
     }
     case "object": {
+      const def = definitions.get(responseDataType.object);
+      if (!def) {
+        throw new Error(
+          `Missing definition for ${responseDataType.object}`,
+        );
+      }
       return createQueryObjectResponse(
-        responseDataType.object,
         responseValue,
-        responseDataType.object,
+        def,
       ) as QueryReturnType<
         typeof responseDataType
       >;
@@ -226,17 +235,26 @@ async function getRequiredDefinitions(
 ): Promise<Map<string, ObjectOrInterfaceDefinition>> {
   const result = new Map<string, ObjectOrInterfaceDefinition>();
   switch (dataType.type) {
-    case "objectSet":
+    case "objectSet": {
       const objectDef = await client.ontologyProvider.getObjectDefinition(
         dataType.objectSet,
       );
       result.set(dataType.objectSet, objectDef);
       break;
+    }
+    case "object": {
+      const objectDef = await client.ontologyProvider.getObjectDefinition(
+        dataType.object,
+      );
+      result.set(dataType.object, objectDef);
+      break;
+    }
 
-    case "set":
+    case "set": {
       return getRequiredDefinitions(dataType.set, client);
+    }
 
-    case "struct":
+    case "struct": {
       for (const value of Object.values(dataType.struct)) {
         for (
           const [type, objectDef] of await getRequiredDefinitions(value, client)
@@ -245,7 +263,7 @@ async function getRequiredDefinitions(
         }
       }
       break;
-
+    }
     case "attachment":
     case "boolean":
     case "date":
@@ -259,10 +277,6 @@ async function getRequiredDefinitions(
     case "timestamp":
     case "twoDimensionalAggregation":
     case "union":
-      break;
-
-    default:
-      const _: never = dataType;
       break;
   }
 
@@ -302,10 +316,16 @@ function requiresConversion(dataType: QueryDataTypeDefinition<any>) {
   }
 }
 
-export function createQueryObjectResponse<N extends string>(
-  objectType: string,
-  primaryKey: string,
-  apiName: N,
-): QueryObjectResponse<N> {
-  return { apiName, objectType, primaryKey };
+export function createQueryObjectResponse<
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+>(
+  primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
+    : unknown,
+  objectDef: Q,
+): OsdkBase<Q> {
+  return {
+    $apiName: objectDef.apiName,
+    $objectType: objectDef.apiName,
+    $primaryKey: primaryKey,
+  };
 }

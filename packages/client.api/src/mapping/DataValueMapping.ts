@@ -36,8 +36,6 @@ export interface DataValueWireToClient {
   short: number;
   string: string;
   timestamp: string;
-  object: QueryObjectResponse<any>;
-  objectSet: ObjectSet<any>;
   twoDimensionalAggregation: {
     key: allowedBucketKeyTypes;
     value: allowedBucketTypes;
@@ -78,8 +76,6 @@ export interface DataValueClientToWire {
     groups: { key: allowedBucketKeyTypes; value: allowedBucketTypes }[];
   }[];
   struct: Record<string, any>;
-  object: QueryObjectResponse<any>;
-  objectSet: never;
 }
 
 type allowedBucketTypes = string | number | boolean;

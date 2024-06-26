@@ -23,6 +23,7 @@ import {
   addOneQueryType,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
+  queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -131,6 +132,40 @@ export const queryTypeTwoDimensionalAggregationResponse: ExecuteQueryResponse =
     },
   };
 
+export const queryTypeAcceptsTwoDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
+    parameters: {
+      aggFunction: {
+        groups: [
+          {
+            key: "testKey1",
+            value: 1,
+          },
+          {
+            key: "testKey2",
+            value: 2,
+          },
+        ],
+      },
+    },
+  };
+
+export const queryTypeAcceptsTwoDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
+    value: {
+      groups: [
+        {
+          key: "responseKey1",
+          value: 3,
+        },
+        {
+          key: "responseKey2",
+          value: 4,
+        },
+      ],
+    },
+  };
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -169,5 +204,9 @@ export const queryRequestHandlers: {
   [queryTypeAcceptsObjectSets.apiName]: {
     [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
       queryTypeAcceptsObjectSetResponse,
+  },
+  [queryTypeAcceptsTwoDimensionalAggregation.apiName]: {
+    [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
+      queryTypeAcceptsTwoDimensionalAggregationResponse,
   },
 };

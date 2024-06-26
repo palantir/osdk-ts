@@ -190,6 +190,36 @@ export const queryTypeTwoDimensionalAggregation: QueryTypeV2 = {
   version: "0.11.0",
 };
 
+export const queryTypeAcceptsTwoDimensionalAggregation: QueryTypeV2 = {
+  apiName: "acceptsTwoDimensionalAggregationFunction",
+  displayName: "acceptsTwoDimensionalAggregation",
+  parameters: {
+    aggFunction: {
+      dataType: {
+        type: "twoDimensionalAggregation",
+        keyType: {
+          type: "string",
+        },
+        valueType: {
+          type: "double",
+        },
+      },
+    },
+  },
+  output: {
+    type: "twoDimensionalAggregation",
+    keyType: {
+      type: "string",
+    },
+    valueType: {
+      type: "double",
+    },
+  },
+  rid:
+    "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+  version: "0.11.0",
+};
+
 export const queryTypeAcceptsObjects: QueryTypeV2 = {
   apiName: "queryAcceptsObject",
   description: "description of the query that takes object types",
@@ -245,4 +275,5 @@ export const queryTypes: QueryTypeV2[] = [
   queryTypeThreeDimensionalAggregation,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
+  queryTypeAcceptsTwoDimensionalAggregation,
 ];

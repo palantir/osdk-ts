@@ -48,8 +48,9 @@ export type QueryParameterType<
 > = NOOP<PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>>;
 
 export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> =
-  T extends ObjectSetQueryDataType<any, infer TTargetType>
-    ? ObjectSet<TTargetType>
+  T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType>
+    : T extends ObjectSetQueryDataType<any, infer TTargetType>
+      ? ObjectSet<TTargetType>
     : T["type"] extends keyof DataValueWireToClient
       ? DataValueWireToClient[T["type"]]
     : never;
@@ -78,8 +79,3 @@ type BaseType<T extends QueryDataTypeDefinition<any, any>> = T extends
   : T["type"] extends keyof DataValueClientToWire
     ? DataValueClientToWire[T["type"]]
   : never;
-// type BaseType<T extends QueryDataTypeDefinition<any>> = T extends
-//   ObjectQueryDataType<any> | ObjectSetQueryDataType<any> ? never
-//   : T["type"] extends keyof DataValueClientToWire
-//     ? DataValueClientToWire[T["type"]]
-//   : never;

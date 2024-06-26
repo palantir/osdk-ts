@@ -17,6 +17,7 @@
 import type { ObjectSet, QuerySignatureFromDef } from "@osdk/client.api";
 import type { Employee } from "@osdk/client.test.ontology";
 import {
+  acceptsTwoDimensionalAggregationFunction,
   addOne,
   incrementPersonAge,
   Ontology as MockOntology,
@@ -66,17 +67,17 @@ describe("queries", () => {
     );
     const result = await client(queryAcceptsObject)({ object: employee });
     expect(result).toEqual({
-      apiName: "Employee",
-      objectType: "Employee",
-      primaryKey: 50031,
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50031,
     });
 
     // Should also accept primary keys
     const result2 = await client(queryAcceptsObject)({ object: 50030 });
     expect(result2).toEqual({
-      apiName: "Employee",
-      objectType: "Employee",
-      primaryKey: 50031,
+      $apiName: "Employee",
+      $objectType: "Employee",
+      $primaryKey: 50031,
     });
   });
 
@@ -113,6 +114,25 @@ describe("queries", () => {
     expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
       key: "Q-AFO",
       value: 2,
+    }]);
+  });
+
+  it("two dimensional aggs request/response works", async () => {
+    const result = await client(acceptsTwoDimensionalAggregationFunction)({
+      aggFunction: [
+        {
+          key: "testKey1",
+          value: 1,
+        },
+        {
+          key: "testKey2",
+          value: 2,
+        },
+      ],
+    });
+    expect(result).toEqual([{ key: "responseKey1", value: 3 }, {
+      key: "responseKey2",
+      value: 4,
     }]);
   });
 
