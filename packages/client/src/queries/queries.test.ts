@@ -17,6 +17,7 @@
 import type { ObjectSet, QuerySignatureFromDef } from "@osdk/client.api";
 import type { Employee } from "@osdk/client.test.ontology";
 import {
+  acceptsThreeDimensionalAggregationFunction,
   acceptsTwoDimensionalAggregationFunction,
   addOne,
   incrementPersonAge,
@@ -148,5 +149,46 @@ describe("queries", () => {
         value: 65.0,
       }],
     }, { key: "Q-AFO", groups: [] }]);
+  });
+
+  it("three dimensional aggs request/response works", async () => {
+    const result = await client(acceptsThreeDimensionalAggregationFunction)({
+      aggFunction: [
+        {
+          key: "testKey1",
+          groups: [
+            {
+              key: {
+                startValue: "2010-10-01T00:00:00Z",
+                endValue: "2010-10-02T00:00:00Z",
+              },
+              value: 65.0,
+            },
+          ],
+        },
+        {
+          key: "testKey2",
+          groups: [],
+        },
+      ],
+    });
+    expect(result).toEqual([
+      {
+        key: "Q-AFN",
+        groups: [
+          {
+            key: {
+              startValue: "2010-10-01T00:00:00Z",
+              endValue: "2010-10-02T00:00:00Z",
+            },
+            value: 65.0,
+          },
+        ],
+      },
+      {
+        key: "Q-AFO",
+        groups: [],
+      },
+    ]);
   });
 });

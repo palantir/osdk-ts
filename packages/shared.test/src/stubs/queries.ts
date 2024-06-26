@@ -23,6 +23,7 @@ import {
   addOneQueryType,
   queryTypeAcceptsObjects,
   queryTypeAcceptsObjectSets,
+  queryTypeAcceptsThreeDimensionalAggregation,
   queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
@@ -166,6 +167,56 @@ export const queryTypeAcceptsTwoDimensionalAggregationResponse:
     },
   };
 
+export const queryTypeAcceptsThreeDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
+    parameters: {
+      aggFunction: {
+        groups: [
+          {
+            key: "testKey1",
+            groups: [
+              {
+                key: {
+                  startValue: "2010-10-01T00:00:00Z",
+                  endValue: "2010-10-02T00:00:00Z",
+                },
+                value: 65.0,
+              },
+            ],
+          },
+          {
+            key: "testKey2",
+            groups: [],
+          },
+        ],
+      },
+    },
+  };
+
+export const queryTypeAcceptsThreeDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
+    value: {
+      groups: [
+        {
+          key: "Q-AFN",
+          groups: [
+            {
+              key: {
+                startValue: "2010-10-01T00:00:00Z",
+                endValue: "2010-10-02T00:00:00Z",
+              },
+              value: 65.0,
+            },
+          ],
+        },
+        {
+          key: "Q-AFO",
+          groups: [],
+        },
+      ],
+    },
+  };
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -208,5 +259,9 @@ export const queryRequestHandlers: {
   [queryTypeAcceptsTwoDimensionalAggregation.apiName]: {
     [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
       queryTypeAcceptsTwoDimensionalAggregationResponse,
+  },
+  [queryTypeAcceptsThreeDimensionalAggregation.apiName]: {
+    [JSON.stringify(queryTypeAcceptsThreeDimensionalAggregationRequest)]:
+      queryTypeAcceptsThreeDimensionalAggregationResponse,
   },
 };

@@ -66,21 +66,13 @@ export async function toDataValueQueries<T extends string>(
       return value;
     }
     case "twoDimensionalAggregation": {
-      if (Array.isArray(value)) {
-        return {
-          groups: value,
-        };
-      }
+      return {
+        groups: value,
+      };
     }
     case "threeDimensionalAggregation": {
       return {
-        groups: Object.entries(value).map(([key, values]) => ({
-          key,
-          groups: Object.entries(values).map(([key, value]) => ({
-            key,
-            value,
-          })),
-        })),
+        groups: value,
       };
     }
 
