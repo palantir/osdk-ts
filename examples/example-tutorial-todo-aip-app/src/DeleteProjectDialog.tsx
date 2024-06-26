@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
 import Dialog from "./Dialog";
-import { MockProject } from "./mocks";
+import type { MockProject } from "./mocks";
 import useProjects from "./useProjects";
+import css from "./DeleteProjectDialog.module.css";
 
 interface DeleteProjectDialogProps {
   project: MockProject;
@@ -31,10 +32,10 @@ function DeleteProjectDialog({
     <Dialog
       isOpen={isOpen}
       buttons={[
-        <button disabled={isDeleting} onClick={onClose} key="cancel">
+        <button disabled={isDeleting} onClick={onClose} key="cancel" className={css.button}>
           Cancel
         </button>,
-        <button disabled={isDeleting} onClick={handleSubmit} key="delete">
+        <button disabled={isDeleting} onClick={handleSubmit} key="delete" className={css.button}>
           Delete
         </button>,
       ]}

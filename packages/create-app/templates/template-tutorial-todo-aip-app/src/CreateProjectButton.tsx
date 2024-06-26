@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import CreateProjectDialog from "./CreateProjectDialog";
 import useProjects from "./useProjects";
+import css from "./CreateProjectButton.module.css";
 
 interface CreateProjectButtonProps {
   onProjectCreated?: (projectId: string) => void;
@@ -20,7 +21,7 @@ function CreateProjectButton({ onProjectCreated }: CreateProjectButtonProps) {
 
   return (
     <>
-      <button onClick={handleOpen}>Create Project</button>
+      <button onClick={handleOpen} className={css.button}>Create Project</button>
       <CreateProjectDialog
         isOpen={isOpen}
         onClose={handleClose}

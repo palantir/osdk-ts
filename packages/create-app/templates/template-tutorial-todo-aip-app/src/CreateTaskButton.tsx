@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import CreateTaskDialog from "./CreateTaskDialog";
 import type { MockProject } from "./mocks";
 import { useProjectTasks } from "./useProjectTasks";
+import css from "./CreateTaskButton.module.css";
 
 interface CreateTaskButtonProps {
   project: MockProject;
@@ -22,7 +23,7 @@ function CreateTaskButton({ project }: CreateTaskButtonProps) {
 
   return (
     <>
-      <button onClick={handleOpen}>Create Task</button>
+      <button onClick={handleOpen} className={css.button}>Create Task</button>
       <CreateTaskDialog
         project={project}
         isOpen={isOpen}

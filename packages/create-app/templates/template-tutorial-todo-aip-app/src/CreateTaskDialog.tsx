@@ -66,10 +66,10 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
           <Dialog
             isOpen={isOpen}
             buttons={[
-              <button disabled={isCreating} onClick={onClose} key="cancel">
+              <button disabled={isCreating} onClick={onClose} key="cancel" className={css.button}>
                 Cancel
               </button>,
-              <button disabled={isCreating} onClick={handleSubmit} key="create">
+              <button disabled={isCreating} onClick={handleSubmit} key="create" className={css.button}>
                 Create task
               </button>,
             ]}

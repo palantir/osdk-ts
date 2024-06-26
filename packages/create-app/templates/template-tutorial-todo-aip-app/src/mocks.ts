@@ -134,7 +134,7 @@ async function createTask({
   projectId,
 }: {
   title: string;
-  description?: string;
+  description: string;
   projectId: string;
 }): Promise<MockTask["$primaryKey"]> {
   await delay();

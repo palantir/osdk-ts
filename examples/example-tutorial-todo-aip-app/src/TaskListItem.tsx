@@ -26,13 +26,11 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
       textArea.style.height = `${textArea.scrollHeight}px`;
     }
   }, [task.description]);
-
+  const cleanDescription = task.description.trim() === ""
+    ? null
+    : task.description.trim();
   return (
     <li className={css.li}>
-      <label
-        className={`${css.label} ${isDeleting ? css.checked : ""}`}
-        htmlFor={`${task.id}`}
-      />
       <input
         type="checkbox"
         onChange={handleClick}
@@ -42,12 +40,15 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
       />
       <div className={`${css.task} ${isDeleting ? css.checked : ""}`}>
         <span>{task.title}</span>
-        <textarea
-          ref={textAreaRef}
-          readOnly
-          value={task.description}
-          className={css.textArea}
-        />
+        {cleanDescription != null && (
+          <textarea
+            ref={textAreaRef}
+            readOnly
+            value={task.description}
+            className={css.textArea}
+            rows={1}
+          />
+        )}
       </div>
     </li>
   );

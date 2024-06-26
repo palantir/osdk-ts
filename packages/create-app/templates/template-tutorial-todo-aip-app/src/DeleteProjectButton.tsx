@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import DeleteProjectDialog from "./DeleteProjectDialog";
 import { MockProject } from "./mocks";
 import useProjects from "./useProjects";
+import css from "./DeleteProjectButton.module.css";
 
 interface DeleteProjectButtonProps {
   project: MockProject;
@@ -21,7 +22,7 @@ function DeleteProjectButton({ project }: DeleteProjectButtonProps) {
 
   return (
     <>
-      <button onClick={handleOpen}>Delete Project</button>
+      <button onClick={handleOpen} className={css.button}>Delete Project</button>
       <DeleteProjectDialog
         project={project}
         isOpen={isOpen}

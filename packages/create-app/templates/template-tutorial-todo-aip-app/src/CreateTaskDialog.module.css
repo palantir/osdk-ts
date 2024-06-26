@@ -13,11 +13,16 @@
 
 .input {
   width: 300px;
+  border: 1px solid gray;
+  border-radius: 5px;
 }
 
 .textArea {
   width: 300px;
   resize: vertical;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
 }
 
 .aip {
@@ -41,6 +46,7 @@
 .container {
   display: flex;
   align-items:flex-start;
+  gap: 5px;
 }
 
 .dialogContainer {
@@ -53,4 +59,8 @@
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimmed background */
+}
+
+.button {
+  border: 1px solid #ccc;
 }
