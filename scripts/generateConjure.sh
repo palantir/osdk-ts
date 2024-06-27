@@ -30,9 +30,9 @@ function generateConjure() {
     formatTypescript "$OUT_DIR" "$PACKAGE_PATH"
 }
 
-generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client"
-generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/client"
-generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client"
+generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client.unstable"
+generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/client.unstable.osw"
+generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client.unstable"
 
 # Reset git changes if the generated files are only changed by copyright year
 git status --porcelain --untracked-files=no | while read line; do

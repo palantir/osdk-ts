@@ -24,6 +24,9 @@
     "transpile": "tsup",
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
+  "dependencies": {
+    "@osdk/api": "workspace:^"
+  },
   "peerDependencies": {
     "@osdk/api": "workspace:^",
     "@osdk/internal.foundry": "workspace:^",
@@ -34,7 +37,7 @@
     "@osdk/internal.foundry": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "type-fest": "^4.18.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"

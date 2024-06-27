@@ -19,10 +19,9 @@ import type {
   ObjectTypeDefinition,
   VersionBound,
 } from "@osdk/api";
-import type { ActionSignatureFromDef } from "@osdk/client.api";
+import type { ActionSignatureFromDef, ObjectSet } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { MinimalClient } from "./MinimalClientContext.js";
-import type { ObjectSet } from "./objectSet/ObjectSet.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 
 export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (

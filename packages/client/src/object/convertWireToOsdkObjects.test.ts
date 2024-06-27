@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Attachment } from "@osdk/client.api";
+import type { Attachment, Osdk } from "@osdk/client.api";
 import {
   Employee,
   FooInterface,
@@ -35,7 +35,6 @@ import {
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createMinimalClient } from "../createMinimalClient.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 describe("convertWireToOsdkObjects", () => {

@@ -1,10 +1,11 @@
-import { ActionValidationError, type Osdk } from "@osdk/client";
+import type { ObjectTypeDefinition } from "@osdk/api";
+import { ActionValidationError } from "@osdk/client";
+import type { Osdk } from "@osdk/client.api";
 import { useCallback, useEffect } from "react";
 import type { KeyedMutator } from "swr";
 import useSWR from "swr";
 import { $ } from "./foundryClient";
 import * as MyOsdk from "./generatedNoCheck2";
-import type { ObjectTypeDefinition } from "@osdk/api";
 
 declare global {
   interface ArrayConstructor {
@@ -16,7 +17,7 @@ declare global {
       iterableOrArrayLike:
         | AsyncIterable<T>
         | Iterable<T | PromiseLike<T>>
-        | ArrayLike<T | PromiseLike<T>>
+        | ArrayLike<T | PromiseLike<T>>,
     ): Promise<T[]>;
 
     /**
@@ -30,7 +31,7 @@ declare global {
     fromAsync<T, U>(
       iterableOrArrayLike: AsyncIterable<T> | Iterable<T> | ArrayLike<T>,
       mapFn: (value: Awaited<T>) => U,
-      thisArg?: any
+      thisArg?: any,
     ): Promise<Awaited<U>[]>;
   }
 }
@@ -39,11 +40,11 @@ export function useTodos() {
   const { data, isLoading, error, isValidating, mutate } = useSWR(
     "/todos",
     async () => await Array.fromAsync<SimpleTodo>($(MyOsdk.Todo).asyncIter()),
-    { keepPreviousData: true, revalidateOnFocus: false }
+    { keepPreviousData: true, revalidateOnFocus: false },
   );
 
   const toggleComplete = useCallback(
-    async function (todo: SimpleTodo) {
+    async function(todo: SimpleTodo) {
       const b = !todo.isComplete;
       await mutate(
         async () => {
@@ -57,10 +58,10 @@ export function useTodos() {
         {
           optimisticData: updateTodo.bind(undefined, todo.id!, b),
           rollbackOnError: true,
-        }
+        },
       );
     },
-    [mutate]
+    [mutate],
   );
 
   const createTodoMutator = useCallback(
@@ -87,7 +88,7 @@ export function useTodos() {
                     if (constraint.type === "stringLength") {
                       if (constraint.gte != null && constraint.lte != null) {
                         setError?.(
-                          `Todo must be between ${constraint.gte}-${constraint.lte} characters`
+                          `Todo must be between ${constraint.gte}-${constraint.lte} characters`,
                         );
                       }
                     }
@@ -105,11 +106,11 @@ export function useTodos() {
           optimisticData: (todos = []) => [...todos, createFauxTodo(title)],
           rollbackOnError: true,
           throwOnError: true,
-        }
+        },
       );
       return undefined;
     },
-    [mutate]
+    [mutate],
   );
 
   return {
@@ -122,7 +123,6 @@ export function useTodos() {
   };
 }
 
- 
 type OsdkPropsOnly<T extends ObjectTypeDefinition<any>> = Omit<
   Osdk<T>,
   "$as" | "$link"
@@ -146,7 +146,7 @@ function createFauxTodo(title: string): SimpleTodo {
 function updateTodo(
   id: string,
   isComplete: boolean,
-  todos: SimpleTodo[] | undefined
+  todos: SimpleTodo[] | undefined,
 ): SimpleTodo[] {
   return updateOne(todos, id, (todo) => ({ ...todo, isComplete })) ?? [];
 }
@@ -154,7 +154,7 @@ function updateTodo(
 function updateOne<T extends { __primaryKey: Q }, Q>(
   things: T[] | undefined,
   primaryKey: Q,
-  update: (thing: T) => T
+  update: (thing: T) => T,
 ) {
   return things?.map((thing) => {
     if (thing.__primaryKey === primaryKey) {
@@ -182,7 +182,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
           } else {
             byApiNameByPK.set(
               object.$apiName,
-              new Map([[object.$primaryKey, object]])
+              new Map([[object.$primaryKey, object]]),
             );
           }
         }
@@ -190,7 +190,7 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
         // get the new version of an object that has changed, removing it from the list of updates
         const getUpdate = (
           apiName: (typeof objects)[0]["$apiName"],
-          primaryKey: (typeof objects)[0]["$primaryKey"]
+          primaryKey: (typeof objects)[0]["$primaryKey"],
         ) => {
           const byPk = byApiNameByPK.get(apiName);
           if (byPk) {
@@ -204,14 +204,13 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
 
         mutate((data) => {
           // update any Todos that we got a new version for
-          const updated =
-            data?.map((object) => {
-              const updateObject = getUpdate(
-                object.$apiName,
-                object.$primaryKey
-              );
-              return updateObject ?? object;
-            }) ?? [];
+          const updated = data?.map((object) => {
+            const updateObject = getUpdate(
+              object.$apiName,
+              object.$primaryKey,
+            );
+            return updateObject ?? object;
+          }) ?? [];
 
           // add any new Todos to the bottom
           for (const byPk of byApiNameByPK.values()) {
@@ -235,6 +234,6 @@ export function useSubscribe(mutate: KeyedMutator<SimpleTodo[]>) {
 
     return function() {
       unsubscribe();
-    }
+    };
   }, [mutate]);
 }

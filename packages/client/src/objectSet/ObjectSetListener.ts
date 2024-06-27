@@ -15,7 +15,7 @@
  */
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
-import type { OsdkObjectOrInterfaceFrom } from "../OsdkObjectFrom.js";
+import type { OsdkObjectOrInterfaceFrom } from "@osdk/client.api";
 
 export interface ObjectSetListener<
   O extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk, PageResult } from "@osdk/client";
+import type { Osdk, PageResult } from "@osdk/client.api";
 import { Employee, FooInterface } from "@osdk/examples.basic.sdk";
 import invariant from "tiny-invariant";
 import type { TypeOf } from "ts-expect";

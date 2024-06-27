@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import type { ConjureContext } from "conjure-lite";
-import invariant from "tiny-invariant";
-import type { DirectedLinkTypeRid } from "../generated/object-set-service/api/DirectedLinkTypeRid.js";
-import type { LinkTypeMetadata } from "../generated/ontology-metadata/api/LinkTypeMetadata.js";
-import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
-import type { ObjectType } from "../generated/ontology-metadata/api/ObjectType.js";
+import type {
+  DirectedLinkTypeRid,
+  LinkTypeMetadata,
+  LoadAllOntologiesResponse,
+  ObjectType,
+} from "@osdk/client.unstable";
 import {
   getLinkTypesForObjectTypes,
   loadAllOntologies,
   loadOntologyEntities,
-} from "../generated/ontology-metadata/api/OntologyMetadataService.js";
+} from "@osdk/client.unstable";
+import type { ConjureContext } from "conjure-lite";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { createSimpleAsyncCache, createSimpleCache } from "../object/Cache.js";
+import {
+  createSimpleAsyncCache,
+  createSimpleCache,
+} from "../object/SimpleCache.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
 
 export type ObjectPropertyMapping = {
