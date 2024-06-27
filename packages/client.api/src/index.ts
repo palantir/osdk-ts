@@ -118,7 +118,6 @@ export type {
   QueryReturnType,
   QuerySignatureFromDef,
 } from "./queries/Queries.js";
-export type { QueryObjectResponse } from "./queries/queryObjectResponse.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 

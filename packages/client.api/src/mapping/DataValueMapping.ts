@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet } from "../index.js";
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
-import type { QueryObjectResponse } from "../queries/queryObjectResponse.js";
 
 /**
  * Map from the DataValue type to the typescript type that we return

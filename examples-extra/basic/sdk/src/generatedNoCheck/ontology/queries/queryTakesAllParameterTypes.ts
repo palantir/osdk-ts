@@ -17,12 +17,14 @@ export const queryTakesAllParameterTypes = {
     string: { type: 'string', nullable: false },
     timestamp: { type: 'timestamp', nullable: false },
     object: {
+      description: 'undefined',
       type: 'object',
       object: 'Todo',
       nullable: false,
       __OsdkTargetType: Todo,
     },
     objectSet: {
+      description: 'undefined',
       type: 'objectSet',
       objectSet: 'Todo',
       nullable: false,

@@ -66,29 +66,19 @@ export async function generatePerQueryDataFiles(
               return `
               ${name}: ${
                 parameter.dataType.type === "object"
+                  || parameter.dataType.type === "objectSet"
                   ? `{
-                      type: "object",
-                      object: "${parameter.dataType.objectTypeApiName}",
-                      nullable: false,
-                      __OsdkTargetType: ${
-                    getObjectDefIdentifier(
-                      parameter.dataType.objectTypeApiName,
-                      true,
-                    )
-                  },
-                    }`
-                  : parameter.dataType.type === "objectSet"
-                  ? `{
-                      type: "objectSet",
-                      objectSet: "${parameter.dataType.objectTypeApiName}",
+                      description: "${parameter.description}",
+                      type: "${parameter.dataType.type}",
+                      "${parameter.dataType.type}": "${parameter.dataType
+                    .objectTypeApiName!}",
                       nullable: false,
                       __OsdkTargetType: ${
                     getObjectDefIdentifier(
                       parameter.dataType.objectTypeApiName!,
-                      true,
+                      v2,
                     )
-                  },
-                    }`
+                  },}`
                   : JSON.stringify(
                     wireQueryParameterV2ToQueryParameterDefinition(parameter),
                   )
@@ -97,27 +87,15 @@ export async function generatePerQueryDataFiles(
             })
           }},
               output: ${
-            query.output.type === "object"
+            query.output.type === "object" || query.output.type === "objectSet"
               ? `{
-                  type: "object",
-                  object: "${query.output.objectTypeApiName}",
-                  nullable: false,
-                  __OsdkTargetType: ${
-                getObjectDefIdentifier(
-                  query.output.objectTypeApiName,
-                  true,
-                )
-              },
-                }`
-              : query.output.type === "objectSet"
-              ? `{
-                  type: "objectSet",
-                  objectSet: "${query.output.objectTypeApiName}",
+                  type: "${query.output.type}",
+                  "${query.output.type}": "${query.output.objectTypeApiName}",
                   nullable: false,
                   __OsdkTargetType: ${
                 getObjectDefIdentifier(
                   query.output.objectTypeApiName!,
-                  true,
+                  v2,
                 )
               },
                 }`
