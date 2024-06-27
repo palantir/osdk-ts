@@ -15,12 +15,14 @@
  */
 
 import type { OsdkObject } from "@osdk/client.api";
+import type {
+  DirectedLinkTypeRid,
+  FoundryObjectReference,
+  GetBulkLinksPageRequest,
+  ObjectIdentifier,
+} from "@osdk/client.unstable";
+import { getBulkLinksPage } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import type { DirectedLinkTypeRid } from "../generated/object-set-service/api/DirectedLinkTypeRid.js";
-import type { FoundryObjectReference } from "../generated/object-set-service/api/FoundryObjectReference.js";
-import type { GetBulkLinksPageRequest } from "../generated/object-set-service/api/GetBulkLinksPageRequest.js";
-import type { ObjectIdentifier } from "../generated/object-set-service/api/ObjectIdentifier.js";
-import { getBulkLinksPage } from "../generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { conjureUnionType } from "../objectSet/conjureUnionType.js";
 import { makeConjureContext } from "../ontology/makeConjureContext.js";
