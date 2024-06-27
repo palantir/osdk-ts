@@ -28,6 +28,8 @@ import {
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
+const LATEST_TYPESCRIPT_DEP = "^5.5.2";
+
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "mytsup",
@@ -149,7 +151,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.4.5"|"^4.9.5",
+ *  tsVersion?: "^5.5.2"|"^4.9.5",
  *  skipTsconfigReferences?: boolean
  *  singlePackageName?: string
  * }} options
@@ -331,7 +333,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
     ...standardPackageRules({
@@ -341,7 +343,7 @@ export default {
       esmOnly: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
     ...standardPackageRules({
@@ -350,7 +352,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
       esmOnly: true,
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
@@ -366,7 +368,7 @@ export default {
           legacy: true,
           packageDepth: 2,
           type: "library",
-          tsVersion: "^5.4.5",
+          tsVersion: LATEST_TYPESCRIPT_DEP,
           singlePackageName: pkg,
         })
       )

@@ -1,8 +1,8 @@
 import type { OntologyDefinition } from '@osdk/api';
-import { OntologyMetadata } from './OntologyMetadata.js';
 import * as Actions from './ontology/actions/index.js';
 import * as Interfaces from './ontology/interfaces.js';
 import * as Objects from './ontology/objects.js';
+import { OntologyMetadata } from './OntologyMetadata.js';
 
 export interface Ontology
   extends OntologyDefinition<
