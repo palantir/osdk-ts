@@ -37,7 +37,7 @@
     "@types/node": "^20.11.30",
     "@types/pluralize": "^0.0.33",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"

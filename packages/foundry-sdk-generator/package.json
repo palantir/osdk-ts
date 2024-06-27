@@ -47,7 +47,7 @@
     "@osdk/shared.test": "workspace:^",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"

@@ -1,4 +1,4 @@
-import { BucketGroup, MetricValue, Metrics } from './Aggregations.js';
+import { BucketGroup, Metrics, MetricValue } from './Aggregations.js';
 
 import { ComputeStep as OG_ComputeStep } from '@osdk/legacy-client';
 

@@ -46,8 +46,8 @@ describe(generateMetadataFile, () => {
       import type { Objects } from './ontology/objects/Objects';
       import { Person } from './ontology/objects/Person';
       import { Todo } from './ontology/objects/Todo';
-      import type { Queries } from './ontology/queries/Queries';
       import { getCount } from './ontology/queries/getCount';
+      import type { Queries } from './ontology/queries/Queries';
 
       export const Ontology: {
         metadata: {
@@ -177,15 +177,15 @@ describe(generateMetadataFile, () => {
       "import type { OntologyDefinition } from '@osdk/api';
       import type { Ontology as ClientOntology } from '@osdk/legacy-client';
       import type { Actions } from './ontology/actions/Actions';
+      import { bar } from './ontology/actions/bar';
       import type { BatchActions } from './ontology/actions/BatchActions';
       import type { BulkActions } from './ontology/actions/BulkActions';
-      import { bar } from './ontology/actions/bar';
       import { foo as fooAction } from './ontology/actions/foo';
-      import type { Objects } from './ontology/objects/Objects';
       import { foo } from './ontology/objects/foo';
-      import type { Queries } from './ontology/queries/Queries';
+      import type { Objects } from './ontology/objects/Objects';
       import { bar as barQuery } from './ontology/queries/bar';
       import { foo as fooQuery } from './ontology/queries/foo';
+      import type { Queries } from './ontology/queries/Queries';
 
       export const Ontology: {
         metadata: {
