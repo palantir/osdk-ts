@@ -27,12 +27,29 @@ import type {
 } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
-import { createActionInvoker } from "./actions/createActionInvoker.js";
+import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+
+class ActionInvoker<Q extends ActionDefinition<any, any, any>>
+  implements ActionSignatureFromDef<Q>
+{
+  constructor(
+    clientCtx: MinimalClient,
+    actionDef: ActionDefinition<any, any, any>,
+  ) {
+    // We type the property as a generic function as binding `applyAction`
+    // doesn't return a type thats all that useful anyway
+    // The implements covers us for the most part here as this exact type doesn't
+    // escape this file
+    this.applyAction = applyAction.bind(undefined, clientCtx, actionDef);
+  }
+
+  applyAction: (...args: any[]) => any;
+}
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
@@ -65,9 +82,13 @@ export function createClientInternal(
       return objectSetFactory(o, clientCtx) as any;
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
-      return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
-        any
-      > as any;
+      return new ActionInvoker(
+        clientCtx,
+        o,
+      ) as (T extends ActionDefinition<any, any, any>
+        // first `as` to the action definition for our "real" typecheck
+        ? ActionSignatureFromDef<T>
+        : never) as any; // then as any for dealing with the conditional return value
     } else {
       throw new Error("not implemented");
     }

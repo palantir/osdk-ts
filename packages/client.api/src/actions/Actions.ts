@@ -67,13 +67,11 @@ export type OsdkActionParameters<
   : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
 
 export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
-  NonNullable<T["__OsdkActionType"]> extends never
-    ? ActionSignature<T["parameters"]>
-    : NonNullable<T["__OsdkActionType"]>;
-
-export type Actions<O extends OntologyDefinition<any>> = {
-  [K in keyof O["actions"]]: ActionSignatureFromDef<O["actions"][K]>;
-};
+  {
+    applyAction: NonNullable<T["__OsdkActionType"]> extends never
+      ? ActionSignature<T["parameters"]>
+      : NonNullable<T["__OsdkActionType"]>;
+  };
 
 type ActionParametersDefinition = Record<
   any,
