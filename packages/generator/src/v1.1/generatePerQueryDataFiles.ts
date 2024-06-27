@@ -78,7 +78,8 @@ export async function generatePerQueryDataFiles(
                       parameter.dataType.objectTypeApiName!,
                       v2,
                     )
-                  },}`
+                  },
+                }`
                   : JSON.stringify(
                     wireQueryParameterV2ToQueryParameterDefinition(parameter),
                   )
@@ -137,6 +138,7 @@ export async function generatePerQueryDataFiles(
       )
         .join("\n")
     }
+    ${Object.keys(ontology.queryTypes).length === 0 ? "export {};" : ""}
   `),
   );
 }
