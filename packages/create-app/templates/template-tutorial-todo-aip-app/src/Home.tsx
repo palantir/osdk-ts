@@ -80,22 +80,22 @@ function Home() {
                 value={project.description}
                 className={css.textArea}
               />
-                <button
-                  disabled={isProcessing}
-                  className={`${css.aip} ${isProcessing ? css.processing : ""}`}
-                  title="Click here to update project description based on AIP Logic"
-                  type="button"
-                  onClick={handleProjectDescriptionRecommendation}
-                >
-                  <div className={css.aipText}>
-                    <img
-                      src={aipLogo}
-                      alt="AIP"
-                      className={css.image}
-                    />
-                    Get description recommendation
-                  </div>
-                </button>
+              <button
+                disabled={isProcessing}
+                className={`${css.aip} ${isProcessing ? css.processing : ""}`}
+                title="Click here to update project description based on AIP Logic"
+                type="button"
+                onClick={handleProjectDescriptionRecommendation}
+              >
+                <div className={css.aipText}>
+                  <img
+                    src={aipLogo}
+                    alt="AIP"
+                    className={css.image}
+                  />
+                  Get description recommendation
+                </div>
+              </button>
             </div>
           )}
           <TaskList project={project} />
