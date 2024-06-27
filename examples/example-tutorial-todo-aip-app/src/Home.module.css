@@ -1,0 +1,80 @@
+.tutorialBannerWrapper {
+  display: flex;
+  margin: 2em;
+}
+
+.tutorialBanner {
+  flex: 1;
+  width: 0;
+  background: rgba(121, 97, 219, 0.7);
+  color: #ffffff;
+  border-radius: 1em;
+  padding: 1em;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.tutorialBannerTitle {
+  margin-top: 0;
+  font-weight: 600;
+}
+
+.projectSelect {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  margin: 2em;
+  font-weight: 600;
+}
+
+.projectCard {
+  margin: 2em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  /* margin: 0.5em; */
+  gap: 0.5em;
+  border-radius: 5px;
+
+}
+
+.projectTitle {
+  font-size: 1.5em;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  height: 16px;
+  width: 16px;
+}
+
+.aip {
+  background-color: #7961DB;
+  color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 2px;
+  gap: 10px;
+  height: 30px;
+}
+
+.processing {
+  cursor: progress;
+}
+
+.aipText {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.textArea {
+  border: none;
+  color: gray;
+  resize: none;
+  overflow: hidden;
+  pointer-events: none;
+}

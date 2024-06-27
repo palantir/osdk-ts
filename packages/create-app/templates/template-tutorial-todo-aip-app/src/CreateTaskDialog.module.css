@@ -1,0 +1,66 @@
+.task {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto min-content;
+    gap: 10px;
+    width: 500px;
+}
+.label {
+  display: flex;
+  gap: 5px;
+  resize: none;
+}
+
+.input {
+  width: 300px;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.textArea {
+  width: 300px;
+  resize: vertical;
+  border: 1px solid gray;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.aip {
+  background-color: #7961DB;
+  border: 1px solid #ccc;
+  padding: 2px 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.processing {
+  cursor: progress;
+}
+
+.image {
+  width: 16px;
+  height: 16px;
+}
+
+.container {
+  display: flex;
+  align-items:flex-start;
+  gap: 5px;
+}
+
+.dialogContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Optional: for dimmed background */
+}
+
+.button {
+  border: 1px solid #ccc;
+}
