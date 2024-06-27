@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type { ValidAggregationKeys } from "@osdk/client.api";
+import type { ValidAggregationKeys } from "./AggregatableKeys.js";
 
 export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> =
   { [AK in ValidAggregationKeys<Q>]?: "unordered" };

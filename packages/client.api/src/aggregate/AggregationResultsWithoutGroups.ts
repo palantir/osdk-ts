@@ -15,11 +15,11 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
+import type { OsdkObjectPropertyType } from "../Definitions.js";
 import type {
   OrderedAggregationClause,
   UnorderedAggregationClause,
-} from "@osdk/client.api";
-import type { OsdkObjectPropertyType } from "../Definitions.js";
+} from "./AggregationsClause.js";
 
 type ExtractPropName<T extends string> = T extends `${infer PropName}:${string}`
   ? PropName

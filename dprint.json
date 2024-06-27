@@ -19,7 +19,9 @@
     ".vscode/settings.json",
     "examples/",
     "examples-extra/**/dist",
-    "**/tsup.config.bundled_*"
+    "**/tsup.config.bundled_*",
+    "**/api-docs/",
+    "**/*.report.api.md"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.90.4.wasm",
