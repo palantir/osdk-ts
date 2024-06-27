@@ -6,9 +6,10 @@ import { useProjectTasks } from "./useProjectTasks";
 
 interface CreateTaskButtonProps {
   project: MockProject;
+  onTaskCreated: (taskId: string) => void;
 }
 
-function CreateTaskButton({ project }: CreateTaskButtonProps) {
+function CreateTaskButton({ project, onTaskCreated }: CreateTaskButtonProps) {
   const { isLoading: isLoadingTasks, isError: isErrorTasks } = useProjectTasks(
     project,
   );
@@ -28,6 +29,7 @@ function CreateTaskButton({ project }: CreateTaskButtonProps) {
         project={project}
         isOpen={isOpen}
         onClose={handleClose}
+        onTaskCreated={onTaskCreated}
       />
     </>
   );

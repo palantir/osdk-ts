@@ -13,9 +13,11 @@ import useProjects from "./useProjects";
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
   const { projects, updateProjectDescription } = useProjects();
-  const project = projects?.find((p) => p.id === projectId);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [projectHasTasks, setProjectHasTasks] = useState<boolean>(false);
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
+  const project = projects?.find((p) => p.id === projectId);
 
   const handleSelectProject = useCallback(
     (p: MockProject) => setProjectId(p.id),
@@ -34,6 +36,7 @@ function Home() {
   useEffect(() => {
     if (project == null && projects != null && projects.length > 0) {
       setProjectId(projects[0].id);
+      setProjectHasTasks(projects[0].tasks.length > 0);
     }
   }, [project, projects]);
 
@@ -44,6 +47,24 @@ function Home() {
       textArea.style.height = `${textArea.scrollHeight}px`;
     }
   }, [project?.description]);
+
+  const handleOnTaskCreated = useCallback(() => {
+    setProjectHasTasks(true);
+  }, []);
+
+  const handleOnProjectCreated = useCallback(
+    (projectId: string | undefined) => {
+      setProjectId(projectId);
+      setProjectHasTasks(false);
+    },
+    [],
+  );
+
+  const handleOnTaskDeleted = useCallback(() => {
+    if (project != null && project.tasks.length === 0) {
+      setProjectHasTasks(false);
+    }
+  }, [project]);
 
   return (
     <Layout>
@@ -66,13 +87,13 @@ function Home() {
           projects={projects ?? []}
           onSelectProject={handleSelectProject}
         />
-        <CreateProjectButton onProjectCreated={setProjectId} />
+        <CreateProjectButton onProjectCreated={handleOnProjectCreated} />
         {project != null && <DeleteProjectButton project={project} />}
       </div>
       {project != null && (
         <div className={css.projectCard} key={project.id}>
           <h1 className={css.projectTitle}>{project.name}</h1>
-          {project.tasks.length > 0 && (
+          {projectHasTasks && (
             <div className={css.description}>
               <textarea
                 ref={textAreaRef}
@@ -98,8 +119,11 @@ function Home() {
               </button>
             </div>
           )}
-          <TaskList project={project} />
-          <CreateTaskButton project={project} />
+          <TaskList project={project} onTaskDeleted={handleOnTaskDeleted}/>
+          <CreateTaskButton
+            project={project}
+            onTaskCreated={handleOnTaskCreated}
+          />
         </div>
       )}
     </Layout>

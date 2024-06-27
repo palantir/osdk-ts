@@ -4,9 +4,10 @@ import css from "./TaskListItem.module.css";
 interface TaskListItemProps {
   task: MockTask;
   deleteTask: (task: MockTask) => Promise<void>;
+  onTaskDeleted: (taskId: string) => void;
 }
 
-function TaskListItem({ task, deleteTask }: TaskListItemProps) {
+function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -15,9 +16,10 @@ function TaskListItem({ task, deleteTask }: TaskListItemProps) {
     try {
       await deleteTask(task);
     } finally {
+      onTaskDeleted(task.id);
       setIsDeleting(false);
     }
-  }, [deleteTask, task]);
+  }, [deleteTask, task, onTaskDeleted]);
 
   useEffect(() => {
     if (textAreaRef.current) {

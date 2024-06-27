@@ -5,9 +5,10 @@ import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
   project: MockProject;
+  onTaskDeleted: (taskId: string) => void;
 }
 
-function TaskList({ project }: TaskListProps) {
+function TaskList({ project, onTaskDeleted }: TaskListProps) {
   const {
     tasks,
     isLoading: isLoadingTasks,
@@ -29,7 +30,12 @@ function TaskList({ project }: TaskListProps) {
   return (
     <ul className={css.taskList}>
       {data.map((task) => (
-        <TaskListItem key={task.id} task={task} deleteTask={deleteTask} />
+        <TaskListItem
+          key={task.id}
+          task={task}
+          deleteTask={deleteTask}
+          onTaskDeleted={onTaskDeleted}
+        />
       ))}
     </ul>
   );

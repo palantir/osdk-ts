@@ -10,9 +10,12 @@ interface CreateTaskDialogProps {
   project: MockProject;
   isOpen: boolean;
   onClose: () => void;
+  onTaskCreated: (taskId: string) => void;
 }
 
-function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
+function CreateTaskDialog(
+  { project, isOpen, onClose, onTaskCreated }: CreateTaskDialogProps,
+) {
   const { createTask, getRecommendedTaskDescription } = useProjectTasks(
     project,
   );
@@ -40,7 +43,10 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
     setIsProcessing(false);
   }, [getRecommendedTaskDescription, name]);
 
-  useEffect(() => setName("New task"), [isOpen]);
+  useEffect(() => {
+    setName("New task");
+    setDescription("");
+  }, [isOpen]);
   useEffect(() => {
     if (textAreaRef.current) {
       const textArea = textAreaRef.current;
@@ -52,12 +58,15 @@ function CreateTaskDialog({ project, isOpen, onClose }: CreateTaskDialogProps) {
   const handleSubmit = useCallback(async () => {
     setIsCreating(true);
     try {
-      await createTask(name, description);
+      const taskId = await createTask(name, description);
+      if (taskId != null) {
+        onTaskCreated(taskId);
+      }
     } finally {
       setIsCreating(false);
       onClose();
     }
-  }, [onClose, createTask, name, description]);
+  }, [onClose, createTask, onTaskCreated, name, description]);
 
   return (
     <>
