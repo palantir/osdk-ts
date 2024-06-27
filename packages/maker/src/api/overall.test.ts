@@ -16,16 +16,18 @@
 
 import { beforeEach, describe, expect, it } from "vitest";
 import { defineInterface } from "./defineInterface.js";
+import { defineInterfaceLinkConstraint } from "./defineInterfaceLinkConstraint.js";
 import { defineOntology, dumpOntologyFullMetadata } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
+import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("myns", () => {});
+    defineOntology("myNamespace", () => {});
   });
 
   describe("Interfaces", () => {
-    it("doesnt let you define the same interface twice", () => {
+    it("doesn't let you define the same interface twice", () => {
       defineInterface("Foo", {});
       expect(() => {
         defineInterface("Foo", {});
@@ -36,17 +38,17 @@ describe("Ontology Defining", () => {
 
     it("defaults displayName to apiName", () => {
       const result = defineInterface("Foo", {});
-      expect(result.displayName).toBe("Foo");
+      expect(result.displayMetadata.displayName).toBe("Foo");
     });
 
     it("defaults description to displayName", () => {
       const result = defineInterface("Foo", { displayName: "d" });
-      expect(result.description).toBe("d");
+      expect(result.displayMetadata.description).toBe("d");
     });
 
     it("defaults description to displayName to apiName", () => {
       const result = defineInterface("Foo", {});
-      expect(result.description).toBe("Foo");
+      expect(result.displayMetadata.description).toBe("Foo");
     });
 
     describe("auto spts", () => {
@@ -106,7 +108,7 @@ describe("Ontology Defining", () => {
                     },
                   ],
                   "status": {
-                    "active": true,
+                    "active": {},
                     "type": "active",
                   },
                 },
@@ -203,6 +205,315 @@ describe("Ontology Defining", () => {
     });
   });
 
+  describe("ILTs", () => {
+    let a: InterfaceType;
+    let b: InterfaceType;
+
+    beforeEach(() => {
+      a = defineInterface("A", {});
+      b = defineInterface("B", {});
+    });
+
+    it("many to many fails", () => {
+      expect(() => {
+        // @ts-expect-error
+        defineInterfaceLinkConstraint({
+          from: { type: a, many: "manyLinks" }, // need the any to be sure it fails
+          to: { type: b, many: "manyLinks" },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: many to many is not supported]`,
+      );
+    });
+
+    it("does not allow passing both one and many", () => {
+      expect(() => {
+        // @ts-expect-error
+        defineInterfaceLinkConstraint({
+          from: { type: a, one: "singleLink", many: "manyLinks" }, // need the any to be sure it fails
+          to: { type: b, one: "singleLink" },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: from should have either one or many, not both]`,
+      );
+
+      expect(() => {
+        defineInterfaceLinkConstraint({
+          from: { type: a, one: "singleLink" }, // need the any to be sure it fails
+          // @ts-expect-error
+          to: { type: b, one: "singleLink", many: "manyLinks" },
+        });
+      }).toThrowErrorMatchingInlineSnapshot(
+        `[Error: Invariant failed: to should have either one or many, not both]`,
+      );
+    });
+
+    it("single to single works", () => {
+      expect(a).not.toBeUndefined();
+      defineInterfaceLinkConstraint({
+        from: { type: a, one: "singleLink" },
+        to: { type: b, one: "singleLink" },
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "A": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "B",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+            "B": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "A",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+
+    it("many to single works", () => {
+      defineInterfaceLinkConstraint({
+        from: { type: a, many: "manyLinks" },
+        to: { type: b, one: "singleLink" },
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "A": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "MANY",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "B",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "manyLinks",
+                      "description": "manyLinks",
+                      "displayName": "manyLinks",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+            "B": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "A",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+
+    it("single to many works", () => {
+      defineInterfaceLinkConstraint({
+        from: { type: a, one: "singleLink" },
+        to: { type: b, many: "manyLinks" },
+      });
+
+      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
+        {
+          "blockPermissionInformation": {
+            "actionTypes": {},
+            "linkTypes": {},
+            "objectTypes": {},
+          },
+          "interfaceTypes": {
+            "A": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "A",
+                "displayMetadata": {
+                  "description": "A",
+                  "displayName": "A",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "SINGLE",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "B",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "singleLink",
+                      "description": "singleLink",
+                      "displayName": "singleLink",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+            "B": {
+              "interfaceType": {
+                "allExtendsInterfaces": [],
+                "allLinks": [],
+                "allProperties": [],
+                "apiName": "B",
+                "displayMetadata": {
+                  "description": "B",
+                  "displayName": "B",
+                  "icon": undefined,
+                },
+                "extendsInterfaces": [],
+                "links": [
+                  {
+                    "cardinality": "MANY",
+                    "linkedEntityTypeId": {
+                      "interfaceType": "A",
+                      "type": "interfaceType",
+                    },
+                    "metadata": {
+                      "apiName": "manyLinks",
+                      "description": "manyLinks",
+                      "displayName": "manyLinks",
+                    },
+                    "required": true,
+                  },
+                ],
+                "properties": [],
+                "status": {
+                  "active": {},
+                  "type": "active",
+                },
+              },
+            },
+          },
+          "sharedPropertyTypes": {},
+        }
+      `);
+    });
+  });
+
   describe("SPTs", () => {
     it("doesn't let you create the same spt twice", () => {
       defineSharedPropertyType("foo", {
@@ -219,7 +530,7 @@ describe("Ontology Defining", () => {
     });
   });
 
-  it("things", () => {
+  it("uses a predefined spt", () => {
     const fooSpt = defineSharedPropertyType(
       "fooSpt",
       {
@@ -286,7 +597,7 @@ describe("Ontology Defining", () => {
                 },
               ],
               "status": {
-                "active": true,
+                "active": {},
                 "type": "active",
               },
             },

@@ -23,6 +23,7 @@ import type {
   Type,
 } from "@osdk/client.unstable";
 import type {
+  InterfaceType,
   Ontology,
   PropertyTypeType,
   SharedPropertyType,
@@ -78,14 +79,9 @@ function convertToWireOntology(
         ontology.interfaceTypes,
       )
         .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, { displayName, description, properties }]) => {
+          ([apiName, interfaceType]) => {
             return [apiName, {
-              interfaceType: convertInterface(
-                description,
-                displayName,
-                apiName,
-                properties,
-              ),
+              interfaceType: convertInterface(interfaceType),
             }];
           },
         ),
@@ -99,29 +95,16 @@ function convertToWireOntology(
 }
 
 function convertInterface(
-  description: string | undefined,
-  displayName: string,
-  apiName: string,
-  properties: Record<string, SharedPropertyType>,
+  interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
   return {
-    displayMetadata: {
-      description,
-      displayName: displayName ?? apiName,
-      icon: undefined,
-    },
-    apiName,
-    extendsInterfaces: [],
-    links: [],
-    status: {
-      active: true,
-      type: "active",
-    },
+    ...interfaceType,
+    properties: Object.values(interfaceType.properties)
+      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
+    // these are omitted from our internal types but we need to readd them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
     allProperties: [],
-    properties: Object.values(properties)
-      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
   };
 }
 
