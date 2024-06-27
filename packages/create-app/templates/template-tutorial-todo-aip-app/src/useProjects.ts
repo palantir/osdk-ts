@@ -4,7 +4,7 @@ import type { MockProject } from "./mocks";
 import Mocks from "./mocks";
 
 function useProjects() {
-  const { data, isLoading, isValidating, error, mutate } = useSWR<
+  const { data, isLoading, isValidating, mutate } = useSWR<
     MockProject[]
   >("projects", async () => {
     // Try to implement this with the Ontology SDK!
@@ -58,7 +58,6 @@ function useProjects() {
     projects: data,
     isLoading,
     isValidating,
-    isError: error,
     createProject,
     deleteProject,
     getRecommendedProjectDescription,

@@ -72,30 +72,30 @@ function Home() {
       {project != null && (
         <div className={css.projectCard} key={project.id}>
           <h1 className={css.projectTitle}>{project.name}</h1>
-          <div className={css.description}>
+          {project.tasks.length > 0 && (<div className={css.description}>
             <textarea
               ref={textAreaRef}
               readOnly
               value={project.description}
               className={css.textArea}
             />
-            <button
-              disabled={isProcessing}
-              className={`${css.aip} ${isProcessing ? css.processing : ""}`}
-              title="Click here to update project description based on AIP Logic"
-              type="button"
-              onClick={handleProjectDescriptionRecommendation}
-            >
-              <div className={css.aipText}>
-                <img
-                  src={aipLogo}
-                  alt="AIP"
-                  className={css.image}
-                />
-                Get description recommendation
-              </div>
-            </button>
-          </div>
+              <button
+                disabled={isProcessing}
+                className={`${css.aip} ${isProcessing ? css.processing : ""}`}
+                title="Click here to update project description based on AIP Logic"
+                type="button"
+                onClick={handleProjectDescriptionRecommendation}
+              >
+                <div className={css.aipText}>
+                  <img
+                    src={aipLogo}
+                    alt="AIP"
+                    className={css.image}
+                  />
+                  Get description recommendation
+                </div>
+              </button>
+          </div>)}
           <TaskList project={project} />
           <CreateTaskButton project={project} />
         </div>

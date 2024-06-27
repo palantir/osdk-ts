@@ -12,7 +12,7 @@ function Layout({ children }: LayoutProps) {
       <div className={css.header}>
         <img src={todoAppLogo} className={css.logo} alt="Todo App logo" />
         <div className={css.title}>
-          Ontology SDK Tutorial - To do App Powered by AIP
+          Ontology SDK Tutorial - To Do App Powered by AIP
         </div>
       </div>
       {children}
