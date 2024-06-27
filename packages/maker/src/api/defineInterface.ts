@@ -24,8 +24,8 @@ import type {
 } from "./types.js";
 
 export function defineInterface(
-  apiName: string,
   opts: {
+    apiName: string;
     displayName?: string;
     description?: string;
     properties?: Record<
@@ -34,6 +34,7 @@ export function defineInterface(
     >;
   },
 ): InterfaceType {
+  const { apiName } = opts;
   invariant(
     ontologyDefinition.interfaceTypes[apiName] === undefined,
     `Interface ${apiName} already exists`,
@@ -50,7 +51,8 @@ export function defineInterface(
             `Invalid data type ${type} for property ${apiName} on InterfaceType ${apiName}`,
           );
 
-          const spt = defineSharedPropertyType(apiName, {
+          const spt = defineSharedPropertyType({
+            apiName,
             displayName: apiName,
             type,
             array: false,

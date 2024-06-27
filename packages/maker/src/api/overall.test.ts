@@ -28,32 +28,33 @@ describe("Ontology Defining", () => {
 
   describe("Interfaces", () => {
     it("doesn't let you define the same interface twice", () => {
-      defineInterface("Foo", {});
+      defineInterface({ apiName: "Foo" });
       expect(() => {
-        defineInterface("Foo", {});
+        defineInterface({ apiName: "Foo" });
       }).toThrowErrorMatchingInlineSnapshot(
         `[Error: Invariant failed: Interface Foo already exists]`,
       );
     });
 
     it("defaults displayName to apiName", () => {
-      const result = defineInterface("Foo", {});
+      const result = defineInterface({ apiName: "Foo" });
       expect(result.displayMetadata.displayName).toBe("Foo");
     });
 
     it("defaults description to displayName", () => {
-      const result = defineInterface("Foo", { displayName: "d" });
+      const result = defineInterface({ apiName: "Foo", displayName: "d" });
       expect(result.displayMetadata.description).toBe("d");
     });
 
     it("defaults description to displayName to apiName", () => {
-      const result = defineInterface("Foo", {});
+      const result = defineInterface({ apiName: "Foo" });
       expect(result.displayMetadata.description).toBe("Foo");
     });
 
     describe("auto spts", () => {
       it("auto creates spts", () => {
-        defineInterface("Foo", {
+        defineInterface({
+          apiName: "Foo",
           properties: {
             foo: "string",
           },
@@ -148,7 +149,8 @@ describe("Ontology Defining", () => {
       });
 
       it("does not let you conflict spts", () => {
-        defineSharedPropertyType("foo", {
+        defineSharedPropertyType({
+          apiName: "foo",
           type: "string",
         });
 
@@ -193,7 +195,8 @@ describe("Ontology Defining", () => {
         `);
 
         expect(() => {
-          defineInterface("Foo", {
+          defineInterface({
+            apiName: "Foo",
             properties: {
               foo: "string",
             },
@@ -210,8 +213,8 @@ describe("Ontology Defining", () => {
     let b: InterfaceType;
 
     beforeEach(() => {
-      a = defineInterface("A", {});
-      b = defineInterface("B", {});
+      a = defineInterface({ apiName: "A" });
+      b = defineInterface({ apiName: "B" });
     });
 
     it("many to many fails", () => {
@@ -516,12 +519,14 @@ describe("Ontology Defining", () => {
 
   describe("SPTs", () => {
     it("doesn't let you create the same spt twice", () => {
-      defineSharedPropertyType("foo", {
+      defineSharedPropertyType({
+        apiName: "foo",
         type: "string",
       });
 
       expect(() => {
-        defineSharedPropertyType("foo", {
+        defineSharedPropertyType({
+          apiName: "foo",
           type: "string",
         });
       }).toThrowErrorMatchingInlineSnapshot(
@@ -531,22 +536,18 @@ describe("Ontology Defining", () => {
   });
 
   it("uses a predefined spt", () => {
-    const fooSpt = defineSharedPropertyType(
-      "fooSpt",
-      {
-        type: "string",
-      },
-    );
+    const fooSpt = defineSharedPropertyType({
+      apiName: "fooSpt",
+      type: "string",
+    });
 
-    const FooInterface = defineInterface(
-      "FooInterface",
-      {
-        displayName: "Foo Interface",
-        properties: {
-          fooSpt,
-        },
+    const FooInterface = defineInterface({
+      apiName: "FooInterface",
+      displayName: "Foo Interface",
+      properties: {
+        fooSpt,
       },
-    );
+    });
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
       {
