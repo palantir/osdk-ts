@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 import type { CurrentTime } from "./CurrentTime.js";
 import type { CurrentUser } from "./CurrentUser.js";
+import type { InterfaceParameterPropertyValue } from "./InterfaceParameterPropertyValue.js";
 import type { ObjectParameterPropertyValue } from "./ObjectParameterPropertyValue.js";
 import type { ParameterId } from "./ParameterId.js";
 import type { StaticValue } from "./StaticValue.js";
@@ -34,6 +35,11 @@ export interface LogicRuleValue_staticValue {
 export interface LogicRuleValue_objectParameterPropertyValue {
   type: "objectParameterPropertyValue";
   objectParameterPropertyValue: ObjectParameterPropertyValue;
+}
+
+export interface LogicRuleValue_interfaceParameterPropertyValue {
+  type: "interfaceParameterPropertyValue";
+  interfaceParameterPropertyValue: InterfaceParameterPropertyValue;
 }
 
 export interface LogicRuleValue_currentUser {
@@ -63,6 +69,7 @@ export type LogicRuleValue =
   | LogicRuleValue_parameterId
   | LogicRuleValue_staticValue
   | LogicRuleValue_objectParameterPropertyValue
+  | LogicRuleValue_interfaceParameterPropertyValue
   | LogicRuleValue_currentUser
   | LogicRuleValue_currentTime
   | LogicRuleValue_uniqueIdentifier

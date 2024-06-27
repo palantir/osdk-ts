@@ -76,4 +76,6 @@ export type { UpdateEntitiesInPackageRequest } from "./UpdateEntitiesInPackageRe
 export type { UpdateEntitiesInPackageResponse } from "./UpdateEntitiesInPackageResponse.js";
 export type { UpdateEntityRolesRequest } from "./UpdateEntityRolesRequest.js";
 export type { UpdateEntityRolesResponse } from "./UpdateEntityRolesResponse.js";
+export type { UpdatePackageRolesRequest } from "./UpdatePackageRolesRequest.js";
+export type { UpdatePackageRolesResponse } from "./UpdatePackageRolesResponse.js";
 export type { UserPrincipal } from "./UserPrincipal.js";

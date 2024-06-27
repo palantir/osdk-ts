@@ -20,6 +20,7 @@ export { findConflicts } from "./OntologyBranchService/findConflicts.js";
 export { getOntologyBranchRid } from "./OntologyBranchService/getOntologyBranchRid.js";
 export { loadOntologyBranch } from "./OntologyBranchService/loadOntologyBranch.js";
 export { loadOntologyBranchByVersion } from "./OntologyBranchService/loadOntologyBranchByVersion.js";
+export { loadOntologyBranchForProposal } from "./OntologyBranchService/loadOntologyBranchForProposal.js";
 export { loadOntologyBranchMarkings } from "./OntologyBranchService/loadOntologyBranchMarkings.js";
 export { mergeOntologyServiceBranch } from "./OntologyBranchService/mergeOntologyServiceBranch.js";
 export { setOntologyBranchLock } from "./OntologyBranchService/setOntologyBranchLock.js";

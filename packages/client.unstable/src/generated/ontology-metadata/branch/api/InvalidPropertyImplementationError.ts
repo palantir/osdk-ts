@@ -19,6 +19,7 @@ import type { InvalidIsIndexedForSearchError } from "./InvalidIsIndexedForSearch
 import type { InvalidPropertyTypeError } from "./InvalidPropertyTypeError.js";
 import type { InvalidTypeClassesError } from "./InvalidTypeClassesError.js";
 import type { InvalidValueTypeError } from "./InvalidValueTypeError.js";
+import type { MissingImplementingPropertyError } from "./MissingImplementingPropertyError.js";
 export interface InvalidPropertyImplementationError_invalidPropertyType {
   type: "invalidPropertyType";
   invalidPropertyType: InvalidPropertyTypeError;
@@ -43,9 +44,15 @@ export interface InvalidPropertyImplementationError_invalidIsIndexedForSearch {
   type: "invalidIsIndexedForSearch";
   invalidIsIndexedForSearch: InvalidIsIndexedForSearchError;
 }
+
+export interface InvalidPropertyImplementationError_propertyIdNotFound {
+  type: "propertyIdNotFound";
+  propertyIdNotFound: MissingImplementingPropertyError;
+}
 export type InvalidPropertyImplementationError =
   | InvalidPropertyImplementationError_invalidPropertyType
   | InvalidPropertyImplementationError_invalidTypeClasses
   | InvalidPropertyImplementationError_invalidDataConstraints
   | InvalidPropertyImplementationError_invalidValueType
-  | InvalidPropertyImplementationError_invalidIsIndexedForSearch;
+  | InvalidPropertyImplementationError_invalidIsIndexedForSearch
+  | InvalidPropertyImplementationError_propertyIdNotFound;

@@ -28,6 +28,7 @@ import type { ParameterObjectPropertyValueOrEmpty } from "./ParameterObjectPrope
 import type { ParameterObjectQueryOrEmpty } from "./ParameterObjectQueryOrEmpty.js";
 import type { ParameterObjectSetRidOrEmpty } from "./ParameterObjectSetRidOrEmpty.js";
 import type { ParameterRangeOrEmpty } from "./ParameterRangeOrEmpty.js";
+import type { ParameterTimeSeriesReferenceOrEmpty } from "./ParameterTimeSeriesReferenceOrEmpty.js";
 import type { ParameterValueOneOfOrEmpty } from "./ParameterValueOneOfOrEmpty.js";
 import type { Redacted } from "./Redacted.js";
 export interface AllowedParameterValues_oneOf {
@@ -109,6 +110,11 @@ export interface AllowedParameterValues_redacted {
   type: "redacted";
   redacted: Redacted;
 }
+
+export interface AllowedParameterValues_timeSeriesReference {
+  type: "timeSeriesReference";
+  timeSeriesReference: ParameterTimeSeriesReferenceOrEmpty;
+}
 export type AllowedParameterValues =
   | AllowedParameterValues_oneOf
   | AllowedParameterValues_range
@@ -125,4 +131,5 @@ export type AllowedParameterValues =
   | AllowedParameterValues_cbacMarking
   | AllowedParameterValues_mandatoryMarking
   | AllowedParameterValues_mediaReference
-  | AllowedParameterValues_redacted;
+  | AllowedParameterValues_redacted
+  | AllowedParameterValues_timeSeriesReference;

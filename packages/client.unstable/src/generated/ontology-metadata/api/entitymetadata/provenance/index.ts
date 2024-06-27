@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export type { ActionTypeProvenance } from "./ActionTypeProvenance.js";
+export type { ActionTypeProvenanceSource } from "./ActionTypeProvenanceSource.js";
 export type { BuilderEntityProvenance } from "./BuilderEntityProvenance.js";
 export type { EntityProvenance } from "./EntityProvenance.js";
 export type { EntityProvenanceSource } from "./EntityProvenanceSource.js";

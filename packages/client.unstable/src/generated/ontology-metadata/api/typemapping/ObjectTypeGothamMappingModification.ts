@@ -30,6 +30,7 @@ export interface ObjectTypeGothamMappingModification {
   uri: GothamObjectTypeUri | undefined;
   parentType: GothamOntologyParentType | undefined;
   parentTypeUri: GothamObjectTypeUri | undefined;
+  gothamMappingEnabled: boolean | undefined;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeGothamMapping>;
   clearGothamMapping: boolean | undefined;
   revDbIntegrationState: RevDbIntegrationState | undefined;

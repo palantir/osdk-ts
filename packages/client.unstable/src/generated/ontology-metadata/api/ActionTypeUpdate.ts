@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import type { ActionNotificationSettings } from "./ActionNotificationSettings.js
 import type { ActionRevert } from "./ActionRevert.js";
 import type { ActionTypeApiName } from "./ActionTypeApiName.js";
 import type { ActionTypeDisplayMetadata } from "./ActionTypeDisplayMetadata.js";
+import type { ActionTypeProvenanceModification } from "./ActionTypeProvenanceModification.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
 import type { ActionWebhooks } from "./ActionWebhooks.js";
 import type { EditParameterRequest } from "./EditParameterRequest.js";
@@ -67,4 +68,5 @@ export interface ActionTypeUpdate {
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings | undefined;
   revert: ActionRevert | undefined;
+  provenance: ActionTypeProvenanceModification | undefined;
 }

@@ -17,6 +17,7 @@
 import type { ConflictingPropertyImplementationError } from "./ConflictingPropertyImplementationError.js";
 import type { ImplicitAndExplicitPropertyImplementationError } from "./ImplicitAndExplicitPropertyImplementationError.js";
 import type { InvalidPropertyImplementationError } from "./InvalidPropertyImplementationError.js";
+import type { LocalAndSharedPropertyTypesConflictingApiNamesError } from "./LocalAndSharedPropertyTypesConflictingApiNamesError.js";
 import type { MissingSharedPropertyError } from "./MissingSharedPropertyError.js";
 export interface InterfaceImplementationError_missingSharedProperty {
   type: "missingSharedProperty";
@@ -38,6 +39,12 @@ export interface InterfaceImplementationError_implicitAndExplicitPropertyImpleme
   implicitAndExplicitPropertyImplementation:
     ImplicitAndExplicitPropertyImplementationError;
 }
+
+export interface InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames {
+  type: "localAndSharedPropertyTypesConflictingApiNames";
+  localAndSharedPropertyTypesConflictingApiNames:
+    LocalAndSharedPropertyTypesConflictingApiNamesError;
+}
 /**
  * A type representing validation errors associated with interface implementations. Since we only validate on
  * branches, we use RIDs instead of the ID/RID union.
@@ -46,4 +53,5 @@ export type InterfaceImplementationError =
   | InterfaceImplementationError_missingSharedProperty
   | InterfaceImplementationError_invalidPropertyImplementation
   | InterfaceImplementationError_conflictingPropertyImplementation
-  | InterfaceImplementationError_implicitAndExplicitPropertyImplementation;
+  | InterfaceImplementationError_implicitAndExplicitPropertyImplementation
+  | InterfaceImplementationError_localAndSharedPropertyTypesConflictingApiNames;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import type { RoleGrant } from "../permissions/RoleGrant.js";
 import type { OntologyObjectTypeSemanticSearchStatus } from "../search/semantic/OntologyObjectTypeSemanticSearchStatus.js";
 import type { ExternalMappingConfiguration } from "../typemapping/ExternalMappingConfiguration.js";
 import type { CompassNamespaceRid } from "./CompassNamespaceRid.js";
+import type { EnabledObjectStoragesStatus } from "./EnabledObjectStoragesStatus.js";
 import type { OntologyAdminConfig } from "./OntologyAdminConfig.js";
 import type { OntologyNamespace } from "./OntologyNamespace.js";
 import type { OntologyProjectRid } from "./OntologyProjectRid.js";
@@ -55,4 +56,5 @@ export interface OntologyInformationInternal {
   permissionModel: PermissionModel;
   isDefaultOntologyMultiOrg: boolean;
   semanticSearchIndexingStatus: OntologyObjectTypeSemanticSearchStatus;
+  enabledObjectStoragesStatus: EnabledObjectStoragesStatus;
 }

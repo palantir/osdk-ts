@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ export { getOntologyRidsForEntities } from "./OntologyMetadataService/getOntolog
 export { getOntologySummary } from "./OntologyMetadataService/getOntologySummary.js";
 export { getOrganizationRidsForOntology } from "./OntologyMetadataService/getOrganizationRidsForOntology.js";
 export { getRelationsForObjectTypes } from "./OntologyMetadataService/getRelationsForObjectTypes.js";
-export { loadAllCustomObjectTypeTraitsFromOntology } from "./OntologyMetadataService/loadAllCustomObjectTypeTraitsFromOntology.js";
 export { loadAllInterfaceTypesFromOntology } from "./OntologyMetadataService/loadAllInterfaceTypesFromOntology.js";
 export { loadAllObjectTypesFromOntology } from "./OntologyMetadataService/loadAllObjectTypesFromOntology.js";
 export { loadAllObjectTypesFromOntologyPage } from "./OntologyMetadataService/loadAllObjectTypesFromOntologyPage.js";

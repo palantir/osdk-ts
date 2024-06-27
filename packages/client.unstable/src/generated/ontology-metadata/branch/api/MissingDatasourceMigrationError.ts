@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ import type { DatasourceRid } from "../../api/DatasourceRid.js";
 import type { ObjectTypeRid } from "../../api/ObjectTypeRid.js";
 
 /**
+ * Note: This error does not block the branch from getting merged.
+ *
  * Indicates that a datasource was deleted without the required schema migrations. Currently we only validate
  * for the most common schema migrations. Validation only looks at migrations with
  * `SourceSchemaVersion.latestVersion()`, other migrations will be ignored.

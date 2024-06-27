@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 import type { OntologyApiName } from "../OntologyApiName.js";
 import type { OrganizationMarkingId } from "../OrganizationMarkingId.js";
 import type { RoleGrantPatch } from "../permissions/RoleGrantPatch.js";
+import type { GothamMappingConfiguration } from "../typemapping/GothamMappingConfiguration.js";
 import type { OntologyAdminConfig } from "./OntologyAdminConfig.js";
 
 /**
@@ -31,4 +32,5 @@ export interface OntologyUpdateRequest {
   addUnrestrictedRoles: boolean | undefined;
   organizationMarkingIds: Array<OrganizationMarkingId>;
   ontologyAdminConfig: OntologyAdminConfig | undefined;
+  gothamMappingConfiguration: GothamMappingConfiguration | undefined;
 }

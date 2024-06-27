@@ -28,6 +28,7 @@ export interface ObjectTypeGothamMapping {
   uri: GothamObjectTypeUri;
   parentType: GothamOntologyParentType;
   parentTypeUri: GothamOntologyParentTypeUri | undefined;
+  gothamMappingEnabled: boolean | undefined;
   propertyMapping: Record<PropertyTypeRid, PropertyTypeGothamMapping>;
   objectLevelIntrinsics: Record<PropertyTypeRid, GothamObjectIntrinsicMapping>;
   propertyLevelIntrinsics: Record<

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import type { ActionTypeEntities } from "./ActionTypeEntities.js";
 import type { ActionTypeRid } from "./ActionTypeRid.js";
 import type { ActionTypeStatus } from "./ActionTypeStatus.js";
 import type { ActionTypeVersion } from "./ActionTypeVersion.js";
+import type { ActionTypeProvenance } from "./entitymetadata/provenance/ActionTypeProvenance.js";
 import type { FormContent } from "./FormContent.js";
 import type { Parameter } from "./Parameter.js";
 import type { ParameterId } from "./ParameterId.js";
@@ -46,4 +47,5 @@ export interface ActionTypeMetadata {
   entities: ActionTypeEntities | undefined;
   actionApplyClientSettings: ActionApplyClientPreferences | undefined;
   notificationSettings: ActionNotificationSettings;
+  provenance: ActionTypeProvenance | undefined;
 }

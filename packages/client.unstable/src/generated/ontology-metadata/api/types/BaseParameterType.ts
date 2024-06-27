@@ -24,6 +24,8 @@ import type { DoubleListType } from "./DoubleListType.js";
 import type { DoubleType } from "./DoubleType.js";
 import type { IntegerListType } from "./IntegerListType.js";
 import type { IntegerType } from "./IntegerType.js";
+import type { InterfaceReferenceListType } from "./InterfaceReferenceListType.js";
+import type { InterfaceReferenceType } from "./InterfaceReferenceType.js";
 import type { LongListType } from "./LongListType.js";
 import type { LongType } from "./LongType.js";
 import type { MarkingListType } from "./MarkingListType.js";
@@ -32,8 +34,10 @@ import type { MediaReferenceType } from "./MediaReferenceType.js";
 import type { ObjectReferenceListType } from "./ObjectReferenceListType.js";
 import type { ObjectReferenceType } from "./ObjectReferenceType.js";
 import type { ObjectSetRidType } from "./ObjectSetRidType.js";
+import type { ObjectTypeReferenceType } from "./ObjectTypeReferenceType.js";
 import type { StringListType } from "./StringListType.js";
 import type { StringType } from "./StringType.js";
+import type { TimeSeriesReferenceType } from "./TimeSeriesReferenceType.js";
 import type { TimestampListType } from "./TimestampListType.js";
 import type { TimestampType } from "./TimestampType.js";
 export interface BaseParameterType_boolean {
@@ -86,6 +90,11 @@ export interface BaseParameterType_stringList {
   stringList: StringListType;
 }
 
+export interface BaseParameterType_timeSeriesReference {
+  type: "timeSeriesReference";
+  timeSeriesReference: TimeSeriesReferenceType;
+}
+
 export interface BaseParameterType_timestamp {
   type: "timestamp";
   timestamp: TimestampType;
@@ -119,6 +128,21 @@ export interface BaseParameterType_objectReferenceList {
 export interface BaseParameterType_objectSetRid {
   type: "objectSetRid";
   objectSetRid: ObjectSetRidType;
+}
+
+export interface BaseParameterType_interfaceReference {
+  type: "interfaceReference";
+  interfaceReference: InterfaceReferenceType;
+}
+
+export interface BaseParameterType_interfaceReferenceList {
+  type: "interfaceReferenceList";
+  interfaceReferenceList: InterfaceReferenceListType;
+}
+
+export interface BaseParameterType_objectTypeReference {
+  type: "objectTypeReference";
+  objectTypeReference: ObjectTypeReferenceType;
 }
 
 export interface BaseParameterType_attachment {
@@ -159,6 +183,7 @@ export type BaseParameterType =
   | BaseParameterType_doubleList
   | BaseParameterType_string
   | BaseParameterType_stringList
+  | BaseParameterType_timeSeriesReference
   | BaseParameterType_timestamp
   | BaseParameterType_timestampList
   | BaseParameterType_date
@@ -166,6 +191,9 @@ export type BaseParameterType =
   | BaseParameterType_objectReference
   | BaseParameterType_objectReferenceList
   | BaseParameterType_objectSetRid
+  | BaseParameterType_interfaceReference
+  | BaseParameterType_interfaceReferenceList
+  | BaseParameterType_objectTypeReference
   | BaseParameterType_attachment
   | BaseParameterType_attachmentList
   | BaseParameterType_marking

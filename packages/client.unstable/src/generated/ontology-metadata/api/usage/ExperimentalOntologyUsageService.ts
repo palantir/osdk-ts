@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { getActionTypeUsage } from "./ExperimentalOntologyUsageService/getActionTypeUsage.js";
 export { getDeprecationUsage } from "./ExperimentalOntologyUsageService/getDeprecationUsage.js";
 export { getUsage } from "./ExperimentalOntologyUsageService/getUsage.js";
 export { getUsageSettingsByOrganization } from "./ExperimentalOntologyUsageService/getUsageSettingsByOrganization.js";

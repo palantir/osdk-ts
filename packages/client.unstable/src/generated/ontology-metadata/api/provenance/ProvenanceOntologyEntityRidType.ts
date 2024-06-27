@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,16 @@
  * limitations under the License.
  */
 
+/**
+ * Type of Ontology entity which can be a Dependency of a Dependent.
+ */
 export type ProvenanceOntologyEntityRidType =
   | "PROPERTY_TYPE"
   | "OBJECT_TYPE"
   | "LINK_TYPE"
   | "ACTION_TYPE"
-  | "VALUE_TYPE";
+  | "VALUE_TYPE"
+  | "FUNCTION"
+  | "QUIVER"
+  | "WORKSHOP"
+  | "NOTEPAD";
