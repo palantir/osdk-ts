@@ -119,7 +119,7 @@ function Home() {
               </button>
             </div>
           )}
-          <TaskList project={project} onTaskDeleted={handleOnTaskDeleted}/>
+          <TaskList project={project} onTaskDeleted={handleOnTaskDeleted} />
           <CreateTaskButton
             project={project}
             onTaskCreated={handleOnTaskCreated}
