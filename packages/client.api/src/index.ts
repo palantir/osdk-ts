@@ -65,6 +65,10 @@ export type {
   GroupByRange,
 } from "./groupby/GroupByClause.js";
 export type {
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "./mapping/DataValueMapping.js";
+export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
@@ -109,6 +113,11 @@ export type {
 } from "./OsdkObjectFrom.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
+export type {
+  QueryParameterType,
+  QueryReturnType,
+  QuerySignatureFromDef,
+} from "./queries/Queries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 

@@ -19,11 +19,13 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
   MinimalObjectSet,
   ObjectSet,
+  QuerySignatureFromDef,
 } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
@@ -33,6 +35,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { createQueryInvoker } from "./queries/createQueryInvoker.js";
 
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
@@ -54,10 +57,12 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>,
+      | ActionDefinition<any, any, any>
+      | QueryDefinition<any, any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -66,6 +71,10 @@ export function createClientInternal(
     } else if (o.type === "action") {
       clientCtx.ontologyProvider.maybeSeed(o);
       return createActionInvoker(clientCtx, o) as ActionSignatureFromDef<
+        any
+      > as any;
+    } else if (o.type === "query") {
+      return createQueryInvoker(clientCtx, o) as QuerySignatureFromDef<
         any
       > as any;
     } else {

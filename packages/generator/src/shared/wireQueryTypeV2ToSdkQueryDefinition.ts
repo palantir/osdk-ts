@@ -36,7 +36,19 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
   };
 }
 
-function wireQueryParameterV2ToQueryParameterDefinition(
+export function wireQueryTypeV2ToSdkQueryDefinitionNoParams(
+  input: QueryTypeV2,
+) {
+  return {
+    type: "query",
+    apiName: input.apiName,
+    description: input.description,
+    displayName: input.displayName,
+    version: input.version,
+  };
+}
+
+export function wireQueryParameterV2ToQueryParameterDefinition(
   parameter: QueryParameterV2,
 ): QueryParameterDefinition<any> {
   return {

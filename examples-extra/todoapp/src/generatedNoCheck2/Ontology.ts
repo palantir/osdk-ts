@@ -12,9 +12,7 @@ export interface Ontology extends OntologyDefinition<'Todo'> {
     completeTodo: typeof Actions.completeTodo;
     createTodo: typeof Actions.createTodo;
   };
-  queries: {
-    // TODO
-  };
+  queries: {};
   interfaces: {};
 }
 
@@ -27,8 +25,6 @@ export const Ontology: Ontology = {
     completeTodo: Actions.completeTodo,
     createTodo: Actions.createTodo,
   },
-  queries: {
-    // TODO
-  },
+  queries: {},
   interfaces: {},
 };

@@ -34,6 +34,16 @@ export interface DataValueWireToClient {
   short: number;
   string: string;
   timestamp: string;
+  twoDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    value: allowedBucketTypes;
+  }[];
+  threeDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    groups: { key: allowedBucketKeyTypes; value: allowedBucketTypes }[];
+  }[];
+  struct: Record<string, any>;
+  set: Set<any>;
 }
 
 /**
@@ -54,4 +64,22 @@ export interface DataValueClientToWire {
   short: number;
   string: string;
   timestamp: string;
+  set: Set<any>;
+  twoDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    value: allowedBucketTypes;
+  }[];
+  threeDimensionalAggregation: {
+    key: allowedBucketKeyTypes;
+    groups: { key: allowedBucketKeyTypes; value: allowedBucketTypes }[];
+  }[];
+  struct: Record<string, any>;
 }
+
+type allowedBucketTypes = string | number | boolean;
+type allowedBucketKeyTypes =
+  | allowedBucketTypes
+  | {
+    startValue: allowedBucketTypes;
+    endValue: allowedBucketTypes;
+  };

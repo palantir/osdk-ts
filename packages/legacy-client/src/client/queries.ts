@@ -103,7 +103,7 @@ export type QueryNamesFrom<O extends OntologyDefinition<any>> =
 
 export type QueryDataType<
   O extends OntologyDefinition<any>,
-  D extends QueryDataTypeDefinition<any>,
+  D extends QueryDataTypeDefinition<any, any>,
   T_ReturnValue extends boolean,
 > = D["multiplicity"] extends true
   ? Array<QueryDataTypeBase<O, D, T_ReturnValue>>
@@ -130,12 +130,12 @@ export type QueryDataTypeBase<
   ? (R extends true
     ? X extends "long" ? string : ValidLegacyBaseQueryDataTypes[X]
     : ValidLegacyBaseQueryDataTypes[X])
-  : T extends ObjectQueryDataType<any>
+  : T extends ObjectQueryDataType<any, any>
     ? R extends true ? OsdkLegacyObjectFrom<O, T["object"]>
     :
       | OsdkLegacyObjectFrom<O, T["object"]>
       | OsdkLegacyObjectFrom<O, T["object"]>["__primaryKey"]
-  : T extends ObjectSetQueryDataType<infer K>
+  : T extends ObjectSetQueryDataType<infer K, any>
     ? ObjectSet<OsdkLegacyObjectFrom<O, K>>
   : T extends SetQueryDataType<any> ? Set<QueryDataType<O, T["set"], R>>
   : T extends TwoDimensionalAggregationDataType ? TwoDimensionalAggregation<

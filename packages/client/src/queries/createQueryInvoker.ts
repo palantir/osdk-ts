@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import type { OsdkBase } from "@osdk/client.api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OntologyDefinition, QueryDefinition } from "@osdk/api";
+import type { QuerySignatureFromDef } from "@osdk/client.api";
+import type { MinimalClient } from "../MinimalClientContext.js";
+import { applyQuery } from "./applyQuery.js";
 
-export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
-  return o && typeof o === "object" && typeof o.__apiName === "string"
-    && o.__primaryKey != null;
-}
-
-export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
-  return o && typeof o === "object" && typeof o.$apiName === "string"
-    && o.$primaryKey != null;
+export function createQueryInvoker<Q extends QueryDefinition<any, any>>(
+  client: MinimalClient,
+  query: Q,
+): QuerySignatureFromDef<Q> {
+  return function(...args: any[]) {
+    return applyQuery(client, query, ...args);
+  };
 }

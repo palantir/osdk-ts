@@ -28,10 +28,13 @@ import type {
   TwoDimensionalAggregation,
 } from "@osdk/gateway/types";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
-export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
+export function wireQueryDataTypeToQueryDataTypeDefinition<
+  K extends string,
+>(
   input: QueryDataType,
-): QueryDataTypeDefinition<K> {
+): QueryDataTypeDefinition<K, any> {
   switch (input.type) {
     case "double":
     case "float":

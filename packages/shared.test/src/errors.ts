@@ -107,6 +107,18 @@ export const ApplyActionFailedError: errors.ApplyActionFailed = {
   parameters: {},
 };
 
+export const ExecuteQueryFailedError: errors.QueryEncounteredUserFacingError = {
+  errorCode: "CONFLICT",
+  errorName: "QueryEncounteredUserFacingError",
+  errorInstanceId,
+  parameters: {
+    functionRid:
+      "ri.function-registry.main.function.9b55870a-63c7-4d48-8f06-9627c0805968",
+    functionVersion: "0.11.0",
+    message: "test failed",
+  },
+};
+
 export const InvalidContentTypeError: errors.InvalidContentType = {
   errorCode: "INVALID_ARGUMENT",
   errorName: "InvalidContentType",
