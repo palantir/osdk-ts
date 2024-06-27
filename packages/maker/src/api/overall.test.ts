@@ -59,45 +59,86 @@ describe("Ontology Defining", () => {
 
         expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
           {
-            "actionTypes": {},
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
+            },
             "interfaceTypes": {
               "Foo": {
-                "apiName": "Foo",
-                "description": "Foo",
-                "displayName": "Foo",
-                "extendsInterfaces": [],
-                "links": {},
-                "properties": {
-                  "foo": {
-                    "apiName": "foo",
-                    "dataType": {
-                      "type": "string",
+                "interfaceType": {
+                  "allExtendsInterfaces": [],
+                  "allLinks": [],
+                  "allProperties": [],
+                  "apiName": "Foo",
+                  "displayMetadata": {
+                    "description": "Foo",
+                    "displayName": "Foo",
+                    "icon": undefined,
+                  },
+                  "extendsInterfaces": [],
+                  "links": [],
+                  "properties": [
+                    {
+                      "aliases": [],
+                      "apiName": "foo",
+                      "baseFormatter": undefined,
+                      "dataConstraints": undefined,
+                      "displayMetadata": {
+                        "description": undefined,
+                        "displayName": "foo",
+                        "visibility": "NORMAL",
+                      },
+                      "gothamMapping": undefined,
+                      "indexedForSearch": true,
+                      "provenance": undefined,
+                      "type": {
+                        "string": {
+                          "analyzerOverride": undefined,
+                          "enableAsciiFolding": undefined,
+                          "isLongText": false,
+                          "supportsExactMatching": true,
+                        },
+                        "type": "string",
+                      },
+                      "typeClasses": [],
+                      "valueType": undefined,
                     },
-                    "description": undefined,
-                    "displayName": "foo",
-                    "rid": "ri.ontology.main.generated-object.foo",
+                  ],
+                  "status": {
+                    "active": true,
+                    "type": "active",
                   },
                 },
-                "rid": "ri.ontology.main.generated-object.foo",
               },
             },
-            "objectTypes": {},
-            "ontology": {
-              "apiName": "IDK",
-              "description": "IDK",
-              "displayName": "IDK",
-              "rid": "ri.ontology.main.generated-object.foo",
-            },
-            "queryTypes": {},
             "sharedPropertyTypes": {
               "foo": {
-                "apiName": "foo",
-                "dataType": {
-                  "type": "string",
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "foo",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "foo",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "provenance": undefined,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
                 },
-                "description": undefined,
-                "displayName": "foo",
-                "rid": "ri.ontology.main.generated-object.foo",
               },
             },
           }
@@ -111,25 +152,39 @@ describe("Ontology Defining", () => {
 
         expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
           {
-            "actionTypes": {},
-            "interfaceTypes": {},
-            "objectTypes": {},
-            "ontology": {
-              "apiName": "IDK",
-              "description": "IDK",
-              "displayName": "IDK",
-              "rid": "ri.ontology.main.generated-object.foo",
+            "blockPermissionInformation": {
+              "actionTypes": {},
+              "linkTypes": {},
+              "objectTypes": {},
             },
-            "queryTypes": {},
+            "interfaceTypes": {},
             "sharedPropertyTypes": {
               "foo": {
-                "apiName": "foo",
-                "dataType": {
-                  "type": "string",
+                "sharedPropertyType": {
+                  "aliases": [],
+                  "apiName": "foo",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "foo",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "provenance": undefined,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
                 },
-                "description": undefined,
-                "displayName": "foo",
-                "rid": "ri.ontology.main.generated-object.foo",
               },
             },
           }
@@ -184,45 +239,86 @@ describe("Ontology Defining", () => {
 
     expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
       {
-        "actionTypes": {},
+        "blockPermissionInformation": {
+          "actionTypes": {},
+          "linkTypes": {},
+          "objectTypes": {},
+        },
         "interfaceTypes": {
           "FooInterface": {
-            "apiName": "FooInterface",
-            "description": "Foo Interface",
-            "displayName": "Foo Interface",
-            "extendsInterfaces": [],
-            "links": {},
-            "properties": {
-              "fooSpt": {
-                "apiName": "fooSpt",
-                "dataType": {
-                  "type": "string",
+            "interfaceType": {
+              "allExtendsInterfaces": [],
+              "allLinks": [],
+              "allProperties": [],
+              "apiName": "FooInterface",
+              "displayMetadata": {
+                "description": "Foo Interface",
+                "displayName": "Foo Interface",
+                "icon": undefined,
+              },
+              "extendsInterfaces": [],
+              "links": [],
+              "properties": [
+                {
+                  "aliases": [],
+                  "apiName": "fooSpt",
+                  "baseFormatter": undefined,
+                  "dataConstraints": undefined,
+                  "displayMetadata": {
+                    "description": undefined,
+                    "displayName": "fooSpt",
+                    "visibility": "NORMAL",
+                  },
+                  "gothamMapping": undefined,
+                  "indexedForSearch": true,
+                  "provenance": undefined,
+                  "type": {
+                    "string": {
+                      "analyzerOverride": undefined,
+                      "enableAsciiFolding": undefined,
+                      "isLongText": false,
+                      "supportsExactMatching": true,
+                    },
+                    "type": "string",
+                  },
+                  "typeClasses": [],
+                  "valueType": undefined,
                 },
-                "description": undefined,
-                "displayName": "fooSpt",
-                "rid": "ri.ontology.main.generated-object.foo",
+              ],
+              "status": {
+                "active": true,
+                "type": "active",
               },
             },
-            "rid": "ri.ontology.main.generated-object.foo",
           },
         },
-        "objectTypes": {},
-        "ontology": {
-          "apiName": "IDK",
-          "description": "IDK",
-          "displayName": "IDK",
-          "rid": "ri.ontology.main.generated-object.foo",
-        },
-        "queryTypes": {},
         "sharedPropertyTypes": {
           "fooSpt": {
-            "apiName": "fooSpt",
-            "dataType": {
-              "type": "string",
+            "sharedPropertyType": {
+              "aliases": [],
+              "apiName": "fooSpt",
+              "baseFormatter": undefined,
+              "dataConstraints": undefined,
+              "displayMetadata": {
+                "description": undefined,
+                "displayName": "fooSpt",
+                "visibility": "NORMAL",
+              },
+              "gothamMapping": undefined,
+              "indexedForSearch": true,
+              "provenance": undefined,
+              "type": {
+                "string": {
+                  "analyzerOverride": undefined,
+                  "enableAsciiFolding": undefined,
+                  "isLongText": false,
+                  "supportsExactMatching": true,
+                },
+                "type": "string",
+              },
+              "typeClasses": [],
+              "valueType": undefined,
             },
-            "description": undefined,
-            "displayName": "fooSpt",
-            "rid": "ri.ontology.main.generated-object.foo",
           },
         },
       }
