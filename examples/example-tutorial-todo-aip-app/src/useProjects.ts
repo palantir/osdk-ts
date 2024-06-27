@@ -23,16 +23,6 @@ function useProjects() {
     [mutate],
   );
 
-  const getRecommendedProjectDescription: (
-    project: MockProject,
-  ) => Promise<string> = useCallback(
-    async (project) => {
-      // Try to implement this with the Ontology SDK!
-      return Mocks.getRecommendedProjectDescription(project);
-    },
-    [],
-  );
-
   const updateProjectDescription: (
     project: MockProject,
   ) => Promise<void> = useCallback(
@@ -61,7 +51,6 @@ function useProjects() {
     isError: error,
     createProject,
     deleteProject,
-    getRecommendedProjectDescription,
     updateProjectDescription,
   };
 }
