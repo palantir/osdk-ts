@@ -7,15 +7,21 @@
 import type { ActionDefinition } from '@osdk/api';
 import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
+import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
+import type { IsNever as IsNever_2 } from 'type-fest';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
+import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
+import type { ObjectTypeLinkDefinition } from '@osdk/api';
+import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { OntologyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
+import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
 //
@@ -51,35 +57,23 @@ export type AggregatableKeys<Q extends ObjectOrInterfaceDefinition> = keyof {
 };
 
 // @public (undocumented)
-export type AggregateOpts<Q extends ObjectOrInterfaceDefinition, KK extends AggregatableKeys<Q> = AggregatableKeys<Q>> = {
-    $select: AggregationClause<Q, KK>;
+export type AggregateOpts<Q extends ObjectOrInterfaceDefinition> = {
+    $select: UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>;
     $where?: WhereClause<Q>;
     $groupBy?: GroupByClause<Q>;
 };
 
-// @public (undocumented)
-export type AggregateOptsThatErrors<Q extends ObjectOrInterfaceDefinition, AO extends AggregateOpts<Q>> = AO & {
-    $select: Pick<AO["$select"], keyof AggregateOpts<Q>["$select"] & keyof AO["$select"]> & Record<Exclude<keyof AO["$select"], keyof AggregateOpts<Q>["$select"]>, never>;
-} & (unknown extends AO["$groupBy"] ? {} : Exclude<AO["$groupBy"], undefined> extends never ? {} : {
-    $groupBy: Pick<AO["$groupBy"], keyof GroupByClause<Q> & keyof AO["$groupBy"]> & Record<Exclude<keyof AO["$groupBy"], keyof GroupByClause<Q>>, never>;
-});
-
-// Warning: (ae-forgotten-export) The symbol "StringAggregateOption" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NumericAggregateOption" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "totalCountOption" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "AggregateOptsThatErrors" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type AggregationClause<Q extends ObjectOrInterfaceDefinition, K extends AggregatableKeys<Q> = AggregatableKeys<Q>> = {
-    [P in K]?: Q["properties"][P]["type"] extends "string" ? StringAggregateOption | StringAggregateOption[] : Q["properties"][P]["type"] extends "double" | "integer" | "float" | "decimal" | "byte" | "long" | "short" ? NumericAggregateOption | NumericAggregateOption[] : never;
-} & totalCountOption;
+export type AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q extends ObjectOrInterfaceDefinition, AO extends AggregateOpts<Q>> = SingleKeyObject<AO["$groupBy"]> extends never ? (AO["$select"] extends UnorderedAggregationClause<Q> ? AggregateOptsThatErrors<Q, AO> : {} extends AO["$groupBy"] ? AggregateOptsThatErrors<Q, AO> : {
+    $groupBy: AO["$groupBy"];
+    $select: UnorderedAggregationClause<Q>;
+    $where?: AO["$where"];
+}) : AggregateOptsThatErrors<Q, AO>;
 
 // @public (undocumented)
-export type AggregationCountResult<Q extends ObjectOrInterfaceDefinition<any, any>, A extends AggregationClause<Q>> = "$count" extends keyof A ? {
-    $count: number;
-} : {};
-
-// @public (undocumented)
-export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<any, any>, A extends AggregationClause<Q>, G extends GroupByClause<Q> | undefined> = ({
+export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<any, any>, A extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>, G extends GroupByClause<Q> | undefined> = ({
     $group: {
         [P in keyof G & keyof Q["properties"]]: G[P] extends {
             $ranges: GroupByRange<infer T>[];
@@ -88,20 +82,20 @@ export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<a
             endValue: T;
         } : OsdkObjectPropertyType<Q["properties"][P], true>;
     };
-} & AggregationCountResult<Q, A> & AggregationResultsWithoutGroups<Q, A>)[];
+} & AggregationResultsWithoutGroups<Q, A>)[];
 
-// Warning: (ae-forgotten-export) The symbol "SubselectKeys" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "StringArrayToUnion" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractPropName" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "ExtractMetricNameForPropName" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type AggregationResultsWithoutGroups<Q extends ObjectOrInterfaceDefinition<any, any>, AC extends AggregationClause<Q>> = {
-    [P in keyof Q["properties"] as SubselectKeys<AC, P>]: AC[P] extends readonly string[] | string ? {
-        [Z in StringArrayToUnion<AC[P]>]: Z extends "approximateDistinct" ? number : OsdkObjectPropertyType<Q["properties"][P]>;
-    } : never;
+export type AggregationResultsWithoutGroups<Q extends ObjectOrInterfaceDefinition<any, any>, AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>> = {
+    [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count" ? number : {
+        [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" ? number : OsdkObjectPropertyType<Q["properties"][PropName]>;
+    };
 };
 
 // @public (undocumented)
-export type AggregationsResults<Q extends ObjectOrInterfaceDefinition, AO extends AggregateOpts<Q>> = Exclude<keyof AO["$select"], AggregatableKeys<Q> | "$count"> extends never ? unknown extends AO["$groupBy"] ? AggregationResultsWithoutGroups<Q, AO["$select"]> & AggregationCountResult<Q, AO["$select"]> : Exclude<AO["$groupBy"], undefined> extends never ? AggregationResultsWithoutGroups<Q, AO["$select"]> & AggregationCountResult<Q, AO["$select"]> : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]> : `Sorry, the following are not valid groups for an aggregation: ${Exclude<keyof AO["$groupBy"] & string, AggregatableKeys<Q>>}` : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<keyof AO["$select"] & string, AggregatableKeys<Q> | "$count">}`;
+export type AggregationsResults<Q extends ObjectOrInterfaceDefinition, AO extends AggregateOpts<Q>> = Exclude<keyof AO["$select"], ValidAggregationKeys<Q>> extends never ? unknown extends AO["$groupBy"] ? AggregationResultsWithoutGroups<Q, AO["$select"]> : Exclude<AO["$groupBy"], undefined> extends never ? AggregationResultsWithoutGroups<Q, AO["$select"]> : Exclude<keyof AO["$groupBy"], AggregatableKeys<Q>> extends never ? AggregationResultsWithGroups<Q, AO["$select"], AO["$groupBy"]> : `Sorry, the following are not valid groups for an aggregation: ${Exclude<keyof AO["$groupBy"] & string, AggregatableKeys<Q>>}` : `Sorry, the following are not valid selectors for an aggregation: ${Exclude<keyof AO["$select"] & string, ValidAggregationKeys<Q>>}`;
 
 // Warning: (ae-forgotten-export) The symbol "GroupByMapper" needs to be exported by the entry point index.d.ts
 //
@@ -157,10 +151,28 @@ export interface AttachmentUpload extends Blob {
 }
 
 // @public (undocumented)
+export type Augment<X extends ObjectOrInterfaceDefinition, T extends string> = X extends ObjectOrInterfaceDefinition<infer Z> ? Z extends BrandedApiName<infer ZZ, any> ? {
+    [K in Z]: T[];
+} : never : never;
+
+// @public (undocumented)
+export type Augments = Record<string, string[]>;
+
+// @public (undocumented)
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
     // (undocumented)
     [ObjectSetType]: Q;
 }
+
+// Warning: (ae-forgotten-export) The symbol "ApiNameAsString" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "DropDollarOptions" needs to be exported by the entry point index.d.ts
+// Warning: (ae-incompatible-release-tags) The symbol "ConvertProps" is marked as @public, but its signature references "UnionIfTrue" which is marked as @internal
+//
+// @public
+export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<TO["interfaceMap"][ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends keyof TO["interfaceMap"][ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">)) : UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][ApiNameAsString<TO>] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">;
+
+// @public (undocumented)
+export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
 
 // @public (undocumented)
 export const DistanceUnitMapping: {
@@ -213,6 +225,29 @@ export const DurationMapping: {
 };
 
 // @public (undocumented)
+export interface FetchInterfacePageArgs<Q extends InterfaceDefinition<any, any>, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false> extends SelectArg<Q, K, R>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+    // (undocumented)
+    $augment?: Augments;
+    // (undocumented)
+    $nextPageToken?: string;
+    // (undocumented)
+    $pageSize?: number;
+}
+
+// @public (undocumented)
+export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
+    // (undocumented)
+    $augment?: A;
+    // (undocumented)
+    $nextPageToken?: string;
+    // (undocumented)
+    $pageSize?: number;
+}
+
+// @public (undocumented)
+export type FetchPageResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = PageResult<SingleOsdkResult<Q, L, R, S>>;
+
+// @public (undocumented)
 export type GeoFilter = GeoFilter_Within | GeoFilter_Intersects;
 
 // @public (undocumented)
@@ -246,6 +281,10 @@ export type GroupByClause<Q extends ObjectOrInterfaceDefinition<any, any>> = {
 // @public (undocumented)
 export type GroupByRange<T> = [T, T];
 
+// @public (undocumented)
+export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>> extends MinimalObjectSet<Q> {
+}
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
@@ -256,6 +295,18 @@ export type LinkedType<Q extends ObjectOrInterfaceDefinition, L extends keyof Q[
 
 // @public (undocumented)
 export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof Q["links"] & string;
+
+// @public (undocumented)
+export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseObjectSet<Q> {
+    // (undocumented)
+    asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+    // (undocumented)
+    fetchPage: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<FetchPageResult<Q, L, R, S>>;
+    // (undocumented)
+    fetchPageWithErrors: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
+    // (undocumented)
+    where: (clause: WhereClause<Q>) => MinimalObjectSet<Q>;
+}
 
 // @public (undocumented)
 export type NOOP<T> = T extends (...args: any[]) => any ? T : T extends abstract new (...args: any[]) => any ? T : {
@@ -269,10 +320,68 @@ export interface NotWhereClause<T extends ObjectOrInterfaceDefinition<any, any>>
 }
 
 // @public (undocumented)
+export type NullabilityAdherence = false | "throw" | "drop";
+
+// @public (undocumented)
+export type NullabilityAdherenceDefault = "throw";
+
+// @public (undocumented)
+export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct";
+
+// @public (undocumented)
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> extends MinimalObjectSet<Q> {
+    // (undocumented)
+    aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
+    // (undocumented)
+    fetchOne: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
+    // (undocumented)
+    fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
+    // (undocumented)
+    intersect: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
+    // (undocumented)
+    pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
+    // (undocumented)
+    subtract: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
+    // (undocumented)
+    union: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
+    // (undocumented)
+    where: (clause: WhereClause<Q>) => ObjectSet<Q>;
+}
+
+// @public (undocumented)
+export interface OrderByArg<Q extends ObjectOrInterfaceDefinition<any, any>, L extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>> {
+    // (undocumented)
+    $orderBy?: {
+        [K in L]?: "asc" | "desc";
+    };
+}
+
+// @public (undocumented)
+export type OrderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
+    [AK in ValidAggregationKeys<Q>]?: "unordered" | "asc" | "desc";
+};
+
+// @public (undocumented)
 export interface OrWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
     // (undocumented)
     $or: WhereClause<T>[];
 }
+
+// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends string = "$all", Z extends string = never> = OsdkBase<Q> & {
+    [PP in keyof Q["properties"] as (IsNever<P> extends true ? PP : P extends "$all" ? PP : PP extends P ? PP : never)]: IsNever<P> extends true ? OsdkObjectPropertyType<Q["properties"][PP], false> : OsdkObjectPropertyType<Q["properties"][PP], P extends "$notStrict" ? false : true>;
+} & {
+    __apiName: Q["apiName"] & {
+        __OsdkType?: Q["apiName"];
+    };
+    __primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q> : unknown;
+    $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q> : never;
+    $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Q, NEW_Q, P>, UnderlyingProps<Q, P, Z, NEW_Q>>;
+} & (IsNever<P> extends true ? {} : string extends P ? {} : "$rid" extends P ? {
+    $rid: string;
+} : {});
 
 // Warning: (ae-forgotten-export) The symbol "ActionParametersDefinition" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "NullableProps" needs to be exported by the entry point index.d.ts
@@ -292,6 +401,24 @@ export type OsdkBase<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<a
 };
 
 // @public (undocumented)
+export type OsdkObject<N extends string> = {
+    $apiName: N;
+    $objectType: string;
+    $primaryKey: unknown;
+};
+
+// @public (undocumented)
+export type OsdkObjectLinksEntry<O extends ObjectTypeDefinition<any>, L extends ObjectTypeLinkKeysFrom2<O>> = O["links"][L] extends ObjectTypeLinkDefinition<infer T, infer M> ? (M extends false ? SingleLinkAccessor<T> : ObjectSet<T>) : never;
+
+// @public
+export type OsdkObjectLinksObject<O extends ObjectTypeDefinition<any>> = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
+    [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
+};
+
+// @public (undocumented)
+export type OsdkObjectOrInterfaceFrom<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends string = "$all"> = Osdk<Q, P>;
+
+// @public (undocumented)
 export type OsdkObjectPrimaryKeyType<O extends ObjectTypeDefinition<any>> = PropertyValueWireToClient[O["primaryKeyType"]];
 
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
@@ -300,6 +427,14 @@ export type OsdkObjectPrimaryKeyType<O extends ObjectTypeDefinition<any>> = Prop
 //
 // @public (undocumented)
 export type OsdkObjectPropertyType<T extends ObjectTypePropertyDefinition, STRICTLY_ENFORCE_NULLABLE extends boolean = true> = STRICTLY_ENFORCE_NULLABLE extends false ? MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>> | undefined : MaybeNullable<T, MaybeArray<T, Converted<PropertyValueWireToClient[T["type"]]>>>;
+
+// @public (undocumented)
+export interface PageResult<T extends OsdkObject<any>> {
+    // (undocumented)
+    data: T[];
+    // (undocumented)
+    nextPageToken: string | undefined;
+}
 
 // @public (undocumented)
 export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
@@ -380,10 +515,74 @@ export interface PropertyValueWireToClient {
     timestamp: string;
 }
 
+// Warning: (ae-internal-missing-underscore) The name "RespectNullability" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal
+export type RespectNullability<S extends NullabilityAdherence> = S extends false ? false : true;
+
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type Result<V> = OkResult<V> | ErrorResult;
+
+// @public (undocumented)
+export interface SelectArg<Q extends ObjectOrInterfaceDefinition<any, any>, L extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, S extends NullabilityAdherence = NullabilityAdherenceDefault> {
+    // (undocumented)
+    $__EXPERIMENTAL_strictNonNull?: S;
+    // (undocumented)
+    $includeRid?: R;
+    // (undocumented)
+    $select?: readonly L[];
+}
+
+// @public (undocumented)
+export type SelectArgToKeys<Q extends ObjectOrInterfaceDefinition, A extends SelectArg<Q, any, any>> = A extends SelectArg<Q, never> ? "$all" : A["$select"] extends readonly string[] ? A["$select"][number] : "$all";
+
+// @public (undocumented)
+export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
+    fetchOne: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>;
+    fetchOneWithErrors: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
+}
+
+// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "RespectNullability" which is marked as @internal
+// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "UnionIfTrue" which is marked as @internal
+// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "UnionIfFalse" which is marked as @internal
+//
+// @public (undocumented)
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? ([
+DefaultToFalse<R>,
+RespectNullability<S>
+] extends [false, true] ? Osdk<Q> : Osdk<Q, UnionIfTrue<UnionIfFalse<"$all", RespectNullability<S>, "$notStrict">, DefaultToFalse<R>, "$rid">>) : ([DefaultToFalse<R>, RespectNullability<S>] extends [false, true] ? Osdk<Q, L> : Osdk<Q, UnionIfTrue<UnionIfFalse<L, RespectNullability<S>, "$notStrict">, DefaultToFalse<R>, "$rid">>);
+
+// @public (undocumented)
+export type StringAggregateOption = "approximateDistinct";
+
+// Warning: (ae-internal-missing-underscore) The name "UnionIfFalse" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal
+export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = IsNever_2<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
+
+// Warning: (ae-internal-missing-underscore) The name "UnionIfTrue" should be prefixed with an underscore because the declaration is marked as @internal
+//
+// @internal
+export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E> = IsNever_2<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
+
+// @public (undocumented)
+export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
+    [AK in ValidAggregationKeys<Q>]?: "unordered";
+};
+
+// Warning: (ae-forgotten-export) The symbol "AGG_FOR_TYPE" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type ValidAggregationKeys<Q extends ObjectOrInterfaceDefinition> = keyof ({
+    [KK in AggregatableKeys<Q> as `${KK & string}:${AGG_FOR_TYPE<PropertyValueClientToWire[Q["properties"][KK]["type"]]>}`]?: any;
+} & {
+    $count?: any;
+});
+
+// @public
+export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends InterfaceDefinition<any, any> ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any> : InterfaceDefinition<any, any>;
 
 // Warning: (ae-forgotten-export) The symbol "FilterFor" needs to be exported by the entry point index.d.ts
 //
@@ -391,6 +590,10 @@ export type Result<V> = OkResult<V> | ErrorResult;
 export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhereClause<T> | AndWhereClause<T> | NotWhereClause<T> | {
     [P in keyof T["properties"]]?: FilterFor<T["properties"][P]>;
 };
+
+// Warnings were encountered during analysis:
+//
+// src/OsdkObjectFrom.ts:149:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 
