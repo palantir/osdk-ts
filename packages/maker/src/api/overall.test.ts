@@ -231,8 +231,8 @@ describe("Ontology Defining", () => {
 
     it("does not allow passing both one and many", () => {
       expect(() => {
-        // @ts-expect-error
         defineInterfaceLinkConstraint({
+          // @ts-expect-error
           from: { type: a, one: "singleLink", many: "manyLinks" }, // need the any to be sure it fails
           to: { type: b, one: "singleLink" },
         });
