@@ -24,20 +24,11 @@ type Many = { type: InterfaceType; many: ApiNameOrMeta; one?: never };
 type One = { type: InterfaceType; one: ApiNameOrMeta; many?: never };
 
 export function defineInterfaceLinkConstraint(
-  opts: {
+  { from, to }: {
     from: Many;
     to: One;
-  },
-): unknown;
-export function defineInterfaceLinkConstraint(
-  opts: {
+  } | {
     from: One;
-    to: One | Many;
-  },
-): unknown;
-export function defineInterfaceLinkConstraint(
-  { from, to }: {
-    from: One | Many;
     to: One | Many;
   },
 ) {
