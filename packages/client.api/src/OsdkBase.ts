@@ -27,5 +27,5 @@ export type OsdkBase<
   $objectType: string;
 
   $primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
-    : unknown;
+    : (string | number);
 };
