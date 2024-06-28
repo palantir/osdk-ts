@@ -40,7 +40,7 @@ export default async (options, ourOptions) => {
       ),
       TARGET: "node",
     },
-    clean: true,
+    clean: false, // we do this ourselves so its granular
     silent: true,
     sourcemap: true,
     splitting: true,
@@ -48,6 +48,7 @@ export default async (options, ourOptions) => {
     onSuccess: async () => {
       console.log("👍");
     },
+    keepNames: false,
     treeshake: true,
     target: "es2022",
 

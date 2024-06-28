@@ -1,0 +1,10 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["ontology.json"],
+      "outputs": ["src/generatedNoCheck2/**/*"],
+      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+    }
+  }
+}
