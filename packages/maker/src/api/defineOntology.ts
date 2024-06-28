@@ -23,6 +23,7 @@ import type {
   Type,
 } from "@osdk/client.unstable";
 import type {
+  InterfaceType,
   Ontology,
   PropertyTypeType,
   SharedPropertyType,
@@ -78,14 +79,9 @@ function convertToWireOntology(
         ontology.interfaceTypes,
       )
         .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
-          ([apiName, { displayName, description, properties }]) => {
+          ([apiName, interfaceType]) => {
             return [apiName, {
-              interfaceType: convertInterface(
-                description,
-                displayName,
-                apiName,
-                properties,
-              ),
+              interfaceType: convertInterface(interfaceType),
             }];
           },
         ),
@@ -99,29 +95,16 @@ function convertToWireOntology(
 }
 
 function convertInterface(
-  description: string | undefined,
-  displayName: string,
-  apiName: string,
-  properties: Record<string, SharedPropertyType>,
+  interfaceType: InterfaceType,
 ): OntologyIrInterfaceType {
   return {
-    displayMetadata: {
-      description,
-      displayName: displayName ?? apiName,
-      icon: undefined,
-    },
-    apiName,
-    extendsInterfaces: [],
-    links: [],
-    status: {
-      active: true,
-      type: "active",
-    },
+    ...interfaceType,
+    properties: Object.values(interfaceType.properties)
+      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
+    // these are omitted from our internal types but we need to re-add them for the final json
     allExtendsInterfaces: [],
     allLinks: [],
     allProperties: [],
-    properties: Object.values(properties)
-      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
   };
 }
 
@@ -163,7 +146,7 @@ function convertType(
 ): Type {
   switch (type) {
     case "marking":
-      return { type, marking: { markingType: "MANDATORY" } };
+      return { type, [type]: { markingType: "MANDATORY" } };
 
     case "geopoint":
       return { type: "geohash", geohash: {} };
@@ -184,16 +167,17 @@ function convertType(
 
     default:
       // use helper function to distribute `type` properly
-      return asdf(type);
+      return distributeTypeHelper(type);
   }
 }
 
 /**
- * Helper function to avoid duplication
+ * Helper function to avoid duplication. Makes the types match properly with the correct
+ * behavior without needing to switch on type.
  * @param type
  * @returns
  */
-function asdf<T extends string>(
+function distributeTypeHelper<T extends string>(
   type: T,
 ): T extends any ? { type: T } & { [K in T]: {} } : never {
   return { type, [type]: {} } as any; // any cast to match conditional return type

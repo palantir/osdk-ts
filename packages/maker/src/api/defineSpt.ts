@@ -19,21 +19,21 @@ import { ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
 export function defineSharedPropertyType(
-  apiName: string,
   opts: {
+    apiName: string;
     type: PropertyTypeType;
     array?: boolean;
     description?: string;
     displayName?: string;
   },
 ): SharedPropertyType {
+  const { apiName } = opts;
   invariant(
     ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
     `Shared property type ${apiName} already exists`,
   );
 
   return ontologyDefinition.sharedPropertyTypes[apiName] = {
-    apiName,
     ...opts,
   };
 }

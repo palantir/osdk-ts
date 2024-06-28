@@ -69,12 +69,14 @@ export interface OntologyIrInterfaceLinkType
   extends Omit<InterfaceLinkType, "rid">
 {}
 
-export type OntologyIrInterfaceTypeBlockDataV2 = ReplaceKeys<
-  InterfaceTypeBlockDataV2,
-  {
-    interfaceType: OntologyIrInterfaceType;
-  }
->;
+export interface OntologyIrInterfaceTypeBlockDataV2 extends
+  ReplaceKeys<
+    InterfaceTypeBlockDataV2,
+    {
+      interfaceType: OntologyIrInterfaceType;
+    }
+  >
+{}
 
 export interface OntologyIrSharedPropertyTypeBlockDataV2 extends
   ReplaceKeys<
