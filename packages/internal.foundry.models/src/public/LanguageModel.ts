@@ -54,7 +54,7 @@ const _streamChatCompletion: $FoundryPlatformMethod<
   (
     modelName: LanguageModelApiName,
     $body: ChatCompletionRequest,
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [1, "/v1/models/languageModels/{0}/chatCompletions/stream", 1, , "*/*"];
 
 /**
@@ -67,7 +67,7 @@ const _streamChatCompletion: $FoundryPlatformMethod<
 export function streamChatCompletion(
   $ctx: $Client | $ClientContext,
   ...args: [modelName: LanguageModelApiName, $body: ChatCompletionRequest]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _streamChatCompletion, ...args);
 }
 

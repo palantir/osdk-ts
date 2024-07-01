@@ -69,7 +69,7 @@ export function uploadAttachment(
 }
 
 const _getAttachmentContent: $FoundryPlatformMethod<
-  (attachmentRid: AttachmentRid) => Promise<unknown>
+  (attachmentRid: AttachmentRid) => Promise<Blob>
 > = [0, "/v1/attachments/{0}/content", , , "*/*"];
 
 /**
@@ -84,7 +84,7 @@ const _getAttachmentContent: $FoundryPlatformMethod<
 export function getAttachmentContent(
   $ctx: $Client | $ClientContext,
   ...args: [attachmentRid: AttachmentRid]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getAttachmentContent, ...args);
 }
 
