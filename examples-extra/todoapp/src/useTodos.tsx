@@ -137,6 +137,7 @@ function createFauxTodo(title: string): SimpleTodo {
     isComplete: false,
     __primaryKey: title,
     __apiName: "Todo",
+    $title: title,
     $primaryKey: title,
     $apiName: "Todo",
     $objectType: "Todo",

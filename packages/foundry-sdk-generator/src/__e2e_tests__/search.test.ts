@@ -75,6 +75,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50030,
           "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "__title": "John Doe",
           "class": "Red",
           "employeeId": 50030,
           "employeeStatus": {
@@ -106,6 +107,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50031,
           "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+          "__title": "Jane Doe",
           "class": "Blue",
           "employeeId": 50031,
           "employeeStatus": {
@@ -137,6 +139,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50032,
           "__rid": "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+          "__title": "Jack Smith",
           "class": "Red",
           "employeeId": 50032,
           "employeeStatus": {
@@ -179,6 +182,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50030,
           "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "__title": "John Doe",
           "class": "Red",
           "employeeId": 50030,
           "employeeStatus": {
@@ -210,6 +214,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50031,
           "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+          "__title": "Jane Doe",
           "class": "Blue",
           "employeeId": 50031,
           "employeeStatus": {
@@ -241,6 +246,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50032,
           "__rid": "ri.phonograph2-objects.main.object.b9a0b2b0-0a2b-0b8b-9e4b-a9a9b9a0b9a0",
+          "__title": "Jack Smith",
           "class": "Red",
           "employeeId": 50032,
           "employeeStatus": {
@@ -286,6 +292,7 @@ describe("SearchObjects", () => {
             "__apiName": "Employee",
             "__primaryKey": 50030,
             "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+            "__title": "John Doe",
             "class": "Red",
             "employeeId": 50030,
             "employeeStatus": {
@@ -332,6 +339,7 @@ describe("SearchObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50030,
           "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+          "__title": "John Doe",
           "class": "Red",
           "employeeId": 50030,
           "employeeStatus": {
@@ -376,6 +384,7 @@ describe("SearchObjects", () => {
             "__apiName": "Employee",
             "__primaryKey": 50030,
             "__rid": "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
+            "__title": "John Doe",
             "class": "Red",
             "employeeId": 50030,
             "employeeStatus": {
@@ -459,6 +468,7 @@ describe("SearchObjects", () => {
               "__apiName": "Employee",
               "__primaryKey": 50031,
               "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+              "__title": "Jane Doe",
               "class": "Blue",
               "employeeId": 50031,
               "employeeStatus": {
