@@ -8,8 +8,8 @@ import type {
   BucketValue as OG_BucketValue,
   Date as OG_Date,
   Double as OG_Double,
-  MetricValue as OG_MetricValue,
   Metrics as OG_Metrics,
+  MetricValue as OG_MetricValue,
   Rangeable as OG_Rangeable,
   TimeUnit as OG_TimeUnit,
 } from '@osdk/legacy-client';

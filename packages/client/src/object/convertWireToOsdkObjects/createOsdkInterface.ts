@@ -17,7 +17,7 @@
 import type { InterfaceDefinition } from "@osdk/api";
 import type { Osdk, OsdkObject } from "@osdk/client.api";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
-import { createSimpleCache } from "../Cache.js";
+import { createSimpleCache } from "../SimpleCache.js";
 import type {
   InterfaceHolder,
   InterfaceHolderOwnProps,

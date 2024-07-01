@@ -50,7 +50,14 @@ export const TEMPLATES: readonly Template[] = [
   },
   {
     id: "template-tutorial-todo-app",
-    label: "Tutorial: Todo App",
+    label: "Tutorial: To do App",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    hidden: true,
+  },
+  {
+    id: "template-tutorial-todo-aip-app",
+    label: "Tutorial: To do AIP App",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     hidden: true,

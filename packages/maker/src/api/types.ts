@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { OntologyIrInterfaceType } from "@osdk/client.unstable";
 import type * as Gateway from "@osdk/gateway/types";
 
 export interface Ontology extends
@@ -26,8 +27,16 @@ export interface Ontology extends
   sharedPropertyTypes: Record<string, SharedPropertyType>;
 }
 
-export interface InterfaceType
-  extends Omit<Gateway.InterfaceType, "properties">
+export interface InterfaceType extends
+  Omit<
+    OntologyIrInterfaceType,
+    // we want our simplified representation
+    | "properties"
+    // these things don't need to exist as the system works fine without them (I'm told)
+    | "allProperties"
+    | "allLinks"
+    | "allExtendsInterfaces"
+  >
 {
   properties: Record<string, SharedPropertyType>;
 }

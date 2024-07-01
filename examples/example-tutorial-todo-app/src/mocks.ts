@@ -18,7 +18,7 @@ const projects: MockProject[] = [
     $apiName: "MockProject",
     $primaryKey: "1",
     id: "1",
-    name: "Mock Project",
+    name: "Mock project",
     tasks: [
       {
         $apiName: "MockTask",
@@ -78,7 +78,7 @@ async function createProject({
   name,
 }: {
   name: string;
-}): Promise<MockTask["$primaryKey"]> {
+}): Promise<MockProject["$primaryKey"]> {
   await delay();
   const id = randomId();
   projects.push({
