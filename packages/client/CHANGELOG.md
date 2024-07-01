@@ -1,5 +1,21 @@
 # @osdk/client
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- 02c65c5: Rework $select syntax in aggregations to add support for ordering by metrics
+- bfdb123: WARNING: Breaking: change action invocation to require `.applyAction`
+- 7adf5c7: Refactoring packages
+- 5e9d7d2: Refactored packages to move types over to client.api
+
+### Patch Changes
+
+- Updated dependencies [7adf5c7]
+- Updated dependencies [5e9d7d2]
+- Updated dependencies [67c1fd6]
+  - @osdk/client.api@0.20.0-beta.1
+
 ## 0.20.0-beta.0
 
 ### Minor Changes

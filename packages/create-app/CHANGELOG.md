@@ -1,5 +1,12 @@
 # @osdk/create-app
 
+## 0.17.0-beta.1
+
+### Minor Changes
+
+- a2cd534: Update style
+- 8b1e578: Add AIP Now template with AIP functionality
+
 ## 0.17.0-beta.0
 
 ### Minor Changes
