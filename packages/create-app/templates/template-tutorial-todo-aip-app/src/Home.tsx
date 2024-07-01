@@ -41,7 +41,7 @@ function Home() {
       setProjectId(projects[0].id);
       setProjectHasTasks(tasks == null ? false : tasks.length > 0);
     }
-  }, [project, projects]);
+  }, [project, projects, tasks]);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -67,7 +67,7 @@ function Home() {
     if (tasks?.length === 0) {
       setProjectHasTasks(false);
     }
-  }, [project]);
+  }, [tasks]);
 
   return (
     <Layout>
