@@ -1,5 +1,12 @@
 # @osdk/maker
 
+## 0.7.0-beta.0
+
+### Minor Changes
+
+- 1112433: Adds support for defining interface link constraints
+- 1112433: Align syntax to be easier to read
+
 ## 0.6.0
 
 ### Minor Changes

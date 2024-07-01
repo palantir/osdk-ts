@@ -1,5 +1,13 @@
 # @osdk/client.api
 
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- 7adf5c7: Refactoring packages
+- 5e9d7d2: Refactored packages to move types over to client.api
+- 67c1fd6: interface instance $primaryKey is now `string | number` instead of `unknown`
+
 ## 0.20.0-beta.0
 
 ### Minor Changes
