@@ -108,6 +108,10 @@ export type {
 } from "./OsdkObjectFrom.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
+export type {
+  TimeSeriesPoint,
+  TimeSeriesProperty,
+} from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
