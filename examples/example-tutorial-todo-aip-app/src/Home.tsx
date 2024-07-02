@@ -9,6 +9,7 @@ import type { MockProject } from "./mocks";
 import ProjectSelect from "./ProjectSelect";
 import TaskList from "./TaskList";
 import useProjects from "./useProjects";
+import { useProjectTasks } from "./useProjectTasks";
 
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
@@ -18,6 +19,7 @@ function Home() {
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const project = projects?.find((p) => p.id === projectId);
+  const tasks = useProjectTasks(project).tasks;
 
   const handleSelectProject = useCallback(
     (p: MockProject) => setProjectId(p.id),
@@ -36,9 +38,9 @@ function Home() {
   useEffect(() => {
     if (project == null && projects != null && projects.length > 0) {
       setProjectId(projects[0].id);
-      setProjectHasTasks(projects[0].tasks.length > 0);
+      setProjectHasTasks(tasks == null ? false : tasks.length > 0);
     }
-  }, [project, projects]);
+  }, [project, projects, tasks]);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -61,10 +63,10 @@ function Home() {
   );
 
   const handleOnTaskDeleted = useCallback(() => {
-    if (project != null && project.tasks.length === 0) {
+    if (tasks?.length === 0) {
       setProjectHasTasks(false);
     }
-  }, [project]);
+  }, [tasks]);
 
   return (
     <Layout>

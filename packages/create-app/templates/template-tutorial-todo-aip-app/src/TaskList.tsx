@@ -5,7 +5,7 @@ import { useProjectTasks } from "./useProjectTasks";
 
 interface TaskListProps {
   project: MockProject;
-  onTaskDeleted: (taskId: string) => void;
+  onTaskDeleted: (taskId: string | undefined) => void;
 }
 
 function TaskList({ project, onTaskDeleted }: TaskListProps) {
