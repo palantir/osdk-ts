@@ -14,7 +14,6 @@ import { useProjectTasks } from "./useProjectTasks";
 function Home() {
   const [projectId, setProjectId] = useState<string | undefined>(undefined);
   const { projects, updateProjectDescription } = useProjects();
-
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [projectHasTasks, setProjectHasTasks] = useState<boolean>(false);
 
