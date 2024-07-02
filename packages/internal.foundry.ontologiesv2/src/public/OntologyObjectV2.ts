@@ -635,7 +635,7 @@ const _getAttachmentContentV2: $FoundryPlatformMethod<
       artifactRepository?: ArtifactRepositoryRid | undefined;
       packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [
   0,
   "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/content",
@@ -666,7 +666,7 @@ export function getAttachmentContentV2(
       packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getAttachmentContentV2, ...args);
 }
 
@@ -681,7 +681,7 @@ const _getAttachmentContentByRidV2: $FoundryPlatformMethod<
       artifactRepository?: ArtifactRepositoryRid | undefined;
       packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [
   0,
   "/v2/ontologies/{0}/objects/{1}/{2}/attachments/{3}/{4}/content",
@@ -715,7 +715,7 @@ export function getAttachmentContentByRidV2(
       packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getAttachmentContentByRidV2, ...args);
 }
 
@@ -808,7 +808,7 @@ const _streamPoints: $FoundryPlatformMethod<
       artifactRepository?: ArtifactRepositoryRid | undefined;
       packageName?: SdkPackageName | undefined;
     },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [
   1,
   "/v2/ontologies/{0}/objects/{1}/{2}/timeseries/{3}/streamPoints",
@@ -839,7 +839,7 @@ export function streamPoints(
       packageName?: SdkPackageName | undefined;
     },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _streamPoints, ...args);
 }
 

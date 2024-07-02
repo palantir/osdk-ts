@@ -83,7 +83,7 @@ const _readTable: $FoundryPlatformMethod<
       columns: Array<string>;
       rowLimit?: number | undefined;
     },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [0, "/v1/datasets/{0}/readTable", 2, , "*/*"];
 
 /**
@@ -110,7 +110,7 @@ export function readTable(
       rowLimit?: number | undefined;
     },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _readTable, ...args);
 }
 

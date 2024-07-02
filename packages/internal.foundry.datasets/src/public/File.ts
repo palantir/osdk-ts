@@ -264,7 +264,7 @@ const _getFileContent: $FoundryPlatformMethod<
       startTransactionRid?: TransactionRid | undefined;
       endTransactionRid?: TransactionRid | undefined;
     },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [0, "/v1/datasets/{0}/files/{1}/content", 2, , "*/*"];
 
 /**
@@ -309,6 +309,6 @@ export function getFileContent(
       endTransactionRid?: TransactionRid | undefined;
     },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _getFileContent, ...args);
 }

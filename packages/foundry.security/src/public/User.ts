@@ -126,7 +126,7 @@ const _profilePictureUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<unknown>
+  ) => Promise<Blob>
 > = [
   0,
   "/v2/security/users/{0}/profilePicture",
@@ -146,7 +146,7 @@ export function profilePictureUser(
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
-): Promise<unknown> {
+): Promise<Blob> {
   return $foundryPlatformFetch($ctx, _profilePictureUser, ...args);
 }
 

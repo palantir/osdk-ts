@@ -94,7 +94,7 @@ export interface ByteType {}
  */
 export interface LteQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -112,18 +112,18 @@ export interface BatchApplyActionResponseV2 {
 /**
  * Log Safety: UNSAFE
  */
-export interface TimeseriesType {
-  itemType: TimeSeriesItemType;
-}
-
-/**
- * Log Safety: UNSAFE
- */
 export interface DeleteLinkRule {
   linkTypeApiNameAtoB: LinkTypeApiName;
   linkTypeApiNameBtoA: LinkTypeApiName;
   aSideObjectTypeApiName: ObjectTypeApiName;
   bSideObjectTypeApiName: ObjectTypeApiName;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface TimeseriesType {
+  itemType: TimeSeriesItemType;
 }
 
 /**
@@ -186,7 +186,7 @@ export type BranchId = LooselyBrandedString<"BranchId">;
  */
 export interface GteQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -434,6 +434,7 @@ export type OntologyObjectV2 = Record<PropertyApiName, PropertyValue>;
 export interface SearchObjectsResponseV2 {
   data: Array<OntologyObjectV2>;
   nextPageToken?: PageToken;
+  totalCount: TotalCount;
 }
 
 /**
@@ -615,18 +616,19 @@ export interface ListAttachmentsResponseV2 {
 export interface FilesystemResource {}
 
 /**
- * Log Safety: SAFE
- */
-export interface ObjectSetReferenceType {
-  reference: string;
-}
-
-/**
  * Log Safety: UNSAFE
  */
 export interface ListObjectsResponseV2 {
   nextPageToken?: PageToken;
   data: Array<OntologyObjectV2>;
+  totalCount: TotalCount;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ObjectSetReferenceType {
+  reference: string;
 }
 
 /**
@@ -697,6 +699,16 @@ export interface ContainsAllTermsInOrderPrefixLastTerm {
 }
 
 /**
+ * Divides objects into groups with the specified width.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface AggregationFixedWidthGrouping {
+  field: FieldNameV1;
+  fixedWidth: number;
+}
+
+/**
  * Metadata about an Ontology.
  *
  * Log Safety: UNSAFE
@@ -706,16 +718,6 @@ export interface Ontology {
   displayName: DisplayName;
   description: string;
   rid: OntologyRid;
-}
-
-/**
- * Divides objects into groups with the specified width.
- *
- * Log Safety: UNSAFE
- */
-export interface AggregationFixedWidthGrouping {
-  field: FieldNameV1;
-  fixedWidth: number;
 }
 
 /**
@@ -783,7 +785,7 @@ export type InterfaceLinkTypeRid = LooselyBrandedString<"InterfaceLinkTypeRid">;
  */
 export interface GtQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -798,7 +800,7 @@ export type RelativeTimeRelation = "BEFORE" | "AFTER";
  */
 export interface ContainsQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -816,13 +818,6 @@ export interface NotQuery {
 export interface TimestampType {}
 
 /**
- * A reference to an Ontology object property with the form properties.{propertyApiName}.
- *
- * Log Safety: UNSAFE
- */
-export type FieldNameV1 = LooselyBrandedString<"FieldNameV1">;
-
-/**
  * Divides objects into groups according to specified ranges.
  *
  * Log Safety: UNSAFE
@@ -831,6 +826,13 @@ export interface AggregationRangesGrouping {
   field: FieldNameV1;
   ranges: Array<AggregationRange>;
 }
+
+/**
+ * A reference to an Ontology object property with the form properties.{propertyApiName}.
+ *
+ * Log Safety: UNSAFE
+ */
+export type FieldNameV1 = LooselyBrandedString<"FieldNameV1">;
 
 /**
  * Log Safety: UNSAFE
@@ -846,7 +848,7 @@ export interface QueryUnionType {
  */
 export interface EqualsQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -1038,6 +1040,7 @@ export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 export interface ListObjectsResponse {
   nextPageToken?: PageToken;
   data: Array<OntologyObject>;
+  totalCount: TotalCount;
 }
 
 /**
@@ -1072,6 +1075,7 @@ export interface LinkTypeSideV2 {
   objectTypeApiName: ObjectTypeApiName;
   cardinality: LinkTypeSideCardinality;
   foreignKeyPropertyApiName?: PropertyApiName;
+  linkTypeRid: LinkTypeRid;
 }
 
 /**
@@ -1539,7 +1543,7 @@ export interface DeleteObjectRule {
  */
 export interface GtQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -1578,20 +1582,6 @@ export interface ActionParameterV2 {
 }
 
 /**
- * Log Safety: SAFE
- */
-export type DistanceUnit =
-  | "MILLIMETERS"
-  | "CENTIMETERS"
-  | "METERS"
-  | "KILOMETERS"
-  | "INCHES"
-  | "FEET"
-  | "YARDS"
-  | "MILES"
-  | "NAUTICAL_MILES";
-
-/**
    * The parameter value must have a length within the defined range.
 This range is always inclusive.
    *
@@ -1611,6 +1601,20 @@ export interface SearchOrdering {
   field: FieldNameV1;
   direction?: string;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export type DistanceUnit =
+  | "MILLIMETERS"
+  | "CENTIMETERS"
+  | "METERS"
+  | "KILOMETERS"
+  | "INCHES"
+  | "FEET"
+  | "YARDS"
+  | "MILES"
+  | "NAUTICAL_MILES";
 
 /**
  * The name of the Query in the API.
@@ -1793,7 +1797,7 @@ export type AggregationMetricName = LooselyBrandedString<
  */
 export interface LtQueryV2 {
   field: PropertyApiName;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -1853,6 +1857,14 @@ export interface QueryStructType {
 export interface FloatType {}
 
 /**
+   * The media type of the file or attachment.
+Examples: application/json, application/pdf, application/octet-stream, image/jpeg
+   *
+   * Log Safety: SAFE
+   */
+export type MediaType = LooselyBrandedString<"MediaType">;
+
+/**
  * Log Safety: SAFE
  */
 export type TimeUnit =
@@ -1865,14 +1877,6 @@ export type TimeUnit =
   | "MONTHS"
   | "YEARS"
   | "QUARTERS";
-
-/**
-   * The media type of the file or attachment.
-Examples: application/json, application/pdf, application/octet-stream, image/jpeg
-   *
-   * Log Safety: SAFE
-   */
-export type MediaType = LooselyBrandedString<"MediaType">;
 
 /**
  * The name of a file or attachment.
@@ -1900,6 +1904,7 @@ export type Filename = LooselyBrandedString<"Filename">;
 | Short      | number                                                | 8739                                                                                             |
 | String     | string                                                | "Call me Ishmael"                                                                                |
 | Timestamp  | ISO 8601 extended offset date-time string in UTC zone | "2021-01-04T05:00:00Z"                                                                           |
+Note that for backwards compatibility, the Boolean, Byte, Double, Float, Integer, and Short types can also be encoded as JSON strings.
    *
    * Log Safety: UNSAFE
    */
@@ -2127,6 +2132,7 @@ export interface LoadObjectSetResponseV2 {
 export interface SearchObjectsResponse {
   data: Array<OntologyObject>;
   nextPageToken?: PageToken;
+  totalCount: TotalCount;
 }
 
 /**
@@ -2196,7 +2202,7 @@ export type PolygonValue = { type: "Polygon" } & Polygon;
  */
 export interface GteQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -2561,7 +2567,7 @@ export type AggregationAccuracyRequest =
  */
 export interface LtQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -2653,6 +2659,11 @@ export interface ObjectTypeFullMetadata {
   >;
   sharedPropertyTypeMapping: Record<SharedPropertyTypeApiName, PropertyApiName>;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export type LinkTypeRid = LooselyBrandedString<"LinkTypeRid">;
 
 /**
  * Computes the average value for the provided field.
@@ -2774,7 +2785,7 @@ export interface AggregationExactGroupingV2 {
  */
 export interface ContainsQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -2797,7 +2808,7 @@ export interface DecimalType {
  */
 export interface LteQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -2832,6 +2843,18 @@ export interface ListLinkedObjectsResponseV2 {
 export interface QosError {}
 
 /**
+ * The representation of an attachment.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface AttachmentV2 {
+  rid: AttachmentRid;
+  filename: Filename;
+  sizeBytes: SizeBytes;
+  mediaType: MediaType;
+}
+
+/**
    * The updated data value associated with an object instance's external reference. The object instance
 is uniquely identified by an object type and a primary key. Note that the value of the property
 field returns a dereferenced value rather than the reference itself.
@@ -2843,18 +2866,6 @@ export interface ReferenceUpdate {
   primaryKey: ObjectPrimaryKey;
   propertyApiName: PropertyApiName;
   value: ReferenceValue;
-}
-
-/**
- * The representation of an attachment.
- *
- * Log Safety: UNSAFE
- */
-export interface AttachmentV2 {
-  rid: AttachmentRid;
-  filename: Filename;
-  sizeBytes: SizeBytes;
-  mediaType: MediaType;
 }
 
 /**
@@ -2990,6 +3001,13 @@ export interface ListActionTypesResponse {
 }
 
 /**
+ * The total number of items across all pages.
+ *
+ * Log Safety: SAFE
+ */
+export type TotalCount = string;
+
+/**
  * Details about a parameter of a query.
  *
  * Log Safety: UNSAFE
@@ -3061,13 +3079,6 @@ export interface OntologyStructType {
 export type ReturnEditsMode = "ALL" | "NONE";
 
 /**
- * The time at which the resource was created.
- *
- * Log Safety: SAFE
- */
-export type CreatedTime = LooselyBrandedString<"CreatedTime">;
-
-/**
  * Represents an action type in the Ontology.
  *
  * Log Safety: UNSAFE
@@ -3081,6 +3092,13 @@ export interface ActionType {
   rid: ActionTypeRid;
   operations: Array<LogicRule>;
 }
+
+/**
+ * The time at which the resource was created.
+ *
+ * Log Safety: SAFE
+ */
+export type CreatedTime = LooselyBrandedString<"CreatedTime">;
 
 /**
  * Resolved data values pointed to by a reference.
@@ -3154,7 +3172,7 @@ export interface AggregationMetricResult {
  */
 export interface EqualsQuery {
   field: FieldNameV1;
-  value: any;
+  value: PropertyValue;
 }
 
 /**
@@ -3279,13 +3297,6 @@ export type ActionTypeRid = LooselyBrandedString<"ActionTypeRid">;
 export interface NullType {}
 
 /**
- * The size of the file or attachment in bytes.
- *
- * Log Safety: SAFE
- */
-export type SizeBytes = string;
-
-/**
  * Represents a query type in the Ontology.
  *
  * Log Safety: UNSAFE
@@ -3299,6 +3310,13 @@ export interface QueryType {
   rid: FunctionRid;
   version: FunctionVersion;
 }
+
+/**
+ * The size of the file or attachment in bytes.
+ *
+ * Log Safety: SAFE
+ */
+export type SizeBytes = string;
 
 /**
  * Returns a response for every request in the same order. Duplicate requests will be assigned the same SubscriberId.
@@ -3405,19 +3423,19 @@ export interface LinkTypeSide {
 }
 
 /**
- * The display name of the entity.
- *
- * Log Safety: UNSAFE
- */
-export type DisplayName = LooselyBrandedString<"DisplayName">;
-
-/**
    * The parameter cannot be evaluated because it depends on another parameter or object set that can't be evaluated.
 This can happen when a parameter's allowed values are defined by another parameter that is missing or invalid.
    *
    * Log Safety: SAFE
    */
 export interface UnevaluableConstraint {}
+
+/**
+ * The display name of the entity.
+ *
+ * Log Safety: UNSAFE
+ */
+export type DisplayName = LooselyBrandedString<"DisplayName">;
 
 /**
    * A constraint that an action parameter value must satisfy in order to be considered valid.
