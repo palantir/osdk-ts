@@ -15,6 +15,7 @@
  */
 
 import type { Attachment, AttachmentUpload } from "../object/Attachment.js";
+import type { TimeSeriesProperty } from "../timeseries/timeseries.js";
 
 /**
  * Map from the PropertyDefinition type to the typescript type that we return
@@ -36,8 +37,8 @@ export interface PropertyValueWireToClient {
   string: string;
   timestamp: string;
 
-  numericTimeseries: unknown;
-  stringTimeseries: unknown;
+  numericTimeseries: TimeSeriesProperty<number>;
+  stringTimeseries: TimeSeriesProperty<string>;
 }
 
 /**
@@ -60,6 +61,6 @@ export interface PropertyValueClientToWire {
   string: string;
   timestamp: string;
 
-  numericTimeseries: unknown;
-  stringTimeseries: unknown;
+  numericTimeseries: TimeSeriesProperty<number>;
+  stringTimeseries: TimeSeriesProperty<string>;
 }

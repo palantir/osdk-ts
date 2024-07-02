@@ -17,6 +17,7 @@
 import type { Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
+import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createClientCache } from "../Cache.js";
@@ -111,6 +112,21 @@ export function createOsdkObject<
               return rawValue.map(a => createAttachmentFromRid(client, a.rid));
             }
             return createAttachmentFromRid(client, rawValue.rid);
+          }
+          if (
+            propDef.type === "numericTimeseries"
+            || propDef.type === "stringTimeseries"
+          ) {
+            return createTimeseriesProperty<
+              (typeof propDef)["type"] extends "numericTimeseries" ? number
+                : string
+            >(
+              client,
+              objectDef.apiName,
+              objectDef.primaryKeyApiName,
+              p as string,
+              undefined as any,
+            );
           }
         }
         return rawValue;
