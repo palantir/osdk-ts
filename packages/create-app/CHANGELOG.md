@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.17.0-beta.2
+
+### Minor Changes
+
+- 79335e5: fix AIP template
+
 ## 0.17.0-beta.1
 
 ### Minor Changes
