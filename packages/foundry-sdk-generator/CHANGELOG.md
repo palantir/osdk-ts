@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 1.2.0-beta.1
+
+### Minor Changes
+
+- 141953f: Expose $title property in OsdkBase
+
+### Patch Changes
+
+- @osdk/legacy-client@2.4.0-beta.0
+
 ## 1.2.0-beta.0
 
 ### Patch Changes

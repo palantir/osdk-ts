@@ -1,5 +1,11 @@
 # @osdk/client.api
 
+## 0.20.0-beta.2
+
+### Minor Changes
+
+- 141953f: Expose $title property in OsdkBase
+
 ## 0.20.0-beta.1
 
 ### Minor Changes

@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 0.20.0-beta.2
+
+### Minor Changes
+
+- 7505880: Fix exports from client
+- 141953f: Expose $title property in OsdkBase
+
+### Patch Changes
+
+- Updated dependencies [141953f]
+  - @osdk/client.api@0.20.0-beta.2
+
 ## 0.20.0-beta.1
 
 ### Minor Changes

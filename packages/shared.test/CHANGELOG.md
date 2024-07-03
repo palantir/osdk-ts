@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.5.0-beta.1
+
+### Minor Changes
+
+- 141953f: Expose $title property in OsdkBase
+
 ## 1.5.0-beta.0
 
 ### Minor Changes
