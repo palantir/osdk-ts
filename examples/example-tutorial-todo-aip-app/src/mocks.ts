@@ -106,7 +106,7 @@ async function getRecommendedProjectDescription(
   project: MockProject,
 ): Promise<string> {
   await delay();
-  if (project.tasks.length === 0) {
+  if (project.tasks != null && project.tasks.length === 0) {
     throw new Error("Project description recommendation requires tasks");
   }
   return `AIP Logic mock description for project`;
@@ -114,10 +114,9 @@ async function getRecommendedProjectDescription(
 
 async function updateProjectDescription(
   project: MockProject,
-  description: string,
 ): Promise<void> {
   await delay();
-  project.description = description;
+  project.description = await getRecommendedProjectDescription(project);
 }
 
 async function deleteProject(id: string): Promise<void> {

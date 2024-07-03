@@ -28,8 +28,7 @@ function useProjects() {
   ) => Promise<void> = useCallback(
     async (project) => {
       // Try to implement this with the Ontology SDK!
-      const description = await Mocks.getRecommendedProjectDescription(project);
-      await Mocks.updateProjectDescription(project, description);
+      await Mocks.updateProjectDescription(project);
       await mutate();
     },
     [mutate],
