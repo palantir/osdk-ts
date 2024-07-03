@@ -19,13 +19,13 @@ import type {
   TimeSeriesPoint,
   TimeSeriesProperty,
 } from "@osdk/client.api";
-import type {
-  StreamTimeSeriesPointsRequest} from "@osdk/internal.foundry";
-import {
-  Ontologies,
-  OntologiesV2
-} from "@osdk/internal.foundry";
+import type { StreamTimeSeriesPointsRequest } from "@osdk/internal.foundry";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
+import {
+  iterateReadableStream,
+  parseStreamedResponse,
+} from "./util/streamutils.js";
 
 export function createTimeseriesProperty<T extends number | string>(
   client: MinimalClient,
@@ -54,9 +54,8 @@ export function createTimeseriesProperty<T extends number | string>(
       ) as Promise<TimeSeriesPoint<T>>;
     },
     async getAllPoints() {
-      return OntologiesV2.OntologyObjectsV2.streamPoints(
+      return getAllTimeSeriesPoints(
         client,
-        client.ontologyRid,
         objectApiName,
         primaryKey,
         propertyName,
@@ -65,9 +64,8 @@ export function createTimeseriesProperty<T extends number | string>(
     },
 
     asyncIterPoints() {
-      return OntologiesV2.OntologyObjectsV2.streamPoints(
+      return iterateTimeSeriesPoints(
         client,
-        client.ontologyRid,
         objectApiName,
         primaryKey,
         propertyName,
@@ -96,7 +94,7 @@ async function getAllTimeSeriesPoints<T extends string | number>(
 
   const allPoints: Array<TimeSeriesPoint<T>> = [];
 
-  const reader = streamPointsIterator.getReader();
+  const reader = streamPointsIterator.stream().getReader();
   for await (
     const point of parseStreamedResponse(iterateReadableStream(reader))
   ) {
@@ -104,6 +102,59 @@ async function getAllTimeSeriesPoints<T extends string | number>(
       time: point.time,
       value: point.value as T,
     });
+  }
+  return allPoints;
+}
+
+async function* iterateTimeSeriesPoints<T extends string | number>(
+  client: MinimalClient,
+  objectApiName: string,
+  primaryKey: any,
+  propertyName: string,
+  body: StreamTimeSeriesPointsRequest,
+): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
+  const streamPointsResponse = await OntologiesV2.OntologyObjectsV2
+    .streamPoints(
+      client,
+      client.ontologyRid,
+      objectApiName,
+      primaryKey,
+      propertyName,
+      body,
+    );
+
+  const reader = streamPointsResponse.stream().getReader();
+  const streamPointsIterator = iterateReadableStream(reader);
+  const firstChunk = await streamPointsIterator.next();
+
+  const remainingChunksPromise: Promise<any[]> = new Promise(
+    (resolve, _reject) => {
+      const remainingPoints = processStream(streamPointsIterator);
+      resolve(remainingPoints);
+    },
+  );
+
+  yield {
+    time: (firstChunk.value as any).time as string,
+    value: (firstChunk.value as any).value as T,
+  };
+  const remainingChunks = await remainingChunksPromise;
+  for (const point of remainingChunks) {
+    yield {
+      time: point.time,
+      value: point.value as T,
+    };
+  }
+}
+
+async function processStream<T extends string | number>(
+  streamIterator: AsyncGenerator<any, any, unknown>,
+): Promise<any[]> {
+  const allPoints: Array<TimeSeriesPoint<T>> = [];
+  for await (const points of streamIterator) {
+    for (const point of points) {
+      allPoints.push(point);
+    }
   }
   return allPoints;
 }
