@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OsdkBase } from "@osdk/client.api";
 
-export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
-  return o && typeof o === "object" && typeof o.__apiName === "string"
-    && o.__primaryKey != null;
+export function isOsdkBaseObject(o: any): o is OsdkBase<any> {
+  return o && typeof o === "object" && typeof o.$apiName === "string"
+    && o.$primaryKey != null;
 }

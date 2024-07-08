@@ -19,7 +19,7 @@ import { type DataValue, Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
-import { isOsdkBaseObject } from "./isOntologyObjectV2.js";
+import { isOsdkBaseObject } from "./isOsdkBaseObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
