@@ -9,8 +9,18 @@ export interface Todo extends ObjectTypeDefinition<'Todo', Todo>, VersionBound<$
   primaryKeyApiName: 'id';
   primaryKeyType: 'string';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     id: PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     isComplete: PropertyDef<'boolean', 'nullable', 'single'>;
+    /**
+     *   display name: 'Title',
+     *   description: The text of the todo
+     */
     title: PropertyDef<'string', 'nullable', 'single'>;
   };
 }
@@ -29,6 +39,7 @@ export const Todo: Todo = {
       nullable: false,
     },
     title: {
+      displayName: 'Title',
       multiplicity: false,
       description: 'The text of the todo',
       type: 'string',

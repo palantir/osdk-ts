@@ -40,6 +40,7 @@ export interface TodoDef extends ObjectTypeDefinition<'Todo', Todo> {
       nullable: true;
     };
     body: {
+      displayName: 'Body';
       multiplicity: false;
       description: 'The text of the todo';
       type: 'string';
@@ -72,6 +73,7 @@ export const Todo: TodoDef = {
       nullable: true,
     },
     body: {
+      displayName: 'Body',
       multiplicity: false,
       description: 'The text of the todo',
       type: 'string',

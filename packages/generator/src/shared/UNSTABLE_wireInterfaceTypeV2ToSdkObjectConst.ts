@@ -15,15 +15,19 @@
  */
 
 import type { InterfaceType } from "@osdk/gateway/types";
-
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import fastDeepEqual from "fast-deep-equal";
+import invariant from "tiny-invariant";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { propertyJsdoc } from "./propertyJsdoc.js";
 import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   interfaceDef: InterfaceType,
+  ontology: WireOntologyDefinition,
   v2: boolean = false,
 ) {
   const definition = deleteUndefineds(
@@ -37,6 +41,56 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     interfaceDef.apiName,
     v2,
   );
+
+  const parents = definition.implements?.map(p => {
+    invariant(
+      ontology.interfaceTypes[p] != null,
+      `Expected to find a parent interface named ${p} in the ontology and did not.`,
+    );
+
+    const it = deleteUndefineds(
+      __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
+        ontology.interfaceTypes[p],
+        v2,
+      ),
+    );
+
+    return it;
+  }) ?? [];
+
+  const mergedProperties = { ...definition.properties };
+  for (const parent of parents) {
+    for (const apiName of Object.keys(parent.properties)) {
+      if (definition.properties[apiName] != null) {
+        invariant(
+          fastDeepEqual(
+            definition.properties[apiName],
+            parent.properties[apiName],
+          ),
+          `Interface ${definition.apiName} redefines property '${apiName}' from parent '${parent.apiName}' but the properties do not match`,
+        );
+      } else if (mergedProperties[apiName] != null) {
+        invariant(
+          fastDeepEqual(
+            mergedProperties[apiName],
+            parent.properties[apiName],
+          ),
+          `Some interface defines a conflicting property '${apiName}' that does not match property from parent '${parent.apiName}'`,
+        );
+      }
+      mergedProperties[apiName] = parent.properties[apiName];
+    }
+  }
+
+  const ogProperties = definition.properties;
+  definition.properties = mergedProperties;
+
+  function localPropertyJsdoc(apiName: string) {
+    const property = definition.properties[apiName]!;
+    const isInherited = ogProperties[apiName] == null;
+
+    return propertyJsdoc(property, { isInherited, apiName });
+  }
 
   function getV2Types() {
     return `
@@ -58,13 +112,19 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
             })
           }
     }`,
-        properties: (_value) => (`{
+        properties: (properties) => (`{
       ${
-          stringify(definition.properties, {
-            "*": (propertyDefinition) =>
+          stringify(properties, {
+            "*": (
+              propertyDefinition,
+              _,
+              key,
+            ) => [
+              `${localPropertyJsdoc(key)}${key}`,
               `PropertyDef<"${propertyDefinition.type}", "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
+            ],
           })
         }
     }`),

@@ -222,7 +222,7 @@ async function generateOntologyInterfaces(
       import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
-      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
+      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, ontology, true)}
     `),
     );
   }

@@ -7,9 +7,18 @@ export interface FooInterface
     VersionBound<$ExpectedClientVersion> {
   osdkMetadata: typeof $osdkMetadata;
   description: 'Its a Foo.';
+  displayName: 'Foo interface';
   links: {};
   properties: {
+    /**
+     *   display name: 'Description',
+     *   description: Description of Description
+     */
     description: PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     *   display name: 'Name',
+     *   description: Name of Foo
+     */
     name: PropertyDef<'string', 'nullable', 'single'>;
   };
 }
@@ -18,15 +27,18 @@ export const FooInterface: FooInterface = {
   osdkMetadata: $osdkMetadata,
   apiName: 'FooInterface',
   description: 'Its a Foo.',
+  displayName: 'Foo interface',
   links: {},
   properties: {
     name: {
+      displayName: 'Name',
       multiplicity: false,
       description: 'Name of Foo',
       type: 'string',
       nullable: true,
     },
     description: {
+      displayName: 'Description',
       multiplicity: false,
       description: 'Description of Description',
       type: 'string',

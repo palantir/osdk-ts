@@ -52,6 +52,7 @@ export type ObjectTypePropertyDefinitionFrom2<
 export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   type: "object" | "interface";
   apiName: BrandedApiName<K, N>;
+  displayName?: string;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<
@@ -59,6 +60,13 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
     ObjectTypeLinkDefinition<any, any>
   >;
   osdkMetadata?: OsdkMetadata;
+
+  /**
+   * Represents the "super interfaces" of this object.
+   *
+   * Optional because they may not exist on legacy.
+   */
+  implements?: ReadonlyArray<string>;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
@@ -72,11 +80,6 @@ export interface ObjectTypeDefinition<
   type: "object";
   primaryKeyApiName: keyof this["properties"];
   primaryKeyType: WirePropertyTypes;
-
-  /**
-   * Optional because they may not exist on legacy.
-   */
-  implements?: string[];
 
   /**
    * Optional because they may not exist on legacy.
