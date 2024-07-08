@@ -54,7 +54,7 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
   baseUrl: string,
-  ontologyRid: string,
+  ontologyRid: string | Promise<string>,
   tokenProvider: () => Promise<string>,
   options: { logger?: Logger } | undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
