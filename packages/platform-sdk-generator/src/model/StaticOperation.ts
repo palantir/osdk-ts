@@ -19,6 +19,7 @@ import type * as ir from "../ir/index.js";
 import { quoteMimeTypeOrEmpty } from "../quoteMimeTypeOrEmpty.js";
 import { addAll } from "../util/addAll.js";
 import { groupByAsObject } from "../util/groupByAsObject.js";
+import { BinaryType } from "./BinaryType.js";
 import type { Component } from "./Component.js";
 import type { Model } from "./Model.js";
 import { OptionalType } from "./OptionalType.js";
@@ -79,7 +80,7 @@ export class StaticOperation {
     if (body.type === "ok") {
       const { responseType, required } = body.ok;
       if (responseType.type === "binary") {
-        return "unknown"; // FIXME
+        return new BinaryType();
       }
 
       let { type: { type: irType } } = responseType.type === "component"
