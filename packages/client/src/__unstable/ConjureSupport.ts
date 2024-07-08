@@ -213,8 +213,8 @@ export class MetadataClient {
     return entities.objectTypes[objectTypeRid];
   });
 
-  ontologyVersion = strongMemoAsync((_: string) =>
-    getOntologyVersionForRid(this.#ctx, this.#client.ontologyRid)
+  ontologyVersion = strongMemoAsync(async (_: string) =>
+    getOntologyVersionForRid(this.#ctx, await this.#client.ontologyRid)
   );
 }
 

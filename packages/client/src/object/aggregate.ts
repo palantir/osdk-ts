@@ -80,7 +80,7 @@ export async function aggregate<
   }
   const result = await OntologiesV2.OntologyObjectSets.aggregateObjectSetV2(
     addUserAgent(clientCtx, objectType),
-    clientCtx.ontologyRid,
+    await clientCtx.ontologyRid,
     {
       objectSet,
       groupBy: body.groupBy,

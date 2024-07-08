@@ -231,6 +231,8 @@ export class ObjectSetListenerWebsocket {
     // in `#createTemporaryObjectSet`. They should be in sync
     sub.expiry = setTimeout(() => this.#expire(sub), this.OBJECT_SET_EXPIRY_MS);
 
+    const ontologyRid = await this.#client.ontologyRid;
+
     try {
       const [temporaryObjectSet] = await Promise.all([
         // create a time-bounded object set representation for watching
@@ -243,7 +245,7 @@ export class ObjectSetListenerWebsocket {
         getObjectSetBaseType(sub.objectSet).then(baseType =>
           OntologiesV2.ObjectTypesV2.getObjectTypeV2(
             this.#client,
-            this.#client.ontologyRid,
+            ontologyRid,
             baseType,
           )
         ).then(
@@ -700,16 +702,18 @@ async function getOntologyPropertyMappingForApiName(
     );
   }
 
+  const ontologyRid = await client.ontologyRid;
+
   const wireObjectType = await OntologiesV2.ObjectTypesV2
     .getObjectTypeV2(
       client,
-      client.ontologyRid,
+      ontologyRid,
       objectApiName,
     );
 
   return getOntologyPropertyMappingForRid(
     ctx,
-    client.ontologyRid,
+    ontologyRid,
     wireObjectType.rid,
   );
 }
