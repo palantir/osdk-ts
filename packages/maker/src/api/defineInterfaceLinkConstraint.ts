@@ -21,18 +21,32 @@ type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType
 
 
-type Many = { apiName: string; from: InterfaceType; toMany: ApiNameOrInterfaceType; toOne?: never; displayName?: string; description?: string; };
-type One = { apiName: string; from: InterfaceType; toOne: ApiNameOrInterfaceType; toMany?: never; displayName?: string; description?: string; };
+type Many = {
+  apiName: string;
+  from: InterfaceType;
+  toMany: ApiNameOrInterfaceType;
+  toOne?: never;
+  displayName?: string;
+  description?: string;
+};
+type One = {
+  apiName: string;
+  from: InterfaceType;
+  toOne: ApiNameOrInterfaceType;
+  toMany?: never;
+  displayName?: string;
+  description?: string;
+};
 
 export function defineInterfaceLinkConstraint(
-  linkDef : One | Many,
+  linkDef: One | Many,
 ) {
 
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
     linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
-      == null,
+    == null,
     `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
   );
 
@@ -47,7 +61,7 @@ export function defineInterfaceLinkConstraint(
 function getLinkedType(t: string | InterfaceType) {
   return {
     type: "interfaceType" as const,
-    interfaceType: typeof t === 'string' ? t : t.apiName,
+    interfaceType: typeof t === "string" ? t : t.apiName,
   };
 }
 
