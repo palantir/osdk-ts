@@ -7,8 +7,6 @@
     "check-mrl": "mrl check --verbose",
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
-    "dev": "npx tsx packages/watch/src/watch.mts",
-    "dev:typecheck": "npx tsx packages/watch/src/watch.mts",
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
@@ -47,15 +45,11 @@
     "tsconfig": "workspace:^",
     "tsup": "^8.0.2",
     "turbo": "^1.13.2",
-    "turbotree": "^1.0.1",
     "typescript": "^5.5.2",
     "typescript-eslint": "^7.9.0",
     "vitest": "^1.6.0"
   },
   "pnpm": {
-    "patchedDependencies": {
-      "turbotree@1.0.1": "patches/turbotree@1.0.1.patch"
-    },
     "overrides": {
       "trim@0.0.1": "0.0.3"
     }

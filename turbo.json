@@ -111,11 +111,6 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
-    "test:watch": {
-      "env": ["FORCE_COLOR"],
-      "cache": false
-    },
-
     "//#check-mrl": {
       "inputs": [
         "package.json",
