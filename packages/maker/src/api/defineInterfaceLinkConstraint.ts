@@ -45,8 +45,7 @@ export function defineInterfaceLinkConstraint(
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
-    linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
-    == null,
+    linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName) == null,
     `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
   );
 
