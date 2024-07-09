@@ -15,10 +15,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
     "@osdk/client.api": "workspace:*",
-    "@osdk/oauth": "workspace:^",
+    "@osdk/oauth": "workspace:~",
     "core-js": "^3.37.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -26,15 +26,15 @@
     "tiny-invariant": "^1.3.3"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/client.api": "workspace:^"
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "workspace:^",
-    "@osdk/cli.cmd.typescript": "workspace:^",
-    "@osdk/client.api": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/client.api": "workspace:~",
     "@types/core-js": "^2.5.8",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",

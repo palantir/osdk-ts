@@ -25,10 +25,10 @@
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/shared.client": "workspace:^",
-    "@osdk/shared.net": "workspace:^",
-    "@osdk/shared.net.platformapi": "workspace:^"
+    "@osdk/api": "workspace:~",
+    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.net": "workspace:~",
+    "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
     "typescript": "^5.5.2"

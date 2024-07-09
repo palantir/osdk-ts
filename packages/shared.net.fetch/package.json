@@ -27,7 +27,7 @@
     "typecheck": "../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
-    "@osdk/shared.net.errors": "workspace:^",
+    "@osdk/shared.net.errors": "workspace:~",
     "fetch-retry": "^6.0.0"
   },
   "devDependencies": {
