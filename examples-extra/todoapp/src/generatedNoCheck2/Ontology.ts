@@ -1,7 +1,7 @@
 import type { OntologyDefinition } from '@osdk/api';
+import { OntologyMetadata } from './OntologyMetadata';
 import * as Actions from './ontology/actions/index';
 import * as Objects from './ontology/objects';
-import { OntologyMetadata } from './OntologyMetadata';
 
 export interface Ontology extends OntologyDefinition<'Todo'> {
   metadata: OntologyMetadata;

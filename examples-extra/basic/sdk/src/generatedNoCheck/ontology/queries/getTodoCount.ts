@@ -5,5 +5,5 @@ export const getTodoCount = {
   type: 'query',
   version: '0.1.2',
   parameters: {},
-  output: { type: 'integer', nullable: false },
+  output: { nullable: false, type: 'integer' },
 } satisfies QueryDefinition<'getTodoCount', never>;

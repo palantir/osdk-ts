@@ -63,53 +63,44 @@ export async function generatePerQueryDataFiles(
             Object.entries(query.parameters).map((
               [name, parameter],
             ) => {
-              return `
-              ${name}: ${
+              return `${name} : {${
+                stringify(deleteUndefineds(
+                  wireQueryParameterV2ToQueryParameterDefinition(parameter),
+                ))
+              },
+            ${
                 parameter.dataType.type === "object"
                   || parameter.dataType.type === "objectSet"
-                  ? `{
-                      description: "${parameter.description}",
-                      type: "${parameter.dataType.type}",
-                      "${parameter.dataType.type}": "${parameter.dataType
-                    .objectTypeApiName!}",
-                      nullable: false,
-                      __OsdkTargetType: ${
+                  ? `__OsdkTargetType: ${
                     getObjectDefIdentifier(
                       parameter.dataType.objectTypeApiName!,
                       v2,
                     )
-                  },
-                }`
-                  : JSON.stringify(
-                    wireQueryParameterV2ToQueryParameterDefinition(parameter),
-                  )
-              }
-              `;
+                  }`
+                  : ``
+              }}`;
             })
           }},
-              output: ${
+              output: {${
+            stringify(
+              deleteUndefineds(
+                wireQueryDataTypeToQueryDataTypeDefinition(query.output),
+              ),
+            )
+          },
+            ${
             query.output.type === "object" || query.output.type === "objectSet"
-              ? `{
-                  type: "${query.output.type}",
-                  "${query.output.type}": "${query.output.objectTypeApiName}",
-                  nullable: false,
+              ? `
                   __OsdkTargetType: ${
                 getObjectDefIdentifier(
                   query.output.objectTypeApiName!,
                   v2,
                 )
-              },
-                }`
-              : JSON.stringify(
-                wireQueryDataTypeToQueryDataTypeDefinition(query.output),
-              )
-          },
-            
-          } satisfies QueryDefinition<"${query.apiName}", ${
-            objectTypes.length > 0
-              ? objectTypes.map(apiName => `"${apiName}"`).join("|")
-              : "never"
-          }>;`),
+              }
+              `
+              : ``
+          }}
+          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
         );
       } else {
         await fs.writeFile(
@@ -119,11 +110,7 @@ export async function generatePerQueryDataFiles(
     
             export const ${query.apiName} = ${
             JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-          } satisfies QueryDefinition<"${query.apiName}", ${
-            objectTypes.length > 0
-              ? objectTypes.map(apiName => `"${apiName}"`).join("|")
-              : "never"
-          }>;`),
+          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
         );
       }
     }),
@@ -208,4 +195,12 @@ function getObjectTypesFromDataType(
         }`,
       );
   }
+}
+
+function getQueryDefSatisfies(apiName: string, objectTypes: string[]): string {
+  return `satisfies QueryDefinition<"${apiName}", ${
+    objectTypes.length > 0
+      ? objectTypes.map(apiNameObj => `"${apiNameObj}"`).join("|")
+      : "never"
+  }>;`;
 }
