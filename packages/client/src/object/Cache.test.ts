@@ -47,7 +47,7 @@ function createSpys(cache: ReturnType<typeof createClientCache>) {
 describe("AsyncCache", () => {
   beforeAll(() => {
   });
-  const fauxClient = {} as MinimalClient;
+  const fauxClient = { clientCacheKey: {} } as MinimalClient;
 
   it("does not double factory", async () => {
     const resolveToKey = (client: MinimalClient, key: string) =>
