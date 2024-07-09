@@ -31,10 +31,10 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/gateway": "workspace:^",
-    "@osdk/generator": "workspace:^",
-    "@osdk/legacy-client": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/gateway": "workspace:~",
+    "@osdk/generator": "workspace:~",
+    "@osdk/legacy-client": "workspace:~",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
@@ -45,7 +45,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/shared.test": "workspace:^",
+    "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
     "typescript": "^5.4.2"
