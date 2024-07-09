@@ -18,68 +18,40 @@ import invariant from "tiny-invariant";
 import type { InterfaceType } from "./types.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
-type ApiNameOrMeta = string | Meta;
+type ApiNameOrInterfaceType = string | InterfaceType
 
-type Many = { type: InterfaceType; many: ApiNameOrMeta; one?: never };
-type One = { type: InterfaceType; one: ApiNameOrMeta; many?: never };
+
+type Many = { apiName: string; from: InterfaceType; toMany: ApiNameOrInterfaceType; toOne?: never; displayName?: string; description?: string; };
+type One = { apiName: string; from: InterfaceType; toOne: ApiNameOrInterfaceType; toMany?: never; displayName?: string; description?: string; };
 
 export function defineInterfaceLinkConstraint(
-  { from, to }: {
-    from: Many;
-    to: One;
-  } | {
-    from: One;
-    to: One | Many;
-  },
+  linkDef : One | Many,
 ) {
-  invariant(
-    (from.one == null && from.many) || (from.one && from.many == null),
-    "from should have either one or many, not both",
-  );
+
+  const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
-    (to.one == null && to.many) || (to.one && to.many == null),
-    "to should have either one or many, not both",
-  );
-
-  invariant(!(from.many && to.many), "many to many is not supported");
-
-  const fromLinkMeta = getLinkMeta(from.one ?? from.many);
-  const toLinkMeta = getLinkMeta(to.one ?? to.many);
-
-  invariant(
-    from.type.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
+    linkDef.from.links.find(a => a.metadata.apiName === fromLinkMeta.apiName)
       == null,
-    `Link with apiName ${fromLinkMeta.apiName} already exists on ${from.type.apiName}`,
-  );
-  invariant(
-    to.type.links.find(a => a.metadata.apiName === toLinkMeta.apiName) == null,
-    `Link with apiName ${toLinkMeta.apiName} already exists on ${to.type.apiName}`,
+    `Link with apiName ${fromLinkMeta.apiName} already exists on ${linkDef.apiName}`,
   );
 
-  from.type.links.push({
-    cardinality: from.many ? "MANY" : "SINGLE",
-    linkedEntityTypeId: getLinkedType(to.type),
+  linkDef.from.links.push({
+    cardinality: linkDef.toMany ? "MANY" : "SINGLE",
+    linkedEntityTypeId: getLinkedType(linkDef.toMany ?? linkDef.toOne),
     metadata: fromLinkMeta,
     required: true, // TODO: expose this?
   });
-
-  to.type.links.push({
-    cardinality: to.one ? "SINGLE" : "MANY",
-    linkedEntityTypeId: getLinkedType(from.type),
-    metadata: toLinkMeta,
-    required: true, // TODO: expose this?
-  });
 }
 
-function getLinkedType(t: InterfaceType) {
+function getLinkedType(t: string | InterfaceType) {
   return {
     type: "interfaceType" as const,
-    interfaceType: t.apiName,
+    interfaceType: typeof t === 'string' ? t : t.apiName,
   };
 }
 
-function getLinkMeta(meta: ApiNameOrMeta) {
+function getLinkMeta(meta: One | Many) {
   return typeof meta === "string"
     ? withDefaults({ apiName: meta })
     : withDefaults(meta);
