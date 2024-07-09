@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.1.1
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+- Updated dependencies [b3f64d9]
+- Updated dependencies [111f928]
+  - @osdk/generator@1.10.1
+
 ## 0.1.0
 
 ### Minor Changes

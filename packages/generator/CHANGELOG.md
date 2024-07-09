@@ -1,5 +1,16 @@
 # @osdk/generator
 
+## 1.10.1
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+- 111f928: Update searchAround deprecation message
+
+  - Add quotes around link API name, and convert to camelCase
+
+  ex) pivotTo(Assignee) -> pivotTo("assignee")
+
 ## 1.10.0
 
 ### Minor Changes

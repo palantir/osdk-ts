@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.2.2
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+
 ## 2.2.1
 
 ### Patch Changes

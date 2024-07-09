@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 1.1.2
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+- Updated dependencies [b3f64d9]
+- Updated dependencies [111f928]
+  - @osdk/legacy-client@2.2.2
+  - @osdk/generator@1.10.1
+
 ## 1.1.1
 
 ### Patch Changes
