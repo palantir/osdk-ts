@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",

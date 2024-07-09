@@ -1,5 +1,13 @@
 # @osdk/shared.test
 
+## 1.3.2
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+- Updated dependencies [647a812]
+  - @osdk/api@1.7.1
+
 ## 1.3.1
 
 ### Patch Changes

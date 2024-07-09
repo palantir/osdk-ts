@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 0.16.2
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+- Updated dependencies [647a812]
+  - @osdk/generator-converters@0.5.1
+  - @osdk/shared.net@1.10.1
+  - @osdk/api@1.7.1
+
 ## 0.16.1
 
 ### Patch Changes

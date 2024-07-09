@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 1.1.3
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+- Updated dependencies [647a812]
+  - @osdk/legacy-client@2.2.3
+  - @osdk/generator@1.10.2
+  - @osdk/api@1.7.1
+
 ## 1.1.2
 
 ### Patch Changes
