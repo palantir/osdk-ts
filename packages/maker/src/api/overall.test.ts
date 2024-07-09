@@ -23,7 +23,7 @@ import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("myNamespace", () => { });
+    defineOntology("myNamespace", () => {});
   });
 
   describe("Interfaces", () => {
@@ -222,7 +222,7 @@ describe("Ontology Defining", () => {
       defineInterfaceLinkConstraint({
         from: a,
         toOne: b,
-        apiName: "singleLink"
+        apiName: "singleLink",
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -297,7 +297,7 @@ describe("Ontology Defining", () => {
       defineInterfaceLinkConstraint({
         from: a,
         toMany: b,
-        apiName: "manyLink"
+        apiName: "manyLink",
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
