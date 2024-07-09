@@ -71,7 +71,6 @@ const esmOnlyPackages = [
   "@osdk/tool.release",
   "@osdk/version-updater",
   "@osdk/client.test.ontology",
-  "watch",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
 
