@@ -28,15 +28,15 @@
     "typecheck": "tsc-absolute"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/examples.basic.sdk": "workspace:^",
-    "@osdk/omniapi": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/examples.basic.sdk": "workspace:~",
+    "@osdk/omniapi": "workspace:~",
     "pino": "^8.20.0",
     "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
-    "@osdk/cli": "workspace:^",
+    "@osdk/cli": "workspace:~",
     "@types/node": "^18.0.0",
     "ts-expect": "^1.3.0"
   },
