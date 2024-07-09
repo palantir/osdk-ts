@@ -33,9 +33,9 @@
     "@osdk/api": "workspace:*"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/generator": "workspace:^",
-    "@osdk/shared.test": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/generator": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

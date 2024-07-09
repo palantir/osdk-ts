@@ -419,8 +419,8 @@ export default {
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:^",
-          "@osdk/shared.net.platformapi": "workspace:^",
+          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.net.platformapi": "workspace:~",
         },
       },
     }),

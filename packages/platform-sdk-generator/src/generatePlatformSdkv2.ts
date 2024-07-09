@@ -225,9 +225,9 @@ const BASE_PACKAGE_JSON = {
   },
   "dependencies": {},
   "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/shared.net": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/shared.net": "workspace:~",
   },
   "devDependencies": {
     "typescript": "^5.4.5",

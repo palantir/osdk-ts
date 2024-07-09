@@ -156,10 +156,10 @@ async function generateClientSdk(
 
       const dependencyVersions = await getDependencyVersions();
       if (args.internal) {
-        dependencyVersions.osdkApiVersion = "workspace:^";
-        dependencyVersions.osdkClientApiVersion = "workspace:^";
-        dependencyVersions.osdkClientVersion = "workspace:^";
-        dependencyVersions.osdkLegacyClientVersion = "workspace:^";
+        dependencyVersions.osdkApiVersion = "workspace:~";
+        dependencyVersions.osdkClientApiVersion = "workspace:~";
+        dependencyVersions.osdkClientVersion = "workspace:~";
+        dependencyVersions.osdkLegacyClientVersion = "workspace:~";
       }
 
       const expectedDeps = getExpectedDependencies(

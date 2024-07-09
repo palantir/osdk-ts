@@ -32,9 +32,9 @@
     "typecheck": "../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/gateway": "workspace:^",
-    "@osdk/generator-converters": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/gateway": "workspace:~",
+    "@osdk/generator-converters": "workspace:~",
     "fetch-retry": "^6.0.0",
     "prettier": "^3.0.3",
     "prettier-plugin-organize-imports": "^3.2.4",

@@ -85,13 +85,13 @@ importers:
         specifier: ^4.0.5
         version: 4.0.5
       mytsup:
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:monorepo/mytsup
       tsc-absolute:
         specifier: ^1.0.1
         version: 1.0.1(typescript@5.5.2)
       tsconfig:
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:monorepo/tsconfig
       tsup:
         specifier: ^8.0.2
@@ -112,22 +112,22 @@ importers:
   examples-extra/basic/cli:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/api
       '@osdk/client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/client
       '@osdk/client.api':
         specifier: workspace:*
         version: link:../../../packages/client.api
       '@osdk/examples.basic.sdk':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../sdk
       '@osdk/foundry':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/foundry
       '@osdk/internal.foundry':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/internal.foundry
       chalk:
         specifier: ^5.3.0
@@ -143,7 +143,7 @@ importers:
         version: 1.3.3
     devDependencies:
       '@osdk/cli':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/cli
       '@types/node':
         specifier: ^18.0.0
@@ -155,10 +155,10 @@ importers:
   examples-extra/basic/sdk:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/api
       '@osdk/client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/client
       '@osdk/client.api':
         specifier: workspace:*
@@ -168,7 +168,7 @@ importers:
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/cli.cmd.typescript':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../../packages/cli.cmd.typescript
       tslib:
         specifier: ^2.6.2
@@ -180,16 +180,16 @@ importers:
   examples-extra/docs_example:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/api
       '@osdk/client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/client
       '@osdk/client.api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/client.api
       '@osdk/legacy-client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/legacy-client
       react:
         specifier: ^18.3.1
@@ -205,7 +205,7 @@ importers:
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/cli.cmd.typescript':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/cli.cmd.typescript
       '@types/react':
         specifier: ^18.3.2
@@ -256,20 +256,20 @@ importers:
   examples-extra/one_dot_one:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/api
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/generator
       '@osdk/legacy-client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/legacy-client
     devDependencies:
       '@arethetypeswrong/cli':
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/cli.cmd.typescript':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/cli.cmd.typescript
       '@types/node':
         specifier: ^18.0.0
@@ -284,16 +284,16 @@ importers:
   examples-extra/todoapp:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/api
       '@osdk/client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/client
       '@osdk/client.api':
         specifier: workspace:*
         version: link:../../packages/client.api
       '@osdk/oauth':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/oauth
       core-js:
         specifier: ^3.37.1
@@ -315,7 +315,7 @@ importers:
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/cli.cmd.typescript':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/cli.cmd.typescript
       '@types/core-js':
         specifier: ^2.5.8
@@ -575,10 +575,10 @@ importers:
   packages/api:
     dependencies:
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@types/geojson':
         specifier: ^7946.0.13
@@ -603,16 +603,16 @@ importers:
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       ajv:
         specifier: ^8.13.0
@@ -640,10 +640,10 @@ importers:
         version: 17.7.2
     devDependencies:
       '@osdk/cli.cmd.typescript':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../cli.cmd.typescript
       '@osdk/cli.common':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../cli.common
       '@types/archiver':
         specifier: ^6.0.2
@@ -673,16 +673,16 @@ importers:
         specifier: ^0.15.2
         version: 0.15.3
       '@osdk/cli.common':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../cli.common
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       consola:
         specifier: ^3.2.3
@@ -741,7 +741,7 @@ importers:
   packages/client:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/client.api':
         specifier: workspace:*
@@ -753,19 +753,19 @@ importers:
         specifier: workspace:*
         version: link:../client.unstable.osw
       '@osdk/generator-converters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator-converters
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.client.impl':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client.impl
       '@osdk/shared.net.errors':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.errors
       '@osdk/shared.net.fetch':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.fetch
       '@types/geojson':
         specifier: ^7946.0.14
@@ -790,13 +790,13 @@ importers:
         version: 8.18.0
     devDependencies:
       '@osdk/client.test.ontology':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../client.test.ontology
       '@osdk/internal.foundry':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../internal.foundry
       '@osdk/shared.test':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.test
       '@types/ws':
         specifier: ^8.5.10
@@ -835,11 +835,11 @@ importers:
   packages/client.api:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
     devDependencies:
       '@osdk/internal.foundry':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../internal.foundry
       '@types/geojson':
         specifier: ^7946.0.14
@@ -858,13 +858,13 @@ importers:
         version: link:../client.api
     devDependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator
       '@osdk/shared.test':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.test
       typescript:
         specifier: ^5.5.2
@@ -924,7 +924,7 @@ importers:
   packages/example-generator:
     dependencies:
       '@osdk/create-app':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../create-app
       consola:
         specifier: ^3.2.3
@@ -970,10 +970,10 @@ importers:
         specifier: workspace:*
         version: link:../foundry.thirdpartyapplications
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -983,16 +983,16 @@ importers:
   packages/foundry-sdk-generator:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator
       '@osdk/legacy-client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../legacy-client
       '@rollup/plugin-commonjs':
         specifier: ^25.0.4
@@ -1020,7 +1020,7 @@ importers:
         version: 17.7.2
     devDependencies:
       '@osdk/shared.test':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.test
       '@types/node':
         specifier: ^18.0.0
@@ -1035,10 +1035,10 @@ importers:
   packages/foundry.core:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1051,10 +1051,10 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1067,10 +1067,10 @@ importers:
         specifier: workspace:*
         version: link:../foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1118,13 +1118,13 @@ importers:
   packages/generator:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/generator-converters':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator-converters
       fetch-retry:
         specifier: ^6.0.0
@@ -1155,10 +1155,10 @@ importers:
   packages/generator-converters:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
     devDependencies:
       ts-expect:
@@ -1174,7 +1174,7 @@ importers:
   packages/internal.foundry:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
@@ -1192,13 +1192,13 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.ontologiesv2
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1208,16 +1208,16 @@ importers:
   packages/internal.foundry.core:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1227,19 +1227,19 @@ importers:
   packages/internal.foundry.datasets:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1249,19 +1249,19 @@ importers:
   packages/internal.foundry.models:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1271,19 +1271,19 @@ importers:
   packages/internal.foundry.ontologies:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
         version: link:../internal.foundry.core
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1293,7 +1293,7 @@ importers:
   packages/internal.foundry.ontologiesv2:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/internal.foundry.core':
         specifier: workspace:*
@@ -1302,13 +1302,13 @@ importers:
         specifier: workspace:*
         version: link:../internal.foundry.ontologies
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       '@osdk/shared.net.platformapi':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
       typescript:
@@ -1318,13 +1318,13 @@ importers:
   packages/legacy-client:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/shared.net':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net
       fetch-retry:
         specifier: ^6.0.0
@@ -1340,10 +1340,10 @@ importers:
         version: 1.3.3
     devDependencies:
       '@osdk/generator':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../generator
       '@osdk/shared.test':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.test
       '@types/luxon':
         specifier: ^3.4.2
@@ -1361,10 +1361,10 @@ importers:
   packages/maker:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       consola:
         specifier: ^3.2.3
@@ -1383,7 +1383,7 @@ importers:
         version: 17.7.2
     devDependencies:
       '@osdk/client.unstable':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../client.unstable
       '@types/yargs':
         specifier: ^17.0.32
@@ -1463,13 +1463,13 @@ importers:
   packages/shared.client.impl:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.errors':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.errors
       '@osdk/shared.net.fetch':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.fetch
     devDependencies:
       typescript:
@@ -1479,19 +1479,19 @@ importers:
   packages/shared.net:
     dependencies:
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.client.impl':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client.impl
       '@osdk/shared.net.errors':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.errors
       '@osdk/shared.net.fetch':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.fetch
     devDependencies:
       ts-expect:
@@ -1510,7 +1510,7 @@ importers:
   packages/shared.net.fetch:
     dependencies:
       '@osdk/shared.net.errors':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.errors
       fetch-retry:
         specifier: ^6.0.0
@@ -1523,10 +1523,10 @@ importers:
   packages/shared.net.platformapi:
     dependencies:
       '@osdk/shared.client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.client
       '@osdk/shared.net.errors':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../shared.net.errors
     devDependencies:
       typescript:
@@ -1536,10 +1536,10 @@ importers:
   packages/shared.test:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../api
       '@osdk/gateway':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../gateway
       fetch-retry:
         specifier: ^6.0.0
@@ -1679,19 +1679,19 @@ importers:
   tests/verify-fallback-package:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/api
       '@osdk/legacy-client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/legacy-client
 
   tests/verify-fallback-package-v2:
     dependencies:
       '@osdk/api':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/api
       '@osdk/client':
-        specifier: workspace:^
+        specifier: workspace:~
         version: link:../../packages/client
 
 packages:
