@@ -24,13 +24,13 @@
     "transpile": "tsup",
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@osdk/api": "workspace:~"
+  },
   "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@types/geojson": "^7946.0.14"
+    "@types/geojson": "*"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "type-fest": "^4.18.2",
     "typescript": "^5.5.2"
