@@ -23,7 +23,7 @@ import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("myNamespace", () => {});
+    defineOntology("myNamespace", () => { });
   });
 
   describe("Interfaces", () => {
@@ -217,45 +217,12 @@ describe("Ontology Defining", () => {
       b = defineInterface({ apiName: "B" });
     });
 
-    it("many to many fails", () => {
-      expect(() => {
-        // @ts-expect-error
-        defineInterfaceLinkConstraint({
-          from: { type: a, many: "manyLinks" }, // need the any to be sure it fails
-          to: { type: b, many: "manyLinks" },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: many to many is not supported]`,
-      );
-    });
-
-    it("does not allow passing both one and many", () => {
-      expect(() => {
-        defineInterfaceLinkConstraint({
-          // @ts-expect-error
-          from: { type: a, one: "singleLink", many: "manyLinks" }, // need the any to be sure it fails
-          to: { type: b, one: "singleLink" },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: from should have either one or many, not both]`,
-      );
-
-      expect(() => {
-        defineInterfaceLinkConstraint({
-          from: { type: a, one: "singleLink" }, // need the any to be sure it fails
-          // @ts-expect-error
-          to: { type: b, one: "singleLink", many: "manyLinks" },
-        });
-      }).toThrowErrorMatchingInlineSnapshot(
-        `[Error: Invariant failed: to should have either one or many, not both]`,
-      );
-    });
-
-    it("single to single works", () => {
+    it("single link works", () => {
       expect(a).not.toBeUndefined();
       defineInterfaceLinkConstraint({
-        from: { type: a, one: "singleLink" },
-        to: { type: b, one: "singleLink" },
+        from: a,
+        toOne: b,
+        apiName: "singleLink"
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -312,21 +279,7 @@ describe("Ontology Defining", () => {
                   "icon": undefined,
                 },
                 "extendsInterfaces": [],
-                "links": [
-                  {
-                    "cardinality": "SINGLE",
-                    "linkedEntityTypeId": {
-                      "interfaceType": "A",
-                      "type": "interfaceType",
-                    },
-                    "metadata": {
-                      "apiName": "singleLink",
-                      "description": "singleLink",
-                      "displayName": "singleLink",
-                    },
-                    "required": true,
-                  },
-                ],
+                "links": [],
                 "properties": [],
                 "status": {
                   "active": {},
@@ -340,98 +293,11 @@ describe("Ontology Defining", () => {
       `);
     });
 
-    it("many to single works", () => {
+    it("many link works", () => {
       defineInterfaceLinkConstraint({
-        from: { type: a, many: "manyLinks" },
-        to: { type: b, one: "singleLink" },
-      });
-
-      expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
-        {
-          "blockPermissionInformation": {
-            "actionTypes": {},
-            "linkTypes": {},
-            "objectTypes": {},
-          },
-          "interfaceTypes": {
-            "A": {
-              "interfaceType": {
-                "allExtendsInterfaces": [],
-                "allLinks": [],
-                "allProperties": [],
-                "apiName": "A",
-                "displayMetadata": {
-                  "description": "A",
-                  "displayName": "A",
-                  "icon": undefined,
-                },
-                "extendsInterfaces": [],
-                "links": [
-                  {
-                    "cardinality": "MANY",
-                    "linkedEntityTypeId": {
-                      "interfaceType": "B",
-                      "type": "interfaceType",
-                    },
-                    "metadata": {
-                      "apiName": "manyLinks",
-                      "description": "manyLinks",
-                      "displayName": "manyLinks",
-                    },
-                    "required": true,
-                  },
-                ],
-                "properties": [],
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-              },
-            },
-            "B": {
-              "interfaceType": {
-                "allExtendsInterfaces": [],
-                "allLinks": [],
-                "allProperties": [],
-                "apiName": "B",
-                "displayMetadata": {
-                  "description": "B",
-                  "displayName": "B",
-                  "icon": undefined,
-                },
-                "extendsInterfaces": [],
-                "links": [
-                  {
-                    "cardinality": "SINGLE",
-                    "linkedEntityTypeId": {
-                      "interfaceType": "A",
-                      "type": "interfaceType",
-                    },
-                    "metadata": {
-                      "apiName": "singleLink",
-                      "description": "singleLink",
-                      "displayName": "singleLink",
-                    },
-                    "required": true,
-                  },
-                ],
-                "properties": [],
-                "status": {
-                  "active": {},
-                  "type": "active",
-                },
-              },
-            },
-          },
-          "sharedPropertyTypes": {},
-        }
-      `);
-    });
-
-    it("single to many works", () => {
-      defineInterfaceLinkConstraint({
-        from: { type: a, one: "singleLink" },
-        to: { type: b, many: "manyLinks" },
+        from: a,
+        toMany: b,
+        apiName: "manyLink"
       });
 
       expect(dumpOntologyFullMetadata()).toMatchInlineSnapshot(`
@@ -462,9 +328,9 @@ describe("Ontology Defining", () => {
                       "type": "interfaceType",
                     },
                     "metadata": {
-                      "apiName": "singleLink",
-                      "description": "singleLink",
-                      "displayName": "singleLink",
+                      "apiName": "manyLink",
+                      "description": "manyLink",
+                      "displayName": "manyLink",
                     },
                     "required": true,
                   },
@@ -488,21 +354,7 @@ describe("Ontology Defining", () => {
                   "icon": undefined,
                 },
                 "extendsInterfaces": [],
-                "links": [
-                  {
-                    "cardinality": "MANY",
-                    "linkedEntityTypeId": {
-                      "interfaceType": "A",
-                      "type": "interfaceType",
-                    },
-                    "metadata": {
-                      "apiName": "manyLinks",
-                      "description": "manyLinks",
-                      "displayName": "manyLinks",
-                    },
-                    "required": true,
-                  },
-                ],
+                "links": [],
                 "properties": [],
                 "status": {
                   "active": {},
