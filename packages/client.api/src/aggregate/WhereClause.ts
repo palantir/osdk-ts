@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import type { BBox, Point, Polygon } from "geojson";
-
 import type {
   ObjectOrInterfaceDefinition,
   ObjectTypePropertyDefinition,
 } from "@osdk/api";
-import type { DistanceUnit } from "@osdk/internal.foundry";
+import type { BBox, Point, Polygon } from "geojson";
 
 export type PossibleWhereClauseFilters =
   | "$gt"
@@ -75,6 +73,8 @@ type ArrayFilter<T> =
   | MakeFilter<"$contains", T>
   | MakeFilter<"$isNull", boolean>;
 
+// the value side of this needs to match DistanceUnit from @osdk/internal.foundry but we don't
+// want the dependency
 export const DistanceUnitMapping = {
   "centimeter": "CENTIMETERS",
   "centimeters": "CENTIMETERS",
@@ -96,7 +96,17 @@ export const DistanceUnitMapping = {
   "nautical_mile": "NAUTICAL_MILES",
   "nauticalMile": "NAUTICAL_MILES",
   "nautical miles": "NAUTICAL_MILES",
-} satisfies Record<string, DistanceUnit>;
+} satisfies Record<
+  string,
+  | "CENTIMETERS"
+  | "METERS"
+  | "KILOMETERS"
+  | "INCHES"
+  | "FEET"
+  | "YARDS"
+  | "MILES"
+  | "NAUTICAL_MILES"
+>;
 
 export type GeoFilter_Within = {
   "$within":
