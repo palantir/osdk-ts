@@ -44,5 +44,16 @@
   },
   "dependencies": {
     "eslint-plugin-unused-imports": "^3.0.0"
-  }
+  },
+  "pnpm": {
+    "overrides": {
+      "trim@0.0.1": "0.0.3",
+      "braces@3.0.2": "3.0.3"
+    }
+  },
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=8.7.4"
+  },
+  "packageManager": "pnpm@8.7.4"
 }
