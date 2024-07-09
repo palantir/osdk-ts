@@ -1,5 +1,14 @@
 # @osdk/legacy-client
 
+## 2.2.3
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+- Updated dependencies [647a812]
+  - @osdk/shared.net@1.10.1
+  - @osdk/api@1.7.1
+
 ## 2.2.2
 
 ### Patch Changes

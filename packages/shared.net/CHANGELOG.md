@@ -1,5 +1,11 @@
 # @osdk/shared.net
 
+## 1.10.1
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+
 ## 1.10.0
 
 ### Minor Changes

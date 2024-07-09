@@ -1,5 +1,14 @@
 # @osdk/cli.cmd.typescript
 
+## 0.1.2
+
+### Patch Changes
+
+- 647a812: Change all internal dependencies to be tilde not caret
+- Updated dependencies [647a812]
+  - @osdk/shared.net@1.10.1
+  - @osdk/generator@1.10.2
+
 ## 0.1.1
 
 ### Patch Changes
