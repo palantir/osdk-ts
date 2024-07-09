@@ -18,7 +18,7 @@ import invariant from "tiny-invariant";
 import type { InterfaceType } from "./types.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
-type ApiNameOrInterfaceType = string | InterfaceType
+type ApiNameOrInterfaceType = string | InterfaceType;
 
 
 type Many = {
