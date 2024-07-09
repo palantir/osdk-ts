@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.3.1
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+
 ## 1.3.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/client
 
+## 0.16.1
+
+### Patch Changes
+
+- b3f64d9: Modify name passed to TS user agent
+
 ## 0.16.0
 
 ### Minor Changes
