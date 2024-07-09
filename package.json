@@ -58,7 +58,8 @@
       "turbotree@1.0.1": "patches/turbotree@1.0.1.patch"
     },
     "overrides": {
-      "trim@0.0.1": "0.0.3"
+      "trim@0.0.1": "0.0.3",
+      "braces@3.0.2": "3.0.3"
     }
   },
   "engines": {
