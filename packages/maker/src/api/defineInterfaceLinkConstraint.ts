@@ -20,7 +20,6 @@ import type { InterfaceType } from "./types.js";
 type Meta = { apiName: string; displayName?: string; description?: string };
 type ApiNameOrInterfaceType = string | InterfaceType;
 
-
 type Many = {
   apiName: string;
   from: InterfaceType;
@@ -41,7 +40,6 @@ type One = {
 export function defineInterfaceLinkConstraint(
   linkDef: One | Many,
 ) {
-
   const fromLinkMeta = getLinkMeta(linkDef);
 
   invariant(
