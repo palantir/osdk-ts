@@ -35,7 +35,7 @@
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.2",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.3"
   },
   "publishConfig": {
     "access": "public"

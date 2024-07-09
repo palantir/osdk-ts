@@ -55,10 +55,10 @@
   "devDependencies": {
     "@changesets/types": "^6.0.0",
     "@types/mdast": "4.0.4",
-    "@types/node": "^20.12.7",
+    "@types/node": "^20.14.10",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "vitest": "^1.6.0"
   },
   "publishConfig": {

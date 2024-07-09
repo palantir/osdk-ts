@@ -28,7 +28,7 @@ import {
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
-const LATEST_TYPESCRIPT_DEP = "^5.5.2";
+const LATEST_TYPESCRIPT_DEP = "^5.5.3";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
