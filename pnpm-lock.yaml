@@ -27,17 +27,17 @@ importers:
         specifier: ^2.27.3
         version: 2.27.3
       '@monorepolint/cli':
-        specifier: 0.5.0-alpha.137
-        version: 0.5.0-alpha.137
+        specifier: 0.5.0-beta.10
+        version: 0.5.0-beta.10
       '@monorepolint/config':
-        specifier: 0.5.0-alpha.137
-        version: 0.5.0-alpha.137
+        specifier: 0.5.0-beta.10
+        version: 0.5.0-beta.10
       '@monorepolint/core':
-        specifier: 0.5.0-alpha.137
-        version: 0.5.0-alpha.137
+        specifier: 0.5.0-beta.10
+        version: 0.5.0-beta.10
       '@monorepolint/rules':
-        specifier: 0.5.0-alpha.137
-        version: 0.5.0-alpha.137
+        specifier: 0.5.0-beta.10
+        version: 0.5.0-beta.10
       '@types/lint-staged':
         specifier: ^13.3.0
         version: 13.3.0
@@ -3234,45 +3234,45 @@ packages:
     resolution: {integrity: sha512-HZpPoABogPvjeJOdzCOSJsXeL/SMCBgBZMVC3X3d7YYp2gf31MfxhUoYUNwf1ERPJOnQc0wkFn9trqI6ZEdZuA==}
     dev: true
 
-  /@monorepolint/cli@0.5.0-alpha.137:
-    resolution: {integrity: sha512-Y368Lgf96MlXDYvnuPmI4K42rFKP0SbEHkdxhp1T/Xk4w5LlG+DN+F3sGsuq8nC+WC+bEp73Hjg1gmdyL2ev7g==}
+  /@monorepolint/cli@0.5.0-beta.10:
+    resolution: {integrity: sha512-zeQn1OHpuG5f4gn9MhfyAiMVv8w43bCm7EMo8VVOG6aARMuNU+9VUaIL4a/4kfGIMISjmay1lLdh+V6E6qD7ZA==}
     engines: {node: '>=18'}
     hasBin: true
     dependencies:
-      '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/core': 0.5.0-alpha.137
-      '@monorepolint/utils': 0.5.0-alpha.137
+      '@monorepolint/config': 0.5.0-beta.10
+      '@monorepolint/core': 0.5.0-beta.10
+      '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
       tslib: 2.6.2
       yargs: 17.7.2
     dev: true
 
-  /@monorepolint/config@0.5.0-alpha.137:
-    resolution: {integrity: sha512-263OymAmzI2tLwTNVEC5qqqcWQpuPTuCr16v+Hbvgp6VgdUVHqFDqtnr3VnkpiA92Bom3UptZodwx5NCKee4eQ==}
+  /@monorepolint/config@0.5.0-beta.10:
+    resolution: {integrity: sha512-ho0IVagHGsWeTE9Sr+S00M8zWMUYMenqxM1PW3+c49Q+rdO3Jyipap4H82zQKk2+PkYSK2e5WWrYoSs5GaKJig==}
     engines: {node: '>=18'}
     dependencies:
-      '@monorepolint/utils': 0.5.0-alpha.137
+      '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
       tslib: 2.6.2
     dev: true
 
-  /@monorepolint/core@0.5.0-alpha.137:
-    resolution: {integrity: sha512-gbN+CX/7RJ5BPL2SoX1XL0+/nQu28OGoyOuN2G3smzDwjDWTxKUIa7akxEc1pc+6ABFYDNVuJAOtZMZrDo+7eA==}
+  /@monorepolint/core@0.5.0-beta.10:
+    resolution: {integrity: sha512-CxsA3vrdqGHkFrGwVQiwzIPnPYVzuPW1B06rhT8pocCjvETF3kihyKLt0AZjgB7CcWOCCx7MJlxnL7Rp+5/X/Q==}
     engines: {node: '>=18'}
     dependencies:
-      '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/utils': 0.5.0-alpha.137
+      '@monorepolint/config': 0.5.0-beta.10
+      '@monorepolint/utils': 0.5.0-beta.10
       chalk: 5.3.0
       tslib: 2.6.2
     dev: true
 
-  /@monorepolint/rules@0.5.0-alpha.137:
-    resolution: {integrity: sha512-92O16iWaaOMNVjAzwZ/h8vvFSVIKSKeIYa3HeDjV4VRcwTH84JopnfJOpd5y/6x3OxaDvhkuZmcpnOnr/Nmsig==}
+  /@monorepolint/rules@0.5.0-beta.10:
+    resolution: {integrity: sha512-bqFKq8Qf1IQBM6AuKPrx8fwSq/CZSYVtd5VKG7cMqAz/OGopGd+2NxhAGUll4xqLGUf9Eue1jWKaOaz4mp/0Sw==}
     engines: {node: '>=18'}
     dependencies:
-      '@monorepolint/config': 0.5.0-alpha.137
-      '@monorepolint/core': 0.5.0-alpha.137
-      '@monorepolint/utils': 0.5.0-alpha.137
+      '@monorepolint/config': 0.5.0-beta.10
+      '@monorepolint/core': 0.5.0-beta.10
+      '@monorepolint/utils': 0.5.0-beta.10
       globby: 14.0.1
       jest-diff: 29.7.0
       resolve-package-path: 4.0.3
@@ -3281,8 +3281,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@monorepolint/utils@0.5.0-alpha.137:
-    resolution: {integrity: sha512-16Cap06ObJt75HmpKA6LBmy+4yKZYiqMrciWF5W5JFpwWuAQ/y4KAUFr6QfSujLv8j1c/KyuA2BbDJKTR42cKA==}
+  /@monorepolint/utils@0.5.0-beta.10:
+    resolution: {integrity: sha512-168whB3isRAweutUEPUbaZ3Bu8vN8k8y83Vufk8ouEZlWRvtzRvn+cyOuY/Ltm8jti7FVxKZeTnYGsfe5idHwA==}
     engines: {node: '>=18'}
     dependencies:
       find-packages: 10.0.4
