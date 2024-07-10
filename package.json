@@ -39,20 +39,19 @@
     "globals": "^15.3.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
-    "micromatch": "^4.0.5",
+    "micromatch": "^4.0.7",
     "mytsup": "workspace:~",
     "tsc-absolute": "^1.0.1",
     "tsconfig": "workspace:~",
-    "tsup": "^8.0.2",
+    "tsup": "^8.1.0",
     "turbo": "^1.13.2",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.3",
     "typescript-eslint": "^7.9.0",
     "vitest": "^1.6.0"
   },
   "pnpm": {
     "overrides": {
-      "trim@0.0.1": "0.0.3",
-      "braces@3.0.2": "3.0.3"
+      "trim@0.0.1": "0.0.3"
     }
   },
   "engines": {
