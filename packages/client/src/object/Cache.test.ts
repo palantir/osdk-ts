@@ -58,6 +58,14 @@ describe("AsyncCache", () => {
     expect(await cache.get(fauxClient2, "k")).toEqual("k");
   });
 
+  it("has a client and its copy access the same cache", async () => {
+    const cache = createAsyncClientCache((client: MinimalClient, key: string) =>
+      Promise.resolve(key)
+    );
+    await cache.set(fauxClient, "k", "v");
+    expect(await cache.get({ ...fauxClient }, "k")).toEqual("v");
+  });
+
   it("does not double factory", async () => {
     const resolveToKey = (client: MinimalClient, key: string) =>
       new Promise<string>((resolve, reject) => {
