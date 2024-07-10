@@ -50,7 +50,7 @@ import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
@@ -101,7 +101,7 @@ function subscriptionIsDone(sub: Subscription<any>) {
 
 export class ObjectSetListenerWebsocket {
   static #instances = new WeakMap<
-    MinimalClient,
+    ClientCacheKey,
     ObjectSetListenerWebsocket
   >();
   readonly OBJECT_SET_EXPIRY_MS: number;
@@ -109,10 +109,15 @@ export class ObjectSetListenerWebsocket {
 
   // FIXME
   static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
-    let instance = ObjectSetListenerWebsocket.#instances.get(client);
+    let instance = ObjectSetListenerWebsocket.#instances.get(
+      client.clientCacheKey,
+    );
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
-      ObjectSetListenerWebsocket.#instances.set(client, instance);
+      ObjectSetListenerWebsocket.#instances.set(
+        client.clientCacheKey,
+        instance,
+      );
     }
     return instance;
   }
