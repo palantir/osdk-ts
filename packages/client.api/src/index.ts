@@ -65,6 +65,8 @@ export type {
   GroupByRange,
 } from "./groupby/GroupByClause.js";
 export type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
   DataValueClientToWire,
   DataValueWireToClient,
 } from "./mapping/DataValueMapping.js";

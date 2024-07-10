@@ -23,6 +23,8 @@ import type {
   QueryParameterDefinition,
 } from "@osdk/api";
 import type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
   OsdkBase,
   OsdkObjectPrimaryKeyType,
   QueryParameterType,
@@ -204,7 +206,10 @@ async function remapQueryResponse<
       return responseValue as QueryReturnType<typeof responseDataType>;
     }
     case "twoDimensionalAggregation": {
-      const result: { key: any; value: any }[] = [];
+      const result: {
+        key: AllowedBucketKeyTypes;
+        value: AllowedBucketTypes;
+      }[] = [];
       for (const { key, value } of responseValue.groups) {
         result.push({ key, value });
       }
@@ -212,7 +217,10 @@ async function remapQueryResponse<
     }
 
     case "threeDimensionalAggregation": {
-      const result: { key: any; groups: { key: any; value: any }[] }[] = [];
+      const result: {
+        key: AllowedBucketKeyTypes;
+        groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
+      }[] = [];
       for (const { key, groups } of responseValue.groups) {
         const subresult: { key: any; value: any }[] = [];
         for (const { key: subkey, value } of groups) {
