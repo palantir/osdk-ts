@@ -16,8 +16,20 @@ export const queryTakesAllParameterTypes = {
     date: { nullable: false, type: 'date' },
     string: { nullable: false, type: 'string' },
     timestamp: { nullable: false, type: 'timestamp' },
-    object: { nullable: false, object: 'Todo', type: 'object', __OsdkTargetType: Todo },
-    objectSet: { nullable: false, objectSet: 'Todo', type: 'objectSet', __OsdkTargetType: Todo },
+    object: {
+      nullable: false,
+      object: 'Todo',
+      type: 'object',
+
+      __OsdkTargetType: Todo,
+    },
+    objectSet: {
+      nullable: false,
+      objectSet: 'Todo',
+      type: 'objectSet',
+
+      __OsdkTargetType: Todo,
+    },
     array: { description: 'an array of strings', multiplicity: true, nullable: false, type: 'string' },
     set: {
       description: 'a set of strings',

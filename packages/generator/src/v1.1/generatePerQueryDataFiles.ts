@@ -71,12 +71,10 @@ export async function generatePerQueryDataFiles(
             ${
                 parameter.dataType.type === "object"
                   || parameter.dataType.type === "objectSet"
-                  ? `__OsdkTargetType: ${
-                    getObjectDefIdentifier(
-                      parameter.dataType.objectTypeApiName!,
-                      v2,
-                    )
-                  }`
+                  ? getOsdkTargetTypeIfPresent(
+                    parameter.dataType.objectTypeApiName!,
+                    v2,
+                  )
                   : ``
               }}`;
             })
@@ -90,14 +88,7 @@ export async function generatePerQueryDataFiles(
           },
             ${
             query.output.type === "object" || query.output.type === "objectSet"
-              ? `
-                  __OsdkTargetType: ${
-                getObjectDefIdentifier(
-                  query.output.objectTypeApiName!,
-                  v2,
-                )
-              }
-              `
+              ? getOsdkTargetTypeIfPresent(query.output.objectTypeApiName!, v2)
               : ``
           }}
           } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
@@ -203,4 +194,18 @@ function getQueryDefSatisfies(apiName: string, objectTypes: string[]): string {
       ? objectTypes.map(apiNameObj => `"${apiNameObj}"`).join("|")
       : "never"
   }>;`;
+}
+
+function getOsdkTargetTypeIfPresent(
+  objectTypeApiName: string,
+  v2: boolean,
+): string {
+  return `
+      __OsdkTargetType: ${
+    getObjectDefIdentifier(
+      objectTypeApiName,
+      v2,
+    )
+  }
+    `;
 }
