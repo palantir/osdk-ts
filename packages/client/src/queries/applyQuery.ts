@@ -149,8 +149,7 @@ async function remapQueryResponse<
       >;
     }
     case "object": {
-      const def = responseDataType.__OsdkTargetType
-        ?? definitions.get(responseDataType.object);
+      const def = definitions.get(responseDataType.object);
       if (!def) {
         throw new Error(
           `Missing definition for ${responseDataType.object}`,
@@ -165,8 +164,7 @@ async function remapQueryResponse<
     }
 
     case "objectSet": {
-      const def = responseDataType.__OsdkTargetType
-        ?? definitions.get(responseDataType.objectSet);
+      const def = definitions.get(responseDataType.objectSet);
       if (!def) {
         throw new Error(
           `Missing definition for ${responseDataType.objectSet}`,
