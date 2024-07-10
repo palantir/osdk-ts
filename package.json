@@ -35,14 +35,14 @@
     "find-up-cli": "^5.0.0",
     "husky": "^9.0.11",
     "lint-staged": "^14.0.1",
-    "micromatch": "^4.0.5",
+    "micromatch": "^4.0.7",
     "mytsup": "workspace:*",
     "tsc-absolute": "^1.0.1",
     "tsconfig": "workspace:*",
-    "tsup": "^7.2.0",
+    "tsup": "^8.1.0",
     "turbo": "^1.10.13",
     "turbotree": "^1.0.1",
-    "typescript": "^5.4.2",
+    "typescript": "^5.5.3",
     "vitest": "^1.4.0"
   },
   "dependencies": {
@@ -53,8 +53,7 @@
       "turbotree@1.0.1": "patches/turbotree@1.0.1.patch"
     },
     "overrides": {
-      "trim@0.0.1": "0.0.3",
-      "braces@3.0.2": "3.0.3"
+      "trim@0.0.1": "0.0.3"
     }
   },
   "engines": {
