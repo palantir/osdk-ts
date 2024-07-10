@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { MinimalClient } from "../MinimalClientContext.js";
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 
 /**
  * A simple cache that can be used to store values for a given client.
@@ -67,18 +67,16 @@ export function createClientCache<K, V extends {}>(
 ): typeof fn extends undefined ? ClientCache<K, V | undefined>
   : ClientCache<K, V>
 {
-  // Given the way some consumers may use this, we may want to cache by
-  // stack + ontologyApiName instead of the client object itself.
   const cache = new WeakMap<
-    MinimalClient,
+    ClientCacheKey,
     typeof fn extends undefined ? Map<K, V | undefined> : Map<K, V>
   >();
 
   function get(client: MinimalClient, key: K) {
-    if (cache.get(client) == null) {
-      cache.set(client, new Map());
+    if (cache.get(client.clientCacheKey) == null) {
+      cache.set(client.clientCacheKey, new Map());
     }
-    let r = cache.get(client)!.get(key);
+    let r = cache.get(client.clientCacheKey)!.get(key);
     if (r === undefined && fn !== undefined) {
       return set(client, key, fn(client, key));
     } else {
@@ -87,17 +85,17 @@ export function createClientCache<K, V extends {}>(
   }
 
   function set(client: MinimalClient, key: K, value: V) {
-    if (cache.get(client) == null) {
-      cache.set(client, new Map());
+    if (cache.get(client.clientCacheKey) == null) {
+      cache.set(client.clientCacheKey, new Map());
     }
 
-    cache.get(client)!.set(key, value);
+    cache.get(client.clientCacheKey)!.set(key, value);
     return value;
   }
 
   function remove(client: MinimalClient, key: K) {
-    if (cache.get(client) == null) return false;
-    return cache.get(client)!.delete(key);
+    if (cache.get(client.clientCacheKey) == null) return false;
+    return cache.get(client.clientCacheKey)!.delete(key);
   }
 
   return { get, set, remove } as ClientCache<K, V>;
