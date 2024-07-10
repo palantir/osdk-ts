@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/legacy-client": "workspace:~",
@@ -41,6 +42,7 @@
     "rollup": "^3.28.1",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-morph": "^19.0.0",
+    "typescript": "^5.5.3",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

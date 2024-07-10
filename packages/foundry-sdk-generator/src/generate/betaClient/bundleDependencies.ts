@@ -23,6 +23,7 @@ export async function bundleDependencies(
   dirs: string[],
   generatedPackageName: string,
   generatedFiles: { [fileName: string]: string },
+  entry?: string,
 ) {
   const project = new Project({
     useInMemoryFileSystem: true,
@@ -39,12 +40,14 @@ export async function bundleDependencies(
     generatedPackageName,
     generatedFiles,
   );
-  const projectMinifier = new ProjectMinifier(
-    project,
-    importSet,
-    `internal/@osdk/legacy-client/index.ts`,
-  );
-  projectMinifier.minifyProject();
+  if (entry) {
+    const projectMinifier = new ProjectMinifier(
+      project,
+      importSet,
+      entry,
+    );
+    projectMinifier.minifyProject();
+  }
   return outputModule(project);
 }
 

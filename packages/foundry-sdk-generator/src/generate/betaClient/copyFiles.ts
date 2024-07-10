@@ -21,6 +21,10 @@ import { Node } from "ts-morph";
 import { withoutTrailingIndex } from "./getModuleSourceFile.js";
 const KNOWN_EXTERNAL = new Set(["geojson"]);
 
+function removeDts(file: string) {
+  return file.replace(/\.d\.c?ts$/, "");
+}
+
 export async function copyFiles(
   project: Project,
   dirs: string[],
@@ -29,14 +33,13 @@ export async function copyFiles(
 ): Promise<Set<string>> {
   const importSet: Set<string> = new Set();
   for (const [fileName, file] of Object.entries(generatedFiles)) {
-    if (!fileName.endsWith(".d.ts")) {
+    if (!fileName.endsWith(".d.ts") && !fileName.endsWith(".d.cts")) {
       continue;
     }
     const indexOfPackageName = fileName.indexOf(generatedPackageName);
-    const tsPath = fileName.slice(
+    const tsPath = removeDts(fileName.slice(
       indexOfPackageName + generatedPackageName.length,
-      -5,
-    );
+    ));
 
     const newModulePath = `${generatedPackageName}${tsPath}`;
 
@@ -93,21 +96,23 @@ export async function copyFiles(
     const packageName = getPackageName(dir);
 
     const relativeBuildDir = buildDirsToTry.find((buildDir) => {
-      try {
-        fs.statSync(path.join(dir, buildDir));
-        return true;
-      } catch (e) {
-        return false;
-      }
+      return ["d.ts", "d.cts", "d.mts"].some((ext) => {
+        try {
+          fs.statSync(path.join(dir, buildDir, `index.${ext}`));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
     });
 
     if (!relativeBuildDir) {
-      throw new Error("Couldnt find the right build dir");
+      throw new Error("Couldn't find the right build dir");
     }
 
     for (const file of getTypeFiles(path.join(dir, relativeBuildDir))) {
       const absoluteBuildDir = path.join(dir, relativeBuildDir);
-      const tsPath = path.relative(absoluteBuildDir, file).slice(0, -5); // drop the trailing ".d.ts"
+      const tsPath = removeDts(path.relative(absoluteBuildDir, file));
 
       const newModulePath = `internal/${packageName}/${tsPath}`;
 
@@ -160,7 +165,10 @@ function* getTypeFiles(dir: string): Generator<string> {
   for (const item of fs.readdirSync(dir)) {
     const target = path.join(dir, item);
     // no test files
-    if (target.endsWith(".d.ts") && !target.endsWith(".test.d.ts")) {
+    if (
+      (target.endsWith(".d.ts") && !target.endsWith(".test.d.ts"))
+      || (target.endsWith(".d.cts") && !target.endsWith(".test.d.cts"))
+    ) {
       yield target;
     } else {
       const stat = fs.lstatSync(target);
