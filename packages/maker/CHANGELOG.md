@@ -1,5 +1,17 @@
 # @osdk/maker
 
+## 0.7.0-beta.1
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+- dc93aa6: Update ontology as code interface link types to reflect internal expectations of ontology integration
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+  - @osdk/api@1.9.0-beta.0
+
 ## 0.7.0-beta.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/platform-sdk-generator
 
+## 0.4.0-beta.1
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+- a8dc51a: Modified codegen so that return types now include Blobs.
+
 ## 0.4.0-beta.0
 
 ### Minor Changes
