@@ -201,8 +201,6 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
   };
 }
 
-// function make
-
 /**
  * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
  * @param {{
@@ -546,37 +544,3 @@ package you do so at your own risk.
     }),
   ],
 };
-
-/**
- * @param {Omit<import("@monorepolint/config").RuleEntry<>,"options" | "id">} shared
- * @returns {import("@monorepolint/config").RuleModule}
- */
-function makePnpmWorkspaceCheck(shared) {
-  return {
-    check: async (context) => {
-      const packageJson = await context.getPackageJson();
-
-      for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
-        const deps = packageJson[d] ?? {};
-
-        for (const [dep, version] of Object.entries(deps)) {
-          if (version?.startsWith("workspace:^")) {
-            context.addError({
-              message:
-                `Disallowed dependency \`${dep}: ${version}. Did you mean 'workspace:~'?`,
-              file: context.getPackageJsonPath(),
-            });
-          }
-        }
-      }
-    },
-    id: "asdf",
-    name: "asdfasdf",
-    ruleEntry: {
-      ...shared,
-
-      options: {},
-    },
-    validateOptions: () => {},
-  };
-}
