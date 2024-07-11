@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
-import type { MinimalClient } from "../MinimalClientContext.js";
+import type { MinimalClient, RequestContext } from "../MinimalClientContext.js";
 
-export function addUserAgent(
+export const augmentRequestContext = (
   client: MinimalClient,
-  withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
-): MinimalClient {
-  if (withMetadata.osdkMetadata) {
-    return {
-      ...client,
-      fetch: createFetchHeaderMutator(
-        client.fetch,
-        (headers) => {
-          headers.set(
-            "Fetch-User-Agent",
-            withMetadata.osdkMetadata!.extraUserAgent,
-          );
-          return headers;
-        },
-      ),
-    };
-  }
-  return client;
-}
+  augment: (ctx: RequestContext) => RequestContext,
+): MinimalClient => ({
+  ...client,
+  requestContext: {
+    ...client.requestContext,
+    ...augment(client.requestContext),
+  },
+});

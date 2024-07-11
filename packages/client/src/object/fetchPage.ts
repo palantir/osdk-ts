@@ -40,7 +40,7 @@ import type {
 } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgent } from "../util/addUserAgent.js";
+import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
@@ -95,7 +95,7 @@ async function fetchInterfacePage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
-    addUserAgent(client, interfaceType),
+    addUserAgentAndRequestContextHeaders(client, interfaceType),
     await client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
@@ -237,7 +237,7 @@ export async function fetchObjectPage<
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.loadObjectSetV2(
-    addUserAgent(client, objectType),
+    addUserAgentAndRequestContextHeaders(client, objectType),
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,

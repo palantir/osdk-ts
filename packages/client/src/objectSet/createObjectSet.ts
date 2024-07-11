@@ -39,6 +39,7 @@ import {
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 
 function isObjectTypeDefinition(
@@ -75,21 +76,24 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   const base: Omit<ObjectSet<Q>, keyof BaseObjectSet<Q>> = {
     aggregate: (aggregate<Q, any>).bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
       objectType,
       objectSet,
     ),
 
     fetchPage: fetchPageInternal.bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "fetchPage" })),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(
+        clientCtx,
+        _ => ({ finalMethodCall: "fetchPageWithErrors" }),
+      ),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
@@ -141,11 +145,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
       let $nextPageToken: string | undefined = undefined;
       do {
+        // TODO: figure out how to mark asyncIter-originated fetchPage requests
         const result = await base.fetchPage({ $nextPageToken });
 
-        for (
-          const obj of result.data
-        ) {
+        for (const obj of result.data) {
           yield obj as Osdk<Q, "$all">;
         }
       } while ($nextPageToken != null);
@@ -169,7 +172,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         };
 
         return await fetchSingle(
-          clientCtx,
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "fetchOne" }),
+          ),
           objectType,
           options,
           withPk,
@@ -195,7 +201,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         };
 
         return await fetchSingleWithErrors(
-          clientCtx,
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "fetchOneWithErrors" }),
+          ),
           objectType,
           options,
           withPk,
