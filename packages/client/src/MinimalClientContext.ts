@@ -19,11 +19,16 @@ import type { Logger } from "pino";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import type { OntologyProvider } from "./ontology/OntologyProvider.js";
 
+declare const tag: unique symbol;
+
+export type ClientCacheKey = {} & { readonly [tag]: void };
+
 export interface MinimalClient extends SharedClientContext {
-  ontologyRid: string;
+  ontologyRid: string | Promise<string>;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
   objectSetFactory: ObjectSetFactory<any, any>;
+  clientCacheKey: ClientCacheKey;
 }
 
 export type MinimalClientParams = {
@@ -32,5 +37,5 @@ export type MinimalClientParams = {
 };
 
 export interface MinimalClientMetadata {
-  ontologyRid: string;
+  ontologyRid: string | Promise<string>;
 }

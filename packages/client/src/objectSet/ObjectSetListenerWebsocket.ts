@@ -50,7 +50,7 @@ import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
@@ -101,7 +101,7 @@ function subscriptionIsDone(sub: Subscription<any>) {
 
 export class ObjectSetListenerWebsocket {
   static #instances = new WeakMap<
-    MinimalClient,
+    ClientCacheKey,
     ObjectSetListenerWebsocket
   >();
   readonly OBJECT_SET_EXPIRY_MS: number;
@@ -109,10 +109,15 @@ export class ObjectSetListenerWebsocket {
 
   // FIXME
   static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
-    let instance = ObjectSetListenerWebsocket.#instances.get(client);
+    let instance = ObjectSetListenerWebsocket.#instances.get(
+      client.clientCacheKey,
+    );
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
-      ObjectSetListenerWebsocket.#instances.set(client, instance);
+      ObjectSetListenerWebsocket.#instances.set(
+        client.clientCacheKey,
+        instance,
+      );
     }
     return instance;
   }
@@ -231,6 +236,8 @@ export class ObjectSetListenerWebsocket {
     // in `#createTemporaryObjectSet`. They should be in sync
     sub.expiry = setTimeout(() => this.#expire(sub), this.OBJECT_SET_EXPIRY_MS);
 
+    const ontologyRid = await this.#client.ontologyRid;
+
     try {
       const [temporaryObjectSet] = await Promise.all([
         // create a time-bounded object set representation for watching
@@ -243,7 +250,7 @@ export class ObjectSetListenerWebsocket {
         getObjectSetBaseType(sub.objectSet).then(baseType =>
           OntologiesV2.ObjectTypesV2.getObjectTypeV2(
             this.#client,
-            this.#client.ontologyRid,
+            ontologyRid,
             baseType,
           )
         ).then(
@@ -700,16 +707,18 @@ async function getOntologyPropertyMappingForApiName(
     );
   }
 
+  const ontologyRid = await client.ontologyRid;
+
   const wireObjectType = await OntologiesV2.ObjectTypesV2
     .getObjectTypeV2(
       client,
-      client.ontologyRid,
+      ontologyRid,
       objectApiName,
     );
 
   return getOntologyPropertyMappingForRid(
     ctx,
-    client.ontologyRid,
+    ontologyRid,
     wireObjectType.rid,
   );
 }

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MockTask } from "./mocks";
 import css from "./TaskListItem.module.css";
+
 interface TaskListItemProps {
   task: MockTask;
   deleteTask: (task: MockTask) => Promise<void>;
-  onTaskDeleted: (taskId: string) => void;
+  onTaskDeleted: (taskId: string | undefined) => void;
 }
 
 function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
@@ -28,9 +29,7 @@ function TaskListItem({ task, deleteTask, onTaskDeleted }: TaskListItemProps) {
       textArea.style.height = `${textArea.scrollHeight}px`;
     }
   }, [task.description]);
-  const cleanDescription = task.description.trim() === ""
-    ? null
-    : task.description.trim();
+  const cleanDescription = task.description?.trim();
   return (
     <li className={css.li}>
       <input

@@ -71,7 +71,6 @@ const esmOnlyPackages = [
   "@osdk/tool.release",
   "@osdk/version-updater",
   "@osdk/client.test.ontology",
-  "watch",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
 
@@ -420,8 +419,8 @@ export default {
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:^",
-          "@osdk/shared.net.platformapi": "workspace:^",
+          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.net.platformapi": "workspace:~",
         },
       },
     }),

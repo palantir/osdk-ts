@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.api",
-  "version": "0.20.0-beta.0",
+  "version": "0.20.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -25,16 +25,12 @@
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^"
+    "@osdk/api": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/internal.foundry": "workspace:^",
-    "@types/geojson": "^7946.0.14"
+    "@types/geojson": "*"
   },
   "devDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/internal.foundry": "workspace:^",
     "@types/geojson": "^7946.0.14",
     "type-fest": "^4.18.2",
     "typescript": "^5.5.2"

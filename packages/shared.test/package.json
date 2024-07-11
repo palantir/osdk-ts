@@ -1,7 +1,7 @@
 {
   "name": "@osdk/shared.test",
   "private": true,
-  "version": "1.5.0-beta.0",
+  "version": "1.5.0-beta.1",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",
@@ -31,8 +31,8 @@
     "typecheck": "../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/gateway": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/gateway": "workspace:~",
     "fetch-retry": "^6.0.0",
     "json-stable-stringify": "^1.1.1",
     "msw": "^2.3.0",

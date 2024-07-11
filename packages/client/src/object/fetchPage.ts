@@ -96,7 +96,7 @@ async function fetchInterfacePage<
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
     addUserAgent(client, interfaceType),
-    client.ontologyRid,
+    await client.ontologyRid,
     interfaceType.apiName,
     applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
       augmentedProperties: args.$augment ?? {},
@@ -238,7 +238,7 @@ export async function fetchObjectPage<
 ): Promise<FetchPageResult<Q, L, R, S>> {
   const r = await OntologiesV2.OntologyObjectSets.loadObjectSetV2(
     addUserAgent(client, objectType),
-    client.ontologyRid,
+    await client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
       // We have to do the following case because LoadObjectSetRequestV2 isnt readonly

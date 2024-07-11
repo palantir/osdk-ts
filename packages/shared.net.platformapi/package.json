@@ -25,8 +25,8 @@
     "typecheck": "../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/shared.client": "workspace:^",
-    "@osdk/shared.net.errors": "workspace:^"
+    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.net.errors": "workspace:~"
   },
   "devDependencies": {
     "typescript": "^5.5.2"

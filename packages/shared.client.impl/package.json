@@ -27,9 +27,9 @@
     "typecheck": "../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
-    "@osdk/shared.client": "workspace:^",
-    "@osdk/shared.net.errors": "workspace:^",
-    "@osdk/shared.net.fetch": "workspace:^"
+    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.net.errors": "workspace:~",
+    "@osdk/shared.net.fetch": "workspace:~"
   },
   "devDependencies": {
     "typescript": "^5.5.2"

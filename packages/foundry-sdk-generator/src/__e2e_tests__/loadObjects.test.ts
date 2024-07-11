@@ -311,6 +311,7 @@ describe("LoadObjects", () => {
           "__apiName": "Employee",
           "__primaryKey": 50031,
           "__rid": "ri.phonograph2-objects.main.object.ae6a0b9a-9b9a-4b9e-8b0a-2b0b9a9a0b9a",
+          "__title": "Jane Doe",
           "class": "Blue",
           "employeeId": 50031,
           "employeeStatus": {

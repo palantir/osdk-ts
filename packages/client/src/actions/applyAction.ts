@@ -48,7 +48,7 @@ export async function applyAction<
   if (Array.isArray(parameters)) {
     const response = await OntologiesV2.Actions.applyActionBatchV2(
       addUserAgent(client, action),
-      client.ontologyRid,
+      await client.ontologyRid,
       action.apiName,
       {
         requests: parameters
@@ -66,7 +66,7 @@ export async function applyAction<
   } else {
     const response = await OntologiesV2.Actions.applyActionV2(
       addUserAgent(client, action),
-      client.ontologyRid,
+      await client.ontologyRid,
       action.apiName,
       {
         parameters: await remapActionParams(

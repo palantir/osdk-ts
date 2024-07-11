@@ -29,19 +29,19 @@
     "typecheck": "../../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
+    "@osdk/api": "workspace:~",
     "@osdk/client.api": "workspace:*"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/client.api": "workspace:^"
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "workspace:^",
-    "@osdk/cli.cmd.typescript": "workspace:^",
-    "@osdk/client.api": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/client.api": "workspace:~",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   },
