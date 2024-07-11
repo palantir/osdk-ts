@@ -34,6 +34,7 @@ const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "mytsup",
   "tsconfig",
+  "@osdk/api-extractor",
   "@osdk/examples.todoapp",
   "@osdk/tests.*",
   "@osdk/foundry-sdk-generator",
@@ -215,7 +216,6 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": DELETE_SCRIPT_ENTRY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           "check-attw":
             `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
@@ -224,10 +224,10 @@ function standardPackageRules(shared, options) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          prettier: DELETE_SCRIPT_ENTRY,
-          transpile: "tsup",
+          transpile:
+            "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
           typecheck:
-            `${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
+            `find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
               options.esmOnly ? "esm" : "both"
             }`,
         },
