@@ -418,6 +418,10 @@ export type OsdkObjectOrInterfaceFrom<Q extends ObjectTypeDefinition<any> | Inte
 // @public (undocumented)
 export type OsdkObjectPrimaryKeyType<O extends ObjectTypeDefinition<any>> = PropertyValueWireToClient[O["primaryKeyType"]];
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// Warning: (tsdoc-param-tag-with-invalid-type) The @param block should not include a JSDoc-style '{type}'
 // Warning: (ae-forgotten-export) The symbol "MaybeArray" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "Converted" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "MaybeNullable" needs to be exported by the entry point index.d.ts
@@ -590,6 +594,8 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
+// src/OsdkObjectFrom.ts:92:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:93:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/OsdkObjectFrom.ts:149:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)

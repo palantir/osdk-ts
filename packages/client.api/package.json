@@ -17,7 +17,7 @@
     }
   },
   "scripts": {
-    "api-checker": "api-extractor run --verbose $(test -n \"$CI\" || echo --local)",
+    "api-checker": "api-extractor run --verbose --local",
     "api-docs": "api-documenter markdown -i build/api-extractor --output-folder api-docs",
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",

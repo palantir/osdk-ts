@@ -55,8 +55,8 @@
 
     "tsdocMessageReporting": {
       "default": {
-        "logLevel": "warning"
-        // "addToApiReportFile": false
+        "logLevel": "warning",
+        "addToApiReportFile": true
       }
       // "tsdoc-link-tag-unescaped-text": {
       //   "logLevel": "warning",
