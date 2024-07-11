@@ -20,6 +20,7 @@ import { consola } from "consola";
 import { compareSync } from "dir-compare";
 import { findUp } from "find-up";
 import { globby } from "globby";
+import * as jestDiff from "jest-diff";
 import { exec } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -141,10 +142,47 @@ async function checkExamples(
         `Found ${compareResult.differences} differences in ${exampleId} please generate examples again.`,
       );
       consola.error(compareResult.diffSet?.filter(d => d.state !== "equal"));
+
+      for (const q of compareResult.diffSet ?? []) {
+        if (q.state !== "equal") {
+          const aPath = q.path1 && q.name1
+            ? q.path1 + q.relativePath + q.name1
+            : null;
+          const bPath = q.path2 && q.name2
+            ? q.path2 + q.relativePath + q.name2
+            : null;
+
+          const aContents = getContents(aPath);
+          const bContents = getContents(bPath);
+
+          if (aContents || bContents) {
+            consola.error("Contents differ");
+            consola.error(
+              jestDiff.diff(aContents, bContents, {
+                aAnnotation: aPath ?? undefined,
+                bAnnotation: bPath ?? undefined,
+                contextLines: 3,
+              }),
+            );
+          }
+        }
+      }
+
       process.exit(1);
     }
     consola.success(`Contents equal`);
   }
+}
+
+function getContents(aPath: string | null) {
+  return aPath?.endsWith(".json")
+    ? JSON.parse(
+      fs.readFileSync(aPath, "utf-8"),
+    )
+    : aPath?.endsWith(".ts") || aPath?.endsWith(".tsx")
+        || aPath?.endsWith(".js") || aPath?.endsWith(".jsx")
+    ? fs.readFileSync(aPath, "utf-8")
+    : null;
 }
 
 async function copyExamples(

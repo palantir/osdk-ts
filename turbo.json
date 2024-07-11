@@ -132,11 +132,7 @@
       "outputLogs": "new-only",
       "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
-      "outputs": [
-        "dist/**",
-        "lib/**",
-        "build/{esm,cjs,browser}/**/*.{js,cjs,js.map,cjs.map}"
-      ]
+      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
     },
 
     "test": {
@@ -146,7 +142,6 @@
     },
 
     "//#check-mrl": {
-      "outputLogs": "new-only",
       "inputs": [
         "package.json",
         ".monorepolint.config.mjs",
