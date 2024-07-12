@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { addCause } from "../../client/addCause";
 import { OAuthToken } from "../OAuthToken";
 import { fetchFormEncoded, getRevokeUri, getTokenUri } from "../utils";
 
@@ -43,8 +44,11 @@ export async function getTokenWithClientSecret(
     const responseText = await response.json();
     return new OAuthToken(responseText);
   } catch (e) {
-    throw new Error(
-      `Failed to get token: ${e ? e.toString() : "Unknown error"}`,
+    throw addCause(
+      new Error(
+        `Failed to get token: ${e ? e.toString() : "Unknown error"}`,
+      ),
+      e,
     );
   }
 }
@@ -66,8 +70,11 @@ export async function revokeTokenWithClientSecret(
   try {
     await fetchFormEncoded(fetchFn, tokenUrl, body);
   } catch (e) {
-    throw new Error(
-      `Failed to revoke token: ${e ? e.toString() : "Unknown error"}`,
+    throw addCause(
+      new Error(
+        `Failed to revoke token: ${e ? e.toString() : "Unknown error"}`,
+      ),
+      e,
     );
   }
 }
