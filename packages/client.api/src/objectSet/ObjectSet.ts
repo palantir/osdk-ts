@@ -51,6 +51,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     S extends NullabilityAdherence = NullabilityAdherenceDefault,
   >(
     args?: FetchPageArgs<Q, L, R, A, S>,
+    calledByAsyncIter?: boolean,
   ) => Promise<FetchPageResult<Q, L, R, S>>;
 
   fetchPageWithErrors: <

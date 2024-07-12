@@ -145,8 +145,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
       let $nextPageToken: string | undefined = undefined;
       do {
-        // TODO: figure out how to mark asyncIter-originated fetchPage requests
-        const result = await base.fetchPage({ $nextPageToken });
+        const result = await base.fetchPage({ $nextPageToken }, true);
 
         for (const obj of result.data) {
           yield obj as Osdk<Q, "$all">;

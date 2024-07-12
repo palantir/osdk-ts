@@ -41,6 +41,7 @@ import type {
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<
@@ -129,11 +130,25 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A, S> = {},
+  calledByAsyncIter: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S>> {
+  const modifiedClient = calledByAsyncIter
+    ? augmentRequestContext(client, _ => ({ finalMethodCall: "asyncIter" }))
+    : client;
   if (objectType.type === "interface") {
-    return await fetchInterfacePage(client, objectType, args, objectSet) as any; // fixme
+    return await fetchInterfacePage(
+      modifiedClient,
+      objectType,
+      args,
+      objectSet,
+    ) as any; // fixme
   } else {
-    return await fetchObjectPage(client, objectType, args, objectSet) as any; // fixme
+    return await fetchObjectPage(
+      modifiedClient,
+      objectType,
+      args,
+      objectSet,
+    ) as any; // fixme
   }
 }
 
