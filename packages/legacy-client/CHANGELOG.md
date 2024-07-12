@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.2.4
+
+### Patch Changes
+
+- 31dc247: Oauth errors should include a cause now on supported platforms
+
 ## 2.2.3
 
 ### Patch Changes
