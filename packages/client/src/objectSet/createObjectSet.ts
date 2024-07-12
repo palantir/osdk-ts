@@ -16,10 +16,12 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   BaseObjectSet,
+  FetchPageResult,
   LinkedType,
   LinkNames,
   MinimalObjectSet,
@@ -145,7 +147,13 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
       let $nextPageToken: string | undefined = undefined;
       do {
-        const result = await base.fetchPage({ $nextPageToken }, true);
+        const result: FetchPageResult<
+          Q,
+          ObjectOrInterfacePropertyKeysFrom2<Q>,
+          boolean,
+          "throw"
+        > = await base.fetchPage({ $nextPageToken }, true);
+        $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
           yield obj as Osdk<Q, "$all">;
