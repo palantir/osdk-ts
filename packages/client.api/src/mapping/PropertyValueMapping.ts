@@ -37,7 +37,7 @@ export interface PropertyValueWireToClient {
   string: string;
   timestamp: string;
 
-  numericTimeseries: unknown;
+  numericTimeseries: TimeSeriesProperty<number>;
   stringTimeseries: TimeSeriesProperty<string>;
 }
 

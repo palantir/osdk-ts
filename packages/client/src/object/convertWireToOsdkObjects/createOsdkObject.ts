@@ -123,9 +123,8 @@ export function createOsdkObject<
             >(
               client,
               objectDef.apiName,
-              objectDef.primaryKeyApiName,
+              target[RawObject][objectDef.primaryKeyApiName as string],
               p as string,
-              undefined as any,
             );
           }
         }

@@ -53,10 +53,10 @@ export type ConvertProps<
   : TO extends ObjectTypeDefinition<any> ? (
       (
         UnionIfTrue<
-          TO["interfaceMap"][ApiNameAsString<FROM>][
+          NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][
             P extends "$all" ? (
                 keyof FROM["properties"] extends
-                  keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+                  NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>]
                   ? keyof FROM["properties"]
                   : never
               )
@@ -70,9 +70,10 @@ export type ConvertProps<
   : UnionIfTrue<
     TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
       : FROM extends ObjectTypeDefinition<any>
-        ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][
-          ApiNameAsString<TO>
-        ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][
+        ? DropDollarOptions<P> extends
+          keyof NonNullable<FROM["inverseInterfaceMap"]>[
+            ApiNameAsString<TO>
+          ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][
             DropDollarOptions<P>
           ]
         : never
@@ -82,6 +83,57 @@ export type ConvertProps<
     "$notStrict"
   >;
 
+// type TO = InterfaceDefinition<string, unknown>;
+// type FROM = FetchedObjectTypeDefinition<any, unknown>;
+// type P = string;
+// type Z = ValidToFrom<FROM>;
+
+// type huh2 = TO["apiName"]["__Unbranded"];
+// type huh3 = ApiNameAsString<Z>;
+// type huh22 = FROM["inverseInterfaceMap"];
+
+// type huhtest<TO extends ObjectTypeDefinition<any>> = UnionIfTrue<
+//   TO["interfaceMap"][ApiNameAsString<FROM>][
+//     P extends "$all" ? (
+//         keyof FROM["properties"] extends
+//           keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+//           ? keyof FROM["properties"]
+//           : never
+//       )
+//       : DropDollarOptions<P>
+//   ],
+//   P extends "$notStrict" ? true : false,
+//   "$notStrict"
+// >;
+
+// type huh = UnionIfTrue<
+//   TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
+//     : FROM extends ObjectTypeDefinition<any>
+//       ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[
+//         ApiNameAsString<Z>
+//       ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<Z>][
+//           DropDollarOptions<P>
+//         ]
+//       : never
+//     : never
+//     : never,
+//   P extends "$notStrict" ? true : false,
+//   "$notStrict"
+// >;
+
+export const InterfaceDefinitions = Symbol(
+  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
+);
+export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
+  extends ObjectTypeDefinition<K, N>
+{
+  rid: string;
+
+  // we keep this here so we can depend on these synchronously
+  [InterfaceDefinitions]: {
+    [key: string]: { def: InterfaceDefinition<any> };
+  };
+}
 /** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
   InterfaceDefinition<any, any>
@@ -139,7 +191,7 @@ export type Osdk<
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
-      : unknown;
+      : any;
 
     // $uniqueId: string; // will be dynamic
 

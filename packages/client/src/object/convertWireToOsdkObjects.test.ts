@@ -167,7 +167,7 @@ describe("convertWireToOsdkObjects", () => {
       clientCtx,
       [objectFromWire],
       undefined,
-    )) as Osdk<Employee>[];
+    )) as unknown as Osdk<Employee>[];
 
     expect(obj.fullName).toEqual("Steve");
     expect(Object.keys(obj).sort()).toEqual([
@@ -227,7 +227,7 @@ describe("convertWireToOsdkObjects", () => {
       clientCtx,
       [objectFromWire],
       FooInterface.apiName,
-    )) as Osdk<FooInterface>[];
+    )) as unknown as Osdk<FooInterface>[];
 
     expect(objAsFoo).toMatchInlineSnapshot(`
       {

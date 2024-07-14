@@ -36,10 +36,13 @@ export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> =
     : S | E;
 
 /** @internal exposed for a test */
-export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E> =
-  IsNever<S> extends true ? never
-    : UNION_IF_TRUE extends true ? S | E
-    : S;
+export type UnionIfTrue<
+  S extends string,
+  UNION_IF_TRUE extends boolean,
+  E extends string,
+> = IsNever<S> extends true ? never
+  : UNION_IF_TRUE extends true ? S | E
+  : S;
 
 export type FetchPageResult<
   Q extends ObjectOrInterfaceDefinition,

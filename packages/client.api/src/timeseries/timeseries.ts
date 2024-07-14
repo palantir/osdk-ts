@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-export interface TimeSeriesQuery {
-  when: "BEFORE" | "AFTER";
-  value: number;
-  unit: TimeseriesDurationUnits;
-}
+export type TimeSeriesQuery = {
+  $before: number;
+  $after?: never;
+  $unit: keyof typeof TimeseriesDurationMapping;
+} | {
+  $after: number;
+  $before?: never;
+  $unit: keyof typeof TimeseriesDurationMapping;
+};
 
 export type TimeseriesDurationUnits =
   | "YEARS"
@@ -29,6 +33,31 @@ export type TimeseriesDurationUnits =
   | "MINUTES"
   | "SECONDS"
   | "MILLISECONDS";
+
+export const TimeseriesDurationMapping = {
+  "ms": "MILLISECONDS",
+  "milliseconds": "MILLISECONDS",
+  "sec": "SECONDS",
+  "seconds": "SECONDS",
+  "min": "MINUTES",
+  "minute": "MINUTES",
+  "minutes": "MINUTES",
+  "hr": "HOURS",
+  "hrs": "HOURS",
+  "hour": "HOURS",
+  "hours": "HOURS",
+  "day": "DAYS",
+  "days": "DAYS",
+  "wk": "WEEKS",
+  "week": "WEEKS",
+  "weeks": "WEEKS",
+  "mos": "MONTHS",
+  "month": "MONTHS",
+  "months": "MONTHS",
+  "yr": "YEARS",
+  "year": "YEARS",
+  "years": "YEARS",
+} satisfies Record<string, TimeseriesDurationUnits>;
 
 export interface TimeSeriesPoint<T extends string | number> {
   time: string;

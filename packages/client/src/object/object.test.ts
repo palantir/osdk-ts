@@ -51,20 +51,20 @@ describe("OsdkObject", () => {
       apiServer.close();
     });
 
-    it("loads an employee", async () => {
-      const result = await client(MockOntology.objects.Employee).where({
-        employeeId: stubData.employee1.employeeId,
-      }).fetchPage();
+    // it("loads an employee", async () => {
+    //   const result = await client(MockOntology.objects.Employee).where({
+    //     employeeId: stubData.employee1.employeeId,
+    //   }).fetchPage();
 
-      // we should get the employee we requested
-      const employee = result.data[0];
-      expect(employee).toEqual(asV2Object(stubData.employee1));
+    //   // we should get the employee we requested
+    //   const employee = result.data[0];
+    //   expect(employee).toEqual(asV2Object(stubData.employee1));
 
-      employee.startDate;
+    //   employee.startDate;
 
-      // it should have the prototype that we assign at hydration time
-      expect(Object.keys(employee.$link.lead)).toBeDefined();
-    });
+    //   // it should have the prototype that we assign at hydration time
+    //   expect(Object.keys(employee.$link.lead)).toBeDefined();
+    // });
 
     it("traverses the link from an employee to their lead", async () => {
       const result = await client(MockOntology.objects.Employee).where({

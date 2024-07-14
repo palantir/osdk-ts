@@ -54,5 +54,16 @@ describe("ObjectSet", () => {
   it("get first points works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
+    const point = await employee.employeeStatus?.getFirstPoint();
+    expect(point?.time).toEqual("2012-02-12");
+    expect(point?.value).toEqual(10);
+  });
+
+  it("get last points works", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+    const point = await employee.employeeStatus?.getLastPoint();
+    expect(point?.time).toEqual("2014-04-14");
+    expect(point?.value).toEqual(30);
   });
 });

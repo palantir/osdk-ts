@@ -19,7 +19,11 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { NullabilityAdherence, Osdk } from "@osdk/client.api";
+import type {
+  ConvertProps,
+  NullabilityAdherence,
+  Osdk,
+} from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
@@ -29,6 +33,12 @@ import {
 } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
+
+// expands object types recursively
+type ExpandRecursively<T> = T extends object
+  ? T extends infer O ? { [K in keyof O]: ExpandRecursively<O[K]> } : never
+  : T;
 /**
  * If interfaceApiName is not undefined, converts the instances of the
  * interface into their respective
@@ -101,7 +111,14 @@ export async function convertWireToOsdkObjects(
     } else if (strictNonNull === "drop" && !conforming) {
       continue;
     }
-
+    // type huh = Osdk<InterfaceDefinition<any, any>, string, never>;
+    // type huh2 = Osdk<FetchedObjectTypeDefinition<any, unknown>, string, never>;
+    // type expandedhuh = Expand<huh>;
+    type huhuh = ConvertProps<
+      FetchedObjectTypeDefinition<any, unknown>,
+      InterfaceDefinition<any, unknown>,
+      string
+    >;
     let osdkObject = createOsdkObject(client, objectDef, rawObj);
     if (interfaceApiName) osdkObject = osdkObject.$as(interfaceApiName);
 

@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-import type {
-  Attachment,
-  TimeSeriesPoint,
-  TimeSeriesProperty,
+import {
+  type Attachment,
+  TimeseriesDurationMapping,
+  type TimeSeriesPoint,
+  type TimeSeriesProperty,
+  type TimeSeriesQuery,
 } from "@osdk/client.api";
-import type { StreamTimeSeriesPointsRequest } from "@osdk/internal.foundry";
+import type {
+  RelativeTime,
+  RelativeTimeRange,
+  StreamTimeSeriesPointsRequest,
+} from "@osdk/internal.foundry";
 import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import {
@@ -32,13 +38,12 @@ export function createTimeseriesProperty<T extends number | string>(
   objectApiName: string,
   primaryKey: any,
   propertyName: string,
-  body: StreamTimeSeriesPointsRequest,
 ): TimeSeriesProperty<T> {
   return {
     async getFirstPoint() {
       return OntologiesV2.OntologyObjectsV2.getFirstPoint(
         client,
-        client.ontologyRid,
+        await client.ontologyRid,
         objectApiName,
         primaryKey,
         propertyName,
@@ -47,29 +52,29 @@ export function createTimeseriesProperty<T extends number | string>(
     async getLastPoint() {
       return OntologiesV2.OntologyObjectsV2.getLastPoint(
         client,
-        client.ontologyRid,
+        await client.ontologyRid,
         objectApiName,
         primaryKey,
         propertyName,
       ) as Promise<TimeSeriesPoint<T>>;
     },
-    async getAllPoints() {
+    async getAllPoints(query: TimeSeriesQuery) {
       return getAllTimeSeriesPoints(
         client,
         objectApiName,
         primaryKey,
         propertyName,
-        body,
+        query,
       );
     },
 
-    asyncIterPoints() {
+    asyncIterPoints(query: TimeSeriesQuery) {
       return iterateTimeSeriesPoints(
         client,
         objectApiName,
         primaryKey,
         propertyName,
-        body,
+        query,
       );
     },
   };
@@ -80,16 +85,27 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   objectApiName: string,
   primaryKey: any,
   propertyName: string,
-  body: StreamTimeSeriesPointsRequest,
+  body: TimeSeriesQuery,
 ): Promise<Array<TimeSeriesPoint<T>>> {
+  const relativeTime: RelativeTime = body.$before
+    ? {
+      when: "BEFORE",
+      value: body.$before,
+      unit: TimeseriesDurationMapping[body.$unit],
+    }
+    : {
+      when: "AFTER",
+      value: body.$after!,
+      unit: TimeseriesDurationMapping[body.$unit],
+    };
   const streamPointsIterator = await OntologiesV2.OntologyObjectsV2
     .streamPoints(
       client,
-      client.ontologyRid,
+      await client.ontologyRid,
       objectApiName,
       primaryKey,
       propertyName,
-      body,
+      { range: { type: "relative", startTime: relativeTime } },
     );
 
   const allPoints: Array<TimeSeriesPoint<T>> = [];
@@ -111,16 +127,27 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
   objectApiName: string,
   primaryKey: any,
   propertyName: string,
-  body: StreamTimeSeriesPointsRequest,
+  body: TimeSeriesQuery,
 ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
+  const relativeTime: RelativeTime = body.$before
+    ? {
+      when: "BEFORE",
+      value: body.$before,
+      unit: TimeseriesDurationMapping[body.$unit],
+    }
+    : {
+      when: "AFTER",
+      value: body.$after!,
+      unit: TimeseriesDurationMapping[body.$unit],
+    };
   const streamPointsResponse = await OntologiesV2.OntologyObjectsV2
     .streamPoints(
       client,
-      client.ontologyRid,
+      await client.ontologyRid,
       objectApiName,
       primaryKey,
       propertyName,
-      body,
+      { range: { type: "relative", startTime: relativeTime } },
     );
 
   const reader = streamPointsResponse.stream().getReader();

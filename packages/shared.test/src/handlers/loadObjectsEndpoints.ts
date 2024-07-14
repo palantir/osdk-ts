@@ -225,7 +225,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     const firstPointResp =
       firstPointRequestHandlers[JSON.stringify(pointParams)];
     if (
-      req.params.ontologyApiName === defaultOntology.apiName
+      (req.params.ontologyApiName === defaultOntology.apiName
+        || req.params.ontologyApiName === defaultOntology.rid)
       && req.params.objectType === employeeObjectType.apiName
     ) {
       return firstPointResp;
@@ -247,7 +248,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         lastPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        req.params.ontologyApiName === "default-ontology"
+        (req.params.ontologyApiName === defaultOntology.apiName
+          || req.params.ontologyApiName === defaultOntology.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;

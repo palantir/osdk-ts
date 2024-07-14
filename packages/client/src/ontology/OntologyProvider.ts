@@ -47,7 +47,7 @@ export interface OntologyProvider {
    */
   getObjectDefinition: (
     apiName: string,
-  ) => Promise<FetchedObjectTypeDefinition<any>>;
+  ) => Promise<FetchedObjectTypeDefinition<string>>;
 
   /**
    * Returns the current known definition for the interface.

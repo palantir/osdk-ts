@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
+
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,
@@ -111,7 +113,9 @@ export type { PageResult } from "./PageResult.js";
 export type {
   TimeSeriesPoint,
   TimeSeriesProperty,
+  TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
+export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
