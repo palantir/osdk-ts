@@ -1,5 +1,18 @@
 # @osdk/client.api
 
+## 0.20.0-beta.3
+
+### Minor Changes
+
+- b5ac8a8: Fix dependencies to be peer only
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 700c894: Directly depends on @osdk/api instead of peer
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+  - @osdk/api@1.9.0-beta.0
+
 ## 0.20.0-beta.2
 
 ### Minor Changes

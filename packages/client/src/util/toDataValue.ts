@@ -19,6 +19,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";
 import { isOntologyObjectV2 } from "./isOntologyObjectV2.js";
+import { isOsdkBaseObject } from "./isOsdkObject.js";
 import { isWireObjectSet } from "./WireObjectSet.js";
 
 /**
@@ -63,6 +64,10 @@ export async function toDataValue(
   // objects just send the JSON'd primaryKey
   if (isOntologyObjectV2(value)) {
     return await toDataValue(value.__primaryKey, client);
+  }
+
+  if (isOsdkBaseObject(value)) {
+    return await toDataValue(value.$primaryKey, client);
   }
 
   // object set (the rid as a string (passes through the last return), or the ObjectSet definition directly)
