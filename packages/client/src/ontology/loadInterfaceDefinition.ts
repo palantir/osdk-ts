@@ -25,7 +25,7 @@ export async function loadInterfaceDefinition(
 ): Promise<InterfaceDefinition<any, any>> {
   const r = await OntologiesV2.OntologyObjectsV2.getInterfaceType(
     client,
-    client.ontologyRid,
+    await client.ontologyRid,
     objtype,
     { preview: true },
   );

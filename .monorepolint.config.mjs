@@ -28,10 +28,13 @@ import {
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
+const LATEST_TYPESCRIPT_DEP = "^5.5.2";
+
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "mytsup",
   "tsconfig",
+  "@osdk/api-extractor",
   "@osdk/examples.todoapp",
   "@osdk/tests.*",
   "@osdk/foundry-sdk-generator",
@@ -53,6 +56,8 @@ const esmOnlyPackages = [
   "@osdk/cli",
   "@osdk/client",
   "@osdk/client.api",
+  "@osdk/client.unstable",
+  "@osdk/client.unstable.osw",
   "@osdk/create-app",
   "@osdk/example-generator",
   "@osdk/foundry.*",
@@ -67,7 +72,6 @@ const esmOnlyPackages = [
   "@osdk/tool.release",
   "@osdk/version-updater",
   "@osdk/client.test.ontology",
-  "watch",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
 
@@ -149,7 +153,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  packageDepth: number,
  *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
- *  tsVersion?: "^5.4.5"|"^4.9.5",
+ *  tsVersion?: "^5.5.2"|"^4.9.5",
  *  skipTsconfigReferences?: boolean
  *  singlePackageName?: string
  * }} options
@@ -212,7 +216,6 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": DELETE_SCRIPT_ENTRY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           "check-attw":
             `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
@@ -221,10 +224,10 @@ function standardPackageRules(shared, options) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          prettier: DELETE_SCRIPT_ENTRY,
-          transpile: "tsup",
+          transpile:
+            "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
           typecheck:
-            `${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
+            `find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
               options.esmOnly ? "esm" : "both"
             }`,
         },
@@ -331,7 +334,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
     ...standardPackageRules({
@@ -341,7 +344,7 @@ export default {
       esmOnly: true,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
     ...standardPackageRules({
@@ -350,7 +353,7 @@ export default {
       legacy: false,
       packageDepth: 2,
       type: "library",
-      tsVersion: "^5.4.5",
+      tsVersion: LATEST_TYPESCRIPT_DEP,
       esmOnly: true,
       customTsconfigExcludes: [
         "./src/__e2e_tests__/**/**.test.ts",
@@ -366,7 +369,7 @@ export default {
           legacy: true,
           packageDepth: 2,
           type: "library",
-          tsVersion: "^5.4.5",
+          tsVersion: LATEST_TYPESCRIPT_DEP,
           singlePackageName: pkg,
         })
       )
@@ -416,8 +419,8 @@ export default {
       ],
       options: {
         dependencies: {
-          "@osdk/shared.client": "workspace:^",
-          "@osdk/shared.net.platformapi": "workspace:^",
+          "@osdk/shared.client": "workspace:~",
+          "@osdk/shared.net.platformapi": "workspace:~",
         },
       },
     }),

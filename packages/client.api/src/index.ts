@@ -17,7 +17,6 @@
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,
-  Actions,
   ActionSignature,
   ActionSignatureFromDef,
   ActionValidationResponse,

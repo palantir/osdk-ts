@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Ontology } from "@osdk/client.test.ontology";
 import { apiServer, MockOntology, stubData } from "@osdk/shared.test";
 import type { MockedFunction } from "vitest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -35,7 +36,7 @@ describe(toDataValue, () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      Ontology.metadata.ontologyRid,
       async () => "myAccessToken",
     );
 
@@ -102,6 +103,14 @@ describe(toDataValue, () => {
     const ontologyConversion = await toDataValue(employee, clientCtx);
     expect(ontologyConversion).toEqual(
       stubData.employee1.__primaryKey,
+    );
+  });
+
+  it("maps an ontology object into just its primary key with osdk wrapper", async () => {
+    const task = await client(Ontology.objects.Employee).fetchOne(50030);
+    const ontologyConversion = await toDataValue(task, clientCtx);
+    expect(ontologyConversion).toEqual(
+      task.$primaryKey,
     );
   });
 

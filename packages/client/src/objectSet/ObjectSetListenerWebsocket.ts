@@ -20,6 +20,26 @@ import type {
   OntologyDefinition,
 } from "@osdk/api";
 import type { Osdk } from "@osdk/client.api";
+import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
+import {
+  createTemporaryObjectSet,
+  loadAllOntologies,
+  loadOntologyEntities,
+} from "@osdk/client.unstable";
+import type {
+  FoundryObject,
+  Message,
+  Message_objectSetChanged,
+  ObjectSetSubscribeRequest,
+  ObjectSetSubscribeRequests,
+  ObjectSetSubscribeResponses,
+  ObjectUpdate_object,
+  RefreshObjectSet,
+  StreamMessage,
+  StreamMessage_objectSetChanged,
+  SubscriptionClosed,
+} from "@osdk/client.unstable.osw";
+import { batchEnableWatcher } from "@osdk/client.unstable.osw";
 import {
   type ObjectSet,
   OntologiesV2,
@@ -30,29 +50,7 @@ import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";
 import invariant from "tiny-invariant";
 import { metadataCacheClient } from "../__unstable/ConjureSupport.js";
-import { createTemporaryObjectSet } from "../generated/object-set-service/api/ObjectSetService.js";
-import type {
-  StreamMessage,
-  SubscriptionClosed,
-} from "../generated/object-set-watcher/objectsetwatcher/api/index.js";
-import type {
-  Message,
-  Message_objectSetChanged,
-} from "../generated/object-set-watcher/objectsetwatcher/api/Message.js";
-import type { FoundryObject } from "../generated/object-set-watcher/objectsetwatcher/api/object/FoundryObject.js";
-import type { ObjectSetSubscribeRequest } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequest.js";
-import type { ObjectSetSubscribeRequests } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeRequests.js";
-import type { ObjectSetSubscribeResponses } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetSubscribeResponses.js";
-import { batchEnableWatcher } from "../generated/object-set-watcher/objectsetwatcher/api/ObjectSetWatchService.js";
-import type {
-  ObjectUpdate_object,
-} from "../generated/object-set-watcher/objectsetwatcher/api/ObjectUpdate.js";
-import type { RefreshObjectSet } from "../generated/object-set-watcher/objectsetwatcher/api/RefreshObjectSet.js";
-import type { StreamMessage_objectSetChanged } from "../generated/object-set-watcher/objectsetwatcher/api/StreamMessage.js";
-import type { LoadAllOntologiesResponse } from "../generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
-import { loadAllOntologies } from "../generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
-import { loadOntologyEntities } from "../generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
-import type { MinimalClient } from "../MinimalClientContext.js";
+import type { ClientCacheKey, MinimalClient } from "../MinimalClientContext.js";
 import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
 import {
@@ -103,7 +101,7 @@ function subscriptionIsDone(sub: Subscription<any>) {
 
 export class ObjectSetListenerWebsocket {
   static #instances = new WeakMap<
-    MinimalClient,
+    ClientCacheKey,
     ObjectSetListenerWebsocket
   >();
   readonly OBJECT_SET_EXPIRY_MS: number;
@@ -111,10 +109,15 @@ export class ObjectSetListenerWebsocket {
 
   // FIXME
   static getInstance(client: MinimalClient): ObjectSetListenerWebsocket {
-    let instance = ObjectSetListenerWebsocket.#instances.get(client);
+    let instance = ObjectSetListenerWebsocket.#instances.get(
+      client.clientCacheKey,
+    );
     if (instance == null) {
       instance = new ObjectSetListenerWebsocket(client);
-      ObjectSetListenerWebsocket.#instances.set(client, instance);
+      ObjectSetListenerWebsocket.#instances.set(
+        client.clientCacheKey,
+        instance,
+      );
     }
     return instance;
   }
@@ -233,6 +236,8 @@ export class ObjectSetListenerWebsocket {
     // in `#createTemporaryObjectSet`. They should be in sync
     sub.expiry = setTimeout(() => this.#expire(sub), this.OBJECT_SET_EXPIRY_MS);
 
+    const ontologyRid = await this.#client.ontologyRid;
+
     try {
       const [temporaryObjectSet] = await Promise.all([
         // create a time-bounded object set representation for watching
@@ -245,7 +250,7 @@ export class ObjectSetListenerWebsocket {
         getObjectSetBaseType(sub.objectSet).then(baseType =>
           OntologiesV2.ObjectTypesV2.getObjectTypeV2(
             this.#client,
-            this.#client.ontologyRid,
+            ontologyRid,
             baseType,
           )
         ).then(
@@ -702,16 +707,18 @@ async function getOntologyPropertyMappingForApiName(
     );
   }
 
+  const ontologyRid = await client.ontologyRid;
+
   const wireObjectType = await OntologiesV2.ObjectTypesV2
     .getObjectTypeV2(
       client,
-      client.ontologyRid,
+      ontologyRid,
       objectApiName,
     );
 
   return getOntologyPropertyMappingForRid(
     ctx,
-    client.ontologyRid,
+    ontologyRid,
     wireObjectType.rid,
   );
 }

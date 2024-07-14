@@ -1,17 +1,16 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "ui": "stream",
+  "tasks": {
     "codegen": {
-      "inputs": ["ontology.json"],
-      "outputs": ["src/generatedNoCheck/**/*", "src/generatedNoCheck2/**/*"],
-      "dependsOn": ["^transpile", "^typecheck"]
-    },
-
+      "outputLogs": "new-only"
+    }, // empty for overriding
     "fix-lint": {
       "cache": false
     },
 
     "lint": {
+      "outputLogs": "new-only",
       "inputs": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -24,6 +23,7 @@
 
     /* Psuedo task to let us depend on dprint config */
     "//#dprint": {
+      "outputLogs": "new-only",
       "inputs": ["dprint.json"]
     },
 
@@ -33,6 +33,7 @@
     },
 
     "check-attw": {
+      "outputLogs": "new-only",
       "dependsOn": ["//#script-check-attw", "transpile", "typecheck"],
       "inputs": ["build/{esm,cjs,browser}", "package.json"]
     },
@@ -51,6 +52,7 @@
     },
 
     "typecheck": {
+      "outputLogs": "new-only",
       "inputs": [
         "src/**",
         "src/**/*.{mts,cts,ts,tsx}",
@@ -59,14 +61,33 @@
         "*.d.ts"
       ],
       "outputs": [
-        "build/**/*.{d.ts,d.ts.map}",
-        "build/**/package.json"
+        "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
       ],
-      "dependsOn": ["//#script-typecheck", "mytsup#typecheck", "^typecheck", "codegen", "transpile"]
+      "dependsOn": ["//#script-typecheck", "mytsup#typecheck", "^typecheck", "codegen"]
     },
 
     "mytsup#typecheck": {
+      "outputLogs": "new-only",
       "inputs": ["tsup.mjs"]
+    },
+
+    "api-checker": {
+      "outputLogs": "new-only",
+      "inputs": ["api-extractor.json", "build/esm/**/*", "api-extractor.json"],
+      "outputs": ["etc/*.report.api.md", "build/api-extractor/**/*"],
+      "dependsOn": ["typecheck", "@osdk/api-extractor#api-checker"]
+    },
+
+    // Doesn't do anything, just a virtual task to depend on the base.json file
+    "@osdk/api-extractor#api-checker": {
+      "inputs": ["base.json"]
+    },
+
+    "api-docs": {
+      "outputLogs": "new-only",
+      "inputs": ["temp/**/*"],
+      "outputs": ["api-docs/**/*"],
+      "dependsOn": ["api-checker"]
     },
 
     "postVersioning": {
@@ -83,6 +104,7 @@
     },
 
     "tsconfig#typecheck": {
+      "outputLogs": "new-only",
       "inputs": ["tsconfig.base.json"]
     },
 
@@ -101,22 +123,24 @@
     },
 
     "transpile": {
-      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "codegen"],
+      "outputLogs": "new-only",
+      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "^transpile", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
-      "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
+      "outputs": [
+        "dist/**",
+        "lib/**",
+        "build/{esm,cjs,browser}/**/*.{js,cjs,js.map,cjs.map}"
+      ]
     },
 
     "test": {
+      "outputLogs": "new-only",
       "env": ["FORCE_COLOR"],
       "dependsOn": ["transpile", "typecheck"]
     },
 
-    "test:watch": {
-      "env": ["FORCE_COLOR"],
-      "cache": false
-    },
-
     "//#check-mrl": {
+      "outputLogs": "new-only",
       "inputs": [
         "package.json",
         ".monorepolint.config.mjs",
@@ -133,7 +157,15 @@
     },
 
     "check": {
-      "dependsOn": ["//#check-mrl", "lint", "transpile", "typecheck", "test", "check-attw"]
+      "dependsOn": [
+        "//#check-mrl",
+        "lint",
+        "transpile",
+        "typecheck",
+        "test",
+        "check-attw",
+        "api-checker"
+      ]
     }
   },
 

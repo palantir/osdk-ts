@@ -66,6 +66,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$title",
     ].sort());
 
     expect(Object.keys(employee.$as)).toEqual([]);
@@ -157,6 +158,7 @@ describe("convertWireToOsdkObjects", () => {
     let objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
+      __title: "Steve",
       fullName: "Steve",
       employeeId: "5",
     } satisfies OntologyObjectV2;
@@ -172,6 +174,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$title",
       "employeeId",
       "fullName",
     ].sort());
@@ -182,6 +185,7 @@ describe("convertWireToOsdkObjects", () => {
       $apiName: FooInterface.apiName,
       $primaryKey: obj.$primaryKey,
       $objectType: obj.$objectType,
+      $title: obj.$title,
     });
 
     console.log(obj);
@@ -197,6 +201,7 @@ describe("convertWireToOsdkObjects", () => {
       "$apiName",
       "$objectType",
       "$primaryKey",
+      "$title",
       "fooSpt",
     ].sort());
 
@@ -214,6 +219,7 @@ describe("convertWireToOsdkObjects", () => {
     let objectFromWire = {
       __apiName: "Employee" as const,
       __primaryKey: 0,
+      __title: "Steve",
       fooSpt: "Steve",
     } satisfies OntologyObjectV2;
 
@@ -228,6 +234,7 @@ describe("convertWireToOsdkObjects", () => {
         "$apiName": "FooInterface",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$title": "Steve",
         "fooSpt": "Steve",
       }
     `);
@@ -240,6 +247,7 @@ describe("convertWireToOsdkObjects", () => {
         "$apiName": "Employee",
         "$objectType": "Employee",
         "$primaryKey": 0,
+        "$title": "Steve",
         "employeeId": 0,
         "fullName": "Steve",
       }

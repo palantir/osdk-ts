@@ -48,7 +48,7 @@ export function useTodos() {
       const b = !todo.isComplete;
       await mutate(
         async () => {
-          await $(MyOsdk.completeTodo)({
+          await $(MyOsdk.completeTodo).applyAction({
             is_complete: b,
             Todo: todo.$primaryKey,
           });
@@ -71,7 +71,7 @@ export function useTodos() {
           // Unwrap to get throw behavior on error.
           // Don't return because we want to invalidate cache
           try {
-            await $(MyOsdk.createTodo)({
+            await $(MyOsdk.createTodo).applyAction({
               Todo: title,
               is_complete: false,
             });
@@ -137,6 +137,7 @@ function createFauxTodo(title: string): SimpleTodo {
     isComplete: false,
     __primaryKey: title,
     __apiName: "Todo",
+    $title: title,
     $primaryKey: title,
     $apiName: "Todo",
     $objectType: "Todo",

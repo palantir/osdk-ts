@@ -27,15 +27,15 @@
     "postVersioning": "./scripts/postVersioning.mjs",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "tsup",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "devDependencies": {
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.2",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"

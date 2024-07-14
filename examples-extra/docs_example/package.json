@@ -9,34 +9,34 @@
   },
   "scripts": {
     "build": "tsc && vite build",
-    "codegen": "rm -rf src/generatedNoCheck2/* && rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --beta true --ontologyPath ontology.json --version dev --internal",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --beta true --ontologyPath ontology.json --version dev --internal",
     "dev": "vite",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/client.api": "workspace:^",
-    "@osdk/legacy-client": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~",
+    "@osdk/legacy-client": "workspace:~",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "swr": "^2.2.5"
   },
   "peerDependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/client": "workspace:^",
-    "@osdk/client.api": "workspace:^"
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "workspace:^",
-    "@osdk/cli.cmd.typescript": "workspace:^",
-    "@osdk/client.api": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/client.api": "workspace:~",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.2.25",
-    "@typescript-eslint/eslint-plugin": "^7.9.0",
-    "@typescript-eslint/parser": "^7.9.0",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
@@ -44,7 +44,7 @@
     "eslint-plugin-react-refresh": "^0.4.7",
     "postcss": "^8.4.31",
     "rollup-plugin-visualizer": "^5.12.0",
-    "tailwindcss": "^3.4.3",
+    "tailwindcss": "^3.4.4",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5",
     "vite": "^5.2.11"

@@ -17,6 +17,7 @@
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import type { Logger } from "pino";
 import type {
+  ClientCacheKey,
   MinimalClient,
   MinimalClientParams,
 } from "./MinimalClientContext.js";
@@ -61,6 +62,7 @@ export function createMinimalClient(
     objectSetFactory,
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
+    clientCacheKey: {} as ClientCacheKey,
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"

@@ -17,11 +17,15 @@
 import invariant from "tiny-invariant";
 import { ontologyDefinition } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
-import type { PropertyTypeType, SharedPropertyType } from "./types.js";
+import type {
+  InterfaceType,
+  PropertyTypeType,
+  SharedPropertyType,
+} from "./types.js";
 
 export function defineInterface(
-  apiName: string,
   opts: {
+    apiName: string;
     displayName?: string;
     description?: string;
     properties?: Record<
@@ -29,15 +33,8 @@ export function defineInterface(
       SharedPropertyType | PropertyTypeType
     >;
   },
-): {
-  apiName: string;
-  displayName: string;
-  extendsInterfaces: never[];
-  links: {};
-  properties: { [k: string]: SharedPropertyType };
-  rid: string;
-  description: string;
-} {
+): InterfaceType {
+  const { apiName } = opts;
   invariant(
     ontologyDefinition.interfaceTypes[apiName] === undefined,
     `Interface ${apiName} already exists`,
@@ -53,34 +50,9 @@ export function defineInterface(
             isSimpleType(type),
             `Invalid data type ${type} for property ${apiName} on InterfaceType ${apiName}`,
           );
-          // switch (v) {
-          //   case "boolean":
-          //   case "byte":
-          //   case "date":
-          //   case "float":
-          //   case "geopoint":
-          //   case "geoshape":
-          //   case "integer":
-          //   case "decimal":
-          //   case "double":
-          //   case "long":
-          //   case "short":
-          //   case "string":
-          //   case "timestamp":
-          //     return [
-          //       k,
-          //       {
-          //         rid: "idk",
-          //         apiName: k,
-          //         displayName: k,
-          //         dataType: {
-          //           type: v,
-          //         },
-          //       } satisfies SharedPropertyType,
-          //     ];
-          // }
 
-          const spt = defineSharedPropertyType(apiName, {
+          const spt = defineSharedPropertyType({
+            apiName,
             displayName: apiName,
             type,
             array: false,
@@ -99,15 +71,20 @@ export function defineInterface(
     ),
   );
 
-  return ontologyDefinition.interfaceTypes[apiName] = {
+  const a: InterfaceType = {
     apiName,
-    displayName: opts.displayName ?? apiName,
+    displayMetadata: {
+      displayName: opts.displayName ?? apiName,
+      description: opts.description ?? opts.displayName ?? apiName,
+      icon: undefined,
+    },
     extendsInterfaces: [],
-    links: {},
+    links: [],
     properties,
-    rid: "",
-    description: opts.description ?? opts.displayName ?? apiName,
+    status: { type: "active", active: {} },
   };
+
+  return ontologyDefinition.interfaceTypes[apiName] = a;
 }
 
 function isSimpleType(

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { addCause } from "../../client/addCause.js";
 import { OAuthToken } from "../OAuthToken.js";
 import {
   fetchFormEncoded,
@@ -107,8 +108,11 @@ export async function getTokenWithCodeVerifier(
     const responseText = await response.json();
     return new OAuthToken(responseText);
   } catch (e) {
-    throw new Error(
-      `Failed to get token: ${e ? e.toString() : "Unknown error"}`,
+    throw addCause(
+      new Error(
+        `Failed to get token: ${e ? e.toString() : "Unknown error"}`,
+      ),
+      e,
     );
   }
 }
@@ -131,8 +135,11 @@ export async function refreshTokenPublicClient(
     const responseText = await response.json();
     return new OAuthToken(responseText);
   } catch (e) {
-    throw new Error(
-      `Failed to refresh token: ${e ? e.toString() : "Unknown error"}`,
+    throw addCause(
+      new Error(
+        `Failed to refresh token: ${e ? e.toString() : "Unknown error"}`,
+      ),
+      e,
     );
   }
 }
@@ -152,8 +159,11 @@ export async function revokeTokenPublicClient(
   try {
     await fetchFormEncoded(fetchFn, tokenUrl, body);
   } catch (e) {
-    throw new Error(
-      `Failed to revoke token: ${e ? e.toString() : "Unknown error"}`,
+    throw addCause(
+      new Error(
+        `Failed to revoke token: ${e ? e.toString() : "Unknown error"}`,
+      ),
+      e,
     );
   }
 }

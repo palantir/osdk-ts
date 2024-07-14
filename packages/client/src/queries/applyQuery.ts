@@ -54,7 +54,7 @@ export async function applyQuery<
 > {
   const response = await OntologiesV2.QueryTypes.executeQueryV2(
     addUserAgent(client, query),
-    client.ontologyRid,
+    await client.ontologyRid,
     query.apiName,
     {
       parameters: params
@@ -325,11 +325,12 @@ export function createQueryObjectResponse<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
 >(
   primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
-    : unknown,
+    : (string | number),
   objectDef: Q,
 ): OsdkBase<Q> {
   return {
     $apiName: objectDef.apiName,
+    $title: undefined,
     $objectType: objectDef.apiName,
     $primaryKey: primaryKey,
   };

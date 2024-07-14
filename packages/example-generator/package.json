@@ -1,7 +1,7 @@
 {
   "name": "@osdk/example-generator",
   "private": true,
-  "version": "0.6.0-beta.0",
+  "version": "0.6.0-beta.3",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -24,11 +24,11 @@
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "generate": "./bin/exampleGenerator.mjs ../../examples",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "tsup",
-    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/create-app": "workspace:^",
+    "@osdk/create-app": "workspace:~",
     "consola": "^3.2.3",
     "dir-compare": "^5.0.0",
     "find-up": "^7.0.0",
@@ -40,7 +40,7 @@
     "@types/node": "^18.0.0",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"

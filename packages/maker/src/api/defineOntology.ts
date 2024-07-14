@@ -14,8 +14,20 @@
  * limitations under the License.
  */
 
-import type * as Gateway from "@osdk/gateway/types";
-import type { Ontology, SharedPropertyType } from "./types.js";
+import type {
+  OntologyIrInterfaceType,
+  OntologyIrInterfaceTypeBlockDataV2,
+  OntologyIrOntologyBlockDataV2,
+  OntologyIrSharedPropertyType,
+  OntologyIrSharedPropertyTypeBlockDataV2,
+  Type,
+} from "@osdk/client.unstable";
+import type {
+  InterfaceType,
+  Ontology,
+  PropertyTypeType,
+  SharedPropertyType,
+} from "./types.js";
 
 /** @internal */
 export let ontologyDefinition: Ontology;
@@ -26,30 +38,13 @@ export let namespace: string;
 export async function defineOntology(
   ns: string,
   body: () => void | Promise<void>,
-): Promise<
-  {
-    sharedPropertyTypes: { [k: string]: Gateway.SharedPropertyType };
-    interfaceTypes: { [k: string]: Gateway.InterfaceType };
-    objectTypes: Record<
-      Gateway.ObjectTypeApiName,
-      Gateway.ObjectTypeFullMetadata
-    >;
-    actionTypes: Record<Gateway.ActionTypeApiName, Gateway.ActionTypeV2>;
-    queryTypes: Record<Gateway.QueryApiName, Gateway.QueryTypeV2>;
-    ontology: {
-      apiName: string;
-      description: string;
-      displayName: string;
-      rid: string;
-    };
-  }
-> {
+): Promise<OntologyIrOntologyBlockDataV2> {
   namespace = ns;
   ontologyDefinition = {
     actionTypes: {},
-    interfaceTypes: {},
     objectTypes: {},
     queryTypes: {},
+    interfaceTypes: {},
     sharedPropertyTypes: {},
   };
 
@@ -67,63 +62,123 @@ export async function defineOntology(
   return convertToWireOntology(ontologyDefinition);
 }
 
-function convertToWireOntology(ontology: Ontology) {
+function convertToWireOntology(
+  ontology: Ontology,
+): OntologyIrOntologyBlockDataV2 {
   return {
-    ontology: {
-      apiName: "IDK",
-      description: "IDK",
-      displayName: "IDK",
-      rid: "ri.ontology.main.generated-object.foo",
-    },
-    ...ontology,
     sharedPropertyTypes: Object.fromEntries(
       Object.entries(
         ontology.sharedPropertyTypes,
       )
-        .map<[string, Gateway.SharedPropertyType]>((
+        .map<[string, OntologyIrSharedPropertyTypeBlockDataV2]>((
           [apiName, spt],
-        ) => [apiName, convertSpt(spt)]),
+        ) => [apiName, { sharedPropertyType: convertSpt(spt) }]),
     ),
     interfaceTypes: Object.fromEntries(
       Object.entries(
         ontology.interfaceTypes,
       )
-        .map<[string, Gateway.InterfaceType]>(
-          ([apiName, { displayName, description, properties }]) => {
+        .map<[string, OntologyIrInterfaceTypeBlockDataV2]>(
+          ([apiName, interfaceType]) => {
             return [apiName, {
-              rid: "ri.ontology.main.generated-object.foo",
-              apiName,
-              displayName: displayName ?? apiName,
-              description,
-              extendsInterfaces: [],
-              links: {},
-              properties: Object.fromEntries(
-                Object.entries(properties)
-                  .map<[string, Gateway.SharedPropertyType]>(
-                    ([apiName, spt]) => [apiName, convertSpt(spt)],
-                  ),
-              ),
+              interfaceType: convertInterface(interfaceType),
             }];
           },
         ),
     ),
+    blockPermissionInformation: {
+      actionTypes: {},
+      linkTypes: {},
+      objectTypes: {},
+    },
   };
 }
 
-export function dumpOntologyFullMetadata(): Gateway.OntologyFullMetadata {
+function convertInterface(
+  interfaceType: InterfaceType,
+): OntologyIrInterfaceType {
+  return {
+    ...interfaceType,
+    properties: Object.values(interfaceType.properties)
+      .map<OntologyIrSharedPropertyType>((spt) => convertSpt(spt)),
+    // these are omitted from our internal types but we need to re-add them for the final json
+    allExtendsInterfaces: [],
+    allLinks: [],
+    allProperties: [],
+  };
+}
+
+export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
   return convertToWireOntology(ontologyDefinition);
 }
 
 function convertSpt(
   { type, array, description, apiName, displayName }: SharedPropertyType,
-): Gateway.SharedPropertyType {
+): OntologyIrSharedPropertyType {
   return {
-    rid: "ri.ontology.main.generated-object.foo",
     apiName,
-    displayName: displayName ?? apiName,
-    description,
-    dataType: array
-      ? { type: "array" as const, subType: { type } }
-      : { type },
+    displayMetadata: {
+      displayName: displayName ?? apiName,
+      visibility: "NORMAL",
+      description,
+    },
+    type: array
+      ? {
+        type: "array" as const,
+        array: {
+          subtype: convertType(type),
+        },
+      }
+      : convertType(type),
+    aliases: [],
+    baseFormatter: undefined,
+    dataConstraints: undefined,
+    gothamMapping: undefined,
+    indexedForSearch: true,
+    provenance: undefined,
+    typeClasses: [],
+    valueType: undefined,
   };
+}
+
+function convertType(
+  type: PropertyTypeType,
+): Type {
+  switch (type) {
+    case "marking":
+      return { type, [type]: { markingType: "MANDATORY" } };
+
+    case "geopoint":
+      return { type: "geohash", geohash: {} };
+
+    case "decimal":
+      return { type, [type]: { precision: undefined, scale: undefined } };
+
+    case "string":
+      return {
+        type,
+        [type]: {
+          analyzerOverride: undefined,
+          enableAsciiFolding: undefined,
+          isLongText: false,
+          supportsExactMatching: true,
+        },
+      };
+
+    default:
+      // use helper function to distribute `type` properly
+      return distributeTypeHelper(type);
+  }
+}
+
+/**
+ * Helper function to avoid duplication. Makes the types match properly with the correct
+ * behavior without needing to switch on type.
+ * @param type
+ * @returns
+ */
+function distributeTypeHelper<T extends string>(
+  type: T,
+): T extends any ? { type: T } & { [K in T]: {} } : never {
+  return { type, [type]: {} } as any; // any cast to match conditional return type
 }

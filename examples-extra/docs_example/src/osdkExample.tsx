@@ -136,13 +136,13 @@ export async function osdkObjectSetExample() {
    */
 
   // When calling an action, you can get back the edits that were made
-  const actionResults = await client(promoteEmployee)({
+  const actionResults = await client(promoteEmployee).applyAction({
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,
   }, { $returnEdits: true });
 
-  const actionResults1 = await client(promoteEmployee)([{
+  const actionResults1 = await client(promoteEmployee).applyAction([{
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,
@@ -158,7 +158,7 @@ export async function osdkObjectSetExample() {
 
   // You can also just run validation to make sure the parameters you passed in for valid
   // Note, this action takes a concrete object, but will also accept the PK of the object (e.g. employeeLead.employeeId)
-  const actionValidation = await client(promoteEmployeeObject)({
+  const actionValidation = await client(promoteEmployeeObject).applyAction({
     employee: employeeLead,
     newTitle: "Architect",
     newCompensation: 1000000,

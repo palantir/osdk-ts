@@ -25,7 +25,7 @@ export async function loadFullObjectMetadata(
 ): Promise<ObjectTypeDefinition<any, any> & { rid: string }> {
   const full = await OntologiesV2.OntologyObjectsV2.getObjectTypeFullMetadata(
     client,
-    client.ontologyRid,
+    await client.ontologyRid,
     objtype,
     { preview: true },
   );

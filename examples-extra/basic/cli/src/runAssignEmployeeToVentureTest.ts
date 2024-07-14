@@ -37,7 +37,7 @@ export async function runAssignEmployeeToVentureTest() {
 
         const { data: [venture] } = await client(Venture).fetchPage();
 
-        const r = await client(assignEmployee1)({
+        const r = await client(assignEmployee1).applyAction({
           "employee-1": emp,
           "venture-1": venture,
         }, {

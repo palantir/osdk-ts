@@ -26,24 +26,24 @@
     "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev --packageType module",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "tsup",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "../../scripts/build_common/typecheck.sh both"
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh both"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/generator": "workspace:^",
-    "@osdk/legacy-client": "workspace:^"
+    "@osdk/api": "workspace:~",
+    "@osdk/generator": "workspace:~",
+    "@osdk/legacy-client": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "^1.8.0",
-    "@osdk/legacy-client": "^2.4.0-beta.0"
+    "@osdk/api": "^1.9.0-beta.0",
+    "@osdk/legacy-client": "^2.4.0-beta.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "^1.8.0",
-    "@osdk/cli.cmd.typescript": "workspace:^",
-    "@osdk/legacy-client": "^2.4.0-beta.0",
+    "@osdk/api": "^1.9.0-beta.0",
+    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/legacy-client": "^2.4.0-beta.1",
     "@types/node": "^18.0.0",
     "tslib": "^2.6.2",
     "typescript": "^4.9.5"

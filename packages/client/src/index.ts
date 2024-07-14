@@ -20,8 +20,13 @@ export type {
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
+  InterfaceObjectSet,
   NOOP,
+  ObjectSet,
+  Osdk,
   OsdkActionParameters,
+  OsdkObject,
+  PageResult,
   WhereClause,
 } from "@osdk/client.api";
 export { PalantirApiError } from "@osdk/shared.net.errors";

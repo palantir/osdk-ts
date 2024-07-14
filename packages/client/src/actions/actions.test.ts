@@ -56,7 +56,7 @@ describe("actions", () => {
   });
 
   it("conditionally returns the edits", async () => {
-    const result = await client(createOffice)({
+    const result = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -81,7 +81,7 @@ describe("actions", () => {
       }
     `);
 
-    const undefinedResult = await client(createOffice)({
+    const undefinedResult = await client(createOffice).applyAction({
       officeId: "NYC",
       address: "123 Main Street",
       capacity: 100,
@@ -90,7 +90,7 @@ describe("actions", () => {
     expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
     expect(undefinedResult).toBeUndefined();
 
-    const clientCreateOffice = client(createOffice);
+    const clientCreateOffice = client(createOffice).applyAction;
     expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
       officeId: "NYC",
       address: "123 Main Street",
@@ -99,7 +99,7 @@ describe("actions", () => {
   });
 
   it("returns validation directly on validateOnly mode", async () => {
-    const result = await client(moveOffice)({
+    const result = await client(moveOffice).applyAction({
       officeId: "SEA",
       newAddress: "456 Pike Place",
       newCapacity: 40,
@@ -119,7 +119,7 @@ describe("actions", () => {
 
   it("throws on validation errors", async () => {
     try {
-      const result = await client(moveOffice)({
+      const result = await client(moveOffice).applyAction({
         officeId: "SEA",
         newAddress: "456 Pike Place",
         newCapacity: 40,
@@ -142,7 +142,7 @@ describe("actions", () => {
   it("Accepts attachments", async () => {
     const clientBoundActionTakesAttachment = client(
       actionTakesAttachment,
-    );
+    ).applyAction;
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<
         { attachment: string | AttachmentUpload } | {
@@ -150,7 +150,7 @@ describe("actions", () => {
         }[]
       >();
 
-    const result = await client(actionTakesAttachment)({
+    const result = await client(actionTakesAttachment).applyAction({
       attachment: "attachment.rid",
     });
 
@@ -161,7 +161,7 @@ describe("actions", () => {
   it("Accepts attachment uploads", async () => {
     const clientBoundActionTakesAttachment = client(
       actionTakesAttachment,
-    );
+    ).applyAction;
     expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
       .toEqualTypeOf<
         { attachment: string | AttachmentUpload } | {
@@ -172,7 +172,7 @@ describe("actions", () => {
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
 
     const attachment = createAttachmentUpload(blob, "file1.txt");
-    const result = await client(actionTakesAttachment)({
+    const result = await client(actionTakesAttachment).applyAction({
       attachment,
     });
 
@@ -180,7 +180,7 @@ describe("actions", () => {
     expect(result).toBeUndefined();
   });
   it("conditionally returns edits in batch mode", async () => {
-    const result = await client(moveOffice)([
+    const result = await client(moveOffice).applyAction([
       {
         officeId: "SEA",
         newAddress: "456 Good Place",

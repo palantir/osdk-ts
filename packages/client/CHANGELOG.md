@@ -1,5 +1,52 @@
 # @osdk/client
 
+## 0.20.0-beta.3
+
+### Minor Changes
+
+- 62bae76: Upgrades 'ws' to avoid false flag CVE
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 57b68db: It is possible to pass a Promise<string> for ontologyRid on client creation
+
+### Patch Changes
+
+- Updated dependencies [b5ac8a8]
+- Updated dependencies [388dba9]
+- Updated dependencies [700c894]
+  - @osdk/client.api@0.20.0-beta.3
+  - @osdk/generator-converters@0.7.0-beta.0
+  - @osdk/shared.client.impl@0.1.0-beta.0
+  - @osdk/shared.net.fetch@0.1.0-beta.0
+  - @osdk/api@1.9.0-beta.0
+
+## 0.20.0-beta.2
+
+### Minor Changes
+
+- 7505880: Fix exports from client
+- 141953f: Expose $title property in OsdkBase
+
+### Patch Changes
+
+- Updated dependencies [141953f]
+  - @osdk/client.api@0.20.0-beta.2
+
+## 0.20.0-beta.1
+
+### Minor Changes
+
+- 02c65c5: Rework $select syntax in aggregations to add support for ordering by metrics
+- bfdb123: WARNING: Breaking: change action invocation to require `.applyAction`
+- 7adf5c7: Refactoring packages
+- 5e9d7d2: Refactored packages to move types over to client.api
+
+### Patch Changes
+
+- Updated dependencies [7adf5c7]
+- Updated dependencies [5e9d7d2]
+- Updated dependencies [67c1fd6]
+  - @osdk/client.api@0.20.0-beta.1
+
 ## 0.20.0-beta.0
 
 ### Minor Changes

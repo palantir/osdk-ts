@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client",
-  "version": "0.20.0-beta.0",
+  "version": "0.20.0-beta.3",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -25,25 +25,27 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "test:watch": "vitest",
-    "transpile": "tsup",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
+    "@osdk/api": "workspace:~",
     "@osdk/client.api": "workspace:*",
-    "@osdk/generator-converters": "workspace:^",
-    "@osdk/shared.client": "workspace:^",
-    "@osdk/shared.client.impl": "workspace:^",
-    "@osdk/shared.net.errors": "workspace:^",
-    "@osdk/shared.net.fetch": "workspace:^",
+    "@osdk/client.unstable": "workspace:*",
+    "@osdk/client.unstable.osw": "workspace:*",
+    "@osdk/generator-converters": "workspace:~",
+    "@osdk/shared.client": "workspace:~",
+    "@osdk/shared.client.impl": "workspace:~",
+    "@osdk/shared.net.errors": "workspace:~",
+    "@osdk/shared.net.fetch": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "conjure-lite": "^0.4.4",
     "fast-deep-equal": "^3.1.3",
     "fetch-retry": "^6.0.0",
     "isomorphic-ws": "^5.0.0",
     "tiny-invariant": "^1.3.1",
-    "ws": "^8.17.0"
+    "ws": "^8.18.0"
   },
   "peerDependencies": {
     "pino": "^9.1.0"
@@ -54,9 +56,9 @@
     }
   },
   "devDependencies": {
-    "@osdk/client.test.ontology": "workspace:^",
-    "@osdk/internal.foundry": "workspace:^",
-    "@osdk/shared.test": "workspace:^",
+    "@osdk/client.test.ontology": "workspace:~",
+    "@osdk/internal.foundry": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",
     "jest-extended": "^4.0.2",
@@ -64,10 +66,10 @@
     "p-defer": "^4.0.1",
     "p-state": "^2.0.1",
     "pino": "^9.1.0",
-    "pino-pretty": "^11.1.0",
+    "pino-pretty": "^11.2.1",
     "ts-expect": "^1.3.0",
     "type-fest": "^4.18.2",
-    "typescript": "^5.4.5",
+    "typescript": "^5.5.2",
     "zod": "^3.23.8"
   },
   "publishConfig": {

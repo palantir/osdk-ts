@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "1.2.0-beta.0",
+  "version": "1.2.0-beta.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -25,15 +25,15 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
-    "transpile": "tsup",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:^",
-    "@osdk/gateway": "workspace:^",
-    "@osdk/generator": "workspace:^",
-    "@osdk/legacy-client": "workspace:^",
+    "@osdk/api": "workspace:~",
+    "@osdk/gateway": "workspace:~",
+    "@osdk/generator": "workspace:~",
+    "@osdk/legacy-client": "workspace:~",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",
@@ -44,10 +44,10 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
-    "@osdk/shared.test": "workspace:^",
+    "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.4.5"
+    "typescript": "^5.5.2"
   },
   "publishConfig": {
     "access": "public"
