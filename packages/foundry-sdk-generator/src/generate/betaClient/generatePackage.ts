@@ -139,6 +139,7 @@ export async function generatePackage(
       packagePath,
       packageVersion: options.packageVersion,
       dependencies: resolvedDependencies,
+      beta: options.beta,
     }),
   ]);
 
