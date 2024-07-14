@@ -151,6 +151,17 @@ describe("queries", () => {
     }, { key: "Q-AFO", groups: [] }]);
   });
 
+  it("throws when response is null and response is non-nullable", async () => {
+    try {
+      const result = await client(addOne)({ n: 3 });
+      expect.fail("Should not reach here");
+    } catch (e) {
+      expect((e as Error).message).toMatch(
+        `Got null response when nullable was not allowed`,
+      );
+    }
+  });
+
   it("three dimensional aggs request/response works", async () => {
     const result = await client(acceptsThreeDimensionalAggregationFunction)({
       aggFunction: [

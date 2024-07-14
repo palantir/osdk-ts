@@ -86,6 +86,7 @@ export const queryTakesAllParameterTypes = {
       type: 'struct',
     },
     twoDimensionalAggregation: {
+      nullable: false,
       twoDimensionalAggregation: {
         keyType: 'string',
         valueType: 'double',
@@ -93,6 +94,7 @@ export const queryTakesAllParameterTypes = {
       type: 'twoDimensionalAggregation',
     },
     threeDimensionalAggregation: {
+      nullable: false,
       threeDimensionalAggregation: {
         keyType: 'range',
         keySubtype: 'date',

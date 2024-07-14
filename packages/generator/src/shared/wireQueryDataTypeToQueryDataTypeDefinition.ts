@@ -117,12 +117,14 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
       return {
         type: "twoDimensionalAggregation",
         twoDimensionalAggregation: get2DQueryAggregationProps(input),
+        nullable: false,
       };
 
     case "threeDimensionalAggregation":
       return {
         type: "threeDimensionalAggregation",
         threeDimensionalAggregation: get3DQueryAggregationProps(input),
+        nullable: false,
       };
 
     case "null":

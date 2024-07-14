@@ -39,6 +39,12 @@ export const addOneQueryRequest: ExecuteQueryRequest = {
   },
 };
 
+export const addOneQueryRequestWithNoResponse: ExecuteQueryRequest = {
+  parameters: {
+    n: 3,
+  },
+};
+
 export const addOneQueryResponse: ExecuteQueryResponse = {
   value: 3,
 };
@@ -228,6 +234,7 @@ export const queryRequestHandlers: {
 } = {
   [addOneQueryType.apiName]: {
     [JSON.stringify(addOneQueryRequest)]: addOneQueryResponse,
+    [JSON.stringify(addOneQueryRequestWithNoResponse)]: { value: undefined },
   },
   [queryTypeReturnsStruct.apiName]: {
     [JSON.stringify(queryTypeReturnsStructRequest)]:
