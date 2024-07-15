@@ -64,7 +64,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
       clientId: "123",
-      osdkPackage: "@osdk/examples.one.dot.one",
+      osdkPackage: "@osdk/e2e.generated.1.1.x",
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,
@@ -193,8 +193,8 @@ const UPDATE_PACKAGE_JSON: Mutator = {
     type: "modify",
     newContent: content.replace(
       // Use locally generated SDK in the monorepo
-      "\"@osdk/examples.one.dot.one\": \"latest\"",
-      "\"@osdk/examples.one.dot.one\": \"workspace:*\"",
+      "\"@osdk/e2e.generated.1.1.x\": \"latest\"",
+      "\"@osdk/e2e.generated.1.1.x\": \"workspace:*\"",
     ).replace(
       // Follow monorepo package naming convention
       `"name": "${templateExampleId(template)}"`,

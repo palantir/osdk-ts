@@ -118,7 +118,7 @@
       "dependsOn": ["transpile", "typecheck"]
     },
 
-    "@osdk/examples.todoapp#build": {
+    "@osdk/e2e.sandbox.todoapp#build": {
       "inputs": ["src/**/*", "vite.config.ts", "postcss.config.js", "tailwind.config.js"],
       "dependsOn": ["transpile", "typecheck"]
     },
