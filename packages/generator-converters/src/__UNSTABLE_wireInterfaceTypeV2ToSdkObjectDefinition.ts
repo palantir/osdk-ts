@@ -25,7 +25,9 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
   return {
     type: "interface",
     apiName: interfaceType.apiName,
+    displayName: interfaceType.displayName,
     description: interfaceType.description,
+    implements: interfaceType.extendsInterfaces,
     properties: Object.fromEntries(
       Object.entries(interfaceType.properties).map((
         [key, value],

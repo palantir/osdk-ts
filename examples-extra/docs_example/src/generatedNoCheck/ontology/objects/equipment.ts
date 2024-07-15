@@ -8,7 +8,13 @@ export interface equipment extends ObjectTypeDefinition<'equipment', equipment>,
   primaryKeyApiName: 'equipmentId';
   primaryKeyType: 'string';
   properties: {
+    /**
+     *   description: The id of an equipment
+     */
     equipmentId: PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     type: PropertyDef<'string', 'nullable', 'single'>;
   };
 }

@@ -13,8 +13,17 @@ export interface Venture extends ObjectTypeDefinition<'Venture', Venture>, Versi
   primaryKeyApiName: 'ventureId';
   primaryKeyType: 'string';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     ventureId: PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     ventureName: PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     ventureStart: PropertyDef<'datetime', 'nullable', 'single'>;
   };
 }

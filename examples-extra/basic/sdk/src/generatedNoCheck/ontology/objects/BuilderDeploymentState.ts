@@ -11,8 +11,17 @@ export interface BuilderDeploymentState
   primaryKeyApiName: 'skuId';
   primaryKeyType: 'string';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     currentTimestamp: PropertyDef<'timestamp', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     date: PropertyDef<'datetime', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     skuId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }

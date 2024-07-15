@@ -9,11 +9,29 @@ export interface Office extends ObjectTypeDefinition<'Office', Office>, VersionB
   primaryKeyApiName: 'officeId';
   primaryKeyType: 'string';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     entrance: PropertyDef<'geopoint', 'nullable', 'single'>;
+    /**
+     *   description: The individual capacities of meetings rooms in the office
+     */
     meetingRoomCapacities: PropertyDef<'integer', 'nullable', 'array'>;
+    /**
+     *   description: The Names of meetings rooms in the office
+     */
     meetingRooms: PropertyDef<'string', 'nullable', 'array'>;
+    /**
+     *   description: The Name of the Office
+     */
     name: PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     *   description: The occupied area of the Office
+     */
     occupiedArea: PropertyDef<'geoshape', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     officeId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
