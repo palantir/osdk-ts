@@ -41,7 +41,6 @@ import type {
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
-import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
 
 export function augment<

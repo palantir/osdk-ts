@@ -39,6 +39,7 @@ import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
 
@@ -53,7 +54,10 @@ export async function applyQuery<
   QueryReturnType<QD["output"]>
 > {
   const response = await OntologiesV2.QueryTypes.executeQueryV2(
-    addUserAgentAndRequestContextHeaders(client, query),
+    addUserAgentAndRequestContextHeaders(
+      augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
+      query,
+    ),
     await client.ontologyRid,
     query.apiName,
     {
