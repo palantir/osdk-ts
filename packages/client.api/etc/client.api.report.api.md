@@ -13,13 +13,17 @@ import type { IsNever as IsNever_2 } from 'type-fest';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
+import type { ObjectQueryDataType } from '@osdk/api';
 import type { ObjectSetActionDataType } from '@osdk/api';
+import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
+import type { QueryDataTypeDefinition } from '@osdk/api';
+import type { QueryDefinition } from '@osdk/api';
 import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -99,6 +103,15 @@ export type AggregationsResults<Q extends ObjectOrInterfaceDefinition, AO extend
 export type AllGroupByValues = GroupByMapper[keyof GroupByMapper];
 
 // @public (undocumented)
+export type AllowedBucketKeyTypes = AllowedBucketTypes | {
+    startValue: AllowedBucketTypes;
+    endValue: AllowedBucketTypes;
+};
+
+// @public (undocumented)
+export type AllowedBucketTypes = string | number | boolean;
+
+// @public (undocumented)
 export interface AndWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
     // (undocumented)
     $and: WhereClause<T>[];
@@ -166,6 +179,104 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 //
 // @public
 export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<TO["interfaceMap"][ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends keyof TO["interfaceMap"][ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">)) : UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][ApiNameAsString<TO>] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">;
+
+// @public
+export interface DataValueClientToWire {
+    // (undocumented)
+    attachment: string | AttachmentUpload;
+    // (undocumented)
+    boolean: boolean;
+    // (undocumented)
+    byte: number;
+    // (undocumented)
+    datetime: string;
+    // (undocumented)
+    decimal: string | number;
+    // (undocumented)
+    double: number;
+    // (undocumented)
+    float: number;
+    // (undocumented)
+    integer: number;
+    // (undocumented)
+    long: string | number;
+    // (undocumented)
+    marking: string;
+    // (undocumented)
+    null: null;
+    // (undocumented)
+    set: Set<any>;
+    // (undocumented)
+    short: number;
+    // (undocumented)
+    string: string;
+    // (undocumented)
+    struct: Record<string, any>;
+    // (undocumented)
+    threeDimensionalAggregation: {
+        key: AllowedBucketKeyTypes;
+        groups: {
+            key: AllowedBucketKeyTypes;
+            value: AllowedBucketTypes;
+        }[];
+    }[];
+    // (undocumented)
+    timestamp: string;
+    // (undocumented)
+    twoDimensionalAggregation: {
+        key: AllowedBucketKeyTypes;
+        value: AllowedBucketTypes;
+    }[];
+}
+
+// @public
+export interface DataValueWireToClient {
+    // (undocumented)
+    attachment: Attachment;
+    // (undocumented)
+    boolean: boolean;
+    // (undocumented)
+    byte: number;
+    // (undocumented)
+    datetime: string;
+    // (undocumented)
+    decimal: string;
+    // (undocumented)
+    double: number;
+    // (undocumented)
+    float: number;
+    // (undocumented)
+    integer: number;
+    // (undocumented)
+    long: string;
+    // (undocumented)
+    marking: string;
+    // (undocumented)
+    null: null;
+    // (undocumented)
+    set: Set<any>;
+    // (undocumented)
+    short: number;
+    // (undocumented)
+    string: string;
+    // (undocumented)
+    struct: Record<string, any>;
+    // (undocumented)
+    threeDimensionalAggregation: {
+        key: AllowedBucketKeyTypes;
+        groups: {
+            key: AllowedBucketKeyTypes;
+            value: AllowedBucketTypes;
+        }[];
+    }[];
+    // (undocumented)
+    timestamp: string;
+    // (undocumented)
+    twoDimensionalAggregation: {
+        key: AllowedBucketKeyTypes;
+        value: AllowedBucketTypes;
+    }[];
+}
 
 // @public (undocumented)
 export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
@@ -515,6 +626,19 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     timestamp: string;
 }
+
+// Warning: (ae-forgotten-export) The symbol "PartialByNotStrict" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NotOptionalParams_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "OptionalQueryParams" needs to be exported by the entry point index.d.ts
+//
+// @public (undocumented)
+export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = NOOP<PartialByNotStrict<NotOptionalParams_2<T>, OptionalQueryParams<T>>>;
+
+// @public (undocumented)
+export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType> : T extends ObjectSetQueryDataType<any, infer TTargetType> ? ObjectSet<TTargetType> : T["type"] extends keyof DataValueWireToClient ? DataValueWireToClient[T["type"]] : never;
+
+// @public (undocumented)
+export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
 
 // Warning: (ae-internal-missing-underscore) The name "RespectNullability" should be prefixed with an underscore because the declaration is marked as @internal
 //
