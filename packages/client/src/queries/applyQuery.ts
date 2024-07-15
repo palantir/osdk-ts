@@ -38,7 +38,7 @@ import { OntologiesV2 } from "@osdk/internal.foundry";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
-import { addUserAgent } from "../util/addUserAgent.js";
+import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
 
@@ -53,7 +53,7 @@ export async function applyQuery<
   QueryReturnType<QD["output"]>
 > {
   const response = await OntologiesV2.QueryTypes.executeQueryV2(
-    addUserAgent(client, query),
+    addUserAgentAndRequestContextHeaders(client, query),
     await client.ontologyRid,
     query.apiName,
     {
