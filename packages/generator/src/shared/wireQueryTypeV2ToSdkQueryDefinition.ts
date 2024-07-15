@@ -16,7 +16,9 @@
 
 import type { QueryDefinition, QueryParameterDefinition } from "@osdk/api";
 import type { QueryParameterV2, QueryTypeV2 } from "@osdk/gateway/types";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
+import {
+  wireQueryDataTypeToQueryDataTypeDefinition,
+} from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 
 export function wireQueryTypeV2ToSdkQueryDefinition(
   input: QueryTypeV2,
@@ -36,7 +38,19 @@ export function wireQueryTypeV2ToSdkQueryDefinition(
   };
 }
 
-function wireQueryParameterV2ToQueryParameterDefinition(
+export function wireQueryTypeV2ToSdkQueryDefinitionNoParams(
+  input: QueryTypeV2,
+) {
+  return {
+    type: "query",
+    apiName: input.apiName,
+    description: input.description,
+    displayName: input.displayName,
+    version: input.version,
+  };
+}
+
+export function wireQueryParameterV2ToQueryParameterDefinition(
   parameter: QueryParameterV2,
 ): QueryParameterDefinition<any> {
   return {

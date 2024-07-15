@@ -1,5 +1,24 @@
 # @osdk/client
 
+## 0.20.0-beta.3
+
+### Minor Changes
+
+- 62bae76: Upgrades 'ws' to avoid false flag CVE
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 57b68db: It is possible to pass a Promise<string> for ontologyRid on client creation
+
+### Patch Changes
+
+- Updated dependencies [b5ac8a8]
+- Updated dependencies [388dba9]
+- Updated dependencies [700c894]
+  - @osdk/client.api@0.20.0-beta.3
+  - @osdk/generator-converters@0.7.0-beta.0
+  - @osdk/shared.client.impl@0.1.0-beta.0
+  - @osdk/shared.net.fetch@0.1.0-beta.0
+  - @osdk/api@1.9.0-beta.0
+
 ## 0.20.0-beta.2
 
 ### Minor Changes

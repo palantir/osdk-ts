@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.17.0-beta.3
+
+### Minor Changes
+
+- adebdb0: update AIP template
+
 ## 0.17.0-beta.2
 
 ### Minor Changes

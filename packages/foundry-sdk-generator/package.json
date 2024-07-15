@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "1.2.0-beta.1",
+  "version": "1.2.0-beta.2",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -25,12 +25,13 @@
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
-    "transpile": "tsup",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
     "transpileWatch": "tsup --watch",
-    "typecheck": "../../scripts/build_common/typecheck.sh esm"
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/legacy-client": "workspace:~",
@@ -41,6 +42,7 @@
     "rollup": "^3.28.1",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-morph": "^19.0.0",
+    "typescript": "^5.5.3",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

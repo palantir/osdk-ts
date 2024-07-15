@@ -493,7 +493,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const queryResponse = queryResponses[JSON.stringify(parsedBody)];
       if (
         req.params.ontologyApiName === defaultOntology.apiName
-        && queryResponse
+        || req.params.ontologyApiName === defaultOntology.rid
+          && queryResponse
       ) {
         return queryResponse;
       }

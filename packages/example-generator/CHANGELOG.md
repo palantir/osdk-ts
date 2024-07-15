@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.6.0-beta.3
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+
+### Patch Changes
+
+- Updated dependencies [adebdb0]
+  - @osdk/create-app@0.17.0-beta.3
+
 ## 0.6.0-beta.2
 
 ### Patch Changes

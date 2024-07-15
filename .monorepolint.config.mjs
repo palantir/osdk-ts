@@ -19,6 +19,7 @@
 import {
   alphabeticalDependencies,
   alphabeticalScripts,
+  createRuleFactory,
   fileContents,
   packageEntry,
   packageOrder,
@@ -34,6 +35,7 @@ const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
   "mytsup",
   "tsconfig",
+  "@osdk/api-extractor",
   "@osdk/examples.todoapp",
   "@osdk/tests.*",
   "@osdk/foundry-sdk-generator",
@@ -73,6 +75,61 @@ const esmOnlyPackages = [
   "@osdk/client.test.ontology",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
+
+/**
+ * We don't want to allow `workspace:^` in our dependencies because our current release branch
+ * strategy only allows for patch changes in the release branch and minors elsewhere.
+ *
+ * If we were to allow `workspace:^`, then the follow scenario causes issues:
+ *   - Suppose we have a Foo and a Bar package and Bar depends on Foo.
+ *   - at T0 we cut a release/1.1.x branch and ship Foo@1.1.0, Bar@1.1.0
+ *   - at T1 we cut a release 1.2.x branch and ship Foo@1.2.0
+ *
+ * If we have `workspace:^` in our deps, a user that already has `Bar@1.1.0` in their package.json
+ * could update their dependencies without updating Bar (say via pnpm update) and Bar's dependency
+ * on Foo @ `^1.1.0` would be satisfied by the shipped `Foo@1.2.0`.
+ *
+ * Using `workspace:~` prevents this as `~` can only resolve patch changes.
+ */
+const disallowWorkspaceCaret = createRuleFactory({
+  name: "disallowWorkspaceCaret",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const packageJsonPath = context.getPackageJsonPath();
+
+    for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
+      const deps = packageJson[d] ?? {};
+
+      for (const [dep, version] of Object.entries(deps)) {
+        if (version === "workspace:^") {
+          const message = `'workspace:^' not allowed (${d}['${dep}']).`;
+          context.addError({
+            message,
+            longMessage: `${message} Did you mean 'workspace:~'?`,
+            file: context.getPackageJsonPath(),
+            fixer: () => {
+              // always refetch in fixer since another fixer may have already changed the file
+              let packageJson = context.getPackageJson();
+              if (packageJson[d]?.[dep] === "workspace:^") {
+                packageJson[d] = Object.assign(
+                  {},
+                  packageJson[d],
+                  { [dep]: "workspace:~" },
+                );
+
+                context.host.writeJson(
+                  context.getPackageJsonPath(),
+                  packageJson,
+                );
+              }
+            },
+          });
+        }
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
 
 const cache = new Map();
 
@@ -156,6 +213,7 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  *  skipTsconfigReferences?: boolean
  *  singlePackageName?: string
  * }} options
+ * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
   if (options.esmOnly && options.legacy) {
@@ -170,6 +228,8 @@ function standardPackageRules(shared, options) {
     .slice(0, -1); // drop trailing slash
 
   return [
+    disallowWorkspaceCaret({ ...shared }),
+
     standardTsconfig({
       ...shared,
 
@@ -215,7 +275,6 @@ function standardPackageRules(shared, options) {
       ...shared,
       options: {
         scripts: {
-          "dev:transpile": DELETE_SCRIPT_ENTRY,
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
           "check-attw":
             `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
@@ -224,10 +283,10 @@ function standardPackageRules(shared, options) {
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          prettier: DELETE_SCRIPT_ENTRY,
-          transpile: "tsup",
+          transpile:
+            "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
           typecheck:
-            `${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
+            `find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
               options.esmOnly ? "esm" : "both"
             }`,
         },

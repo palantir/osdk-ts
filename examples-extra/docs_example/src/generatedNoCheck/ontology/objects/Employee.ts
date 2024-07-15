@@ -12,11 +12,29 @@ export interface Employee extends ObjectTypeDefinition<'Employee', Employee>, Ve
   primaryKeyApiName: 'employeeId';
   primaryKeyType: 'integer';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     class: PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     employeeId: PropertyDef<'integer', 'non-nullable', 'single'>;
+    /**
+     *   description: TimeSeries of the status of the employee
+     */
     employeeStatus: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     fullName: PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     *   description: The unique of the employee's assigned office. This is some more text.
+     */
     office: PropertyDef<'integer', 'nullable', 'single'>;
+    /**
+     *   description: The date the employee was hired (most recently, if they were re-hired)
+     */
     startDate: PropertyDef<'datetime', 'nullable', 'single'>;
   };
 }

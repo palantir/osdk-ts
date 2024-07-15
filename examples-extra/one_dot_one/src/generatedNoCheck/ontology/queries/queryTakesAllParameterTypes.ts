@@ -47,6 +47,7 @@ export const queryTakesAllParameterTypes = {
     twoDimensionalAggregation: {
       type: 'twoDimensionalAggregation',
       twoDimensionalAggregation: { keyType: 'string', valueType: 'double' },
+      nullable: false,
     },
     threeDimensionalAggregation: {
       type: 'threeDimensionalAggregation',
@@ -55,6 +56,7 @@ export const queryTakesAllParameterTypes = {
         keySubtype: 'date',
         valueType: { keyType: 'range', keySubtype: 'timestamp', valueType: 'date' },
       },
+      nullable: false,
     },
   },
   output: { type: 'string', nullable: false },

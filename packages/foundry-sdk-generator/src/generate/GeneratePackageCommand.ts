@@ -33,6 +33,7 @@ export interface generatePackageCommandArgs {
   packageName: string;
   packageVersion: string;
   outputDir: string;
+  beta?: boolean;
 }
 
 export class GeneratePackageCommand
@@ -178,6 +179,7 @@ export class GeneratePackageCommand
       packageName: args.packageName,
       packageVersion: args.packageVersion,
       outputDir: args.outputDir,
+      beta: !!args.beta,
     });
 
     const elapsedTime = Date.now() - timeStart;
