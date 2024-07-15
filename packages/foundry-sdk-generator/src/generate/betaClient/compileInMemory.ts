@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { basename } from "path";
 import type { CompilerOptions, Diagnostic } from "typescript";
 import {
   createCompilerHost,
@@ -23,17 +22,19 @@ import {
   ModuleKind,
   ScriptTarget,
 } from "typescript";
-import { libFiles } from "./libFiles.js";
 
 export interface CompilerOutput {
   files: { [filename: string]: string };
   diagnostics: Diagnostic[];
 }
 
-export function compileInMemory(files: { [fileName: string]: string }) {
+export function compileInMemory(
+  files: { [fileName: string]: string },
+  opts?: { esm?: boolean },
+) {
   const inMemoryOutputFileSystem: { [fileName: string]: string } = {};
   const compilerOptions: CompilerOptions = {
-    module: ModuleKind.CommonJS,
+    module: opts?.esm ? ModuleKind.NodeNext : ModuleKind.CommonJS,
     target: ScriptTarget.ES2019,
     declaration: true,
     skipLibCheck: true,
@@ -43,19 +44,6 @@ export function compileInMemory(files: { [fileName: string]: string }) {
 
   compilerHost.writeFile = (fileName, data) => {
     inMemoryOutputFileSystem[fileName] = data;
-  };
-
-  const originalReadFile = compilerHost.readFile;
-
-  const libfileMap = Object.fromEntries(
-    libFiles.map(file => [file.fileName, file.text]),
-  );
-  compilerHost.readFile = fileName => {
-    const baseName = basename(fileName);
-    if (libfileMap[baseName]) {
-      return libfileMap[baseName];
-    }
-    return originalReadFile(fileName);
   };
 
   const originalSourceFile = compilerHost.getSourceFile;
