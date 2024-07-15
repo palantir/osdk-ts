@@ -50,7 +50,7 @@ export function createOsdkInterface<
   };
 
   if (process.env.TARGET !== "browser") {
-    Object.setPrototypeOf(interfaceHolder, OsdkCustomInspectPrototype);
+    Object.setPrototypeOf(interfaceHolder, null);
   }
 
   const handler = handlerCache.get(interfaceDef);

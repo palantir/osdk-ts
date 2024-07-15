@@ -39,7 +39,7 @@ import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
 const objectPrototypeCache = createClientCache(
   function(client, objectDef: FetchedObjectTypeDefinition<any, any>) {
     return Object.create(
-      process.env.target !== "browser" ? OsdkCustomInspectPrototype : null,
+      process.env.target !== "browser" ? null : null,
       {
         [ObjectDefRef]: { value: objectDef },
         [ClientRef]: { value: client },
