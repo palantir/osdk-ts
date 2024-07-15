@@ -35,7 +35,6 @@ import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import {
   fetchPageInternal,
   fetchPageWithErrorsInternal,
@@ -152,7 +151,15 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
           ObjectOrInterfacePropertyKeysFrom2<Q>,
           boolean,
           "throw"
-        > = await base.fetchPage({ $nextPageToken }, true);
+        > = await fetchPageInternal(
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIter" }),
+          ),
+          objectType,
+          objectSet,
+          { $nextPageToken },
+        );
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {

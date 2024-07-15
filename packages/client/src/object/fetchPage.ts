@@ -130,21 +130,17 @@ export async function fetchPageInternal<
   objectType: Q,
   objectSet: ObjectSet,
   args: FetchPageArgs<Q, L, R, A, S> = {},
-  calledByAsyncIter: boolean = false,
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  const modifiedClient = calledByAsyncIter
-    ? augmentRequestContext(client, _ => ({ finalMethodCall: "asyncIter" }))
-    : client;
   if (objectType.type === "interface") {
     return await fetchInterfacePage(
-      modifiedClient,
+      client,
       objectType,
       args,
       objectSet,
     ) as any; // fixme
   } else {
     return await fetchObjectPage(
-      modifiedClient,
+      client,
       objectType,
       args,
       objectSet,
