@@ -139,7 +139,7 @@ export default tseslint.config(
       "**/src/generatedNoCheck2/",
       "**/templates/",
       "examples/**/*",
-      "monorepo/**",
+      "packages/monorepo.*/**",
       "google-font-mocked-response.js",
       ".lintstagedrc.mjs",
       "tests/",

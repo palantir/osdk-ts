@@ -63,10 +63,16 @@
       "outputs": [
         "build/{esm,cjs,browser}/**/*.{ts,cjs,ts.map,cts.map}"
       ],
-      "dependsOn": ["//#script-typecheck", "mytsup#typecheck", "^typecheck", "codegen"]
+      "dependsOn": [
+        "//#script-typecheck",
+        "@osdk/monorepo.tsconfig#typecheck",
+        "@osdk/monorepo.tsup#typecheck",
+        "^typecheck",
+        "codegen"
+      ]
     },
 
-    "mytsup#typecheck": {
+    "@osdk/monorepo.tsup#typecheck": {
       "outputLogs": "new-only",
       "inputs": ["tsup.mjs"]
     },
@@ -75,11 +81,11 @@
       "outputLogs": "new-only",
       "inputs": ["api-extractor.json", "build/esm/**/*", "api-extractor.json"],
       "outputs": ["etc/*.report.api.md", "build/api-extractor/**/*"],
-      "dependsOn": ["typecheck", "@osdk/api-extractor#api-checker"]
+      "dependsOn": ["typecheck", "@osdk/monorepo.api-extractor#api-checker"]
     },
 
     // Doesn't do anything, just a virtual task to depend on the base.json file
-    "@osdk/api-extractor#api-checker": {
+    "@osdk/monorepo.api-extractor#api-checker": {
       "inputs": ["base.json"]
     },
 
@@ -103,7 +109,7 @@
       "outputs": ["../client/src/Client.ts", "../generator/src/v2.0/generateMetadata.ts"]
     },
 
-    "tsconfig#typecheck": {
+    "@osdk/monorepo.tsconfig#typecheck": {
       "outputLogs": "new-only",
       "inputs": ["tsconfig.base.json"]
     },
@@ -124,7 +130,7 @@
 
     "transpile": {
       "outputLogs": "new-only",
-      "dependsOn": ["mytsup#typecheck", "tsconfig#typecheck", "^transpile", "codegen"],
+      "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
       "inputs": ["src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
       "outputs": [
         "dist/**",
@@ -150,8 +156,6 @@
         "examples/*/*/tsconfig.json",
         "examples-extra/*/*/package.json",
         "examples-extra/*/*/tsconfig.json",
-        "monorepo/*/*/package.json",
-        "monorepo/*/*/tsconfig.json",
         "templates/*"
       ]
     },

@@ -43,6 +43,9 @@
   },
   "devDependencies": {
     "@osdk/generator": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/luxon": "^3.4.2",
     "@types/ngeohash": "^0.6.4",

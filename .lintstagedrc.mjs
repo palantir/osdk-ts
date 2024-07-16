@@ -12,7 +12,7 @@ import micromatch from "micromatch";
  * @type {import("lint-staged").Config}
  */
 export default {
-  "monorepo/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
+  "packages/monorepo.*/**/*.{js,jsx,ts,tsx,mjs,cjs}": [
     "dprint fmt",
   ],
   "{packages,examples-extra/basic}/**/*.{js,jsx,ts,tsx,mjs,cjs}": (
