@@ -9,6 +9,9 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
 
   return {
+    define: {
+      "process.env.NODE_ENV": JSON.stringify(mode),
+    },
     plugins: [
       react(),
       visualizer({
@@ -24,6 +27,12 @@ export default defineConfig(({ mode }) => {
         "/object-set-watcher": `${env.VITE_FOUNDRY_URL}`,
         "/object-set-service": `${env.VITE_FOUNDRY_URL}`,
       },
+    },
+    optimizeDeps: {
+      // shared.client is a mixed package that needs to be properly processed by vite
+      // but normally linked packages do not get that treatment so we have to explicitly add it here
+      // and in the `commonjsOptions` below
+      include: ["@osdk/client > @osdk/shared.client"],
     },
     build: {
       outDir: "build/site/",

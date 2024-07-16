@@ -15,10 +15,8 @@
  */
 
 import type { BaseOauthClient } from "./BaseOauthClient.js";
-import type { Token } from "./Token.js";
 
-export interface PublicOauthClient
-  extends BaseOauthClient<"signIn" | "signOut" | "refresh">
+export interface ConfidentialOauthClient
+  extends BaseOauthClient<"signIn" | "signOut">
 {
-  refresh: () => Promise<Token | undefined>;
 }
