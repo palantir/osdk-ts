@@ -106,7 +106,7 @@ export function handleOpenApiCall<
     return Promise.resolve();
   };
 
-  // we dont care about the promise here, we are just building the url
+  // we don't care about the promise here, we are just building the url
   openApiCall(
     capture as any,
     ...(names.map(n => `:${n}`) as any),

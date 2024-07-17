@@ -97,7 +97,7 @@ export default async (options, ourOptions) => {
 
 async function readPackageVersion(k) {
   const workspaceFile = await findUp("pnpm-workspace.yaml");
-  if (!workspaceFile) throw "couldnt find workspace file";
+  if (!workspaceFile) throw "couldn't find workspace file";
   const workspaceRoot = path.dirname(workspaceFile);
   return await readFile(path.join(workspaceRoot, k, "package.json"), "utf-8")
     .then(f => JSON.parse(f).version);

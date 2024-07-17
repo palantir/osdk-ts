@@ -82,10 +82,10 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<
 
       // special case for a union where one half is nullable to skip the union step and just allow nulls directly
       if (allowNulls && input.unionTypes.length === 2) {
-        const nonnull = input.unionTypes.find(t => t.type != null);
-        if (nonnull) {
+        const nonNull = input.unionTypes.find(t => t.type != null);
+        if (nonNull) {
           return {
-            ...wireQueryDataTypeToQueryDataTypeDefinition(nonnull),
+            ...wireQueryDataTypeToQueryDataTypeDefinition(nonNull),
             nullable: true,
           };
         }

@@ -109,7 +109,7 @@ describe("AsyncCache", () => {
     let expectedAsyncSets: number;
     let expectedFactoryCalls: number;
 
-    let successfullFetches: Set<string>;
+    let successfulFetches: Set<string>;
     let pendingFetches: Set<string>;
     let expectedPending: Record<string, number> = {};
 
@@ -127,7 +127,7 @@ describe("AsyncCache", () => {
       expectedAsyncSets = 0;
       expectedFactoryCalls = 0;
 
-      successfullFetches = new Set();
+      successfulFetches = new Set();
       pendingFetches = new Set();
       expectedPending = {};
 
@@ -155,7 +155,7 @@ describe("AsyncCache", () => {
 
     function initiateAsyncCacheGetFor(key: string) {
       return async () => {
-        if (!successfullFetches.has(key)) {
+        if (!successfulFetches.has(key)) {
           expectedPending[key] = (expectedPending[key] ?? 0) + 1;
           if (!pendingFetches.has(key)) {
             pendingFetches.add(key);
@@ -189,12 +189,12 @@ describe("AsyncCache", () => {
         );
         expect(factoryFn.mock.calls[num][1]).toBe(key);
         expect(pendingFetches).toContain(key);
-        expect(successfullFetches).not.toContain(key);
+        expect(successfulFetches).not.toContain(key);
         // </preconditions>
 
         // Update expectations
         pendingFetches.delete(value);
-        successfullFetches.add(value);
+        successfulFetches.add(value);
 
         // check before and after make sense so that `expectSaneCalls` can work
         const before = await getStats();
@@ -263,7 +263,7 @@ describe("AsyncCache", () => {
       expect(cache.get).toHaveBeenCalledTimes(stats.asyncCacheGetCalls);
 
       // the inner cache only gets set after a successful factory call
-      expect(cache.set).toHaveBeenCalledTimes(successfullFetches.size);
+      expect(cache.set).toHaveBeenCalledTimes(successfulFetches.size);
     }
 
     function itRejectsAllRequestsOf(key: string) {
@@ -325,8 +325,8 @@ describe("AsyncCache", () => {
       });
     }
 
-    function itFullfillsAsyncCacheGets(indexes: number[], value: string) {
-      it(`fullfills the AsyncCache.get()'s ${indexes.join(", ")} with '${value}'`, async () => {
+    function itFulfillsAsyncCacheGets(indexes: number[], value: string) {
+      it(`fulfills the AsyncCache.get()'s ${indexes.join(", ")} with '${value}'`, async () => {
         for (const i of indexes) {
           expect(await pStateAsync(getPromises[i])).toBe("fulfilled");
           expect(await getPromises[i]).toBe(value);
@@ -404,7 +404,7 @@ describe("AsyncCache", () => {
           });
 
           describeResolvesFactoryCall(0, "a", () => {
-            itFullfillsAsyncCacheGets([0, 1], "aResult");
+            itFulfillsAsyncCacheGets([0, 1], "aResult");
             itLeavesAsyncGetPromisesInStates([
               "fulfilled",
               "fulfilled",

@@ -143,7 +143,7 @@ export function createBulkLinksAsyncIterFactory(ctx: MinimalClient) {
           a.directedLinkTypeRid.linkTypeRid === link.link.linkTypeRid
           && a.directedLinkTypeRid.linkSide === link.linkSide
         );
-        if (!mappedLink) throw new Error("Could not find link type"); // shouldnt happens
+        if (!mappedLink) throw new Error("Could not find link type"); // should not happens
 
         yield {
           object: obj,

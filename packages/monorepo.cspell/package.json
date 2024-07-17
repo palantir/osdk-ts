@@ -1,0 +1,15 @@
+{
+  "name": "@osdk/monorepo.cspell",
+  "private": true,
+  "version": "0.0.0",
+  "description": "CSpell configuration for the monorepo",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "dependencies": {
+    "@cspell/cspell-types": "^8.11.0",
+    "@types/node": "^18.0.0"
+  }
+}

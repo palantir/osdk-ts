@@ -435,10 +435,10 @@ export class ProjectMinifier {
       }
 
       for (const node of this.dependentExport[nextModuleName]) {
-        const rexportModuleName = getModuleFromFileName(node.getSourceFile());
-        this.getNodesToKeepForModule(rexportModuleName).add(node);
+        const reexportModuleName = getModuleFromFileName(node.getSourceFile());
+        this.getNodesToKeepForModule(reexportModuleName).add(node);
 
-        dependentExportStack.push(rexportModuleName);
+        dependentExportStack.push(reexportModuleName);
       }
     }
   }

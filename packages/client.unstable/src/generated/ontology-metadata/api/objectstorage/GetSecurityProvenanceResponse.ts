@@ -20,7 +20,7 @@ import type { LinkTypeSecurityProvenanceLoadResponse } from "./LinkTypeSecurityP
 import type { ObjectTypeSecurityProvenanceLoadResponse } from "./ObjectTypeSecurityProvenanceLoadResponse.js";
 
 /**
- * Response to GetSecurisyProvenanceRequest.
+ * Response to GetSecurityProvenanceResponse.
  */
 export interface GetSecurityProvenanceResponse {
   objectTypes: Record<ObjectTypeRid, ObjectTypeSecurityProvenanceLoadResponse>;

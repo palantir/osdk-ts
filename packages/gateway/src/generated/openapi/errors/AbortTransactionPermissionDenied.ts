@@ -17,7 +17,7 @@
 import type { DatasetRid } from "../components/DatasetRid.js";
 import type { TransactionRid } from "../components/TransactionRid.js";
 
-/** The provided token does not have permission to abort the given treansaction on the given dataset. */
+/** The provided token does not have permission to abort the given transaction on the given dataset. */
 export interface AbortTransactionPermissionDenied {
   errorCode: "PERMISSION_DENIED";
   errorName: "AbortTransactionPermissionDenied";

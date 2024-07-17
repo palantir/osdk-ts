@@ -9,26 +9,26 @@ import type {
   SubtractObjectSetDefinition as OG_SubtractObjectSetDefinition,
 } from '@osdk/legacy-client';
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type BaseObjectSetDefinition = OG_BaseObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ReferenceObjectSetDefinition = OG_ReferenceObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type StaticObjectSetDefinition = OG_StaticObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type IntersectObjectSetDefinition = OG_IntersectObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type SubtractObjectSetDefinition = OG_SubtractObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type SearchAroundObjectSetDefinition = OG_SearchAroundObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FilterObjectSetDefinition = OG_FilterObjectSetDefinition;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ObjectSetDefinition = OG_ObjectSetDefinition;

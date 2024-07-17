@@ -63,188 +63,188 @@ import type {
   UnknownParameter as OG_UnknownParameter,
 } from '@osdk/legacy-client';
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PermissionDenied = OG_PermissionDenied;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type Unauthorized = OG_Unauthorized;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidAggregationRangeValue = OG_InvalidAggregationRangeValue;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type MalformedPropertyFilters = OG_MalformedPropertyFilters;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertiesNotFilterable = OG_PropertiesNotFilterable;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ParametersNotFound = OG_ParametersNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ApplyActionFailed = OG_ApplyActionFailed;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertyTypesSearchNotSupported = OG_PropertyTypesSearchNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidParameterValue = OG_InvalidParameterValue;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type QueryTimeExceededLimit = OG_QueryTimeExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type CompositePrimaryKeyNotSupported = OG_CompositePrimaryKeyNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertyBaseTypeNotSupported = OG_PropertyBaseTypeNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertiesNotSearchable = OG_PropertiesNotSearchable;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type AttachmentNotFound = OG_AttachmentNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ObjectTypeNotFound = OG_ObjectTypeNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidGroupId = OG_InvalidGroupId;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type OntologySyncing = OG_OntologySyncing;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionNotFound = OG_ActionNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ParameterObjectSetRidNotFound = OG_ParameterObjectSetRidNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type LinkTypeNotFound = OG_LinkTypeNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidRangeQuery = OG_InvalidRangeQuery;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionParameterObjectNotFound = OG_ActionParameterObjectNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidPropertyValue = OG_InvalidPropertyValue;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertiesNotSortable = OG_PropertiesNotSortable;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FunctionExecutionTimedOut = OG_FunctionExecutionTimedOut;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidFields = OG_InvalidFields;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionTypeNotFound = OG_ActionTypeNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ObjectTypeNotSynced = OG_ObjectTypeNotSynced;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type OntologyEditsExceededLimit = OG_OntologyEditsExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type AggregationGroupCountExceededLimit = OG_AggregationGroupCountExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidContentType = OG_InvalidContentType;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertiesNotFound = OG_PropertiesNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FunctionInvalidInput = OG_FunctionInvalidInput;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidSortOrder = OG_InvalidSortOrder;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type QueryDepthExceededLimit = OG_QueryDepthExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidPropertyFiltersCombination = OG_InvalidPropertyFiltersCombination;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ObjectsExceededLimit = OG_ObjectsExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type DuplicateOrderBy = OG_DuplicateOrderBy;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FunctionEncounteredUserFacingError = OG_FunctionEncounteredUserFacingError;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidUserId = OG_InvalidUserId;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type QueryNotFound = OG_QueryNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidAggregationRange = OG_InvalidAggregationRange;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ParameterObjectNotFound = OG_ParameterObjectNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type QueryMemoryExceededLimit = OG_QueryMemoryExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidContentLength = OG_InvalidContentLength;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type OntologyNotFound = OG_OntologyNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionParameterObjectTypeNotFound = OG_ActionParameterObjectTypeNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type UnknownParameter = OG_UnknownParameter;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidSortType = OG_InvalidSortType;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertyFiltersNotSupported = OG_PropertyFiltersNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionValidationFailed = OG_ActionValidationFailed;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type MultipleGroupByOnFieldNotSupported = OG_MultipleGroupByOnFieldNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type LinkedObjectNotFound = OG_LinkedObjectNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ActionEditedPropertiesNotFound = OG_ActionEditedPropertiesNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidPropertyFilterValue = OG_InvalidPropertyFilterValue;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type QueryEncounteredUserFacingError = OG_QueryEncounteredUserFacingError;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type AttachmentSizeExceededLimit = OG_AttachmentSizeExceededLimit;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ObjectNotFound = OG_ObjectNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type PropertyApiNameNotFound = OG_PropertyApiNameNotFound;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type ParameterTypeNotSupported = OG_ParameterTypeNotSupported;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type InvalidAggregationRangePropertyType = OG_InvalidAggregationRangePropertyType;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type MissingParameter = OG_MissingParameter;

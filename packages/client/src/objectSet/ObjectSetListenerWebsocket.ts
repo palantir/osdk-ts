@@ -362,10 +362,10 @@ export class ObjectSetListenerWebsocket {
     if (this.#maybeDisconnectTimeout) {
       // We reset the timeout on every unsubscribe so its always at least 15s from
       // the last time we are empty. E.g.:
-      //   - 0s: Sub(A)
-      //   - 10s: Unsub(A)
-      //   - 11s: Sub(B)
-      //   - 20s: Unsub(B)
+      //   - 0s: Subscribe(A)
+      //   - 10s: Unsubscribe(A)
+      //   - 11s: Subscribe(B)
+      //   - 20s: Unsubscribe(B)
       // If we do not clear out the timeout we would disconnect at 25s but that would only be
       // 5s after the last subscription was removed instead of at 35s for the desired 15s.
       clearTimeout(this.#maybeDisconnectTimeout);

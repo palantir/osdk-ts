@@ -36,7 +36,7 @@ describe("attachments", () => {
     apiServer.close();
   });
 
-  it("reads attachment metadata succesfully", async () => {
+  it("reads attachment metadata successfully", async () => {
     const result = await client(
       MockOntology.objects.objectTypeWithAllPropertyTypes,
     )
@@ -54,7 +54,7 @@ describe("attachments", () => {
     );
   });
 
-  it("reads attachment succesfully", async () => {
+  it("reads attachment successfully", async () => {
     const result = await client(
       MockOntology.objects.objectTypeWithAllPropertyTypes,
     )

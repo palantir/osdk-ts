@@ -250,7 +250,7 @@ describe("aggregate", () => {
         },
         typeof notGrouped
       >
-    >(false); // subselect should hide unused keys
+    >(false); // subSelect should hide unused keys
 
     const grouped = await aggregate(
       clientCtx,
