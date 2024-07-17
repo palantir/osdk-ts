@@ -1,5 +1,6 @@
 export * from './objects/BoundariesUsState.js';
 export * from './objects/BuilderDeploymentState.js';
+export * from './objects/DherlihyComplexObject.js';
 export * from './objects/Employee.js';
 export * from './objects/ObjectTypeWithAllPropertyTypes.js';
 export * from './objects/Person.js';

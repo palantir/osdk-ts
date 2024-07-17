@@ -607,12 +607,28 @@ export interface TimeSeriesProperty<T extends number | string> {
 // @public (undocumented)
 export type TimeSeriesQuery = {
     $before: number;
-    $after?: never;
     $unit: keyof typeof TimeseriesDurationMapping;
+    $after?: never;
+    $startTime?: never;
+    $endTime?: never;
 } | {
     $after: number;
-    $before?: never;
     $unit: keyof typeof TimeseriesDurationMapping;
+    $before?: never;
+    $startTime?: never;
+    $endTime?: never;
+} | {
+    $startTime: string;
+    $endTime?: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
+} | {
+    $startTime?: string;
+    $endTime: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
 };
 
 // Warning: (ae-internal-missing-underscore) The name "UnionIfFalse" should be prefixed with an underscore because the declaration is marked as @internal

@@ -14,15 +14,35 @@
  * limitations under the License.
  */
 
-export type TimeSeriesQuery = {
-  $before: number;
-  $after?: never;
-  $unit: keyof typeof TimeseriesDurationMapping;
-} | {
-  $after: number;
-  $before?: never;
-  $unit: keyof typeof TimeseriesDurationMapping;
-};
+export type TimeSeriesQuery =
+  | {
+    $before: number;
+    $unit: keyof typeof TimeseriesDurationMapping;
+    $after?: never;
+    $startTime?: never;
+    $endTime?: never;
+  }
+  | {
+    $after: number;
+    $unit: keyof typeof TimeseriesDurationMapping;
+    $before?: never;
+    $startTime?: never;
+    $endTime?: never;
+  }
+  | {
+    $startTime: string;
+    $endTime?: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
+  }
+  | {
+    $startTime?: string;
+    $endTime: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
+  };
 
 export type TimeseriesDurationUnits =
   | "YEARS"

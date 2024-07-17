@@ -22,9 +22,11 @@ import {
   type TimeSeriesQuery,
 } from "@osdk/client.api";
 import type {
+  AbsoluteTimeRange,
   RelativeTime,
   RelativeTimeRange,
   StreamTimeSeriesPointsRequest,
+  TimeRange,
 } from "@osdk/internal.foundry";
 import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -87,17 +89,6 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   propertyName: string,
   body: TimeSeriesQuery,
 ): Promise<Array<TimeSeriesPoint<T>>> {
-  const relativeTime: RelativeTime = body.$before
-    ? {
-      when: "BEFORE",
-      value: body.$before,
-      unit: TimeseriesDurationMapping[body.$unit],
-    }
-    : {
-      when: "AFTER",
-      value: body.$after!,
-      unit: TimeseriesDurationMapping[body.$unit],
-    };
   const streamPointsIterator = await OntologiesV2.OntologyObjectsV2
     .streamPoints(
       client,
@@ -105,7 +96,7 @@ async function getAllTimeSeriesPoints<T extends string | number>(
       objectApiName,
       primaryKey,
       propertyName,
-      { range: { type: "relative", startTime: relativeTime } },
+      { range: getTimeRange(body) },
     );
 
   const allPoints: Array<TimeSeriesPoint<T>> = [];
@@ -122,6 +113,49 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   return allPoints;
 }
 
+// async function* iterateTimeSeriesPoints<T extends string | number>(
+//   client: MinimalClient,
+//   objectApiName: string,
+//   primaryKey: any,
+//   propertyName: string,
+//   body: TimeSeriesQuery,
+// ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
+//   const utf8decoder = new TextDecoder("utf-8");
+
+//   const streamPointsResponse = await OntologiesV2.OntologyObjectsV2
+//     .streamPoints(
+//       client,
+//       await client.ontologyRid,
+//       objectApiName,
+//       primaryKey,
+//       propertyName,
+//       { range: getTimeRange(body) },
+//     );
+
+//   const reader = streamPointsResponse.stream().getReader();
+//   const streamPointsIterator = iterateReadableStream(reader);
+//   const firstChunk = await streamPointsIterator.next();
+
+//   const remainingChunksPromise: Promise<any[]> = new Promise(
+//     (resolve, _reject) => {
+//       const remainingPoints = processStream(streamPointsIterator);
+//       resolve(remainingPoints);
+//     },
+//   );
+//   console.log(utf8decoder.decode(firstChunk.value!));
+//   yield {
+//     time: (firstChunk.value as any).time as string,
+//     value: (firstChunk.value as any).value as T,
+//   };
+//   const remainingChunks = await remainingChunksPromise;
+//   for (const point of remainingChunks) {
+//     yield {
+//       time: point.time,
+//       value: point.value as T,
+//     };
+//   }
+// }
+
 async function* iterateTimeSeriesPoints<T extends string | number>(
   client: MinimalClient,
   objectApiName: string,
@@ -129,44 +163,22 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
   propertyName: string,
   body: TimeSeriesQuery,
 ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
-  const relativeTime: RelativeTime = body.$before
-    ? {
-      when: "BEFORE",
-      value: body.$before,
-      unit: TimeseriesDurationMapping[body.$unit],
-    }
-    : {
-      when: "AFTER",
-      value: body.$after!,
-      unit: TimeseriesDurationMapping[body.$unit],
-    };
-  const streamPointsResponse = await OntologiesV2.OntologyObjectsV2
+  const utf8decoder = new TextDecoder("utf-8");
+
+  const streamPointsIterator = await OntologiesV2.OntologyObjectsV2
     .streamPoints(
       client,
       await client.ontologyRid,
       objectApiName,
       primaryKey,
       propertyName,
-      { range: { type: "relative", startTime: relativeTime } },
+      { range: getTimeRange(body) },
     );
 
-  const reader = streamPointsResponse.stream().getReader();
-  const streamPointsIterator = iterateReadableStream(reader);
-  const firstChunk = await streamPointsIterator.next();
-
-  const remainingChunksPromise: Promise<any[]> = new Promise(
-    (resolve, _reject) => {
-      const remainingPoints = processStream(streamPointsIterator);
-      resolve(remainingPoints);
-    },
-  );
-
-  yield {
-    time: (firstChunk.value as any).time as string,
-    value: (firstChunk.value as any).value as T,
-  };
-  const remainingChunks = await remainingChunksPromise;
-  for (const point of remainingChunks) {
+  const reader = streamPointsIterator.stream().getReader();
+  for await (
+    const point of parseStreamedResponse(iterateReadableStream(reader))
+  ) {
     yield {
       time: point.time,
       value: point.value as T,
@@ -184,4 +196,31 @@ async function processStream<T extends string | number>(
     }
   }
   return allPoints;
+}
+
+function getTimeRange(body: TimeSeriesQuery): TimeRange {
+  if ("$startTime" in body || "$endTime" in body) {
+    return {
+      type: "absolute",
+      startTime: body.$startTime,
+      endTime: body.$endTime,
+    };
+  }
+  return body.$before
+    ? {
+      type: "relative",
+      startTime: {
+        when: "BEFORE",
+        value: body.$before,
+        unit: TimeseriesDurationMapping[body.$unit],
+      },
+    }
+    : {
+      type: "relative",
+      endTime: {
+        when: "AFTER",
+        value: body.$after!,
+        unit: TimeseriesDurationMapping[body.$unit],
+      },
+    };
 }
