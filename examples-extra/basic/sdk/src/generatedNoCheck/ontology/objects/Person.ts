@@ -14,6 +14,9 @@ export interface Person extends ObjectTypeDefinition<'Person', Person>, VersionB
   primaryKeyApiName: 'email';
   primaryKeyType: 'string';
   properties: {
+    /**
+     * (no ontology metadata)
+     */
     email: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }

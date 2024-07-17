@@ -24,6 +24,7 @@ import {
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { verifyOutdir } from "../util/verifyOutdir.js";
+import { generatePerQueryDataFiles } from "../v1.1/generatePerQueryDataFiles.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
 
@@ -62,6 +63,7 @@ export async function generateClientSdkVersionTwoPointZero(
         export * from "./ontology/actions/index${importExt}";
         export * from "./ontology/objects${importExt}";
         export * from "./ontology/interfaces${importExt}";
+        export * from "./ontology/queries/index${importExt}";
     `,
     ),
   );
@@ -76,6 +78,7 @@ export async function generateClientSdkVersionTwoPointZero(
       import * as Actions from "./ontology/actions/index${importExt}";
       import * as Objects from "./ontology/objects${importExt}";
       import * as Interfaces from "./ontology/interfaces${importExt}";
+      import * as Queries from "./ontology/queries/index${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       export interface Ontology extends OntologyDefinition<${
@@ -97,7 +100,11 @@ export async function generateClientSdkVersionTwoPointZero(
       }
         },
         queries: {
-          // TODO
+          ${
+        queryNames.map((queryName) => {
+          return `${queryName}: typeof Queries.${queryName}`;
+        }).join(",\n")
+      }
         },
         interfaces: {
           ${
@@ -126,7 +133,11 @@ export async function generateClientSdkVersionTwoPointZero(
       }
         },
         queries: {
-          // TODO
+          ${
+        queryNames.map((queryName) => {
+          return `${queryName}: Queries.${queryName}`;
+        }).join(",\n")
+      }
         },
         interfaces: {
           ${
@@ -188,6 +199,16 @@ export async function generateClientSdkVersionTwoPointZero(
     ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}
     `),
   );
+
+  const queriesDir = path.join(outDir, "ontology", "queries");
+  await fs.mkdir(queriesDir, { recursive: true });
+  await generatePerQueryDataFiles(
+    sanitizedOntology,
+    fs,
+    queriesDir,
+    importExt,
+    true,
+  );
 }
 
 function stringUnionFrom(values: ReadonlyArray<string>) {
@@ -222,7 +243,7 @@ async function generateOntologyInterfaces(
       import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
-      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, true)}
+      ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, ontology, true)}
     `),
     );
   }

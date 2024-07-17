@@ -1,5 +1,17 @@
 # @osdk/foundry.core
 
+## 1.1.0-beta.1
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+- a8dc51a: Modified codegen so that return types now include Blobs.
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+  - @osdk/shared.net.platformapi@0.2.0-beta.1
+
 ## 1.1.0-beta.0
 
 ### Minor Changes

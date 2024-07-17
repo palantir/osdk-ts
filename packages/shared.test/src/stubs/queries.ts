@@ -18,9 +18,13 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
 } from "@osdk/gateway/types";
-import { employee1 } from "./objects.js";
+import { employee1, employee2 } from "./objects.js";
 import {
   addOneQueryType,
+  queryTypeAcceptsObjects,
+  queryTypeAcceptsObjectSets,
+  queryTypeAcceptsThreeDimensionalAggregation,
+  queryTypeAcceptsTwoDimensionalAggregation,
   queryTypeReturnsDate,
   queryTypeReturnsObject,
   queryTypeReturnsStruct,
@@ -32,6 +36,12 @@ import {
 export const addOneQueryRequest: ExecuteQueryRequest = {
   parameters: {
     n: 2,
+  },
+};
+
+export const addOneQueryRequestWithNoResponse: ExecuteQueryRequest = {
+  parameters: {
+    n: 3,
   },
 };
 
@@ -67,6 +77,26 @@ export const queryTypeReturnsDateResponse: ExecuteQueryResponse = {
 
 export const queryTypeReturnsObjectResponse: ExecuteQueryResponse = {
   value: employee1.__primaryKey,
+};
+
+export const queryTypeAcceptsObjectRequest: ExecuteQueryRequest = {
+  parameters: { object: employee1.__primaryKey },
+};
+
+export const queryTypeAcceptsObjectResponse: ExecuteQueryResponse = {
+  value: employee2.__primaryKey,
+};
+
+export const queryTypeAcceptsObjectSetRequest: ExecuteQueryRequest = {
+  parameters: {
+    objectSet: { type: "base", objectType: "Employee" },
+  },
+};
+
+export const queryTypeAcceptsObjectSetResponse: ExecuteQueryResponse = {
+  value: {
+    objectSet: { type: "base", objectType: "Employee" },
+  },
 };
 
 export const queryTypeThreeDimensionalAggregationResponse:
@@ -109,6 +139,90 @@ export const queryTypeTwoDimensionalAggregationResponse: ExecuteQueryResponse =
     },
   };
 
+export const queryTypeAcceptsTwoDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
+    parameters: {
+      aggFunction: {
+        groups: [
+          {
+            key: "testKey1",
+            value: 1,
+          },
+          {
+            key: "testKey2",
+            value: 2,
+          },
+        ],
+      },
+    },
+  };
+
+export const queryTypeAcceptsTwoDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
+    value: {
+      groups: [
+        {
+          key: "responseKey1",
+          value: 3,
+        },
+        {
+          key: "responseKey2",
+          value: 4,
+        },
+      ],
+    },
+  };
+
+export const queryTypeAcceptsThreeDimensionalAggregationRequest:
+  ExecuteQueryRequest = {
+    parameters: {
+      aggFunction: {
+        groups: [
+          {
+            key: "testKey1",
+            groups: [
+              {
+                key: {
+                  startValue: "2010-10-01T00:00:00Z",
+                  endValue: "2010-10-02T00:00:00Z",
+                },
+                value: 65.0,
+              },
+            ],
+          },
+          {
+            key: "testKey2",
+            groups: [],
+          },
+        ],
+      },
+    },
+  };
+
+export const queryTypeAcceptsThreeDimensionalAggregationResponse:
+  ExecuteQueryResponse = {
+    value: {
+      groups: [
+        {
+          key: "Q-AFN",
+          groups: [
+            {
+              key: {
+                startValue: "2010-10-01T00:00:00Z",
+                endValue: "2010-10-02T00:00:00Z",
+              },
+              value: 65.0,
+            },
+          ],
+        },
+        {
+          key: "Q-AFO",
+          groups: [],
+        },
+      ],
+    },
+  };
+
 export const emptyBody: string = JSON.stringify({
   parameters: {},
 });
@@ -120,6 +234,7 @@ export const queryRequestHandlers: {
 } = {
   [addOneQueryType.apiName]: {
     [JSON.stringify(addOneQueryRequest)]: addOneQueryResponse,
+    [JSON.stringify(addOneQueryRequestWithNoResponse)]: { value: undefined },
   },
   [queryTypeReturnsStruct.apiName]: {
     [JSON.stringify(queryTypeReturnsStructRequest)]:
@@ -139,5 +254,21 @@ export const queryRequestHandlers: {
   },
   [queryTypeThreeDimensionalAggregation.apiName]: {
     [emptyBody]: queryTypeThreeDimensionalAggregationResponse,
+  },
+  [queryTypeAcceptsObjects.apiName]: {
+    [JSON.stringify(queryTypeAcceptsObjectRequest)]:
+      queryTypeAcceptsObjectResponse,
+  },
+  [queryTypeAcceptsObjectSets.apiName]: {
+    [JSON.stringify(queryTypeAcceptsObjectSetRequest)]:
+      queryTypeAcceptsObjectSetResponse,
+  },
+  [queryTypeAcceptsTwoDimensionalAggregation.apiName]: {
+    [JSON.stringify(queryTypeAcceptsTwoDimensionalAggregationRequest)]:
+      queryTypeAcceptsTwoDimensionalAggregationResponse,
+  },
+  [queryTypeAcceptsThreeDimensionalAggregation.apiName]: {
+    [JSON.stringify(queryTypeAcceptsThreeDimensionalAggregationRequest)]:
+      queryTypeAcceptsThreeDimensionalAggregationResponse,
   },
 };

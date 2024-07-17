@@ -115,7 +115,7 @@ export async function* loadObjectsIterator<
 ): AsyncIterableIterator<T> {
   let pageToken: string | undefined = undefined;
   do {
-    const result = await loadObjectsPage(
+    const result: Result<Page<T>, LoadObjectSetError> = await loadObjectsPage(
       client,
       objectApiName,
       objectSetDefinition,
@@ -124,6 +124,7 @@ export async function* loadObjectsIterator<
       { pageToken },
     );
     if (result.type === "ok") {
+      pageToken = result.value.nextPageToken;
       for (
         const obj of result.value.data
       ) {

@@ -18,6 +18,7 @@ import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
+import { propertyJsdoc } from "./propertyJsdoc.js";
 
 export function getObjectDefIdentifier(name: string, v2: boolean) {
   return v2 ? name : `${name}Def`;
@@ -91,10 +92,12 @@ export function wireObjectTypeV2ToSdkObjectConst(
         properties: (_value) => (`{
           ${
           stringify(definition.properties, {
-            "*": (propertyDefinition) =>
+            "*": (propertyDefinition, _, apiName) => [
+              `${propertyJsdoc(propertyDefinition, { apiName })}${apiName}`,
               `PropertyDef<"${propertyDefinition.type}", "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
+            ],
           })
         }
         }`),

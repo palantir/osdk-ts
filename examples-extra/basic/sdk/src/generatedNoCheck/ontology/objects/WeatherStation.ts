@@ -11,7 +11,14 @@ export interface WeatherStation
   primaryKeyApiName: 'stationId';
   primaryKeyType: 'string';
   properties: {
+    /**
+     *   display name: 'Geohash',
+     *   description: geopoint
+     */
     geohash: PropertyDef<'geopoint', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
     stationId: PropertyDef<'string', 'non-nullable', 'single'>;
   };
 }
@@ -30,6 +37,7 @@ export const WeatherStation: WeatherStation = {
       nullable: false,
     },
     geohash: {
+      displayName: 'Geohash',
       multiplicity: false,
       description: 'geopoint',
       type: 'geopoint',
