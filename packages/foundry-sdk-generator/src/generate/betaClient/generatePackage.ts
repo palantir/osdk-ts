@@ -60,8 +60,6 @@ export async function generatePackage(
   const resolvedDependencies = await Promise.all(
     Object.keys(options.beta ? betaDependencies : dependencies).map(
       async dependency => {
-        // eslint-disable-next-line no-console
-        console.log("LOOK:", dependency);
         return {
           dependencyName: dependency,
           dependencyVersion: await getDependencyVersion(dependency),
@@ -69,8 +67,6 @@ export async function generatePackage(
       },
     ),
   );
-  // eslint-disable-next-line no-console
-  console.log("AfterALL", resolvedDependencies);
   await mkdir(packagePath, { recursive: true });
 
   const inMemoryFileSystem: { [fileName: string]: string } = {};

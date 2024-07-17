@@ -107,42 +107,6 @@ export async function setup() {
     _: [],
     $0: "",
   });
-
-  await generatePackageCommand.handler({
-    packageName: "@test-app2/osdk",
-    packageVersion: "0.0.1",
-    outputDir: dir,
-    authToken: "myAccessToken",
-    foundryHostname: "https://stack.palantir.com",
-    ontology: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
-    objectTypes: [
-      "employee",
-      "office",
-      "objectTypeWithAllPropertyTypes",
-      "ObjectWithTimestampPrimaryKey",
-      "equipment",
-    ],
-    actionTypes: [
-      "createOffice",
-      "moveOffice",
-      "createOfficeAndEmployee",
-      "actionTakesObjectSet",
-    ],
-    queryTypes: [
-      "addOne",
-      "incrementPersonAge",
-      "returnsTimestamp",
-      "returnsDate",
-      "returnsObject",
-      "twoDimensionalAggregationFunction",
-      "threeDimensionalAggregationFunction",
-    ],
-    beta: true,
-    linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
-    palantirOnlyTest: true,
-    _: [],
-    $0: "",
-  });
 }
 
 export async function teardown() {

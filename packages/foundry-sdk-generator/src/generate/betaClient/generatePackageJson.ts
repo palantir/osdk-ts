@@ -24,6 +24,11 @@ export async function generatePackageJson(options: {
   dependencies?: Array<{ dependencyName: string; dependencyVersion: string }>;
   beta: boolean;
 }) {
+  const packageDeps = options.dependencies?.reduce((acc, value) => {
+    acc[value.dependencyName] = value.dependencyVersion;
+    return acc;
+  }, {} as { [dependencyName: string]: string });
+
   // Note that any "default" conditions _must_ be last in their block otherwise it will crash at runtime
   const packageJson = options.beta
     ? {
@@ -40,10 +45,7 @@ export async function generatePackageJson(options: {
           default: "./index.js",
         },
       },
-      dependencies: options.dependencies?.reduce((acc, value) => {
-        acc[value.dependencyName] = value.dependencyVersion;
-        return acc;
-      }, {} as { [dependencyName: string]: string }),
+      dependencies: packageDeps,
     }
     : {
       name: options.packageName,
@@ -64,10 +66,7 @@ export async function generatePackageJson(options: {
           default: "./ontology/objects/index.js",
         },
       },
-      dependencies: options.dependencies?.reduce((acc, value) => {
-        acc[value.dependencyName] = value.dependencyVersion;
-        return acc;
-      }, {} as { [dependencyName: string]: string }),
+      dependencies: packageDeps,
     };
 
   await writeFile(
