@@ -35,26 +35,9 @@ export async function generatePackageJson(options: {
         ".": {
           types: "./index.d.ts",
           script: {
-            types: "./dist/bundle/index.d.ts",
             default: "./dist/bundle/index.esm.js",
           },
           default: "./index.js",
-        },
-        "./ontology/objects": {
-          types: "./ontology/objects/index.d.ts",
-          default: "./ontology/objects/index.js",
-        },
-        "./ontology/actions": {
-          types: "./ontology/actions/index.d.ts",
-          default: "./ontology/actions/index.js",
-        },
-        "./ontology/interfaces": {
-          types: "./ontology/interfaces/index.d.ts",
-          default: "./ontology/interfaces/index.js",
-        },
-        "./ontology/queries": {
-          types: "./ontology/queries/index.d.ts",
-          default: "./ontology/queries/index.js",
         },
       },
       dependencies: options.dependencies?.reduce((acc, value) => {
