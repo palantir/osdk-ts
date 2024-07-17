@@ -24,7 +24,6 @@ import { loggingFetch } from "./loggingFetch.js";
 invariant(process.env.FOUNDRY_STACK !== undefined);
 invariant(process.env.FOUNDRY_USER_TOKEN !== undefined);
 
-console.log(process.env.FOUNDRY_STACK);
 export const client: Client = createClient(
   process.env.FOUNDRY_STACK,
   "ri.ontology.main.ontology.00000000-0000-0000-0000-000000000000",

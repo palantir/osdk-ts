@@ -33,35 +33,35 @@ const testSubscriptions = false;
 
 async function runTests() {
   try {
-    // await runFoundryPlatformApiTest();
-    // await checkUnstableBulkLinks();
+    await runFoundryPlatformApiTest();
+    await checkUnstableBulkLinks();
 
-    // if (runOld) {
-    //   await runLegacyExamples();
-    // }
-    // if (testSubscriptions) {
-    //   runSubscriptionsTest();
+    if (runOld) {
+      await runLegacyExamples();
+    }
+    if (testSubscriptions) {
+      runSubscriptionsTest();
 
-    //   // we don't need the console flooded with additional things
-    //   return;
-    // }
+      // we don't need the console flooded with additional things
+      return;
+    }
 
-    // const datasetRid =
-    //   "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
-    // await runFoundrySdkClientVerificationTest(datasetRid);
+    const datasetRid =
+      "ri.foundry.main.dataset.58070dbb-dd3b-4c82-b012-9c2f8a13dd83";
+    await runFoundrySdkClientVerificationTest(datasetRid);
 
-    // await runInterfacesTest();
+    await runInterfacesTest();
 
-    // // only works in default ontology
-    // await runGeoQueriesTest();
+    // only works in default ontology
+    await runGeoQueriesTest();
 
-    // await runAssignEmployeeToVentureTest();
+    await runAssignEmployeeToVentureTest();
 
-    // await runAggregationsTest();
+    await runAggregationsTest();
 
-    // await runAggregationGroupByDatesTest();
+    await runAggregationGroupByDatesTest();
 
-    // if (runOld) await typeChecks(client);
+    if (runOld) await typeChecks(client);
 
     await runTimeseriesTest();
   } catch (e) {
