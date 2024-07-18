@@ -102,7 +102,7 @@ describe(createClient, () => {
         .fetchPage();
     });
 
-    it("doesnt work with a far future version", () => {
+    it("doesn't work with a far future version", () => {
       client(
         // @ts-expect-error
         MockOntology.objects.Task as

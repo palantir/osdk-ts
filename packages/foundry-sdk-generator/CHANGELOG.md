@@ -37,9 +37,9 @@
 
 ### Patch Changes
 
-- 212f651: Add fetchone, that is get replacement without result wrapper
+- 212f651: Add fetchOne, that is get replacement without result wrapper
 - e690399: Fix $rid, $apiName and $primaryKey population
-- 212f651: Deprecate get and add fetchonewitherrors, which functionally is the same
+- 212f651: Deprecate get and add fetchOneWithErrors, which functionally is the same
 - Updated dependencies [212f651]
 - Updated dependencies [e690399]
 - Updated dependencies [212f651]
@@ -121,7 +121,7 @@
 
 ### Patch Changes
 
-- 35803ca0: Fix backcompat break where the script exports were removed
+- 35803ca0: Fix back-compat break where the script exports were removed
 
 ## 0.200.3
 

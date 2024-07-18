@@ -95,7 +95,7 @@ export async function generatePerActionDataFiles(
 
       function createV2Types() {
         // the params must be a `type` to align properly with the `ActionDefinition` interface
-        // this way we can generate a strict type for the function itself and reference it from the Aciton Definition
+        // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
         
           ${createParamsDef()}

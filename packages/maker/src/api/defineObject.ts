@@ -66,7 +66,7 @@ export function defineObject(
     sharedPropertyTypeMapping: {},
   };
 
-  // FIXME: dont return the raw value
+  // FIXME: don't return the raw value
   return {
     data: ontologyDefinition.objectTypes[apiName],
     linkTypes: {},

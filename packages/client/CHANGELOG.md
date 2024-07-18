@@ -60,7 +60,7 @@
 - 5378312: Added batch action support for 2.0 client
 - b3563e0: OSDK learns \_\_EXPERIMENTAL_strictNonNull to throw, drop objects, or return `| undefined` for properties, allowing for correct typesafety.
 - dd6033a: Adds a createPlatformClient if you only need platform apis
-- 4dbac7e: Fixes link direction for experiental bulk loads
+- 4dbac7e: Fixes link direction for experimental bulk loads
 - 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
 - 44add10: Standardize the use of dollar signs as prefixes for object properties that are specific to the OSDK.
 
@@ -76,7 +76,7 @@
 
 - 0a64def: Adds experimental batch link support
 - f9b3c72: Support importing the unstable-do-not-use from moduleResolution: node
-- 978ecd5: Rexport PalantirApiError
+- 978ecd5: Reexport PalantirApiError
 - 978ecd5: Client is now usable for calling Platform SDK
 - c9f3214: Interfaces are now mapped as views
 
@@ -111,7 +111,7 @@
 
   - Introduced an optional pino logger to the client
   - Fixes issues with where clauses for equality in subscriptions
-  - Fixes issues with inconsistent idname and apiName's in the mapping data
+  - Fixes issues with inconsistent id name and apiName's in the mapping data
 
 - 9906a41: Foundry Platform API support
 - 9906a41: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
@@ -197,7 +197,7 @@
 
 ### Minor Changes
 
-- 6d81f7f: Add priliminary action support to v2
+- 6d81f7f: Add preliminary action support to v2
 
 ## 0.0.11
 
@@ -267,7 +267,7 @@
 
 ### Patch Changes
 
-- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatability in @osdk/api"
+- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatibility in @osdk/api"
 - 848404c: Handle conflicts between object, action, and query names
 - Updated dependencies [f3120fb]
 - Updated dependencies [848404c]

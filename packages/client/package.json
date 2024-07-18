@@ -20,6 +20,7 @@
   },
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -58,6 +59,9 @@
   "devDependencies": {
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/internal.foundry": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",

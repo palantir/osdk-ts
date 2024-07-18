@@ -23,7 +23,7 @@ import {
   wireObjectTypeV2ToSdkObjectConst,
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
-import { verifyOutdir } from "../util/verifyOutdir.js";
+import { verifyOutDir } from "../util/verifyOutDir.js";
 import { generatePerQueryDataFiles } from "../v1.1/generatePerQueryDataFiles.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
@@ -35,7 +35,7 @@ export async function generateClientSdkVersionTwoPointZero(
   outDir: string,
   packageType: "module" | "commonjs" = "commonjs",
 ) {
-  await verifyOutdir(outDir, fs);
+  await verifyOutDir(outDir, fs);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
 

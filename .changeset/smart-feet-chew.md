@@ -2,4 +2,4 @@
 "@osdk/client": patch
 ---
 
-Fixes link direction for experiental bulk loads
+Fixes link direction for experimental bulk loads

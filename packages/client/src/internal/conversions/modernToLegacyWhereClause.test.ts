@@ -284,7 +284,7 @@ describe(modernToLegacyWhereClause, () => {
         `);
       });
 
-      it("properly generates interesects polygon", async () => {
+      it("properly generates intersects polygon", async () => {
         expect(modernToLegacyWhereClause<ObjAllProps>(
           {
             geoShape: {

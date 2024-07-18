@@ -1,4 +1,4 @@
-import { FoundryClient, PublicClientAuth } from "@osdk/examples.one.dot.one";
+import { FoundryClient, PublicClientAuth } from "@osdk/e2e.generated.1.1.x";
 
 const url = process.env.NEXT_PUBLIC_FOUNDRY_API_URL;
 const clientId = process.env.NEXT_PUBLIC_FOUNDRY_CLIENT_ID;

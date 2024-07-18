@@ -34,7 +34,7 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
     try {
       response = await fetchFn(url, requestInit);
     } catch (e) {
-      throw convertError(e, "A network error occured");
+      throw convertError(e, "A network error occurred");
     }
 
     if (!response.ok) {
@@ -46,7 +46,10 @@ export function createFetchOrThrow(fetchFn: typeof fetch = fetch) {
       try {
         body = await response.json();
       } catch (e) {
-        throw convertError(e, "A network error occured while reading response");
+        throw convertError(
+          e,
+          "A network error occurred while reading response",
+        );
       }
 
       throw new PalantirApiError(

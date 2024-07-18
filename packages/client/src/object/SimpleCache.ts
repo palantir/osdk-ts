@@ -79,7 +79,7 @@ export interface WeakAsyncCache<K, V> {
 
   /**
    * @param client the client to key from
-   * @param key the subkey to use
+   * @param key the sub-key to use
    * @param value the value or a promise to the value
    * @returns a new promise to the resolved value
    */

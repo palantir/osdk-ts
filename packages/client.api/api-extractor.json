@@ -1,5 +1,5 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
-  "extends": "@osdk/api-extractor/base.json",
+  "extends": "@osdk/monorepo.api-extractor/base.json",
   "mainEntryPointFilePath": "<projectFolder>/build/esm/index.d.ts"
 }

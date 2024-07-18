@@ -137,8 +137,8 @@ describe(toDataValue, () => {
       expected,
     );
 
-    const defintionConversion = await toDataValue(definition, clientCtx);
-    expect(defintionConversion).toMatchInlineSnapshot(expected);
+    const definitionConversion = await toDataValue(definition, clientCtx);
+    expect(definitionConversion).toMatchInlineSnapshot(expected);
   });
 
   it("converts attachment uploads correctly", async () => {

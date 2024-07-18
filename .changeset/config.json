@@ -14,8 +14,7 @@
     "@osdk/examples.*",
     "@osdk/tests.*",
     "@osdk/version-updater",
-    "mytsup",
-    "tsconfig"
+    "@osdk/monorepo.*"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {

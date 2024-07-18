@@ -19,6 +19,7 @@
   },
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -31,7 +32,7 @@
     "@changesets/apply-release-plan": "^7.0.1",
     "@changesets/assemble-release-plan": "^6.0.0",
     "@changesets/changelog-git": "^0.2.0",
-    "@changesets/config": "^3.0.0",
+    "@changesets/config": "^3.0.2",
     "@changesets/git": "^3.0.0",
     "@changesets/pre": "^2.0.0",
     "@changesets/read": "^0.6.0",
@@ -54,6 +55,9 @@
   },
   "devDependencies": {
     "@changesets/types": "^6.0.0",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@types/mdast": "4.0.4",
     "@types/node": "^20.12.7",
     "@types/semver": "^7.5.8",

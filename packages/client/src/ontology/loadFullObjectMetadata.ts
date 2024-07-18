@@ -21,15 +21,15 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadFullObjectMetadata(
   client: MinimalClient,
-  objtype: string,
+  objectType: string,
 ): Promise<ObjectTypeDefinition<any, any> & { rid: string }> {
   const full = await OntologiesV2.OntologyObjectsV2.getObjectTypeFullMetadata(
     client,
     await client.ontologyRid,
-    objtype,
+    objectType,
     { preview: true },
   );
   const ret = wireObjectTypeFullMetadataToSdkObjectTypeDefinition(full, true);
-  client.logger?.debug(`END loadFullObjectMetadata(${objtype})`);
+  client.logger?.debug(`END loadFullObjectMetadata(${objectType})`);
   return { ...ret, rid: full.objectType.rid };
 }
