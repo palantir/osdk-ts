@@ -1,10 +1,11 @@
 {
-  "name": "@osdk/monorepo.api-extractor",
+  "name": "@osdk/monorepo.tool.transpile",
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/palantir/osdk-ts.git"
-  }
+  },
+  "bin": "./bin/transpile.sh"
 }
