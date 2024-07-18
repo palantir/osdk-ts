@@ -196,6 +196,8 @@ export const DistanceUnitMapping: {
 
 // @public (undocumented)
 export const DurationMapping: {
+    quarter: "QUARTERS";
+    quarters: "QUARTERS";
     sec: "SECONDS";
     seconds: "SECONDS";
     min: "MINUTES";
@@ -216,8 +218,6 @@ export const DurationMapping: {
     yr: "YEARS";
     year: "YEARS";
     years: "YEARS";
-    quarter: "QUARTERS";
-    quarters: "QUARTERS";
 };
 
 // @public (undocumented)
@@ -560,8 +560,6 @@ export type StringAggregateOption = "approximateDistinct";
 
 // @public (undocumented)
 export const TimeseriesDurationMapping: {
-    ms: "MILLISECONDS";
-    milliseconds: "MILLISECONDS";
     sec: "SECONDS";
     seconds: "SECONDS";
     min: "MINUTES";
@@ -582,6 +580,8 @@ export const TimeseriesDurationMapping: {
     yr: "YEARS";
     year: "YEARS";
     years: "YEARS";
+    ms: "MILLISECONDS";
+    milliseconds: "MILLISECONDS";
 };
 
 // @public (undocumented)

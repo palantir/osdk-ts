@@ -16,6 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { AggregatableKeys } from "../aggregate/AggregatableKeys.js";
+import { TimeDurationMapping } from "../mapping/DurationMapping.js";
 import type { GroupByMapper } from "./GroupByMapper.js";
 
 export type GroupByClause<
@@ -52,28 +53,8 @@ export type TimestampTimeUnits =
   | "HOURS";
 
 export type DateTimeUnits = "DAYS" | "WEEKS" | "MONTHS" | "YEARS" | "QUARTERS";
-
 export const DurationMapping = {
-  "sec": "SECONDS",
-  "seconds": "SECONDS",
-  "min": "MINUTES",
-  "minute": "MINUTES",
-  "minutes": "MINUTES",
-  "hr": "HOURS",
-  "hrs": "HOURS",
-  "hour": "HOURS",
-  "hours": "HOURS",
-  "day": "DAYS",
-  "days": "DAYS",
-  "wk": "WEEKS",
-  "week": "WEEKS",
-  "weeks": "WEEKS",
-  "mos": "MONTHS",
-  "month": "MONTHS",
-  "months": "MONTHS",
-  "yr": "YEARS",
-  "year": "YEARS",
-  "years": "YEARS",
+  ...TimeDurationMapping,
   "quarter": "QUARTERS",
   "quarters": "QUARTERS",
 } satisfies Record<string, DateTimeUnits | TimestampTimeUnits>;

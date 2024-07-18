@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TimeDurationMapping } from "../mapping/DurationMapping.js";
+
 export type TimeSeriesQuery =
   | {
     $before: number;
@@ -57,26 +59,7 @@ export type TimeseriesDurationUnits =
 export const TimeseriesDurationMapping = {
   "ms": "MILLISECONDS",
   "milliseconds": "MILLISECONDS",
-  "sec": "SECONDS",
-  "seconds": "SECONDS",
-  "min": "MINUTES",
-  "minute": "MINUTES",
-  "minutes": "MINUTES",
-  "hr": "HOURS",
-  "hrs": "HOURS",
-  "hour": "HOURS",
-  "hours": "HOURS",
-  "day": "DAYS",
-  "days": "DAYS",
-  "wk": "WEEKS",
-  "week": "WEEKS",
-  "weeks": "WEEKS",
-  "mos": "MONTHS",
-  "month": "MONTHS",
-  "months": "MONTHS",
-  "yr": "YEARS",
-  "year": "YEARS",
-  "years": "YEARS",
+  ...TimeDurationMapping,
 } satisfies Record<string, TimeseriesDurationUnits>;
 
 export interface TimeSeriesPoint<T extends string | number> {
