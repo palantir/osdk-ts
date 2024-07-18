@@ -1,5 +1,28 @@
 # @osdk/client
 
+## 0.20.0-beta.4
+
+### Minor Changes
+
+- 7afa226: Fix action params that take objects to correctly parse out primary key.
+- 3ec7c38: Add support for queries in 2.0
+- 4824449: Fix asyncIter to fetch subsequent pages
+- bc89b62: Spelling fixes and spell check in CI
+- a92e032: ClientCache now uses a key field as the cache key instead of the entire client
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/client.api@0.20.0-beta.4
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/generator-converters@0.7.0-beta.1
+  - @osdk/client.unstable.osw@0.1.0-beta.0
+  - @osdk/shared.client.impl@0.1.0-beta.1
+  - @osdk/shared.net.errors@1.1.0-beta.0
+  - @osdk/shared.net.fetch@0.1.0-beta.1
+  - @osdk/client.unstable@0.1.0-beta.0
+
 ## 0.20.0-beta.3
 
 ### Minor Changes

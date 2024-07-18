@@ -1,5 +1,17 @@
 # @osdk/foundry.security
 
+## 1.1.0-beta.2
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [bc89b62]
+  - @osdk/shared.net.platformapi@0.2.0-beta.2
+  - @osdk/foundry.core@1.1.0-beta.2
+
 ## 1.1.0-beta.1
 
 ### Minor Changes

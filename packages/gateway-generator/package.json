@@ -1,7 +1,7 @@
 {
   "name": "@osdk/gateway-generator",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0-beta.0",
   "description": "",
   "access": "private",
   "license": "Apache-2.0",

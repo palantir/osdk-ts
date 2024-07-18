@@ -1,5 +1,28 @@
 # @osdk/foundry-sdk-generator
 
+## 1.2.0-beta.3
+
+### Minor Changes
+
+- fee51a3: Add interface support
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [7afa226]
+- Updated dependencies [572e322]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [4824449]
+- Updated dependencies [bc89b62]
+- Updated dependencies [116d848]
+- Updated dependencies [a92e032]
+  - @osdk/client@0.20.0-beta.4
+  - @osdk/legacy-client@2.4.0-beta.2
+  - @osdk/client.api@0.20.0-beta.4
+  - @osdk/generator@1.12.0-beta.2
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 1.2.0-beta.2
 
 ### Minor Changes
