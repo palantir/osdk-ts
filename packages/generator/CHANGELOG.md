@@ -1,5 +1,21 @@
 # @osdk/generator
 
+## 1.12.0-beta.2
+
+### Minor Changes
+
+- 3ec7c38: Add support for queries in 2.0
+- bc89b62: Spelling fixes and spell check in CI
+- 116d848: Interface inherited properties are now generated
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/generator-converters@0.7.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 1.12.0-beta.1
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @osdk/example-generator
 
+## 0.6.0-beta.4
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [bc89b62]
+  - @osdk/create-app@0.17.0-beta.4
+
 ## 0.6.0-beta.3
 
 ### Minor Changes

@@ -1,5 +1,20 @@
 # @osdk/internal.foundry.models
 
+## 0.1.0-beta.2
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/shared.net.platformapi@0.2.0-beta.2
+  - @osdk/internal.foundry.core@0.1.0-beta.2
+  - @osdk/shared.net@1.12.0-beta.1
+
 ## 0.1.0-beta.1
 
 ### Minor Changes

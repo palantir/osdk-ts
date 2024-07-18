@@ -1,5 +1,21 @@
 # @osdk/cli.cmd.typescript
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+- Updated dependencies [116d848]
+  - @osdk/generator@1.12.0-beta.2
+  - @osdk/cli.common@0.3.0-beta.0
+  - @osdk/shared.net@1.12.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 0.4.0-beta.1
 
 ### Minor Changes

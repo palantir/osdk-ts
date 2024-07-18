@@ -1,5 +1,18 @@
 # @osdk/client.api
 
+## 0.20.0-beta.4
+
+### Minor Changes
+
+- 3ec7c38: Add support for queries in 2.0
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0-beta.1
+
 ## 0.20.0-beta.3
 
 ### Minor Changes

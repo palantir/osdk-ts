@@ -1,5 +1,18 @@
 # @osdk/maker
 
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 0.7.0-beta.1
 
 ### Minor Changes

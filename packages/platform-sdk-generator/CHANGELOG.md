@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.4.0-beta.2
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
 ## 0.4.0-beta.1
 
 ### Minor Changes

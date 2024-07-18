@@ -1,5 +1,18 @@
 # @osdk/client.test.ontology
 
+## 1.0.0-beta.4
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/client.api@0.20.0-beta.4
+  - @osdk/api@1.9.0-beta.1
+
 ## 1.0.0-beta.3
 
 ### Minor Changes
