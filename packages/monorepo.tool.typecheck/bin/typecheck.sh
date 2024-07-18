@@ -3,7 +3,9 @@
 set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-# shellcheck source-path=SCRIPTDIR/../
+# Clean up old files
+find . \( -path build/cjs -or -path build/esm -or -path build/browser \) -type f \( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \) -delete
+
 
 # Command line arg
 BUILD_TYPE="${1:-esm}"
@@ -13,7 +15,7 @@ if [[ "$BUILD_TYPE" != "esm" && "$BUILD_TYPE" != "both" ]]; then
     exit 1
 fi
 
-source "$SCRIPT_DIR/../checkCommand.sh"
+source "$SCRIPT_DIR/../../../scripts/checkCommand.sh"
 SED="$(checkCommand "gsed" "sed" "Try 'brew install gnu-sed'")"
 TSC="pnpm exec tsc-absolute"
 

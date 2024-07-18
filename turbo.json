@@ -35,14 +35,9 @@
       "inputs": ["dprint.json"]
     },
 
-    /* Psuedo task to depend on the script contents */
-    "//#script-check-attw": {
-      "inputs": ["scripts/build_common/check-attw.sh"]
-    },
-
     "check-attw": {
       "outputLogs": "new-only",
-      "dependsOn": ["//#script-check-attw", "transpile", "typecheck"],
+      "dependsOn": ["@osdk/monorepo.tool.attw#transpile", "transpile", "typecheck"],
       "inputs": ["build/{esm,cjs,browser}", "package.json"]
     },
 
@@ -67,6 +62,7 @@
     "typecheck": {
       "outputLogs": "new-only",
       "inputs": [
+        "bin/**",
         "src/**",
         "src/**/*.{mts,cts,ts,tsx}",
         "tsconfig.json",
@@ -144,7 +140,7 @@
     "transpile": {
       "outputLogs": "new-only",
       "dependsOn": ["@osdk/monorepo.tsup#typecheck", "@osdk/monorepo.tsconfig#typecheck", "^transpile", "codegen"],
-      "inputs": ["src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
+      "inputs": ["bin/**", "src/**", "tsup.config.js", "tsconfig.json", "tsconfig.cjs.json"],
       "outputs": ["dist/**", "lib/**", "build/**/*.{js,cjs,js.map,cjs.map}"]
     },
 

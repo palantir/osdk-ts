@@ -13,7 +13,7 @@
     }
   },
   "scripts": {
-    "check-attw": "../../scripts/build_common/check-attw.sh both",
+    "check-attw": "monorepo.tool.attw both",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)"
