@@ -1,8 +1,6 @@
 {
-  "name": "@osdk/create-app",
-  "version": "0.17.0-beta.3",
-  "description": "",
-  "access": "public",
+  "name": "@osdk/create-app.template.next-static-export",
+  "version": "0.17.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -21,40 +19,31 @@
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "create-app.template-packager",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "test": "vitest run --pool=forks",
-    "test:watch": "vitest",
     "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
-    "transpileWatch": "tsup --watch",
     "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "dependencies": {
-    "@osdk/create-app.template.next-static-export": "workspace:*",
-    "@osdk/create-app.template.react": "workspace:*",
-    "@osdk/create-app.template.tutorial-todo-aip-app": "workspace:*",
-    "@osdk/create-app.template.tutorial-todo-app": "workspace:*",
-    "@osdk/create-app.template.vue": "workspace:*",
-    "consola": "^3.2.3",
-    "find-up": "^7.0.0",
-    "handlebars": "^4.7.8",
-    "yargs": "^17.7.2"
+    "next": "14.2.3",
+    "react": "^18",
+    "react-dom": "^18"
   },
   "devDependencies": {
+    "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "@types/node": "^18.0.0",
-    "@types/tmp": "^0.2.6",
-    "@types/yargs": "^17.0.29",
-    "tmp": "^0.2.3",
-    "typescript": "^5.5.2"
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.3",
+    "typescript": "^5"
   },
   "publishConfig": {
     "access": "public"
-  },
-  "bin": {
-    "create-osdk-app": "bin/createOsdkApp.mjs"
   },
   "files": [
     "build/cjs",

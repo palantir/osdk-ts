@@ -27,6 +27,7 @@ tsconfig.tsbuildinfo
 packages/client/src/generatedNoCheck
 packages/client.test.ontology/src/generatedNoCheck
 packages/legacy-client/src/generatedNoCheck
+packages/create-app.template.*/src/generatedNoCheck
 
 .log
 pnpm-publish-summary.json
