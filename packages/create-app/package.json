@@ -45,7 +45,7 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.40",
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
     "tmp": "^0.2.3",
