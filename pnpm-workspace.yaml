@@ -3,5 +3,4 @@ packages:
   - "examples/*"
   - "examples-extra/*"
   - "examples-extra/basic/*"
-  - "monorepo/*"
   - "tests/*"

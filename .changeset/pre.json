@@ -11,7 +11,7 @@
     "@osdk/examples.react": "0.0.0",
     "@osdk/examples.tutorial-todo-app": "0.0.0",
     "@osdk/examples.vue": "0.0.0",
-    "mytsup": "0.0.0",
+    "@osdk/monorepo.tsup": "0.0.0",
     "tsconfig": "0.0.0",
     "@osdk/api": "1.8.0",
     "@osdk/cli": "0.21.0",

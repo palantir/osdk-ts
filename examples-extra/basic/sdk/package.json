@@ -42,6 +42,9 @@
     "@osdk/api": "workspace:~",
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/client.api": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5"
   },

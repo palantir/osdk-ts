@@ -58,6 +58,9 @@
   "devDependencies": {
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/internal.foundry": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "@types/ws": "^8.5.10",

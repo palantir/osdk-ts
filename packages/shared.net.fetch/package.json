@@ -31,6 +31,9 @@
     "fetch-retry": "^6.0.0"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

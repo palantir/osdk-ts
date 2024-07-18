@@ -1,5 +1,5 @@
 {
-  "name": "tsconfig",
+  "name": "@osdk/monorepo.tsconfig",
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
@@ -8,7 +8,7 @@
     "url": "https://github.com/palantir/osdk-ts.git"
   },
   "exports": {
-    "./base": "./tsconfig.base.json"
+    "./base.json": "./base.json"
   },
   "scripts": {},
   "dependencies": {},

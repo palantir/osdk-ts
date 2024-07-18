@@ -33,14 +33,11 @@ const LATEST_TYPESCRIPT_DEP = "^5.5.2";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 const nonStandardPackages = [
-  "mytsup",
-  "tsconfig",
-  "@osdk/api-extractor",
-  "@osdk/examples.todoapp",
-  "@osdk/tests.*",
-  "@osdk/foundry-sdk-generator",
   "@osdk/examples.*",
+  "@osdk/foundry-sdk-generator",
+  "@osdk/monorepo.*",
   "@osdk/shared.client",
+  "@osdk/tests.*",
 ];
 
 const legacyPackages = [
@@ -234,7 +231,7 @@ function standardPackageRules(shared, options) {
       ...shared,
 
       options: getTsconfigOptions(
-        `${pathToWorkspaceRoot}/monorepo/tsconfig/tsconfig.base.json`,
+        `@osdk/monorepo.tsconfig/base.json`,
         {
           customTsconfigExcludes: options.customTsconfigExcludes,
           skipTsconfigReferences: options.skipTsconfigReferences,
@@ -271,6 +268,16 @@ function standardPackageRules(shared, options) {
         }),
       ]
       : []),
+    requireDependency({
+      ...shared,
+      options: {
+        devDependencies: {
+          "@osdk/monorepo.tsconfig": "workspace:~",
+          "@osdk/monorepo.tsup": "workspace:~",
+          "@osdk/monorepo.api-extractor": "workspace:~",
+        },
+      },
+    }),
     packageScript({
       ...shared,
       options: {
@@ -365,7 +372,7 @@ function standardPackageRules(shared, options) {
           import { defineConfig } from "tsup";
 
           export default defineConfig(async (options) =>
-            (await import("mytsup")).default(options, {
+            (await import("@osdk/monorepo.tsup")).default(options, {
               ${options.legacy ? "cjsExtension: '.js'" : ""}
               ${options.esmOnly ? "esmOnly: true," : ""}
           })

@@ -47,6 +47,9 @@
   "devDependencies": {
     "@osdk/cli.cmd.typescript": "workspace:~",
     "@osdk/cli.common": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@types/archiver": "^6.0.2",
     "@types/ngeohash": "^0.6.8",
     "@types/node": "^18.0.0",
