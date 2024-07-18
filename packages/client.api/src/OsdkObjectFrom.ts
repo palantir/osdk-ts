@@ -83,19 +83,6 @@ export type ConvertProps<
     "$notStrict"
   >;
 
-export const InterfaceDefinitions = Symbol(
-  process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
-);
-export interface FetchedObjectTypeDefinition<K extends string, N = unknown>
-  extends ObjectTypeDefinition<K, N>
-{
-  rid: string;
-
-  // we keep this here so we can depend on these synchronously
-  [InterfaceDefinitions]: {
-    [key: string]: { def: InterfaceDefinition<any> };
-  };
-}
 /** DO NOT EXPORT FROM PACKAGE */
 export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
   InterfaceDefinition<any, any>
