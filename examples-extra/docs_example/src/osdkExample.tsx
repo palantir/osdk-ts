@@ -51,7 +51,7 @@ export async function osdkObjectSetExample() {
     meetingRoomCapacities: { $contains: 30 },
   });
 
-  // Where clause GEOTYPES
+  // Where clause geo types
 
   // Within clauses take either a polygon or bounding box
   const withinFilteredObjectSet = await client(Office).where({

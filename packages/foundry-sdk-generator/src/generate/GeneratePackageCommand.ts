@@ -93,7 +93,7 @@ export class GeneratePackageCommand
         string: true,
         demandOption: false,
         description:
-          `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintanence`,
+          `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintenance`,
         default: undefined,
         defaultDescription:
           `By default, no arguments will not load any action type.`,
@@ -123,7 +123,7 @@ export class GeneratePackageCommand
         string: true,
         demandOption: false,
         description:
-          `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeaures realtimeUpdates`,
+          `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeatures realtimeUpdates`,
         default: undefined,
         defaultDescription:
           `By default, no arguments will not enable any experimental features.`,

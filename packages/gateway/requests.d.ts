@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-// This file only exists as a fallback for packages that dont do modern module resolution
+// This file only exists as a fallback for packages that don't do modern module resolution
 export * from "./build/cjs/public/requests.cjs";

@@ -160,7 +160,7 @@ export function createPublicOauthClient(
     }
 
     try {
-      // note, we dont use processRefreshTokenResponse because the mp oauth implementation
+      // note, we don't use processRefreshTokenResponse because the mp oauth implementation
       // doesn't do refresh tokens quite right and this lets us skip the id check
       return makeTokenAndSaveRefresh(
         throwIfError(

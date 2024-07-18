@@ -40,6 +40,7 @@ const nonStandardPackages = [
   "@osdk/e2e.generated.*", // generated sdks for e2e testing
   "@osdk/shared.client",
   "@osdk/create-app.template.*",
+  "@osdk/monorepo.cspell",
   "@osdk/tests.*",
 ];
 
@@ -287,6 +288,7 @@ function standardPackageRules(shared, options) {
       options: {
         scripts: {
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
+          "check-spelling": "cspell --quiet .",
           "check-attw":
             `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
               options.esmOnly ? "esm" : "both"

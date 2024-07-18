@@ -80,7 +80,7 @@ export default async function siteDeployCommand(
       clientCtx,
       application,
       siteVersion,
-      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesnt align type wise with streams
+      Readable.toWeb(archive) as ReadableStream<any>, // This cast is because the dom fetch doesn't align type wise with streams
     ),
     archive.finalize(),
   ]);

@@ -1,0 +1,25 @@
+# These are all words that are acceptable in wire apis
+actiontype
+checkpointed
+deindexed
+entitymetadata
+frontends
+loggable
+lucene
+mergable
+Mergeable
+Metadatas
+millis
+multifield
+Noops
+objectstorage
+objecttype
+objecttypes
+ontologyobject
+permissioning
+reindex
+rulesets
+schemamigrations
+SearchArounds
+typeclasses
+workstate

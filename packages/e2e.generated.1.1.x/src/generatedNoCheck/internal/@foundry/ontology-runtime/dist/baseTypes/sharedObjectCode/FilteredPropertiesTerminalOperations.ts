@@ -4,13 +4,13 @@ import type {
 } from '@osdk/legacy-client';
 import { OntologyObject } from '../OntologyObject.js';
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FilteredPropertiesTerminalOperations<
   T extends OntologyObject,
   V extends Array<keyof T>,
 > = OG_FilteredPropertiesTerminalOperations<T, V>;
 
-/** @deprecated submodule imports arent public api **/
+/** @deprecated submodule imports aren't public api **/
 export type FilteredPropertiesTerminalOperationsWithGet<
   T extends OntologyObject,
   V extends Array<keyof T>,

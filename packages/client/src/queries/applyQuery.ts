@@ -222,11 +222,11 @@ async function remapQueryResponse<
         groups: { key: AllowedBucketKeyTypes; value: AllowedBucketTypes }[];
       }[] = [];
       for (const { key, groups } of responseValue.groups) {
-        const subresult: { key: any; value: any }[] = [];
-        for (const { key: subkey, value } of groups) {
-          subresult.push({ key: subkey, value });
+        const subResult: { key: any; value: any }[] = [];
+        for (const { key: subKey, value } of groups) {
+          subResult.push({ key: subKey, value });
         }
-        result.push({ key, groups: subresult });
+        result.push({ key, groups: subResult });
       }
       return result as QueryReturnType<typeof responseDataType>;
     }

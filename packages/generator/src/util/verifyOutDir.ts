@@ -22,7 +22,7 @@ import type { MinimalFs } from "../MinimalFs.js";
  * Re-generating an ontology on top of itself is not supported and may leave old
  * files around or refuse to update files with new contents in some cases.
  */
-export async function verifyOutdir(outDir: string, fs: MinimalFs) {
+export async function verifyOutDir(outDir: string, fs: MinimalFs) {
   // if outDir exists and is not empty, we cannot proceed with the generation
   try {
     const contents = await fs.readdir(outDir);

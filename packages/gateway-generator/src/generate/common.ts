@@ -51,7 +51,7 @@ export function generateDocumentation(documentation: Documentation): string {
   return documentationCode;
 }
 
-export function shouldSanitizePameterName(parameterName: string): boolean {
+export function shouldSanitizeParameterName(parameterName: string): boolean {
   return parameterName.includes("-");
 }
 

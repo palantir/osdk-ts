@@ -18,9 +18,9 @@
  * A function for changing the stringified key/value pairs of an object.
  *
  * @param value The value of the key/value pair.
- * @param defaultValueFormatter The function that would be called if this customizer wasnt used
+ * @param defaultValueFormatter The function that would be called if this customizer wasn't used
  * @param key The key of the key/value pair.
- * @param defaultKeyFormatter The function that would be called if this customizer wasnt used
+ * @param defaultKeyFormatter The function that would be called if this customizer wasn't used
  *
  * @returns A string, a tuple of strings, or undefined.
  *          If a string is returned, it will be used as the value of the key/value pair.

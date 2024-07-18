@@ -9,6 +9,14 @@
       "cache": false
     },
 
+    "ci:cspell": {
+      "dependsOn": ["//#cspell:all"]
+    },
+
+    "//#cspell:all": {
+      "cache": false
+    },
+
     "lint": {
       "outputLogs": "new-only",
       "inputs": [
@@ -36,6 +44,11 @@
       "outputLogs": "new-only",
       "dependsOn": ["//#script-check-attw", "transpile", "typecheck"],
       "inputs": ["build/{esm,cjs,browser}", "package.json"]
+    },
+
+    "check-spelling": {
+      "outputLogs": "new-only",
+      "inputs": ["**/*.{ts,tsx,cts,mts,md,json,js,mjs,cjs}"]
     },
 
     /* Psuedo task to depend on the script contents */
@@ -163,7 +176,8 @@
         "typecheck",
         "test",
         "check-attw",
-        "api-checker"
+        "api-checker",
+        "check-spelling"
       ]
     }
   },

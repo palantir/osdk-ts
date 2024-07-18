@@ -26,7 +26,7 @@ export function reexportTypes(
     
         ${
     typesToExport.map(q => `
-      /** @deprecated submodule imports arent public api **/
+      /** @deprecated submodule imports aren't public api **/
       export type ${q}${genericArgsLeft} = OG_${q}${genericArgsRight};
     `).join("\n\n")
   }

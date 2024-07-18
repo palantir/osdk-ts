@@ -40,7 +40,7 @@ import type {
 import { InputType } from "../spec/index.js";
 import {
   sanitizeParameterName,
-  shouldSanitizePameterName,
+  shouldSanitizeParameterName,
   visitTypeUnion,
 } from "./common.js";
 import { getJsDocs } from "./getJsDocs.js";
@@ -245,7 +245,7 @@ function generateParameter(
 ): ParameterDeclarationStructure {
   return {
     kind: StructureKind.Parameter,
-    name: shouldSanitizePameterName(parameter.name)
+    name: shouldSanitizeParameterName(parameter.name)
       ? sanitizeParameterName(parameter.name)
       : parameter.name,
     type: generateType(parameter.type.type, referenceSet),

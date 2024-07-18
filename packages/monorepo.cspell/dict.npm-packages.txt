@@ -1,0 +1,12 @@
+consola
+execa
+jiti
+manypkg
+npmjs
+dprint
+tsup
+attw
+ngeohash
+arethetypeswrong
+monorepolint
+luxon
