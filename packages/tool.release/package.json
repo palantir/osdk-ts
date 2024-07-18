@@ -32,7 +32,7 @@
     "@changesets/apply-release-plan": "^7.0.1",
     "@changesets/assemble-release-plan": "^6.0.0",
     "@changesets/changelog-git": "^0.2.0",
-    "@changesets/config": "^3.0.0",
+    "@changesets/config": "^3.0.2",
     "@changesets/git": "^3.0.0",
     "@changesets/pre": "^2.0.0",
     "@changesets/read": "^0.6.0",
