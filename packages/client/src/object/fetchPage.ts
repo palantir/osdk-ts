@@ -251,7 +251,7 @@ export async function fetchObjectPage<
     await client.ontologyRid,
     applyFetchArgs<LoadObjectSetRequestV2>(args, {
       objectSet,
-      // We have to do the following case because LoadObjectSetRequestV2 isnt readonly
+      // We have to do the following case because LoadObjectSetRequestV2 isn't readonly
       select: ((args?.$select as string[] | undefined) ?? []), // FIXME?
       excludeRid: !args?.$includeRid,
     }),

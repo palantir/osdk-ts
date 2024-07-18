@@ -179,7 +179,7 @@ describe("generateTypes", () => {
     );
   });
 
-  it("should generate a typeunion for an enum type", () => {
+  it("should generate a type union for an enum type", () => {
     const dataType: DataType = {
       type: "enum",
       enum: {

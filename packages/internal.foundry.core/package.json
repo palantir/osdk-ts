@@ -18,6 +18,7 @@
   },
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -31,6 +32,9 @@
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

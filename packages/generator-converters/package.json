@@ -22,6 +22,7 @@
   },
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh both",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -36,6 +37,9 @@
     "@osdk/gateway": "workspace:~"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "ts-expect": "^1.3.0",
     "typescript": "^5.5.2",
     "vitest": "^1.6.0"

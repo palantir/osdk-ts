@@ -51,17 +51,16 @@ export async function generateOntologyRuntimeDistDir(
 
   await fs.writeFile(
     path.join(runtimeDistDir, "index.ts"),
-    // TRASHFIXME
     await formatTs(`
       export * from "./aggregations/index${importExt}";
       export * from "./baseTypes/index${importExt}";
       ${""
-      // Skipping this one, it doesnt have an equiv now
+      // Skipping this one, it doesn't have an equiv now
       // export * from "./common/index${importExt}";
     }
       // export * from "./filters/index${importExt}";
       ${""
-      // Skipping this one, it doesnt have an equiv now
+      // Skipping this one, it doesn't have an equiv now
       // export * from "./iterator/index${importExt}";
     }
       ${""

@@ -37,7 +37,7 @@ export class Timestamp {
    * @param dateTimeString
    */
   static fromISOString(dateTimeString: string): Timestamp {
-    // TODO check setZone behaviour
+    // TODO check setZone behavior
     return new Timestamp(
       DateTime.fromISO(dateTimeString, { zone: "utc", setZone: true }),
     );

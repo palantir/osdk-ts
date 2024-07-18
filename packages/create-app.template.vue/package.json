@@ -1,0 +1,58 @@
+{
+  "name": "@osdk/create-app.template.vue",
+  "version": "0.17.0-beta.2",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js"
+    },
+    "./*": {
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "create-app.template-packager",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
+  },
+  "dependencies": {
+    "vue": "^3.4.27",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@osdk/create-app.template-packager": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "@vitejs/plugin-vue": "^4.5.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4",
+    "vue-tsc": "^1.8.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "module": "./build/esm/index.js",
+  "types": "./build/esm/index.d.ts",
+  "type": "module"
+}

@@ -21,6 +21,7 @@
   },
   "scripts": {
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
@@ -32,6 +33,9 @@
     "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "consola": "^3.2.3",
     "find-up": "^7.0.0",
     "semver": "^7.6.2",

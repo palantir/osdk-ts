@@ -110,7 +110,7 @@ describe("queries", () => {
     });
   });
 
-  it("two dimensional aggs response works", async () => {
+  it("two dimensional aggregation response works", async () => {
     const result = await client(twoDimensionalAggregationFunction)();
     expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
       key: "Q-AFO",
@@ -118,7 +118,7 @@ describe("queries", () => {
     }]);
   });
 
-  it("two dimensional aggs request/response works", async () => {
+  it("two dimensional aggregation request/response works", async () => {
     const result = await client(acceptsTwoDimensionalAggregationFunction)({
       aggFunction: [
         {
@@ -137,7 +137,7 @@ describe("queries", () => {
     }]);
   });
 
-  it("three dimensional aggs response works", async () => {
+  it("three dimensional aggregation response works", async () => {
     const result = await client(threeDimensionalAggregationFunction)();
     expect(result).toEqual([{
       key: "Q-AFN",
@@ -162,7 +162,7 @@ describe("queries", () => {
     }
   });
 
-  it("three dimensional aggs request/response works", async () => {
+  it("three dimensional aggregation request/response works", async () => {
     const result = await client(acceptsThreeDimensionalAggregationFunction)({
       aggFunction: [
         {

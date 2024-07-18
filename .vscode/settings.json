@@ -22,5 +22,8 @@
     "pino",
     "todoapp"
   ],
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "[jsonc]": {
+    "editor.defaultFormatter": "dprint.dprint"
+  }
 }

@@ -1,0 +1,72 @@
+{
+  "name": "@osdk/e2e.generated.1.1.x",
+  "private": true,
+  "version": "0.0.17",
+  "description": "",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "require": "./build/cjs/index.cjs",
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js"
+    },
+    "./*": {
+      "require": "./build/cjs/public/*.cjs",
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "../../scripts/build_common/check-attw.sh both",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev --packageType module",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
+    "transpileWatch": "tsup --watch",
+    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh both"
+  },
+  "dependencies": {
+    "@osdk/api": "workspace:~",
+    "@osdk/generator": "workspace:~",
+    "@osdk/legacy-client": "workspace:~"
+  },
+  "peerDependencies": {
+    "@osdk/api": "^1.9.0-beta.0",
+    "@osdk/legacy-client": "^2.4.0-beta.1"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.15.2",
+    "@osdk/api": "^1.9.0-beta.0",
+    "@osdk/cli.cmd.typescript": "workspace:~",
+    "@osdk/legacy-client": "^2.4.0-beta.1",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "@types/node": "^18.0.0",
+    "tslib": "^2.6.2",
+    "typescript": "^4.9.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [],
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "main": "./build/cjs/index.cjs",
+  "module": "./build/esm/index.js",
+  "types": "./build/cjs/index.d.cts",
+  "type": "module"
+}

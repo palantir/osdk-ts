@@ -243,7 +243,7 @@ export const ActionTakesObjectSet: ActionTypeV2 = {
 
 export const ActionTakesAttachment: ActionTypeV2 = {
   apiName: "actionTakesAttachment",
-  description: "An action which takes an attachmen t",
+  description: "An action which takes an attachment",
   parameters: {
     attachment: {
       dataType: {

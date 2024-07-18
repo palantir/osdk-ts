@@ -18,7 +18,7 @@ import * as path from "node:path";
 import type { MinimalFs } from "../MinimalFs.js";
 import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
-import { verifyOutdir } from "../util/verifyOutdir.js";
+import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateActions } from "./generateActions.js";
 import { generateBackCompatDeprecatedExports } from "./generateBackCompatDeprecatedExports.js";
@@ -46,7 +46,7 @@ export async function generateClientSdkVersionOneDotOne(
   const actionsDir = path.join(outDir, "ontology", "actions");
   const queriesDir = path.join(outDir, "ontology", "queries");
 
-  await verifyOutdir(outDir, fs);
+  await verifyOutDir(outDir, fs);
   await fs.mkdir(outDir, { recursive: true });
 
   const sanitizedOntology = sanitizeMetadata(ontology);

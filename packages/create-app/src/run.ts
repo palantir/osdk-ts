@@ -79,16 +79,25 @@ export async function run(
 
   consola.info(`Copying files into project directory`);
 
-  const templatesDir = findUpSync("templates", {
-    cwd: path.dirname(fileURLToPath(import.meta.url)),
-    type: "directory",
-  });
-  if (templatesDir == null) {
-    throw new Error(`Could not find templates directory`);
-  }
-  const templateDir = path.resolve(templatesDir, template.id);
+  const files: Map<
+    string,
+    { type: "base64"; body: string } | { type: "raw"; body: string }
+  > = (await import(
+    `@osdk/create-app.template.${template.id.replace(/^template-/, "")}`
+  )).files;
 
-  fs.cpSync(templateDir, root, { recursive: true });
+  for (const [filePath, contents] of files) {
+    const finalPath = path.join(root, filePath);
+    const dirPath = path.dirname(finalPath);
+    await fs.promises.mkdir(dirPath, { recursive: true });
+    await fs.promises.writeFile(
+      finalPath,
+      Buffer.from(
+        contents.body,
+        contents.type === "raw" ? "utf-8" : "base64",
+      ),
+    );
+  }
 
   const templateContext: TemplateContext = {
     project,

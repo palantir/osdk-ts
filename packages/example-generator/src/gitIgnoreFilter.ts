@@ -26,9 +26,9 @@ import { isGitIgnoredSync } from "globby";
  * * https://github.com/sindresorhus/globby/issues/86
  * * https://github.com/sindresorhus/globby/issues/146
  * * https://github.com/sindresorhus/globby/issues/255
- * @param pathLeft This has to be the same as dir1 sent to dircompare.compare(dir1, dir2)
- * @param pathRight This has to be the same as dir2 sent to dircompare.compare(dir1, dir2)
- * @returns The filter function to be used as dircompare Option.
+ * @param pathLeft This has to be the same as dir1 sent to dir-compare.compare(dir1, dir2)
+ * @param pathRight This has to be the same as dir2 sent to dir-compare.compare(dir1, dir2)
+ * @returns The filter function to be used as dir-compare Option.
  */
 export function gitIgnoreFilter(
   pathLeft: string,

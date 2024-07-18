@@ -22,7 +22,7 @@ const expected = `
 @myapp:registry=https://registry.com/
 `.trimStart();
 
-test("it generates .npmrc for packge and registry", () => {
+test("it generates .npmrc for package and registry", () => {
   expect(
     generateNpmRc({
       osdkPackage: "@myapp/sdk",

@@ -13,14 +13,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/examples.one.dot.one": "workspace:*",
+    "@osdk/e2e.generated.1.1.x": "workspace:*",
     "vue": "^3.4.27",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.5.0",
     "typescript": "^5.2.2",
-    "vite": "^5.2.11",
+    "vite": "^5.3.4",
     "vue-tsc": "^1.8.22"
   },
   "type": "module"
