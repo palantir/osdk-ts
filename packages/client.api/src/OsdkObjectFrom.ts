@@ -83,44 +83,6 @@ export type ConvertProps<
     "$notStrict"
   >;
 
-// type TO = InterfaceDefinition<string, unknown>;
-// type FROM = FetchedObjectTypeDefinition<any, unknown>;
-// type P = string;
-// type Z = ValidToFrom<FROM>;
-
-// type huh2 = TO["apiName"]["__Unbranded"];
-// type huh3 = ApiNameAsString<Z>;
-// type huh22 = FROM["inverseInterfaceMap"];
-
-// type huhtest<TO extends ObjectTypeDefinition<any>> = UnionIfTrue<
-//   TO["interfaceMap"][ApiNameAsString<FROM>][
-//     P extends "$all" ? (
-//         keyof FROM["properties"] extends
-//           keyof TO["interfaceMap"][ApiNameAsString<FROM>]
-//           ? keyof FROM["properties"]
-//           : never
-//       )
-//       : DropDollarOptions<P>
-//   ],
-//   P extends "$notStrict" ? true : false,
-//   "$notStrict"
-// >;
-
-// type huh = UnionIfTrue<
-//   TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
-//     : FROM extends ObjectTypeDefinition<any>
-//       ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[
-//         ApiNameAsString<Z>
-//       ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<Z>][
-//           DropDollarOptions<P>
-//         ]
-//       : never
-//     : never
-//     : never,
-//   P extends "$notStrict" ? true : false,
-//   "$notStrict"
-// >;
-
 export const InterfaceDefinitions = Symbol(
   process.env.MODE !== "production" ? "InterfaceDefinitions" : undefined,
 );

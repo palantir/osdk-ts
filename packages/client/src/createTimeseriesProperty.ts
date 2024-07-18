@@ -113,49 +113,6 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   return allPoints;
 }
 
-// async function* iterateTimeSeriesPoints<T extends string | number>(
-//   client: MinimalClient,
-//   objectApiName: string,
-//   primaryKey: any,
-//   propertyName: string,
-//   body: TimeSeriesQuery,
-// ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
-//   const utf8decoder = new TextDecoder("utf-8");
-
-//   const streamPointsResponse = await OntologiesV2.OntologyObjectsV2
-//     .streamPoints(
-//       client,
-//       await client.ontologyRid,
-//       objectApiName,
-//       primaryKey,
-//       propertyName,
-//       { range: getTimeRange(body) },
-//     );
-
-//   const reader = streamPointsResponse.stream().getReader();
-//   const streamPointsIterator = iterateReadableStream(reader);
-//   const firstChunk = await streamPointsIterator.next();
-
-//   const remainingChunksPromise: Promise<any[]> = new Promise(
-//     (resolve, _reject) => {
-//       const remainingPoints = processStream(streamPointsIterator);
-//       resolve(remainingPoints);
-//     },
-//   );
-//   console.log(utf8decoder.decode(firstChunk.value!));
-//   yield {
-//     time: (firstChunk.value as any).time as string,
-//     value: (firstChunk.value as any).value as T,
-//   };
-//   const remainingChunks = await remainingChunksPromise;
-//   for (const point of remainingChunks) {
-//     yield {
-//       time: point.time,
-//       value: point.value as T,
-//     };
-//   }
-// }
-
 async function* iterateTimeSeriesPoints<T extends string | number>(
   client: MinimalClient,
   objectApiName: string,
@@ -184,18 +141,6 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
       value: point.value as T,
     };
   }
-}
-
-async function processStream<T extends string | number>(
-  streamIterator: AsyncGenerator<any, any, unknown>,
-): Promise<any[]> {
-  const allPoints: Array<TimeSeriesPoint<T>> = [];
-  for await (const points of streamIterator) {
-    for (const point of points) {
-      allPoints.push(point);
-    }
-  }
-  return allPoints;
 }
 
 function getTimeRange(body: TimeSeriesQuery): TimeRange {

@@ -667,9 +667,9 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:144:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:145:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:201:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:106:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:107:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:163:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

@@ -93,17 +93,6 @@ import {
   OpenApiCallError,
 } from "./util/handleOpenApiCall.js";
 
-type ParamsAfterReqCall<
-  T extends (reqCall: any, ...args: any[]) => Promise<any>,
-> = T extends (reqCall: any, ...args: infer Z) => Promise<any> ? Z : never;
-
-type ExtractStringParams<T extends any[]> = T extends [infer A, ...infer B]
-  ? A extends string ? [A, ...ExtractStringParams<B>] : []
-  : [];
-
-type huh = ParamsAfterReqCall<typeof streamPoints>;
-type huh1 = ExtractStringParams<huh>;
-
 export const loadObjectsEndpoints: Array<RequestHandler> = [
   /**
    * List ontologies
