@@ -14,7 +14,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/examples.one.dot.one": "workspace:*",
+    "@osdk/e2e.generated.1.1.x": "workspace:*",
     "react": "^18",
     "react-dom": "^18",
     "react-router-dom": "^6.23.1",

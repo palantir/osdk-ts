@@ -36,6 +36,8 @@ const nonStandardPackages = [
   "@osdk/examples.*",
   "@osdk/foundry-sdk-generator",
   "@osdk/monorepo.*",
+  "@osdk/e2e.sandbox.*", // sandboxes for manual e2e testing
+  "@osdk/e2e.generated.*", // generated sdks for e2e testing
   "@osdk/shared.client",
   "@osdk/tests.*",
 ];
@@ -442,19 +444,22 @@ export default {
     ),
 
     ...standardPackageRules({
-      includePackages: ["@osdk/examples.basic.**"],
-      excludePackages: ["@osdk/examples.one.dot.one"],
+      includePackages: [
+        "@osdk/e2e.generated.catchall",
+        "@osdk/e2e.sandbox.catchall",
+      ],
+      excludePackages: ["@osdk/e2e.generated.1.1.x"],
     }, {
       esmOnly: true,
       legacy: false,
-      packageDepth: 3,
+      packageDepth: 2,
       type: "example",
     }),
 
     // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
     // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
     ...standardPackageRules({
-      includePackages: ["@osdk/examples.one.dot.one"],
+      includePackages: ["@osdk/e2e.generated.1.1.x"],
     }, {
       legacy: false,
       packageDepth: 2,
