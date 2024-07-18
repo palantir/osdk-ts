@@ -1428,6 +1428,9 @@ importers:
       '@osdk/client':
         specifier: workspace:~
         version: link:../client
+      '@osdk/client.api':
+        specifier: workspace:~
+        version: link:../client.api
       '@osdk/gateway':
         specifier: workspace:~
         version: link:../gateway

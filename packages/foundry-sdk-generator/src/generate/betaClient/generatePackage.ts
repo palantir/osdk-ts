@@ -28,9 +28,20 @@ import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 declare const __OSDK_LEGACY_CLIENT_VERSION__: string | undefined;
+declare const __OSDK_CLIENT_API_VERSION__: string | undefined;
+declare const __OSDK_API_VERSION__: string | undefined;
 const dependencies: { [key: string]: string | undefined } = {
   "@osdk/legacy-client": typeof __OSDK_LEGACY_CLIENT_VERSION__ !== "undefined"
     ? __OSDK_LEGACY_CLIENT_VERSION__
+    : undefined,
+};
+
+const betaDependencies: { [key: string]: string | undefined } = {
+  "@osdk/client.api": typeof __OSDK_CLIENT_API_VERSION__ !== "undefined"
+    ? __OSDK_CLIENT_API_VERSION__
+    : undefined,
+  "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
+    ? __OSDK_API_VERSION__
     : undefined,
 };
 
@@ -47,12 +58,14 @@ export async function generatePackage(
 
   const packagePath = join(options.outputDir, options.packageName);
   const resolvedDependencies = await Promise.all(
-    Object.keys(dependencies).map(async dependency => {
-      return {
-        dependencyName: dependency,
-        dependencyVersion: await getDependencyVersion(dependency),
-      };
-    }),
+    Object.keys(options.beta ? betaDependencies : dependencies).map(
+      async dependency => {
+        return {
+          dependencyName: dependency,
+          dependencyVersion: await getDependencyVersion(dependency),
+        };
+      },
+    ),
   );
   await mkdir(packagePath, { recursive: true });
 
@@ -139,6 +152,7 @@ export async function generatePackage(
       packagePath,
       packageVersion: options.packageVersion,
       dependencies: resolvedDependencies,
+      beta: options.beta,
     }),
   ]);
 

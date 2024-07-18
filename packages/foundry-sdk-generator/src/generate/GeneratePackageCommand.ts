@@ -29,6 +29,7 @@ export interface generatePackageCommandArgs {
   actionTypes?: string[];
   queryTypes?: string[];
   linkTypes?: string[];
+  interfaceTypes?: string[];
   experimentalFeatures?: string[];
   packageName: string;
   packageVersion: string;
@@ -118,6 +119,16 @@ export class GeneratePackageCommand
         defaultDescription:
           `By default, no arguments will not load any query type.`,
       })
+      .options("interfaceTypes", {
+        array: true,
+        string: true,
+        demandOption: false,
+        description:
+          `The API Names of the interface types to generate. Example Usage: --interfaceTypes Geolocatable`,
+        default: undefined,
+        defaultDescription:
+          `By default, no arguments will not load any interface type.`,
+      })
       .options("experimentalFeatures", {
         array: true,
         string: true,
@@ -164,6 +175,7 @@ export class GeneratePackageCommand
         objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
         actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
         queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+        interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
         linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
       });
 

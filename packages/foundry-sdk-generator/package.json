@@ -33,6 +33,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~",
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/legacy-client": "workspace:~",

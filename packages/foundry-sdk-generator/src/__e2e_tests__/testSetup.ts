@@ -60,6 +60,9 @@ export async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
+    interfaceTypes: [
+      "FooInterface",
+    ],
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
     palantirOnlyTest: true,
     _: [],
@@ -94,6 +97,9 @@ export async function setup() {
       "returnsObject",
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
+    ],
+    interfaceTypes: [
+      "FooInterface",
     ],
     beta: true,
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],

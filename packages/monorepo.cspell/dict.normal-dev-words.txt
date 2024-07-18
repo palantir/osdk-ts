@@ -13,3 +13,4 @@ uncapitalize
 unevaluable
 unioned
 webapi
+Geolocatable
