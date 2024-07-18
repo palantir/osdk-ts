@@ -19,6 +19,7 @@
     }
   },
   "scripts": {
+    "check-api": "api-extractor run --verbose --local",
     "check-attw": "../../scripts/build_common/check-attw.sh esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
@@ -57,6 +58,8 @@
     }
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.25.3",
+    "@microsoft/api-extractor": "^7.47.0",
     "@osdk/client.test.ontology": "workspace:~",
     "@osdk/internal.foundry": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",

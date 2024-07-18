@@ -646,6 +646,12 @@ importers:
         specifier: ^8.18.0
         version: 8.18.0
     devDependencies:
+      '@microsoft/api-documenter':
+        specifier: ^7.25.3
+        version: 7.25.3
+      '@microsoft/api-extractor':
+        specifier: ^7.47.0
+        version: 7.47.0
       '@osdk/client.test.ontology':
         specifier: workspace:~
         version: link:../client.test.ontology
