@@ -90,15 +90,15 @@
       "inputs": ["tsup.mjs"]
     },
 
-    "api-checker": {
+    "check-api": {
       "outputLogs": "new-only",
       "inputs": ["api-extractor.json", "build/esm/**/*", "api-extractor.json"],
       "outputs": ["etc/*.report.api.md", "build/api-extractor/**/*"],
-      "dependsOn": ["typecheck", "@osdk/monorepo.api-extractor#api-checker"]
+      "dependsOn": ["typecheck", "@osdk/monorepo.api-extractor#check-api"]
     },
 
     // Doesn't do anything, just a virtual task to depend on the base.json file
-    "@osdk/monorepo.api-extractor#api-checker": {
+    "@osdk/monorepo.api-extractor#check-api": {
       "inputs": ["base.json"]
     },
 
@@ -106,7 +106,7 @@
       "outputLogs": "new-only",
       "inputs": ["temp/**/*"],
       "outputs": ["api-docs/**/*"],
-      "dependsOn": ["api-checker"]
+      "dependsOn": ["check-api"]
     },
 
     "postVersioning": {
@@ -176,7 +176,7 @@
         "typecheck",
         "test",
         "check-attw",
-        "api-checker",
+        "check-api",
         "check-spelling"
       ]
     }
