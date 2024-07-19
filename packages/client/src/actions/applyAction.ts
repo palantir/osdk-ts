@@ -24,7 +24,8 @@ import type {
 import type { DataValue } from "@osdk/internal.foundry";
 import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgent } from "../util/addUserAgent.js";
+import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 
@@ -45,9 +46,13 @@ export async function applyAction<
 ): Promise<
   ActionReturnTypeForOptions<Op>
 > {
+  const clientWithHeaders = addUserAgentAndRequestContextHeaders(
+    augmentRequestContext(client, _ => ({ finalMethodCall: "applyAction" })),
+    action,
+  );
   if (Array.isArray(parameters)) {
     const response = await OntologiesV2.Actions.applyActionBatchV2(
-      addUserAgent(client, action),
+      clientWithHeaders,
       await client.ontologyRid,
       action.apiName,
       {
@@ -65,7 +70,7 @@ export async function applyAction<
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
     const response = await OntologiesV2.Actions.applyActionV2(
-      addUserAgent(client, action),
+      clientWithHeaders,
       await client.ontologyRid,
       action.apiName,
       {

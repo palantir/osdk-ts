@@ -18,24 +18,26 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import { createFetchHeaderMutator } from "@osdk/shared.net.fetch";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
-export function addUserAgent(
+export const addUserAgentAndRequestContextHeaders = (
   client: MinimalClient,
   withMetadata: Pick<ObjectOrInterfaceDefinition, "osdkMetadata">,
-): MinimalClient {
-  if (withMetadata.osdkMetadata) {
-    return {
-      ...client,
-      fetch: createFetchHeaderMutator(
-        client.fetch,
-        (headers) => {
-          headers.set(
-            "Fetch-User-Agent",
-            withMetadata.osdkMetadata!.extraUserAgent,
-          );
-          return headers;
-        },
-      ),
-    };
-  }
-  return client;
-}
+): MinimalClient => ({
+  ...client,
+  fetch: createFetchHeaderMutator(
+    client.fetch,
+    (headers) => {
+      headers.set(
+        "X-OSDK-Request-Context",
+        JSON.stringify(client.requestContext),
+      );
+
+      if (withMetadata.osdkMetadata) {
+        headers.set(
+          "Fetch-User-Agent",
+          withMetadata.osdkMetadata.extraUserAgent,
+        );
+      }
+      return headers;
+    },
+  ),
+});

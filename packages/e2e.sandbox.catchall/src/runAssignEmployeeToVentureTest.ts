@@ -42,8 +42,8 @@ export async function runAssignEmployeeToVentureTest() {
         const { data: [venture] } = await client(Venture).fetchPage();
 
         const r = await client(assignEmployee1).applyAction({
-          "employee-1": emp,
-          "venture-1": venture,
+          "employee-1": emp.id,
+          "venture-1": venture.ventureId,
         }, {
           $validateOnly: true,
         });
