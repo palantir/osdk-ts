@@ -18,7 +18,7 @@ import type { MinimalClient, RequestContext } from "../MinimalClientContext.js";
 
 export const augmentRequestContext = (
   client: MinimalClient,
-  augment: (ctx: RequestContext) => RequestContext,
+  augment: (ctx: RequestContext) => Partial<RequestContext>,
 ): MinimalClient => ({
   ...client,
   requestContext: {
