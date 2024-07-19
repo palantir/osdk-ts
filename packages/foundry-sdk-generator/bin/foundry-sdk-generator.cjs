@@ -15,7 +15,5 @@
  * limitations under the License.
  */
 
-
 const cli = require("../build/js/index.cjs");
 cli.cli();
-
