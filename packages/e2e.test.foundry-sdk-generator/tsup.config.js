@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
@@ -15,5 +14,8 @@
  * limitations under the License.
  */
 
-const cli = require("../build/cjs/index.cjs");
-cli.cli();
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("@osdk/monorepo.tsup")).default(options, {})
+);
