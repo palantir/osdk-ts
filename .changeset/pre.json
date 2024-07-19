@@ -68,9 +68,11 @@
     "@osdk/monorepo.tool.attw": "0.0.0",
     "@osdk/monorepo.tool.transpile": "0.0.0",
     "@osdk/monorepo.tool.typecheck": "0.0.0",
-    "@osdk/monorepo.tsconfig": "0.0.0"
+    "@osdk/monorepo.tsconfig": "0.0.0",
+    "@osdk/e2e.test.foundry-sdk-generator": "0.0.0"
   },
   "changesets": [
+    "bright-apples-bake",
     "calm-pillows-collect",
     "chilly-mayflies-vanish",
     "chilly-melons-hammer",
@@ -128,6 +130,7 @@
     "tasty-kiwis-attack",
     "thin-eggs-prove",
     "tough-hats-push",
+    "unlucky-geese-hug",
     "unlucky-moose-lay",
     "unlucky-wombats-switch",
     "weak-dragons-wonder",
