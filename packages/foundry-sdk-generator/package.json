@@ -61,7 +61,7 @@
   },
   "keywords": [],
   "bin": {
-    "foundry-sdk-generator": "./bin/foundry-sdk-generator"
+    "foundry-sdk-generator": "./bin/foundry-sdk-generator.cjs"
   },
   "files": [
     "build/cjs",
