@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import type { WirePropertyTypes } from "@osdk/api";
+import type { PrimaryKeyTypes } from "@osdk/api";
 import type { PropertyV2 } from "@osdk/gateway/types";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,
-): WirePropertyTypes {
+): PrimaryKeyTypes {
   switch (input.dataType.type) {
     case "integer":
     case "double":
     case "string":
     case "boolean":
-    case "attachment":
     case "byte":
-    case "decimal":
-    case "float":
-    case "geopoint":
-    case "geoshape":
     case "long":
     case "short": {
       return input.dataType.type;
@@ -41,9 +36,14 @@ export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
     case "timestamp": {
       return "timestamp";
     }
+    case "geopoint":
+    case "geoshape":
+    case "decimal":
+    case "attachment":
     case "timeseries":
     case "array":
     case "marking":
+    case "float":
       throw new Error(
         `Type not supported for primaryKey: ${input.dataType.type}`,
       );

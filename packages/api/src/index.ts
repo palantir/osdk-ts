@@ -58,6 +58,7 @@ export type {
 } from "./ontology/ObjectTypeDefinition.js";
 export type { OntologyDefinition } from "./ontology/OntologyDefinition.js";
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
+export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {
   AggregationKeyDataType,
   ObjectQueryDataType,
