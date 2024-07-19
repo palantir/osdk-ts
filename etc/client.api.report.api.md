@@ -483,7 +483,7 @@ export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, 
     __apiName: Q["apiName"] & {
         __OsdkType?: Q["apiName"];
     };
-    __primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q> : unknown;
+    __primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q> : string | number | boolean;
     $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q> : never;
     $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Q, NEW_Q, P>, UnderlyingProps<Q, P, Z, NEW_Q>>;
 } & (IsNever<P> extends true ? {} : string extends P ? {} : "$rid" extends P ? {

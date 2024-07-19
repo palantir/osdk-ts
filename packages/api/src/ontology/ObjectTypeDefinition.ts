@@ -17,6 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
@@ -79,7 +80,7 @@ export interface ObjectTypeDefinition<
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
-  primaryKeyType: WirePropertyTypes;
+  primaryKeyType: PrimaryKeyTypes;
 
   /**
    * Optional because they may not exist on legacy.
