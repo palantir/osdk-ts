@@ -1,5 +1,12 @@
 # @osdk/foundry-sdk-generator
 
+## 1.2.0-beta.4
+
+### Minor Changes
+
+- 6bf66d5: Actually fix the script to run
+- 029d816: Fixes bin script being interpreted as esm
+
 ## 1.2.0-beta.3
 
 ### Minor Changes
