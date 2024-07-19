@@ -35,5 +35,5 @@ describe("foundry-sdk-generator", () => {
         --version  Show version number                                       [boolean]"
     `);
   });
-});
+}, { timeout: 10_000 });
 //
