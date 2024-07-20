@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
-
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,

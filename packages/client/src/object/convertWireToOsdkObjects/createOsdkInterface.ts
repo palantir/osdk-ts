@@ -49,10 +49,6 @@ export function createOsdkInterface<
     [InterfaceDefRef]: interfaceDef,
   };
 
-  if (process.env.TARGET !== "browser") {
-    Object.setPrototypeOf(interfaceHolder, null);
-  }
-
   const handler = handlerCache.get(interfaceDef);
 
   const proxy = new Proxy<OsdkObject<any>>(

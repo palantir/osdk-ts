@@ -89,21 +89,16 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   propertyName: string,
   body: TimeSeriesQuery,
 ): Promise<Array<TimeSeriesPoint<T>>> {
-  const streamPointsIterator = await OntologiesV2.OntologyObjectsV2
-    .streamPoints(
+  const allPoints: Array<TimeSeriesPoint<T>> = [];
+
+  for await (
+    const point of iterateTimeSeriesPoints(
       client,
-      await client.ontologyRid,
       objectApiName,
       primaryKey,
       propertyName,
-      { range: getTimeRange(body) },
-    );
-
-  const allPoints: Array<TimeSeriesPoint<T>> = [];
-
-  const reader = streamPointsIterator.stream().getReader();
-  for await (
-    const point of parseStreamedResponse(iterateReadableStream(reader))
+      body,
+    )
   ) {
     allPoints.push({
       time: point.time,

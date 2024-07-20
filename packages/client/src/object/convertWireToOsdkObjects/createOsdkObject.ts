@@ -33,13 +33,12 @@ import type {
   ObjectHolder,
   ObjectHolderPrototypeOwnProps,
 } from "./ObjectHolder.js";
-import { OsdkCustomInspectPrototype } from "./OsdkCustomInspectPrototype.js";
 import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
 
 const objectPrototypeCache = createClientCache(
   function(client, objectDef: FetchedObjectTypeDefinition<any, any>) {
     return Object.create(
-      process.env.target !== "browser" ? null : null,
+      null,
       {
         [ObjectDefRef]: { value: objectDef },
         [ClientRef]: { value: client },
