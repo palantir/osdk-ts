@@ -7,6 +7,7 @@
     "check-mrl": "mrl check --verbose",
     "ci:publish": "./scripts/ci-publish.sh",
     "ci:publishSnapshot": "pnpm run prePublish && pnpm exec changeset version --snapshot && pnpm exec changeset publish --no-git-tag --snapshot --tag=next",
+    "cspell:all": "cspell . --quiet",
     "lint": "turbo run lint",
     "postVersionCmd": "turbo run postVersioning && turbo codegen",
     "prePublish": "turbo build && turbo lint",
@@ -21,13 +22,20 @@
     "@babel/preset-typescript": "^7.24.1",
     "@changesets/changelog-git": "^0.2.0",
     "@changesets/cli": "^2.27.3",
-    "@monorepolint/cli": "0.5.0-alpha.137",
-    "@monorepolint/config": "0.5.0-alpha.137",
-    "@monorepolint/core": "0.5.0-alpha.137",
-    "@monorepolint/rules": "0.5.0-alpha.137",
+    "@monorepolint/cli": "0.5.0-beta.10",
+    "@monorepolint/config": "0.5.0-beta.10",
+    "@monorepolint/core": "0.5.0-beta.10",
+    "@monorepolint/rules": "0.5.0-beta.10",
+    "@osdk/monorepo.cspell": "workspace:~",
+    "@osdk/monorepo.tool.attw": "workspace:~",
+    "@osdk/monorepo.tool.transpile": "workspace:~",
+    "@osdk/monorepo.tool.typecheck": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@types/lint-staged": "^13.3.0",
     "@typescript-eslint/parser": "^7.16.0",
     "babel-plugin-dev-expression": "^0.2.3",
+    "cspell": "^8.11.0",
     "dprint": "^0.45.1",
     "esbuild-plugin-babel": "^0.2.3",
     "eslint": "^9.3.0",
@@ -40,9 +48,7 @@
     "husky": "^9.0.11",
     "lint-staged": "^15.2.2",
     "micromatch": "^4.0.7",
-    "mytsup": "workspace:~",
     "tsc-absolute": "^1.0.1",
-    "tsconfig": "workspace:~",
     "tsup": "^8.1.0",
     "turbo": "^2.0.4",
     "typescript": "^5.5.3",
@@ -55,8 +61,8 @@
     }
   },
   "engines": {
-    "node": ">=16",
-    "pnpm": ">=8.7.4"
+    "node": ">=18.19.0",
+    "pnpm": "=9.5.0"
   },
-  "packageManager": "pnpm@8.7.4"
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }

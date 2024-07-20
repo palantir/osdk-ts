@@ -63,6 +63,7 @@ export function createMinimalClient(
     ontologyRid: metadata.ontologyRid,
     logger: options.logger,
     clientCacheKey: {} as ClientCacheKey,
+    requestContext: {},
   } satisfies Omit<
     MinimalClient,
     "ontologyProvider"

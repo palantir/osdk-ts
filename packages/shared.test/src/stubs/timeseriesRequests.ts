@@ -85,7 +85,7 @@ const rangeBodyRequest: StreamTimeSeriesPointsRequest = {
   },
 };
 
-export const streamPointsnoBody: StreamTimeSeriesPointsResponse = {
+export const streamPointsNoBody: StreamTimeSeriesPointsResponse = {
   data: [
     timeSeriesPoint1,
     timeSeriesPoint1,
@@ -120,7 +120,7 @@ export const streamPointsRequestHandlers: Record<
   string,
   StreamTimeSeriesPointsResponse
 > = {
-  [stableStringify(noBodyRequest)]: streamPointsnoBody,
+  [stableStringify(noBodyRequest)]: streamPointsNoBody,
   [stableStringify(rangeBodyRequest)]: streamPointsRange,
   [stableStringify(fromBodyRequest)]: streamPointsFrom,
   [stableStringify(afterBodyRequest)]: streamPointsAfter,

@@ -1,0 +1,58 @@
+{
+  "name": "@osdk/e2e.test.foundry-sdk-generator",
+  "private": true,
+  "version": "0.1.0-beta.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/palantir/osdk-ts.git"
+  },
+  "exports": {
+    ".": {
+      "require": "./build/cjs/index.cjs",
+      "browser": "./build/browser/index.js",
+      "import": "./build/esm/index.js"
+    },
+    "./*": {
+      "require": "./build/cjs/public/*.cjs",
+      "browser": "./build/browser/public/*.js",
+      "import": "./build/esm/public/*.js"
+    }
+  },
+  "scripts": {
+    "check-attw": "monorepo.tool.attw both",
+    "check-spelling": "cspell --quiet .",
+    "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
+    "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
+    "test": "vitest run --pool=forks",
+    "transpile": "monorepo.tool.transpile",
+    "typecheck": "monorepo.tool.typecheck both"
+  },
+  "dependencies": {
+    "@osdk/foundry-sdk-generator": "workspace:~",
+    "execa": "^9.3.0"
+  },
+  "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
+    "typescript": "^5.5.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "build/cjs",
+    "build/esm",
+    "build/browser",
+    "CHANGELOG.md",
+    "package.json",
+    "templates",
+    "*.d.ts"
+  ],
+  "main": "./build/cjs/index.cjs",
+  "module": "./build/esm/index.js",
+  "types": "./build/cjs/index.d.cts",
+  "type": "module"
+}

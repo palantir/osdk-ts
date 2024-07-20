@@ -46,6 +46,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
     case "timeseries":
     case "marking":
       return {
+        displayName: input.displayName,
         multiplicity: false,
         description: input.description,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
@@ -53,6 +54,7 @@ export function wirePropertyV2ToSdkPropertyDefinition(
       };
     case "array": {
       return {
+        displayName: input.displayName,
         multiplicity: true,
         description: input.description,
         type: objectPropertyTypeToSdkPropertyDefinition(input.dataType),
@@ -97,6 +99,6 @@ function objectPropertyTypeToSdkPropertyDefinition(
       return "numericTimeseries";
     default:
       const _: never = propertyType;
-      throw new Error(`Unexecpected data type ${JSON.stringify(propertyType)}`);
+      throw new Error(`Unexpected data type ${JSON.stringify(propertyType)}`);
   }
 }

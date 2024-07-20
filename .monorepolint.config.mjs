@@ -19,6 +19,7 @@
 import {
   alphabeticalDependencies,
   alphabeticalScripts,
+  createRuleFactory,
   fileContents,
   packageEntry,
   packageOrder,
@@ -31,17 +32,33 @@ import * as child_process from "node:child_process";
 const LATEST_TYPESCRIPT_DEP = "^5.5.2";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
+
+//
+// BEGIN MUTUALLY EXCLUSIVE GROUPS
+//
+
+// Packages in this section MUST only belong to one (or none) of these
+// three groups:
+// - nonStandardPackages
+// - legacyPackages
+// - esmOnlyPackages
+//
+// Packages in none of these groups are treated as esm + cjs
+// but not legacy
+
 const nonStandardPackages = [
-  "mytsup",
-  "tsconfig",
-  "@osdk/api-extractor",
-  "@osdk/examples.todoapp",
-  "@osdk/tests.*",
-  "@osdk/foundry-sdk-generator",
+  "@osdk/e2e.generated.1.1.x",
+  "@osdk/e2e.sandbox.todoapp",
   "@osdk/examples.*",
-  "@osdk/shared.client",
+  "@osdk/foundry-sdk-generator",
+  "@osdk/monorepo.*", // internal monorepo packages
+  "@osdk/shared.client", // hand written package that only exposes a symbol
+  "@osdk/tests.*",
 ];
 
+// Any package that is in the dependency chain of `legacy-client` needs to be in this list so
+// that we are sure to generate them in a backwards compatible way. This can be changed
+// at next major.
 const legacyPackages = [
   "@osdk/api",
   "@osdk/gateway",
@@ -54,11 +71,12 @@ const legacyPackages = [
 const esmOnlyPackages = [
   "@osdk/cli.*",
   "@osdk/cli",
+  "@osdk/client.*",
   "@osdk/client",
-  "@osdk/client.api",
-  "@osdk/client.unstable",
-  "@osdk/client.unstable.osw",
+  "@osdk/create-app.*",
   "@osdk/create-app",
+  "@osdk/e2e.generated.catchall",
+  "@osdk/e2e.sandbox.catchall",
   "@osdk/example-generator",
   "@osdk/foundry.*",
   "@osdk/foundry",
@@ -71,9 +89,81 @@ const esmOnlyPackages = [
   "@osdk/shared.net.platformapi",
   "@osdk/tool.release",
   "@osdk/version-updater",
-  "@osdk/client.test.ontology",
   // "@osdk/examples.*", but they have their own config cause they are nonstandard
 ];
+
+//
+// END MUTUALLY EXCLUSIVE GROUPS
+//
+
+// Packages that should have the `check-api` task installed
+const checkApiPackages = [
+  "@osdk/client",
+  "@osdk/client.api",
+];
+
+// Packages that should be private
+const privatePackages = [
+  "@osdk/client.test.ontology",
+  "@osdk/e2e.*",
+  "@osdk/monorepo.*",
+  "@osdk/tool.*",
+];
+
+/**
+ * We don't want to allow `workspace:^` in our dependencies because our current release branch
+ * strategy only allows for patch changes in the release branch and minors elsewhere.
+ *
+ * If we were to allow `workspace:^`, then the follow scenario causes issues:
+ *   - Suppose we have a Foo and a Bar package and Bar depends on Foo.
+ *   - at T0 we cut a release/1.1.x branch and ship Foo@1.1.0, Bar@1.1.0
+ *   - at T1 we cut a release 1.2.x branch and ship Foo@1.2.0
+ *
+ * If we have `workspace:^` in our deps, a user that already has `Bar@1.1.0` in their package.json
+ * could update their dependencies without updating Bar (say via pnpm update) and Bar's dependency
+ * on Foo @ `^1.1.0` would be satisfied by the shipped `Foo@1.2.0`.
+ *
+ * Using `workspace:~` prevents this as `~` can only resolve patch changes.
+ */
+const disallowWorkspaceCaret = createRuleFactory({
+  name: "disallowWorkspaceCaret",
+  check: async (context) => {
+    const packageJson = context.getPackageJson();
+    const packageJsonPath = context.getPackageJsonPath();
+
+    for (const d of ["dependencies", "devDependencies", "peerDependencies"]) {
+      const deps = packageJson[d] ?? {};
+
+      for (const [dep, version] of Object.entries(deps)) {
+        if (version === "workspace:^") {
+          const message = `'workspace:^' not allowed (${d}['${dep}']).`;
+          context.addError({
+            message,
+            longMessage: `${message} Did you mean 'workspace:~'?`,
+            file: context.getPackageJsonPath(),
+            fixer: () => {
+              // always refetch in fixer since another fixer may have already changed the file
+              let packageJson = context.getPackageJson();
+              if (packageJson[d]?.[dep] === "workspace:^") {
+                packageJson[d] = Object.assign(
+                  {},
+                  packageJson[d],
+                  { [dep]: "workspace:~" },
+                );
+
+                context.host.writeJson(
+                  context.getPackageJsonPath(),
+                  packageJson,
+                );
+              }
+            },
+          });
+        }
+      }
+    }
+  },
+  validateOptions: () => {}, // no options right now
+});
 
 const cache = new Map();
 
@@ -150,13 +240,12 @@ function getTsconfigOptions(baseTsconfigPath, opts) {
  * @param {{
  *  legacy: boolean,
  *  esmOnly?: boolean,
- *  packageDepth: number,
- *  type: "library" | "example",
  *  customTsconfigExcludes?: string[],
  *  tsVersion?: "^5.5.2"|"^4.9.5",
  *  skipTsconfigReferences?: boolean
  *  singlePackageName?: string
  * }} options
+ * @returns {import("@monorepolint/config").RuleModule[]}
  */
 function standardPackageRules(shared, options) {
   if (options.esmOnly && options.legacy) {
@@ -167,15 +256,14 @@ function standardPackageRules(shared, options) {
     throw "singlePackageName only makes sense for legacy packages";
   }
 
-  const pathToWorkspaceRoot = "../".repeat(options.packageDepth)
-    .slice(0, -1); // drop trailing slash
-
   return [
+    disallowWorkspaceCaret({ ...shared }),
+
     standardTsconfig({
       ...shared,
 
       options: getTsconfigOptions(
-        `${pathToWorkspaceRoot}/monorepo/tsconfig/tsconfig.base.json`,
+        `@osdk/monorepo.tsconfig/base.json`,
         {
           customTsconfigExcludes: options.customTsconfigExcludes,
           skipTsconfigReferences: options.skipTsconfigReferences,
@@ -212,24 +300,32 @@ function standardPackageRules(shared, options) {
         }),
       ]
       : []),
+    requireDependency({
+      ...shared,
+      options: {
+        devDependencies: {
+          "@osdk/monorepo.tsconfig": "workspace:~",
+          "@osdk/monorepo.tsup": "workspace:~",
+          "@osdk/monorepo.api-extractor": "workspace:~",
+        },
+      },
+    }),
     packageScript({
       ...shared,
       options: {
         scripts: {
           clean: "rm -rf lib dist types build tsconfig.tsbuildinfo",
-          "check-attw":
-            `${pathToWorkspaceRoot}/scripts/build_common/check-attw.sh ${
-              options.esmOnly ? "esm" : "both"
-            }`,
+          "check-spelling": "cspell --quiet .",
+          "check-attw": `monorepo.tool.attw ${
+            options.esmOnly ? "esm" : "both"
+          }`,
           lint: "eslint . && dprint check  --config $(find-up dprint.json)",
           "fix-lint":
             "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
-          transpile:
-            "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
-          typecheck:
-            `find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ${pathToWorkspaceRoot}/scripts/build_common/typecheck.sh ${
-              options.esmOnly ? "esm" : "both"
-            }`,
+          transpile: "monorepo.tool.transpile",
+          typecheck: `monorepo.tool.typecheck ${
+            options.esmOnly ? "esm" : "both"
+          }`,
         },
       },
     }),
@@ -306,7 +402,7 @@ function standardPackageRules(shared, options) {
           import { defineConfig } from "tsup";
 
           export default defineConfig(async (options) =>
-            (await import("mytsup")).default(options, {
+            (await import("@osdk/monorepo.tsup")).default(options, {
               ${options.legacy ? "cjsExtension: '.js'" : ""}
               ${options.esmOnly ? "esmOnly: true," : ""}
           })
@@ -324,6 +420,42 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
+    fileContents({
+      includePackages: ["@osdk/create-app.template.*"],
+      options: {
+        file: "README.md",
+        generator: (context) => {
+          return `# ${context.getPackageJson().name}
+
+This package contains templates for \`@osdk/create-app\`.
+
+The dependencies will come from this package's \`package.json\` (excluding \`@osdk/create-app.template-packager\`) and the rest of template is filled out from the \`templates\` directory.
+
+NOTE: DO NOT EDIT THIS README BY HAND. It is generated by monorepolint.
+`;
+        },
+      },
+    }),
+    fileContents({
+      includePackages: ["@osdk/create-app.template.*"],
+      options: {
+        file: "turbo.json",
+        template: `{
+  // WARNING: GENERATED FILE. DO NOT EDIT DIRECTLY. See .monorepolint.config.mjs
+  "extends": ["//"],
+  "tasks": {
+    "codegen": {
+      "inputs": ["templates/**/*"],
+      "outputs": ["src/generatedNoCheck/**/*"],
+      "dependsOn": ["@osdk/create-app.template-packager#transpile"]
+    }
+  }
+}
+`,
+      },
+    }),
+
+    // Fall through case for none of the mutual exclusive groups
     ...standardPackageRules({
       excludePackages: [
         ...nonStandardPackages,
@@ -332,8 +464,6 @@ export default {
       ],
     }, {
       legacy: false,
-      packageDepth: 2,
-      type: "library",
       tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
@@ -342,8 +472,6 @@ export default {
     }, {
       legacy: false,
       esmOnly: true,
-      packageDepth: 2,
-      type: "library",
       tsVersion: LATEST_TYPESCRIPT_DEP,
     }),
 
@@ -351,8 +479,6 @@ export default {
       includePackages: ["@osdk/foundry-sdk-generator"],
     }, {
       legacy: false,
-      packageDepth: 2,
-      type: "library",
       tsVersion: LATEST_TYPESCRIPT_DEP,
       esmOnly: true,
       customTsconfigExcludes: [
@@ -367,35 +493,23 @@ export default {
           includePackages: [pkg],
         }, {
           legacy: true,
-          packageDepth: 2,
-          type: "library",
           tsVersion: LATEST_TYPESCRIPT_DEP,
           singlePackageName: pkg,
         })
       )
     ),
 
-    ...standardPackageRules({
-      includePackages: ["@osdk/examples.basic.**"],
-      excludePackages: ["@osdk/examples.one.dot.one"],
-    }, {
-      esmOnly: true,
-      legacy: false,
-      packageDepth: 3,
-      type: "example",
-    }),
-
     // most packages can use the newest typescript, but we enforce that @osdk/example.one.dot.one uses TS4.9
     // so that we get build-time checking to make sure we don't regress v1.1 clients using an older Typescript.
     ...standardPackageRules({
-      includePackages: ["@osdk/examples.one.dot.one"],
+      includePackages: ["@osdk/e2e.generated.1.1.x"],
     }, {
       legacy: false,
-      packageDepth: 2,
-      type: "example",
       tsVersion: "^4.9.5",
       skipTsconfigReferences: true,
     }),
+
+    ...rulesForPackagesWithChecKApiTask(),
 
     packageEntry({
       options: {
@@ -450,6 +564,15 @@ package you do so at your own risk.
       },
     }),
 
+    packageEntry({
+      includePackages: privatePackages,
+      options: {
+        entries: {
+          private: true,
+        },
+      },
+    }),
+
     alphabeticalDependencies({ includeWorkspaceRoot: true }),
     alphabeticalScripts({ includeWorkspaceRoot: true }),
 
@@ -485,3 +608,42 @@ package you do so at your own risk.
     }),
   ],
 };
+
+/**
+ * Rules for packages that do api checks / docs generation
+ * @returns {import("@monorepolint/config").RuleModule<any>[]}
+ */
+function rulesForPackagesWithChecKApiTask() {
+  return [
+    packageScript({
+      includePackages: checkApiPackages,
+      options: {
+        scripts: {
+          "check-api": "api-extractor run --verbose --local",
+        },
+      },
+    }),
+    requireDependency({
+      includePackages: checkApiPackages,
+      options: {
+        devDependencies: {
+          "@osdk/monorepo.api-extractor": "workspace:~",
+          "@microsoft/api-documenter": "^7.25.3",
+          "@microsoft/api-extractor": "^7.47.0",
+        },
+      },
+    }),
+    fileContents({
+      includePackages: checkApiPackages,
+      options: {
+        file: "api-extractor.json",
+        template: `{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "extends": "@osdk/monorepo.api-extractor/base.json",
+  "mainEntryPointFilePath": "<projectFolder>/build/esm/index.d.ts"
+}
+`,
+      },
+    }),
+  ];
+}

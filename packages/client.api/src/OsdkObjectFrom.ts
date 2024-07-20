@@ -140,7 +140,7 @@ export type Osdk<
     /** @deprecated use $primaryKey */
     __primaryKey: Q extends ObjectTypeDefinition<any>
       ? OsdkObjectPrimaryKeyType<Q>
-      : any;
+      : string | number | boolean;
 
     // $uniqueId: string; // will be dynamic
 

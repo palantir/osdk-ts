@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.api",
-  "version": "0.20.0-beta.3",
+  "version": "0.20.0-beta.4",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -17,14 +17,15 @@
     }
   },
   "scripts": {
-    "api-checker": "api-extractor run --verbose --local",
     "api-docs": "api-documenter markdown -i build/api-extractor --output-folder api-docs",
-    "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-api": "api-extractor run --verbose --local",
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
-    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
+    "transpile": "monorepo.tool.transpile",
+    "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
     "@osdk/api": "workspace:~"
@@ -35,9 +36,11 @@
   "devDependencies": {
     "@microsoft/api-documenter": "^7.25.3",
     "@microsoft/api-extractor": "^7.47.0",
-    "@osdk/api": "workspace:^",
-    "@osdk/api-extractor": "workspace:~",
+    "@osdk/api": "workspace:~",
     "@osdk/internal.foundry": "workspace:~",
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@types/geojson": "^7946.0.14",
     "type-fest": "^4.18.2",
     "typescript": "^5.5.2"

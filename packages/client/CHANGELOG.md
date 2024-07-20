@@ -1,5 +1,28 @@
 # @osdk/client
 
+## 0.20.0-beta.4
+
+### Minor Changes
+
+- 7afa226: Fix action params that take objects to correctly parse out primary key.
+- 3ec7c38: Add support for queries in 2.0
+- 4824449: Fix asyncIter to fetch subsequent pages
+- bc89b62: Spelling fixes and spell check in CI
+- a92e032: ClientCache now uses a key field as the cache key instead of the entire client
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/client.api@0.20.0-beta.4
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/generator-converters@0.7.0-beta.1
+  - @osdk/client.unstable.osw@0.1.0-beta.0
+  - @osdk/shared.client.impl@0.1.0-beta.1
+  - @osdk/shared.net.errors@1.1.0-beta.0
+  - @osdk/shared.net.fetch@0.1.0-beta.1
+  - @osdk/client.unstable@0.1.0-beta.0
+
 ## 0.20.0-beta.3
 
 ### Minor Changes
@@ -60,7 +83,7 @@
 - 5378312: Added batch action support for 2.0 client
 - b3563e0: OSDK learns \_\_EXPERIMENTAL_strictNonNull to throw, drop objects, or return `| undefined` for properties, allowing for correct typesafety.
 - dd6033a: Adds a createPlatformClient if you only need platform apis
-- 4dbac7e: Fixes link direction for experiental bulk loads
+- 4dbac7e: Fixes link direction for experimental bulk loads
 - 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
 - 44add10: Standardize the use of dollar signs as prefixes for object properties that are specific to the OSDK.
 
@@ -76,7 +99,7 @@
 
 - 0a64def: Adds experimental batch link support
 - f9b3c72: Support importing the unstable-do-not-use from moduleResolution: node
-- 978ecd5: Rexport PalantirApiError
+- 978ecd5: Reexport PalantirApiError
 - 978ecd5: Client is now usable for calling Platform SDK
 - c9f3214: Interfaces are now mapped as views
 
@@ -111,7 +134,7 @@
 
   - Introduced an optional pino logger to the client
   - Fixes issues with where clauses for equality in subscriptions
-  - Fixes issues with inconsistent idname and apiName's in the mapping data
+  - Fixes issues with inconsistent id name and apiName's in the mapping data
 
 - 9906a41: Foundry Platform API support
 - 9906a41: Compatible version checks now use versions that are both embedded in the code and updated automatically as part of the release process.
@@ -197,7 +220,7 @@
 
 ### Minor Changes
 
-- 6d81f7f: Add priliminary action support to v2
+- 6d81f7f: Add preliminary action support to v2
 
 ## 0.0.11
 
@@ -267,7 +290,7 @@
 
 ### Patch Changes
 
-- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatability in @osdk/api"
+- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatibility in @osdk/api"
 - 848404c: Handle conflicts between object, action, and query names
 - Updated dependencies [f3120fb]
 - Updated dependencies [848404c]

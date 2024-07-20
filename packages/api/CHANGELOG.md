@@ -1,5 +1,18 @@
 # @osdk/api
 
+## 1.9.0-beta.1
+
+### Minor Changes
+
+- 3ec7c38: Add support for queries in 2.0
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [bc89b62]
+  - @osdk/shared.net@1.12.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 1.9.0-beta.0
 
 ### Minor Changes
@@ -134,7 +147,7 @@
 
 ### Patch Changes
 
-- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatability in @osdk/api"
+- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatibility in @osdk/api"
 - 848404c: Handle conflicts between object, action, and query names
 - Updated dependencies [f3120fb]
 - Updated dependencies [848404c]
@@ -164,7 +177,7 @@
 
 ### Patch Changes
 
-- a2b7874: Addin TimeSeries support and fixing issues during code-gen time with Queries
+- a2b7874: Add in TimeSeries support and fixing issues during code-gen time with Queries
 
 ## 0.0.6
 

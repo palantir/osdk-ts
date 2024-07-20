@@ -1,0 +1,17 @@
+aggregatable
+codegen
+devx
+groupable
+isModifierable
+onwarn
+retryable
+rsort
+tsdoc
+typecheck
+typesafety
+uncapitalize
+unevaluable
+unioned
+webapi
+Geolocatable
+streamutils

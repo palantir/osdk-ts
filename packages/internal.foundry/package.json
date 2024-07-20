@@ -1,7 +1,7 @@
 {
   "name": "@osdk/internal.foundry",
   "private": "true",
-  "version": "0.4.0-beta.1",
+  "version": "0.4.0-beta.2",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -18,12 +18,13 @@
     }
   },
   "scripts": {
-    "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
-    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
+    "transpile": "monorepo.tool.transpile",
+    "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
@@ -37,6 +38,9 @@
     "@osdk/shared.net.platformapi": "workspace:~"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

@@ -19,11 +19,13 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
   MinimalObjectSet,
   ObjectSet,
+  QuerySignatureFromDef,
 } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
@@ -33,6 +35,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
+import { createQueryInvoker } from "./queries/createQueryInvoker.js";
 
 class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   implements ActionSignatureFromDef<Q>
@@ -71,10 +74,12 @@ export function createClientInternal(
   function clientFn<
     T extends
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<any, any, any>,
+      | ActionDefinition<any, any, any>
+      | QueryDefinition<any, any>,
   >(o: T): T extends ObjectTypeDefinition<any> ? ObjectSet<T>
     : T extends InterfaceDefinition<any, any> ? MinimalObjectSet<T>
     : T extends ActionDefinition<any, any, any> ? ActionSignatureFromDef<T>
+    : T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
     : never
   {
     if (o.type === "object" || o.type === "interface") {
@@ -89,6 +94,10 @@ export function createClientInternal(
         // first `as` to the action definition for our "real" typecheck
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value
+    } else if (o.type === "query") {
+      return createQueryInvoker(clientCtx, o) as QuerySignatureFromDef<
+        any
+      > as any;
     } else {
       throw new Error("not implemented");
     }

@@ -28,10 +28,13 @@ import type {
   TwoDimensionalAggregation,
 } from "@osdk/gateway/types";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
-export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
+export function wireQueryDataTypeToQueryDataTypeDefinition<
+  K extends string,
+>(
   input: QueryDataType,
-): QueryDataTypeDefinition<K> {
+): QueryDataTypeDefinition<K, any> {
   switch (input.type) {
     case "double":
     case "float":
@@ -79,10 +82,10 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
 
       // special case for a union where one half is nullable to skip the union step and just allow nulls directly
       if (allowNulls && input.unionTypes.length === 2) {
-        const nonnull = input.unionTypes.find(t => t.type != null);
-        if (nonnull) {
+        const nonNull = input.unionTypes.find(t => t.type != null);
+        if (nonNull) {
           return {
-            ...wireQueryDataTypeToQueryDataTypeDefinition(nonnull),
+            ...wireQueryDataTypeToQueryDataTypeDefinition(nonNull),
             nullable: true,
           };
         }
@@ -114,12 +117,14 @@ export function wireQueryDataTypeToQueryDataTypeDefinition<K extends string>(
       return {
         type: "twoDimensionalAggregation",
         twoDimensionalAggregation: get2DQueryAggregationProps(input),
+        nullable: false,
       };
 
     case "threeDimensionalAggregation":
       return {
         type: "threeDimensionalAggregation",
         threeDimensionalAggregation: get3DQueryAggregationProps(input),
+        nullable: false,
       };
 
     case "null":

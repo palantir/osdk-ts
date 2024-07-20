@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
+import type {
+  InterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
+} from "@osdk/api";
 import type { Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
 import {
@@ -31,7 +34,6 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
-import type { InterfaceDefinition } from "../../../api/build/cjs/index.cjs";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 

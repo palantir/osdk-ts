@@ -29,10 +29,12 @@ export interface generatePackageCommandArgs {
   actionTypes?: string[];
   queryTypes?: string[];
   linkTypes?: string[];
+  interfaceTypes?: string[];
   experimentalFeatures?: string[];
   packageName: string;
   packageVersion: string;
   outputDir: string;
+  beta?: boolean;
 }
 
 export class GeneratePackageCommand
@@ -92,7 +94,7 @@ export class GeneratePackageCommand
         string: true,
         demandOption: false,
         description:
-          `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintanence`,
+          `The API names of the action types to generate. Example Usage: --actionTypes schedule-airplane-maintenance`,
         default: undefined,
         defaultDescription:
           `By default, no arguments will not load any action type.`,
@@ -117,12 +119,22 @@ export class GeneratePackageCommand
         defaultDescription:
           `By default, no arguments will not load any query type.`,
       })
+      .options("interfaceTypes", {
+        array: true,
+        string: true,
+        demandOption: false,
+        description:
+          `The API Names of the interface types to generate. Example Usage: --interfaceTypes Geolocatable`,
+        default: undefined,
+        defaultDescription:
+          `By default, no arguments will not load any interface type.`,
+      })
       .options("experimentalFeatures", {
         array: true,
         string: true,
         demandOption: false,
         description:
-          `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeaures realtimeUpdates`,
+          `Experimental features that can be modified or removed at any time. Example Usage: --experimentalFeatures realtimeUpdates`,
         default: undefined,
         defaultDescription:
           `By default, no arguments will not enable any experimental features.`,
@@ -163,6 +175,7 @@ export class GeneratePackageCommand
         objectTypesApiNamesToLoad: transformArrayArg(args.objectTypes),
         actionTypesApiNamesToLoad: transformArrayArg(args.actionTypes),
         queryTypesApiNamesToLoad: transformArrayArg(args.queryTypes),
+        interfaceTypesApiNamesToLoad: transformArrayArg(args.interfaceTypes),
         linkTypesApiNamesToLoad: transformArrayArg(args.linkTypes),
       });
 
@@ -178,6 +191,7 @@ export class GeneratePackageCommand
       packageName: args.packageName,
       packageVersion: args.packageVersion,
       outputDir: args.outputDir,
+      beta: !!args.beta,
     });
 
     const elapsedTime = Date.now() - timeStart;

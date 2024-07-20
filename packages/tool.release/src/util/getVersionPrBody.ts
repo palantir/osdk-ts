@@ -72,7 +72,7 @@ export async function getVersionPrBody({
     `This PR was opened by automation. When you're ready to do a release, you can merge this and publish to npm yourself.
      If you're not ready to do a release yet, that's fine, whenever you re-run the release script in ${branch}, this PR will be updated.
 `;
-  const messagePrestate = !!preState
+  const messagePreState = !!preState
     ? `⚠️⚠️⚠️⚠️⚠️⚠️
 
 \`${branch}\` is currently in **pre mode** so this branch has prereleases rather than normal releases. If you want to exit prereleases, run \`changeset pre exit\` on \`${branch}\`.
@@ -84,7 +84,7 @@ export async function getVersionPrBody({
 
   let fullMessage = [
     messageHeader,
-    messagePrestate,
+    messagePreState,
     messageReleasesHeading,
     ...changedPackagesInfo.map((info) => `${info.header}\n\n${info.content}`),
   ].join("\n");
@@ -94,7 +94,7 @@ export async function getVersionPrBody({
   if (fullMessage.length > prBodyMaxCharacters) {
     fullMessage = [
       messageHeader,
-      messagePrestate,
+      messagePreState,
       messageReleasesHeading,
       `\n> The changelog information of each package has been omitted from this message, as the content exceeds the size limit.\n`,
       ...changedPackagesInfo.map((info) => `${info.header}\n\n`),
@@ -106,7 +106,7 @@ export async function getVersionPrBody({
   if (fullMessage.length > prBodyMaxCharacters) {
     fullMessage = [
       messageHeader,
-      messagePrestate,
+      messagePreState,
       messageReleasesHeading,
       `\n> All release information have been omitted from this message, as the content exceeds the size limit.`,
     ].join("\n");

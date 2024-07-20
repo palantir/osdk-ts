@@ -43,12 +43,19 @@ export class OntologyMetadataResolver {
       objectTypes: Set<string>;
       queryTypes: Set<string>;
       actionTypes: Set<string>;
+      interfaceTypes: Set<string>;
     },
   ): components.OntologyFullMetadata {
     const filteredObjectTypes = Object.fromEntries(
       Object.entries(ontologyFullMetadata.objectTypes).filter((
         [objectTypeApiName],
       ) => expectedEntities.objectTypes.has(objectTypeApiName.toLowerCase())),
+    );
+
+    const filteredInterfaceTypes = Object.fromEntries(
+      Object.entries(ontologyFullMetadata.interfaceTypes).filter((
+        [interfaceApiName],
+      ) => expectedEntities.interfaceTypes.has(interfaceApiName.toLowerCase())),
     );
 
     Object.values(filteredObjectTypes).forEach(objectType => {
@@ -91,7 +98,7 @@ export class OntologyMetadataResolver {
       objectTypes: filteredObjectTypes,
       actionTypes: filteredActionTypes,
       queryTypes: filteredQueryTypes,
-      interfaceTypes: {},
+      interfaceTypes: filteredInterfaceTypes,
       sharedPropertyTypes: {},
     };
   }
@@ -102,6 +109,7 @@ export class OntologyMetadataResolver {
       actionTypesApiNamesToLoad?: string[];
       objectTypesApiNamesToLoad?: string[];
       queryTypesApiNamesToLoad?: string[];
+      interfaceTypesApiNamesToLoad?: string[];
       linkTypesApiNamesToLoad?: string[];
     },
   ): Promise<Result<WireOntologyDefinition, string[]>> {
@@ -147,6 +155,12 @@ export class OntologyMetadataResolver {
       ),
     );
 
+    const interfaceTypes = new Set(
+      entities.interfaceTypesApiNamesToLoad?.map(interfaceName =>
+        interfaceName.toLowerCase()
+      ),
+    );
+
     for (const linkType of entities.linkTypesApiNamesToLoad ?? []) {
       const [objectTypeApiName, linkTypeApiName] = linkType.toLowerCase().split(
         ".",
@@ -162,6 +176,7 @@ export class OntologyMetadataResolver {
       linkTypes,
       actionTypes,
       queryTypes,
+      interfaceTypes,
     });
 
     const validData: Result<{}, string[]> = this.validateLoadedOntologyMetadata(

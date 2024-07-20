@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import type { WireOntologyDefinition } from "@osdk/generator";
-import { generateClientSdkVersionOneDotOne } from "@osdk/generator";
+import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
+import {
+  generateClientSdkVersionOneDotOne,
+  generateClientSdkVersionTwoPointZero,
+} from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
 import { isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent.js";
@@ -25,46 +28,78 @@ import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
 declare const __OSDK_LEGACY_CLIENT_VERSION__: string | undefined;
+declare const __OSDK_CLIENT_API_VERSION__: string | undefined;
+declare const __OSDK_API_VERSION__: string | undefined;
 const dependencies: { [key: string]: string | undefined } = {
   "@osdk/legacy-client": typeof __OSDK_LEGACY_CLIENT_VERSION__ !== "undefined"
     ? __OSDK_LEGACY_CLIENT_VERSION__
     : undefined,
 };
 
+const betaDependencies: { [key: string]: string | undefined } = {
+  "@osdk/client.api": typeof __OSDK_CLIENT_API_VERSION__ !== "undefined"
+    ? __OSDK_CLIENT_API_VERSION__
+    : undefined,
+  "@osdk/api": typeof __OSDK_API_VERSION__ !== "undefined"
+    ? __OSDK_API_VERSION__
+    : undefined,
+};
+
 export async function generatePackage(
   ontology: WireOntologyDefinition,
-  options: { packageName: string; packageVersion: string; outputDir: string },
+  options: {
+    packageName: string;
+    packageVersion: string;
+    outputDir: string;
+    beta: boolean;
+  },
 ) {
   const { consola } = await import("consola");
 
   const packagePath = join(options.outputDir, options.packageName);
   const resolvedDependencies = await Promise.all(
-    Object.keys(dependencies).map(async dependency => {
-      return {
-        dependencyName: dependency,
-        dependencyVersion: await getDependencyVersion(dependency),
-      };
-    }),
+    Object.keys(options.beta ? betaDependencies : dependencies).map(
+      async dependency => {
+        return {
+          dependencyName: dependency,
+          dependencyVersion: await getDependencyVersion(dependency),
+        };
+      },
+    ),
   );
   await mkdir(packagePath, { recursive: true });
 
   const inMemoryFileSystem: { [fileName: string]: string } = {};
-  await generateClientSdkVersionOneDotOne(
-    ontology,
-    `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
-    {
-      writeFile: async (path, contents) => {
-        inMemoryFileSystem[normalize(path)] = contents;
-      },
-      mkdir: async (path, _options?: { recursive: boolean }) => {
-        await mkdir(normalize(path), { recursive: true });
-      },
-      readdir: path => readdir(path),
+  const hostFs: MinimalFs = {
+    writeFile: async (path, contents) => {
+      inMemoryFileSystem[normalize(path)] = contents;
     },
-    packagePath,
-  );
+    mkdir: async (path, _options?: { recursive: boolean }) => {
+      await mkdir(normalize(path), { recursive: true });
+    },
+    readdir: path => readdir(path),
+  };
 
-  const compilerOutput = compileInMemory(inMemoryFileSystem);
+  if (!options.beta) {
+    await generateClientSdkVersionOneDotOne(
+      ontology,
+      `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
+      hostFs,
+      packagePath,
+    );
+  } else {
+    await generateClientSdkVersionTwoPointZero(
+      ontology,
+      `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
+      hostFs,
+      packagePath,
+      "module",
+    );
+  }
+
+  const compilerOutput = compileInMemory(inMemoryFileSystem, {
+    esm: options.beta,
+  });
   compilerOutput.diagnostics.forEach(d =>
     consola.error(`Error compiling file`, d.file?.fileName, d.messageText)
   );
@@ -81,17 +116,18 @@ export async function generatePackage(
   if (nodeModulesPath) {
     try {
       bundleDts = await bundleDependencies(
-        [
-          join(
-            nodeModulesPath,
-            "@osdk",
-            "legacy-client",
-          ),
-          join(nodeModulesPath, "@osdk", "api"),
-          join(nodeModulesPath, "@osdk", "gateway"),
-        ],
+        options.beta
+          ? []
+          : [
+            join(nodeModulesPath, "@osdk", "legacy-client"),
+            join(nodeModulesPath, "@osdk", "api"),
+            join(nodeModulesPath, "@osdk", "gateway"),
+          ],
         options.packageName,
         compilerOutput.files,
+        options.beta
+          ? undefined
+          : `internal/@osdk/legacy-client/index.ts`,
       );
     } catch (e) {
       consola.error("Failed bundling DTS", e);
@@ -116,6 +152,7 @@ export async function generatePackage(
       packagePath,
       packageVersion: options.packageVersion,
       dependencies: resolvedDependencies,
+      beta: options.beta,
     }),
   ]);
 

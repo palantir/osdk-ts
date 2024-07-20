@@ -21,12 +21,12 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 
 export async function loadInterfaceDefinition(
   client: MinimalClient,
-  objtype: string,
+  objectType: string,
 ): Promise<InterfaceDefinition<any, any>> {
   const r = await OntologiesV2.OntologyObjectsV2.getInterfaceType(
     client,
     await client.ontologyRid,
-    objtype,
+    objectType,
     { preview: true },
   );
 

@@ -15,7 +15,7 @@
  */
 
 import { apiServer } from "@osdk/shared.test";
-import { rmdir } from "fs/promises";
+import { rm } from "fs/promises";
 import { join } from "path";
 import { GeneratePackageCommand } from "../generate/index.js";
 
@@ -24,7 +24,8 @@ export async function setup() {
   apiServer.listen();
 
   try {
-    await rmdir(join(dir, "@test-app"), { recursive: true });
+    await rm(join(dir, "@test-app"), { recursive: true });
+    await rm(join(dir, "@test-app2"), { recursive: true });
   } catch (e) {
     // Only needed for regenerations
   }
@@ -59,6 +60,48 @@ export async function setup() {
       "twoDimensionalAggregationFunction",
       "threeDimensionalAggregationFunction",
     ],
+    interfaceTypes: [
+      "FooInterface",
+    ],
+    linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
+    palantirOnlyTest: true,
+    _: [],
+    $0: "",
+  });
+
+  await generatePackageCommand.handler({
+    packageName: "@test-app2/osdk",
+    packageVersion: "0.0.1",
+    outputDir: dir,
+    authToken: "myAccessToken",
+    foundryHostname: "https://stack.palantir.com",
+    ontology: "ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361",
+    objectTypes: [
+      "employee",
+      "office",
+      "objectTypeWithAllPropertyTypes",
+      "ObjectWithTimestampPrimaryKey",
+      "equipment",
+    ],
+    actionTypes: [
+      "createOffice",
+      "moveOffice",
+      "createOfficeAndEmployee",
+      "actionTakesObjectSet",
+    ],
+    queryTypes: [
+      "addOne",
+      "incrementPersonAge",
+      "returnsTimestamp",
+      "returnsDate",
+      "returnsObject",
+      "twoDimensionalAggregationFunction",
+      "threeDimensionalAggregationFunction",
+    ],
+    interfaceTypes: [
+      "FooInterface",
+    ],
+    beta: true,
     linkTypes: ["employee.peeps", "employee.lead", "employee.officeLink"],
     palantirOnlyTest: true,
     _: [],

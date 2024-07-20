@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.client.impl",
-  "version": "0.1.0-beta.0",
+  "version": "0.1.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -19,12 +19,13 @@
     }
   },
   "scripts": {
-    "check-attw": "../../scripts/build_common/check-attw.sh both",
+    "check-attw": "monorepo.tool.attw both",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
-    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh both"
+    "transpile": "monorepo.tool.transpile",
+    "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
     "@osdk/shared.client": "workspace:~",
@@ -32,6 +33,9 @@
     "@osdk/shared.net.fetch": "workspace:~"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "typescript": "^5.5.2"
   },
   "publishConfig": {

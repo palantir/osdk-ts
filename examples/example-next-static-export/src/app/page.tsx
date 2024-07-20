@@ -15,7 +15,7 @@ function Home() {
 
   return (
     <div>
-      <h1>@osdk/examples.one.dot.one</h1>
+      <h1>@osdk/e2e.generated.1.1.x</h1>
       <p>
         Welcome to your Ontology SDK! Try using any of the following methods
         now.

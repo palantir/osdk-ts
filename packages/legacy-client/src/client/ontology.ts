@@ -52,7 +52,7 @@ export class Ontology<O extends OntologyDefinition<any>> {
   }
 
   get queries(): Queries<O> {
-    /* this `as any` is required for ts4.9 compatability */
+    /* this `as any` is required for ts4.9 compatibility */
     return createQueryProxy(this.#client) as any;
   }
 

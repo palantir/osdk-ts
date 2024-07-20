@@ -17,6 +17,7 @@
 import type { ObjectOrInterfaceDefinition } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
 import type { OntologyDefinition } from "./OntologyDefinition.js";
+import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
 
@@ -52,6 +53,7 @@ export type ObjectTypePropertyDefinitionFrom2<
 export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   type: "object" | "interface";
   apiName: BrandedApiName<K, N>;
+  displayName?: string;
   description?: string;
   properties: Record<string, ObjectTypePropertyDefinition>;
   links: Record<
@@ -59,6 +61,13 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
     ObjectTypeLinkDefinition<any, any>
   >;
   osdkMetadata?: OsdkMetadata;
+
+  /**
+   * Represents the "super interfaces" of this object.
+   *
+   * Optional because they may not exist on legacy.
+   */
+  implements?: ReadonlyArray<string>;
 }
 
 export interface VersionBound<V extends VersionString<any, any, any>> {
@@ -71,12 +80,7 @@ export interface ObjectTypeDefinition<
 > extends ObjectInterfaceBaseDefinition<K, N> {
   type: "object";
   primaryKeyApiName: keyof this["properties"];
-  primaryKeyType: WirePropertyTypes;
-
-  /**
-   * Optional because they may not exist on legacy.
-   */
-  implements?: string[];
+  primaryKeyType: PrimaryKeyTypes;
 
   /**
    * Optional because they may not exist on legacy.

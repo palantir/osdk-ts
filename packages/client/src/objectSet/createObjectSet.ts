@@ -16,10 +16,12 @@
 
 import type {
   ObjectOrInterfaceDefinition,
+  ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type {
   BaseObjectSet,
+  FetchPageResult,
   LinkedType,
   LinkNames,
   MinimalObjectSet,
@@ -33,12 +35,12 @@ import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";
-import { convertWireToOsdkObjects } from "../object/convertWireToOsdkObjects.js";
 import {
   fetchPageInternal,
   fetchPageWithErrorsInternal,
 } from "../object/fetchPage.js";
 import { fetchSingle, fetchSingleWithErrors } from "../object/fetchSingle.js";
+import { augmentRequestContext } from "../util/augmentRequestContext.js";
 import { isWireObjectSet } from "../util/WireObjectSet.js";
 
 function isObjectTypeDefinition(
@@ -75,21 +77,24 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   const base: Omit<ObjectSet<Q>, keyof BaseObjectSet<Q>> = {
     aggregate: (aggregate<Q, any>).bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "aggregate" })),
       objectType,
       objectSet,
     ),
 
     fetchPage: fetchPageInternal.bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(clientCtx, _ => ({ finalMethodCall: "fetchPage" })),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPage"],
 
     fetchPageWithErrors: fetchPageWithErrorsInternal.bind(
       globalThis,
-      clientCtx,
+      augmentRequestContext(
+        clientCtx,
+        _ => ({ finalMethodCall: "fetchPageWithErrors" }),
+      ),
       objectType,
       objectSet,
     ) as ObjectSet<Q>["fetchPageWithErrors"],
@@ -141,11 +146,23 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
     asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
       let $nextPageToken: string | undefined = undefined;
       do {
-        const result = await base.fetchPage({ $nextPageToken });
+        const result: FetchPageResult<
+          Q,
+          ObjectOrInterfacePropertyKeysFrom2<Q>,
+          boolean,
+          "throw"
+        > = await fetchPageInternal(
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "asyncIter" }),
+          ),
+          objectType,
+          objectSet,
+          { $nextPageToken },
+        );
+        $nextPageToken = result.nextPageToken;
 
-        for (
-          const obj of result.data
-        ) {
+        for (const obj of result.data) {
           yield obj as Osdk<Q, "$all">;
         }
       } while ($nextPageToken != null);
@@ -169,7 +186,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         };
 
         return await fetchSingle(
-          clientCtx,
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "fetchOne" }),
+          ),
           objectType,
           options,
           withPk,
@@ -195,7 +215,10 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         };
 
         return await fetchSingleWithErrors(
-          clientCtx,
+          augmentRequestContext(
+            clientCtx,
+            _ => ({ finalMethodCall: "fetchOneWithErrors" }),
+          ),
           objectType,
           options,
           withPk,

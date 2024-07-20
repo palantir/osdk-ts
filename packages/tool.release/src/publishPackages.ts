@@ -28,7 +28,7 @@ import pMap from "p-map";
 import { PackageNotFoundError } from "package-json";
 import packageVersionsOrThrow from "pkg-versions";
 
-// Honestly I dont know that we need this file since `pnpm publish -r` is a thing
+// Honestly I don't know that we need this file since `pnpm publish -r` is a thing
 
 export type PublishedResult = {
   name: string;

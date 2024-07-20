@@ -66,6 +66,12 @@ export type {
   GroupByRange,
 } from "./groupby/GroupByClause.js";
 export type {
+  AllowedBucketKeyTypes,
+  AllowedBucketTypes,
+  DataValueClientToWire,
+  DataValueWireToClient,
+} from "./mapping/DataValueMapping.js";
+export type {
   PropertyValueClientToWire,
   PropertyValueWireToClient,
 } from "./mapping/PropertyValueMapping.js";
@@ -111,11 +117,17 @@ export type {
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
 export type {
+  QueryParameterType,
+  QueryReturnType,
+  QuerySignatureFromDef,
+} from "./queries/Queries.js";
+export type {
   TimeSeriesPoint,
   TimeSeriesProperty,
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
+
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 

@@ -106,6 +106,7 @@ export default tseslint.config(
       "**/bin/*.mjs",
       "**/bin/*.cjs",
       "examples-extra/**/*",
+      "packages/e2e.sandbox.*/**/*",
     ],
     rules: {
       "header/header": "off",
@@ -120,6 +121,7 @@ export default tseslint.config(
       "**/*.test.ts",
       "**/test/*",
       "examples-extra/**/*",
+      "packages/e2e.sandbox.*/**/*",
     ],
     rules: {
       "no-console": "off",
@@ -139,7 +141,7 @@ export default tseslint.config(
       "**/src/generatedNoCheck2/",
       "**/templates/",
       "examples/**/*",
-      "monorepo/**",
+      "packages/monorepo.*/**",
       "google-font-mocked-response.js",
       ".lintstagedrc.mjs",
       "tests/",

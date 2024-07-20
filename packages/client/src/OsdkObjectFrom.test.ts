@@ -150,7 +150,7 @@ describe("Osdk", () => {
         Osdk<FooInterface, "fooSpt", InvalidPropertyName>
       >();
 
-      // See, when we dig via infer we find it doesnt match
+      // See, when we dig via infer we find it doesn't match
       expectTypeOf<
         GetUnderlyingProps<
           OsdkAsHelper<Employee, "fullName", "fullName", FooInterface>

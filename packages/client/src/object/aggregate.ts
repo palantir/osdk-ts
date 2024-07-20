@@ -33,7 +33,7 @@ import { modernToLegacyAggregationClause } from "../internal/conversions/modernT
 import { modernToLegacyGroupByClause } from "../internal/conversions/modernToLegacyGroupByClause.js";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
-import { addUserAgent } from "../util/addUserAgent.js";
+import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
 /** @deprecated use `aggregate` */
@@ -79,7 +79,7 @@ export async function aggregate<
     body.where = modernToLegacyWhereClause(req.$where);
   }
   const result = await OntologiesV2.OntologyObjectSets.aggregateObjectSetV2(
-    addUserAgent(clientCtx, objectType),
+    addUserAgentAndRequestContextHeaders(clientCtx, objectType),
     await clientCtx.ontologyRid,
     {
       objectSet,

@@ -1,5 +1,35 @@
 # @osdk/foundry-sdk-generator
 
+## 1.2.0-beta.4
+
+### Minor Changes
+
+- 6bf66d5: Actually fix the script to run
+- 029d816: Fixes bin script being interpreted as esm
+
+## 1.2.0-beta.3
+
+### Minor Changes
+
+- fee51a3: Add interface support
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [7afa226]
+- Updated dependencies [572e322]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [4824449]
+- Updated dependencies [bc89b62]
+- Updated dependencies [116d848]
+- Updated dependencies [a92e032]
+  - @osdk/client@0.20.0-beta.4
+  - @osdk/legacy-client@2.4.0-beta.2
+  - @osdk/client.api@0.20.0-beta.4
+  - @osdk/generator@1.12.0-beta.2
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 1.2.0-beta.2
 
 ### Minor Changes
@@ -37,9 +67,9 @@
 
 ### Patch Changes
 
-- 212f651: Add fetchone, that is get replacement without result wrapper
+- 212f651: Add fetchOne, that is get replacement without result wrapper
 - e690399: Fix $rid, $apiName and $primaryKey population
-- 212f651: Deprecate get and add fetchonewitherrors, which functionally is the same
+- 212f651: Deprecate get and add fetchOneWithErrors, which functionally is the same
 - Updated dependencies [212f651]
 - Updated dependencies [e690399]
 - Updated dependencies [212f651]
@@ -121,7 +151,7 @@
 
 ### Patch Changes
 
-- 35803ca0: Fix backcompat break where the script exports were removed
+- 35803ca0: Fix back-compat break where the script exports were removed
 
 ## 0.200.3
 

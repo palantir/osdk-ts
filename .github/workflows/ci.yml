@@ -13,6 +13,30 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  cspell:
+    name: Check spelling
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Check spelling
+        run: pnpm exec turbo run ci:cspell
+  
   changesets:
     name: Check for changesets
     if: ${{ github.event_name == 'pull_request' }}
@@ -25,8 +49,6 @@ jobs:
           fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 8.7.4
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
@@ -63,8 +85,6 @@ jobs:
           fetch-depth: 2
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 8.7.4
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4

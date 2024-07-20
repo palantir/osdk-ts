@@ -86,7 +86,7 @@ describe("AttachmentsTest", () => {
     expect(attachmentError.name).toEqual("AttachmentSizeExceededLimit");
   });
 
-  it("Reads attachment metadata succesfully", async () => {
+  it("Reads attachment metadata successfully", async () => {
     const result = await client.ontology.objects.objectTypeWithAllPropertyTypes
       .get(
         stubData.objectWithAllPropertyTypes1.__primaryKey,
@@ -104,7 +104,7 @@ describe("AttachmentsTest", () => {
     );
   });
 
-  it("Fails to read attachment metadata succesfully", async () => {
+  it("Fails to read attachment metadata successfully", async () => {
     const result: Result<objectTypeWithAllPropertyTypes, GetObjectError> =
       await client.ontology.objects.objectTypeWithAllPropertyTypes.get(
         stubData.objectWithAllPropertyTypes1.__primaryKey,

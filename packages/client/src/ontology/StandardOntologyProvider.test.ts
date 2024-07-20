@@ -31,7 +31,7 @@ describe(createStandardOntologyProviderFactory, () => {
     apiServer.close();
   });
 
-  it("doesnt realidate if not needed", async () => {
+  it("doesn't revalidate if not needed", async () => {
     const client = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",

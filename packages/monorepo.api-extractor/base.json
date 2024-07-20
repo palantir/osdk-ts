@@ -1,0 +1,69 @@
+/**
+ * Config file for API Extractor.  For more info, please visit: https://api-extractor.com
+ */
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+
+  "mainEntryPointFilePath": "<projectFolder>/build/esm/index.d.ts",
+  "bundledPackages": [],
+  "newlineKind": "lf",
+
+  "apiReport": {
+    "enabled": true,
+    "reportFileName": "<unscopedPackageName>.report.api.md",
+    "reportFolder": "<projectFolder>/../../etc/",
+    "reportTempFolder": "<projectFolder>/build/api-extractor/"
+  },
+
+  "docModel": {
+    "enabled": true,
+    "projectFolderUrl": "https://github.com/palantir/osdk-ts/tree/main/packages/client.api",
+    "apiJsonFilePath": "<projectFolder>/build/api-extractor/<unscopedPackageName>.api.json"
+  },
+  "tsdocMetadata": {
+    "enabled": false
+  },
+
+  "dtsRollup": {
+    "enabled": false
+  },
+  //
+  "messages": {
+    "compilerMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+      // "TS2551": {
+      //   "logLevel": "warning",
+      //   "addToApiReportFile": true
+      // },
+      //
+      // . . .
+    },
+
+    "extractorMessageReporting": {
+      "default": {
+        "logLevel": "warning"
+      }
+      // "ae-extra-release-tag": {
+      //   "logLevel": "warning",
+      //   "addToApiReportFile": true
+      // },
+      //
+      // . . .
+    },
+
+    "tsdocMessageReporting": {
+      "default": {
+        "logLevel": "warning",
+        "addToApiReportFile": true
+      }
+      // "tsdoc-link-tag-unescaped-text": {
+      //   "logLevel": "warning",
+      //   "addToApiReportFile": true
+      // },
+      //
+      // . . .
+    }
+  }
+}

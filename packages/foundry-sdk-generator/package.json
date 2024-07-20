@@ -1,6 +1,6 @@
 {
   "name": "@osdk/foundry-sdk-generator",
-  "version": "1.2.0-beta.2",
+  "version": "1.2.0-beta.4",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
@@ -19,18 +19,21 @@
     }
   },
   "scripts": {
-    "check-attw": "../../scripts/build_common/check-attw.sh esm",
+    "check-attw": "monorepo.tool.attw esm",
+    "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --config ./vitest.config.mts --pool=forks",
     "test:watch": "vitest",
-    "transpile": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.js' -or -name '*.js.map' -or -name '*.cjs' -or -name '*.cjs.map' \\) -delete && tsup",
+    "transpile": "monorepo.tool.transpile",
     "transpileWatch": "tsup --watch",
-    "typecheck": "find . \\( -path build/cjs -or -path build/esm -or -path build/browser \\) -type f \\( -name '*.ts' -or -name '*.ts.map' -or -name '*.cts' -or -name '*.cts.map' \\) -delete && ../../scripts/build_common/typecheck.sh esm"
+    "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/client.api": "workspace:~",
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
     "@osdk/legacy-client": "workspace:~",
@@ -41,9 +44,13 @@
     "rollup": "^3.28.1",
     "rollup-plugin-polyfill-node": "^0.13.0",
     "ts-morph": "^19.0.0",
+    "typescript": "^5.5.3",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@osdk/monorepo.api-extractor": "workspace:~",
+    "@osdk/monorepo.tsconfig": "workspace:~",
+    "@osdk/monorepo.tsup": "workspace:~",
     "@osdk/shared.test": "workspace:~",
     "@types/node": "^18.0.0",
     "@types/yargs": "^17.0.29",
@@ -54,7 +61,7 @@
   },
   "keywords": [],
   "bin": {
-    "foundry-sdk-generator": "./bin/foundry-sdk-generator"
+    "foundry-sdk-generator": "./bin/foundry-sdk-generator.cjs"
   },
   "files": [
     "build/cjs",

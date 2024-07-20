@@ -23,12 +23,17 @@ declare const tag: unique symbol;
 
 export type ClientCacheKey = {} & { readonly [tag]: void };
 
+export type RequestContext = {
+  finalMethodCall?: string;
+};
+
 export interface MinimalClient extends SharedClientContext {
   ontologyRid: string | Promise<string>;
   ontologyProvider: OntologyProvider;
   logger?: Logger;
   objectSetFactory: ObjectSetFactory<any, any>;
   clientCacheKey: ClientCacheKey;
+  requestContext: RequestContext;
 }
 
 export type MinimalClientParams = {

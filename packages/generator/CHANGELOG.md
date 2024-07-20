@@ -1,5 +1,21 @@
 # @osdk/generator
 
+## 1.12.0-beta.2
+
+### Minor Changes
+
+- 3ec7c38: Add support for queries in 2.0
+- bc89b62: Spelling fixes and spell check in CI
+- 116d848: Interface inherited properties are now generated
+
+### Patch Changes
+
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0-beta.1
+  - @osdk/generator-converters@0.7.0-beta.1
+  - @osdk/gateway@2.4.0-beta.0
+
 ## 1.12.0-beta.1
 
 ### Minor Changes
@@ -126,7 +142,7 @@
 
 ### Patch Changes
 
-- b59cb10: Adding backcompatibility for internal types
+- b59cb10: Adding backward compatibility for internal types
 
 ## 0.0.14
 
@@ -179,7 +195,7 @@
 
 ### Patch Changes
 
-- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatability in @osdk/api"
+- f3120fb: Move 2.0 client into @osdk/client to fix typescript 4.9 compatibility in @osdk/api"
 - 848404c: Handle conflicts between object, action, and query names
 - Updated dependencies [f3120fb]
 - Updated dependencies [848404c]
@@ -205,14 +221,14 @@
 
 ### Patch Changes
 
-- e22ce70: Adding proper support for reservered keywords in properties
+- e22ce70: Adding proper support for reserved keywords in properties
 - 66cb4ce: Fixing generator for integration
 
 ## 0.0.5
 
 ### Patch Changes
 
-- 70719db: Fixing nits, and adding support for legacy reservered word backcompat
+- 70719db: Fixing nits, and adding support for legacy reserved word back-compat
 
 ## 0.0.4
 
@@ -227,7 +243,7 @@
 
 ### Patch Changes
 
-- a2b7874: Addin TimeSeries support and fixing issues during code-gen time with Queries
+- a2b7874: Add in TimeSeries support and fixing issues during code-gen time with Queries
 - Updated dependencies [a2b7874]
   - @osdk/api@0.0.7
 
