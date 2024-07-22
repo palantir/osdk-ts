@@ -113,7 +113,7 @@ export async function generatePerActionDataFiles(
 
           
           // Represents the definition of the action
-          export interface ${actionDefIdentifier} extends ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}, ${action.apiName}>{
+          export interface ${actionDefIdentifier} extends ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}, ${action.apiName}>, VersionBound<$ExpectedClientVersion> {
           ${
           Object.entries(actionDefSansParameters).sort((a, b) =>
             a[0].localeCompare(b[0])
@@ -174,9 +174,10 @@ export async function generatePerActionDataFiles(
       await fs.writeFile(
         path.join(outDir, `${action.apiName}.ts`),
         await formatTs(`
-          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from "@osdk/api";
+          import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound} from "@osdk/api";
           import type { ActionSignature, ApplyActionOptions, ApplyBatchActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client.api';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
+          import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
           ${importObjects}
 
         
