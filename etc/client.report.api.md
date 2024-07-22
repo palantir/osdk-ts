@@ -12,11 +12,13 @@ import { ActionValidationResponse } from '@osdk/client.api';
 import { ApplyActionOptions } from '@osdk/client.api';
 import { ApplyBatchActionOptions } from '@osdk/client.api';
 import type { Attachment } from '@osdk/client.api';
+import type { AttachmentUpload } from '@osdk/client.api';
 import type { GreaterThan } from 'type-fest';
 import type { GreaterThanOrEqual } from 'type-fest';
 import type { InterfaceDefinition } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
 import type { IsEqual } from 'type-fest';
+import { isOk } from '@osdk/client.api';
 import type { LessThan } from 'type-fest';
 import type { Logger } from 'pino';
 import { NOOP } from '@osdk/client.api';
@@ -31,6 +33,7 @@ import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
 import type { QueryDefinition } from '@osdk/api';
 import type { QuerySignatureFromDef } from '@osdk/client.api';
+import { Result } from '@osdk/client.api';
 import type { SharedClient } from '@osdk/shared.client';
 import { SharedClientContext } from '@osdk/shared.client';
 import type { VersionBound } from '@osdk/api';
@@ -71,6 +74,9 @@ export interface Client extends SharedClient<MinimalClient> {
 export function createAttachmentFromRid(client: MinimalClient, rid: string): Attachment;
 
 // @public (undocumented)
+export function createAttachmentUpload(data: Blob, name: string): AttachmentUpload;
+
+// @public (undocumented)
 export const createClient: (baseUrl: string, ontologyRid: string | Promise<string>, tokenProvider: () => Promise<string>, options?: {
     logger?: Logger;
 } | undefined, fetchFn?: typeof fetch | undefined) => Client;
@@ -85,10 +91,7 @@ export function createPlatformClient(baseUrl: string, tokenProvider: () => Promi
 
 export { InterfaceObjectSet }
 
-// @public (undocumented)
-export function isOk(result: ResultOrError<any>): result is {
-    type: "ok";
-};
+export { isOk }
 
 export { NOOP }
 
@@ -103,6 +106,8 @@ export { OsdkObject }
 export { PageResult }
 
 export { PalantirApiError }
+
+export { Result }
 
 // @public (undocumented)
 export type ResultOrError<T extends object> = ({
