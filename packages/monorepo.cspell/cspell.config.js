@@ -123,7 +123,7 @@ const cspell = {
   overrides: [
     {
       filename: ["**/*.md"],
-      dictionaries: ["foundry-words"],
+      dictionaries: ["foundry-words", "dev-words"],
     },
     {
       filename: [".changeset/**/*.md"],
