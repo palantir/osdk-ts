@@ -27,8 +27,11 @@ export type {
   OsdkActionParameters,
   OsdkObject,
   PageResult,
+  Result,
   WhereClause,
 } from "@osdk/client.api";
+
+export { isOk } from "@osdk/client.api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
 export type { Client } from "./Client.js";
@@ -36,7 +39,7 @@ export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
 
 export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
+export { createAttachmentUpload } from "./object/AttachmentUpload.js";
 
 export { ActionValidationError } from "./actions/ActionValidationError.js";
-export { isOk } from "./ResultOrError.js";
 export type { ResultOrError } from "./ResultOrError.js";
