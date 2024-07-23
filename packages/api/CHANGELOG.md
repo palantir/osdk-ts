@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 1.9.0-beta.2
+
+### Minor Changes
+
+- d8edf10: Fix primary key types
+
 ## 1.9.0-beta.1
 
 ### Minor Changes

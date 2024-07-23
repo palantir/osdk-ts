@@ -1,5 +1,14 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.1.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+  - @osdk/api@1.9.0-beta.2
+  - @osdk/legacy-client@2.4.0-beta.3
+  - @osdk/generator@1.12.0-beta.3
+
 ## 0.1.0-beta.0
 
 ### Patch Changes

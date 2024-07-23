@@ -1,5 +1,20 @@
 # @osdk/client.api
 
+## 0.20.0-beta.5
+
+### Minor Changes
+
+- 034f7ea: Add support for no query time series pulls.
+- d8edf10: Fix primary key types
+- 3615522: Fix primary key type on action edits
+- 489d13f: Add support for timeseries in 2.0 syntax.
+- dec005b: Add final method call to request context header
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+  - @osdk/api@1.9.0-beta.2
+
 ## 0.20.0-beta.4
 
 ### Minor Changes

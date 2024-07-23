@@ -1,5 +1,16 @@
 # @osdk/foundry.thirdpartyapplications
 
+## 2.0.0-beta.3
+
+### Minor Changes
+
+- 9405a3e: Bump api-gateway to 1.891.0
+
+### Patch Changes
+
+- Updated dependencies [9405a3e]
+  - @osdk/foundry.core@2.0.0-beta.3
+
 ## 1.1.0-beta.2
 
 ### Minor Changes

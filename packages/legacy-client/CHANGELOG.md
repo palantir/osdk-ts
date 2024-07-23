@@ -1,5 +1,12 @@
 # @osdk/legacy-client
 
+## 2.4.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+  - @osdk/api@1.9.0-beta.2
+
 ## 2.4.0-beta.2
 
 ### Minor Changes

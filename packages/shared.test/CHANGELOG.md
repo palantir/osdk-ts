@@ -1,5 +1,17 @@
 # @osdk/shared.test
 
+## 1.5.0-beta.4
+
+### Minor Changes
+
+- 034f7ea: Add support for no query time series pulls.
+- 489d13f: Add support for timeseries in 2.0 syntax.
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+  - @osdk/api@1.9.0-beta.2
+
 ## 1.5.0-beta.3
 
 ### Minor Changes

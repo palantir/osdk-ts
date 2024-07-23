@@ -1,5 +1,11 @@
 # @osdk/platform-sdk-generator
 
+## 0.4.0-beta.3
+
+### Minor Changes
+
+- 9405a3e: Handle new Core namespace
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,25 @@
 # @osdk/client
 
+## 0.20.0-beta.5
+
+### Minor Changes
+
+- 034f7ea: Add support for no query time series pulls.
+- 489d13f: Add support for timeseries in 2.0 syntax.
+- 8cff4f0: Adding more package exports
+- dec005b: Add final method call to request context header
+
+### Patch Changes
+
+- Updated dependencies [034f7ea]
+- Updated dependencies [d8edf10]
+- Updated dependencies [3615522]
+- Updated dependencies [489d13f]
+- Updated dependencies [dec005b]
+  - @osdk/client.api@0.20.0-beta.5
+  - @osdk/generator-converters@0.7.0-beta.2
+  - @osdk/api@1.9.0-beta.2
+
 ## 0.20.0-beta.4
 
 ### Minor Changes

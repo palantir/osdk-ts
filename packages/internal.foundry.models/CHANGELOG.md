@@ -1,5 +1,18 @@
 # @osdk/internal.foundry.models
 
+## 0.1.0-beta.3
+
+### Minor Changes
+
+- 9405a3e: Bump api-gateway to 1.891.0
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+- Updated dependencies [9405a3e]
+  - @osdk/api@1.9.0-beta.2
+  - @osdk/internal.foundry.core@0.1.0-beta.3
+
 ## 0.1.0-beta.2
 
 ### Minor Changes

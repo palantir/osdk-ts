@@ -1,5 +1,16 @@
 # @osdk/generator-converters
 
+## 0.7.0-beta.2
+
+### Minor Changes
+
+- d8edf10: Fix primary key types
+
+### Patch Changes
+
+- Updated dependencies [d8edf10]
+  - @osdk/api@1.9.0-beta.2
+
 ## 0.7.0-beta.1
 
 ### Minor Changes
