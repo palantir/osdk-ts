@@ -37,13 +37,13 @@ const _deleteUser: $FoundryPlatformMethod<
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
-> = [3, "/v2/security/users/{0}", 2];
+> = [3, "/v2/admin/users/{0}", 2];
 
 /**
  * Deletes the given User
  *
  * Required Scopes: [api:security-read]
- * URL: /v2/security/users/{userId}
+ * URL: /v2/admin/users/{userId}
  */
 export function deleteUser(
   $ctx: $Client | $ClientContext,
@@ -62,13 +62,13 @@ const _listUsers: $FoundryPlatformMethod<
     pageToken?: PageToken | undefined;
     preview?: PreviewMode | undefined;
   }) => Promise<ListUsersResponse>
-> = [0, "/v2/security/users", 2];
+> = [0, "/v2/admin/users", 2];
 
 /**
  * Lists all Users
  *
  * Required Scopes: [api:security-read]
- * URL: /v2/security/users
+ * URL: /v2/admin/users
  */
 export function listUsers(
   $ctx: $Client | $ClientContext,
@@ -88,13 +88,13 @@ const _getUser: $FoundryPlatformMethod<
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<User>
-> = [0, "/v2/security/users/{0}", 2];
+> = [0, "/v2/admin/users/{0}", 2];
 
 /**
  * Get the User
  *
  * Required Scopes: [api:security-read]
- * URL: /v2/security/users/{userId}
+ * URL: /v2/admin/users/{userId}
  */
 export function getUser(
   $ctx: $Client | $ClientContext,
@@ -109,11 +109,11 @@ export function getUser(
 
 const _getCurrentUser: $FoundryPlatformMethod<
   ($queryParams?: { preview?: PreviewMode | undefined }) => Promise<User>
-> = [0, "/v2/security/users/getCurrent", 2];
+> = [0, "/v2/admin/users/getCurrent", 2];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/users/getCurrent
+ * URL: /v2/admin/users/getCurrent
  */
 export function getCurrentUser(
   $ctx: $Client | $ClientContext,
@@ -129,7 +129,7 @@ const _profilePictureUser: $FoundryPlatformMethod<
   ) => Promise<Blob>
 > = [
   0,
-  "/v2/security/users/{0}/profilePicture",
+  "/v2/admin/users/{0}/profilePicture",
   2,
   ,
   "application/octet-stream",
@@ -137,7 +137,7 @@ const _profilePictureUser: $FoundryPlatformMethod<
 
 /**
  * Required Scopes: []
- * URL: /v2/security/users/{userId}/profilePicture
+ * URL: /v2/admin/users/{userId}/profilePicture
  */
 export function profilePictureUser(
   $ctx: $Client | $ClientContext,
@@ -155,11 +155,11 @@ const _searchUsers: $FoundryPlatformMethod<
     $body: SearchUsersRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<SearchUsersResponse>
-> = [1, "/v2/security/users/search", 3];
+> = [1, "/v2/admin/users/search", 3];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/users/search
+ * URL: /v2/admin/users/search
  */
 export function searchUsers(
   $ctx: $Client | $ClientContext,

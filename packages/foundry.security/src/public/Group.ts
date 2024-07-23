@@ -41,13 +41,13 @@ const _createGroup: $FoundryPlatformMethod<
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Group>
-> = [1, "/v2/security/groups", 3];
+> = [1, "/v2/admin/groups", 3];
 
 /**
  * Creates a new Group
  *
  * Required Scopes: [api:security-write]
- * URL: /v2/security/groups
+ * URL: /v2/admin/groups
  */
 export function createGroup(
   $ctx: $Client | $ClientContext,
@@ -64,13 +64,13 @@ const _deleteGroup: $FoundryPlatformMethod<
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
-> = [3, "/v2/security/groups/{0}", 2];
+> = [3, "/v2/admin/groups/{0}", 2];
 
 /**
  * Deletes the given Group
  *
  * Required Scopes: [api:security-write]
- * URL: /v2/security/groups/{groupId}
+ * URL: /v2/admin/groups/{groupId}
  */
 export function deleteGroup(
   $ctx: $Client | $ClientContext,
@@ -89,13 +89,13 @@ const _listGroups: $FoundryPlatformMethod<
     pageToken?: PageToken | undefined;
     preview?: PreviewMode | undefined;
   }) => Promise<ListGroupsResponse>
-> = [0, "/v2/security/groups", 2];
+> = [0, "/v2/admin/groups", 2];
 
 /**
  * Lists all Groups
  *
  * Required Scopes: [api:security-read]
- * URL: /v2/security/groups
+ * URL: /v2/admin/groups
  */
 export function listGroups(
   $ctx: $Client | $ClientContext,
@@ -115,13 +115,13 @@ const _getGroup: $FoundryPlatformMethod<
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Group>
-> = [0, "/v2/security/groups/{0}", 2];
+> = [0, "/v2/admin/groups/{0}", 2];
 
 /**
  * Get the Group
  *
  * Required Scopes: [api:security-read]
- * URL: /v2/security/groups/{groupId}
+ * URL: /v2/admin/groups/{groupId}
  */
 export function getGroup(
   $ctx: $Client | $ClientContext,
@@ -139,11 +139,11 @@ const _searchGroups: $FoundryPlatformMethod<
     $body: SearchGroupsRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<SearchGroupsResponse>
-> = [1, "/v2/security/groups/search", 3];
+> = [1, "/v2/admin/groups/search", 3];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/groups/search
+ * URL: /v2/admin/groups/search
  */
 export function searchGroups(
   $ctx: $Client | $ClientContext,
