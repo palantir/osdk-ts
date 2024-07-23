@@ -1,5 +1,67 @@
 # @osdk/client
 
+## 0.20.0
+
+### Minor Changes
+
+- 7505880: Fix exports from client
+- 02c65c5: Rework $select syntax in aggregations to add support for ordering by metrics
+- 564adbf: Fixing attachment creation when converting objects from the wire
+- 141953f: Expose $title property in OsdkBase
+- 505b993: Experimental subscription no longer fires outOfDate when first subscribing
+- a6119bd: Attachments reworked so that you can now fetch directly from object properties. Also added a helper to create an attachment object directly from a rid.
+- bfdb123: WARNING: Breaking: change action invocation to require `.applyAction`
+- 62bae76: Upgrades 'ws' to avoid false flag CVE
+- 034f7ea: Add support for no query time series pulls.
+- f6d8850: Removed get, which is now replaced by fetchOne(). This has the exact same functionality and is essentially just a rename.
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 527e8ab: Objects that are $as are now linked directly to changes from source object
+- a519655: Fixed issue accessing $rid when requested on an object.
+- 7afa226: Fix action params that take objects to correctly parse out primary key.
+- 57b68db: It is possible to pass a Promise<string> for ontologyRid on client creation
+- 5378312: Added batch action support for 2.0 client
+- 3ec7c38: Add support for queries in 2.0
+- b3563e0: OSDK learns \_\_EXPERIMENTAL_strictNonNull to throw, drop objects, or return `| undefined` for properties, allowing for correct typesafety.
+- 7adf5c7: Refactoring packages
+- 4824449: Fix asyncIter to fetch subsequent pages
+- dd6033a: Adds a createPlatformClient if you only need platform apis
+- bc89b62: Spelling fixes and spell check in CI
+- 4dbac7e: Fixes link direction for experimental bulk loads
+- 489d13f: Add support for timeseries in 2.0 syntax.
+- 8cff4f0: Adding more package exports
+- dec005b: Add final method call to request context header
+- 5e9d7d2: Refactored packages to move types over to client.api
+- 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
+- 44add10: Standardize the use of dollar signs as prefixes for object properties that are specific to the OSDK.
+- a92e032: ClientCache now uses a key field as the cache key instead of the entire client
+
+### Patch Changes
+
+- Updated dependencies [b5ac8a8]
+- Updated dependencies [141953f]
+- Updated dependencies [a6119bd]
+- Updated dependencies [034f7ea]
+- Updated dependencies [388dba9]
+- Updated dependencies [d8edf10]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [7adf5c7]
+- Updated dependencies [700c894]
+- Updated dependencies [bc89b62]
+- Updated dependencies [3615522]
+- Updated dependencies [489d13f]
+- Updated dependencies [dec005b]
+- Updated dependencies [5e9d7d2]
+- Updated dependencies [413e511]
+- Updated dependencies [67c1fd6]
+  - @osdk/client.api@0.20.0
+  - @osdk/generator-converters@0.7.0
+  - @osdk/shared.client.impl@0.1.0
+  - @osdk/shared.net.fetch@0.1.0
+  - @osdk/api@1.9.0
+  - @osdk/client.unstable.osw@0.1.0
+  - @osdk/shared.net.errors@1.1.0
+  - @osdk/client.unstable@0.1.0
+
 ## 0.20.0-beta.4
 
 ### Minor Changes

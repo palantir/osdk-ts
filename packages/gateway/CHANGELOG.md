@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 2.4.0
+
+### Minor Changes
+
+- bc89b62: Spelling fixes and spell check in CI
+
 ## 2.4.0-beta.0
 
 ### Minor Changes

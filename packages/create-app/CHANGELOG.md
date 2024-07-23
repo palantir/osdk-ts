@@ -1,5 +1,29 @@
 # @osdk/create-app
 
+## 0.17.0
+
+### Minor Changes
+
+- a2cd534: Update style
+- e660cbd: Fix runtime warnings on AipNow template
+- 78c24a1: update the mock objects to the new TypeScript 1.1.1 syntax version
+- 79335e5: fix AIP template
+- adebdb0: update AIP template
+- af8675a: Fix login page not redirecting when oauth redirect not required
+- 4ee6e25: Update global layout styles
+- bc89b62: Spelling fixes and spell check in CI
+- 8b1e578: Add AIP Now template with AIP functionality
+- 2f5cfac: Remove platform specific commands in template scripts
+- 8da6d12: React/Vue router respects vite base path
+
+### Patch Changes
+
+- @osdk/create-app.template.next-static-export@0.17.0
+- @osdk/create-app.template.react@0.17.0
+- @osdk/create-app.template.tutorial-todo-aip-app@0.17.0
+- @osdk/create-app.template.tutorial-todo-app@0.17.0
+- @osdk/create-app.template.vue@0.17.0
+
 ## 0.17.0-beta.4
 
 ### Minor Changes

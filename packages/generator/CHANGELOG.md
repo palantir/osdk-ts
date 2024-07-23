@@ -1,5 +1,26 @@
 # @osdk/generator
 
+## 1.12.0
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 5378312: Added batch action support for 2.0 client
+- 3ec7c38: Add support for queries in 2.0
+- 0ecd42b: Generates 2.0's Ontology.ts in a typescript 5.5.0-beta safe way
+- bc89b62: Spelling fixes and spell check in CI
+- 116d848: Interface inherited properties are now generated
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+- Updated dependencies [d8edf10]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/generator-converters@0.7.0
+  - @osdk/api@1.9.0
+  - @osdk/gateway@2.4.0
+
 ## 1.12.0-beta.2
 
 ### Minor Changes

@@ -1,5 +1,24 @@
 # @osdk/maker
 
+## 0.7.0
+
+### Minor Changes
+
+- 1112433: Adds support for defining interface link constraints
+- 388dba9: Change all internal dependencies to be tilde not caret
+- dc93aa6: Update ontology as code interface link types to reflect internal expectations of ontology integration
+- 1112433: Align syntax to be easier to read
+- bc89b62: Spelling fixes and spell check in CI
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+- Updated dependencies [d8edf10]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0
+  - @osdk/gateway@2.4.0
+
 ## 0.7.0-beta.2
 
 ### Minor Changes
