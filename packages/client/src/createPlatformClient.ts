@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import type { SharedClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { USER_AGENT } from "./util/UserAgent.js";
+
+export interface PlatformClient extends SharedClientContext {}
 
 /**
  * Creates a client that can only be used with Platform APIs.
@@ -34,7 +37,7 @@ export function createPlatformClient(
   tokenProvider: () => Promise<string>,
   options: undefined = undefined,
   fetchFn: typeof globalThis.fetch = fetch,
-) {
+): PlatformClient {
   return createSharedClientContext(
     baseUrl,
     tokenProvider,

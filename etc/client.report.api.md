@@ -35,7 +35,7 @@ import type { QueryDefinition } from '@osdk/api';
 import type { QuerySignatureFromDef } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
 import type { SharedClient } from '@osdk/shared.client';
-import { SharedClientContext } from '@osdk/shared.client';
+import type { SharedClientContext } from '@osdk/shared.client';
 import type { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/client.api';
 
@@ -87,7 +87,7 @@ export const createClient: (baseUrl: string, ontologyRid: string | Promise<strin
 // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 //
 // @public
-export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): SharedClientContext;
+export function createPlatformClient(baseUrl: string, tokenProvider: () => Promise<string>, options?: undefined, fetchFn?: typeof globalThis.fetch): PlatformClient;
 
 export { InterfaceObjectSet }
 
@@ -106,6 +106,10 @@ export { OsdkObject }
 export { PageResult }
 
 export { PalantirApiError }
+
+// @public (undocumented)
+export interface PlatformClient extends SharedClientContext {
+}
 
 export { Result }
 

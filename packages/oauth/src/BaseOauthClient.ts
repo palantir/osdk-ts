@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
-import type { BaseOauthClient } from "./BaseOauthClient.js";
 import type { Token } from "./Token.js";
 
-export interface PublicOauthClient
-  extends BaseOauthClient<"signIn" | "signOut" | "refresh">
-{
-  refresh: () => Promise<Token | undefined>;
+export type Events = {
+  signIn: CustomEvent<Token>;
+  signOut: Event;
+  refresh: CustomEvent<Token>;
+};
+
+export interface BaseOauthClient<K extends keyof Events & string> {
+  (): Promise<string>;
+
+  signIn: () => Promise<Token>;
+  signOut: () => Promise<void>;
+
+  addEventListener: <T extends K>(
+    type: T,
+    listener: ((evt: Events[T]) => void) | null,
+    options?: boolean | AddEventListenerOptions,
+  ) => void;
+
+  removeEventListener: <T extends K>(
+    type: T,
+    callback: ((evt: Events[T]) => void) | null,
+    options?: EventListenerOptions | boolean,
+  ) => void;
 }

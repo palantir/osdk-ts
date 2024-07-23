@@ -34,12 +34,11 @@ export type {
 export { isOk } from "@osdk/client.api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 
+export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { Client } from "./Client.js";
+export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
 export { createClient } from "./createClient.js";
 export { createPlatformClient } from "./createPlatformClient.js";
-
-export { createAttachmentFromRid } from "./createAttachmentFromRid.js";
+export type { PlatformClient } from "./createPlatformClient.js";
 export { createAttachmentUpload } from "./object/AttachmentUpload.js";
-
-export { ActionValidationError } from "./actions/ActionValidationError.js";
 export type { ResultOrError } from "./ResultOrError.js";

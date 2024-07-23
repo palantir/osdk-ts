@@ -15,12 +15,7 @@
  */
 
 import delay from "delay";
-import type {
-  AuthorizationServer,
-  Client,
-  HttpRequestOptions,
-  OAuth2TokenEndpointResponse,
-} from "oauth4webapi";
+import type { Client, HttpRequestOptions } from "oauth4webapi";
 import {
   authorizationCodeGrantRequest,
   calculatePKCECodeChallenge,
@@ -28,63 +23,25 @@ import {
   generateRandomCodeVerifier,
   generateRandomState,
   processAuthorizationCodeOAuth2Response,
-  processRevocationResponse,
   refreshTokenGrantRequest,
-  revocationRequest,
   validateAuthResponse,
 } from "oauth4webapi";
-import invariant from "tiny-invariant";
-import { TypedEventTarget } from "typescript-event-target";
-import type { Events, PublicOauthClient } from "./PublicOauthClient.js";
+import {
+  common,
+  createAuthorizationServer,
+  readLocal,
+  removeLocal,
+  saveLocal,
+} from "./common.js";
+import type { PublicOauthClient } from "./PublicOauthClient.js";
 import { throwIfError } from "./throwIfError.js";
 import type { Token } from "./Token.js";
-
-const storageKey = "asdfasdfdhjlkajhgj";
 
 declare const process: undefined | {
   env?: {
     NODE_ENV: "production" | "development";
   };
 };
-
-type LocalStorageState =
-  // when we are going to the login page
-  | {
-    refresh_token?: never;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl: string;
-  }
-  // when we are redirecting to oauth login
-  | {
-    refresh_token?: never;
-    codeVerifier: string;
-    state: string;
-    oldUrl: string;
-  }
-  // when we have the refresh token
-  | {
-    refresh_token?: string;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl?: never;
-  }
-  | {
-    refresh_token?: never;
-    codeVerifier?: never;
-    state?: never;
-    oldUrl?: never;
-  };
-
-function saveLocal(x: LocalStorageState) {
-  localStorage.setItem(storageKey, JSON.stringify(x));
-}
-function removeLocal() {
-  localStorage.removeItem(storageKey);
-}
-function readLocal(): LocalStorageState {
-  return JSON.parse(localStorage.getItem(storageKey) ?? "{}");
-}
 
 /**
  * @param client_id
@@ -109,19 +66,17 @@ export function createPublicOauthClient(
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ctxPath: string = "/multipass",
 ): PublicOauthClient {
-  const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
-  const eventTarget = new TypedEventTarget<Events>();
-
-  const issuer = `${new URL(ctxPath, url)}`;
-
-  const as: AuthorizationServer = {
-    token_endpoint: `${issuer}/api/oauth2/token`,
-    authorization_endpoint: `${issuer}/api/oauth2/authorize`,
-    revocation_endpoint: `${issuer}/api/oauth2/revoke_token`,
-    issuer,
-  };
-
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
+  const authServer = createAuthorizationServer(ctxPath, url);
+  const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
+
+  const { makeTokenAndSaveRefresh, getToken } = common(
+    client,
+    authServer,
+    _signIn,
+    oauthHttpOptions,
+    maybeRefresh.bind(globalThis, true),
+  );
 
   async function go(x: string) {
     if (useHistory) return window.history.replaceState({}, "", x);
@@ -131,29 +86,10 @@ export function createPublicOauthClient(
     throw new Error("Unable to redirect");
   }
 
-  function makeTokenAndSaveRefresh(
-    resp: OAuth2TokenEndpointResponse,
-    type: "signIn" | "refresh",
-  ): Token {
-    const { refresh_token, expires_in, access_token } = resp;
-    invariant(expires_in != null);
-    saveLocal({ refresh_token });
-    token = {
-      refresh_token,
-      expires_in,
-      access_token,
-      expires_at: Date.now() + expires_in * 1000,
-    };
-
-    eventTarget.dispatchTypedEvent(
-      type,
-      new CustomEvent(type, { detail: token }),
-    );
-    return token;
-  }
-
-  async function maybeRefresh(expectRefreshToken?: boolean) {
-    const { refresh_token } = readLocal();
+  async function maybeRefresh(
+    expectRefreshToken?: boolean,
+  ): Promise<Token | undefined> {
+    const { refresh_token } = readLocal(client);
     if (!refresh_token) {
       if (expectRefreshToken) throw new Error("No refresh token found");
       return;
@@ -165,10 +101,10 @@ export function createPublicOauthClient(
       return makeTokenAndSaveRefresh(
         throwIfError(
           await processAuthorizationCodeOAuth2Response(
-            as,
+            authServer,
             client,
             await refreshTokenGrantRequest(
-              as,
+              authServer,
               client,
               refresh_token,
               oauthHttpOptions,
@@ -185,7 +121,7 @@ export function createPublicOauthClient(
           e,
         );
       }
-      removeLocal();
+      removeLocal(client);
       if (expectRefreshToken) {
         throw new Error("Could not refresh token");
       }
@@ -193,21 +129,21 @@ export function createPublicOauthClient(
   }
 
   async function maybeHandleAuthReturn() {
-    const { codeVerifier, state, oldUrl } = readLocal();
+    const { codeVerifier, state, oldUrl } = readLocal(client);
     if (!codeVerifier) return;
 
     try {
       const ret = makeTokenAndSaveRefresh(
         throwIfError(
           await processAuthorizationCodeOAuth2Response(
-            as,
+            authServer,
             client,
             await authorizationCodeGrantRequest(
-              as,
+              authServer,
               client,
               throwIfError(
                 validateAuthResponse(
-                  as,
+                  authServer,
                   client,
                   new URL(window.location.href),
                   state,
@@ -232,22 +168,22 @@ export function createPublicOauthClient(
           e,
         );
       }
-      removeLocal();
+      removeLocal(client);
     }
   }
 
   async function initiateLoginRedirect(): Promise<void> {
     if (loginPage && window.location.href !== loginPage) {
-      saveLocal({ oldUrl: postLoginPage });
+      saveLocal(client, { oldUrl: postLoginPage });
       return await go(loginPage);
     }
 
     const state = generateRandomState()!;
     const codeVerifier = generateRandomCodeVerifier();
-    const oldUrl = readLocal().oldUrl ?? window.location.toString();
-    saveLocal({ codeVerifier, state, oldUrl });
+    const oldUrl = readLocal(client).oldUrl ?? window.location.toString();
+    saveLocal(client, { codeVerifier, state, oldUrl });
 
-    window.location.assign(`${as
+    window.location.assign(`${authServer
       .authorization_endpoint!}?${new URLSearchParams({
       client_id,
       response_type: "code",
@@ -263,83 +199,15 @@ export function createPublicOauthClient(
     throw new Error("Unable to redirect");
   }
 
-  let refreshTimeout: ReturnType<typeof setTimeout>;
-  function rmTimeout() {
-    if (refreshTimeout) clearTimeout(refreshTimeout);
-  }
-  function restartRefreshTimer(evt: CustomEvent<Token>) {
-    rmTimeout();
-    refreshTimeout = setTimeout(
-      refresh,
-      evt.detail.expires_in * 1000 - 60 * 1000,
-    );
-  }
-
-  const refresh = maybeRefresh.bind(globalThis, true);
-
-  async function signOut() {
-    invariant(token, "not signed in");
-
-    const result = await processRevocationResponse(
-      await revocationRequest(
-        as,
-        client,
-        token.access_token,
-        oauthHttpOptions,
-      ),
-    );
-
-    rmTimeout();
-
-    // Clean up
-    removeLocal();
-    token = undefined;
-    throwIfError(result);
-    eventTarget.dispatchTypedEvent("signOut", new Event("signOut"));
-  }
-
-  let pendingSignIn: Promise<Token> | undefined;
-  async function signIn() {
-    if (pendingSignIn) {
-      return pendingSignIn;
-    }
-    try {
-      pendingSignIn = _signIn();
-      return await pendingSignIn;
-    } finally {
-      pendingSignIn = undefined;
-    }
-  }
   /** Will throw if there is no token! */
   async function _signIn() {
     // 1. Check if we have a refresh token in local storage
-    return token = await maybeRefresh()
+    return await maybeRefresh()
       // 2. If there is no refresh token we are likely trying to perform the callback
       ?? await maybeHandleAuthReturn()
       // 3. If we haven't been able to load the token from one of the two above ways, we need to make the initial auth request
       ?? await initiateLoginRedirect() as unknown as Token;
   }
 
-  eventTarget.addEventListener("signIn", restartRefreshTimer);
-  eventTarget.addEventListener("refresh", restartRefreshTimer);
-
-  let token: Token | undefined;
-  const ret = Object.assign(async function ret() {
-    if (!token || Date.now() >= token.expires_at) {
-      token = await signIn();
-    }
-    return token!.access_token;
-  }, {
-    signIn,
-    refresh,
-    signOut,
-    addEventListener: eventTarget.addEventListener.bind(
-      eventTarget,
-    ) as typeof eventTarget.addEventListener,
-    removeEventListener: eventTarget.removeEventListener.bind(
-      eventTarget,
-    ) as typeof eventTarget.removeEventListener,
-  });
-
-  return ret;
+  return getToken;
 }
