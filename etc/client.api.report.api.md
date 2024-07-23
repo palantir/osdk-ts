@@ -19,7 +19,7 @@ import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
-import { ObjectTypePropertyDefinition } from '@osdk/api';
+import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
 import type { QueryDataTypeDefinition } from '@osdk/api';
