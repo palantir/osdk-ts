@@ -38,7 +38,7 @@ type ObjectEdit =
     bSideObject: ObjectReference;
   });
 interface ObjectReference {
-  primaryKey: unknown;
+  primaryKey: string | number;
   objectType: string;
 }
 export interface ValidateActionResponseV2 {
