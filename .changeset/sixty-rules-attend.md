@@ -16,7 +16,7 @@
 "@osdk/example-generator": patch
 "@osdk/gateway-generator": patch
 "@osdk/shared.net.errors": patch
-"@osdk/foundry.security": patch
+"@osdk/foundry.admin": patch
 "@osdk/internal.foundry": patch
 "@osdk/shared.net.fetch": patch
 "@osdk/client.unstable": patch

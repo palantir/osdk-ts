@@ -6,7 +6,7 @@
 "@osdk/internal.foundry.models": minor
 "@osdk/platform-sdk-generator": minor
 "@osdk/internal.foundry.core": minor
-"@osdk/foundry.security": minor
+"@osdk/foundry.admin": minor
 "@osdk/internal.foundry": minor
 "@osdk/foundry.core": minor
 "@osdk/foundry": minor

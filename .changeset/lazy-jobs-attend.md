@@ -13,7 +13,7 @@
 "@osdk/cli.cmd.typescript": minor
 "@osdk/shared.client.impl": minor
 "@osdk/example-generator": minor
-"@osdk/foundry.security": minor
+"@osdk/foundry.admin": minor
 "@osdk/internal.foundry": minor
 "@osdk/shared.net.fetch": minor
 "@osdk/legacy-client": minor
