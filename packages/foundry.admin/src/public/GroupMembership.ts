@@ -40,13 +40,13 @@ const _listGroupMemberships: $FoundryPlatformMethod<
       preview?: PreviewMode | undefined;
     },
   ) => Promise<ListGroupMembershipsResponse>
-> = [0, "/v2/security/users/{0}/groupMemberships", 2];
+> = [0, "/v2/admin/users/{0}/groupMemberships", 2];
 
 /**
  * Lists all GroupMemberships
  *
- * Required Scopes: [api:security-read]
- * URL: /v2/security/users/{userId}/groupMemberships
+ * Required Scopes: [api:admin-read]
+ * URL: /v2/admin/users/{userId}/groupMemberships
  */
 export function listGroupMemberships(
   $ctx: $Client | $ClientContext,

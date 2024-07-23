@@ -15,12 +15,10 @@
  */
 
 import type {
-  Group,
   PageSize,
   PageToken,
   PreviewMode,
   PrincipalId,
-  SearchGroupsResponse,
 } from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
@@ -30,8 +28,12 @@ import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shar
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
   CreateGroupRequest,
+  GetGroupsBatchRequestElement,
+  GetGroupsBatchResponse,
+  Group,
   ListGroupsResponse,
   SearchGroupsRequest,
+  SearchGroupsResponse,
 } from "../_components.js";
 
 //
@@ -41,13 +43,13 @@ const _createGroup: $FoundryPlatformMethod<
     $body: CreateGroupRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Group>
-> = [1, "/v2/security/groups", 3];
+> = [1, "/v2/admin/groups", 3];
 
 /**
  * Creates a new Group
  *
- * Required Scopes: [api:security-write]
- * URL: /v2/security/groups
+ * Required Scopes: [api:admin-write]
+ * URL: /v2/admin/groups
  */
 export function createGroup(
   $ctx: $Client | $ClientContext,
@@ -64,13 +66,13 @@ const _deleteGroup: $FoundryPlatformMethod<
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
-> = [3, "/v2/security/groups/{0}", 2];
+> = [3, "/v2/admin/groups/{0}", 2];
 
 /**
  * Deletes the given Group
  *
- * Required Scopes: [api:security-write]
- * URL: /v2/security/groups/{groupId}
+ * Required Scopes: [api:admin-write]
+ * URL: /v2/admin/groups/{groupId}
  */
 export function deleteGroup(
   $ctx: $Client | $ClientContext,
@@ -89,13 +91,13 @@ const _listGroups: $FoundryPlatformMethod<
     pageToken?: PageToken | undefined;
     preview?: PreviewMode | undefined;
   }) => Promise<ListGroupsResponse>
-> = [0, "/v2/security/groups", 2];
+> = [0, "/v2/admin/groups", 2];
 
 /**
  * Lists all Groups
  *
- * Required Scopes: [api:security-read]
- * URL: /v2/security/groups
+ * Required Scopes: [api:admin-read]
+ * URL: /v2/admin/groups
  */
 export function listGroups(
   $ctx: $Client | $ClientContext,
@@ -115,13 +117,13 @@ const _getGroup: $FoundryPlatformMethod<
     groupId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Group>
-> = [0, "/v2/security/groups/{0}", 2];
+> = [0, "/v2/admin/groups/{0}", 2];
 
 /**
  * Get the Group
  *
- * Required Scopes: [api:security-read]
- * URL: /v2/security/groups/{groupId}
+ * Required Scopes: [api:admin-read]
+ * URL: /v2/admin/groups/{groupId}
  */
 export function getGroup(
   $ctx: $Client | $ClientContext,
@@ -134,16 +136,41 @@ export function getGroup(
   return $foundryPlatformFetch($ctx, _getGroup, ...args);
 }
 
+const _getGroupsBatch: $FoundryPlatformMethod<
+  (
+    $body: Array<GetGroupsBatchRequestElement>,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<GetGroupsBatchResponse>
+> = [1, "/v2/admin/groups/getBatch", 3];
+
+/**
+ * Execute multiple get requests on Group.
+ *
+ * The maximum batch size for this endpoint is 500.
+ *
+ * Required Scopes: [api:admin-read]
+ * URL: /v2/admin/groups/getBatch
+ */
+export function getGroupsBatch(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: Array<GetGroupsBatchRequestElement>,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<GetGroupsBatchResponse> {
+  return $foundryPlatformFetch($ctx, _getGroupsBatch, ...args);
+}
+
 const _searchGroups: $FoundryPlatformMethod<
   (
     $body: SearchGroupsRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<SearchGroupsResponse>
-> = [1, "/v2/security/groups/search", 3];
+> = [1, "/v2/admin/groups/search", 3];
 
 /**
  * Required Scopes: []
- * URL: /v2/security/groups/search
+ * URL: /v2/admin/groups/search
  */
 export function searchGroups(
   $ctx: $Client | $ClientContext,

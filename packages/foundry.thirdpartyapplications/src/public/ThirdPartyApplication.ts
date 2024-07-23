@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import type {
-  PreviewMode,
-  ThirdPartyApplication,
-  ThirdPartyApplicationRid,
-} from "@osdk/foundry.core";
+import type { PreviewMode } from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+import type {
+  ThirdPartyApplication,
+  ThirdPartyApplicationRid,
+} from "../_components.js";
 
 //
 
