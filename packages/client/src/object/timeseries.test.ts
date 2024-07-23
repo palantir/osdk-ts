@@ -109,6 +109,23 @@ describe("Timeseries", () => {
     }, { time: "2014-04-14", value: 30 }]);
   });
 
+  it("getAll points with no query works", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+    const points = await employee.employeeStatus?.getAllPoints();
+    expect(points).toBeDefined();
+    expect(points!).toEqual([
+      { time: "2012-02-12", value: 10 },
+      { time: "2012-02-12", value: 10 },
+      {
+        time: "2013-03-13",
+        value: 20,
+      },
+      { time: "2014-04-14", value: 30 },
+      { time: "2014-04-14", value: 30 },
+    ]);
+  });
+
   it("async iter points with absolute range works", async () => {
     const employee = await client(Employee).fetchOne(50030);
     expect(employee.$primaryKey).toEqual(50030);
@@ -126,5 +143,27 @@ describe("Timeseries", () => {
       time: "2013-03-13",
       value: 20,
     }, { time: "2014-04-14", value: 30 }]);
+  });
+
+  it("async iter points with no query", async () => {
+    const employee = await client(Employee).fetchOne(50030);
+    expect(employee.$primaryKey).toEqual(50030);
+    const pointsIter = employee.employeeStatus?.asyncIterPoints();
+
+    const points: TimeSeriesPoint<string>[] = [];
+    for await (const point of pointsIter!) {
+      points.push(point);
+    }
+    expect(points).toBeDefined();
+    expect(points!).toEqual([
+      { time: "2012-02-12", value: 10 },
+      { time: "2012-02-12", value: 10 },
+      {
+        time: "2013-03-13",
+        value: 20,
+      },
+      { time: "2014-04-14", value: 30 },
+      { time: "2014-04-14", value: 30 },
+    ]);
   });
 });

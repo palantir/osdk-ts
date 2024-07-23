@@ -70,6 +70,6 @@ export interface TimeSeriesPoint<T extends string | number> {
 export interface TimeSeriesProperty<T extends number | string> {
   getFirstPoint(): Promise<TimeSeriesPoint<T>>;
   getLastPoint(): Promise<TimeSeriesPoint<T>>;
-  getAllPoints(query: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
-  asyncIterPoints(query: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
+  getAllPoints(query?: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
+  asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
 }

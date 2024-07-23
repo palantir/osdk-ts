@@ -719,9 +719,9 @@ export interface TimeSeriesPoint<T extends string | number> {
 // @public (undocumented)
 export interface TimeSeriesProperty<T extends number | string> {
     // (undocumented)
-    asyncIterPoints(query: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
+    asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
     // (undocumented)
-    getAllPoints(query: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
+    getAllPoints(query?: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
     // (undocumented)
     getFirstPoint(): Promise<TimeSeriesPoint<T>>;
     // (undocumented)
