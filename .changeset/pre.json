@@ -25,7 +25,7 @@
     "@osdk/foundry": "1.0.0",
     "@osdk/foundry-sdk-generator": "1.1.1",
     "@osdk/foundry.core": "1.0.0",
-    "@osdk/foundry.security": "1.0.0",
+    "@osdk/foundry.admin": "1.0.0",
     "@osdk/foundry.thirdpartyapplications": "1.0.0",
     "@osdk/gateway": "2.3.0",
     "@osdk/gateway-generator": "0.3.0",
