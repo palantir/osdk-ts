@@ -20,7 +20,7 @@ import { client } from "./client.js";
 import { logger } from "./logger.js";
 
 export async function runFoundryPlatformApiTest() {
-  const myUser = await Foundry.Security.Users.getCurrentUser(
+  const myUser = await Foundry.Admin.Users.getCurrentUser(
     client,
     { preview: true },
   );

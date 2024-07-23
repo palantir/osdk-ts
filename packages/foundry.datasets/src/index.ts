@@ -15,17 +15,26 @@
  */
 
 export type {
-  AddGroupMembersRequest,
-  CreateGroupRequest,
-  ListGroupMembershipsResponse,
-  ListGroupMembersResponse,
-  ListGroupsResponse,
-  ListUsersResponse,
-  RemoveGroupMembersRequest,
-  SearchGroupsRequest,
-  SearchUsersRequest,
+  Branch,
+  BranchId,
+  CreateBranchRequest,
+  CreateDatasetRequest,
+  CreateTransactionRequest,
+  Dataset,
+  DatasetName,
+  DatasetRid,
+  File,
+  FileUpdatedTime,
+  ListBranchesResponse,
+  ListFilesResponse,
+  TableExportFormat,
+  Transaction,
+  TransactionCreatedTime,
+  TransactionRid,
+  TransactionStatus,
+  TransactionType,
 } from "./_components.js";
-export * as Groups from "./public/Group.js";
-export * as GroupMembers from "./public/GroupMember.js";
-export * as GroupMemberships from "./public/GroupMembership.js";
-export * as Users from "./public/User.js";
+export * as Branches from "./public/Branch.js";
+export * as Datasets from "./public/Dataset.js";
+export * as Files from "./public/File.js";
+export * as Transactions from "./public/Transaction.js";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { PageToken, Version, VersionVersion } from "@osdk/foundry.core";
+import type { PageToken } from "@osdk/foundry.core";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -33,4 +33,47 @@ export interface DeployWebsiteRequest {
 export interface ListVersionsResponse {
   data: Array<Version>;
   nextPageToken?: PageToken;
+}
+
+/**
+ * A subdomain from which a website is served.
+ *
+ * Log Safety: UNSAFE
+ */
+export type Subdomain = LooselyBrandedString<"Subdomain">;
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ThirdPartyApplication {
+  rid: ThirdPartyApplicationRid;
+}
+
+/**
+ * An RID identifying a third-party application created in Developer Console.
+ *
+ * Log Safety: SAFE
+ */
+export type ThirdPartyApplicationRid = LooselyBrandedString<
+  "ThirdPartyApplicationRid"
+>;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface Version {
+  version: VersionVersion;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export type VersionVersion = LooselyBrandedString<"VersionVersion">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface Website {
+  deployedVersion?: VersionVersion;
+  subdomains: Array<Subdomain>;
 }

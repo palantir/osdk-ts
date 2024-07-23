@@ -44,13 +44,13 @@ const _listGroupMembers: $FoundryPlatformMethod<
       preview?: PreviewMode | undefined;
     },
   ) => Promise<ListGroupMembersResponse>
-> = [0, "/v2/security/groups/{0}/groupMembers", 2];
+> = [0, "/v2/admin/groups/{0}/groupMembers", 2];
 
 /**
  * Lists all GroupMembers
  *
- * Required Scopes: [api:security-read]
- * URL: /v2/security/groups/{groupId}/groupMembers
+ * Required Scopes: [api:admin-read]
+ * URL: /v2/admin/groups/{groupId}/groupMembers
  */
 export function listGroupMembers(
   $ctx: $Client | $ClientContext,
@@ -74,11 +74,11 @@ const _addGroupMembers: $FoundryPlatformMethod<
     $body: AddGroupMembersRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
-> = [1, "/v2/security/groups/{0}/groupMembers/add", 3];
+> = [1, "/v2/admin/groups/{0}/groupMembers/add", 3];
 
 /**
- * Required Scopes: [api:security-write]
- * URL: /v2/security/groups/{groupId}/groupMembers/add
+ * Required Scopes: [api:admin-write]
+ * URL: /v2/admin/groups/{groupId}/groupMembers/add
  */
 export function addGroupMembers(
   $ctx: $Client | $ClientContext,
@@ -97,11 +97,11 @@ const _removeGroupMembers: $FoundryPlatformMethod<
     $body: RemoveGroupMembersRequest,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
-> = [1, "/v2/security/groups/{0}/groupMembers/remove", 3];
+> = [1, "/v2/admin/groups/{0}/groupMembers/remove", 3];
 
 /**
- * Required Scopes: [api:security-write]
- * URL: /v2/security/groups/{groupId}/groupMembers/remove
+ * Required Scopes: [api:admin-write]
+ * URL: /v2/admin/groups/{groupId}/groupMembers/remove
  */
 export function removeGroupMembers(
   $ctx: $Client | $ClientContext,

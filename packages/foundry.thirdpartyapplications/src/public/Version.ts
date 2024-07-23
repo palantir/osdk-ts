@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type {
-  PageSize,
-  PageToken,
-  PreviewMode,
-  ThirdPartyApplicationRid,
-  Version,
-  VersionVersion,
-} from "@osdk/foundry.core";
+import type { PageSize, PageToken, PreviewMode } from "@osdk/foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { ListVersionsResponse } from "../_components.js";
+import type {
+  ListVersionsResponse,
+  ThirdPartyApplicationRid,
+  Version,
+  VersionVersion,
+} from "../_components.js";
 
 //
 

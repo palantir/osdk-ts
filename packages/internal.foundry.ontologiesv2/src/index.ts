@@ -17,6 +17,7 @@
 export type {} from "./_components.js";
 export * as Actions from "./public/Action.js";
 export * as ActionTypesV2 from "./public/ActionTypeV2.js";
+export * as Attachments from "./public/Attachment.js";
 export * as ObjectTypesV2 from "./public/ObjectTypeV2.js";
 export * as OntologyObjectSets from "./public/OntologyObjectSet.js";
 export * as OntologyObjectsV2 from "./public/OntologyObjectV2.js";

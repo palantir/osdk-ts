@@ -26,21 +26,6 @@ export type LooselyBrandedString<T extends string> = string & {
 export type ArchiveFileFormat = "ZIP";
 
 /**
- * Log Safety: UNSAFE
- */
-export type AttributeName = LooselyBrandedString<"AttributeName">;
-
-/**
- * Log Safety: UNSAFE
- */
-export type AttributeValue = LooselyBrandedString<"AttributeValue">;
-
-/**
- * Log Safety: UNSAFE
- */
-export type AttributeValues = Array<AttributeValue>;
-
-/**
  * Log Safety: SAFE
  */
 export type ContentLength = string;
@@ -115,51 +100,6 @@ export type FilePath = LooselyBrandedString<"FilePath">;
 export type FolderRid = LooselyBrandedString<"FolderRid">;
 
 /**
- * Log Safety: UNSAFE
- */
-export interface Group {
-  id: PrincipalId;
-  name: GroupName;
-  description?: string;
-  realm: Realm;
-  organizations: Array<OrganizationRid>;
-  attributes: Record<AttributeName, AttributeValues>;
-}
-
-/**
- * Log Safety: SAFE
- */
-export interface GroupMember {
-  principalType: PrincipalType;
-  principalId: PrincipalId;
-}
-
-/**
- * Log Safety: SAFE
- */
-export interface GroupMembership {
-  groupId: PrincipalId;
-}
-
-/**
- * Log Safety: SAFE
- */
-export type GroupMembershipExpiration = string;
-
-/**
- * Log Safety: UNSAFE
- */
-export type GroupName = LooselyBrandedString<"GroupName">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface GroupSearchFilter {
-  type: PrincipalFilterType;
-  value: string;
-}
-
-/**
  * Log Safety: SAFE
  */
 export type OrganizationRid = LooselyBrandedString<"OrganizationRid">;
@@ -188,16 +128,11 @@ export type PageToken = LooselyBrandedString<"PageToken">;
 export type PreviewMode = boolean;
 
 /**
- * Log Safety: SAFE
- */
-export type PrincipalFilterType = "queryString";
-
-/**
  * The ID of a Foundry Group or User.
  *
  * Log Safety: SAFE
  */
-export type PrincipalId = string;
+export type PrincipalId = LooselyBrandedString<"PrincipalId">;
 
 /**
  * Log Safety: SAFE
@@ -220,50 +155,11 @@ export type Realm = LooselyBrandedString<"Realm">;
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
 
 /**
- * Log Safety: UNSAFE
- */
-export interface SearchGroupsResponse {
-  data: Array<Group>;
-  nextPageToken?: PageToken;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface SearchUsersResponse {
-  data: Array<User>;
-  nextPageToken?: PageToken;
-}
-
-/**
  * The size of the file or attachment in bytes.
  *
  * Log Safety: SAFE
  */
 export type SizeBytes = string;
-
-/**
- * A subdomain from which a website is served.
- *
- * Log Safety: UNSAFE
- */
-export type Subdomain = LooselyBrandedString<"Subdomain">;
-
-/**
- * Log Safety: SAFE
- */
-export interface ThirdPartyApplication {
-  rid: ThirdPartyApplicationRid;
-}
-
-/**
- * An RID identifying a third-party application created in Developer Console.
- *
- * Log Safety: SAFE
- */
-export type ThirdPartyApplicationRid = LooselyBrandedString<
-  "ThirdPartyApplicationRid"
->;
 
 /**
  * Log Safety: SAFE
@@ -294,55 +190,8 @@ export type UpdatedBy = UserId;
 export type UpdatedTime = string;
 
 /**
- * Log Safety: UNSAFE
- */
-export interface User {
-  id: PrincipalId;
-  username: UserUsername;
-  givenName?: string;
-  familyName?: string;
-  email?: string;
-  realm: Realm;
-  organization: OrganizationRid;
-  attributes: Record<AttributeName, AttributeValues>;
-}
-
-/**
  * A Foundry User ID.
  *
  * Log Safety: SAFE
  */
 export type UserId = string;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface UserSearchFilter {
-  type: PrincipalFilterType;
-  value: string;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export type UserUsername = LooselyBrandedString<"UserUsername">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface Version {
-  version: VersionVersion;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export type VersionVersion = LooselyBrandedString<"VersionVersion">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface Website {
-  deployedVersion?: VersionVersion;
-  subdomains: Array<Subdomain>;
-}

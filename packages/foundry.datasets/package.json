@@ -1,6 +1,6 @@
 {
-  "name": "@osdk/internal.foundry.core",
-  "version": "0.1.0-beta.2",
+  "name": "@osdk/foundry.datasets",
+  "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -26,10 +26,14 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
+    "@osdk/foundry.core": "workspace:*",
     "@osdk/shared.client": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
+  },
+  "peerDependencies": {
+    "@osdk/api": "workspace:~",
+    "@osdk/client": "workspace:~",
+    "@osdk/shared.net": "workspace:~"
   },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
@@ -49,7 +53,6 @@
     "templates",
     "*.d.ts"
   ],
-  "main": "./build/js/index.cjs",
   "module": "./build/esm/index.js",
   "types": "./build/esm/index.d.ts",
   "sls": {
