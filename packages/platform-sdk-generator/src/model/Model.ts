@@ -175,7 +175,7 @@ export class Model {
   }
 
   #addComponent(c: ir.Component) {
-    const nsName = (c.namespace === undefined || c.namespace === "Core")
+    const nsName = (c.namespace == null || c.namespace === "Core")
       ? ""
       : c.namespace;
     const ns = this.#namespaces.get(nsName);
