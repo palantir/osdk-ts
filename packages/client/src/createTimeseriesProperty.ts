@@ -60,7 +60,7 @@ export function createTimeseriesProperty<T extends number | string>(
         propertyName,
       ) as Promise<TimeSeriesPoint<T>>;
     },
-    async getAllPoints(query: TimeSeriesQuery) {
+    async getAllPoints(query?: TimeSeriesQuery) {
       return getAllTimeSeriesPoints(
         client,
         objectApiName,
@@ -70,7 +70,7 @@ export function createTimeseriesProperty<T extends number | string>(
       );
     },
 
-    asyncIterPoints(query: TimeSeriesQuery) {
+    asyncIterPoints(query?: TimeSeriesQuery) {
       return iterateTimeSeriesPoints(
         client,
         objectApiName,
@@ -87,7 +87,7 @@ async function getAllTimeSeriesPoints<T extends string | number>(
   objectApiName: string,
   primaryKey: any,
   propertyName: string,
-  body: TimeSeriesQuery,
+  body?: TimeSeriesQuery,
 ): Promise<Array<TimeSeriesPoint<T>>> {
   const allPoints: Array<TimeSeriesPoint<T>> = [];
 
@@ -113,7 +113,7 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
   objectApiName: string,
   primaryKey: any,
   propertyName: string,
-  body: TimeSeriesQuery,
+  body?: TimeSeriesQuery,
 ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
   const utf8decoder = new TextDecoder("utf-8");
 
@@ -124,7 +124,7 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
       objectApiName,
       primaryKey,
       propertyName,
-      { range: getTimeRange(body) },
+      body ? { range: getTimeRange(body) } : {},
     );
 
   const reader = streamPointsIterator.stream().getReader();

@@ -55,6 +55,8 @@ const noBodyRequest: StreamTimeSeriesPointsRequest = {
   range: { type: "absolute" },
 };
 
+const noRangeRequest: StreamTimeSeriesPointsRequest = {};
+
 const fromBodyRequest: StreamTimeSeriesPointsRequest = {
   range: {
     type: "relative",
@@ -121,6 +123,7 @@ export const streamPointsRequestHandlers: Record<
   StreamTimeSeriesPointsResponse
 > = {
   [stableStringify(noBodyRequest)]: streamPointsNoBody,
+  [stableStringify(noRangeRequest)]: streamPointsNoBody,
   [stableStringify(rangeBodyRequest)]: streamPointsRange,
   [stableStringify(fromBodyRequest)]: streamPointsFrom,
   [stableStringify(afterBodyRequest)]: streamPointsAfter,
