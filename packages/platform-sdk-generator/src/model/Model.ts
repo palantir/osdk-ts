@@ -175,7 +175,10 @@ export class Model {
   }
 
   #addComponent(c: ir.Component) {
-    const ns = this.#namespaces.get(c.namespace ?? "");
+    const nsName = (c.namespace === undefined || c.namespace === "Core")
+      ? ""
+      : c.namespace;
+    const ns = this.#namespaces.get(nsName);
     if (!ns) {
       throw new Error(`Namespace not found for ${c.namespace} in ${c.name}`);
     }
