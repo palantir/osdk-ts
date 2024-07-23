@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  type ObjectTypePropertyDefinition,
-  WirePropertyTypes,
-} from "@osdk/api";
+import type { ObjectTypePropertyDefinition } from "@osdk/api";
 import type { PropertyValueWireToClient } from "./mapping/PropertyValueMapping.js";
 
 type MaybeArray<T extends { multiplicity?: boolean | undefined }, U> =
