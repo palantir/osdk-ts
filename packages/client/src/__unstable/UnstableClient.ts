@@ -39,8 +39,8 @@ export interface UnstableClient extends Client {
     rid: string,
   ): UNSTABLE_ObjectSet<T>;
 
-  __UNSTABLE_getBulkLinks<T extends Osdk<ObjectOrInterfaceDefinition>>(
-    objs: T[],
+  __UNSTABLE_getBulkLinks<T extends ObjectOrInterfaceDefinition>(
+    objs: Osdk<T>[],
     links: string[],
   ): AsyncGenerator<BulkLinkResult, void, undefined>;
 }

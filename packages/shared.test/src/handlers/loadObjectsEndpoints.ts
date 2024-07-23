@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { request } from "@osdk/gateway";
 import {
   executeQueryV2,
   getAttachment,
@@ -33,10 +34,13 @@ import {
   listOntologies,
   listOutgoingLinkTypes,
   listQueryTypesV2,
+  streamPoints,
   uploadAttachment,
 } from "@osdk/gateway/requests";
 import type { LinkTypeSide } from "@osdk/gateway/types";
-import type { RequestHandler } from "msw";
+import stableStringify from "json-stable-stringify";
+import type { HttpResponseResolver, PathParams, RequestHandler } from "msw";
+import type { BaseAPIError } from "../BaseError.js";
 import {
   AttachmentNotFoundError,
   AttachmentSizeExceededLimitError,
@@ -75,12 +79,15 @@ import { queryTypes } from "../stubs/queryTypes.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
+  streamPointsFrom,
+  streamPointsRequestHandlers,
 } from "../stubs/timeseriesRequests.js";
 import {
   areArrayBuffersEqual,
   pageThroughResponseSearchParams,
 } from "./endpointUtils.js";
 import { getOntology } from "./ontologyMetadataEndpoints.js";
+import type { ExtractBody } from "./util/handleOpenApiCall.js";
 import {
   handleOpenApiCall,
   OpenApiCallError,
@@ -225,7 +232,8 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     const firstPointResp =
       firstPointRequestHandlers[JSON.stringify(pointParams)];
     if (
-      req.params.ontologyApiName === defaultOntology.apiName
+      (req.params.ontologyApiName === defaultOntology.apiName
+        || req.params.ontologyApiName === defaultOntology.rid)
       && req.params.objectType === employeeObjectType.apiName
     ) {
       return firstPointResp;
@@ -247,13 +255,23 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       const lastPointResp =
         lastPointRequestHandlers[JSON.stringify(pointParams)];
       if (
-        req.params.ontologyApiName === "default-ontology"
+        (req.params.ontologyApiName === defaultOntology.apiName
+          || req.params.ontologyApiName === defaultOntology.rid)
         && req.params.objectType === employeeObjectType.apiName
       ) {
         return lastPointResp;
       }
       throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
     },
+  ),
+
+  /**
+   * stream points
+   */
+  handleOpenApiCall(
+    streamPoints,
+    ["ontologyApiName", "objectType", "primaryKey", "propertyName"],
+    handleStreamPoints,
   ),
 
   /**
@@ -642,3 +660,31 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
     throw new OpenApiCallError(404, AttachmentNotFoundError);
   }),
 ] as const;
+
+async function handleStreamPoints(
+  req: Parameters<
+    HttpResponseResolver<
+      PathParams<string>,
+      | ExtractBody<typeof streamPoints>
+      | Blob
+      | BaseAPIError
+    >
+  >[0],
+) {
+  const requestBody = await req.request.json();
+  const streamPointsResp =
+    streamPointsRequestHandlers[stableStringify(requestBody)];
+  if (
+    streamPointsResp
+    && (req.params.ontologyApiName === defaultOntology.apiName
+      || req.params.ontologyApiName === defaultOntology.rid)
+    && req.params.objectType === employeeObjectType.apiName
+  ) {
+    const blob = new Blob(
+      [JSON.stringify(streamPointsResp)],
+      { type: "application/json" },
+    );
+    return blob;
+  }
+  throw new OpenApiCallError(400, InvalidRequest("Invalid request"));
+}

@@ -53,10 +53,10 @@ export type ConvertProps<
   : TO extends ObjectTypeDefinition<any> ? (
       (
         UnionIfTrue<
-          TO["interfaceMap"][ApiNameAsString<FROM>][
+          NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][
             P extends "$all" ? (
                 keyof FROM["properties"] extends
-                  keyof TO["interfaceMap"][ApiNameAsString<FROM>]
+                  NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>]
                   ? keyof FROM["properties"]
                   : never
               )
@@ -70,9 +70,10 @@ export type ConvertProps<
   : UnionIfTrue<
     TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
       : FROM extends ObjectTypeDefinition<any>
-        ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][
-          ApiNameAsString<TO>
-        ] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][
+        ? DropDollarOptions<P> extends
+          keyof NonNullable<FROM["inverseInterfaceMap"]>[
+            ApiNameAsString<TO>
+          ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][
             DropDollarOptions<P>
           ]
         : never

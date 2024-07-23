@@ -119,6 +119,13 @@ export type {
   QueryReturnType,
   QuerySignatureFromDef,
 } from "./queries/Queries.js";
+export type {
+  TimeSeriesPoint,
+  TimeSeriesProperty,
+  TimeSeriesQuery,
+} from "./timeseries/timeseries.js";
+export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
+
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 

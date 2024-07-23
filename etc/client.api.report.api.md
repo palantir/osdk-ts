@@ -178,7 +178,7 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 // Warning: (ae-incompatible-release-tags) The symbol "ConvertProps" is marked as @public, but its signature references "UnionIfTrue" which is marked as @internal
 //
 // @public
-export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<TO["interfaceMap"][ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends keyof TO["interfaceMap"][ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">)) : UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof FROM["inverseInterfaceMap"][ApiNameAsString<TO>] ? FROM["inverseInterfaceMap"][ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">;
+export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">)) : UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">;
 
 // @public
 export interface DataValueClientToWire {
@@ -307,6 +307,8 @@ export const DistanceUnitMapping: {
 
 // @public (undocumented)
 export const DurationMapping: {
+    quarter: "QUARTERS";
+    quarters: "QUARTERS";
     sec: "SECONDS";
     seconds: "SECONDS";
     min: "MINUTES";
@@ -327,8 +329,6 @@ export const DurationMapping: {
     yr: "YEARS";
     year: "YEARS";
     years: "YEARS";
-    quarter: "QUARTERS";
-    quarters: "QUARTERS";
 };
 
 // @public (undocumented)
@@ -578,13 +578,13 @@ export interface PropertyValueClientToWire {
     // (undocumented)
     marking: string;
     // (undocumented)
-    numericTimeseries: unknown;
+    numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
     short: number;
     // (undocumented)
     string: string;
     // (undocumented)
-    stringTimeseries: unknown;
+    stringTimeseries: TimeSeriesProperty<string>;
     // (undocumented)
     timestamp: string;
 }
@@ -616,13 +616,13 @@ export interface PropertyValueWireToClient {
     // (undocumented)
     marking: string;
     // (undocumented)
-    numericTimeseries: unknown;
+    numericTimeseries: TimeSeriesProperty<number>;
     // (undocumented)
     short: number;
     // (undocumented)
     string: string;
     // (undocumented)
-    stringTimeseries: unknown;
+    stringTimeseries: TimeSeriesProperty<string>;
     // (undocumented)
     timestamp: string;
 }
@@ -682,6 +682,79 @@ RespectNullability<S>
 // @public (undocumented)
 export type StringAggregateOption = "approximateDistinct";
 
+// @public (undocumented)
+export const TimeseriesDurationMapping: {
+    sec: "SECONDS";
+    seconds: "SECONDS";
+    min: "MINUTES";
+    minute: "MINUTES";
+    minutes: "MINUTES";
+    hr: "HOURS";
+    hrs: "HOURS";
+    hour: "HOURS";
+    hours: "HOURS";
+    day: "DAYS";
+    days: "DAYS";
+    wk: "WEEKS";
+    week: "WEEKS";
+    weeks: "WEEKS";
+    mos: "MONTHS";
+    month: "MONTHS";
+    months: "MONTHS";
+    yr: "YEARS";
+    year: "YEARS";
+    years: "YEARS";
+    ms: "MILLISECONDS";
+    milliseconds: "MILLISECONDS";
+};
+
+// @public (undocumented)
+export interface TimeSeriesPoint<T extends string | number> {
+    // (undocumented)
+    time: string;
+    // (undocumented)
+    value: T;
+}
+
+// @public (undocumented)
+export interface TimeSeriesProperty<T extends number | string> {
+    // (undocumented)
+    asyncIterPoints(query: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
+    // (undocumented)
+    getAllPoints(query: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
+    // (undocumented)
+    getFirstPoint(): Promise<TimeSeriesPoint<T>>;
+    // (undocumented)
+    getLastPoint(): Promise<TimeSeriesPoint<T>>;
+}
+
+// @public (undocumented)
+export type TimeSeriesQuery = {
+    $before: number;
+    $unit: keyof typeof TimeseriesDurationMapping;
+    $after?: never;
+    $startTime?: never;
+    $endTime?: never;
+} | {
+    $after: number;
+    $unit: keyof typeof TimeseriesDurationMapping;
+    $before?: never;
+    $startTime?: never;
+    $endTime?: never;
+} | {
+    $startTime: string;
+    $endTime?: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
+} | {
+    $startTime?: string;
+    $endTime: string;
+    $before?: never;
+    $after?: never;
+    $unit?: never;
+};
+
 // Warning: (ae-internal-missing-underscore) The name "UnionIfFalse" should be prefixed with an underscore because the declaration is marked as @internal
 //
 // @internal
@@ -690,7 +763,7 @@ export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = 
 // Warning: (ae-internal-missing-underscore) The name "UnionIfTrue" should be prefixed with an underscore because the declaration is marked as @internal
 //
 // @internal
-export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E> = IsNever_2<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
+export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E extends string> = IsNever_2<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
 
 // @public (undocumented)
 export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
@@ -718,9 +791,9 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:92:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/OsdkObjectFrom.ts:93:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:149:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:94:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:150:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

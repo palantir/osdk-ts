@@ -66,6 +66,17 @@ const fromBodyRequest: StreamTimeSeriesPointsRequest = {
   },
 };
 
+const afterBodyRequest: StreamTimeSeriesPointsRequest = {
+  range: {
+    type: "relative",
+    endTime: {
+      when: "AFTER",
+      value: 1,
+      unit: "MONTHS",
+    },
+  },
+};
+
 const rangeBodyRequest: StreamTimeSeriesPointsRequest = {
   range: {
     type: "absolute",
@@ -87,7 +98,10 @@ export const streamPointsRange: StreamTimeSeriesPointsResponse = {
   data: [timeSeriesPoint2, timeSeriesPoint3],
 };
 export const streamPointsFrom: StreamTimeSeriesPointsResponse = {
-  data: [timeSeriesPoint1, timeSeriesPoint1, timeSeriesPoint2],
+  data: [timeSeriesPoint1, timeSeriesPoint2, timeSeriesPoint3],
+};
+export const streamPointsAfter: StreamTimeSeriesPointsResponse = {
+  data: [timeSeriesPoint1, timeSeriesPoint3],
 };
 
 export const firstPointRequestHandlers: Record<string, TimeSeriesPoint> = {
@@ -109,4 +123,5 @@ export const streamPointsRequestHandlers: Record<
   [stableStringify(noBodyRequest)]: streamPointsNoBody,
   [stableStringify(rangeBodyRequest)]: streamPointsRange,
   [stableStringify(fromBodyRequest)]: streamPointsFrom,
+  [stableStringify(afterBodyRequest)]: streamPointsAfter,
 };

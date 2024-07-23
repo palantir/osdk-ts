@@ -9,6 +9,7 @@ export interface Ontology
   extends OntologyDefinition<
     | 'BoundariesUsState'
     | 'BuilderDeploymentState'
+    | 'DherlihyComplexObject'
     | 'Employee'
     | 'ObjectTypeWithAllPropertyTypes'
     | 'Person'
@@ -20,6 +21,7 @@ export interface Ontology
   objects: {
     BoundariesUsState: Objects.BoundariesUsState;
     BuilderDeploymentState: Objects.BuilderDeploymentState;
+    DherlihyComplexObject: Objects.DherlihyComplexObject;
     Employee: Objects.Employee;
     ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes;
     Person: Objects.Person;
@@ -46,6 +48,7 @@ export const Ontology: Ontology = {
   objects: {
     BoundariesUsState: Objects.BoundariesUsState,
     BuilderDeploymentState: Objects.BuilderDeploymentState,
+    DherlihyComplexObject: Objects.DherlihyComplexObject,
     Employee: Objects.Employee,
     ObjectTypeWithAllPropertyTypes: Objects.ObjectTypeWithAllPropertyTypes,
     Person: Objects.Person,

@@ -179,6 +179,37 @@
       },
       "linkTypes": []
     },
+    "DherlihyComplexObject": {
+      "objectType": {
+        "apiName": "DherlihyComplexObject",
+        "primaryKey": "id",
+        "displayName": "Dherlihy Complex Object",
+        "description": "Dherlihy Complex Object",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "secret": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "seriesId": {
+            "dataType": {
+              "type": "timeseries",
+              "itemType": {
+                "type": "double"
+              }
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridfordherlihy"
+      },
+      "linkTypes": []
+    },
     "BuilderDeploymentState": {
       "objectType": {
         "apiName": "BuilderDeploymentState",

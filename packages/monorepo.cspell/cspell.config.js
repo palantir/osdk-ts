@@ -184,6 +184,7 @@ const cspell = {
         "Downey",
         "Hemsworth",
         "underlyings",
+        "Dherlihy",
       ],
     },
   ],

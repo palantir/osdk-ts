@@ -25,6 +25,7 @@ import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
 import { runLegacyExamples } from "./runLegacyExamples.js";
 import { runSubscriptionsTest } from "./runSubscriptionsTest.js";
+import { runTimeseriesTest } from "./runTimeseriesTest.js";
 import { typeChecks } from "./typeChecks.js";
 
 const runOld = false;
@@ -61,6 +62,8 @@ async function runTests() {
     await runAggregationGroupByDatesTest();
 
     if (runOld) await typeChecks(client);
+
+    await runTimeseriesTest();
   } catch (e) {
     console.error(`Caught an error we did not expect, type: ${typeof e}`);
     console.error(e);

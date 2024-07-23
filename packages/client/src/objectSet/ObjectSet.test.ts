@@ -111,47 +111,44 @@ describe("ObjectSet", () => {
       .fetchPage({
         $orderBy: { "employeeId": "asc" },
       });
-
-    expect(employees).toMatchInlineSnapshot(`
-      [
-        {
-          "$apiName": "Employee",
-          "$objectType": "Employee",
-          "$primaryKey": 50030,
-          "$title": "John Doe",
-          "class": "Red",
-          "employeeId": 50030,
-          "employeeStatus": "TimeSeries<String>",
-          "fullName": "John Doe",
-          "office": "NYC",
-          "startDate": "2019-01-01",
-        },
-        {
-          "$apiName": "Employee",
-          "$objectType": "Employee",
-          "$primaryKey": 50031,
-          "$title": "Jane Doe",
-          "class": "Blue",
-          "employeeId": 50031,
-          "employeeStatus": "TimeSeries<String>",
-          "fullName": "Jane Doe",
-          "office": "SEA",
-          "startDate": "2012-02-12",
-        },
-        {
-          "$apiName": "Employee",
-          "$objectType": "Employee",
-          "$primaryKey": 50032,
-          "$title": "Jack Smith",
-          "class": "Red",
-          "employeeId": 50032,
-          "employeeStatus": "TimeSeries<String>",
-          "fullName": "Jack Smith",
-          "office": "LON",
-          "startDate": "2015-05-15",
-        },
-      ]
-    `);
+    expect(employees).toMatchObject([
+      {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50030,
+        $title: "John Doe",
+        class: "Red",
+        employeeId: 50030,
+        employeeStatus: expect.anything(),
+        fullName: "John Doe",
+        office: "NYC",
+        startDate: "2019-01-01",
+      },
+      {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50031,
+        $title: "Jane Doe",
+        class: "Blue",
+        employeeId: 50031,
+        employeeStatus: expect.anything(),
+        fullName: "Jane Doe",
+        office: "SEA",
+        startDate: "2012-02-12",
+      },
+      {
+        $apiName: "Employee",
+        $objectType: "Employee",
+        $primaryKey: 50032,
+        $title: "Jack Smith",
+        class: "Red",
+        employeeId: 50032,
+        employeeStatus: expect.anything(),
+        fullName: "Jack Smith",
+        office: "LON",
+        startDate: "2015-05-15",
+      },
+    ]);
   });
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {

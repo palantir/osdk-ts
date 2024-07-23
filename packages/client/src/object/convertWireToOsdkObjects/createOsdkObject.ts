@@ -17,6 +17,7 @@
 import type { Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
+import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import { createClientCache } from "../Cache.js";
@@ -32,13 +33,12 @@ import type {
   ObjectHolder,
   ObjectHolderPrototypeOwnProps,
 } from "./ObjectHolder.js";
-import { OsdkCustomInspectPrototype } from "./OsdkCustomInspectPrototype.js";
 import type { PropertyDescriptorRecord } from "./PropertyDescriptorRecord.js";
 
 const objectPrototypeCache = createClientCache(
   function(client, objectDef: FetchedObjectTypeDefinition<any, any>) {
     return Object.create(
-      process.env.target !== "browser" ? OsdkCustomInspectPrototype : null,
+      null,
       {
         [ObjectDefRef]: { value: objectDef },
         [ClientRef]: { value: client },
@@ -111,6 +111,20 @@ export function createOsdkObject<
               return rawValue.map(a => createAttachmentFromRid(client, a.rid));
             }
             return createAttachmentFromRid(client, rawValue.rid);
+          }
+          if (
+            propDef.type === "numericTimeseries"
+            || propDef.type === "stringTimeseries"
+          ) {
+            return createTimeseriesProperty<
+              (typeof propDef)["type"] extends "numericTimeseries" ? number
+                : string
+            >(
+              client,
+              objectDef.apiName,
+              target[RawObject][objectDef.primaryKeyApiName as string],
+              p as string,
+            );
           }
         }
         return rawValue;
