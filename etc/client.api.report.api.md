@@ -175,10 +175,10 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // Warning: (ae-forgotten-export) The symbol "ApiNameAsString" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "DropDollarOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-incompatible-release-tags) The symbol "ConvertProps" is marked as @public, but its signature references "UnionIfTrue" which is marked as @internal
+// Warning: (ae-internal-missing-underscore) The name "ConvertProps" should be prefixed with an underscore because the declaration is marked as @internal
 //
-// @public
-export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">)) : UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">;
+// @internal
+export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<UnionIfTrue<NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">, P extends "$rid" ? true : false, "$rid">)) : UnionIfTrue<UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">, P extends "$rid" ? true : false, "$rid">;
 
 // @public
 export interface DataValueClientToWire {
@@ -791,9 +791,10 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:93:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:94:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:150:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:102:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:103:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:159:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
+// src/OsdkObjectFrom.ts:159:5 - (ae-incompatible-release-tags) The symbol "$as" is marked as @public, but its signature references "ConvertProps" which is marked as @internal
 
 // (No @packageDocumentation comment for this package)
 
