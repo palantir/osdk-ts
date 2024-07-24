@@ -45,7 +45,7 @@ export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> =
 
 export type QueryParameterType<
   T extends Record<any, QueryDataTypeDefinition<any, any>>,
-> = NOOP<PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>>;
+> = PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>;
 
 export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> =
   T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType>

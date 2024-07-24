@@ -24,9 +24,9 @@ import {
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
-import { generatePerQueryDataFiles } from "../v1.1/generatePerQueryDataFiles.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
+import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
 
 export async function generateClientSdkVersionTwoPointZero(
   ontology: WireOntologyDefinition,
@@ -202,12 +202,11 @@ export async function generateClientSdkVersionTwoPointZero(
 
   const queriesDir = path.join(outDir, "ontology", "queries");
   await fs.mkdir(queriesDir, { recursive: true });
-  await generatePerQueryDataFiles(
+  await generatePerQueryDataFilesV2(
     sanitizedOntology,
     fs,
     queriesDir,
     importExt,
-    true,
   );
 }
 

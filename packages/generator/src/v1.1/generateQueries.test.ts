@@ -31,6 +31,7 @@ describe(generateQueries, () => {
     expect(helper.getFiles()[`${BASE_PATH}/Queries.ts`])
       .toMatchInlineSnapshot(`
         "import type { QueryError, QueryResponse, Result } from '@osdk/legacy-client';
+        import type { Todo } from '../objects/Todo';
 
         export interface Queries {
           /**
@@ -38,6 +39,12 @@ describe(generateQueries, () => {
            * @returns number
            */
           getCount(params: { completed: boolean }): Promise<Result<QueryResponse<number>, QueryError>>;
+
+          /**
+           * @param {Todo|Todo["__primaryKey"]} params.someTodo - Random desc so we test jsdoc
+           * @returns Todo
+           */
+          returnsTodo(params: { someTodo: Todo | Todo['__primaryKey'] }): Promise<Result<QueryResponse<Todo>, QueryError>>;
         }
         "
       `);
