@@ -1,5 +1,15 @@
 # @osdk/platform-sdk-generator
 
+## 0.4.0
+
+### Minor Changes
+
+- af1d316: Added support to omni api code gen for binary type bodies in requests.
+- 388dba9: Change all internal dependencies to be tilde not caret
+- bc89b62: Spelling fixes and spell check in CI
+- 9405a3e: Handle new Core namespace
+- a8dc51a: Modified codegen so that return types now include Blobs.
+
 ## 0.4.0-beta.2
 
 ### Minor Changes

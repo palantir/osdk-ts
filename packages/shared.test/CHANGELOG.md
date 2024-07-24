@@ -1,5 +1,26 @@
 # @osdk/shared.test
 
+## 1.5.0
+
+### Minor Changes
+
+- 141953f: Expose $title property in OsdkBase
+- 034f7ea: Add support for no query time series pulls.
+- 388dba9: Change all internal dependencies to be tilde not caret
+- 3ec7c38: Add support for queries in 2.0
+- bc89b62: Spelling fixes and spell check in CI
+- 489d13f: Add support for timeseries in 2.0 syntax.
+- 413e511: Added attachment uploading, reading, and metadata fetching support to 2.0.
+
+### Patch Changes
+
+- Updated dependencies [388dba9]
+- Updated dependencies [d8edf10]
+- Updated dependencies [3ec7c38]
+- Updated dependencies [bc89b62]
+  - @osdk/api@1.9.0
+  - @osdk/gateway@2.4.0
+
 ## 1.5.0-beta.3
 
 ### Minor Changes

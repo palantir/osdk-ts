@@ -1,5 +1,28 @@
 # @osdk/example-generator
 
+## 0.6.0
+
+### Minor Changes
+
+- 388dba9: Change all internal dependencies to be tilde not caret
+- bc89b62: Spelling fixes and spell check in CI
+- 2f5cfac: Remove platform specific commands in template scripts
+
+### Patch Changes
+
+- Updated dependencies [a2cd534]
+- Updated dependencies [e660cbd]
+- Updated dependencies [78c24a1]
+- Updated dependencies [79335e5]
+- Updated dependencies [adebdb0]
+- Updated dependencies [af8675a]
+- Updated dependencies [4ee6e25]
+- Updated dependencies [bc89b62]
+- Updated dependencies [8b1e578]
+- Updated dependencies [2f5cfac]
+- Updated dependencies [8da6d12]
+  - @osdk/create-app@0.17.0
+
 ## 0.6.0-beta.4
 
 ### Minor Changes

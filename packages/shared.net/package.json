@@ -1,6 +1,6 @@
 {
   "name": "@osdk/shared.net",
-  "version": "1.12.0-beta.1",
+  "version": "1.12.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",
