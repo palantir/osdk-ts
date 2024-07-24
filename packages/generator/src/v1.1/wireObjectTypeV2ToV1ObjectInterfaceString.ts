@@ -29,7 +29,7 @@ export function wireObjectTypeV2ToObjectInterfaceStringV1(
       a !== objectTypeWithLinks.objectType.apiName
     ),
   );
-  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink } from "@osdk/legacy-client";
+  return `import type { OntologyObject, LocalDate, Timestamp, GeoShape, GeoPoint, Attachment, TimeSeries, MultiLink, SingleLink, StringLong } from "@osdk/legacy-client";
 ${
     Array.from(uniqueLinkTargets).map(linkTarget =>
       `import type { ${linkTarget} } from "./${linkTarget}${importExt}";`
@@ -128,7 +128,7 @@ function wirePropertyTypeV2ToTypeScriptType(
     case "geoshape":
       return "GeoShape";
     case "long":
-      return "string";
+      return "StringLong";
     case "short":
       return "number";
     case "timestamp":
