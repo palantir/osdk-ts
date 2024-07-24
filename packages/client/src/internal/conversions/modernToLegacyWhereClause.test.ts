@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import type { WhereClause } from "@osdk/client.api";
 import type { MockOntology } from "@osdk/shared.test";
 import type { Point } from "geojson";
+import { expectType } from "ts-expect";
 import { describe, expect, it } from "vitest";
 import { modernToLegacyWhereClause } from "./modernToLegacyWhereClause.js";
 
@@ -219,16 +221,70 @@ describe(modernToLegacyWhereClause, () => {
           }
         `);
       });
-    });
-    describe("$intersects", () => {
-      it("properly generates bbox shortcut", async () => {
-        expect(modernToLegacyWhereClause<ObjAllProps>(
-          {
-            geoShape: {
-              $intersects: [-5, 5, -10, 10],
+      it("check types", async () => {
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: [-5, 5, -10, 10],
+          },
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: { $distance: [2, "centimeter"], $of: [2, 2] },
+          },
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
+          },
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: {
+              type: "Polygon",
+              coordinates: [[[0, 1], [3, 2], [0, 1]]],
             },
           },
-        )).toMatchInlineSnapshot(`
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: { $bbox: [-5, 5, -10, 10] },
+          },
+        });
+
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: {
+              $bbox: [-5, 5, -10, 10],
+              // @ts-expect-error
+              $distance: [2, "centimeter"],
+              // @ts-expect-error
+              $of: [2, 2],
+            },
+          },
+        });
+        expectType<WhereClause<ObjAllProps>>({
+          geoPoint: {
+            $within: {
+              $polygon: [[[0, 1], [3, 2], [0, 1]]],
+              // @ts-expect-error
+              $bbox: [2, 2, 2, 2],
+            },
+          },
+        });
+      });
+      describe("$intersects", () => {
+        it("properly generates bbox shortcut", async () => {
+          expect(modernToLegacyWhereClause<ObjAllProps>(
+            {
+              geoShape: {
+                $intersects: [-5, 5, -10, 10],
+              },
+            },
+          )).toMatchInlineSnapshot(`
         {
           "field": "geoShape",
           "type": "intersectsBoundingBox",
@@ -250,17 +306,17 @@ describe(modernToLegacyWhereClause, () => {
           },
         }
       `);
-      });
-      it("properly generates bbox long form", async () => {
-        expect(modernToLegacyWhereClause<ObjAllProps>(
-          {
-            geoShape: {
-              $intersects: {
-                $bbox: [-5, 5, -10, 10],
+        });
+        it("properly generates bbox long form", async () => {
+          expect(modernToLegacyWhereClause<ObjAllProps>(
+            {
+              geoShape: {
+                $intersects: {
+                  $bbox: [-5, 5, -10, 10],
+                },
               },
             },
-          },
-        )).toMatchInlineSnapshot(`
+          )).toMatchInlineSnapshot(`
           {
             "field": "geoShape",
             "type": "intersectsBoundingBox",
@@ -282,16 +338,16 @@ describe(modernToLegacyWhereClause, () => {
             },
           }
         `);
-      });
+        });
 
-      it("properly generates intersects polygon", async () => {
-        expect(modernToLegacyWhereClause<ObjAllProps>(
-          {
-            geoShape: {
-              $intersects: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
+        it("properly generates intersects polygon", async () => {
+          expect(modernToLegacyWhereClause<ObjAllProps>(
+            {
+              geoShape: {
+                $intersects: { $polygon: [[[0, 1], [3, 2], [0, 1]]] },
+              },
             },
-          },
-        )).toMatchInlineSnapshot(`
+          )).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
               "type": "intersectsPolygon",
@@ -316,19 +372,19 @@ describe(modernToLegacyWhereClause, () => {
               },
             }
           `);
-      });
+        });
 
-      it("properly generates within polygon geojson", async () => {
-        expect(modernToLegacyWhereClause<ObjAllProps>(
-          {
-            geoShape: {
-              $intersects: {
-                type: "Polygon",
-                coordinates: [[[0, 1], [3, 2], [0, 1]]],
+        it("properly generates within polygon geojson", async () => {
+          expect(modernToLegacyWhereClause<ObjAllProps>(
+            {
+              geoShape: {
+                $intersects: {
+                  type: "Polygon",
+                  coordinates: [[[0, 1], [3, 2], [0, 1]]],
+                },
               },
             },
-          },
-        )).toMatchInlineSnapshot(`
+          )).toMatchInlineSnapshot(`
             {
               "field": "geoShape",
               "type": "intersectsPolygon",
@@ -353,13 +409,13 @@ describe(modernToLegacyWhereClause, () => {
               },
             }
           `);
+        });
       });
-    });
 
-    it("inverts ne short hand properly", () => {
-      expect(modernToLegacyWhereClause<ObjAllProps>({
-        integer: { $ne: 5 },
-      })).toMatchInlineSnapshot(`
+      it("inverts ne short hand properly", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>({
+          integer: { $ne: 5 },
+        })).toMatchInlineSnapshot(`
         {
           "type": "not",
           "value": {
@@ -369,17 +425,17 @@ describe(modernToLegacyWhereClause, () => {
           },
         }
       `);
+      });
     });
-  });
 
-  describe("multiple checks", () => {
-    it("properly handles multiple simple where checks", () => {
-      expect(modernToLegacyWhereClause<ObjAllProps>(
-        {
-          decimal: 5,
-          integer: 10,
-        },
-      )).toMatchInlineSnapshot(`
+    describe("multiple checks", () => {
+      it("properly handles multiple simple where checks", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            decimal: 5,
+            integer: 10,
+          },
+        )).toMatchInlineSnapshot(`
         {
           "type": "and",
           "value": [
@@ -396,18 +452,18 @@ describe(modernToLegacyWhereClause, () => {
           ],
         }
       `);
-    });
+      });
 
-    it("properly handles $and", () => {
-      expect(modernToLegacyWhereClause<ObjAllProps>(
-        {
-          $and: [{
-            decimal: 5,
-          }, {
-            integer: 10,
-          }],
-        },
-      )).toMatchInlineSnapshot(`
+      it("properly handles $and", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            $and: [{
+              decimal: 5,
+            }, {
+              integer: 10,
+            }],
+          },
+        )).toMatchInlineSnapshot(`
           {
             "type": "and",
             "value": [
@@ -424,18 +480,18 @@ describe(modernToLegacyWhereClause, () => {
             ],
           }
         `);
-    });
+      });
 
-    it("properly handles $or", () => {
-      expect(modernToLegacyWhereClause<ObjAllProps>(
-        {
-          $or: [{
-            decimal: 5,
-          }, {
-            integer: 10,
-          }],
-        },
-      )).toMatchInlineSnapshot(`
+      it("properly handles $or", () => {
+        expect(modernToLegacyWhereClause<ObjAllProps>(
+          {
+            $or: [{
+              decimal: 5,
+            }, {
+              integer: 10,
+            }],
+          },
+        )).toMatchInlineSnapshot(`
             {
               "type": "or",
               "value": [
@@ -452,6 +508,7 @@ describe(modernToLegacyWhereClause, () => {
               ],
             }
           `);
+      });
     });
   });
 });
