@@ -15,7 +15,7 @@
  */
 
 export function addCause(e: Error, cause: any) {
-  if (process.env.NODE_ENV !== "production") {
+  if (process?.env?.NODE_ENV !== "production") {
     // In case someone is debugging on an older browser or the `.cause` assignment trick
     // does not work in certain environments, we log the cause to the console to aid debugging.
     // eslint-disable-next-line no-console
