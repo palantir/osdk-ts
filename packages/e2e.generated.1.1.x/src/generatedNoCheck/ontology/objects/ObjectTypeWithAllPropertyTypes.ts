@@ -5,6 +5,7 @@ import type {
   GeoShape,
   LocalDate,
   OntologyObject,
+  StringLong,
   TimeSeries,
   Timestamp,
 } from '@osdk/legacy-client';
@@ -42,8 +43,8 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly id: number | undefined;
   readonly integer: number | undefined;
   readonly integerArray: number[] | undefined;
-  readonly long: string | undefined;
-  readonly longArray: string[] | undefined;
+  readonly long: StringLong | undefined;
+  readonly longArray: StringLong[] | undefined;
   readonly numericTimeseries: TimeSeries<number> | undefined;
   readonly short: number | undefined;
   readonly shortArray: number[] | undefined;
