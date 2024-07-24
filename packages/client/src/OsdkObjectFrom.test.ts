@@ -15,12 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import type {
-  ConvertProps,
-  FetchPageResult,
-  Osdk,
-  ValidToFrom,
-} from "@osdk/client.api";
+import type { ConvertProps, Osdk, ValidToFrom } from "@osdk/client.api";
 import type { Employee, FooInterface } from "@osdk/client.test.ontology";
 import { describe, expectTypeOf, it } from "vitest";
 
@@ -51,6 +46,10 @@ describe("ConvertProps", () => {
         ConvertProps<FooInterface, Employee, "$all" | "$notStrict">
       >()
         .toEqualTypeOf<"fullName" | "$notStrict">();
+    });
+    it("handles $all | $rid", () => {
+      expectTypeOf<ConvertProps<FooInterface, Employee, "$all" | "$rid">>()
+        .toEqualTypeOf<"fullName" | "$rid">();
     });
   });
 
@@ -111,6 +110,11 @@ describe("ConvertProps", () => {
     it("handles $all", () => {
       expectTypeOf<ConvertProps<Employee, FooInterface, "$all">>()
         .toEqualTypeOf<"$all">();
+    });
+
+    it("handles $all | $rid", () => {
+      expectTypeOf<ConvertProps<Employee, FooInterface, "$all" | "$rid">>()
+        .toEqualTypeOf<"$all" | "$rid">();
     });
   });
 });

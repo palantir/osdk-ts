@@ -44,6 +44,7 @@ type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
  * @param P - the property(s) to convert
+ * @internal
  */
 export type ConvertProps<
   FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
@@ -53,34 +54,42 @@ export type ConvertProps<
   : TO extends ObjectTypeDefinition<any> ? (
       (
         UnionIfTrue<
-          NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][
-            P extends "$all" ? (
-                keyof FROM["properties"] extends
-                  NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>]
-                  ? keyof FROM["properties"]
-                  : never
-              )
-              : DropDollarOptions<P>
-          ],
-          P extends "$notStrict" ? true : false,
-          "$notStrict"
+          UnionIfTrue<
+            NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][
+              P extends "$all" ? (
+                  keyof FROM["properties"] extends
+                    NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>]
+                    ? keyof FROM["properties"]
+                    : never
+                )
+                : DropDollarOptions<P>
+            ],
+            P extends "$notStrict" ? true : false,
+            "$notStrict"
+          >,
+          P extends "$rid" ? true : false,
+          "$rid"
         >
       )
     )
   : UnionIfTrue<
-    TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
-      : FROM extends ObjectTypeDefinition<any>
-        ? DropDollarOptions<P> extends
-          keyof NonNullable<FROM["inverseInterfaceMap"]>[
-            ApiNameAsString<TO>
-          ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][
-            DropDollarOptions<P>
-          ]
+    UnionIfTrue<
+      TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
+        : FROM extends ObjectTypeDefinition<any>
+          ? DropDollarOptions<P> extends
+            keyof NonNullable<FROM["inverseInterfaceMap"]>[
+              ApiNameAsString<TO>
+            ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][
+              DropDollarOptions<P>
+            ]
+          : never
         : never
-      : never
-      : never,
-    P extends "$notStrict" ? true : false,
-    "$notStrict"
+        : never,
+      P extends "$notStrict" ? true : false,
+      "$notStrict"
+    >,
+    P extends "$rid" ? true : false,
+    "$rid"
   >;
 
 /** DO NOT EXPORT FROM PACKAGE */
