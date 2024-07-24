@@ -174,7 +174,7 @@ function isConforming(
 ) {
   for (const propName of propsToCheck) {
     if (def.properties[propName].nullable === false && obj[propName] == null) {
-      if (process.env.NODE_ENV !== "production") {
+      if (process?.env?.NODE_ENV !== "production") {
         client.logger?.debug(
           {
             obj: {
