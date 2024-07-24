@@ -34,6 +34,7 @@ import type {
   StringGroupBy,
   TimestampGroupBy,
 } from "../objectSets/aggregations/index.js";
+import type { StringLong } from "../utils/StringLong.js";
 import type { OmitMetadataProperties } from "./utils/OmitProperties.js";
 
 export declare type ObjectTypesGroupByFunction<
@@ -111,15 +112,17 @@ export type GroupByFromType<T, N extends string> = NonNullable<T> extends number
   : T extends Array<infer U> ? GroupByFromType<U, N>
   : never;
 
-export type AggregationFromType<T> = NonNullable<T> extends number
+export type AggregationFromType<T> = NonNullable<T> extends StringLong
   ? AggregatableProperty<Double>
+  : NonNullable<T> extends number ? AggregatableProperty<Double>
   : NonNullable<T> extends boolean ? AggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? AggregatableProperty<LocalDate>
   : NonNullable<T> extends Timestamp ? AggregatableProperty<Timestamp>
   : AggregatableProperty<never>;
 
-export type MultipleAggregationFromType<T> = NonNullable<T> extends number
+export type MultipleAggregationFromType<T> = NonNullable<T> extends StringLong
   ? MultipleAggregatableProperty<Double>
+  : NonNullable<T> extends number ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends boolean ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? MultipleAggregatableProperty<LocalDate>
   : NonNullable<T> extends Timestamp ? MultipleAggregatableProperty<Timestamp>
