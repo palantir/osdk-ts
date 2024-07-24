@@ -163,9 +163,13 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
 
     if (Array.isArray(withinBody)) {
       return makeGeoFilterBbox(field, withinBody, firstKey);
-    } else if ("$bbox" in withinBody) {
+    } else if ("$bbox" in withinBody && withinBody.$bbox != null) {
       return makeGeoFilterBbox(field, withinBody.$bbox, firstKey);
-    } else if ("$distance" in withinBody && "$of" in withinBody) {
+    } else if (
+      ("$distance" in withinBody && "$of" in withinBody)
+      && withinBody.$distance != null
+      && withinBody.$of != null
+    ) {
       return {
         type: "withinDistanceOf",
         field,
@@ -194,7 +198,7 @@ function handleWherePair([field, filter]: [string, any]): SearchJsonQueryV2 {
       filter[firstKey] as GeoFilter_Intersects["$intersects"];
     if (Array.isArray(intersectsBody)) {
       return makeGeoFilterBbox(field, intersectsBody, firstKey);
-    } else if ("$bbox" in intersectsBody) {
+    } else if ("$bbox" in intersectsBody && intersectsBody.$bbox != null) {
       return makeGeoFilterBbox(field, intersectsBody.$bbox, firstKey);
     } else {
       const coordinates = ("$polygon" in intersectsBody)

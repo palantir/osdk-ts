@@ -113,13 +113,21 @@ export type GeoFilter_Within = {
     | {
       $distance: [number, keyof typeof DistanceUnitMapping];
       $of: [number, number] | Readonly<Point>;
+      $bbox?: never;
+      $polygon?: never;
     }
     | {
       $bbox: BBox;
+      $distance?: never;
+      $of?: never;
+      $polygon?: never;
     }
     | BBox
     | {
       $polygon: Polygon["coordinates"];
+      $bbox?: never;
+      $distance?: never;
+      $of?: never;
     }
     | Polygon;
 };
@@ -128,10 +136,12 @@ export type GeoFilter_Intersects = {
   "$intersects":
     | {
       $bbox: BBox;
+      $polygon?: never;
     }
     | BBox
     | {
       $polygon: Polygon["coordinates"];
+      $bbox?: never;
     }
     | Polygon;
 };
