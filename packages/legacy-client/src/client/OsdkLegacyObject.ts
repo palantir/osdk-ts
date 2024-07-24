@@ -36,6 +36,7 @@ import type {
   Timestamp,
 } from "./baseTypes/index.js";
 import type { reservedKeywordsList } from "./utils/reservedKeywords.js";
+import type { StringLong } from "./utils/StringLong.js";
 
 export interface ValidLegacyPropertyTypes {
   string: string;
@@ -45,7 +46,7 @@ export interface ValidLegacyPropertyTypes {
   integer: number;
   timestamp: Timestamp;
   short: number;
-  long: string;
+  long: StringLong;
   float: number;
   decimal: string;
   byte: number;
