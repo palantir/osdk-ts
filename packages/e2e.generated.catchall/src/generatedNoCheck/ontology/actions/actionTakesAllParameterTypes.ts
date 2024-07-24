@@ -1,4 +1,4 @@
-import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person, Todo } from '../objects.js';
 
@@ -68,10 +69,11 @@ export interface actionTakesAllParameterTypes {
 // Represents the definition of the action
 export interface ActionDef$actionTakesAllParameterTypes
   extends ActionDefinition<
-    'actionTakesAllParameterTypes',
-    'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
-    actionTakesAllParameterTypes
-  > {
+      'actionTakesAllParameterTypes',
+      'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
+      actionTakesAllParameterTypes
+    >,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'actionTakesAllParameterTypes';
   description: 'An action which takes different types of parameters';
   modifiedEntities: {

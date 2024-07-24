@@ -1,4 +1,4 @@
-import type { ActionDefinition } from '@osdk/api';
+import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -49,7 +50,9 @@ export interface promoteEmployee {
 }
 
 // Represents the definition of the action
-export interface ActionDef$promoteEmployee extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee> {
+export interface ActionDef$promoteEmployee
+  extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'promoteEmployee';
   description: "Update an employee's title and compensation";
   modifiedEntities: { Employee: { created: false; modified: true } };
