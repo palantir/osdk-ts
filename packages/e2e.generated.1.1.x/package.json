@@ -37,14 +37,14 @@
     "@osdk/legacy-client": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "^1.9.0-beta.1",
-    "@osdk/legacy-client": "^2.4.0-beta.2"
+    "@osdk/api": "^1.9.0",
+    "@osdk/legacy-client": "^2.4.0"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "^1.9.0-beta.1",
+    "@osdk/api": "^1.9.0",
     "@osdk/cli.cmd.typescript": "workspace:~",
-    "@osdk/legacy-client": "^2.4.0-beta.2",
+    "@osdk/legacy-client": "^2.4.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
