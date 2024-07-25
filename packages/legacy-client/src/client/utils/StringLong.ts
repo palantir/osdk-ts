@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-export type { IsEmptyRecord } from "./IsEmptyRecord.js";
-export type { NonNullableKeys, NullableKeys } from "./NullableKeys.js";
-export type { reservedKeywordsList } from "./reservedKeywords.js";
-export type { StringLong } from "./StringLong.js";
-export type { ValuesOfMap } from "./ValuesOfMap.js";
+declare const representsLong: unique symbol;
+
+/** Represents a long property value converted to a string. We use a
+ *  tagged type to distinguish from a regular string property value.
+ *  This type is not used in `ValidLegacyBaseQueryDataTypes` or
+ *  `ValidLegacyActionParameterTypes` because it is just for result
+ *  long values, not long values that are passed into queries and actions. */
+export type StringLong = string & { [representsLong]: true };

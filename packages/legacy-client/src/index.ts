@@ -342,6 +342,7 @@ export type {
   SingleLink,
   StartsWithWhereClause,
   StaticObjectSetDefinition,
+  StringLong,
   SubtractObjectSetDefinition,
   ThreeDimensionalAggregation,
   ThreeDimensionalAggregationType,

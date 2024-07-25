@@ -174,6 +174,20 @@ describe("OsdkObjectSet", () => {
     );
   });
 
+  it("creates the max aggregation for a long property", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
+    await os.max(s => s.unixTimestamp).compute();
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [{ type: "max", name: "max", field: "unixTimestamp" }],
+      }),
+    );
+  });
+
   it("creates the groupBy clauses", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
@@ -198,17 +212,20 @@ describe("OsdkObjectSet", () => {
     await (os.aggregate(b => ({
       foo: b.complete.approximateDistinct(),
       bar: b.body.approximateDistinct(),
+      baz: b.unixTimestamp.avg(),
+      qux: b.unixTimestamp.approximateDistinct(),
     })).compute());
     expect(fetch).toHaveBeenCalledOnce();
     expect(fetch).toHaveBeenCalledWith(
       ...expectedJestResponse("Ontology/objectSets/aggregate", {
         objectSet: { type: "base", objectType: "Todo" },
         groupBy: [],
-        aggregation: [{
-          type: "approximateDistinct",
-          name: "foo",
-          field: "complete",
-        }, { type: "approximateDistinct", name: "bar", field: "body" }],
+        aggregation: [
+          { type: "approximateDistinct", name: "foo", field: "complete" },
+          { type: "approximateDistinct", name: "bar", field: "body" },
+          { type: "avg", name: "baz", field: "unixTimestamp" },
+          { type: "approximateDistinct", name: "qux", field: "unixTimestamp" },
+        ],
       }),
     );
   });
