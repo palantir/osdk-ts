@@ -419,7 +419,7 @@ function createMockWebSocketConstructor(
         eventEmitter.removeEventListener.bind(eventEmitter),
       ) as any,
 
-      send: vi.fn((a, _b) => {
+      send: vi.fn((a, _b: any) => {
         logger.debug(
           { message: JSON.parse(a.toString()), webSocketInst },
           "send() called",
