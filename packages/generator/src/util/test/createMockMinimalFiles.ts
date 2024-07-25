@@ -18,15 +18,14 @@ import { vi } from "vitest";
 import type { ReaddirFn, WriteFileFn } from "../../MinimalFs.js";
 
 export function createMockMinimalFiles() {
-  const writeFile = vi.fn<Parameters<WriteFileFn>, ReturnType<WriteFileFn>>(
+  const writeFile = vi.fn<WriteFileFn>(
     () => Promise.resolve(),
   );
   const getFiles = () => Object.fromEntries(writeFile.mock.calls);
 
-  const readdir = vi.fn<
-    Parameters<ReaddirFn>,
-    ReturnType<ReaddirFn>
-  >(() => Promise.resolve([]));
+  const readdir = vi.fn<ReaddirFn>(
+    () => Promise.resolve([]),
+  );
 
   return {
     minimalFiles: {
