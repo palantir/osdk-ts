@@ -17,5 +17,8 @@
 declare const representsLong: unique symbol;
 
 /** Represents a long property value converted to a string. We use a
- *  tagged type to distinguish from a regular string property value. */
+ *  tagged type to distinguish from a regular string property value.
+ *  This type is not used in `ValidLegacyBaseQueryDataTypes` or
+ *  `ValidLegacyActionParameterTypes` because it is just for result
+ *  long values, not long values that are passed into queries and actions. */
 export type StringLong = string & { [representsLong]: true };
