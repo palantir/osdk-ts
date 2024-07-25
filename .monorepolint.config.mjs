@@ -420,6 +420,14 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
+    packageEntry({
+      includePackages: ["@osdk/create-app.template.*"],
+      options: {
+        entries: {
+          private: true,
+        },
+      },
+    }),
     fileContents({
       includePackages: ["@osdk/create-app.template.*"],
       options: {
