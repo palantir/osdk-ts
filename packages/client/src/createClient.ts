@@ -54,6 +54,7 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   applyAction: (...args: any[]) => any;
 }
 
+/** @internal */
 export function createClientInternal(
   objectSetFactory: ObjectSetFactory<any, any>, // first so i can bind
   baseUrl: string,

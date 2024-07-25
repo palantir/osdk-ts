@@ -38,6 +38,7 @@ const handlerCache = createSimpleCache<
   createInterfaceProxyHandler,
 );
 
+/** @internal */
 export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition<any, any>,
 >(

@@ -24,7 +24,6 @@ import type { Logger } from 'pino';
 import { NOOP } from '@osdk/client.api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
-import type { ObjectSet as ObjectSet_2 } from '@osdk/internal.foundry';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/client.api';
 import { OsdkActionParameters } from '@osdk/client.api';
