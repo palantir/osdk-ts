@@ -38,7 +38,7 @@ export async function getLastPoint<T extends string | number>(
         createOpenApiRequest(client.stack, client.fetch),
         client.ontology.metadata.ontologyApiName,
         objectApiName,
-        primaryKey,
+        encodeURIComponent(primaryKey),
         propertyName,
       );
       return {
