@@ -46,7 +46,7 @@ export async function getAllTimeSeriesPoints<T extends string | number>(
         createOpenApiRequest(client.stack, client.fetch, undefined, true),
         client.ontology.metadata.ontologyApiName,
         apiName,
-        primaryKey,
+        encodeURIComponent(primaryKey),
         propertyName,
         body,
       );
