@@ -9,7 +9,6 @@ import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
-import type { IsNever as IsNever_2 } from 'type-fest';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
@@ -759,10 +758,10 @@ export type TimeSeriesQuery = {
 };
 
 // @public
-export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = IsNever_2<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
+export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = IsNever<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
 
 // @public
-export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E extends string> = IsNever_2<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
+export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E extends string> = IsNever<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
 
 // @public (undocumented)
 export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
