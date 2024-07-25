@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.5.0-beta.0
+
+### Minor Changes
+
+- cd37441: Fix primary key encoding in URLs
+
 ## 2.4.0
 
 ### Minor Changes

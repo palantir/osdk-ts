@@ -1,6 +1,7 @@
 {
   "name": "@osdk/create-app.template.react",
-  "version": "0.17.0",
+  "private": true,
+  "version": "0.18.0-beta.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -44,7 +45,7 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.4",
     "vite": "^5.3.4"
   },
   "publishConfig": {

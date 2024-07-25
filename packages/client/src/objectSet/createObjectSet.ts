@@ -49,6 +49,7 @@ function isObjectTypeDefinition(
   return def.type === "object";
 }
 
+/* @internal */
 export function isObjectSet(o: any): o is ObjectSet<any> {
   return o != null && typeof o === "object"
     && isWireObjectSet(objectSetDefinitions.get(o));
@@ -66,6 +67,7 @@ const objectSetDefinitions = new WeakMap<
   WireObjectSet
 >();
 
+/** @internal */
 export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,

@@ -20,6 +20,12 @@ export interface Template {
   envPrefix: string;
   buildDirectory: string;
   hidden?: boolean;
+  getFiles: () => Promise<
+    Map<
+      string,
+      { type: "base64"; body: string } | { type: "raw"; body: string }
+    >
+  >;
 }
 
 export interface TemplateContext {
@@ -35,18 +41,27 @@ export const TEMPLATES: readonly Template[] = [
     label: "React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.react`
+    )).files),
   },
   {
     id: "template-vue",
     label: "Vue",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.vue`
+    )).files),
   },
   {
     id: "template-next-static-export",
     label: "Next (static export)",
     envPrefix: "NEXT_PUBLIC_",
     buildDirectory: "./out",
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.next-static-export`
+    )).files),
   },
   {
     id: "template-tutorial-todo-app",
@@ -54,6 +69,9 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     hidden: true,
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.tutorial-todo-app`
+    )).files),
   },
   {
     id: "template-tutorial-todo-aip-app",
@@ -61,5 +79,8 @@ export const TEMPLATES: readonly Template[] = [
     envPrefix: "VITE_",
     buildDirectory: "./dist",
     hidden: true,
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.tutorial-todo-aip-app`
+    )).files),
   },
 ];

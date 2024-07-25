@@ -29,7 +29,7 @@ import {
 } from "@monorepolint/rules";
 import * as child_process from "node:child_process";
 
-const LATEST_TYPESCRIPT_DEP = "^5.5.2";
+const LATEST_TYPESCRIPT_DEP = "^5.5.4";
 
 const DELETE_SCRIPT_ENTRY = { options: [undefined], fixValue: undefined };
 
@@ -420,6 +420,14 @@ function standardPackageRules(shared, options) {
  */
 export default {
   rules: [
+    packageEntry({
+      includePackages: ["@osdk/create-app.template.*"],
+      options: {
+        entries: {
+          private: true,
+        },
+      },
+    }),
     fileContents({
       includePackages: ["@osdk/create-app.template.*"],
       options: {

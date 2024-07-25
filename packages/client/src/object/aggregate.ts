@@ -36,7 +36,7 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
-/** @deprecated use `aggregate` */
+/** @deprecated use `aggregate` @internal */
 export async function aggregateOrThrow<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,
@@ -52,6 +52,7 @@ export async function aggregateOrThrow<
   return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
 }
 
+/** @internal */
 export async function aggregate<
   Q extends ObjectOrInterfaceDefinition,
   AO extends AggregateOpts<Q>,

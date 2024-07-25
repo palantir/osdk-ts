@@ -42,7 +42,7 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "@types/yargs": "^17.0.29",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   },
   "publishConfig": {
     "access": "public"

@@ -33,7 +33,7 @@ export async function getLinkedObjectsPage<T extends OntologyObject>(
     createOpenApiRequest(client.stack, client.fetch),
     client.ontology.metadata.ontologyApiName,
     sourceApiName,
-    primaryKey,
+    encodeURIComponent(primaryKey),
     linkTypeApiName,
     {
       pageSize: options?.pageSize,

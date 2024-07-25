@@ -16,6 +16,7 @@
     "strict": true,
 
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "stripInternal": true
   }
 }

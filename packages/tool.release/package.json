@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@actions/exec": "^1.1.1",
-    "@changesets/apply-release-plan": "^7.0.1",
-    "@changesets/assemble-release-plan": "^6.0.0",
+    "@changesets/apply-release-plan": "^7.0.4",
+    "@changesets/assemble-release-plan": "^6.0.3",
     "@changesets/changelog-git": "^0.2.0",
     "@changesets/config": "^3.0.2",
     "@changesets/git": "^3.0.0",
@@ -50,7 +50,7 @@
     "package-json": "^10.0.0",
     "pkg-versions": "^4.0.0",
     "resolve-from": "^5.0.0",
-    "semver": "^7.6.2",
+    "semver": "^7.6.3",
     "yargs": "^17.7.2"
   },
   "devDependencies": {
@@ -62,7 +62,7 @@
     "@types/node": "^20.12.7",
     "@types/semver": "^7.5.8",
     "@types/yargs": "^17.0.32",
-    "typescript": "^5.5.2",
+    "typescript": "^5.5.4",
     "vitest": "^1.6.0"
   },
   "publishConfig": {

@@ -1,11 +1,16 @@
+
 aggregatable
 codegen
 devx
+Discoverability
+duplicative
+Geolocatable
 groupable
 isModifierable
 onwarn
 retryable
 rsort
+streamutils
 tsdoc
 typecheck
 typesafety
@@ -13,5 +18,3 @@ uncapitalize
 unevaluable
 unioned
 webapi
-Geolocatable
-streamutils

@@ -171,6 +171,14 @@ export async function fetchPageWithErrorsInternal<
   }
 }
 
+/**
+ * @param client
+ * @param objectType
+ * @param args
+ * @param objectSet
+ * @returns
+ * @internal
+ */
 export async function fetchPage<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -188,6 +196,7 @@ export async function fetchPage<
   return fetchPageInternal(client, objectType, objectSet, args);
 }
 
+/** @internal */
 export async function fetchPageWithErrors<
   Q extends ObjectOrInterfaceDefinition,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
@@ -235,6 +244,7 @@ function applyFetchArgs<
   return body;
 }
 
+/** @internal */
 export async function fetchObjectPage<
   Q extends ObjectTypeDefinition<any>,
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,

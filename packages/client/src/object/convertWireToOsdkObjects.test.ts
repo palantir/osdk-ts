@@ -209,7 +209,7 @@ describe("convertWireToOsdkObjects", () => {
     expect(objAsFoo).toBe(obj.$as(FooInterface));
   });
 
-  it("reconstitutes interfaces properly", async () => {
+  it("reconstitutes interfaces properly without rid", async () => {
     const clientCtx = createMinimalClient(
       MockOntology.metadata,
       "https://stack.palantir.com",
@@ -252,6 +252,56 @@ describe("convertWireToOsdkObjects", () => {
         "fullName": "Steve",
       }
     `);
+  });
+
+  it("reconstitutes interfaces properly with rid", async () => {
+    const clientCtx = createMinimalClient(
+      MockOntology.metadata,
+      "https://stack.palantir.com",
+      async () => "myAccessToken",
+    );
+
+    let objectFromWire = {
+      __apiName: "Employee" as const,
+      __primaryKey: 0,
+      __title: "Steve",
+      __rid: "hiMom",
+      fooSpt: "Steve",
+    } satisfies OntologyObjectV2;
+
+    const [objAsFoo] = (await convertWireToOsdkObjects(
+      clientCtx,
+      [objectFromWire],
+      FooInterface.apiName,
+    )) as unknown as Osdk<FooInterface, "$rid" | "$all">[];
+
+    expect(objAsFoo).toMatchInlineSnapshot(`
+      {
+        "$apiName": "FooInterface",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$rid": "hiMom",
+        "$title": "Steve",
+        "fooSpt": "Steve",
+      }
+    `);
+    expect(objAsFoo.$rid).toEqual("hiMom");
+
+    const obj = objAsFoo.$as(Employee);
+    expect(obj.fullName).toEqual("Steve");
+
+    expect(obj).toMatchInlineSnapshot(`
+      {
+        "$apiName": "Employee",
+        "$objectType": "Employee",
+        "$primaryKey": 0,
+        "$rid": "hiMom",
+        "$title": "Steve",
+        "employeeId": 0,
+        "fullName": "Steve",
+      }
+    `);
+    expect(obj.$rid).toEqual("hiMom");
   });
 
   describe("selection keys", () => {

@@ -1,4 +1,4 @@
-import type { ActionDefinition } from '@osdk/api';
+import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -57,7 +58,9 @@ export interface moveOffice {
 }
 
 // Represents the definition of the action
-export interface ActionDef$moveOffice extends ActionDefinition<'moveOffice', 'Office', moveOffice> {
+export interface ActionDef$moveOffice
+  extends ActionDefinition<'moveOffice', 'Office', moveOffice>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'moveOffice';
   description: "Update an office's physical location";
   modifiedEntities: { Office: { created: false; modified: true } };

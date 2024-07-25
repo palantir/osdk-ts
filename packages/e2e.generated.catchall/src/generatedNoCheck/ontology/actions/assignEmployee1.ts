@@ -1,4 +1,4 @@
-import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee, Venture } from '../objects.js';
 
@@ -46,7 +47,8 @@ export interface assignEmployee1 {
 
 // Represents the definition of the action
 export interface ActionDef$assignEmployee1
-  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1> {
+  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'assignEmployee1';
   description: 'Assigns an employee to a venture';
   modifiedEntities: { Employee: { created: false; modified: true } };

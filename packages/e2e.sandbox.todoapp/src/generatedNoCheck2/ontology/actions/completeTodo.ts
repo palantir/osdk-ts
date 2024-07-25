@@ -1,4 +1,4 @@
-import type { ActionDefinition, ObjectActionDataType } from '@osdk/api';
+import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { Todo } from '../objects';
 
@@ -46,7 +47,9 @@ export interface completeTodo {
 }
 
 // Represents the definition of the action
-export interface ActionDef$completeTodo extends ActionDefinition<'completeTodo', 'Todo', completeTodo> {
+export interface ActionDef$completeTodo
+  extends ActionDefinition<'completeTodo', 'Todo', completeTodo>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'completeTodo';
   description: 'Completes Todo';
   modifiedEntities: { Todo: { created: false; modified: true } };

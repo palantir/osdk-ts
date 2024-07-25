@@ -30,6 +30,7 @@ import type {
   ObjectHolderOwnProperties,
 } from "./ObjectHolder.js";
 
+/** @internal */
 export function get$link(
   holder: ObjectHolder<any>,
 ): OsdkObjectLinksObject<any> {

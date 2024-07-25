@@ -99,6 +99,7 @@ function subscriptionIsDone(sub: Subscription<any>) {
   return sub.status === "done" || sub.status === "error";
 }
 
+/** @internal */
 export class ObjectSetListenerWebsocket {
   static #instances = new WeakMap<
     ClientCacheKey,

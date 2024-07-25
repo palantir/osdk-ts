@@ -1,5 +1,6 @@
 {
   "name": "@osdk/create-app.template-packager",
+  "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
   "repository": {
@@ -39,7 +40,7 @@
     "@types/tmp": "^0.2.6",
     "@types/yargs": "^17.0.29",
     "tmp": "^0.2.3",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.4"
   },
   "publishConfig": {
     "access": "public"

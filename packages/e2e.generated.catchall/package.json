@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.generated.catchall",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0-beta.0",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
@@ -46,8 +46,8 @@
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
-    "tslib": "^2.6.2",
-    "typescript": "^5.5.2"
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.4"
   },
   "publishConfig": {
     "access": "public"

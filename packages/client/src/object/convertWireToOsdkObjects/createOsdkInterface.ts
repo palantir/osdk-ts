@@ -38,6 +38,7 @@ const handlerCache = createSimpleCache<
   createInterfaceProxyHandler,
 );
 
+/** @internal */
 export function createOsdkInterface<
   Q extends FetchedObjectTypeDefinition<any, any>,
 >(
@@ -70,7 +71,10 @@ function createInterfaceProxyHandler(
         case "$primaryKey":
         case "$title":
         case "$objectType":
-          return Reflect.getOwnPropertyDescriptor(underlying, p);
+        case "$rid":
+          return underlying[p] != null
+            ? Reflect.getOwnPropertyDescriptor(underlying, p)
+            : undefined;
 
         case "$apiName":
           return {
@@ -92,10 +96,12 @@ function createInterfaceProxyHandler(
     },
 
     ownKeys(target) {
+      const underlying = target[UnderlyingOsdkObject];
       return [
         "$apiName",
         "$objectType",
         "$primaryKey",
+        ...(underlying["$rid"] ? ["$rid"] : []),
         "$title",
         ...Object.keys(newDef.properties),
       ];
@@ -113,6 +119,7 @@ function createInterfaceProxyHandler(
         case "$primaryKey":
         case "$title":
         case "$objectType":
+        case "$rid":
           return underlying[p as string];
       }
 

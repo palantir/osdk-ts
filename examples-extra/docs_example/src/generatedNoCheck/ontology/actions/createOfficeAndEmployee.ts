@@ -1,4 +1,4 @@
-import type { ActionDefinition } from '@osdk/api';
+import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -6,6 +6,7 @@ import type {
   NOOP,
   OsdkActionParameters,
 } from '@osdk/client.api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 // Represents the definition of the parameters for the action
@@ -64,7 +65,8 @@ export interface createOfficeAndEmployee {
 
 // Represents the definition of the action
 export interface ActionDef$createOfficeAndEmployee
-  extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee> {
+  extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'createOfficeAndEmployee';
   description: 'Create an office and employee';
   modifiedEntities: { Office: { created: true; modified: false }; Employee: { created: true; modified: false } };
