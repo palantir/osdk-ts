@@ -26,6 +26,7 @@ import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 
+/** @internal */
 export function legacyToModernSingleAggregationResult<
   Q extends ObjectOrInterfaceDefinition,
   AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>,

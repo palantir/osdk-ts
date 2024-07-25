@@ -53,6 +53,7 @@ export interface UNSTABLE_ObjectSet<Q extends ObjectOrInterfaceDefinition>
   ) => UNSTABLE_ObjectSet<LinkedType<Q, L>>;
 }
 
+/** @internal */
 export function UNSTABLE_createObjectSet<Q extends ObjectOrInterfaceDefinition>(
   objectType: Q,
   clientCtx: MinimalClient,

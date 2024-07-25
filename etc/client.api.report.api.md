@@ -9,7 +9,6 @@ import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
-import type { IsNever as IsNever_2 } from 'type-fest';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
@@ -175,9 +174,8 @@ export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
 
 // Warning: (ae-forgotten-export) The symbol "ApiNameAsString" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "DropDollarOptions" needs to be exported by the entry point index.d.ts
-// Warning: (ae-internal-missing-underscore) The name "ConvertProps" should be prefixed with an underscore because the declaration is marked as @internal
 //
-// @internal
+// @public (undocumented)
 export type ConvertProps<FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, TO extends ValidToFrom<FROM>, P extends string = "$all"> = TO extends FROM ? P : TO extends ObjectTypeDefinition<any> ? ((UnionIfTrue<UnionIfTrue<NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][P extends "$all" ? (keyof FROM["properties"] extends NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>] ? keyof FROM["properties"] : never) : DropDollarOptions<P>], P extends "$notStrict" ? true : false, "$notStrict">, P extends "$rid" ? true : false, "$rid">)) : UnionIfTrue<UnionIfTrue<TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all" : FROM extends ObjectTypeDefinition<any> ? DropDollarOptions<P> extends keyof NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][DropDollarOptions<P>] : never : never : never, P extends "$notStrict" ? true : false, "$notStrict">, P extends "$rid" ? true : false, "$rid">;
 
 // @public
@@ -650,9 +648,7 @@ export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T ext
 // @public (undocumented)
 export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
 
-// Warning: (ae-internal-missing-underscore) The name "RespectNullability" should be prefixed with an underscore because the declaration is marked as @internal
-//
-// @internal
+// @public
 export type RespectNullability<S extends NullabilityAdherence> = S extends false ? false : true;
 
 // Warning: (ae-forgotten-export) The symbol "ErrorResult" needs to be exported by the entry point index.d.ts
@@ -679,10 +675,6 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
     fetchOneWithErrors: <const A extends SelectArg<T, ObjectOrInterfacePropertyKeysFrom2<T>, boolean>>(options?: A) => Promise<Result<DefaultToFalse<A["$includeRid"]> extends false ? Osdk<T, SelectArgToKeys<T, A>> : Osdk<T, SelectArgToKeys<T, A> | "$rid">>>;
 }
 
-// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "RespectNullability" which is marked as @internal
-// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "UnionIfTrue" which is marked as @internal
-// Warning: (ae-incompatible-release-tags) The symbol "SingleOsdkResult" is marked as @public, but its signature references "UnionIfFalse" which is marked as @internal
-//
 // @public (undocumented)
 export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? ([
 DefaultToFalse<R>,
@@ -765,15 +757,11 @@ export type TimeSeriesQuery = {
     $unit?: never;
 };
 
-// Warning: (ae-internal-missing-underscore) The name "UnionIfFalse" should be prefixed with an underscore because the declaration is marked as @internal
-//
-// @internal
-export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = IsNever_2<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
+// @public
+export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> = IsNever<S> extends true ? never : JUST_S_IF_TRUE extends true ? S : S | E;
 
-// Warning: (ae-internal-missing-underscore) The name "UnionIfTrue" should be prefixed with an underscore because the declaration is marked as @internal
-//
-// @internal
-export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E extends string> = IsNever_2<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
+// @public
+export type UnionIfTrue<S extends string, UNION_IF_TRUE extends boolean, E extends string> = IsNever<S> extends true ? never : UNION_IF_TRUE extends true ? S | E : S;
 
 // @public (undocumented)
 export type UnorderedAggregationClause<Q extends ObjectOrInterfaceDefinition> = {
@@ -801,10 +789,9 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
-// src/OsdkObjectFrom.ts:102:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:103:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// src/OsdkObjectFrom.ts:159:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
-// src/OsdkObjectFrom.ts:159:5 - (ae-incompatible-release-tags) The symbol "$as" is marked as @public, but its signature references "ConvertProps" which is marked as @internal
+// src/OsdkObjectFrom.ts:100:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:101:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+// src/OsdkObjectFrom.ts:157:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts
 
 // (No @packageDocumentation comment for this package)
 

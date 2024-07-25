@@ -26,6 +26,7 @@ import type { InterfaceHolder } from "./InterfaceHolder.js";
 import { UnderlyingOsdkObject } from "./InternalSymbols.js";
 import type { ObjectHolder } from "./ObjectHolder.js";
 
+/** @internal */
 export type DollarAsFn = <
   Q extends FetchedObjectTypeDefinition<any, any>,
   NEW_Q extends ObjectOrInterfaceDefinition<any>,

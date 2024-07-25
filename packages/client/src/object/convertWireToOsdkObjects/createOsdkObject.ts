@@ -65,6 +65,7 @@ const objectPrototypeCache = createClientCache(
   },
 );
 
+/** @internal */
 export function createOsdkObject<
   Q extends FetchedObjectTypeDefinition<any, any>,
 >(
