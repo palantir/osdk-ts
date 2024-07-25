@@ -60,6 +60,7 @@ const Todo: TodoDef = {
     complete: { type: "boolean", nullable: true },
     tags: { type: "string", multiplicity: true, nullable: true },
     points: { type: "integer", nullable: true },
+    unixTimestamp: { type: "long", nullable: true },
   },
   links: {
     linkedTask: {
@@ -83,6 +84,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo">, VersionBound<"0.15.0"> {
     complete: { type: "boolean"; nullable: true };
     tags: { type: "string"; multiplicity: true; nullable: true };
     points: { type: "integer"; nullable: true };
+    unixTimestamp: { type: "long"; nullable: true };
   };
   links: {
     linkedTask: ObjectTypeLinkDefinition<TaskDef, false>;
