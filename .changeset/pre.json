@@ -70,5 +70,15 @@
     "@osdk/tests.verify-fallback-package": "0.0.3",
     "@osdk/tests.verify-fallback-package-v2": "0.0.3"
   },
-  "changesets": []
+  "changesets": [
+    "eleven-planets-taste",
+    "giant-pianos-film",
+    "gorgeous-coats-hang",
+    "healthy-tools-accept",
+    "mean-dragons-stare",
+    "old-deers-chew",
+    "purple-students-sin",
+    "rich-bobcats-pretend",
+    "twelve-foxes-walk"
+  ]
 }
