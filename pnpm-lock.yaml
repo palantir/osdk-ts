@@ -815,6 +815,19 @@ importers:
 
   packages/create-app:
     dependencies:
+      consola:
+        specifier: ^3.2.3
+        version: 3.2.3
+      find-up:
+        specifier: ^7.0.0
+        version: 7.0.0
+      handlebars:
+        specifier: ^4.7.8
+        version: 4.7.8
+      yargs:
+        specifier: ^17.7.2
+        version: 17.7.2
+    devDependencies:
       '@osdk/create-app.template.next-static-export':
         specifier: workspace:*
         version: link:../create-app.template.next-static-export
@@ -830,19 +843,6 @@ importers:
       '@osdk/create-app.template.vue':
         specifier: workspace:*
         version: link:../create-app.template.vue
-      consola:
-        specifier: ^3.2.3
-        version: 3.2.3
-      find-up:
-        specifier: ^7.0.0
-        version: 7.0.0
-      handlebars:
-        specifier: ^4.7.8
-        version: 4.7.8
-      yargs:
-        specifier: ^17.7.2
-        version: 17.7.2
-    devDependencies:
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor

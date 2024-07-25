@@ -82,9 +82,7 @@ export async function run(
   const files: Map<
     string,
     { type: "base64"; body: string } | { type: "raw"; body: string }
-  > = (await import(
-    `@osdk/create-app.template.${template.id.replace(/^template-/, "")}`
-  )).files;
+  > = await template.getFiles();
 
   for (const [filePath, contents] of files) {
     const finalPath = path.join(root, filePath);
