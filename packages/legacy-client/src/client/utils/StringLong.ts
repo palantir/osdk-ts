@@ -16,4 +16,6 @@
 
 declare const representsLong: unique symbol;
 
+/** Represents a long property value converted to a string. We use a
+ *  tagged type to distinguish from a regular string property value. */
 export type StringLong = string & { [representsLong]: true };
