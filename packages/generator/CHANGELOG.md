@@ -1,11 +1,5 @@
 # @osdk/generator
 
-## 1.13.0-beta.0
-
-### Minor Changes
-
-- 8c76c1a: Adds VersionBound to actions
-
 ## 1.12.0
 
 ### Minor Changes

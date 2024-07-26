@@ -1,12 +1,5 @@
 # @osdk/client.api
 
-## 0.21.0-beta.0
-
-### Minor Changes
-
-- 2deb4d9: Fixing types for within and intersects so they don't take more than the permitted keys
-- e54f413: Marks things as @internal to clean up API requirements
-
 ## 0.20.0
 
 ### Minor Changes

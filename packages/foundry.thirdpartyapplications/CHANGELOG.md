@@ -1,11 +1,5 @@
 # @osdk/foundry.thirdpartyapplications
 
-## 3.0.0-beta.0
-
-### Patch Changes
-
-- @osdk/foundry.core@3.0.0-beta.0
-
 ## 2.0.0
 
 ### Minor Changes
