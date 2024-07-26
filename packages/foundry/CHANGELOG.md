@@ -1,14 +1,5 @@
 # @osdk/foundry
 
-## 3.0.0-beta.1
-
-### Patch Changes
-
-- @osdk/foundry.admin@3.0.0-beta.1
-- @osdk/foundry.datasets@3.0.0-beta.1
-- @osdk/foundry.core@3.0.0-beta.1
-- @osdk/foundry.thirdpartyapplications@3.0.0-beta.1
-
 ## 3.0.0-beta.0
 
 ### Patch Changes

@@ -1,11 +1,5 @@
 # @osdk/legacy-client
 
-## 2.5.0-beta.1
-
-### Minor Changes
-
-- e2ab8db: Fix long aggregations in legacy-client
-
 ## 2.5.0-beta.0
 
 ### Minor Changes
