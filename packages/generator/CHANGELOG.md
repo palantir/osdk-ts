@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 1.13.0-beta.1
+
+### Minor Changes
+
+- e2ab8db: Fix long aggregations in legacy-client
+
 ## 1.13.0-beta.0
 
 ### Minor Changes

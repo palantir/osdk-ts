@@ -1,5 +1,11 @@
 # @osdk/shared.test
 
+## 1.6.0-beta.0
+
+### Minor Changes
+
+- e2ab8db: Fix long aggregations in legacy-client
+
 ## 1.5.0
 
 ### Minor Changes

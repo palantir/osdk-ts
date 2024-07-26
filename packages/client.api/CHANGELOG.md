@@ -1,5 +1,7 @@
 # @osdk/client.api
 
+## 0.21.0-beta.1
+
 ## 0.21.0-beta.0
 
 ### Minor Changes

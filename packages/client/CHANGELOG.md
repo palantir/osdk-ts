@@ -1,5 +1,15 @@
 # @osdk/client
 
+## 0.21.0-beta.1
+
+### Minor Changes
+
+- f91cd58: Temporarily disable X-OSDK-Request-Context header
+
+### Patch Changes
+
+- @osdk/client.api@0.21.0-beta.1
+
 ## 0.21.0-beta.0
 
 ### Minor Changes
