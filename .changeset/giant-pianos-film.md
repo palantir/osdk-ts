@@ -1,6 +1,6 @@
 ---
-"@osdk/client.api": minor
-"@osdk/client": minor
+"@osdk/client.api": patch
+"@osdk/client": patch
 ---
 
 Marks things as @internal to clean up API requirements
