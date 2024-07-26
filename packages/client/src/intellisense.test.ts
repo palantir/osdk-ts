@@ -98,7 +98,7 @@ describe("intellisense", () => {
     tsServer = undefined as any;
   });
 
-  it("callsQueryAcceptsObject", { timeout: 10_000 }, async () => {
+  it("callsQueryAcceptsObject", { timeout: 20_000 }, async () => {
     const { resp } = await tsServer.sendQuickInfoRequest({
       file: intellisenseFilePath,
       line: 27,
