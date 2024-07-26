@@ -1410,6 +1410,9 @@ importers:
         specifier: ^9.3.0
         version: 9.3.0
     devDependencies:
+      '@osdk/legacy-client':
+        specifier: workspace:~
+        version: link:../legacy-client
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -1419,6 +1422,9 @@ importers:
       '@osdk/monorepo.tsup':
         specifier: workspace:~
         version: link:../monorepo.tsup
+      '@osdk/shared.test':
+        specifier: workspace:~
+        version: link:../shared.test
       typescript:
         specifier: ^5.5.4
         version: 5.5.4
