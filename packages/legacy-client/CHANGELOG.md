@@ -1,5 +1,12 @@
 # @osdk/legacy-client
 
+## 2.4.1
+
+### Patch Changes
+
+- cd37441: Fix primary key encoding in URLs
+- e2ab8db: Fix long aggregations in legacy-client
+
 ## 2.4.0
 
 ### Minor Changes

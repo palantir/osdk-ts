@@ -1,5 +1,16 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.1.1
+
+### Patch Changes
+
+- e2ab8db: Fix long aggregations in legacy-client
+- Updated dependencies [cd37441]
+- Updated dependencies [8c76c1a]
+- Updated dependencies [e2ab8db]
+  - @osdk/legacy-client@2.4.1
+  - @osdk/generator@1.12.1
+
 ## 0.1.0
 
 ### Patch Changes

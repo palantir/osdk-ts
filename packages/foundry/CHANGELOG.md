@@ -1,5 +1,14 @@
 # @osdk/foundry
 
+## 2.0.1
+
+### Patch Changes
+
+- @osdk/foundry.admin@2.0.1
+- @osdk/foundry.datasets@2.0.1
+- @osdk/foundry.core@2.0.1
+- @osdk/foundry.thirdpartyapplications@2.0.1
+
 ## 2.0.0
 
 ### Minor Changes

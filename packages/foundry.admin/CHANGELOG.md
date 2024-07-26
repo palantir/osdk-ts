@@ -1,5 +1,17 @@
 # @osdk/foundry.admin
 
+## 2.0.1
+
+### Patch Changes
+
+- Updated dependencies [2deb4d9]
+- Updated dependencies [e54f413]
+- Updated dependencies [6387a92]
+- Updated dependencies [f91cd58]
+- Updated dependencies [651c1b8]
+  - @osdk/client@0.20.1
+  - @osdk/foundry.core@2.0.1
+
 ## 2.0.0
 
 ### Minor Changes

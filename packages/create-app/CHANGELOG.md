@@ -1,5 +1,11 @@
 # @osdk/create-app
 
+## 0.17.1
+
+### Patch Changes
+
+- 9e956e3: Makes the templates get embedded create-app instead of referencing them
+
 ## 0.17.0
 
 ### Minor Changes
