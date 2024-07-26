@@ -1,5 +1,13 @@
 # @osdk/create-app
 
+## 0.17.1
+
+### Patch Changes
+
+- Updated dependencies [71ddf63]
+  - @osdk/create-app.template.tutorial-todo-aip-app@0.17.1
+  - @osdk/create-app.template.tutorial-todo-app@0.17.1
+
 ## 0.17.0
 
 ### Minor Changes

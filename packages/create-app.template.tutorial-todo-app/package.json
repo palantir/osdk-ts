@@ -1,6 +1,6 @@
 {
   "name": "@osdk/create-app.template.tutorial-todo-app",
-  "version": "0.17.0",
+  "version": "0.17.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

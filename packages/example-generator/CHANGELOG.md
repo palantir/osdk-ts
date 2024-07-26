@@ -1,5 +1,11 @@
 # @osdk/example-generator
 
+## 0.6.1
+
+### Patch Changes
+
+- @osdk/create-app@0.17.1
+
 ## 0.6.0
 
 ### Minor Changes

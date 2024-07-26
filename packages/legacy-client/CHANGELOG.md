@@ -1,5 +1,11 @@
 # @osdk/legacy-client
 
+## 2.4.1
+
+### Patch Changes
+
+- 0d69b95: Fix primary key encoding in URLs
+
 ## 2.4.0
 
 ### Minor Changes
