@@ -1,5 +1,12 @@
 # @osdk/generator
 
+## 1.13.0
+
+### Minor Changes
+
+- 8c76c1a: Adds VersionBound to actions
+- e2ab8db: Fix long aggregations in legacy-client
+
 ## 1.13.0-beta.1
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/tool.release
 
+## 0.4.0
+
+### Minor Changes
+
+- 0e931a4: Properly generate titles and body copy after exiting pre mode
+
 ## 0.3.0
 
 ### Minor Changes
