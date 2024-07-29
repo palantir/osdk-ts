@@ -1,15 +1,5 @@
 # @osdk/foundry.datasets
 
-## 3.0.0-beta.1
-
-### Patch Changes
-
-- Updated dependencies [f91cd58]
-  - @osdk/client@0.21.0-beta.1
-  - @osdk/foundry.core@3.0.0-beta.1
-
-## 3.0.0-beta.0
-
 ### Patch Changes
 
 - Updated dependencies [2deb4d9]
