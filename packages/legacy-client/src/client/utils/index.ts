@@ -17,4 +17,5 @@
 export type { IsEmptyRecord } from "./IsEmptyRecord.js";
 export type { NonNullableKeys, NullableKeys } from "./NullableKeys.js";
 export type { reservedKeywordsList } from "./reservedKeywords.js";
+export type { StringLong } from "./StringLong.js";
 export type { ValuesOfMap } from "./ValuesOfMap.js";

@@ -29,6 +29,7 @@ import {
 } from "./ontology/StandardOntologyProvider.js";
 import { USER_AGENT } from "./util/UserAgent.js";
 
+/** @internal */
 export function createMinimalClient(
   metadata: MinimalClientParams["metadata"],
   baseUrl: string,

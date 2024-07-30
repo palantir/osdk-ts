@@ -26,6 +26,7 @@ import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "./fetchPage.js";
 
+/** @internal */
 export async function fetchSingle<
   Q extends ObjectOrInterfaceDefinition,
   const A extends FetchPageArgs<Q, any, any>,
@@ -59,6 +60,7 @@ export async function fetchSingle<
   return result.data[0] as any;
 }
 
+/** @internal */
 export async function fetchSingleWithErrors<
   Q extends ObjectOrInterfaceDefinition,
   const A extends FetchPageArgs<Q, any, any>,

@@ -25,6 +25,7 @@ import type { AggregationV2 } from "@osdk/internal.foundry";
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;
 
+/** @internal */
 export function modernToLegacyAggregationClause<
   AC extends UnorderedAggregationClause<any> | OrderedAggregationClause<any>,
 >(select: AC) {

@@ -42,6 +42,7 @@ describe("Aggregations", () => {
       class: StringGroupBy<"class">;
       class_: StringGroupBy<"class_">;
       tags: StringGroupBy<"tags">;
+      unixTimestamp: NumericGroupBy<"unixTimestamp">;
     }>().toMatchTypeOf<ObjectSetGroupByArg<Todo>>();
 
     expectTypeOf<{
@@ -51,6 +52,7 @@ describe("Aggregations", () => {
       points: AggregatableProperty<number>;
       class: AggregatableProperty<number>;
       class_: AggregatableProperty<number>;
+      unixTimestamp: AggregatableProperty<number>;
     }>().toMatchTypeOf<ObjectSetAggregateArg<Todo>>();
 
     expectTypeOf<{
@@ -61,6 +63,7 @@ describe("Aggregations", () => {
       class: ApproximateDistinctCountAggregatableProperty;
       class_: ApproximateDistinctCountAggregatableProperty;
       count: () => CountOperation;
+      unixTimestamp: MultipleAggregatableProperty<number>;
     }>().toMatchTypeOf<ObjectSetMultipleAggregateArg<Todo>>();
   });
 });

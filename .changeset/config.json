@@ -4,7 +4,8 @@
   "commit": false,
   "fixed": [
     ["@osdk/foundry.*", "@osdk/foundry"],
-    ["@osdk/client.api", "@osdk/client"]
+    ["@osdk/client.api", "@osdk/client"],
+    ["@osdk/create-app", "@osdk/create-app.template.*"]
   ],
   "linked": [],
   "access": "restricted",
@@ -12,9 +13,9 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "@osdk/examples.*",
+    "@osdk/monorepo.*",
     "@osdk/tests.*",
-    "@osdk/version-updater",
-    "@osdk/monorepo.*"
+    "@osdk/version-updater"
   ],
   "bumpVersionsWithWorkspaceProtocolOnly": true,
   "snapshot": {

@@ -194,9 +194,13 @@ export async function runVersion({
   } else {
     // project with `commit: true` setting could have already committed files
     if (!(await gitUtils.checkIfClean())) {
-      const finalCommitMessage = `${commitMessage}${
-        !!preState ? ` (${preState.tag})` : ""
-      }`;
+      let finalCommitMessage = commitMessage;
+      if (preState && preState.mode === "pre") {
+        finalCommitMessage += ` (${preState.tag})`;
+      } else if (preState && preState.mode === "exit") {
+        finalCommitMessage += ` (exit ${preState.tag})`;
+      }
+
       await gitUtils.commitAll(finalCommitMessage);
     }
 

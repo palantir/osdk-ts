@@ -39,9 +39,12 @@ async function createRollupBuild(
         browser: true,
         modulePaths: [nodeModulesPath!],
       }),
-      (commonjs.default ?? (commonjs as any as typeof commonjs["default"]))({}),
-      (nodePolyfill.default
-        ?? (nodePolyfill as any as typeof nodePolyfill["default"]))(),
+      ("default" in commonjs
+        ? commonjs.default
+        : (commonjs as any))({}),
+      ("default" in nodePolyfill
+        ? nodePolyfill.default
+        : (nodePolyfill as any))(),
     ],
     onwarn: (warning, warn) => {
       // Ignore circular dependency warnings

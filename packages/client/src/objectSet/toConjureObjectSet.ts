@@ -23,6 +23,7 @@ import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import type { ObjectPropertyMapping } from "../__unstable/ConjureSupport.js";
 import { conjureUnionType } from "./conjureUnionType.js";
 
+/** @internal */
 export function toConjureObjectSet<
   O extends OntologyDefinition<any>,
   K extends ObjectTypeKeysFrom<O>,
@@ -81,6 +82,7 @@ export function toConjureObjectSet<
   }
 }
 
+/** @internal */
 export async function getObjectSetBaseType(objectSet: ObjectSet) {
   switch (objectSet.type) {
     case "base":

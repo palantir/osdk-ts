@@ -27,6 +27,7 @@ import type {
   UnderlyingOsdkObject,
 } from "./InternalSymbols.js";
 
+/** @internal */
 export interface ObjectHolderPrototypeOwnProps {
   readonly [ObjectDefRef]: FetchedObjectTypeDefinition<any, any>;
   readonly [ClientRef]: MinimalClient;
@@ -34,10 +35,12 @@ export interface ObjectHolderPrototypeOwnProps {
   readonly "$link": ReturnType<typeof get$link>;
   readonly "$updateInternalValues": (newValues: Record<string, any>) => void;
 }
+/** @internal */
 export interface ObjectHolderOwnProperties {
   [RawObject]: OntologyObjectV2;
 }
 
+/** @internal */
 export interface ObjectHolder<Q extends FetchedObjectTypeDefinition<any, any>>
   extends ObjectHolderPrototypeOwnProps, ObjectHolderOwnProperties
 {

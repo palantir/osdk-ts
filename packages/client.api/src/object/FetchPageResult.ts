@@ -18,24 +18,23 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
-import type { IsNever } from "type-fest";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
-import type { Osdk } from "../OsdkObjectFrom.js";
+import type { IsNever, Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NullabilityAdherence } from "./FetchPageArgs.js";
 
-/** @internal exposed for a test */
+/** exposed for a test */
 export type RespectNullability<S extends NullabilityAdherence> = S extends false
   ? false
   : true;
 
-/** @internal exposed for a test */
+/** exposed for a test */
 export type UnionIfFalse<S extends string, JUST_S_IF_TRUE extends boolean, E> =
   IsNever<S> extends true ? never
     : JUST_S_IF_TRUE extends true ? S
     : S | E;
 
-/** @internal exposed for a test */
+/** exposed for a test */
 export type UnionIfTrue<
   S extends string,
   UNION_IF_TRUE extends boolean,

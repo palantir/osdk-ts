@@ -25,6 +25,7 @@ import type {
   AggregationRangeV2,
 } from "@osdk/internal.foundry";
 
+/** @internal */
 export function modernToLegacyGroupByClause(
   groupByClause: GroupByClause<any> | undefined,
 ) {

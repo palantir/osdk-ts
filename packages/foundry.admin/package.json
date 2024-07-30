@@ -30,11 +30,6 @@
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.net.platformapi": "workspace:~"
   },
-  "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/shared.net": "workspace:~"
-  },
   "devDependencies": {
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",

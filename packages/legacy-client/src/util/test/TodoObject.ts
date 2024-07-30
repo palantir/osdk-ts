@@ -18,6 +18,7 @@ import type {
   OntologyObject,
   SingleLink,
 } from "../../client/baseTypes/index.js";
+import type { StringLong } from "../../client/index.js";
 import type { Task } from "./TaskObject.js";
 
 /**
@@ -42,4 +43,5 @@ export interface Todo extends OntologyObject {
   readonly points: number | undefined;
   readonly tags: string[] | undefined;
   readonly linkedTask: SingleLink<Task>;
+  readonly unixTimestamp: StringLong | undefined;
 }

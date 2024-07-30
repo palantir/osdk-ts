@@ -48,6 +48,7 @@ describe(generateMetadataFile, () => {
       import { Todo } from './ontology/objects/Todo';
       import { getCount } from './ontology/queries/getCount';
       import type { Queries } from './ontology/queries/Queries';
+      import { returnsTodo } from './ontology/queries/returnsTodo';
 
       export const Ontology: {
         metadata: {
@@ -65,6 +66,7 @@ describe(generateMetadataFile, () => {
         };
         queries: {
           getCount: typeof getCount;
+          returnsTodo: typeof returnsTodo;
         };
       } = {
         metadata: {
@@ -82,8 +84,9 @@ describe(generateMetadataFile, () => {
         },
         queries: {
           getCount,
+          returnsTodo,
         },
-      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted' | 'deleteTodos', 'getCount'>;
+      } satisfies OntologyDefinition<'Todo' | 'Person', 'markTodoCompleted' | 'deleteTodos', 'getCount' | 'returnsTodo'>;
 
       export interface Ontology extends ClientOntology<typeof Ontology> {
         objects: Objects;

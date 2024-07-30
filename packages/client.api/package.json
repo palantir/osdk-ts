@@ -1,6 +1,6 @@
 {
   "name": "@osdk/client.api",
-  "version": "0.20.0",
+  "version": "0.21.0",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -28,7 +28,8 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~"
+    "@osdk/api": "workspace:~",
+    "type-fest": "^4.18.2"
   },
   "peerDependencies": {
     "@types/geojson": "*"
@@ -42,7 +43,6 @@
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
     "@types/geojson": "^7946.0.14",
-    "type-fest": "^4.23.0",
     "typescript": "^5.5.4"
   },
   "publishConfig": {

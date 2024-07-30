@@ -22,6 +22,7 @@ import type {
   OntologyObject,
   Timestamp,
 } from "../../client/baseTypes/index.js";
+import type { StringLong } from "../../client/index.js";
 
 export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly __apiName: "ObjectTypeWithAllPropertyTypes";
@@ -33,7 +34,7 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
   readonly dateTime: Timestamp | undefined;
   readonly decimal: string | undefined;
   readonly integer: number | undefined;
-  readonly long: string | undefined;
+  readonly long: StringLong | undefined;
   readonly short: number | undefined;
   readonly float: number | undefined;
   readonly double: number | undefined;

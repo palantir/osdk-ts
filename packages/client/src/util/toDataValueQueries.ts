@@ -26,6 +26,7 @@ import { isWireObjectSet } from "./WireObjectSet.js";
  * Marshall user-facing data into the wire DataValue type
  *
  * @see DataValue for the expected payloads
+ * @internal
  */
 export async function toDataValueQueries<T extends string>(
   value: unknown,

@@ -19,17 +19,12 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type {
-  ConvertProps,
-  NullabilityAdherence,
-  Osdk,
-} from "@osdk/client.api";
+import type { NullabilityAdherence, Osdk } from "@osdk/client.api";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {
   type FetchedObjectTypeDefinition,
-  InterfaceDefinitions,
 } from "../ontology/OntologyProvider.js";
 import { createOsdkObject } from "./convertWireToOsdkObjects/createOsdkObject.js";
 

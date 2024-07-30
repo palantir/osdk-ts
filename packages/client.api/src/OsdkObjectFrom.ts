@@ -40,11 +40,9 @@ type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
 >;
 
 /**
- * DO NOT EXPORT FROM PACKAGE
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
  * @param P - the property(s) to convert
- * @internal
  */
 export type ConvertProps<
   FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
@@ -114,7 +112,7 @@ type UnderlyingProps<
   : Z
   : Z;
 
-type IsNever<T> = [T] extends [never] ? true : false;
+export type IsNever<T> = [T] extends [never] ? true : false;
 
 export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,

@@ -29,6 +29,7 @@ import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 
+/** @internal */
 export function modernToLegacyWhereClause<
   T extends ObjectOrInterfaceDefinition<any, any>,
 >(
