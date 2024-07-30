@@ -92,7 +92,9 @@ export default async (options, ourOptions) => {
     },
   };
 
-  return [esmConfig, cjsConfig, browserConfig];
+  const ret = [esmConfig, browserConfig];
+  if (!ourOptions.esmOnly) ret.push(cjsConfig);
+  return ret;
 };
 
 async function readPackageVersion(k) {
