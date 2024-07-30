@@ -645,6 +645,9 @@ importers:
       fetch-retry:
         specifier: ^6.0.0
         version: 6.0.0
+      find-up:
+        specifier: 7.0.0
+        version: 7.0.0
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.18.0)
@@ -685,6 +688,9 @@ importers:
       '@types/ws':
         specifier: ^8.5.11
         version: 8.5.11
+      execa:
+        specifier: ^9.3.0
+        version: 9.3.0
       jest-extended:
         specifier: ^4.0.2
         version: 4.0.2
@@ -694,6 +700,15 @@ importers:
       p-defer:
         specifier: ^4.0.1
         version: 4.0.1
+      p-event:
+        specifier: ^6.0.1
+        version: 6.0.1
+      p-locate:
+        specifier: ^6.0.0
+        version: 6.0.0
+      p-map:
+        specifier: ^7.0.2
+        version: 7.0.2
       p-state:
         specifier: ^2.0.1
         version: 2.0.1
@@ -6415,6 +6430,10 @@ packages:
     resolution: {integrity: sha512-Mr5KC5efvAK5VUptYEIopP1bakB85k2IWXaRC0rsh1uwn1L6M0LVml8OIQ4Gudg4oyZakf7FmeRLkMMtZW1i5A==}
     engines: {node: '>=12'}
 
+  p-event@6.0.1:
+    resolution: {integrity: sha512-Q6Bekk5wpzW5qIyUP4gdMEujObYstZl6DMMOSenwBvV0BlE5LkDwkjs5yHbZmdCEq2o4RJx4tE1vwxFVf2FG1w==}
+    engines: {node: '>=16.17'}
+
   p-filter@2.1.0:
     resolution: {integrity: sha512-ZBxxZ5sL2HghephhpGAQdoskxplTwr7ICaehZwLIlfL6acuVgZPm8yBNuRAFBGEqtD/hmUeq9eqLg2ys9Xr/yw==}
     engines: {node: '>=8'}
@@ -6462,6 +6481,10 @@ packages:
   p-state@2.0.1:
     resolution: {integrity: sha512-izK3LJXvFsTOnompAXfyZRMJ6StMxwcdjgaoG20ZQH/8USERQnrSs7dtG3z6qiDHfeWhjT/WXWTCKug3pmoO1g==}
     engines: {node: '>=18'}
+
+  p-timeout@6.1.2:
+    resolution: {integrity: sha512-UbD77BuZ9Bc9aABo74gfXhNvzC9Tx7SxtHSh1fxvx3jTLLYvmVhiQZZrJzqqU0jKbN32kb5VOKiLEQI/3bIjgQ==}
+    engines: {node: '>=14.16'}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -12430,6 +12453,10 @@ snapshots:
 
   p-defer@4.0.1: {}
 
+  p-event@6.0.1:
+    dependencies:
+      p-timeout: 6.1.2
+
   p-filter@2.1.0:
     dependencies:
       p-map: 2.1.0
@@ -12471,6 +12498,8 @@ snapshots:
   p-map@7.0.2: {}
 
   p-state@2.0.1: {}
+
+  p-timeout@6.1.2: {}
 
   p-try@2.2.0: {}
 

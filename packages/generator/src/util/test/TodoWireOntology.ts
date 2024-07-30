@@ -156,6 +156,26 @@ export const TodoWireOntology = {
       rid: "rid.query.1",
       version: "0",
     },
+    "returnsTodo": {
+      apiName: "returnsTodo",
+      output: {
+        type: "object",
+        objectApiName: "Todo",
+        objectTypeApiName: "Todo",
+      },
+      parameters: {
+        someTodo: {
+          description: "Random desc so we test jsdoc",
+          dataType: {
+            type: "object",
+            objectApiName: "Todo",
+            objectTypeApiName: "Todo",
+          },
+        },
+      },
+      rid: "rid.query.2",
+      version: "0",
+    },
   },
   interfaceTypes: {},
   sharedPropertyTypes: {},

@@ -640,7 +640,7 @@ export interface PropertyValueWireToClient {
 // Warning: (ae-forgotten-export) The symbol "OptionalQueryParams" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = NOOP<PartialByNotStrict<NotOptionalParams_2<T>, OptionalQueryParams<T>>>;
+export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = PartialByNotStrict<NotOptionalParams_2<T>, OptionalQueryParams<T>>;
 
 // @public (undocumented)
 export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType> : T extends ObjectSetQueryDataType<any, infer TTargetType> ? ObjectSet<TTargetType> : T["type"] extends keyof DataValueWireToClient ? DataValueWireToClient[T["type"]] : never;

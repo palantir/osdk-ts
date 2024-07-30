@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-import type { QueryDataType, QueryTypeV2 } from "@osdk/gateway/types";
+import type { QueryTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { MinimalFs } from "../MinimalFs.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
+import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import {
-  wireQueryParameterV2ToQueryParameterDefinition,
   wireQueryTypeV2ToSdkQueryDefinition,
-  wireQueryTypeV2ToSdkQueryDefinitionNoParams,
 } from "../shared/wireQueryTypeV2ToSdkQueryDefinition.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
-import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
@@ -39,71 +34,7 @@ export async function generatePerQueryDataFiles(
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.queryTypes).map(async query => {
-      const objectTypes = getObjectTypesFromQuery(query);
-      const importObjects = objectTypes.length > 0
-        ? `import {${
-          [...objectTypes].join(",")
-        }} from "../objects${importExt}";`
-        : "";
-      if (v2) {
-        await fs.writeFile(
-          path.join(outDir, `${query.apiName}.ts`),
-          await formatTs(`
-          import { QueryDefinition } from "@osdk/api";
-          ${importObjects}
-          export const ${query.apiName} = {
-            ${
-            stringify(
-              deleteUndefineds(
-                wireQueryTypeV2ToSdkQueryDefinitionNoParams(query),
-              ),
-            )
-          },
-              parameters: {${
-            Object.entries(query.parameters).map((
-              [name, parameter],
-            ) => {
-              return `${name} : {${
-                stringify(deleteUndefineds(
-                  wireQueryParameterV2ToQueryParameterDefinition(parameter),
-                ))
-              },
-            ${
-                parameter.dataType.type === "object"
-                  || parameter.dataType.type === "objectSet"
-                  ? getOsdkTargetTypeIfPresent(
-                    parameter.dataType.objectTypeApiName!,
-                    v2,
-                  )
-                  : ``
-              }}`;
-            })
-          }},
-              output: {${
-            stringify(
-              deleteUndefineds(
-                wireQueryDataTypeToQueryDataTypeDefinition(query.output),
-              ),
-            )
-          },
-            ${
-            query.output.type === "object" || query.output.type === "objectSet"
-              ? getOsdkTargetTypeIfPresent(query.output.objectTypeApiName!, v2)
-              : ``
-          }}
-          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
-        );
-      } else {
-        await fs.writeFile(
-          path.join(outDir, `${query.apiName}.ts`),
-          await formatTs(`
-            import { QueryDefinition } from "@osdk/api";
-    
-            export const ${query.apiName} = ${
-            JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
-        );
-      }
+      await generateV1QueryFile(fs, outDir, query);
     }),
   );
 
@@ -121,71 +52,21 @@ export async function generatePerQueryDataFiles(
   );
 }
 
-function getObjectTypesFromQuery(query: QueryTypeV2) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromDataType(dataType, types);
-  }
-  getObjectTypesFromDataType(query.output, types);
-
-  return Array.from(types);
-}
-
-function getObjectTypesFromDataType(
-  dataType: QueryDataType,
-  types: Set<string>,
+async function generateV1QueryFile(
+  fs: MinimalFs,
+  outDir: string,
+  query: QueryTypeV2,
 ) {
-  switch (dataType.type) {
-    case "array":
-    case "set":
-      getObjectTypesFromDataType(dataType.subType, types);
-      return;
-
-    case "object":
-      types.add(dataType.objectTypeApiName);
-      return;
-
-    case "objectSet":
-      types.add(dataType.objectTypeApiName!);
-      return;
-
-    case "struct":
-      for (const prop of Object.values(dataType.fields)) {
-        getObjectTypesFromDataType(prop.fieldType, types);
-      }
-      return;
-
-    case "union":
-      for (const type of dataType.unionTypes) {
-        getObjectTypesFromDataType(type, types);
-      }
-      return;
-
-    case "attachment":
-    case "boolean":
-    case "date":
-    case "double":
-    case "float":
-    case "integer":
-    case "long":
-    case "null":
-    case "string":
-    case "threeDimensionalAggregation":
-    case "timestamp":
-    case "twoDimensionalAggregation":
-    case "unsupported":
-      /* complete no-op */
-      return;
-
-    default:
-      const _: never = dataType;
-      throw new Error(
-        `Cannot find object types from unsupported QueryDataType ${
-          (dataType as any).type
-        }`,
-      );
-  }
+  const objectTypes = getObjectTypeApiNamesFromQuery(query);
+  await fs.writeFile(
+    path.join(outDir, `${query.apiName}.ts`),
+    await formatTs(`
+            import { QueryDefinition } from "@osdk/api";
+    
+            export const ${query.apiName} = ${
+      JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
+    } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
+  );
 }
 
 function getQueryDefSatisfies(apiName: string, objectTypes: string[]): string {
@@ -194,18 +75,4 @@ function getQueryDefSatisfies(apiName: string, objectTypes: string[]): string {
       ? objectTypes.map(apiNameObj => `"${apiNameObj}"`).join("|")
       : "never"
   }>;`;
-}
-
-function getOsdkTargetTypeIfPresent(
-  objectTypeApiName: string,
-  v2: boolean,
-): string {
-  return `
-      __OsdkTargetType: ${
-    getObjectDefIdentifier(
-      objectTypeApiName,
-      v2,
-    )
-  }
-    `;
 }
