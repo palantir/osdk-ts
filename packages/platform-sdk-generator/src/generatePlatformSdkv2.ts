@@ -224,11 +224,6 @@ const BASE_PACKAGE_JSON = {
     "typecheck": "tsc-absolute",
   },
   "dependencies": {},
-  "peerDependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/client": "workspace:~",
-    "@osdk/shared.net": "workspace:~",
-  },
   "devDependencies": {
     "typescript": "^5.4.5",
   },
