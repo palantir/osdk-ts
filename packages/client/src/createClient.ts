@@ -61,10 +61,6 @@ class QueryInvoker<Q extends QueryDefinition<any, any>>
     clientCtx: MinimalClient,
     queryDef: QueryDefinition<any, any>,
   ) {
-    // We type the property as a generic function as binding `applyAction`
-    // doesn't return a type thats all that useful anyway
-    // The implements covers us for the most part here as this exact type doesn't
-    // escape this file
     this.applyQuery = applyQuery.bind(undefined, clientCtx, queryDef);
   }
 
