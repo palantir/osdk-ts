@@ -1,5 +1,11 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.1
+
+### Patch Changes
+
+- 74e035c: Restore cjs exports
+
 ## 1.3.0
 
 ### Patch Changes
