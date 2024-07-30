@@ -413,13 +413,25 @@ export type LinkNames<Q extends ObjectOrInterfaceDefinition> = keyof Q["links"] 
 
 // @public (undocumented)
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends BaseObjectSet<Q> {
-    // (undocumented)
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     fetchPage: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<FetchPageResult<Q, L, R, S>>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     fetchPageWithErrors: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     where: (clause: WhereClause<Q>) => MinimalObjectSet<Q>;
 }
 
@@ -445,21 +457,33 @@ export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximat
 
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition> extends MinimalObjectSet<Q> {
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    // (undocumented)
     fetchOne: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
-    // (undocumented)
     fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     intersect: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     subtract: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
     union: (...objectSets: ReadonlyArray<ObjectSet<Q>>) => ObjectSet<Q>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     where: (clause: WhereClause<Q>) => ObjectSet<Q>;
 }
 
@@ -720,13 +744,17 @@ export interface TimeSeriesPoint<T extends string | number> {
 
 // @public (undocumented)
 export interface TimeSeriesProperty<T extends number | string> {
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
-    // (undocumented)
+    // Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     getAllPoints(query?: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
-    // (undocumented)
     getFirstPoint(): Promise<TimeSeriesPoint<T>>;
-    // (undocumented)
     getLastPoint(): Promise<TimeSeriesPoint<T>>;
 }
 
