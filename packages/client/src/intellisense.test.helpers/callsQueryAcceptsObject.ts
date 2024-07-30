@@ -23,6 +23,6 @@ import { queryAcceptsObject } from "@osdk/client.test.ontology";
 import type { Client } from "../Client.js";
 
 const client: Client = {} as any;
-client(queryAcceptsObject)({
+client(queryAcceptsObject).applyQuery({
   object: undefined as any,
 });

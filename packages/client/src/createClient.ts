@@ -35,7 +35,7 @@ import { createMinimalClient } from "./createMinimalClient.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
-import { createQueryInvoker } from "./queries/createQueryInvoker.js";
+import { applyQuery } from "./queries/applyQuery.js";
 
 class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   implements ActionSignatureFromDef<Q>
@@ -52,6 +52,23 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   }
 
   applyAction: (...args: any[]) => any;
+}
+
+class QueryInvoker<Q extends QueryDefinition<any, any>>
+  implements QuerySignatureFromDef<Q>
+{
+  constructor(
+    clientCtx: MinimalClient,
+    queryDef: QueryDefinition<any, any>,
+  ) {
+    // We type the property as a generic function as binding `applyAction`
+    // doesn't return a type thats all that useful anyway
+    // The implements covers us for the most part here as this exact type doesn't
+    // escape this file
+    this.applyQuery = applyQuery.bind(undefined, clientCtx, queryDef);
+  }
+
+  applyQuery: (...args: any[]) => any;
 }
 
 /** @internal */
@@ -96,9 +113,12 @@ export function createClientInternal(
         ? ActionSignatureFromDef<T>
         : never) as any; // then as any for dealing with the conditional return value
     } else if (o.type === "query") {
-      return createQueryInvoker(clientCtx, o) as QuerySignatureFromDef<
-        any
-      > as any;
+      clientCtx.ontologyProvider.maybeSeed(o);
+      return new QueryInvoker(
+        clientCtx,
+        o,
+      ) as (T extends QueryDefinition<any, any> ? QuerySignatureFromDef<T>
+        : never) as any;
     } else {
       throw new Error("not implemented");
     }

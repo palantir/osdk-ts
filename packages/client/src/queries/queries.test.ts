@@ -58,7 +58,7 @@ describe("queries", () => {
   });
 
   it("simple query works", async () => {
-    const result = await client(addOne)({ n: 2 });
+    const result = await client(addOne).applyQuery({ n: 2 });
     expect(result).toBe(3);
   });
 
@@ -66,7 +66,9 @@ describe("queries", () => {
     const employee = await client(MockOntology.objects.Employee).fetchOne(
       50030,
     );
-    const result = await client(queryAcceptsObject)({ object: employee });
+    const result = await client(queryAcceptsObject).applyQuery({
+      object: employee,
+    });
     expect(result).toEqual({
       $apiName: "Employee",
       $objectType: "Employee",
@@ -74,7 +76,9 @@ describe("queries", () => {
     });
 
     // Should also accept primary keys
-    const result2 = await client(queryAcceptsObject)({ object: 50030 });
+    const result2 = await client(queryAcceptsObject).applyQuery({
+      object: 50030,
+    });
     expect(result2).toEqual({
       $apiName: "Employee",
       $objectType: "Employee",
@@ -84,7 +88,7 @@ describe("queries", () => {
 
   it("accepts objectSets", async () => {
     const employeeObjectSet = client(MockOntology.objects.Employee);
-    const result = await client(queryAcceptsObjectSets)({
+    const result = await client(queryAcceptsObjectSets).applyQuery({
       objectSet: employeeObjectSet,
     });
 
@@ -92,15 +96,15 @@ describe("queries", () => {
   });
 
   it("no params work", async () => {
-    const resultWithTimestamp = await client(returnsTimestamp)();
+    const resultWithTimestamp = await client(returnsTimestamp).applyQuery();
     expect(resultWithTimestamp).toBe("2019-01-01T00:00:00.000Z");
 
-    const resultWithDate = await client(returnsDate)();
+    const resultWithDate = await client(returnsDate).applyQuery();
     expect(resultWithDate).toBe("2019-01-01");
   });
 
   it("returns and accepts structs property", async () => {
-    const result = await client(incrementPersonAge)({
+    const result = await client(incrementPersonAge).applyQuery({
       person: { firstName: "John", lastName: "Doe", age: 42 },
     });
     expect(result).toEqual({
@@ -111,7 +115,7 @@ describe("queries", () => {
   });
 
   it("two dimensional aggregation response works", async () => {
-    const result = await client(twoDimensionalAggregationFunction)();
+    const result = await client(twoDimensionalAggregationFunction).applyQuery();
     expect(result).toEqual([{ key: "Q-AFN", value: 1 }, {
       key: "Q-AFO",
       value: 2,
@@ -119,18 +123,19 @@ describe("queries", () => {
   });
 
   it("two dimensional aggregation request/response works", async () => {
-    const result = await client(acceptsTwoDimensionalAggregationFunction)({
-      aggFunction: [
-        {
-          key: "testKey1",
-          value: 1,
-        },
-        {
-          key: "testKey2",
-          value: 2,
-        },
-      ],
-    });
+    const result = await client(acceptsTwoDimensionalAggregationFunction)
+      .applyQuery({
+        aggFunction: [
+          {
+            key: "testKey1",
+            value: 1,
+          },
+          {
+            key: "testKey2",
+            value: 2,
+          },
+        ],
+      });
     expect(result).toEqual([{ key: "responseKey1", value: 3 }, {
       key: "responseKey2",
       value: 4,
@@ -138,7 +143,8 @@ describe("queries", () => {
   });
 
   it("three dimensional aggregation response works", async () => {
-    const result = await client(threeDimensionalAggregationFunction)();
+    const result = await client(threeDimensionalAggregationFunction)
+      .applyQuery();
     expect(result).toEqual([{
       key: "Q-AFN",
       groups: [{
@@ -153,7 +159,7 @@ describe("queries", () => {
 
   it("throws when response is null and response is non-nullable", async () => {
     try {
-      const result = await client(addOne)({ n: 3 });
+      const result = await client(addOne).applyQuery({ n: 3 });
       expect.fail("Should not reach here");
     } catch (e) {
       expect((e as Error).message).toMatch(
@@ -163,26 +169,27 @@ describe("queries", () => {
   });
 
   it("three dimensional aggregation request/response works", async () => {
-    const result = await client(acceptsThreeDimensionalAggregationFunction)({
-      aggFunction: [
-        {
-          key: "testKey1",
-          groups: [
-            {
-              key: {
-                startValue: "2010-10-01T00:00:00Z",
-                endValue: "2010-10-02T00:00:00Z",
+    const result = await client(acceptsThreeDimensionalAggregationFunction)
+      .applyQuery({
+        aggFunction: [
+          {
+            key: "testKey1",
+            groups: [
+              {
+                key: {
+                  startValue: "2010-10-01T00:00:00Z",
+                  endValue: "2010-10-02T00:00:00Z",
+                },
+                value: 65.0,
               },
-              value: 65.0,
-            },
-          ],
-        },
-        {
-          key: "testKey2",
-          groups: [],
-        },
-      ],
-    });
+            ],
+          },
+          {
+            key: "testKey2",
+            groups: [],
+          },
+        ],
+      });
     expect(result).toEqual([
       {
         key: "Q-AFN",
