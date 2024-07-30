@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.23.0
+
+### Patch Changes
+
+- Updated dependencies [8c76c1a]
+- Updated dependencies [e2ab8db]
+  - @osdk/generator@1.13.0
+
 ## 0.23.0-beta.1
 
 ### Patch Changes
