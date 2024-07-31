@@ -44,6 +44,7 @@ export default async (options, ourOptions) => {
     silent: true,
     sourcemap: true,
     splitting: true,
+    shims: true, // so we can use __dirname in both esm and cjs
     minify: false, // !options.watch,
     onSuccess: async () => {
       console.log("👍");
