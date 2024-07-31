@@ -61,10 +61,10 @@ class QueryInvoker<Q extends QueryDefinition<any, any>>
     clientCtx: MinimalClient,
     queryDef: QueryDefinition<any, any>,
   ) {
-    this.applyQuery = applyQuery.bind(undefined, clientCtx, queryDef);
+    this.executeFunction = applyQuery.bind(undefined, clientCtx, queryDef);
   }
 
-  applyQuery: (...args: any[]) => any;
+  executeFunction: (...args: any[]) => any;
 }
 
 /** @internal */

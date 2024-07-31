@@ -647,7 +647,7 @@ export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T ext
 
 // @public (undocumented)
 export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
-    applyQuery: keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
+    executeFunction: keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
 };
 
 // @public

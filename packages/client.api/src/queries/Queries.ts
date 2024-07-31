@@ -33,7 +33,7 @@ import type {
 import type { PartialByNotStrict } from "../util/PartialBy.js";
 
 export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
-  applyQuery: keyof T["parameters"] extends never
+  executeFunction: keyof T["parameters"] extends never
     ? () => Promise<QueryReturnType<T["output"]>>
     : (
       params: QueryParameterType<T["parameters"]>,
