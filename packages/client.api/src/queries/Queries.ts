@@ -32,16 +32,13 @@ import type {
 } from "../index.js";
 import type { PartialByNotStrict } from "../util/PartialBy.js";
 
-export type Queries<O extends OntologyDefinition<any>> = {
-  [K in keyof O["queries"]]: QuerySignatureFromDef<O["queries"][K]>;
-};
-
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> =
-  keyof T["parameters"] extends never
+export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
+  executeFunction: keyof T["parameters"] extends never
     ? () => Promise<QueryReturnType<T["output"]>>
     : (
       params: QueryParameterType<T["parameters"]>,
     ) => Promise<QueryReturnType<T["output"]>>;
+};
 
 export type QueryParameterType<
   T extends Record<any, QueryDataTypeDefinition<any, any>>,
