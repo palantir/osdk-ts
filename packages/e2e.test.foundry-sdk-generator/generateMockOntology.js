@@ -38,6 +38,8 @@ async function setup() {
   await safeStat(testAppDir, "should not exist");
   await safeStat(testApp2Dir, "should not exist");
 
+  await fs.mkdir(dir, { recursive: true });
+
   const generatePackageCommand = new GeneratePackageCommand();
   await generatePackageCommand.handler({
     packageName: "@test-app/osdk",
