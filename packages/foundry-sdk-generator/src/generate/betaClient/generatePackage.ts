@@ -109,7 +109,7 @@ export async function generatePackage(
 
   const { findUp } = await import("find-up");
   const nodeModulesPath = await findUp("node_modules", {
-    cwd: dirname(fileURLToPath(import.meta.url)),
+    cwd: __dirname,
     type: "directory",
   });
 
@@ -174,7 +174,7 @@ async function getDependencyVersion(dependency: string): Promise<string> {
   }
   const { findUp } = await import("find-up");
   const result = await findUp("package.json", {
-    cwd: dirname(fileURLToPath(import.meta.url)),
+    cwd: __dirname,
   });
   const packageJson = await readFile(result!, {
     encoding: "utf-8",

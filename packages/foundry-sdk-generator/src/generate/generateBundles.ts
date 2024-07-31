@@ -30,7 +30,7 @@ async function createRollupBuild(
 
   const { findUp } = await import("find-up");
   const nodeModulesPath = await findUp("node_modules", {
-    cwd: dirname(fileURLToPath(import.meta.url)),
+    cwd: __dirname,
     type: "directory",
   });
 
