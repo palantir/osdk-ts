@@ -20,3 +20,30 @@ export interface WireOntologyDefinition
   extends gateway.components.OntologyFullMetadata
 {
 }
+
+// export type WireOntologyDefinitionWithNamespaces = {
+//   apiNamespace: string;
+// } & {
+//   [K in keyof WireOntologyDefinition]: K extends "objectTypes" | "actionTypes" | "queryTypes" | "interfaceTypes" ? MapValueToNamespace<WireOntologyDefinition[K]> : WireOntologyDefinition[K];
+// };
+
+// type MapValueToNamespace<T extends Record<string, any>> = T extends Record<infer K, infer V> ? Record<K, AddNamespace<V>> : never;
+
+// type AddNamespace<T extends object> = T & (T extends {apiName: string} ? {apiNamespace: string}: {})
+
+// const s: WireOntologyDefinitionWithNamespaces = {
+//   actionTypes: {
+//     a: {
+// parameters: {
+//   d: {
+
+//   }
+// }
+//     }
+//   },
+//   interfaceTypes: {},
+//   namespace: "hoi",
+//   objectTypes: {},
+//   queryTypes: {},
+//   sharedPropertyTypes: {}
+// }

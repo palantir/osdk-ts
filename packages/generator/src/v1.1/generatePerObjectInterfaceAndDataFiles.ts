@@ -15,6 +15,7 @@
  */
 
 import path from "node:path";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
@@ -27,10 +28,23 @@ export async function generatePerObjectInterfaceAndDataFiles(
   outDir: string,
   importExt: string = "",
 ) {
+  const enhancedOntology = enhanceOntology(
+    ontology,
+    undefined,
+    new Map(),
+    importExt,
+  );
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.objectTypes).map(async (object) => {
       const links = object.linkTypes;
+
+      const relPath = path.join(
+        ".",
+        "ontology",
+        `objects`,
+        `${object.objectType.apiName}.ts`,
+      );
 
       await fs.writeFile(
         path.join(outDir, `${object.objectType.apiName}.ts`),
@@ -43,7 +57,16 @@ export async function generatePerObjectInterfaceAndDataFiles(
           )
         }
 
-        ${wireObjectTypeV2ToSdkObjectConst(object, importExt)}
+        ${
+          wireObjectTypeV2ToSdkObjectConst(
+            object,
+            {
+              ontology: enhancedOntology,
+            },
+            relPath,
+            false,
+          )
+        }
         `),
       );
     }),

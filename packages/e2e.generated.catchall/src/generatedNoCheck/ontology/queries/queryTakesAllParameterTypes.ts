@@ -1,9 +1,8 @@
 import type { VersionBound } from '@osdk/api';
 import { QueryDefinition } from '@osdk/api';
-
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-import { Todo } from '../objects.js';
+import { Todo } from '../objects/Todo.js';
 
 export interface queryTakesAllParameterTypes
   extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo'>,

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
+import * as path from "node:path";
 import { describe, expect, it } from "vitest";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
@@ -22,13 +24,16 @@ import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 describe(generatePerActionDataFiles, () => {
   it("generates per action metadata", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/actions";
+    const BASE_PATH = "/foo/ontology/actions";
+    const sanitizedOntology = TodoWireOntology;
 
     await generatePerActionDataFiles(
-      TodoWireOntology,
-      helper.minimalFiles,
-      BASE_PATH,
-      "",
+      {
+        sanitizedOntology,
+        fs: helper.minimalFiles,
+        outDir: path.join(BASE_PATH, "..", ".."),
+        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
+      },
       false,
     );
 
@@ -41,12 +46,15 @@ describe(generatePerActionDataFiles, () => {
 
   it("guards against empty actions", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/actions";
+    const BASE_PATH = "/foo/ontology/actions";
+    const sanitizedOntology = { ...TodoWireOntology, actionTypes: {} };
     await generatePerActionDataFiles(
-      { ...TodoWireOntology, actionTypes: {} },
-      helper.minimalFiles,
-      BASE_PATH,
-      "",
+      {
+        sanitizedOntology,
+        fs: helper.minimalFiles,
+        outDir: path.join(BASE_PATH, "..", ".."),
+        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
+      },
       true,
     );
     expect(helper.getFiles()[`${BASE_PATH}/index.ts`]).toEqual("export {};\n");
@@ -54,17 +62,20 @@ describe(generatePerActionDataFiles, () => {
 
   it("imports object types correctly with array params in actions", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/actions";
+    const BASE_PATH = "/foo/ontology/actions";
+    const sanitizedOntology = TodoWireOntology;
     await generatePerActionDataFiles(
-      TodoWireOntology,
-      helper.minimalFiles,
-      BASE_PATH,
-      "",
+      {
+        sanitizedOntology,
+        fs: helper.minimalFiles,
+        outDir: path.join(BASE_PATH, "..", ".."),
+        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
+      },
       true,
     );
 
     expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(
-      "import type { Todo } from '../objects';\n",
+      "import type { Todo } from '../objects/Todo';\n",
     );
   });
 });

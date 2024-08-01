@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
+import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import type { EnhanceCommon } from "./EnhanceCommon.js";
+import { EnhancedBase } from "./EnhancedBase.js";
 
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
+export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
+  constructor(common: EnhanceCommon, public og: ObjectTypeFullMetadata) {
+    super(common, og, og.objectType.apiName, "./ontology/objects");
   }
-  getObjectTypesFromQueryDataType(query.output, types);
 
-  return Array.from(types);
+  getObjectDefIdentifier(v2: boolean) {
+    return v2 ? this.uniqueImportName : `${this.uniqueImportName}Def`;
+  }
 }

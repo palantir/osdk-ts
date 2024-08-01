@@ -15,19 +15,16 @@
  */
 
 import path from "path";
-import type { MinimalFs } from "../MinimalFs.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { formatTs } from "../util/test/formatTs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
 const ExpectedOsdkVersion = "0.21.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataFile(
-  ontology: WireOntologyDefinition,
+  { sanitizedOntology: ontology, fs, outDir }: GenerateContext,
   userAgent: string,
-  fs: MinimalFs,
-  outDir: string,
 ) {
   fs.writeFile(
     path.join(outDir, "OntologyMetadata.ts"),

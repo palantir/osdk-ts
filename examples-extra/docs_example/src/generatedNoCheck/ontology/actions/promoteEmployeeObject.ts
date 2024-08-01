@@ -8,7 +8,7 @@ import type {
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
-import type { Employee } from '../objects';
+import type { Employee } from '../objects/Employee';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$promoteEmployeeObject$Params = {

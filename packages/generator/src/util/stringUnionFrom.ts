@@ -14,19 +14,10 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
-
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
+export function stringUnionFrom(values: ReadonlyArray<string>) {
+  if (values.length === 0) {
+    return "never";
+  } else {
+    return values.map(v => `"${v}"`).join("|");
   }
-  getObjectTypesFromQueryDataType(query.output, types);
-
-  return Array.from(types);
 }

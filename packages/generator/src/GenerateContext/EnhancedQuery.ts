@@ -15,18 +15,17 @@
  */
 
 import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
+import type { EnhanceCommon } from "./EnhanceCommon.js";
+import { EnhancedBase } from "./EnhancedBase.js";
 
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
+export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
+  constructor(common: EnhanceCommon, public og: QueryTypeV2) {
+    super(common, og, og.apiName, "./ontology/queries");
   }
-  getObjectTypesFromQueryDataType(query.output, types);
-
-  return Array.from(types);
+  get parameters() {
+    return this.og.parameters;
+  }
+  get output() {
+    return this.og.output;
+  }
 }
