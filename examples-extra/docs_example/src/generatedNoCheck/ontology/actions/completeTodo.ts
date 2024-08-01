@@ -8,7 +8,7 @@ import type {
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
-import type { Todo } from '../objects';
+import type { Todo } from '../objects/Todo';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$completeTodo$Params = {

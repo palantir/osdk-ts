@@ -1,5 +1,6 @@
 import { QueryDefinition } from '@osdk/api';
-import { Todo } from '../objects.js';
+import { Todo } from '../objects/Todo.js';
+
 export const queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
   description: 'description of the query that takes all parameter types',

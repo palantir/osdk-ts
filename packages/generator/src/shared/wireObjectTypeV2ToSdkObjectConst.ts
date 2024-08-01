@@ -16,6 +16,8 @@
 
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { propertyJsdoc } from "./propertyJsdoc.js";
@@ -27,28 +29,30 @@ export function getObjectDefIdentifier(name: string, v2: boolean) {
 /** @internal */
 export function wireObjectTypeV2ToSdkObjectConst(
   object: ObjectTypeFullMetadata,
-  importExt: string,
+  { ontology }: Pick<
+    GenerateContext,
+    "ontology"
+  >,
+  currentFilePath: string,
   v2: boolean = false,
 ) {
+  const enhancedObject = ontology.requireObjectType(object.objectType.apiName);
   const uniqueLinkTargetTypes = new Set(
-    object.linkTypes.map(a => a.objectTypeApiName),
+    object.linkTypes.map(a => ontology.requireObjectType(a.objectTypeApiName)),
   );
 
   const definition = deleteUndefineds(
     wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-      object,
+      enhancedObject.og,
       v2,
     ),
   );
 
-  const objectDefIdentifier = getObjectDefIdentifier(
-    object.objectType.apiName,
-    v2,
-  );
+  const objectDefIdentifier = enhancedObject.getObjectDefIdentifier(v2);
 
   function getV1Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${enhancedObject.fullApiName}", ${enhancedObject.uniqueImportName}> {
         ${
       stringify(definition, {
         osdkMetadata: () => undefined, // not used in v1
@@ -58,7 +62,10 @@ export function wireObjectTypeV2ToSdkObjectConst(
             stringify(definition.links, {
               "*": (definition) =>
                 `ObjectTypeLinkDefinition<${
-                  getObjectDefIdentifier(definition.targetType, v2)
+                  ontology
+                    .objectTypes[definition.targetType].getObjectDefIdentifier(
+                      v2,
+                    )
                 }, ${definition.multiplicity}>`,
             })
           }
@@ -71,7 +78,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.objectType.apiName}", ${object.objectType.apiName}>, VersionBound<$ExpectedClientVersion> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${enhancedObject.fullApiName}", ${enhancedObject.uniqueImportName}>, VersionBound<$ExpectedClientVersion> {
         osdkMetadata: typeof $osdkMetadata;
         ${
       stringify(definition, {
@@ -84,7 +91,10 @@ export function wireObjectTypeV2ToSdkObjectConst(
             stringify(definition.links, {
               "*": (definition) =>
                 `ObjectTypeLinkDefinition<${
-                  getObjectDefIdentifier(definition.targetType, v2)
+                  ontology
+                    .objectTypes[definition.targetType].getObjectDefIdentifier(
+                      v2,
+                    )
                 }, ${definition.multiplicity}>`,
             })
           }
@@ -109,19 +119,19 @@ export function wireObjectTypeV2ToSdkObjectConst(
     `;
   }
 
-  const imports = Array.from(uniqueLinkTargetTypes).filter(type =>
-    type !== definition.apiName
-  ).map(type =>
-    `import type { ${
-      getObjectDefIdentifier(type, v2)
-    } } from "./${type}${importExt}";`
+  const fullApiName = definition.apiName;
+  const imports = getObjectImports(
+    uniqueLinkTargetTypes,
+    fullApiName,
+    currentFilePath,
+    v2,
   );
 
-  return `${imports.join("\n")}
+  return `${imports}
 
     ${v2 ? getV2Types() : getV1Types()}
 
-    export const ${object.objectType.apiName}: ${objectDefIdentifier} = {
+    export const ${enhancedObject.shortApiName}: ${objectDefIdentifier} = {
       ${v2 ? `osdkMetadata: $osdkMetadata,` : ""}
       ${
     stringify(definition, {
@@ -130,4 +140,19 @@ export function wireObjectTypeV2ToSdkObjectConst(
   }
     
     };`;
+}
+
+export function getObjectImports(
+  objects: Set<EnhancedObjectType>,
+  curApiName: string | undefined,
+  currentFilePath: string,
+  v2: boolean,
+) {
+  return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
+    .map(obj => {
+      const enhancedObj = obj;
+      return `import type { ${enhancedObj.getObjectDefIdentifier(v2)} } from "${
+        enhancedObj.getImportPathRelTo("./" + currentFilePath)
+      }";`;
+    }).join("\n");
 }

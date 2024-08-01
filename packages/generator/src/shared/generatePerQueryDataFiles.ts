@@ -16,46 +16,58 @@
 
 import type { QueryDataType, QueryTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
-import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { stringify } from "../util/stringify.js";
+import { formatTs } from "../util/test/formatTs.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
+import { wireQueryDataTypeToQueryDataTypeDefinition } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";
 import {
   wireQueryParameterV2ToQueryParameterDefinition,
   wireQueryTypeV2ToSdkQueryDefinition,
   wireQueryTypeV2ToSdkQueryDefinitionNoParams,
-} from "../shared/wireQueryTypeV2ToSdkQueryDefinition.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
-import { stringify } from "../util/stringify.js";
-import { formatTs } from "../util/test/formatTs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+} from "./wireQueryTypeV2ToSdkQueryDefinition.js";
 
 export async function generatePerQueryDataFiles(
-  ontology: WireOntologyDefinition,
-  fs: MinimalFs,
-  outDir: string,
-  importExt: string = "",
-  v2: boolean = false,
+  {
+    fs,
+    outDir: rootOutDir,
+    ontology,
+  }: Pick<
+    GenerateContext,
+    | "fs"
+    | "outDir"
+    | "ontology"
+  >,
+  v2: boolean,
 ) {
+  const relOutDir = path.join(".", "ontology", "queries");
+  const outDir = path.join(rootOutDir, "ontology", "queries");
+
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.queryTypes).map(async query => {
+      const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
       const objectTypes = getObjectTypesFromQuery(query);
-      const importObjects = objectTypes.length > 0
-        ? `import {${
-          [...objectTypes].join(",")
-        }} from "../objects${importExt}";`
-        : "";
+      const importObjects = getObjectImports(
+        ontology,
+        objectTypes,
+        relFilePath,
+      );
+
       if (v2) {
         await fs.writeFile(
-          path.join(outDir, `${query.apiName}.ts`),
+          path.join(outDir, `${query.shortApiName}.ts`),
           await formatTs(`
           import { QueryDefinition } from "@osdk/api";
           ${importObjects}
-          export const ${query.apiName} = {
+          export const ${query.shortApiName} = {
             ${
             stringify(
               deleteUndefineds(
-                wireQueryTypeV2ToSdkQueryDefinitionNoParams(query),
+                wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.og),
               ),
             )
           },
@@ -91,17 +103,17 @@ export async function generatePerQueryDataFiles(
               ? getOsdkTargetTypeIfPresent(query.output.objectTypeApiName!, v2)
               : ``
           }}
-          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
+          } ${getQueryDefSatisfies(query.fullApiName, objectTypes)}`),
         );
       } else {
         await fs.writeFile(
-          path.join(outDir, `${query.apiName}.ts`),
+          path.join(outDir, `${query.shortApiName}.ts`),
           await formatTs(`
             import { QueryDefinition } from "@osdk/api";
     
-            export const ${query.apiName} = ${
-            JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-          } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
+            export const ${query.shortApiName} = ${
+            JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query.og))
+          } ${getQueryDefSatisfies(query.fullApiName, objectTypes)}`),
         );
       }
     }),
@@ -112,7 +124,9 @@ export async function generatePerQueryDataFiles(
     await formatTs(`
   ${
       Object.values(ontology.queryTypes).map(query =>
-        `export * from "./${query.apiName}${importExt}";`
+        `export * from "${
+          query.getImportPathRelTo(path.join(relOutDir, "index.ts"))
+        }";`
       )
         .join("\n")
     }
@@ -121,7 +135,24 @@ export async function generatePerQueryDataFiles(
   );
 }
 
-function getObjectTypesFromQuery(query: QueryTypeV2) {
+function getObjectImports(
+  enhancedOntology: EnhancedOntologyDefinition,
+  objectTypes: string[],
+  filePath: string,
+) {
+  let ret = "";
+
+  for (const fqObjectApiName of objectTypes) {
+    const obj = enhancedOntology.requireObjectType(fqObjectApiName);
+    ret += `import { ${obj.shortApiName} } from "${
+      obj.getImportPathRelTo(filePath)
+    }";\n`;
+  }
+
+  return ret;
+}
+
+function getObjectTypesFromQuery(query: EnhancedQuery) {
   const types = new Set<string>();
 
   for (const { dataType } of Object.values(query.parameters)) {

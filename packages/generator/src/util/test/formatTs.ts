@@ -20,12 +20,18 @@ import { format } from "prettier";
 import organizeImports from "prettier-plugin-organize-imports";
 
 export function formatTs(contents: string) {
-  return format(contents, {
-    parser: "typescript",
-    singleQuote: true,
-    trailingComma: "all",
-    plugins: [organizeImports],
-    tabWidth: 2,
-    printWidth: 120,
-  });
+  try {
+    return format(contents, {
+      parser: "typescript",
+      singleQuote: true,
+      trailingComma: "all",
+      plugins: [organizeImports],
+      tabWidth: 2,
+      printWidth: 120,
+    });
+  } catch (e) {
+    console.error("Failed to format file", e);
+    console.log(contents);
+    return contents;
+  }
 }
