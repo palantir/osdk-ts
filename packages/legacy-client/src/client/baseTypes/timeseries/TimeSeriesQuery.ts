@@ -35,6 +35,7 @@ export interface TimeSeriesQuery<T extends string | number>
 {
   /**
    * Creates a query to grab Time Series points from a specified duration in years from today.
+   * @deprecated
    *
    * @param value a number representing the duration of years.
    * @example
@@ -48,6 +49,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in months from today.
+   * @deprecated
    *
    * @param value a number representing the duration of months.
    * @example
@@ -61,6 +63,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in weeks from today.
+   * @deprecated
    *
    * @param value a number representing the duration of weeks.
    * @example
@@ -74,6 +77,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in days from today.
+   * @deprecated
    *
    * @param value a number representing the duration of days.
    * @example
@@ -87,6 +91,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in hours from today.
+   * @deprecated
    *
    * @param value a number representing the duration of hours.
    * @example
@@ -100,6 +105,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in minutes from today.
+   * @deprecated
    *
    * @param value a number representing the duration of minutes.
    * @example
@@ -113,6 +119,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in seconds from today.
+   * @deprecated
    *
    * @param value a number representing the duration of seconds.
    * @example
@@ -126,6 +133,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points from a specified duration in milliseconds from today.
+   * @deprecated
    *
    * @param value a number representing the duration of milliseconds.
    * @example
@@ -139,6 +147,7 @@ export interface TimeSeriesQuery<T extends string | number>
 
   /**
    * Creates a query to grab Time Series points between a specified start and end time.
+   * @deprecated
    *
    * @param range a query representing the specified start and time of the range of points.
    * @example

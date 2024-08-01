@@ -54,6 +54,7 @@ export class PublicClientAuth implements Auth {
    * @param options.redirectUrl The URL where the OAuth server should redirect the user after authentication (required).
    * @param options.multipassContextPath The context path for the multipass authentication (optional).
    * @param options.scopes An array of strings representing the requested OAuth scopes (optional).
+   * @deprecated
    */
   constructor(
     private options: {

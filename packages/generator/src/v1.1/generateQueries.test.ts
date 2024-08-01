@@ -37,12 +37,14 @@ describe(generateQueries, () => {
           /**
            * @param {boolean} params.completed
            * @returns number
+           * @deprecated
            */
           getCount(params: { completed: boolean }): Promise<Result<QueryResponse<number>, QueryError>>;
 
           /**
            * @param {Todo|Todo["__primaryKey"]} params.someTodo - Random desc so we test jsdoc
            * @returns Todo
+           * @deprecated
            */
           returnsTodo(params: { someTodo: Todo | Todo['__primaryKey'] }): Promise<Result<QueryResponse<Todo>, QueryError>>;
         }

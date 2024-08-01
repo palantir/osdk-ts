@@ -63,7 +63,7 @@ export async function generateActions(
       }
       parameterBlock += "}, ";
     }
-
+    jsDocBlock.push(`* @deprecated`);
     jsDocBlock.push(`*/`);
     actionSignatures.push(
       `

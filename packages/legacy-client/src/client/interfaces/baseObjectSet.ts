@@ -38,14 +38,26 @@ export type BaseObjectSetOperations<O extends OntologyObject> = {
   /** @deprecated use fetchOneWithErrors instead */
   get(primaryKey: O["$primaryKey"]): Promise<Result<O, GetObjectError>>;
 
+  /**
+   * @deprecated
+   * @param primaryKey
+   */
   fetchOneWithErrors(
     primaryKey: O["$primaryKey"],
   ): Promise<Result<O, GetObjectError>>;
 
+  /**
+   * @deprecated
+   * @param primaryKey
+   */
   fetchOne(
     primaryKey: O["$primaryKey"],
   ): Promise<O>;
 
+  /**
+   * @deprecated
+   * @param properties
+   */
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
   ): FilteredPropertiesTerminalOperationsWithGet<O, T[]>;

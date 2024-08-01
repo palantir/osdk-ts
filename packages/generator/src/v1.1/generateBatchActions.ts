@@ -66,6 +66,7 @@ export async function generateBatchActions(
       parameterBlock = `params: Record<string,never>[], `;
     }
 
+    jsDocBlock.push(`* @deprecated`);
     jsDocBlock.push(`*/`);
     actionSignatures.push(
       `
