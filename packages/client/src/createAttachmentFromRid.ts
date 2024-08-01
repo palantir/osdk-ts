@@ -18,6 +18,12 @@ import type { Attachment } from "@osdk/client.api";
 import { Ontologies } from "@osdk/internal.foundry";
 import type { MinimalClient } from "./MinimalClientContext.js";
 
+/**
+ * Helper function to create an attachment type from a rid
+ * @param client
+ * @param rid rid of attachment in Foundry
+ * @returns
+ */
 export function createAttachmentFromRid(
   client: MinimalClient,
   rid: string,

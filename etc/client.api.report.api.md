@@ -132,9 +132,7 @@ export type ApplyBatchActionOptions = {
 
 // @public (undocumented)
 export interface Attachment {
-    // (undocumented)
     fetchContents(): Promise<Blob>;
-    // (undocumented)
     fetchMetadata(): Promise<AttachmentMetadata>;
     // (undocumented)
     rid: string;
@@ -400,9 +398,10 @@ export type GroupByRange<T> = [T, T];
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>> extends MinimalObjectSet<Q> {
 }
 
+// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
-// @public (undocumented)
+// @public
 export function isOk<X>(a: Result<X>): a is OkResult<X>;
 
 // @public (undocumented)
