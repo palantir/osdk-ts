@@ -670,7 +670,9 @@ export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any
 export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType> : T extends ObjectSetQueryDataType<any, infer TTargetType> ? ObjectSet<TTargetType> : T["type"] extends keyof DataValueWireToClient ? DataValueWireToClient[T["type"]] : never;
 
 // @public (undocumented)
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
+export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
+    executeFunction: keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
+};
 
 // @public
 export type RespectNullability<S extends NullabilityAdherence> = S extends false ? false : true;

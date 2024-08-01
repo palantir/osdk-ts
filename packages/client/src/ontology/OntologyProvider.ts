@@ -19,6 +19,7 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
+  QueryDefinition,
 } from "@osdk/api";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
@@ -69,7 +70,8 @@ export interface OntologyProvider {
   maybeSeed: (
     definition:
       | ObjectOrInterfaceDefinition
-      | ActionDefinition<string, string, any>,
+      | ActionDefinition<string, string, any>
+      | QueryDefinition<any, any>,
   ) => void;
 }
 
