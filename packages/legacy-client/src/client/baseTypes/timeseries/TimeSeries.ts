@@ -23,14 +23,17 @@ export interface TimeSeries<T extends number | string> {
   type: "TimeSeries";
   /**
    * Queries the First Point of the Time Series.
+   * @deprecated
    */
   getFirstPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>>;
   /**
    * Queries the Last Point of the Time Series.
+   * @deprecated
    */
   getLastPoint(): Promise<Result<TimeSeriesPoint<T>, TimeSeriesError>>;
   /**
    * Queries a stream of Time Series points using different operations and filters.
+   * @deprecated
    *
    * @example
    * const allPoints = object.property.points.all();

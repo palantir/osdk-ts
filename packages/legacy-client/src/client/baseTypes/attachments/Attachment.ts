@@ -22,10 +22,12 @@ export interface Attachment {
   attachmentRid: string | undefined;
   /**
    * Get the metadata of an attachment.
+   * @deprecated
    */
   getMetadata(): Promise<Result<AttachmentMetadata, AttachmentsError>>;
   /**
    * Read the content of an attachment.
+   * @deprecated
    */
   read(): Promise<Result<Blob, AttachmentsError>>;
 }

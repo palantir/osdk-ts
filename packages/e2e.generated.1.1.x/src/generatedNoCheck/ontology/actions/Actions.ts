@@ -21,6 +21,7 @@ export interface Actions {
    * @param {Timestamp} params.time-stamp
    * @param {Array<LocalDate>} params.dateArray
    * @param {Array<Attachment>} params.attachmentArray
+   * @deprecated
    */
   actionTakesAllParameterTypes<O extends ActionExecutionOptions>(
     params: {
@@ -36,6 +37,7 @@ export interface Actions {
 
   /**
    * Creates a new Todo
+   * @deprecated
    */
   createTodo<O extends ActionExecutionOptions>(
     options?: O,

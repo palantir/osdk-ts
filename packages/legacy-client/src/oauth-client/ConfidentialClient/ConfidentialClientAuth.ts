@@ -38,6 +38,7 @@ export class ConfidentialClientAuth implements Auth {
    * @param options.url The base URL of the OAuth server (required).
    * @param options.multipassContextPath The context path for the multipass authentication (optional).
    * @param options.scopes An array of strings representing the requested OAuth scopes (optional).
+   * @deprecated
    */
   constructor(
     private options: {

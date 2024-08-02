@@ -22,6 +22,11 @@ import type { AttachmentsError } from "../../errors/index.js";
 import type { Attachment } from "./Attachment.js";
 
 export interface Attachments {
+  /**
+   * @deprecated
+   * @param fileName
+   * @param data
+   */
   upload(
     fileName: string,
     data: Blob,

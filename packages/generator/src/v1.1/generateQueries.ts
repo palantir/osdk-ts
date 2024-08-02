@@ -71,6 +71,7 @@ export async function generateQueries(
 
     jsDocBlock.push(
       `* @returns ${sanitizeDocTypeName(outputType)}`,
+      `* @deprecated`,
       "*/",
     );
 

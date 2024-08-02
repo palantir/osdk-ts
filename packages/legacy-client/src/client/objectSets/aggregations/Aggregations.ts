@@ -145,6 +145,7 @@ export interface AggregatableObjectSetStep<
    * Group the results by a specified property
    *
    * @param propertySelector a function that selects the property to group by
+   * @deprecated
    */
   groupBy<TGroupKey extends BucketValue, TPropertyName extends string>(
     propertySelector: (
@@ -167,6 +168,7 @@ export interface GroupedTerminalAggregationOperations<
 > {
   /**
    * Computes the count of total objects.
+   * @deprecated
    */
   count(): AggregationComputeStep<
     TBucketGroup,
@@ -178,6 +180,7 @@ export interface GroupedTerminalAggregationOperations<
    * Compute the maximum value of the specified property.
    *
    * @param propertySelector A function that selects the property to find the maximum of.
+   * @deprecated
    */
   max<TResult extends MetricValue>(
     propertySelector: (
@@ -196,6 +199,7 @@ export interface GroupedTerminalAggregationOperations<
    * Computes the minimum of the specified property.
    *
    * @param propertySelector A function that selects the property to compute the minimum of.
+   * @deprecated
    */
   min<TResult extends MetricValue>(
     propertySelector: (
@@ -214,6 +218,7 @@ export interface GroupedTerminalAggregationOperations<
    * Computes approximate count of distinct values of the specified property.
    *
    * @param propertySelector A function that selects the property to count.
+   * @deprecated
    */
   approximateDistinct(
     propertySelector: (
@@ -224,6 +229,7 @@ export interface GroupedTerminalAggregationOperations<
    * Compute the average of the specified property.
    *
    * @param propertySelector A function that selects the property to calculate the average of.
+   * @deprecated
    */
   avg<TResult extends MetricValue>(
     propertySelector: (
@@ -242,6 +248,7 @@ export interface GroupedTerminalAggregationOperations<
    * Compute the sum of the specified property.
    *
    * @param propertySelector A function that selects the property to calculate the sum of.
+   * @deprecated
    */
   sum<TResult extends MetricValue>(
     propertySelector: (
@@ -256,6 +263,10 @@ export interface GroupedTerminalAggregationOperations<
       sum: TResult;
     }
   >;
+  /**
+   * @deprecated
+   * @param aggregateBuilder
+   */
   aggregate<
     TOperation extends
       | MultipleAggregationsOperations<MetricValue>

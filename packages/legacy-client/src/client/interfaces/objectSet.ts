@@ -51,26 +51,50 @@ export type ObjectSet<O extends OntologyObject> =
   >;
 
 export type ObjectSetOperations<O extends OntologyObject> = {
+  /**
+   * @deprecated
+   * @param predicate
+   */
   where(
     predicate: ObjectTypeFilterFunction<O>,
   ): ObjectSet<O>;
 
+  /**
+   * @deprecated
+   * @param otherObjectSets
+   */
   union(
     ...otherObjectSets: ObjectSet<O>[]
   ): ObjectSet<O>;
 
+  /**
+   * @deprecated
+   * @param otherObjectSets
+   */
   intersect(
     ...otherObjectSets: ObjectSet<O>[]
   ): ObjectSet<O>;
 
+  /**
+   * @deprecated
+   * @param otherObjectSets
+   */
   subtract(
     ...otherObjectSets: ObjectSet<O>[]
   ): ObjectSet<O>;
 
+  /**
+   * @deprecated
+   * @param properties
+   */
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
   ): FilteredPropertiesTerminalOperations<O, T[]>;
 
+  /**
+   * @deprecated
+   * @param linkType
+   */
   pivotTo<
     K extends keyof LinksProperties<O>,
   >(
@@ -79,10 +103,19 @@ export type ObjectSetOperations<O extends OntologyObject> = {
 };
 
 export type ObjectSetOrderByStep<O extends OntologyObject> = {
+  /**
+   * @deprecated
+   * @param predicate
+   * @returns
+   */
   orderBy: (
     predicate: OrderByFunction<O>,
   ) => ObjectSetOrderByStep<O>;
 
+  /**
+   * @deprecated
+   * @param properties
+   */
   select<T extends keyof SelectableProperties<O>>(
     properties: readonly T[],
   ): FilteredPropertiesTerminalOperations<O, T[]>;
@@ -98,6 +131,10 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
     pageToken?: string;
   }): Promise<Result<Page<O>, ListObjectsError>>;
 
+  /**
+   * @deprecated
+   * @param options
+   */
   fetchPageWithErrors(options?: {
     pageSize?: number;
     pageToken?: string;
@@ -105,6 +142,7 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
 
   /**
    * Get a page of objects of this type, without a result wrapper
+   * @deprecated
    */
   fetchPage(options?: {
     pageSize?: number;
@@ -119,6 +157,7 @@ export type ObjectSetTerminalLoadStep<O extends OntologyObject> = {
 
   /**
    * Iterate through all objects
+   * @deprecated
    */
   asyncIter(): AsyncIterableIterator<O>;
 };

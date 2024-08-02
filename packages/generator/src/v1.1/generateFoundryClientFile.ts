@@ -31,6 +31,9 @@ export async function generateFoundryClientFile(
     import { Ontology } from "./Ontology${importExt}";
 
     export class FoundryClient<TAuth extends Auth = Auth> extends BaseFoundryClient<typeof Ontology, TAuth> {
+        /**
+         * @deprecated
+         */
         constructor(options: FoundryClientOptions<TAuth>) {
           super(options, Ontology);
         }

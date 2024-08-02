@@ -21,6 +21,7 @@ export interface BatchActions {
    * @param {Timestamp} params.time-stamp
    * @param {Array<LocalDate>} params.dateArray
    * @param {Array<Attachment>} params.attachmentArray
+   * @deprecated
    */
   actionTakesAllParameterTypes<O extends BatchActionExecutionOptions>(
     params: {
@@ -38,6 +39,7 @@ export interface BatchActions {
 
   /**
    * Creates a new Todo
+   * @deprecated
    */
   createTodo<O extends BatchActionExecutionOptions>(
     params: Record<string, never>[],

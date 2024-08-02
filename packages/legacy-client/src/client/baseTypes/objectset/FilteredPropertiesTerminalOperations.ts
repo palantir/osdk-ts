@@ -55,6 +55,9 @@ export type FilteredPropertiesTerminalOperations<
     >
   >;
 
+  /**
+   * @deprecated
+   */
   asyncIter(): AsyncIterableIterator<
     Pick<
       T,
@@ -62,6 +65,10 @@ export type FilteredPropertiesTerminalOperations<
     >
   >;
 
+  /**
+   * @deprecated
+   * @param options
+   */
   fetchPage(options?: {
     pageSize?: number;
     pageToken?: string;
@@ -73,6 +80,10 @@ export type FilteredPropertiesTerminalOperations<
       >
     >
   >;
+  /**
+   * @deprecated
+   * @param options
+   */
   fetchPageWithErrors(options?: {
     pageSize?: number;
     pageToken?: string;
@@ -105,6 +116,10 @@ export type FilteredPropertiesTerminalOperationsWithGet<
       GetObjectError
     >
   >;
+  /**
+   * @deprecated
+   * @param primaryKey
+   */
   fetchOneWithErrors(
     primaryKey: T["$primaryKey"],
   ): Promise<
@@ -116,6 +131,10 @@ export type FilteredPropertiesTerminalOperationsWithGet<
       GetObjectError
     >
   >;
+  /**
+   * @deprecated
+   * @param primaryKey
+   */
   fetchOne(
     primaryKey: T["$primaryKey"],
   ): Promise<

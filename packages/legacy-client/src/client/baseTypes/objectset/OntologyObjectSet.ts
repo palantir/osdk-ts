@@ -20,12 +20,24 @@ export interface OntologyObjectSet<
   TOntologyObject extends OntologyObject = OntologyObject,
 > {
   definition: ObjectSetDefinition;
+  /**
+   * @deprecated
+   * @param objectSet
+   */
   union(
     objectSet: OntologyObjectSet<TOntologyObject>,
   ): OntologyObjectSet<TOntologyObject>;
+  /**
+   * @deprecated
+   * @param objectSet
+   */
   intersect(
     objectSet: OntologyObjectSet<TOntologyObject>,
   ): OntologyObjectSet<TOntologyObject>;
+  /**
+   * deprecated
+   * @param objectSet
+   */
   subtract(
     objectSet: OntologyObjectSet<TOntologyObject>,
   ): OntologyObjectSet<TOntologyObject>;

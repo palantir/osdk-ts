@@ -71,7 +71,10 @@ export interface AggregationComputeStep<
   TBucketGroup extends BucketGroup,
   TMetrics extends Metrics | MetricValue,
 > {
-  /** Compute the specified aggregation(s) */
+  /**
+   * Compute the specified aggregation(s)
+   * @deprecated
+   */
   compute(): Promise<
     Result<AggregationResult<TBucketGroup, TMetrics>, AggregateObjectsError>
   >;

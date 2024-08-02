@@ -46,6 +46,7 @@ describe(generateActions, () => {
           /**
            * An action which takes different types of parameters
            * @param {Todo | Todo["__primaryKey"]} params.object
+           * @deprecated
            */
           markTodoCompleted<O extends ActionExecutionOptions>(
             params: {
@@ -57,6 +58,7 @@ describe(generateActions, () => {
           /**
            * An action which takes in an array of objects
            * @param {Array<Todo | Todo["__primaryKey"]>} params.object
+           * @deprecated
            */
           deleteTodos<O extends ActionExecutionOptions>(
             params: {

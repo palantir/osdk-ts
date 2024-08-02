@@ -34,6 +34,7 @@ export interface Queries {
    * @param {TwoDimensionalAggregation<string,number>} params.twoDimensionalAggregation
    * @param {ThreeDimensionalAggregation<Range<LocalDate>,Range<Timestamp>,LocalDate>} params.threeDimensionalAggregation
    * @returns string
+   * @deprecated
    */
   queryTakesAllParameterTypes(params: {
     double: number;
@@ -58,6 +59,7 @@ export interface Queries {
 
   /**
    * @returns number
+   * @deprecated
    */
   getTodoCount(): Promise<Result<QueryResponse<number>, QueryError>>;
 }
