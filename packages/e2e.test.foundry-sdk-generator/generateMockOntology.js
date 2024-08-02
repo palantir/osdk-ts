@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
+// @ts-check
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { apiServer } from "@osdk/shared.test";
-import { rm } from "fs/promises";
-import { join } from "path";
-import { GeneratePackageCommand } from "../generate/index.js";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const dir = `${__dirname}/../generatedNoCheck/`;
-export async function setup() {
+const dir = path.join(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "src",
+  "generatedNoCheck",
+);
+async function setup() {
   apiServer.listen();
 
-  try {
-    await rm(join(dir, "@test-app"), { recursive: true });
-    await rm(join(dir, "@test-app2"), { recursive: true });
-  } catch (e) {
-    // Only needed for regenerations
-  }
+  const testAppDir = path.join(dir, "@test-app");
+  const testApp2Dir = path.join(dir, "@test-app2");
+
+  await rmRf(testAppDir);
+  await rmRf(testApp2Dir);
+
+  await safeStat(testAppDir, "should not exist");
+  await safeStat(testApp2Dir, "should not exist");
+
+  await fs.mkdir(dir, { recursive: true });
 
   const generatePackageCommand = new GeneratePackageCommand();
   await generatePackageCommand.handler({
@@ -69,6 +79,8 @@ export async function setup() {
     $0: "",
   });
 
+  await safeStat(testAppDir, "should exist");
+
   await generatePackageCommand.handler({
     packageName: "@test-app2/osdk",
     packageVersion: "0.0.1",
@@ -107,10 +119,54 @@ export async function setup() {
     _: [],
     $0: "",
   });
+
+  await safeStat(testApp2Dir, "should exist");
 }
 
 export async function teardown() {
   // eslint-disable-next-line no-console
-  console.log("Test teardown: stopping API server");
+  console.log("teardown: stopping API server");
   apiServer.close();
+}
+
+await setup();
+await teardown();
+
+/**
+ * @param {string} testAppDir
+ */
+async function rmRf(testAppDir) {
+  try {
+    await fs.rm(testAppDir, { recursive: true });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.debug("rm error", e);
+    // Only needed for regenerations
+  }
+}
+
+/**
+ * @param {string} filePath
+ * @param {"should exist" | "should not exist"} type
+ * @returns
+ */
+async function safeStat(filePath, type) {
+  try {
+    const ret = await fs.stat(filePath);
+    if (type !== "should exist") {
+      throw new Error(`Expected ${filePath} to not exist`);
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`safeStat: ${filePath} exists`);
+    return ret;
+  } catch (e) {
+    if (type === "should exist") {
+      throw new Error(`Expected ${filePath} to exist`);
+    }
+
+    // eslint-disable-next-line no-console
+    console.log(`safeStat: ${filePath} does not exist`);
+    return undefined;
+  }
 }

@@ -26,6 +26,7 @@ interface ClientCache<K, V> {
 }
 
 /**
+ * @internal
  * A simple async cache that can be used to store values for a given client.
  */
 export interface AsyncClientCache<K, V> {
@@ -46,9 +47,11 @@ export interface AsyncClientCache<K, V> {
   ) => Promise<V>;
 }
 
-type Factory<K, V> = (client: MinimalClient, key: K) => V;
+/** @internal */
+export type Factory<K, V> = (client: MinimalClient, key: K) => V;
 
 /**
+ * @internal
  * Create a new cache without a factory function.
  */
 export function createClientCache<K, V extends {}>(): ClientCache<
@@ -56,6 +59,7 @@ export function createClientCache<K, V extends {}>(): ClientCache<
   V | undefined
 >;
 /**
+ * @internal
  * Create a new cache with a factory function.
  * @param fn A factory function that will be used to create the value if it does not exist in the cache.
  */
@@ -101,13 +105,20 @@ export function createClientCache<K, V extends {}>(
   return { get, set, remove } as ClientCache<K, V>;
 }
 
+/** @internal */
+export type AsyncFactory<K, V extends {}> = (
+  client: MinimalClient,
+  key: K,
+) => Promise<V>;
+
 /**
+ * @internal
  * Create a new cache with an async factory function.
  * @param fn A factory function that will be used to create the value if it does not exist in the cache.
  * @returns
  */
 export function createAsyncClientCache<K, V extends {}>(
-  fn: (client: MinimalClient, key: K) => Promise<V>,
+  fn: AsyncFactory<K, V>,
   createCacheLocal: typeof createClientCache = createClientCache,
 ): AsyncClientCache<K, V> {
   const cache = createCacheLocal<K, V>();

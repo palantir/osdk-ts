@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { OntologyMetadataResolver } from "../ontologyMetadata/ontologyMetadataResolver.js";
-
 import { apiServer, handlers } from "@osdk/shared.test";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { OntologyMetadataResolver } from "./ontologyMetadataResolver.js";
 
 describe("Load Ontologies Metadata", () => {
   beforeAll(() => {

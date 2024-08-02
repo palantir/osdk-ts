@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { apiServer, loadAll } from "@osdk/shared.test";
 import {
   afterAll,
   beforeAll,
@@ -35,8 +36,6 @@ import type {
   Result,
   SearchObjectsError,
 } from "../generatedNoCheck/@test-app/osdk/index.js";
-
-import { apiServer, loadAll } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -428,10 +427,12 @@ describe("SearchObjects", () => {
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(1);
     expect(employees.data[0].fullName).toEqual("John Doe");
-    expectTypeOf(employees.data[0]).toEqualTypeOf<{
+    expectTypeOf(employees.data[0]).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 
@@ -446,10 +447,12 @@ describe("SearchObjects", () => {
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(1);
     expect(employees.data[0].fullName).toEqual("John Doe");
-    expectTypeOf(employees.data[0]).toEqualTypeOf<{
+    expectTypeOf(employees.data[0]).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
+      readonly $primaryKey: number;
+      readonly $apiName: "Employee";
     }>();
   });
 

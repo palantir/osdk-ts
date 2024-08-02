@@ -53,6 +53,7 @@ const cspell = {
     "node_modules/**",
     ".git/**",
     ".gitignore",
+    "**/.turbo/**/*",
 
     // Ignore these files for now
     "_gitignore",
@@ -83,7 +84,7 @@ const cspell = {
     // this is the conjure generated code that we won't keep forever
     "packages/client.unstable/src/generated/**",
 
-    "packages/foundry-sdk-generator/src/generatedNoCheck/**/*",
+    "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),

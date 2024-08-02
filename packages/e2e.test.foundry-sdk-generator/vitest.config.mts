@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,9 @@ export default defineConfig({
     alias: {
       "consola": join(
         dirname(fileURLToPath(import.meta.url)),
-        "./src/__e2e_tests__/consola.ts",
+        "src",
+        "legacy-client",
+        "consola.ts",
       ),
     },
     pool: "forks",

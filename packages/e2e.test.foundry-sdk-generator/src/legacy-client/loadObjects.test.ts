@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import {
   afterAll,
   beforeAll,
@@ -39,8 +40,6 @@ import type {
   Page,
   Result,
 } from "../generatedNoCheck/@test-app/osdk/index.js";
-
-import { apiServer, loadAll, stubData } from "@osdk/shared.test";
 import type {
   Employee,
   Office,
@@ -123,7 +122,7 @@ describe("LoadObjects", () => {
 
     const emp = assertOkOrThrow(result);
 
-    expectTypeOf(emp).toEqualTypeOf<{
+    expectTypeOf(emp).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
@@ -141,7 +140,7 @@ describe("LoadObjects", () => {
 
     const emp = assertOkOrThrow(result);
 
-    expectTypeOf(emp).toEqualTypeOf<{
+    expectTypeOf(emp).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
@@ -157,7 +156,7 @@ describe("LoadObjects", () => {
     const emp = await client.ontology.objects.Employee.select(["fullName"])
       .fetchOne(stubData.employee1.__primaryKey);
 
-    expectTypeOf(emp).toEqualTypeOf<{
+    expectTypeOf(emp).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
@@ -500,7 +499,7 @@ describe("LoadObjects", () => {
       .all();
     const employees = assertOkOrThrow(result);
     expect(employees.length).toEqual(3);
-    expectTypeOf(employees[0]).toEqualTypeOf<{
+    expectTypeOf(employees[0]).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
@@ -515,7 +514,7 @@ describe("LoadObjects", () => {
         .asyncIter(),
     );
     expect(employees.length).toEqual(3);
-    expectTypeOf(employees[0]).toEqualTypeOf<{
+    expectTypeOf(employees[0]).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";
@@ -529,7 +528,7 @@ describe("LoadObjects", () => {
       .fetchPageWithErrors({ pageSize: 2 });
     const employees = assertOkOrThrow(result);
     expect(employees.data.length).toEqual(2);
-    expectTypeOf(employees.data[0]).toEqualTypeOf<{
+    expectTypeOf(employees.data[0]).branded.toEqualTypeOf<{
       readonly fullName: string | undefined;
       readonly __primaryKey: number;
       readonly __apiName: "Employee";

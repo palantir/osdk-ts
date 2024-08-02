@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
+import { __testSeamOnly_NotSemverStable__GeneratePackageCommand as GeneratePackageCommand } from "@osdk/foundry-sdk-generator";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { GeneratePackageCommand } from "./GeneratePackageCommand.js";
 
 describe(GeneratePackageCommand, () => {
   // ensure that we do not break backcompat by retaining our scripts export that links to the bundled types and esm output
   it("has a public scripts export", async () => {
     const generatedPath = path.join(
-      __dirname,
-      "..",
+      path.dirname(fileURLToPath(import.meta.url)),
       "generatedNoCheck",
       "@test-app",
       "osdk",
