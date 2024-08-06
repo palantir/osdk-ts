@@ -16,9 +16,14 @@
 
 import invariant from "tiny-invariant";
 import { valueTypes } from "./defineOntology.js";
-import type { ValueTypeBaseType, ValueTypeReference } from "./types.js";
+import type {
+  ValueTypeBaseType,
+  ValueTypeDataConstraint,
+  ValueTypeExampleValue,
+  ValueTypeReference,
+} from "./types.js";
 
-export function defineSharedPropertyType(
+export function defineValueType(
   opts: {
     apiName: string;
     version: string;
@@ -26,6 +31,8 @@ export function defineSharedPropertyType(
     array?: boolean;
     description?: string;
     displayName?: string;
+    constraints?: ValueTypeDataConstraint[];
+    exampleValues?: ValueTypeExampleValue[];
   },
 ): ValueTypeReference {
   const { apiName, version } = opts;
@@ -37,10 +44,7 @@ export function defineSharedPropertyType(
   );
   let created = valueTypes.valueTypes[apiName] = {
     reference: { apiName: apiName, version: version },
-    type: opts.type,
-    // ACTUALLY FILL IN!
-    constraints: [],
-    exampleValues: [],
+    ...opts,
   };
   return created.reference;
 }

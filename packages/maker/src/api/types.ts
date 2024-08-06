@@ -63,8 +63,8 @@ export interface ValueTypeDefinition {
   array?: boolean;
   description?: string;
   displayName?: string;
-  constraints: ValueTypeDataConstraint[];
-  exampleValues: ValueTypeExampleValue[];
+  constraints?: ValueTypeDataConstraint[];
+  exampleValues?: ValueTypeExampleValue[];
 }
 
 export interface ValueTypeReference {
