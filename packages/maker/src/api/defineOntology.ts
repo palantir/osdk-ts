@@ -22,15 +22,21 @@ import type {
   OntologyIrSharedPropertyTypeBlockDataV2,
   Type,
 } from "@osdk/client.unstable";
+import invariant from "tiny-invariant";
 import type {
   InterfaceType,
   Ontology,
   PropertyTypeType,
   SharedPropertyType,
+  ValueTypeDefinition,
+  ValueTypes,
 } from "./types.js";
 
 /** @internal */
 export let ontologyDefinition: Ontology;
+
+/** @internal */
+export let valueTypes: ValueTypes;
 
 /** @internal */
 export let namespace: string;
@@ -113,8 +119,12 @@ export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
 }
 
 function convertSpt(
-  { type, array, description, apiName, displayName }: SharedPropertyType,
+  { type, array, description, apiName, displayName, valueType }:
+    SharedPropertyType,
 ): OntologyIrSharedPropertyType {
+  const backingValueType = valueType === undefined
+    ? undefined
+    : valueTypes.valueTypes[valueType!.apiName];
   return {
     apiName,
     displayMetadata: {
@@ -126,10 +136,10 @@ function convertSpt(
       ? {
         type: "array" as const,
         array: {
-          subtype: convertType(type),
+          subtype: convertType(type, backingValueType),
         },
       }
-      : convertType(type),
+      : convertType(type, backingValueType),
     aliases: [],
     baseFormatter: undefined,
     dataConstraints: undefined,
@@ -137,12 +147,13 @@ function convertSpt(
     indexedForSearch: true,
     provenance: undefined,
     typeClasses: [],
-    valueType: undefined,
+    valueType: backingValueType?.reference,
   };
 }
 
 function convertType(
   type: PropertyTypeType,
+  backingValueType?: ValueTypeDefinition,
 ): Type {
   switch (type) {
     case "marking":
@@ -164,7 +175,12 @@ function convertType(
           supportsExactMatching: true,
         },
       };
-
+    case "valueType":
+      invariant(
+        backingValueType !== undefined,
+        "Property type was specified as a value type but no referencing base type found",
+      );
+      return convertType(backingValueType!.type);
     default:
       // use helper function to distribute `type` properly
       return distributeTypeHelper(type);

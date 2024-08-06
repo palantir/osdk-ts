@@ -27,6 +27,10 @@ export interface Ontology extends
   sharedPropertyTypes: Record<string, SharedPropertyType>;
 }
 
+export interface ValueTypes {
+  valueTypes: Record<string, ValueTypeDefinition>;
+}
+
 export interface InterfaceType extends
   Omit<
     OntologyIrInterfaceType,
@@ -50,20 +54,48 @@ export interface PropertyType {
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;
+  valueType?: ValueTypeReference;
 }
 
-export type PropertyTypeType =
+export interface ValueTypeDefinition {
+  reference: ValueTypeReference;
+  type: ValueTypeBaseType;
+  array?: boolean;
+  description?: string;
+  displayName?: string;
+  constraints: ValueTypeDataConstraint[];
+  exampleValues: ValueTypeExampleValue[];
+}
+
+export interface ValueTypeReference {
+  apiName: string;
+  version: string;
+}
+
+type CommonType =
   | "boolean"
   | "byte"
   | "date"
   | "decimal"
   | "double"
   | "float"
-  | "geopoint"
-  | "geoshape"
   | "integer"
   | "long"
-  | "marking"
   | "short"
   | "string"
   | "timestamp";
+
+export type PropertyTypeType =
+  | CommonType
+  | "geopoint"
+  | "geoshape"
+  | "marking"
+  | "valueType";
+
+export type ValueTypeBaseType = CommonType;
+
+export interface ValueTypeDataConstraint {
+}
+
+export interface ValueTypeExampleValue {
+}
