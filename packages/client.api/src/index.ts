@@ -129,4 +129,6 @@ export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
 
+export type { DisplayMetadata } from "./DisplayMetadata.js";
+
 export {};

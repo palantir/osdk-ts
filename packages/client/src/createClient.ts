@@ -32,10 +32,12 @@ import type { Logger } from "pino";
 import { applyAction } from "./actions/applyAction.js";
 import type { Client } from "./Client.js";
 import { createMinimalClient } from "./createMinimalClient.js";
+import { fetchDisplayMetadataInternal } from "./fetchDisplayMetadata.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
+import { augmentRequestContext } from "./util/augmentRequestContext.js";
 
 class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   implements ActionSignatureFromDef<Q>

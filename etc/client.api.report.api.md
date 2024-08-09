@@ -280,6 +280,15 @@ export interface DataValueWireToClient {
 export type DefaultToFalse<B extends boolean | undefined> = false extends B ? false : undefined extends B ? false : true;
 
 // @public (undocumented)
+export type DisplayMetadata = {
+    displayName: string;
+    pluralDisplayName: string;
+    description?: string;
+    icon: Icon;
+    visibility: ObjectTypeVisibility;
+};
+
+// @public (undocumented)
 export const DistanceUnitMapping: {
     centimeter: "CENTIMETERS";
     centimeters: "CENTIMETERS";
@@ -791,6 +800,8 @@ export type WhereClause<T extends ObjectOrInterfaceDefinition<any, any>> = OrWhe
 
 // Warnings were encountered during analysis:
 //
+// src/DisplayMetadata.ts:30:3 - (ae-forgotten-export) The symbol "Icon" needs to be exported by the entry point index.d.ts
+// src/DisplayMetadata.ts:31:3 - (ae-forgotten-export) The symbol "ObjectTypeVisibility" needs to be exported by the entry point index.d.ts
 // src/OsdkObjectFrom.ts:100:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/OsdkObjectFrom.ts:101:4 - (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
 // src/OsdkObjectFrom.ts:157:5 - (ae-forgotten-export) The symbol "UnderlyingProps" needs to be exported by the entry point index.d.ts

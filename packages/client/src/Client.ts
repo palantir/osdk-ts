@@ -22,6 +22,7 @@ import type {
 } from "@osdk/api";
 import type {
   ActionSignatureFromDef,
+  DisplayMetadata,
   ObjectSet,
   QuerySignatureFromDef,
 } from "@osdk/client.api";
@@ -50,6 +51,10 @@ export interface Client extends SharedClient<MinimalClient> {
   <Q extends QueryDefinition<any, any>>(
     o: CheckVersionBound<Q>,
   ): QuerySignatureFromDef<Q>;
+
+  fetchDisplayMetadata<
+    Q extends (ObjectTypeDefinition<any> & VersionBound<any>),
+  >(o: CheckVersionBound<Q>): Promise<DisplayMetadata>;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
