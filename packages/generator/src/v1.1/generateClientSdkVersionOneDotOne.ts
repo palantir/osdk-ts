@@ -82,7 +82,7 @@ export async function generateClientSdkVersionOneDotOne(
     importExt,
   );
   await generatePerObjectInterfaceAndDataFiles(
-    sanitizedOntology,
+    enhancedOntology,
     fs,
     objectsDir,
     importExt,

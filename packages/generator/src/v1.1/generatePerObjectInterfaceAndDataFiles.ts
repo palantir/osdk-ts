@@ -15,30 +15,21 @@
  */
 
 import path from "node:path";
-import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString.js";
 
 export async function generatePerObjectInterfaceAndDataFiles(
-  ontology: WireOntologyDefinition,
+  ontology: EnhancedOntologyDefinition,
   fs: MinimalFs,
   outDir: string,
   importExt: string = "",
 ) {
-  const enhancedOntology = enhanceOntology(
-    ontology,
-    undefined,
-    new Map(),
-    importExt,
-  );
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
-    Object.values(ontology.objectTypes).map(async (object) => {
-      const links = object.linkTypes;
-
+    Object.values(ontology.og.objectTypes).map(async (object) => {
       const relPath = path.join(
         ".",
         "ontology",
@@ -60,9 +51,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
         ${
           wireObjectTypeV2ToSdkObjectConst(
             object,
-            {
-              ontology: enhancedOntology,
-            },
+            { ontology },
             relPath,
             false,
           )
@@ -76,7 +65,7 @@ export async function generatePerObjectInterfaceAndDataFiles(
     path.join(outDir, "index.ts"),
     await formatTs(`
     ${
-      Object.keys(ontology.objectTypes).map(apiName =>
+      Object.keys(ontology.og.objectTypes).map(apiName =>
         `export * from "./${apiName}${importExt}";`
       ).join("\n")
     }

@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeApiName,
-  InterfaceTypeApiName,
-  OntologyV2,
-  QueryApiName,
-  SharedPropertyTypeApiName,
-} from "@osdk/gateway/types";
 import * as path from "node:path";
-import type { MinimalFs } from "../MinimalFs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
-import { EnhancedAction } from "./EnhancedAction.js";
-import { EnhancedInterfaceType } from "./EnhancedInterfaceType.js";
-import { EnhancedObjectType } from "./EnhancedObjectType.js";
-import { EnhancedQuery } from "./EnhancedQuery.js";
-import { EnhancedSharedPropertyType } from "./EnhancedSharedPropertyType.js";
 
 export abstract class EnhancedBase<T> {
   protected _common: EnhanceCommon;

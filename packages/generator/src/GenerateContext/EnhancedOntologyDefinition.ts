@@ -71,7 +71,14 @@ export class EnhancedOntologyDefinition {
     );
   }
 
-  #createRequireType = <K extends "objectTypes" | "actionTypes">(
+  #createRequireType = <
+    K extends
+      | "objectTypes"
+      | "actionTypes"
+      | "interfaceTypes"
+      | "queryTypes"
+      | "sharedPropertyTypes",
+  >(
     key: K & keyof this,
   ) => {
     return (fullApiName: string): this[K][string] => {
@@ -84,6 +91,12 @@ export class EnhancedOntologyDefinition {
   };
 
   public requireObjectType = this.#createRequireType("objectTypes");
+  public requireInterfaceType = this.#createRequireType("interfaceTypes");
+  public requireActionType = this.#createRequireType("actionTypes");
+  public requireQueryType = this.#createRequireType("queryTypes");
+  public requireSharedPropertyType = this.#createRequireType(
+    "sharedPropertyTypes",
+  );
 }
 function remap<T, X>(
   r: Record<string, T>,

@@ -92,9 +92,9 @@ export async function generatePerActionDataFiles(
                     return JSON.stringify(type);
                   } else if (type.type === "object") {
                     const obj = enhancedOntology.requireObjectType(type.object);
-                    return `ObjectActionDataType<"${obj.fullApiName}", ${obj
+                    return `ObjectActionDataType<"${obj.fullApiName}", ${
+                      obj
                         .getObjectDefIdentifier(v2)
-                      // getObjectDefIdentifier(type.object, v2)
                     }>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${

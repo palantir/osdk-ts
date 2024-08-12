@@ -22,4 +22,8 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
   constructor(common: EnhanceCommon, public og: InterfaceType) {
     super(common, og, og.apiName, "./ontology/interfaces");
   }
+
+  getObjectDefIdentifier(v2: boolean) {
+    return v2 ? this.uniqueImportName : `${this.uniqueImportName}Def`;
+  }
 }

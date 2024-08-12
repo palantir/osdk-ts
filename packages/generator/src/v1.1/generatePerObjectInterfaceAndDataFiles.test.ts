@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles.js";
@@ -25,7 +26,7 @@ describe(generatePerObjectInterfaceAndDataFiles, () => {
     const BASE_PATH = "/foo/objects";
 
     await generatePerObjectInterfaceAndDataFiles(
-      TodoWireOntology,
+      enhanceOntology(TodoWireOntology, undefined, new Map(), ""),
       helper.minimalFiles,
       BASE_PATH,
     );

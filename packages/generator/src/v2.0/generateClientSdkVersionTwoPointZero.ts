@@ -173,29 +173,6 @@ export async function generateClientSdkVersionTwoPointZero(
     importExt,
   );
 
-  const objectNames = sortedKeys(sanitizedOntology.objectTypes);
-  const actionNames = sortedKeys(sanitizedOntology.actionTypes);
-  const queryNames = sortedKeys(sanitizedOntology.queryTypes);
-  const interfaceNames = sortedKeys(sanitizedOntology.interfaceTypes ?? {});
-  const sharedPropertyNames = sortedKeys(
-    sanitizedOntology.sharedPropertyTypes ?? {},
-  );
-
-  function invariantStartsWithNamespace(type: string, names: string[]) {
-    invariant(
-      names.every((name: string) =>
-        startsWithApiNamespace(name, ontologyApiNamespace)
-      ),
-      `${type}: ${names}`,
-    );
-  }
-
-  invariantStartsWithNamespace("objectNames", objectNames);
-  invariantStartsWithNamespace("actionNames", actionNames);
-  invariantStartsWithNamespace("queryNames", queryNames);
-  invariantStartsWithNamespace("interfaceNames", interfaceNames);
-  invariantStartsWithNamespace("sharedPropertyNames", sharedPropertyNames);
-
   await fs.mkdir(outDir, { recursive: true });
 
   const ctx: GenerateContext = {
@@ -221,10 +198,7 @@ export async function generateClientSdkVersionTwoPointZero(
 
   const actionsDir = path.join(outDir, "ontology", "actions");
   await fs.mkdir(actionsDir, { recursive: true });
-  await generatePerActionDataFiles(
-    ctx,
-    true,
-  );
+  await generatePerActionDataFiles(ctx, true);
 
   await fs.writeFile(
     path.join(outDir, "ontology", "objects.ts"),
@@ -238,21 +212,7 @@ export async function generateClientSdkVersionTwoPointZero(
     `),
   );
 
-  const queriesDir = path.join(outDir, "ontology", "queries");
-  await fs.mkdir(queriesDir, { recursive: true });
-  await generatePerQueryDataFilesV2(
-    {
-      ontology: enhancedOntology,
-      fs,
-      importExt,
-      outDir,
-    },
-    true,
-  );
-}
-
-function sortedKeys(obj: Record<string, any>) {
-  return Object.keys(obj).sort((a, b) => a.localeCompare(b));
+  await generatePerQueryDataFilesV2(ctx, true);
 }
 
 /** @internal */
@@ -275,8 +235,8 @@ async function generateOntologyInterfaces(
 
       ${
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-          obj.og,
-          ontology.og,
+          obj,
+          ontology,
           true,
         )
       }
