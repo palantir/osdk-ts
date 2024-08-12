@@ -20,7 +20,8 @@ import {
   generateClientSdkVersionTwoPointZero,
 } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
-import { isAbsolute, join, normalize } from "path";
+import { fileURLToPath } from "node:url";
+import { dirname, isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
@@ -172,7 +173,9 @@ async function getDependencyVersion(dependency: string): Promise<string> {
     return dependencies[dependency]!;
   }
   const { findUp } = await import("find-up");
-  const result = await findUp("package.json", { cwd: __dirname });
+  const result = await findUp("package.json", {
+    cwd: __dirname,
+  });
   const packageJson = await readFile(result!, {
     encoding: "utf-8",
   });
