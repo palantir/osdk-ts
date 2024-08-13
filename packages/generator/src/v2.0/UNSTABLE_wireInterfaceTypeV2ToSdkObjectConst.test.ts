@@ -193,17 +193,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         implements: ["Parent"],
         links: {},
         properties: {
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
           bar: {
             displayName: "bar property dn",
             multiplicity: false,
             description: "bar property desc",
+            type: "integer",
+            nullable: true,
+          },
+          foo: {
+            displayName: "foo property dn",
+            multiplicity: false,
+            description: "foo property desc",
             type: "integer",
             nullable: true,
           },
@@ -269,17 +269,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         implements: ["Parent"],
         links: {},
         properties: {
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
           bar: {
             displayName: "bar property dn",
             multiplicity: false,
             description: "bar property desc",
+            type: "integer",
+            nullable: true,
+          },
+          foo: {
+            displayName: "foo property dn",
+            multiplicity: false,
+            description: "foo property desc",
             type: "integer",
             nullable: true,
           },
