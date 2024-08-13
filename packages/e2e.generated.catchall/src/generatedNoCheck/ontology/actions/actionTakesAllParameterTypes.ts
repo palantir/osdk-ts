@@ -1,10 +1,9 @@
 import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -46,10 +45,31 @@ export type ActionDef$actionTakesAllParameterTypes$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
+/**
+ * An action which takes different types of parameters
+ */
+export interface ActionParams$actionTakesAllParameterTypes {
+  readonly attachmentArray: ReadonlyArray<ActionParam.PrimitiveType<'attachment'>>;
+
+  readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>>;
+  /**
+   * A person Object
+   */
+  readonly object?: ActionParam.ObjectType<Person>;
+
+  readonly objectSet: ActionParam.ObjectSetType<Todo>;
+
+  readonly string: ActionParam.PrimitiveType<'string'>;
+
+  readonly 'time-stamp': ActionParam.PrimitiveType<'timestamp'>;
+}
+
+/**
+ * @deprecated Use `ActionParams$actionTakesAllParameterTypes`
+ */
 export type actionTakesAllParameterTypes$Params =
-  | NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>[];
+  | ActionParams$actionTakesAllParameterTypes
+  | ReadonlyArray<ActionParams$actionTakesAllParameterTypes>;
 
 // Represents a fqn of the action
 export interface actionTakesAllParameterTypes {
@@ -57,8 +77,8 @@ export interface actionTakesAllParameterTypes {
    * An action which takes different types of parameters
    */
   <
-    P extends actionTakesAllParameterTypes$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$actionTakesAllParameterTypes$Params>>[]
+    P extends ActionParams$actionTakesAllParameterTypes | ReadonlyArray<ActionParams$actionTakesAllParameterTypes>,
+    OP extends P extends ReadonlyArray<ActionParams$actionTakesAllParameterTypes>
       ? ApplyBatchActionOptions
       : ApplyActionOptions,
   >(

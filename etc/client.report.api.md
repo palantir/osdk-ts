@@ -6,13 +6,15 @@
 
 import type { ActionDefinition } from '@osdk/api';
 import { ActionEditResponse } from '@osdk/client.api';
+import type { ActionParam } from '@osdk/client.api';
+import type { ActionParameterDefinition } from '@osdk/api';
 import { ActionReturnTypeForOptions } from '@osdk/client.api';
-import type { ActionSignatureFromDef } from '@osdk/client.api';
 import { ActionValidationResponse } from '@osdk/client.api';
 import { ApplyActionOptions } from '@osdk/client.api';
 import { ApplyBatchActionOptions } from '@osdk/client.api';
 import type { Attachment } from '@osdk/client.api';
 import type { AttachmentUpload } from '@osdk/client.api';
+import type { DataValueClientToWire } from '@osdk/client.api';
 import type { GreaterThan } from 'type-fest';
 import type { GreaterThanOrEqual } from 'type-fest';
 import type { InterfaceDefinition } from '@osdk/api';
@@ -22,14 +24,16 @@ import { isOk } from '@osdk/client.api';
 import type { LessThan } from 'type-fest';
 import type { Logger } from 'pino';
 import { NOOP } from '@osdk/client.api';
+import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import { ObjectSet } from '@osdk/client.api';
+import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import { Osdk } from '@osdk/client.api';
-import { OsdkActionParameters } from '@osdk/client.api';
 import { OsdkObject } from '@osdk/client.api';
 import { PageResult } from '@osdk/client.api';
 import { PalantirApiError } from '@osdk/shared.net.errors';
+import type { PartialBy } from '@osdk/client.api';
 import type { QueryDefinition } from '@osdk/api';
 import type { QuerySignatureFromDef } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
@@ -63,6 +67,8 @@ export interface Client extends SharedClient<MinimalClient> {
     //
     // (undocumented)
     <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(o: CheckVersionBound<Q>): ObjectSet<Q>;
+    // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
+    //
     // (undocumented)
     <Q extends ActionDefinition<any, any, any>>(o: CheckVersionBound<Q>): ActionSignatureFromDef<Q>;
     // (undocumented)
@@ -97,8 +103,6 @@ export { NOOP }
 export { ObjectSet }
 
 export { Osdk }
-
-export { OsdkActionParameters }
 
 export { OsdkObject }
 
