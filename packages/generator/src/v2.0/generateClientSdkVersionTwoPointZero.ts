@@ -15,15 +15,12 @@
  */
 
 import path from "node:path";
-import invariant from "tiny-invariant";
 import type { EnhancedBase } from "../GenerateContext/EnhancedBase.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { startsWithApiNamespace } from "../shared/apiNamespaces/startsWithApiNamespace.js";
 import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
-import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "../shared/UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 import {
   wireObjectTypeV2ToSdkObjectConst,
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
@@ -33,6 +30,7 @@ import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
+import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
 async function generateRootIndexTsFile(
   { fs, outDir, importExt }: GenerateContext,
@@ -248,12 +246,12 @@ async function generateOntologyInterfaces(
     interfacesDir + ".ts",
     await formatTs(`
     ${
-      Object.keys(ontology.interfaceTypes ?? {}).map(apiName =>
-        `export * from "./interfaces/${apiName}${importExt}";`
+      Object.values(ontology.interfaceTypes).map(interfaceType =>
+        `export * from "./interfaces/${interfaceType.shortApiName}${importExt}";`
       ).join("\n")
     }
     ${
-      Object.keys(ontology.interfaceTypes ?? {}).length === 0
+      Object.keys(ontology.interfaceTypes).length === 0
         ? "export {}"
         : ""
     }
