@@ -150,7 +150,7 @@ export interface AttachmentMetadata {
 // @public
 export interface AttachmentUpload extends Blob {
     // (undocumented)
-    name: string;
+    readonly name: string;
 }
 
 // @public (undocumented)

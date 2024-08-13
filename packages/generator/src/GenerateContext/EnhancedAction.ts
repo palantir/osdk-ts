@@ -34,4 +34,16 @@ export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
   get operations() {
     return this.og.operations;
   }
+
+  get paramsIdentifier() {
+    return `ActionParams$${this.shortApiName}`;
+  }
+
+  get actionDefIdentifier() {
+    return `ActionDef$${this.shortApiName}`;
+  }
+
+  get actionDefParamsIdentifier() {
+    return `${this.actionDefIdentifier}$Params`;
+  }
 }

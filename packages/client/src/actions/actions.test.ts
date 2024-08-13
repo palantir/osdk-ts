@@ -143,12 +143,18 @@ describe("actions", () => {
     const clientBoundActionTakesAttachment = client(
       actionTakesAttachment,
     ).applyAction;
-    expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<
-        { attachment: string | AttachmentUpload } | {
-          attachment: string | AttachmentUpload;
-        }[]
-      >();
+
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesAttachment
+    >[0];
+
+    expectTypeOf<{ attachment: string | AttachmentUpload }>().toMatchTypeOf<
+      InferredParamType
+    >();
+
+    expectTypeOf<{
+      attachment: string | AttachmentUpload;
+    }[]>().toMatchTypeOf<InferredParamType>();
 
     const result = await client(actionTakesAttachment).applyAction({
       attachment: "attachment.rid",
@@ -162,12 +168,16 @@ describe("actions", () => {
     const clientBoundActionTakesAttachment = client(
       actionTakesAttachment,
     ).applyAction;
-    expectTypeOf<Parameters<typeof clientBoundActionTakesAttachment>[0]>()
-      .toEqualTypeOf<
-        { attachment: string | AttachmentUpload } | {
-          attachment: string | AttachmentUpload;
-        }[]
-      >();
+    type InferredParamType = Parameters<
+      typeof clientBoundActionTakesAttachment
+    >[0];
+    expectTypeOf<{ attachment: string | AttachmentUpload }>().toMatchTypeOf<
+      InferredParamType
+    >();
+    expectTypeOf<{ attachment: string | AttachmentUpload }[]>().toMatchTypeOf<
+      InferredParamType
+    >();
+
     const blob =
       stubData.attachmentUploadRequestBody[stubData.localAttachment1.filename];
 

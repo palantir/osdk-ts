@@ -283,14 +283,14 @@ describe("generator", () => {
       export * from './ontology/queries/index.js';
       ",
         "/foo/ontology/actions/index.ts": "export { markTodoCompleted } from './markTodoCompleted.js';
+      export type { ActionParams$markTodoCompleted } from './markTodoCompleted.js';
       ",
         "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
+        ActionParam,
         ActionReturnTypeForOptions,
         ApplyActionOptions,
         ApplyBatchActionOptions,
-        NOOP,
-        OsdkActionParameters,
       } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
       import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -306,10 +306,20 @@ describe("generator", () => {
         };
       };
 
-      // Represents the runtime arguments for the action
-      export type markTodoCompleted$Params =
-        | NOOP<OsdkActionParameters<ActionDef$markTodoCompleted$Params>>
-        | NOOP<OsdkActionParameters<ActionDef$markTodoCompleted$Params>>[];
+      /**
+       * An action which takes different types of parameters
+       */
+      export interface ActionParams$markTodoCompleted {
+        /**
+         * A Todo to mark completed
+         */
+        readonly object?: ActionParam.ObjectType<Todo>;
+      }
+
+      /**
+       * @deprecated Use \`ActionParams$markTodoCompleted\`
+       */
+      export type markTodoCompleted$Params = ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>;
 
       // Represents a fqn of the action
       export interface markTodoCompleted {
@@ -317,10 +327,8 @@ describe("generator", () => {
          * An action which takes different types of parameters
          */
         <
-          P extends markTodoCompleted$Params,
-          OP extends P extends NOOP<OsdkActionParameters<ActionDef$markTodoCompleted$Params>>[]
-            ? ApplyBatchActionOptions
-            : ApplyActionOptions,
+          P extends ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>,
+          OP extends P extends ReadonlyArray<ActionParams$markTodoCompleted> ? ApplyBatchActionOptions : ApplyActionOptions,
         >(
           args: P,
           options?: OP,
