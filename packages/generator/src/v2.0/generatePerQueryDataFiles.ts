@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,11 @@
  */
 
 import type { QueryParameterDefinition } from "@osdk/api";
-import type { QueryDataType, QueryTypeV2 } from "@osdk/gateway/types";
+import type { QueryDataType } from "@osdk/gateway/types";
 import path from "node:path";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
@@ -28,22 +31,34 @@ import {
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 export async function generatePerQueryDataFilesV2(
-  ontology: WireOntologyDefinition,
-  fs: MinimalFs,
-  outDir: string,
-  importExt: string = "",
+  {
+    fs,
+    outDir: rootOutDir,
+    ontology,
+    importExt = "",
+  }: Pick<
+    GenerateContext,
+    | "fs"
+    | "outDir"
+    | "importExt"
+    | "ontology"
+  >,
+  v2: boolean,
 ) {
+  const relOutDir = path.join(".", "ontology", "queries");
+  const outDir = path.join(rootOutDir, "ontology", "queries");
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.queryTypes).map(async query => {
       await generateV2QueryFile(
         fs,
         outDir,
+        relOutDir,
         query,
         importExt,
+        ontology,
       );
     }),
   );
@@ -53,7 +68,9 @@ export async function generatePerQueryDataFilesV2(
     await formatTs(`
     ${
       Object.values(ontology.queryTypes).map(query =>
-        `export * from "./${query.apiName}${importExt}";`
+        `export * from "${
+          query.getImportPathRelTo(path.join(relOutDir, "index.ts"))
+        }";`
       )
         .join("\n")
     }
@@ -65,16 +82,21 @@ export async function generatePerQueryDataFilesV2(
 async function generateV2QueryFile(
   fs: MinimalFs,
   outDir: string,
-  query: QueryTypeV2,
+  relOutDir: string,
+  query: EnhancedQuery,
   importExt: string,
+  ontology: EnhancedOntologyDefinition,
 ) {
+  const relFilePath = path.join(relOutDir, `${query.shortApiName}.ts`);
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
-  const importObjects = objectTypes.length > 0
-    ? `import {${[...objectTypes].join(",")}} from "../objects${importExt}";`
-    : "";
+  const importObjects = getObjectImports(
+    ontology,
+    objectTypes,
+    relFilePath,
+  );
 
   const baseProps = deleteUndefineds(
-    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query),
+    wireQueryTypeV2ToSdkQueryDefinitionNoParams(query.og),
   );
 
   const outputBase = deleteUndefineds(
@@ -86,16 +108,15 @@ async function generateV2QueryFile(
     : "never";
 
   await fs.writeFile(
-    path.join(outDir, `${query.apiName}.ts`),
+    path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
         import { QueryDefinition } from "@osdk/api";
-              import type {  VersionBound } from "@osdk/api";
-      
-      import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+        import type {  VersionBound } from "@osdk/api";
+        import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
         ${importObjects}
 
-        export interface ${query.apiName} extends QueryDefinition<"${query.apiName}", ${referencedObjectTypes}>, VersionBound<$ExpectedClientVersion>{
+        export interface ${query.shortApiName} extends QueryDefinition<"${query.fullApiName}", ${referencedObjectTypes}>, VersionBound<$ExpectedClientVersion>{
             ${stringify(baseProps)},
             parameters: {
             ${parameterDefsForType(query)}
@@ -106,7 +127,7 @@ async function generateV2QueryFile(
             };
         }
 
-        export const ${query.apiName}: ${query.apiName} = {
+        export const ${query.shortApiName}: ${query.shortApiName} = {
             ${stringify(baseProps)},
             parameters: {
             ${parametersForConst(query)}
@@ -119,14 +140,14 @@ async function generateV2QueryFile(
   );
 }
 
-function parametersForConst(query: QueryTypeV2) {
+function parametersForConst(query: EnhancedQuery) {
   return stringify(query.parameters, {
     "*": (parameter, formatter) =>
       formatter(deleteUndefineds(paramToDef(parameter))),
   });
 }
 
-function parameterDefsForType(query: QueryTypeV2) {
+function parameterDefsForType(query: EnhancedQuery) {
   return stringify(query.parameters, {
     "*": (parameter, valueFormatter, apiName) => [
       `${queryParamJsDoc(paramToDef(parameter), { apiName })} ${apiName}`,
@@ -162,5 +183,22 @@ export function queryParamJsDoc(
   }
 
   ret += ` */\n`;
+  return ret;
+}
+
+function getObjectImports(
+  enhancedOntology: EnhancedOntologyDefinition,
+  objectTypes: string[],
+  filePath: string,
+) {
+  let ret = "";
+
+  for (const fqObjectApiName of objectTypes) {
+    const obj = enhancedOntology.requireObjectType(fqObjectApiName);
+    ret += `import { ${obj.shortApiName} } from "${
+      obj.getImportPathRelTo(filePath)
+    }";\n`;
+  }
+
   return ret;
 }

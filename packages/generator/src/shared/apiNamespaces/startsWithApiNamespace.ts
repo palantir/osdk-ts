@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
-
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
+export function startsWithApiNamespace(
+  name: string,
+  ontologyApiNamespace: string | undefined,
 ) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
+  if (ontologyApiNamespace) {
+    return name.startsWith(`${ontologyApiNamespace}.`)
+      && !name.slice(ontologyApiNamespace.length + 1).includes(".");
+  } else {
+    return !name.includes(".");
   }
-  getObjectTypesFromQueryDataType(query.output, types);
-
-  return Array.from(types);
 }

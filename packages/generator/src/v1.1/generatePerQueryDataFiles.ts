@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
+import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
 import {
   wireQueryTypeV2ToSdkQueryDefinition,
 } from "../shared/wireQueryTypeV2ToSdkQueryDefinition.js";
 import { formatTs } from "../util/test/formatTs.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 
 export async function generatePerQueryDataFiles(
-  ontology: WireOntologyDefinition,
-  fs: MinimalFs,
-  outDir: string,
-  importExt: string = "",
-  v2: boolean = false,
+  {
+    fs,
+    outDir: rootOutDir,
+    ontology,
+  }: Pick<
+    GenerateContext,
+    | "fs"
+    | "outDir"
+    | "ontology"
+  >,
+  v2: boolean,
 ) {
+  const relOutDir = path.join(".", "ontology", "queries");
+  const outDir = path.join(rootOutDir, "ontology", "queries");
+
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
     Object.values(ontology.queryTypes).map(async query => {
@@ -43,7 +52,9 @@ export async function generatePerQueryDataFiles(
     await formatTs(`
   ${
       Object.values(ontology.queryTypes).map(query =>
-        `export * from "./${query.apiName}${importExt}";`
+        `export * from "${
+          query.getImportPathRelTo(path.join(relOutDir, "index.ts"))
+        }";`
       )
         .join("\n")
     }
@@ -55,21 +66,25 @@ export async function generatePerQueryDataFiles(
 async function generateV1QueryFile(
   fs: MinimalFs,
   outDir: string,
-  query: QueryTypeV2,
+  query: EnhancedQuery,
 ) {
   const objectTypes = getObjectTypeApiNamesFromQuery(query);
+
   await fs.writeFile(
-    path.join(outDir, `${query.apiName}.ts`),
+    path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-            import { QueryDefinition } from "@osdk/api";
-    
-            export const ${query.apiName} = ${
-      JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query))
-    } ${getQueryDefSatisfies(query.apiName, objectTypes)}`),
+      import { QueryDefinition } from "@osdk/api";
+
+      export const ${query.shortApiName} = ${
+      JSON.stringify(wireQueryTypeV2ToSdkQueryDefinition(query.og))
+    } ${getQueryDefSatisfies(query.fullApiName, objectTypes)}`),
   );
 }
 
-function getQueryDefSatisfies(apiName: string, objectTypes: string[]): string {
+export function getQueryDefSatisfies(
+  apiName: string,
+  objectTypes: string[],
+): string {
   return `satisfies QueryDefinition<"${apiName}", ${
     objectTypes.length > 0
       ? objectTypes.map(apiNameObj => `"${apiNameObj}"`).join("|")

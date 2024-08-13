@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
+import type { ActionTypeV2 } from "@osdk/gateway/types";
+import type { EnhanceCommon } from "./EnhanceCommon.js";
+import { EnhancedBase } from "./EnhancedBase.js";
 
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
+export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
+  constructor(common: EnhanceCommon, public og: ActionTypeV2) {
+    super(common, og, og.apiName, "./ontology/actions");
   }
-  getObjectTypesFromQueryDataType(query.output, types);
 
-  return Array.from(types);
+  get description() {
+    return this.og.description;
+  }
+
+  get parameters() {
+    return this.og.parameters;
+  }
+
+  get operations() {
+    return this.og.operations;
+  }
 }

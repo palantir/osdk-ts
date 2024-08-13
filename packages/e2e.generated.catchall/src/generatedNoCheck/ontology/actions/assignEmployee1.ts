@@ -8,7 +8,8 @@ import type {
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Employee, Venture } from '../objects.js';
+import type { Employee } from '../objects/Employee.js';
+import type { Venture } from '../objects/Venture.js';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$assignEmployee1$Params = {

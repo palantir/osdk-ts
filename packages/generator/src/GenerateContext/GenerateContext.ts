@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
+import type { MinimalFs } from "../MinimalFs.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import type { EnhancedOntologyDefinition } from "./EnhancedOntologyDefinition.js";
 
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
+export interface GenerateContext {
+  sanitizedOntology: WireOntologyDefinition;
+  ontology: EnhancedOntologyDefinition;
 
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
-  }
-  getObjectTypesFromQueryDataType(query.output, types);
+  importExt?: string;
+  fs: MinimalFs;
 
-  return Array.from(types);
+  outDir: string;
+
+  ontologyApiNamespace?: string | undefined;
+  apiNamespacePackageMap?: Map<string, string>;
 }

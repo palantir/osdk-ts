@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
-import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
-import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
+import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
+import { EnhancedOntologyDefinition } from "./EnhancedOntologyDefinition.js";
 
-export function getObjectTypeApiNamesFromQuery(
-  query: QueryTypeV2 | EnhancedQuery,
-) {
-  const types = new Set<string>();
-
-  for (const { dataType } of Object.values(query.parameters)) {
-    getObjectTypesFromQueryDataType(dataType, types);
-  }
-  getObjectTypesFromQueryDataType(query.output, types);
-
-  return Array.from(types);
+export function enhanceOntology(
+  sanitized: WireOntologyDefinition,
+  ontologyApiNamespace: string | undefined,
+  apiNamespacePackageMap: Map<string, string>,
+  importExt: string,
+): EnhancedOntologyDefinition {
+  return new EnhancedOntologyDefinition(
+    sanitized,
+    ontologyApiNamespace,
+    apiNamespacePackageMap,
+    importExt,
+  );
 }

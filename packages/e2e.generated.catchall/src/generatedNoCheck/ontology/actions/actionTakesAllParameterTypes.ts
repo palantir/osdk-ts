@@ -8,7 +8,8 @@ import type {
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
-import type { Person, Todo } from '../objects.js';
+import type { Person } from '../objects/Person.js';
+import type { Todo } from '../objects/Todo.js';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$actionTakesAllParameterTypes$Params = {

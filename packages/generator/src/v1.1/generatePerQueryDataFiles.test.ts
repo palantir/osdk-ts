@@ -15,6 +15,7 @@
  */
 
 import { describe, expect, it } from "vitest";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
@@ -22,18 +23,21 @@ import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
 describe("generatePerQueryDataFiles", () => {
   it("generates per action metadata", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/queries";
+    const BASE_PATH = "/foo";
 
     await generatePerQueryDataFiles(
-      TodoWireOntology,
-      helper.minimalFiles,
-      BASE_PATH,
+      {
+        fs: helper.minimalFiles,
+        outDir: BASE_PATH,
+        ontology: enhanceOntology(TodoWireOntology, undefined, new Map(), ""),
+      },
+      false,
     );
 
     expect(helper.minimalFiles.writeFile).toBeCalled();
     expect(helper.getFiles()).toMatchObject({
-      [`${BASE_PATH}/getCount.ts`]: expect.anything(),
-      [`${BASE_PATH}/index.ts`]: expect.anything(),
+      [`${BASE_PATH}/ontology/queries/getCount.ts`]: expect.anything(),
+      [`${BASE_PATH}/ontology/queries/index.ts`]: expect.anything(),
     });
   });
 });

@@ -15,6 +15,7 @@
  */
 
 import * as path from "node:path";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
@@ -50,6 +51,12 @@ export async function generateClientSdkVersionOneDotOne(
   await fs.mkdir(outDir, { recursive: true });
 
   const sanitizedOntology = sanitizeMetadata(ontology);
+  const enhancedOntology = enhanceOntology(
+    sanitizedOntology,
+    undefined,
+    new Map(),
+    importExt,
+  );
   await generateFoundryClientFile(fs, outDir, importExt);
   await generateMetadataFile(
     sanitizedOntology,
@@ -75,28 +82,25 @@ export async function generateClientSdkVersionOneDotOne(
     importExt,
   );
   await generatePerObjectInterfaceAndDataFiles(
-    sanitizedOntology,
+    enhancedOntology,
     fs,
     objectsDir,
     importExt,
   );
+
+  const common = {
+    sanitizedOntology,
+    fs,
+    outDir,
+    ontology: enhancedOntology,
+  };
+
   await generateActions(sanitizedOntology, fs, actionsDir, importExt);
   await generateBatchActions(sanitizedOntology, fs, actionsDir, importExt);
   await generateBulkActions(sanitizedOntology, fs, actionsDir, importExt);
-  await generatePerActionDataFiles(
-    sanitizedOntology,
-    fs,
-    actionsDir,
-    importExt,
-    false,
-  );
+  await generatePerActionDataFiles(common, false);
   await generateQueries(sanitizedOntology, fs, queriesDir, importExt);
-  await generatePerQueryDataFiles(
-    sanitizedOntology,
-    fs,
-    queriesDir,
-    importExt,
-  );
+  await generatePerQueryDataFiles(common, false);
   await generateIndexFile(fs, outDir, importExt);
   await generateBackCompatDeprecatedExports(fs, outDir, importExt);
 }
