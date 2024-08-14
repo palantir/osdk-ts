@@ -3,7 +3,7 @@
   "tasks": {
     "codegen": {
       "inputs": ["generateMockOntology.js"],
-      "outputs": ["src/generatedNoCheck2/**/*"],
+      "outputs": ["src/generatedNoCheck/**/*"],
       "dependsOn": ["@osdk/generator#transpile", "@osdk/shared.test#transpile"]
     }
   }

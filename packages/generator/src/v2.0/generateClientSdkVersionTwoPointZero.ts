@@ -40,10 +40,10 @@ async function generateRootIndexTsFile(
     await formatTs(
       `
         export { Ontology } from "./Ontology${importExt}";
-        export * from "./ontology/actions/index${importExt}";
+        export * from "./ontology/actions${importExt}";
         export * from "./ontology/objects${importExt}";
         export * from "./ontology/interfaces${importExt}";
-        export * from "./ontology/queries/index${importExt}";
+        export * from "./ontology/queries${importExt}";
     `,
     ),
   );
@@ -68,10 +68,10 @@ async function generateOntologyTsFile(
     await formatTs(
       `
       import type { OntologyDefinition } from "@osdk/api";
-      import * as Actions from "./ontology/actions/index${importExt}";
+      import * as Actions from "./ontology/actions${importExt}";
       import * as Objects from "./ontology/objects${importExt}";
       import * as Interfaces from "./ontology/interfaces${importExt}";
-      import * as Queries from "./ontology/queries/index${importExt}";
+      import * as Queries from "./ontology/queries${importExt}";
       import { OntologyMetadata } from "./OntologyMetadata${importExt}";
       
       export interface Ontology extends OntologyDefinition<${
