@@ -23,7 +23,7 @@ import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shar
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
   Branch,
-  BranchId,
+  BranchName,
   CreateBranchRequest,
   DatasetRid,
   ListBranchesResponse,
@@ -59,22 +59,22 @@ export function createBranch(
 const _deleteBranch: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
 > = [3, "/v2/datasets/{0}/branches/{1}", 2];
 
 /**
- * Deletes the Branch with the given BranchId.
+ * Deletes the Branch with the given BranchName.
  *
  * Required Scopes: [api:datasets-write]
- * URL: /v2/datasets/{datasetRid}/branches/{branchBranchId}
+ * URL: /v2/datasets/{datasetRid}/branches/{branchName}
  */
 export function deleteBranch(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
@@ -117,7 +117,7 @@ export function listBranches(
 const _getBranch: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Branch>
 > = [0, "/v2/datasets/{0}/branches/{1}", 2];
@@ -126,13 +126,13 @@ const _getBranch: $FoundryPlatformMethod<
  * Get a Branch of a Dataset.
  *
  * Required Scopes: [api:datasets-read]
- * URL: /v2/datasets/{datasetRid}/branches/{branchBranchId}
+ * URL: /v2/datasets/{datasetRid}/branches/{branchName}
  */
 export function getBranch(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]

@@ -40,7 +40,7 @@ const _createChatCompletion: $FoundryPlatformMethod<
 /**
  * Creates a chat completion for a prompt.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/models/languageModels/{modelName}/chatCompletions
  */
 export function createChatCompletion(
@@ -61,7 +61,7 @@ const _streamChatCompletion: $FoundryPlatformMethod<
  * Runs the same query as create chat completion, but streams the raw response as a string of UTF8 encoded bytes.
  *   Note: This endpoint returns only the string response.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/models/languageModels/{modelName}/chatCompletions/stream
  */
 export function streamChatCompletion(
@@ -80,7 +80,7 @@ const _listLanguageModels: $FoundryPlatformMethod<
 /**
  * Lists the language models available. Can be filtered by source.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/models/languageModels
  */
 export function listLanguageModels(

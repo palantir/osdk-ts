@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-export * as Admin from "@osdk/foundry.admin";
-export * from "@osdk/foundry.core";
-export * as Datasets from "@osdk/foundry.datasets";
-export * as Orchestration from "@osdk/foundry.orchestration";
-export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";
+import { defineConfig } from "tsup";
+
+export default defineConfig(async (options) =>
+  (await import("@osdk/monorepo.tsup")).default(options, {
+    esmOnly: true,
+  })
+);

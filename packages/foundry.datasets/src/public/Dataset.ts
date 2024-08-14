@@ -22,7 +22,7 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
-  BranchId,
+  BranchName,
   CreateDatasetRequest,
   Dataset,
   DatasetRid,
@@ -83,7 +83,7 @@ const _readTableDataset: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
     $queryParams: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       startTransactionRid?: TransactionRid | undefined;
       endTransactionRid?: TransactionRid | undefined;
       format: TableExportFormat;
@@ -108,7 +108,7 @@ export function readTableDataset(
     datasetRid: DatasetRid,
 
     $queryParams: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       startTransactionRid?: TransactionRid | undefined;
       endTransactionRid?: TransactionRid | undefined;
       format: TableExportFormat;

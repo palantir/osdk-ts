@@ -71,9 +71,9 @@ const _listObjects: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}
  */
 export function listObjects(
@@ -105,9 +105,9 @@ const _getObject: $FoundryPlatformMethod<
 /**
  * Gets a specific object with the given primary key.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}
  */
 export function getObject(
@@ -156,9 +156,9 @@ const _listLinkedObjects: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
 export function listLinkedObjects(
@@ -195,9 +195,9 @@ const _getLinkedObject: $FoundryPlatformMethod<
  * Get a specific linked object that originates from another object. If there is no link between the two objects,
  * LinkedObjectNotFound is thrown.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
  */
 export function getLinkedObject(
@@ -244,9 +244,9 @@ const _searchObjects: $FoundryPlatformMethod<
  * | anyTerm  | The provided property contains at least one of the terms separated by whitespace. | string                          |
  * | allTerms | The provided property contains all the terms separated by whitespace.             | string                          |                                                                            |
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/search
  */
 export function searchObjects(
@@ -271,9 +271,9 @@ const _aggregateObjects: $FoundryPlatformMethod<
 /**
  * Perform functions on object fields in the specified ontology and object type.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/aggregate
  */
 export function aggregateObjects(

@@ -49,9 +49,9 @@ const _uploadAttachmentV2: $FoundryPlatformMethod<
  * The body of the request must contain the binary content of the file and the `Content-Type` header must be `application/octet-stream`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:write-data`.
+ * following operation scopes: `api:ontologies-write`.
  *
- * Required Scopes: [api:write-data]
+ * Required Scopes: [api:ontologies-write]
  * URL: /v2/ontologies/attachments/upload
  */
 export function uploadAttachmentV2(
@@ -76,9 +76,9 @@ const _getAttachmentContentV2: $FoundryPlatformMethod<
  * Get the content of an attachment.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/attachments/{attachmentRid}/content
  */
 export function getAttachmentContentV2(
@@ -96,9 +96,9 @@ const _getAttachmentV2: $FoundryPlatformMethod<
  * Get the metadata of an attachment.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/attachments/{attachmentRid}
  */
 export function getAttachmentV2(
