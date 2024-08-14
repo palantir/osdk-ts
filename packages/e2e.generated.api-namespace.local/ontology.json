@@ -1,0 +1,18 @@
+{
+  "ontology": {
+    "apiName": "dep",
+    "rid": "ri.ontology.main.ontology.dep",
+    "displayName": "",
+    "description": ""
+  },
+  "actionTypes": {
+  },
+  "objectTypes": {
+  },
+  "queryTypes": {
+  },
+  "interfaceTypes": {
+  },
+  "sharedPropertyTypes": {
+  }
+}
