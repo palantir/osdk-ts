@@ -81,11 +81,14 @@ export type DistanceUnit =
   | "NAUTICAL_MILES";
 
 /**
- * An ISO 8601 formatted duration.
+ * A measurement of duration.
  *
- * Log Safety: UNSAFE
+ * Log Safety: SAFE
  */
-export type Duration = LooselyBrandedString<"Duration">;
+export interface Duration {
+  value: undefined;
+  unit: TimeUnit;
+}
 
 /**
  * The path to a File within Foundry. Examples: my-file.txt, path/to/my-file.jpg, dataframe.snappy.parquet.
@@ -98,6 +101,13 @@ export type FilePath = LooselyBrandedString<"FilePath">;
  * Log Safety: SAFE
  */
 export type FolderRid = LooselyBrandedString<"FolderRid">;
+
+/**
+ * The Resource Identifier (RID) of a Media Set
+ *
+ * Log Safety: SAFE
+ */
+export type MediaSetRid = LooselyBrandedString<"MediaSetRid">;
 
 /**
  * Log Safety: SAFE
@@ -138,6 +148,13 @@ export type PrincipalId = LooselyBrandedString<"PrincipalId">;
  * Log Safety: SAFE
  */
 export type PrincipalType = "USER" | "GROUP";
+
+/**
+ * The Resource Identifier (RID) of a Project.
+ *
+ * Log Safety: SAFE
+ */
+export type ProjectRid = LooselyBrandedString<"ProjectRid">;
 
 /**
    * Identifies which Realm a User or Group is a member of.

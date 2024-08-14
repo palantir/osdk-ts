@@ -22,7 +22,7 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
-  BranchId,
+  BranchName,
   CreateTransactionRequest,
   DatasetRid,
   Transaction,
@@ -36,7 +36,7 @@ const _createTransaction: $FoundryPlatformMethod<
     datasetRid: DatasetRid,
     $body: CreateTransactionRequest,
     $queryParams?: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       preview?: PreviewMode | undefined;
     },
   ) => Promise<Transaction>
@@ -54,7 +54,7 @@ export function createTransaction(
     datasetRid: DatasetRid,
     $body: CreateTransactionRequest,
     $queryParams?: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       preview?: PreviewMode | undefined;
     },
   ]

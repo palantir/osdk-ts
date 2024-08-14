@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-export * as Admin from "@osdk/foundry.admin";
-export * from "@osdk/foundry.core";
-export * as Datasets from "@osdk/foundry.datasets";
-export * as Orchestration from "@osdk/foundry.orchestration";
-export * as ThirdPartyApplications from "@osdk/foundry.thirdpartyapplications";
+import type {
+  SharedClient as $Client,
+  SharedClientContext as $ClientContext,
+} from "@osdk/shared.client";
+import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
+import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
+
+//

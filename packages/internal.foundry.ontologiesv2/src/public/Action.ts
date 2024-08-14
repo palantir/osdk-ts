@@ -56,9 +56,9 @@ const _applyActionV2: $FoundryPlatformMethod<
  * this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/apply
  */
 export function applyActionV2(
@@ -98,9 +98,9 @@ const _applyActionBatchV2: $FoundryPlatformMethod<
  * Note that [notifications](/docs/foundry/action-types/notifications/) are not currently supported by this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyBatch
  */
 export function applyActionBatchV2(
@@ -139,9 +139,9 @@ const _applyActionAsyncV2: $FoundryPlatformMethod<
  * this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync
  */
 export function applyActionAsyncV2(

@@ -51,9 +51,9 @@ const _listObjectTypesV2: $FoundryPlatformMethod<
  * more results available, at least one result will be present in the
  * response.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes
  */
 export function listObjectTypesV2(
@@ -80,9 +80,9 @@ const _getObjectTypeV2: $FoundryPlatformMethod<
 /**
  * Gets a specific object type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}
  */
 export function getObjectTypeV2(
@@ -107,9 +107,9 @@ const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<
  * List the outgoing links for an object type.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes
  */
 export function listOutgoingLinkTypesV2(
@@ -139,9 +139,9 @@ const _getOutgoingLinkTypeV2: $FoundryPlatformMethod<
  * Get an outgoing link for an object type.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}
  */
 export function getOutgoingLinkTypeV2(
