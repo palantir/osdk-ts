@@ -41,6 +41,8 @@ const _deleteVersion: $FoundryPlatformMethod<
 /**
  * Deletes the given Version
  *
+ * @beta
+ *
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/{versionVersion}
  */
@@ -70,6 +72,8 @@ const _listVersions: $FoundryPlatformMethod<
 /**
  * Lists all Versions
  *
+ * @beta
+ *
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions
  */
@@ -98,6 +102,8 @@ const _getVersion: $FoundryPlatformMethod<
 
 /**
  * Get the Version
+ *
+ * @beta
  *
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/{versionVersion}
@@ -131,6 +137,8 @@ const _uploadVersion: $FoundryPlatformMethod<
 ];
 
 /**
+ * @beta
+ *
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}/website/versions/upload
  */

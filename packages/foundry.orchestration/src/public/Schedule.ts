@@ -35,6 +35,8 @@ const _getSchedule: $FoundryPlatformMethod<
 /**
  * Get the Schedule
  *
+ * @beta
+ *
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/schedules/{scheduleRid}
  */

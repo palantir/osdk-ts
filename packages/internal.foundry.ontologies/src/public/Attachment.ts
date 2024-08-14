@@ -51,6 +51,8 @@ const _uploadAttachment: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-write]
  * URL: /v1/attachments/upload
  */
@@ -78,6 +80,8 @@ const _getAttachmentContent: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/attachments/{attachmentRid}/content
  */
@@ -97,6 +101,8 @@ const _getAttachment: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/attachments/{attachmentRid}

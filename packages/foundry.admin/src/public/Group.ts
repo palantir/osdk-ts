@@ -48,6 +48,8 @@ const _createGroup: $FoundryPlatformMethod<
 /**
  * Creates a new Group
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups
  */
@@ -70,6 +72,8 @@ const _deleteGroup: $FoundryPlatformMethod<
 
 /**
  * Deletes the given Group
+ *
+ * @beta
  *
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups/{groupId}
@@ -95,6 +99,8 @@ const _listGroups: $FoundryPlatformMethod<
 
 /**
  * Lists all Groups
+ *
+ * @beta
  *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups
@@ -122,6 +128,8 @@ const _getGroup: $FoundryPlatformMethod<
 /**
  * Get the Group
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/{groupId}
  */
@@ -148,6 +156,8 @@ const _getGroupsBatch: $FoundryPlatformMethod<
  *
  * The maximum batch size for this endpoint is 500.
  *
+ * @alpha
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/getBatch
  */
@@ -169,6 +179,8 @@ const _searchGroups: $FoundryPlatformMethod<
 > = [1, "/v2/admin/groups/search", 3];
 
 /**
+ * @beta
+ *
  * Required Scopes: []
  * URL: /v2/admin/groups/search
  */

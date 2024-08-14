@@ -37,6 +37,8 @@ const _listOntologies: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies
  */
@@ -55,6 +57,8 @@ const _getOntology: $FoundryPlatformMethod<
  * Gets a specific ontology with the given Ontology RID.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}
