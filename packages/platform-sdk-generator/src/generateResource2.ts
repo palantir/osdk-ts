@@ -33,7 +33,7 @@ export async function writeResource2(
   filePath: string,
   model: Model,
 ): Promise<void> {
-  const { out, referencedTypes } = generateMethods(resource, model);
+  const { out, referencedTypes } = await generateMethods(resource, model);
 
   return writeCode(
     filePath,
@@ -51,7 +51,7 @@ export async function writeResource2(
   );
 }
 
-function generateMethods(resource: Resource, model: Model) {
+async function generateMethods(resource: Resource, model: Model) {
   let out = "";
   const referencedTypes = new Set<Component>();
 
@@ -73,7 +73,7 @@ function generateMethods(resource: Resource, model: Model) {
     
 
 
-    ${generateMethodJsdoc(method)}
+    ${await generateMethodJsdoc(method)}
     export function ${methodName}(
       $ctx: $Client | $ClientContext,
       ...args: [${generateMethodParameters(method)}]
