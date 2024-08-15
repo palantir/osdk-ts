@@ -17,11 +17,11 @@
 import { getCleanedUpJsdoc } from "./getCleanedUpJsdoc.js";
 import type * as ir from "./ir/index.js";
 
-export function generateMethodJsdoc(
+export async function generateMethodJsdoc(
   method: Pick<ir.StaticOperation, "documentation" | "auth" | "path">,
 ) {
   return `/**
-  * ${getCleanedUpJsdoc(method.documentation)}
+  * ${await getCleanedUpJsdoc(method.documentation)}
   * 
   * Required Scopes: [${method.auth.scopes.join(", ")}]
   * ${true ? `URL: ${method.path}` : ``}

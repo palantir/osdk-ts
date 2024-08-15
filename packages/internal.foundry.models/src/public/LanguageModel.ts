@@ -59,7 +59,7 @@ const _streamChatCompletion: $FoundryPlatformMethod<
 
 /**
  * Runs the same query as create chat completion, but streams the raw response as a string of UTF8 encoded bytes.
- *   Note: This endpoint returns only the string response.
+ * Note: This endpoint returns only the string response.
  *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/models/languageModels/{modelName}/chatCompletions/stream

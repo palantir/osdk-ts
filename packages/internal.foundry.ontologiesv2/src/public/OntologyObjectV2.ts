@@ -287,8 +287,8 @@ const _listInterfaceTypes: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Lists the interface types for the given Ontology.
@@ -326,8 +326,8 @@ const _getInterfaceType: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Gets a specific object type with the given API name.
@@ -360,8 +360,8 @@ const _searchObjectsForInterface: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Search for objects in the specified ontology and interface type. Any properties specified in the "where" or
@@ -415,8 +415,8 @@ const _aggregateObjectsForInterface: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Perform functions on object fields in the specified ontology and of the specified interface type. Any
