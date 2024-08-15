@@ -53,6 +53,8 @@ const _listObjectTypes: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes
  */
@@ -82,6 +84,8 @@ const _getObjectType: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}
  */
@@ -108,6 +112,8 @@ const _listOutgoingLinkTypes: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}/outgoingLinkTypes
@@ -140,6 +146,8 @@ const _getOutgoingLinkType: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}

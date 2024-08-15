@@ -49,6 +49,8 @@ const _listActionTypesV2: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/actionTypes
  */
@@ -77,6 +79,8 @@ const _getActionTypeV2: $FoundryPlatformMethod<
  * Gets a specific action type with the given API name.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/actionTypes/{actionType}

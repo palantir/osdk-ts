@@ -45,6 +45,8 @@ const _listGroupMemberships: $FoundryPlatformMethod<
 /**
  * Lists all GroupMemberships
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}/groupMemberships
  */

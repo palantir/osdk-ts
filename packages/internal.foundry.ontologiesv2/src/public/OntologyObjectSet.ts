@@ -49,6 +49,8 @@ const _createTemporaryObjectSetV2: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
+ * @alpha
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/objectSets/createTemporary
  */
@@ -73,6 +75,8 @@ const _getObjectSetV2: $FoundryPlatformMethod<
  * Gets the definition of the `ObjectSet` with the given RID.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @alpha
  *
  * Required Scopes: []
  * URL: /v2/ontologies/{ontology}/objectSets/{objectSetRid}
@@ -104,6 +108,8 @@ const _loadObjectSetV2: $FoundryPlatformMethod<
  * Note that null value properties will not be returned.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/loadObjects
@@ -137,6 +143,8 @@ const _aggregateObjectSetV2: $FoundryPlatformMethod<
  * Aggregates the ontology objects present in the `ObjectSet` from the provided object set definition.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/aggregate

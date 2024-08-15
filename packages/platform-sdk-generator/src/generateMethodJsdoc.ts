@@ -16,14 +16,33 @@
 
 import { getCleanedUpJsdoc } from "./getCleanedUpJsdoc.js";
 import type * as ir from "./ir/index.js";
+import type { StaticOperation } from "./model/StaticOperation.js";
 
 export async function generateMethodJsdoc(
-  method: Pick<ir.StaticOperation, "documentation" | "auth" | "path">,
+  method: StaticOperation,
 ) {
   return `/**
   * ${await getCleanedUpJsdoc(method.documentation)}
   * 
+  * ${jsdocTagForReleaseStage(method.spec.releaseStage)}
+  * 
   * Required Scopes: [${method.auth.scopes.join(", ")}]
   * ${true ? `URL: ${method.path}` : ``}
   */`;
+}
+
+function jsdocTagForReleaseStage(
+  releaseStage: ir.StaticOperation["releaseStage"],
+) {
+  switch (releaseStage) {
+    case "PRIVATE_BETA":
+      return "@alpha";
+    case "PUBLIC_BETA":
+      return "@beta";
+    case "STABLE":
+    case undefined:
+      return "@public";
+    default:
+      throw new Error(`Unexpected release stage: ${releaseStage}`);
+  }
 }

@@ -47,6 +47,8 @@ const _deleteUser: $FoundryPlatformMethod<
 /**
  * Deletes the given User
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}
  */
@@ -71,6 +73,8 @@ const _listUsers: $FoundryPlatformMethod<
 
 /**
  * Lists all Users
+ *
+ * @beta
  *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users
@@ -98,6 +102,8 @@ const _getUser: $FoundryPlatformMethod<
 /**
  * Get the User
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}
  */
@@ -124,6 +130,8 @@ const _getUsersBatch: $FoundryPlatformMethod<
  *
  * The maximum batch size for this endpoint is 500.
  *
+ * @alpha
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/getBatch
  */
@@ -142,6 +150,8 @@ const _getCurrentUser: $FoundryPlatformMethod<
 > = [0, "/v2/admin/users/getCurrent", 2];
 
 /**
+ * @beta
+ *
  * Required Scopes: []
  * URL: /v2/admin/users/getCurrent
  */
@@ -160,6 +170,8 @@ const _profilePictureUser: $FoundryPlatformMethod<
 > = [0, "/v2/admin/users/{0}/profilePicture", 2, , "application/octet-stream"];
 
 /**
+ * @beta
+ *
  * Required Scopes: []
  * URL: /v2/admin/users/{userId}/profilePicture
  */
@@ -182,6 +194,8 @@ const _searchUsers: $FoundryPlatformMethod<
 > = [1, "/v2/admin/users/search", 3];
 
 /**
+ * @beta
+ *
  * Required Scopes: []
  * URL: /v2/admin/users/search
  */

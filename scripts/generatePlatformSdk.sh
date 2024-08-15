@@ -41,8 +41,18 @@ pnpm exec mrl check --fix --quiet
 
 echo
 echo "Fixing lint and formatting lines"
-pnpm exec turbo run --output-logs=errors-only fix-lint 
+pnpm exec -- \
+    turbo run --output-logs=errors-only fix-lint \
+        --filter ./packages/foundry \
+        --filter ./packages/internal.foundry \
+        --filter="./packages/foundry.*" \
+        --filter="./packages/internal.foundry.*"
 
 echo
 echo "Checking for any remaining lint errors"
-pnpm exec turbo run --output-logs=errors-only check
+pnpm exec -- \
+    turbo run --output-logs=errors-only check \
+        --filter ./packages/foundry \
+        --filter ./packages/internal.foundry \
+        --filter="./packages/foundry.*" \
+        --filter="./packages/internal.foundry.*"

@@ -48,4 +48,3 @@ export type {
   ZoneId,
 } from "./_components.js";
 export * as Schedules from "./public/Schedule.js";
-export * as ScheduleVersions from "./public/ScheduleVersion.js";

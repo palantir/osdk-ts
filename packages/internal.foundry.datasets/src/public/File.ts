@@ -77,6 +77,8 @@ const _listFiles: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files
  */
@@ -131,6 +133,8 @@ const _uploadFile: $FoundryPlatformMethod<
  * See [createTransaction](https://www.palantir.com/docs/foundry/api/datasets-resources/transactions/create-transaction/) to open a transaction.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/files:upload
@@ -189,6 +193,8 @@ const _getFileMetadata: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
  */
@@ -236,6 +242,8 @@ const _deleteFile: $FoundryPlatformMethod<
  * open a transaction.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
@@ -293,6 +301,8 @@ const _getFileContent: $FoundryPlatformMethod<
  * `startTransactionRid` and `endTransactionRid`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}/content

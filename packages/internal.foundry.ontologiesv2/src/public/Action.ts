@@ -58,6 +58,8 @@ const _applyActionV2: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/apply
  */
@@ -100,6 +102,8 @@ const _applyActionBatchV2: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyBatch
  */
@@ -140,6 +144,8 @@ const _applyActionAsyncV2: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
+ *
+ * @alpha
  *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/actions/{action}/applyAsync

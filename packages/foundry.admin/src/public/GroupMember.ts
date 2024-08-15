@@ -49,6 +49,8 @@ const _listGroupMembers: $FoundryPlatformMethod<
 /**
  * Lists all GroupMembers
  *
+ * @beta
+ *
  * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/{groupId}/groupMembers
  */
@@ -77,6 +79,8 @@ const _addGroupMembers: $FoundryPlatformMethod<
 > = [1, "/v2/admin/groups/{0}/groupMembers/add", 3];
 
 /**
+ * @beta
+ *
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups/{groupId}/groupMembers/add
  */
@@ -100,6 +104,8 @@ const _removeGroupMembers: $FoundryPlatformMethod<
 > = [1, "/v2/admin/groups/{0}/groupMembers/remove", 3];
 
 /**
+ * @beta
+ *
  * Required Scopes: [api:admin-write]
  * URL: /v2/admin/groups/{groupId}/groupMembers/remove
  */

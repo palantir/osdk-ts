@@ -59,6 +59,8 @@ const _listActionTypes: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actionTypes
  */
@@ -88,6 +90,8 @@ const _getActionType: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actionTypes/{actionTypeApiName}
  */
@@ -115,6 +119,8 @@ const _applyAction: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/apply
@@ -151,6 +157,8 @@ const _applyActionBatch: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyBatch
  */
@@ -184,6 +192,8 @@ const _applyActionAsync: $FoundryPlatformMethod<
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
+ * @alpha
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync
  */
@@ -209,6 +219,8 @@ const _getAsyncActionStatus: $FoundryPlatformMethod<
 > = [0, "/v1/ontologies/{0}/actions/{1}/applyAsync/{2}", 2];
 
 /**
+ * @alpha
+ *
  * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync/{actionRid}
  */
@@ -244,6 +256,8 @@ const _validateAction: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/validate

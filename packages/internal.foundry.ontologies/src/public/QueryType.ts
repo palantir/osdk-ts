@@ -53,6 +53,8 @@ const _listQueryTypes: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queryTypes
  */
@@ -84,6 +86,8 @@ const _getQueryType: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queryTypes/{queryApiName}
  */
@@ -112,6 +116,8 @@ const _executeQuery: $FoundryPlatformMethod<
  * Executes a Query using the given parameters. Optional parameters do not need to be supplied.
  * Third-party applications using this endpoint via OAuth2 must request the
  * following operation scopes: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queries/{queryApiName}/execute

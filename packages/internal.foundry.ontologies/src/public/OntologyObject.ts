@@ -73,6 +73,8 @@ const _listObjects: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}
  */
@@ -106,6 +108,8 @@ const _getObject: $FoundryPlatformMethod<
  * Gets a specific object with the given primary key.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}
@@ -158,6 +162,8 @@ const _listLinkedObjects: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
@@ -196,6 +202,8 @@ const _getLinkedObject: $FoundryPlatformMethod<
  * LinkedObjectNotFound is thrown.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
@@ -246,6 +254,8 @@ const _searchObjects: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/search
  */
@@ -272,6 +282,8 @@ const _aggregateObjects: $FoundryPlatformMethod<
  * Perform functions on object fields in the specified ontology and object type.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/aggregate
