@@ -24,7 +24,7 @@ export interface Attachment {
  * the W3C FileApi https://www.w3.org/TR/FileAPI/#file-section
  */
 export interface AttachmentUpload extends Blob {
-  name: string;
+  readonly name: string;
 }
 
 export interface AttachmentMetadata {

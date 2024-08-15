@@ -1,10 +1,9 @@
 import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
@@ -25,10 +24,19 @@ export type ActionDef$assignEmployee1$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
-export type assignEmployee1$Params =
-  | NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>[];
+/**
+ * Assigns an employee to a venture
+ */
+export interface ActionParams$assignEmployee1 {
+  readonly 'employee-1': ActionParam.ObjectType<Employee>;
+
+  readonly 'venture-1': ActionParam.ObjectType<Venture>;
+}
+
+/**
+ * @deprecated Use `ActionParams$assignEmployee1`
+ */
+export type assignEmployee1$Params = ActionParams$assignEmployee1 | ReadonlyArray<ActionParams$assignEmployee1>;
 
 // Represents a fqn of the action
 export interface assignEmployee1 {
@@ -36,10 +44,8 @@ export interface assignEmployee1 {
    * Assigns an employee to a venture
    */
   <
-    P extends assignEmployee1$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$assignEmployee1$Params>>[]
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
+    P extends ActionParams$assignEmployee1 | ReadonlyArray<ActionParams$assignEmployee1>,
+    OP extends P extends ReadonlyArray<ActionParams$assignEmployee1> ? ApplyBatchActionOptions : ApplyActionOptions,
   >(
     args: P,
     options?: OP,

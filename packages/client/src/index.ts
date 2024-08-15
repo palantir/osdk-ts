@@ -24,13 +24,11 @@ export type {
   NOOP,
   ObjectSet,
   Osdk,
-  OsdkActionParameters,
   OsdkObject,
   PageResult,
   Result,
   WhereClause,
 } from "@osdk/client.api";
-
 export { isOk } from "@osdk/client.api";
 export { PalantirApiError } from "@osdk/shared.net.errors";
 

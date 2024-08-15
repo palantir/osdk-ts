@@ -14,20 +14,76 @@
  * limitations under the License.
  */
 
-import type { ActionDefinition } from "@osdk/api";
 import type {
+  ActionDefinition,
+  ActionParameterDefinition,
+  ObjectActionDataType,
+  ObjectSetActionDataType,
+} from "@osdk/api";
+import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  OsdkActionParameters,
+  DataValueClientToWire,
+  NOOP,
+  PartialBy,
 } from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
-import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import type { NullableProps } from "../util/NullableProps.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
+
+type BaseType<APD extends Pick<ActionParameterDefinition<any, any>, "type">> =
+  APD["type"] extends ObjectActionDataType<any, infer TTargetType>
+    ? ActionParam.ObjectType<TTargetType>
+    : APD["type"] extends ObjectSetActionDataType<any, infer TTargetType>
+      ? ActionParam.ObjectSetType<TTargetType>
+    : APD["type"] extends keyof DataValueClientToWire
+      ? ActionParam.PrimitiveType<APD["type"]>
+    : never;
+
+type MaybeArrayType<APD extends ActionParameterDefinition<any, any>> =
+  APD["multiplicity"] extends true ? Array<BaseType<APD>>
+    : BaseType<APD>;
+
+type NotOptionalParams<X extends ActionParametersDefinition> = {
+  [P in keyof X]: MaybeArrayType<X[P]>;
+};
+
+export type OsdkActionParameters<
+  X extends ActionParametersDefinition,
+> = NullableProps<X> extends never ? NotOptionalParams<X>
+  : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
+
+export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
+  {
+    applyAction: NonNullable<T["__OsdkActionType"]> extends never
+      ? ActionSignature<T["parameters"]>
+      : NonNullable<T["__OsdkActionType"]>;
+  };
+
+type ActionParametersDefinition = Record<
+  any,
+  ActionParameterDefinition<any, any>
+>;
+
+export type ActionSignature<
+  X extends Record<any, ActionParameterDefinition<any, any>>,
+> = <
+  A extends NOOP<OsdkActionParameters<X>> | NOOP<OsdkActionParameters<X>>[],
+  OP extends A extends NOOP<OsdkActionParameters<X>>[] ? ApplyBatchActionOptions
+    : ApplyActionOptions,
+>(
+  args: A,
+  options?: OP,
+) => Promise<
+  ActionReturnTypeForOptions<OP>
+>;
 
 export async function applyAction<
   AD extends ActionDefinition<any, any>,
