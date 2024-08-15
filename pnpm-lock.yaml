@@ -1208,6 +1208,62 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
 
+  packages/e2e.generated.api-namespace.dep:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../client.api
+    devDependencies:
+      '@osdk/cli.cmd.typescript':
+        specifier: workspace:~
+        version: link:../cli.cmd.typescript
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
+  packages/e2e.generated.api-namespace.local:
+    dependencies:
+      '@osdk/api':
+        specifier: workspace:~
+        version: link:../api
+      '@osdk/client':
+        specifier: workspace:~
+        version: link:../client
+      '@osdk/client.api':
+        specifier: workspace:*
+        version: link:../client.api
+    devDependencies:
+      '@osdk/cli.cmd.typescript':
+        specifier: workspace:~
+        version: link:../cli.cmd.typescript
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
+      typescript:
+        specifier: ^5.5.4
+        version: 5.5.4
+
   packages/e2e.generated.catchall:
     dependencies:
       '@osdk/api':
