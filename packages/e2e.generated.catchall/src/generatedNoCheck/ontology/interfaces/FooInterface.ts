@@ -30,17 +30,17 @@ export const FooInterface: FooInterface = {
   displayName: 'Foo interface',
   links: {},
   properties: {
-    name: {
-      displayName: 'Name',
-      multiplicity: false,
-      description: 'Name of Foo',
-      type: 'string',
-      nullable: true,
-    },
     description: {
       displayName: 'Description',
       multiplicity: false,
       description: 'Description of Description',
+      type: 'string',
+      nullable: true,
+    },
+    name: {
+      displayName: 'Name',
+      multiplicity: false,
+      description: 'Name of Foo',
       type: 'string',
       nullable: true,
     },

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/gateway/types";
+import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -25,5 +25,9 @@ export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
 
   getObjectDefIdentifier(v2: boolean) {
     return v2 ? this.uniqueImportName : `${this.uniqueImportName}Def`;
+  }
+
+  get properties() {
+    return this.og.properties;
   }
 }

@@ -109,8 +109,14 @@ export const TodoWireOntology = {
         status: "ACTIVE",
         foreignKeyPropertyApiName: "email",
       }],
-      implementsInterfaces: [],
-      implementsInterfaces2: {},
+      implementsInterfaces: ["SomeInterface"],
+      implementsInterfaces2: {
+        "SomeInterface": {
+          properties: {
+            "SomeProperty": "body",
+          },
+        },
+      },
       sharedPropertyTypeMapping: {},
     },
     Person: {
@@ -177,6 +183,36 @@ export const TodoWireOntology = {
       version: "0",
     },
   },
-  interfaceTypes: {},
-  sharedPropertyTypes: {},
+  interfaceTypes: {
+    SomeInterface: {
+      apiName: "SomeInterface",
+      description: "Some interface",
+      properties: {
+        "SomeProperty": {
+          apiName: "SomeProperty",
+          description: "Some property",
+          displayName: "Sum Property",
+          dataType: {
+            type: "string",
+          },
+          rid: "idk2",
+        },
+      },
+      rid: "idk",
+      displayName: "Sum Interface",
+      extendsInterfaces: [],
+      links: {},
+    },
+  },
+  sharedPropertyTypes: {
+    SomeProperty: {
+      apiName: "SomeProperty",
+      description: "Some property",
+      displayName: "Sum Property",
+      dataType: {
+        type: "string",
+      },
+      rid: "idk2",
+    },
+  },
 } satisfies WireOntologyDefinition;
