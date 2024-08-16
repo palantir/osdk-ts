@@ -1,8 +1,14 @@
-import type { VersionBound } from '@osdk/api';
-import { QueryDefinition } from '@osdk/api';
+import type { QueryDefinition, VersionBound } from '@osdk/api';
+import type { QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-export interface getTodoCount extends QueryDefinition<'getTodoCount', never>, VersionBound<$ExpectedClientVersion> {
+export interface getTodoCount {
+  (): Promise<QueryResult.PrimitiveType<'integer'>>;
+}
+
+export interface QueryDef$getTodoCount
+  extends QueryDefinition<'getTodoCount', never, getTodoCount>,
+    VersionBound<$ExpectedClientVersion> {
   apiName: 'getTodoCount';
   type: 'query';
   version: '0.1.2';
@@ -13,7 +19,7 @@ export interface getTodoCount extends QueryDefinition<'getTodoCount', never>, Ve
   };
 }
 
-export const getTodoCount: getTodoCount = {
+export const getTodoCount: QueryDef$getTodoCount = {
   apiName: 'getTodoCount',
   type: 'query',
   version: '0.1.2',

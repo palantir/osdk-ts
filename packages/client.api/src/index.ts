@@ -112,11 +112,7 @@ export type {
 } from "./OsdkObjectFrom.js";
 export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
-export type {
-  QueryParameterType,
-  QueryReturnType,
-  QuerySignatureFromDef,
-} from "./queries/Queries.js";
+export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type {
   TimeSeriesPoint,
@@ -124,7 +120,5 @@ export type {
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
-export type { NOOP } from "./util/NOOP.js";
-export type { PartialBy } from "./util/PartialBy.js";
 
 export {};

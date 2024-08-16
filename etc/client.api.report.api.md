@@ -9,16 +9,12 @@ import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
-import type { ObjectQueryDataType } from '@osdk/api';
-import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
 import type { ObjectTypeLinkKeysFrom2 } from '@osdk/api';
 import type { ObjectTypePropertyDefinition } from '@osdk/api';
 import type { Point } from 'geojson';
 import type { Polygon } from 'geojson';
-import type { QueryDataTypeDefinition } from '@osdk/api';
-import type { QueryDefinition } from '@osdk/api';
 import type { SingleKeyObject } from 'type-fest';
 
 // Warning: (ae-forgotten-export) The symbol "ActionResults" needs to be exported by the entry point index.d.ts
@@ -427,11 +423,6 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends
 }
 
 // @public (undocumented)
-export type NOOP<T> = T extends (...args: any[]) => any ? T : T extends abstract new (...args: any[]) => any ? T : {
-    [K in keyof T]: T[K];
-};
-
-// @public (undocumented)
 export interface NotWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> {
     // (undocumented)
     $not: WhereClause<T>;
@@ -558,9 +549,6 @@ export interface PageResult<T extends OsdkObject<any>> {
 }
 
 // @public (undocumented)
-export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-
-// @public (undocumented)
 export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
 
 // @public
@@ -639,20 +627,19 @@ export interface PropertyValueWireToClient {
     timestamp: string;
 }
 
-// Warning: (ae-forgotten-export) The symbol "PartialByNotStrict" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NotOptionalParams" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "OptionalQueryParams" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>;
+// @public
+export namespace QueryParam {
+    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
+    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+}
 
-// @public (undocumented)
-export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType> : T extends ObjectSetQueryDataType<any, infer TTargetType> ? ObjectSet<TTargetType> : T["type"] extends keyof DataValueWireToClient ? DataValueWireToClient[T["type"]] : never;
-
-// @public (undocumented)
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
-    executeFunction: keyof T["parameters"] extends never ? () => Promise<QueryReturnType<T["output"]>> : (params: QueryParameterType<T["parameters"]>) => Promise<QueryReturnType<T["output"]>>;
-};
+// @public
+export namespace QueryResult {
+    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = ObjectSet<T>;
+    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T>;
+    export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueWireToClient[T];
+}
 
 // @public
 export type RespectNullability<S extends NullabilityAdherence> = S extends false ? false : true;

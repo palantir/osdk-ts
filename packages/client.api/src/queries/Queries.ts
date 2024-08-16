@@ -14,65 +14,58 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectQueryDataType,
-  ObjectSetQueryDataType,
-  OntologyDefinition,
-  QueryDataTypeDefinition,
-  QueryDefinition,
-} from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
+
 import type {
   BaseObjectSet,
   DataValueClientToWire,
   DataValueWireToClient,
-  NOOP,
   ObjectSet,
   OsdkBase,
   OsdkObjectPrimaryKeyType,
 } from "../index.js";
-import type { PartialByNotStrict } from "../util/PartialBy.js";
 
-export type QuerySignatureFromDef<T extends QueryDefinition<any, any>> = {
-  executeFunction: keyof T["parameters"] extends never
-    ? () => Promise<QueryReturnType<T["output"]>>
-    : (
-      params: QueryParameterType<T["parameters"]>,
-    ) => Promise<QueryReturnType<T["output"]>>;
-};
+/**
+ * Helper types for converting query definition parameter types to typescript types
+ */
+export namespace QueryParam {
+  /**
+   * Helper type to convert action definition parameter primitives to typescript types
+   */
+  export type PrimitiveType<T extends keyof DataValueClientToWire> =
+    DataValueClientToWire[T];
 
-export type QueryParameterType<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
-> = PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>;
+  /**
+   * Helper type to convert action definition parameter object types to typescript types
+   */
+  export type ObjectType<T extends ObjectTypeDefinition<any>> =
+    | OsdkBase<T>
+    | OsdkObjectPrimaryKeyType<T>;
 
-export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> =
-  T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType>
-    : T extends ObjectSetQueryDataType<any, infer TTargetType>
-      ? ObjectSet<TTargetType>
-    : T["type"] extends keyof DataValueWireToClient
-      ? DataValueWireToClient[T["type"]]
-    : never;
+  /**
+   * Helper type to convert action definition parameter object sets to typescript types
+   */
+  export type ObjectSetType<T extends ObjectTypeDefinition<any>> =
+    BaseObjectSet<T>;
+}
 
-type OptionalQueryParams<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
-> = {
-  [K in keyof T]: T[K] extends { nullable: true } ? never : K;
-}[keyof T];
+/**
+ * Helper types for converting query result types to typescript types
+ */
+export namespace QueryResult {
+  /**
+   * Helper type to convert action definition parameter primitives to typescript types
+   */
+  export type PrimitiveType<T extends keyof DataValueClientToWire> =
+    DataValueWireToClient[T];
 
-type NotOptionalParams<
-  T extends Record<any, QueryDataTypeDefinition<any, any>>,
-> = {
-  [K in keyof T]: MaybeArrayType<T[K]>;
-};
+  /**
+   * Helper type to convert action definition parameter object types to typescript types
+   */
+  export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T>;
 
-type MaybeArrayType<T extends QueryDataTypeDefinition<any, any>> =
-  T["multiplicity"] extends true ? Array<BaseType<T>>
-    : BaseType<T>;
-
-type BaseType<T extends QueryDataTypeDefinition<any, any>> = T extends
-  ObjectQueryDataType<any, infer TTargetType>
-  ? OsdkBase<TTargetType> | OsdkObjectPrimaryKeyType<TTargetType>
-  : T extends ObjectSetQueryDataType<any, infer TTargetType>
-    ? BaseObjectSet<TTargetType>
-  : T["type"] extends keyof DataValueClientToWire
-    ? DataValueClientToWire[T["type"]]
-  : never;
+  /**
+   * Helper type to convert action definition parameter object sets to typescript types
+   */
+  export type ObjectSetType<T extends ObjectTypeDefinition<any>> = ObjectSet<T>;
+}

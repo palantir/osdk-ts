@@ -20,7 +20,9 @@ import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 export interface QueryDefinition<
   Q extends string,
   K extends string,
+  T = never, // used in client 2
 > {
+  __OsdkQueryType?: T;
   type: "query";
   apiName: Q;
   description?: string;

@@ -26,15 +26,15 @@ import type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
   DataValueClientToWire,
-  NOOP,
-  PartialBy,
 } from "@osdk/client.api";
 import type { DataValue } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
+import type { NOOP } from "../util/NOOP.js";
 import type { NullableProps } from "../util/NullableProps.js";
+import type { PartialBy } from "../util/partialBy.js";
 import { toDataValue } from "../util/toDataValue.js";
 import { ActionValidationError } from "./ActionValidationError.js";
 

@@ -67,22 +67,17 @@ export async function generatePerActionDataFiles(
 
       const { parameters, ...actionDefSansParameters } = fullActionDef;
 
-      // const actionDefIdentifier = `ActionDef$${action.shortApiName}`;
-      // const paramsDefIdentifier = `${actionDefIdentifier}$Params`;
-      const oldParamsIdentifier = `${action.shortApiName}$Params`;
-      // const paramsIdentifier = `ActionParams$${action.shortApiName}`;
-
       function createParamsDef() {
         const entries = Object.entries(parameters);
         entries.sort((a, b) => a[0].localeCompare(b[0]));
 
         if (entries.length === 0) {
           return `// Represents the definition of the parameters for the action
-          export type ${action.actionDefParamsIdentifier} = Record<string, never>;`;
+          export type ${action.definitionParamsIdentifier} = Record<string, never>;`;
         }
 
         return `// Represents the definition of the parameters for the action
-        export type ${action.actionDefParamsIdentifier} = {
+        export type ${action.definitionParamsIdentifier} = {
           ${
           entries.map(([key, value]) => {
             return `"${key}": {
@@ -131,7 +126,9 @@ export async function generatePerActionDataFiles(
           }>`;
         }
       }
+
       function createV2Types() {
+        const oldParamsIdentifier = `${action.shortApiName}$Params`;
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
@@ -168,7 +165,7 @@ export async function generatePerActionDataFiles(
 
           
           // Represents the definition of the action
-          export interface ${action.actionDefIdentifier} extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
+          export interface ${action.definitionIdentifier} extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
           ${
           Object.entries(actionDefSansParameters).sort((a, b) =>
             a[0].localeCompare(b[0])
@@ -176,13 +173,13 @@ export async function generatePerActionDataFiles(
             return `${key}: ${JSON.stringify(value)};`;
           }).join("\n")
         }
-          parameters: ${action.actionDefParamsIdentifier};
+          parameters: ${action.definitionParamsIdentifier};
           osdkMetadata: typeof $osdkMetadata;
         }`;
       }
 
       function createV2Object() {
-        return `  export const ${action.shortApiName}: ${action.actionDefIdentifier} = 
+        return `  export const ${action.shortApiName}: ${action.definitionIdentifier} = 
         {
           ${stringify(fullActionDef)},
           osdkMetadata: $osdkMetadata

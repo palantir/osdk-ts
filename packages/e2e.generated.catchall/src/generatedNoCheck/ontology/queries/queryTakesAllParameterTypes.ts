@@ -1,11 +1,110 @@
-import type { VersionBound } from '@osdk/api';
-import { QueryDefinition } from '@osdk/api';
+import type { QueryDefinition, VersionBound } from '@osdk/api';
+import type { QueryParam, QueryResult } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
 import { Todo } from '../objects/Todo.js';
 
-export interface queryTakesAllParameterTypes
-  extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo'>,
+export interface queryTakesAllParameterTypes {
+  /**
+   * description of the query that takes all parameter types
+   */
+  (query: QueryParams$queryTakesAllParameterTypes): Promise<QueryResult.PrimitiveType<'string'>>;
+}
+
+export interface QueryParams$queryTakesAllParameterTypes {
+  /**
+   *   description: an array of strings
+   */
+  readonly array: ReadonlyArray<QueryParam.PrimitiveType<'string'>>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly attachment: QueryParam.PrimitiveType<'attachment'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly boolean: QueryParam.PrimitiveType<'boolean'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly date: QueryParam.PrimitiveType<'datetime'>;
+
+  /**
+   *   description: a double parameter
+   */
+  readonly double: QueryParam.PrimitiveType<'double'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly float: QueryParam.PrimitiveType<'float'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly integer: QueryParam.PrimitiveType<'integer'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly long: QueryParam.PrimitiveType<'long'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly object: QueryParam.ObjectType<Todo>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly objectSet: QueryParam.ObjectSetType<Todo>;
+
+  /**
+   *   description: a set of strings
+   */
+  readonly set: ReadonlySet<QueryParam.PrimitiveType<'string'>>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly string: QueryParam.PrimitiveType<'string'>;
+
+  /**
+   *   description: a struct with some fields
+   */
+  readonly struct: QueryParam.PrimitiveType<'struct'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly threeDimensionalAggregation: QueryParam.PrimitiveType<'threeDimensionalAggregation'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly timestamp: QueryParam.PrimitiveType<'timestamp'>;
+
+  /**
+   * (no ontology metadata)
+   */
+  readonly twoDimensionalAggregation: QueryParam.PrimitiveType<'twoDimensionalAggregation'>;
+
+  /**
+   *   description: a union of strings and integers
+   */
+  readonly unionNonNullable: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
+
+  /**
+   *   description: a union of strings and integers but its optional
+   */
+  readonly unionNullable?: QueryParam.PrimitiveType<'string'> | QueryParam.PrimitiveType<'integer'>;
+}
+
+export interface QueryDef$queryTakesAllParameterTypes
+  extends QueryDefinition<'queryTakesAllParameterTypes', 'Todo', queryTakesAllParameterTypes>,
     VersionBound<$ExpectedClientVersion> {
   apiName: 'queryTakesAllParameterTypes';
   description: 'description of the query that takes all parameter types';
@@ -204,7 +303,7 @@ export interface queryTakesAllParameterTypes
   };
 }
 
-export const queryTakesAllParameterTypes: queryTakesAllParameterTypes = {
+export const queryTakesAllParameterTypes: QueryDef$queryTakesAllParameterTypes = {
   apiName: 'queryTakesAllParameterTypes',
   description: 'description of the query that takes all parameter types',
   displayName: 'qTAPT',

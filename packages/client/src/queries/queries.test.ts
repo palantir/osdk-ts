@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectSet, QuerySignatureFromDef } from "@osdk/client.api";
+import type { ObjectSet } from "@osdk/client.api";
 import type { Employee } from "@osdk/client.test.ontology";
 import {
   acceptsThreeDimensionalAggregationFunction,
@@ -92,7 +92,7 @@ describe("queries", () => {
       objectSet: employeeObjectSet,
     });
 
-    expectTypeOf<typeof result>().toMatchTypeOf<ObjectSet<Employee>>();
+    expectTypeOf<ObjectSet<Employee>>().toMatchTypeOf<typeof result>();
   });
 
   it("no params work", async () => {

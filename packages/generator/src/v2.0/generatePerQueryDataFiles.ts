@@ -31,6 +31,7 @@ import {
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
+import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
 
 export async function generatePerQueryDataFilesV2(
   {
@@ -109,13 +110,58 @@ async function generateV2QueryFile(
   await fs.writeFile(
     path.join(outDir, `${query.shortApiName}.ts`),
     await formatTs(`
-        import { QueryDefinition } from "@osdk/api";
-        import type {  VersionBound } from "@osdk/api";
+        import type { QueryDefinition , VersionBound} from "@osdk/api";
+        import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
         ${importObjects}
 
-        export interface ${query.shortApiName} extends QueryDefinition<"${query.fullApiName}", ${referencedObjectTypes}>, VersionBound<$ExpectedClientVersion>{
+        export interface ${query.shortApiName} {
+          ${getDescriptionIfPresent(query.description)}
+          (${
+      Object.keys(query.parameters).length > 0
+        ? `query: ${query.paramsIdentifier}`
+        : ""
+    }): Promise<${
+      getQueryParamType(
+        ontology,
+        paramToDef({ dataType: query.output }),
+        "Result",
+      )
+    }>
+        }
+
+        ${
+      Object.keys(query.parameters).length > 0
+        ? `
+        export interface ${query.paramsIdentifier} {
+        ${
+          stringify(query.parameters, {
+            "*": (parameter, formatter, apiName) => {
+              const q = paramToDef(parameter);
+              return [
+                `
+            ${
+                  queryParamJsDoc(paramToDef(parameter), { apiName })
+                }readonly "${apiName}"${q.nullable ? "?" : ""}`,
+                `${getQueryParamType(ontology, q, "Param")}`,
+              ];
+            },
+          })
+        }
+        }
+
+        `
+        : ""
+    }
+
+
+
+        export interface ${query.definitionIdentifier} extends QueryDefinition<
+          "${query.fullApiName}", 
+          ${referencedObjectTypes},
+          ${query.shortApiName}
+        >, VersionBound<$ExpectedClientVersion>{
             ${stringify(baseProps)},
             parameters: {
             ${parameterDefsForType(query)}
@@ -126,7 +172,7 @@ async function generateV2QueryFile(
             };
         }
 
-        export const ${query.shortApiName}: ${query.shortApiName} = {
+        export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${stringify(baseProps)},
             parameters: {
             ${parametersForConst(query)}
@@ -200,4 +246,67 @@ function getObjectImports(
   }
 
   return ret;
+}
+
+export function getQueryParamType(
+  enhancedOntology: EnhancedOntologyDefinition,
+  input: QueryParameterDefinition<any, any>,
+  type: "Param" | "Result",
+): string {
+  let inner = `unknown /* ${
+    (input as QueryParameterDefinition<any, any>).type
+  } */`;
+
+  switch (input.type) {
+    case "date":
+      inner = `Query${type}.PrimitiveType<${JSON.stringify("datetime")}>`;
+      break;
+
+    case "attachment":
+    case "boolean":
+    case "double":
+    case "float":
+    case "integer":
+    case "long":
+    case "string":
+    case "struct":
+    case "threeDimensionalAggregation":
+    case "timestamp":
+    case "twoDimensionalAggregation":
+      inner = `Query${type}.PrimitiveType<${JSON.stringify(input.type)}>`;
+      break;
+
+    case "object":
+      inner = `Query${type}.ObjectType<${
+        enhancedOntology.requireObjectType(input.object)
+          .getObjectDefIdentifier(true)
+      }>`;
+      break;
+
+    case "objectSet":
+      inner = `Query${type}.ObjectSetType<${
+        enhancedOntology.requireObjectType(input.objectSet)
+          .getObjectDefIdentifier(true)
+      }>`;
+      break;
+
+    case "set":
+      inner = `${type === "Param" ? "Readonly" : ""}Set<${
+        getQueryParamType(enhancedOntology, input.set, type)
+      }>`;
+      break;
+
+    case "union":
+      inner = input.union.map((u) =>
+        getQueryParamType(enhancedOntology, u, type)
+      ).join(" | ");
+      break;
+  }
+
+  if (input.multiplicity && type === "Param") {
+    return `ReadonlyArray<${inner}>`;
+  } else if (input.multiplicity) {
+    return `Array<${inner}>`;
+  }
+  return inner;
 }

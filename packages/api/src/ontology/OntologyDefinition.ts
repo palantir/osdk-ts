@@ -34,7 +34,7 @@ export interface OntologyDefinition<
     [AA in A]: ActionDefinition<AA, K, any>;
   };
   queries: {
-    [QQ in Q]: QueryDefinition<QQ, K>;
+    [QQ in Q]: QueryDefinition<QQ, K, any>;
   };
   interfaces?: {
     [II in I]: InterfaceDefinition<II, K>;
