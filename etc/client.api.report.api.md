@@ -409,7 +409,11 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition> extends
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     fetchPage: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<FetchPageResult<Q, L, R, S>>;
+    // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
+    // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     fetchPageWithErrors: <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, const A extends Augments, S extends NullabilityAdherence = NullabilityAdherenceDefault>(args?: FetchPageArgs<Q, L, R, A, S>) => Promise<Result<FetchPageResult<Q, L, R, S>>>;

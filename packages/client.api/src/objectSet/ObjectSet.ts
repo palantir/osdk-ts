@@ -48,10 +48,10 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage(\{
+   *  const myObjs = await objectSet.fetchPage({
       $pageSize: 10,
       $nextPageToken: "nextPage"
-    \});
+    });
      const myObjsResult = myObjs.data;
 
    * @returns a page of objects
@@ -69,10 +69,10 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * Gets a page of objects of this type, with a result wrapper
    * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage(\{
+   *  const myObjs = await objectSet.fetchPage({
       $pageSize: 10,
       $nextPageToken: "nextPage"
-    \});
+    });
 
      if(isOk(myObjs)){
      const myObjsResult = myObjs.value.data;
