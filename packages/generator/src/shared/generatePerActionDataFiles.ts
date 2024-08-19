@@ -14,44 +14,63 @@
  * limitations under the License.
  */
 
+import type { ActionParameterDefinition } from "@osdk/api";
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
-import type { MinimalFs } from "../MinimalFs.js";
+import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
+import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition.js";
-import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
+import {
+  getObjectDefIdentifier,
+  getObjectImports,
+} from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 export async function generatePerActionDataFiles(
-  ontology: WireOntologyDefinition,
-  fs: MinimalFs,
-  outDir: string,
-  importExt: string,
+  {
+    sanitizedOntology: ontology,
+    fs,
+    outDir: rootOutDir,
+    importExt = "",
+    ontology: enhancedOntology,
+  }: Pick<
+    GenerateContext,
+    | "sanitizedOntology"
+    | "fs"
+    | "outDir"
+    | "importExt"
+    | "ontology"
+  >,
   v2: boolean,
 ) {
+  const outDir = path.join(rootOutDir, "ontology", "actions");
+
   await fs.mkdir(outDir, { recursive: true });
   await Promise.all(
-    Object.values(ontology.actionTypes).map(async (action) => {
-      const uniqueApiNames = new Set(
-        extractReferencedObjectsFromAction(action),
-      );
+    Object.values(enhancedOntology.actionTypes).map(async (action) => {
+      const currentFilePath = `${
+        path.join("ontology", "actions", `${action.shortApiName}.ts`)
+      }`;
 
-      const uniqueApiNamesString = uniqueApiNames.size > 0
-        ? [...uniqueApiNames].map(apiName => `"${apiName}"`).join("|")
-        : "never";
+      const uniqueApiNamesArray = extractReferencedObjectsFromAction(action.og);
+      const uniqueApiNames = new Set(uniqueApiNamesArray);
+
+      const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionDefinition(action),
+        wireActionTypeV2ToSdkActionDefinition(action.og),
       );
 
       const { parameters, ...actionDefSansParameters } = fullActionDef;
 
-      const actionDefIdentifier = `ActionDef$${action.apiName}`;
-      const paramsDefIdentifier = `${actionDefIdentifier}$Params`;
-      const paramsIdentifier = `${action.apiName}$Params`;
+      // const actionDefIdentifier = `ActionDef$${action.shortApiName}`;
+      // const paramsDefIdentifier = `${actionDefIdentifier}$Params`;
+      const oldParamsIdentifier = `${action.shortApiName}$Params`;
+      // const paramsIdentifier = `ActionParams$${action.shortApiName}`;
 
       function createParamsDef() {
         const entries = Object.entries(parameters);
@@ -59,11 +78,11 @@ export async function generatePerActionDataFiles(
 
         if (entries.length === 0) {
           return `// Represents the definition of the parameters for the action
-          export type ${paramsDefIdentifier} = Record<string, never>;`;
+          export type ${action.actionDefParamsIdentifier} = Record<string, never>;`;
         }
 
         return `// Represents the definition of the parameters for the action
-        export type ${paramsDefIdentifier} = {
+        export type ${action.actionDefParamsIdentifier} = {
           ${
           entries.map(([key, value]) => {
             return `"${key}": {
@@ -74,8 +93,10 @@ export async function generatePerActionDataFiles(
                   if (typeof type === "string") {
                     return JSON.stringify(type);
                   } else if (type.type === "object") {
-                    return `ObjectActionDataType<"${type.object}", ${
-                      getObjectDefIdentifier(type.object, v2)
+                    const obj = enhancedOntology.requireObjectType(type.object);
+                    return `ObjectActionDataType<"${obj.fullApiName}", ${
+                      obj
+                        .getObjectDefIdentifier(v2)
                     }>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${
@@ -93,27 +114,61 @@ export async function generatePerActionDataFiles(
         }`;
       }
 
+      function getActionParamType(
+        input: ActionParameterDefinition<any, any>["type"],
+      ) {
+        if (typeof input === "string") {
+          return `ActionParam.PrimitiveType<${JSON.stringify(input)}>`;
+        } else if (input.type === "object") {
+          return `ActionParam.ObjectType<${
+            enhancedOntology.requireObjectType(input.object)
+              .getObjectDefIdentifier(v2)
+          }>`;
+        } else if (input.type === "objectSet") {
+          return `ActionParam.ObjectSetType<${
+            enhancedOntology.requireObjectType(input.objectSet)
+              .getObjectDefIdentifier(v2)
+          }>`;
+        }
+      }
       function createV2Types() {
         // the params must be a `type` to align properly with the `ActionDefinition` interface
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
         
           ${createParamsDef()}
-          
 
-          // Represents the runtime arguments for the action
-          export type ${paramsIdentifier} = NOOP<OsdkActionParameters<${paramsDefIdentifier}>> | NOOP<OsdkActionParameters<${paramsDefIdentifier}>>[];
+          ${getDescriptionIfPresent(action.description)}
+          export interface ${action.paramsIdentifier} {
+            ${
+          stringify(parameters, {
+            "*": (ogValue, _, ogKey) => {
+              const key = `${getDescriptionIfPresent(ogValue.description)}
+                readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
 
-          
+              const value = ogValue.multiplicity
+                ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
+                : `${getActionParamType(ogValue.type)}`;
+              return [key, value];
+            },
+          })
+        }
+          }
+
+          /**
+           * @deprecated Use \`${action.paramsIdentifier}\`
+           */
+          export type ${oldParamsIdentifier} = ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>;
+
           // Represents a fqn of the action
-          export interface ${action.apiName} {
+          export interface ${action.shortApiName} {
             ${getDescriptionIfPresent(action.description)}
-             <P extends ${paramsIdentifier}, OP extends P extends NOOP<OsdkActionParameters<${paramsDefIdentifier}>>[]? ApplyBatchActionOptions: ApplyActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+             <P extends ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>, OP extends (P extends  ReadonlyArray<${action.paramsIdentifier}> ? ApplyBatchActionOptions: ApplyActionOptions)>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
           }
 
           
           // Represents the definition of the action
-          export interface ${actionDefIdentifier} extends ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}, ${action.apiName}>, VersionBound<$ExpectedClientVersion> {
+          export interface ${action.actionDefIdentifier} extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
           ${
           Object.entries(actionDefSansParameters).sort((a, b) =>
             a[0].localeCompare(b[0])
@@ -121,13 +176,13 @@ export async function generatePerActionDataFiles(
             return `${key}: ${JSON.stringify(value)};`;
           }).join("\n")
         }
-          parameters: ${paramsDefIdentifier};
+          parameters: ${action.actionDefParamsIdentifier};
           osdkMetadata: typeof $osdkMetadata;
         }`;
       }
 
       function createV2Object() {
-        return `  export const ${action.apiName}: ${actionDefIdentifier} = 
+        return `  export const ${action.shortApiName}: ${action.actionDefIdentifier} = 
         {
           ${stringify(fullActionDef)},
           osdkMetadata: $osdkMetadata
@@ -136,49 +191,62 @@ export async function generatePerActionDataFiles(
       }
 
       function createV1Object() {
-        return `  export const ${action.apiName} = ${
+        return `  export const ${action.shortApiName} = ${
           JSON.stringify(fullActionDef, null, 2)
-        } satisfies ActionDefinition<"${action.apiName}", ${uniqueApiNamesString}>;`;
+        } satisfies ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}>;`;
       }
 
-      const referencedObjectDefs = new Set();
+      const referencedObjectDefs = new Set<EnhancedObjectType>();
       for (const p of Object.values(action.parameters)) {
         if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.objectApiName!, v2),
-          );
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.objectTypeApiName!, v2),
-          );
+          if (p.dataType.objectApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireObjectType(p.dataType.objectApiName),
+            );
+          }
+          if (p.dataType.objectTypeApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireObjectType(p.dataType.objectTypeApiName),
+            );
+          }
         }
         if (
           p.dataType.type === "array"
           && (p.dataType.subType.type === "object"
             || p.dataType.subType.type === "objectSet")
         ) {
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.subType.objectApiName!, v2),
-          );
-          referencedObjectDefs.add(
-            getObjectDefIdentifier(p.dataType.subType.objectTypeApiName!, v2),
-          );
+          if (p.dataType.subType.objectApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireObjectType(
+                p.dataType.subType.objectApiName,
+              ),
+            );
+          }
+          if (p.dataType.subType.objectTypeApiName) {
+            referencedObjectDefs.add(
+              enhancedOntology.requireObjectType(
+                p.dataType.subType.objectTypeApiName,
+              ),
+            );
+          }
         }
       }
 
-      const importObjects = referencedObjectDefs.size > 0
-        ? `import type {${
-          [...referencedObjectDefs].join(",")
-        }} from "../objects${importExt}";`
-        : "";
+      const imports = getObjectImports(
+        referencedObjectDefs,
+        undefined,
+        currentFilePath,
+        v2,
+      );
 
       await fs.writeFile(
-        path.join(outDir, `${action.apiName}.ts`),
+        path.join(rootOutDir, currentFilePath),
         await formatTs(`
           import type { ActionDefinition, ObjectActionDataType, ObjectSetActionDataType, VersionBound} from "@osdk/api";
-          import type { ActionSignature, ApplyActionOptions, ApplyBatchActionOptions, OsdkActionParameters,ActionReturnTypeForOptions, NOOP } from '@osdk/client.api';
+          import type { ApplyActionOptions, ApplyBatchActionOptions, ActionReturnTypeForOptions, ActionParam } from '@osdk/client.api';
           import { $osdkMetadata} from "../../OntologyMetadata${importExt}";
           import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-          ${importObjects}
+          ${imports}
 
         
           ${v2 ? createV2Types() : ""}
@@ -189,13 +257,26 @@ export async function generatePerActionDataFiles(
     }),
   );
 
+  const indexFileRelPath = `${path.join("ontology", "actions", `index.ts`)}`;
   await fs.writeFile(
-    path.join(outDir, `index.ts`),
+    path.join(rootOutDir, indexFileRelPath),
     await formatTs(`
       ${
-      Object.values(ontology.actionTypes).map(action =>
-        `export {${action.apiName}} from "./${action.apiName}${importExt}";`
-      )
+      Object.values(enhancedOntology.actionTypes).map(action => {
+        const exportConstLine = `export {${action.shortApiName} } from "${
+          action.getImportPathRelTo(indexFileRelPath)
+        }";`;
+        const exportTypeLine =
+          `export type { ${action.paramsIdentifier} } from "${
+            action.getImportPathRelTo(indexFileRelPath)
+          }";`;
+
+        if (v2) {
+          return exportConstLine + "\n" + exportTypeLine;
+        } else {
+          return exportConstLine;
+        }
+      })
         .join("\n")
     }
     ${Object.keys(ontology.actionTypes).length === 0 ? "export {};" : ""}

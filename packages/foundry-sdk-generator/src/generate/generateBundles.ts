@@ -16,6 +16,8 @@
 
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import type { ModuleFormat, RollupBuild } from "rollup";
 import { rollup } from "rollup";
 import nodePolyfill from "rollup-plugin-polyfill-node";

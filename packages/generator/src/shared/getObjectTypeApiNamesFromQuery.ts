@@ -15,9 +15,12 @@
  */
 
 import type { QueryTypeV2 } from "@osdk/gateway/types";
+import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
 
-export function getObjectTypeApiNamesFromQuery(query: QueryTypeV2) {
+export function getObjectTypeApiNamesFromQuery(
+  query: QueryTypeV2 | EnhancedQuery,
+) {
   const types = new Set<string>();
 
   for (const { dataType } of Object.values(query.parameters)) {

@@ -22,7 +22,7 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
-  BranchId,
+  BranchName,
   CreateTransactionRequest,
   DatasetRid,
   Transaction,
@@ -36,7 +36,7 @@ const _createTransaction: $FoundryPlatformMethod<
     datasetRid: DatasetRid,
     $body: CreateTransactionRequest,
     $queryParams?: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       preview?: PreviewMode | undefined;
     },
   ) => Promise<Transaction>
@@ -44,6 +44,8 @@ const _createTransaction: $FoundryPlatformMethod<
 
 /**
  * Creates a Transaction on a Branch of a Dataset.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions
@@ -54,7 +56,7 @@ export function createTransaction(
     datasetRid: DatasetRid,
     $body: CreateTransactionRequest,
     $queryParams?: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       preview?: PreviewMode | undefined;
     },
   ]
@@ -72,6 +74,8 @@ const _getTransaction: $FoundryPlatformMethod<
 
 /**
  * Gets a Transaction of a Dataset.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}
@@ -100,6 +104,8 @@ const _commitTransaction: $FoundryPlatformMethod<
  * Commits an open Transaction. File modifications made on this Transaction are preserved and the Branch is
  * updated to point to the Transaction.
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}/commit
  */
@@ -126,6 +132,8 @@ const _abortTransaction: $FoundryPlatformMethod<
 /**
  * Aborts an open Transaction. File modifications made on this Transaction are not preserved and the Branch is
  * not updated.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/transactions/{transactionRid}/abort

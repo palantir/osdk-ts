@@ -22,7 +22,7 @@ import type {
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
-  BranchId,
+  BranchName,
   CreateDatasetRequest,
   Dataset,
   DatasetRid,
@@ -41,6 +41,8 @@ const _createDataset: $FoundryPlatformMethod<
 
 /**
  * Creates a new Dataset. A default branch - `master` for most enrollments - will be created on the Dataset.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets
@@ -65,6 +67,8 @@ const _getDataset: $FoundryPlatformMethod<
 /**
  * Get the Dataset
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}
  */
@@ -83,7 +87,7 @@ const _readTableDataset: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
     $queryParams: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       startTransactionRid?: TransactionRid | undefined;
       endTransactionRid?: TransactionRid | undefined;
       format: TableExportFormat;
@@ -99,6 +103,8 @@ const _readTableDataset: $FoundryPlatformMethod<
  *
  * This endpoint currently does not support views (Virtual datasets composed of other datasets).
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/readTable
  */
@@ -108,7 +114,7 @@ export function readTableDataset(
     datasetRid: DatasetRid,
 
     $queryParams: {
-      branchId?: BranchId | undefined;
+      branchName?: BranchName | undefined;
       startTransactionRid?: TransactionRid | undefined;
       endTransactionRid?: TransactionRid | undefined;
       format: TableExportFormat;

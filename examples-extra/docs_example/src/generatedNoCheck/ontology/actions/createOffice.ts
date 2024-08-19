@@ -1,10 +1,9 @@
 import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
@@ -36,10 +35,30 @@ export type ActionDef$createOffice$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
-export type createOffice$Params =
-  | NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>[];
+/**
+ * Create an office's
+ */
+export interface ActionParams$createOffice {
+  /**
+   * The office's physical address (not necessarily shipping address)
+   */
+  readonly address?: ActionParam.PrimitiveType<'string'>;
+  /**
+   * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
+   */
+  readonly capacity?: ActionParam.PrimitiveType<'integer'>;
+
+  readonly officeId: ActionParam.PrimitiveType<'string'>;
+  /**
+   * A list of all office names
+   */
+  readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
+}
+
+/**
+ * @deprecated Use `ActionParams$createOffice`
+ */
+export type createOffice$Params = ActionParams$createOffice | ReadonlyArray<ActionParams$createOffice>;
 
 // Represents a fqn of the action
 export interface createOffice {
@@ -47,10 +66,8 @@ export interface createOffice {
    * Create an office's
    */
   <
-    P extends createOffice$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$createOffice$Params>>[]
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
+    P extends ActionParams$createOffice | ReadonlyArray<ActionParams$createOffice>,
+    OP extends P extends ReadonlyArray<ActionParams$createOffice> ? ApplyBatchActionOptions : ApplyActionOptions,
   >(
     args: P,
     options?: OP,

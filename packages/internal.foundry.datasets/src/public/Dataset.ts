@@ -43,6 +43,8 @@ const _createDataset: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets
  */
@@ -61,6 +63,8 @@ const _getDataset: $FoundryPlatformMethod<
  * Gets the Dataset with the given DatasetRid.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}
@@ -92,6 +96,8 @@ const _readTable: $FoundryPlatformMethod<
  * This endpoint currently does not support views (Virtual datasets composed of other datasets).
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/readTable
@@ -128,6 +134,8 @@ const _getSchema: $FoundryPlatformMethod<
 /**
  * Retrieves the Schema for a Dataset and Branch, if it exists.
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/schema
  */
@@ -160,6 +168,8 @@ const _putSchema: $FoundryPlatformMethod<
 /**
  * Puts a Schema on an existing Dataset and Branch.
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/schema
  */
@@ -190,6 +200,8 @@ const _deleteSchema: $FoundryPlatformMethod<
 
 /**
  * Deletes the Schema from a Dataset and Branch.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/schema

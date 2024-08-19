@@ -55,7 +55,7 @@ const _listFiles: $FoundryPlatformMethod<
  *
  * #### Advanced Usage
  *
- * See [Datasets Core Concepts](/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
+ * See [Datasets Core Concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
  *
  * To **list files on a specific Branch** specify the Branch's identifier as `branchId`. This will include the most
  * recent version of all files since the latest snapshot transaction, or the earliest ancestor transaction of the
@@ -76,6 +76,8 @@ const _listFiles: $FoundryPlatformMethod<
  * Transaction.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files
@@ -119,18 +121,20 @@ const _uploadFile: $FoundryPlatformMethod<
  *
  * #### Advanced Usage
  *
- * See [Datasets Core Concepts](/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
+ * See [Datasets Core Concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
  *
  * To **upload a file to a specific Branch** specify the Branch's identifier as `branchId`. A new transaction will
  * be created and committed on this branch. By default the TransactionType will be `UPDATE`, to override this
  * default specify `transactionType` in addition to `branchId`.
- * See [createBranch](/docs/foundry/api/datasets-resources/branches/create-branch/) to create a custom branch.
+ * See [createBranch](https://www.palantir.com/docs/foundry/api/datasets-resources/branches/create-branch/) to create a custom branch.
  *
  * To **upload a file on a manually opened transaction** specify the Transaction's resource identifier as
  * `transactionRid`. This is useful for uploading multiple files in a single transaction.
- * See [createTransaction](/docs/foundry/api/datasets-resources/transactions/create-transaction/) to open a transaction.
+ * See [createTransaction](https://www.palantir.com/docs/foundry/api/datasets-resources/transactions/create-transaction/) to open a transaction.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/files:upload
@@ -169,7 +173,7 @@ const _getFileMetadata: $FoundryPlatformMethod<
  *
  * #### Advanced Usage
  *
- * See [Datasets Core Concepts](/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
+ * See [Datasets Core Concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
  *
  * To **get a file's metadata from a specific Branch** specify the Branch's identifier as `branchId`. This will
  * retrieve metadata for the most recent version of the file since the latest snapshot transaction, or the earliest
@@ -188,6 +192,8 @@ const _getFileMetadata: $FoundryPlatformMethod<
  * `startTransactionRid` and `endTransactionRid`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
@@ -225,17 +231,19 @@ const _deleteFile: $FoundryPlatformMethod<
  *
  * #### Advanced Usage
  *
- * See [Datasets Core Concepts](/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
+ * See [Datasets Core Concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
  *
  * To **delete a File from a specific Branch** specify the Branch's identifier as `branchId`. A new delete Transaction
  * will be created and committed on this branch.
  *
  * To **delete a File using a manually opened Transaction**, specify the Transaction's resource identifier
  * as `transactionRid`. The transaction must be of type `DELETE`. This is useful for deleting multiple files in a
- * single transaction. See [createTransaction](/docs/foundry/api/datasets-resources/transactions/create-transaction/) to
+ * single transaction. See [createTransaction](https://www.palantir.com/docs/foundry/api/datasets-resources/transactions/create-transaction/) to
  * open a transaction.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}
@@ -273,7 +281,7 @@ const _getFileContent: $FoundryPlatformMethod<
  *
  * #### Advanced Usage
  *
- * See [Datasets Core Concepts](/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
+ * See [Datasets Core Concepts](https://www.palantir.com/docs/foundry/data-integration/datasets/) for details on using branches and transactions.
  *
  * To **get a file's content from a specific Branch** specify the Branch's identifier as `branchId`. This will
  * retrieve the content for the most recent version of the file since the latest snapshot transaction, or the
@@ -293,6 +301,8 @@ const _getFileContent: $FoundryPlatformMethod<
  * `startTransactionRid` and `endTransactionRid`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/files/{filePath}/content

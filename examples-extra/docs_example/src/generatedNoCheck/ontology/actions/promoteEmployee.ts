@@ -1,10 +1,9 @@
 import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
@@ -28,10 +27,21 @@ export type ActionDef$promoteEmployee$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
-export type promoteEmployee$Params =
-  | NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>[];
+/**
+ * Update an employee's title and compensation
+ */
+export interface ActionParams$promoteEmployee {
+  readonly employeeId: ActionParam.PrimitiveType<'integer'>;
+
+  readonly newCompensation: ActionParam.PrimitiveType<'double'>;
+
+  readonly newTitle: ActionParam.PrimitiveType<'string'>;
+}
+
+/**
+ * @deprecated Use `ActionParams$promoteEmployee`
+ */
+export type promoteEmployee$Params = ActionParams$promoteEmployee | ReadonlyArray<ActionParams$promoteEmployee>;
 
 // Represents a fqn of the action
 export interface promoteEmployee {
@@ -39,10 +49,8 @@ export interface promoteEmployee {
    * Update an employee's title and compensation
    */
   <
-    P extends promoteEmployee$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$promoteEmployee$Params>>[]
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
+    P extends ActionParams$promoteEmployee | ReadonlyArray<ActionParams$promoteEmployee>,
+    OP extends P extends ReadonlyArray<ActionParams$promoteEmployee> ? ApplyBatchActionOptions : ApplyActionOptions,
   >(
     args: P,
     options?: OP,

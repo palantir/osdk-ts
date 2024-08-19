@@ -42,6 +42,8 @@ const _createTransaction: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/transactions
  */
@@ -68,6 +70,8 @@ const _getTransaction: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}
  */
@@ -91,6 +95,8 @@ const _commitTransaction: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}/commit
  */
@@ -113,6 +119,8 @@ const _abortTransaction: $FoundryPlatformMethod<
  * not updated.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/transactions/{transactionRid}/abort

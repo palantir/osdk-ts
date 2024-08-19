@@ -17,6 +17,7 @@
 import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 
@@ -82,9 +83,14 @@ function simpleOntology<I extends InterfaceType>(
 
 describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
   it("Does not say (inherited) on properties locally defined", async () => {
-    const ontology = simpleOntology("ontology", [
-      simpleInterface("Bar", [simpleSpt("bar", 0)], [], 0),
-    ]);
+    const ontology = enhanceOntology(
+      simpleOntology("ontology", [
+        simpleInterface("Bar", [simpleSpt("bar", 0)], [], 0),
+      ]),
+      undefined,
+      new Map(),
+      "",
+    );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -135,10 +141,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");
 
-    const ontology = simpleOntology("ontology", [
-      simpleInterface("Foo", [fooSpt], ["Parent"]),
-      simpleInterface("Parent", [barSpt], []),
-    ]);
+    const ontology = enhanceOntology(
+      simpleOntology("ontology", [
+        simpleInterface("Foo", [fooSpt], ["Parent"]),
+        simpleInterface("Parent", [barSpt], []),
+      ]),
+      undefined,
+      new Map(),
+      "",
+    );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -182,17 +193,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         implements: ["Parent"],
         links: {},
         properties: {
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
           bar: {
             displayName: "bar property dn",
             multiplicity: false,
             description: "bar property desc",
+            type: "integer",
+            nullable: true,
+          },
+          foo: {
+            displayName: "foo property dn",
+            multiplicity: false,
+            description: "foo property desc",
             type: "integer",
             nullable: true,
           },
@@ -207,10 +218,15 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
     const fooSpt = simpleSpt("foo");
     const barSpt = simpleSpt("bar");
 
-    const ontology = simpleOntology("ontology", [
-      simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
-      simpleInterface("Parent", [barSpt], []),
-    ]);
+    const ontology = enhanceOntology(
+      simpleOntology("ontology", [
+        simpleInterface("Foo", [fooSpt, barSpt], ["Parent"]),
+        simpleInterface("Parent", [barSpt], []),
+      ]),
+      undefined,
+      new Map(),
+      "",
+    );
 
     const formattedCode = await format(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -253,17 +269,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         implements: ["Parent"],
         links: {},
         properties: {
-          foo: {
-            displayName: "foo property dn",
-            multiplicity: false,
-            description: "foo property desc",
-            type: "integer",
-            nullable: true,
-          },
           bar: {
             displayName: "bar property dn",
             multiplicity: false,
             description: "bar property desc",
+            type: "integer",
+            nullable: true,
+          },
+          foo: {
+            displayName: "foo property dn",
+            multiplicity: false,
+            description: "foo property desc",
             type: "integer",
             nullable: true,
           },

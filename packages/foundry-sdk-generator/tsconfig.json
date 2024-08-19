@@ -8,7 +8,6 @@
     "./src/**/*"
   ],
   "exclude": [
-    "./src/__e2e_tests__/**/**.test.ts",
     "./src/generatedNoCheck/**/*"
   ],
   "references": []

@@ -57,7 +57,7 @@ const _listObjects: $FoundryPlatformMethod<
  * Lists the objects for the given Ontology and object type.
  *
  * This endpoint supports filtering objects.
- * See the [Filtering Objects documentation](/docs/foundry/api/ontology-resources/objects/object-basics/#filtering-objects) for details.
+ * See the [Filtering Objects documentation](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/object-basics/#filtering-objects) for details.
  *
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
@@ -71,9 +71,11 @@ const _listObjects: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}
  */
 export function listObjects(
@@ -105,9 +107,11 @@ const _getObject: $FoundryPlatformMethod<
 /**
  * Gets a specific object with the given primary key.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}
  */
 export function getObject(
@@ -142,7 +146,7 @@ const _listLinkedObjects: $FoundryPlatformMethod<
  * Lists the linked objects for a specific object and the given link type.
  *
  * This endpoint supports filtering objects.
- * See the [Filtering Objects documentation](/docs/foundry/api/ontology-resources/objects/object-basics/#filtering-objects) for details.
+ * See the [Filtering Objects documentation](https://www.palantir.com/docs/foundry/api/ontology-resources/objects/object-basics/#filtering-objects) for details.
  *
  * Note that this endpoint does not guarantee consistency. Changes to the data could result in missing or
  * repeated objects in the response pages.
@@ -156,9 +160,11 @@ const _listLinkedObjects: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
 export function listLinkedObjects(
@@ -195,9 +201,11 @@ const _getLinkedObject: $FoundryPlatformMethod<
  * Get a specific linked object that originates from another object. If there is no link between the two objects,
  * LinkedObjectNotFound is thrown.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
  */
 export function getLinkedObject(
@@ -244,9 +252,11 @@ const _searchObjects: $FoundryPlatformMethod<
  * | anyTerm  | The provided property contains at least one of the terms separated by whitespace. | string                          |
  * | allTerms | The provided property contains all the terms separated by whitespace.             | string                          |                                                                            |
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/search
  */
 export function searchObjects(
@@ -271,9 +281,11 @@ const _aggregateObjects: $FoundryPlatformMethod<
 /**
  * Perform functions on object fields in the specified ontology and object type.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objects/{objectType}/aggregate
  */
 export function aggregateObjects(

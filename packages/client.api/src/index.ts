@@ -17,12 +17,10 @@
 export type { ActionReturnTypeForOptions } from "./actions/ActionReturnTypeForOptions.js";
 export type {
   ActionEditResponse,
-  ActionSignature,
-  ActionSignatureFromDef,
+  ActionParam,
   ActionValidationResponse,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  OsdkActionParameters,
 } from "./actions/Actions.js";
 export type {
   AggregatableKeys,
@@ -119,14 +117,14 @@ export type {
   QueryReturnType,
   QuerySignatureFromDef,
 } from "./queries/Queries.js";
+export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
 export type {
   TimeSeriesPoint,
   TimeSeriesProperty,
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
-export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
-
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";
 export type { NOOP } from "./util/NOOP.js";
+export type { PartialBy } from "./util/PartialBy.js";
 
 export {};

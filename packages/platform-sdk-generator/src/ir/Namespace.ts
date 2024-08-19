@@ -164,4 +164,6 @@ export interface StaticOperation {
   requestBody?: RequestBody;
   response: Response;
   auth: Auth;
+  auditCategory: string;
+  releaseStage: undefined | "PUBLIC_BETA" | "PRIVATE_BETA" | "STABLE";
 }

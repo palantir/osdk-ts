@@ -20,12 +20,9 @@ import type {
   QueryDefinition,
   VersionBound,
 } from "@osdk/api";
-import type {
-  ActionSignatureFromDef,
-  ObjectSet,
-  QuerySignatureFromDef,
-} from "@osdk/client.api";
+import type { ObjectSet, QuerySignatureFromDef } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
+import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import type { SatisfiesSemver } from "./SatisfiesSemver.js";
 

@@ -86,9 +86,11 @@ const _listObjectsV2: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}
  */
 export function listObjectsV2(
@@ -128,9 +130,11 @@ const _getObjectV2: $FoundryPlatformMethod<
 /**
  * Gets a specific object with the given primary key.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}
  */
 export function getObjectV2(
@@ -165,9 +169,11 @@ const _countObjects: $FoundryPlatformMethod<
 /**
  * Returns a count of the objects of the given object type.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/count
  */
 export function countObjects(
@@ -219,9 +225,11 @@ const _searchObjectsV2: $FoundryPlatformMethod<
  * | containsAnyTerm                         | The provided property contains at least one of the terms separated by whitespace.                                 | string                          |
  * | containsAllTerms                        | The provided property contains all the terms separated by whitespace.                                             | string                          |
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/search
  */
 export function searchObjectsV2(
@@ -254,9 +262,11 @@ const _aggregateObjectsV2: $FoundryPlatformMethod<
 /**
  * Perform functions on object fields in the specified ontology and object type.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/aggregate
  */
 export function aggregateObjectsV2(
@@ -287,8 +297,8 @@ const _listInterfaceTypes: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Lists the interface types for the given Ontology.
@@ -296,9 +306,11 @@ const _listInterfaceTypes: $FoundryPlatformMethod<
  * Each page may be smaller than the requested page size. However, it is guaranteed that if there are more
  * results available, at least one result will be present in the response.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/interfaceTypes
  */
 export function listInterfaceTypes(
@@ -326,15 +338,17 @@ const _getInterfaceType: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Gets a specific object type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/interfaceTypes/{interfaceType}
  */
 export function getInterfaceType(
@@ -360,8 +374,8 @@ const _searchObjectsForInterface: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Search for objects in the specified ontology and interface type. Any properties specified in the "where" or
@@ -387,9 +401,11 @@ const _searchObjectsForInterface: $FoundryPlatformMethod<
  * | containsAllTerms                        | The provided property contains all the terms separated by whitespace.                                             | string                          |
  *
  * Attempting to use an unsupported query will result in a validation error. Third-party applications using this
- * endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/interfaces/{interfaceType}/search
  */
 export function searchObjectsForInterface(
@@ -415,16 +431,18 @@ const _aggregateObjectsForInterface: $FoundryPlatformMethod<
 
 /**
  * :::callout{theme=warning title=Warning}
- *   This endpoint is in preview and may be modified or removed at any time.
- *   To use this endpoint, add `preview=true` to the request query parameters.
+ * This endpoint is in preview and may be modified or removed at any time.
+ * To use this endpoint, add `preview=true` to the request query parameters.
  * :::
  *
  * Perform functions on object fields in the specified ontology and of the specified interface type. Any
  * properties specified in the query must be shared property type API names defined on the interface.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/interfaces/{interfaceType}/aggregate
  */
 export function aggregateObjectsForInterface(
@@ -472,9 +490,11 @@ const _listLinkedObjectsV2: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}
  */
 export function listLinkedObjectsV2(
@@ -520,9 +540,11 @@ const _getLinkedObjectV2: $FoundryPlatformMethod<
  *
  * If there is no link between the two objects, `LinkedObjectNotFound` is thrown.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/links/{linkType}/{linkedObjectPrimaryKey}
  */
 export function getLinkedObjectV2(
@@ -562,9 +584,11 @@ const _listPropertyAttachments: $FoundryPlatformMethod<
  * Get the metadata of attachments parented to the given object.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}
  */
 export function listPropertyAttachments(
@@ -602,9 +626,11 @@ const _getAttachmentPropertyByRidV2: $FoundryPlatformMethod<
  * Get the metadata of a particular attachment in an attachment list.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}
  */
 export function getAttachmentPropertyByRidV2(
@@ -648,9 +674,11 @@ const _getAttachmentPropertyContentV2: $FoundryPlatformMethod<
  * Get the content of an attachment.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/content
  */
 export function getAttachmentPropertyContentV2(
@@ -696,9 +724,11 @@ const _getAttachmentPropertyContentByRidV2: $FoundryPlatformMethod<
  * The RID must exist in the attachment array of the property.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/attachments/{property}/{attachmentRid}/content
  */
 export function getAttachmentPropertyContentByRidV2(
@@ -740,9 +770,11 @@ const _getFirstPoint: $FoundryPlatformMethod<
  * Get the first point of a time series property.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/firstPoint
  */
 export function getFirstPoint(
@@ -779,9 +811,11 @@ const _getLastPoint: $FoundryPlatformMethod<
  * Get the last point of a time series property.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/lastPoint
  */
 export function getLastPoint(
@@ -825,9 +859,11 @@ const _streamPoints: $FoundryPlatformMethod<
  * Stream all of the points of a time series property.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objects/{objectType}/{primaryKey}/timeseries/{property}/streamPoints
  */
 export function streamPoints(
@@ -858,9 +894,11 @@ const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
 /**
  * Gets the full metadata for a specific object type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/fullMetadata
  */
 export function getObjectTypeFullMetadata(

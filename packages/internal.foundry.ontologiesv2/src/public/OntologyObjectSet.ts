@@ -47,9 +47,11 @@ const _createTemporaryObjectSetV2: $FoundryPlatformMethod<
  * Creates a temporary `ObjectSet` from the given definition.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v2/ontologies/{ontology}/objectSets/createTemporary
  */
 export function createTemporaryObjectSetV2(
@@ -72,7 +74,9 @@ const _getObjectSetV2: $FoundryPlatformMethod<
 /**
  * Gets the definition of the `ObjectSet` with the given RID.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @alpha
  *
  * Required Scopes: []
  * URL: /v2/ontologies/{ontology}/objectSets/{objectSetRid}
@@ -103,9 +107,11 @@ const _loadObjectSetV2: $FoundryPlatformMethod<
  *
  * Note that null value properties will not be returned.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/loadObjects
  */
 export function loadObjectSetV2(
@@ -136,9 +142,11 @@ const _aggregateObjectSetV2: $FoundryPlatformMethod<
 /**
  * Aggregates the ontology objects present in the `ObjectSet` from the provided object set definition.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/objectSets/aggregate
  */
 export function aggregateObjectSetV2(

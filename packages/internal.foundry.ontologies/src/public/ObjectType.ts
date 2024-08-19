@@ -51,9 +51,11 @@ const _listObjectTypes: $FoundryPlatformMethod<
  * more results available, at least one result will be present in the
  * response.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes
  */
 export function listObjectTypes(
@@ -80,9 +82,11 @@ const _getObjectType: $FoundryPlatformMethod<
 /**
  * Gets a specific object type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}
  */
 export function getObjectType(
@@ -107,9 +111,11 @@ const _listOutgoingLinkTypes: $FoundryPlatformMethod<
  * List the outgoing links for an object type.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}/outgoingLinkTypes
  */
 export function listOutgoingLinkTypes(
@@ -139,9 +145,11 @@ const _getOutgoingLinkType: $FoundryPlatformMethod<
  * Get an outgoing link for an object type.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/objectTypes/{objectType}/outgoingLinkTypes/{linkType}
  */
 export function getOutgoingLinkType(

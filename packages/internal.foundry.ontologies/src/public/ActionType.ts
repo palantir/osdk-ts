@@ -57,9 +57,11 @@ const _listActionTypes: $FoundryPlatformMethod<
  * Each page may be smaller than the requested page size. However, it is guaranteed that if there are more
  * results available, at least one result will be present in the response.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actionTypes
  */
 export function listActionTypes(
@@ -86,9 +88,11 @@ const _getActionType: $FoundryPlatformMethod<
 /**
  * Gets a specific action type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actionTypes/{actionTypeApiName}
  */
 export function getActionType(
@@ -110,13 +114,15 @@ const _applyAction: $FoundryPlatformMethod<
  * Applies an action using the given parameters. Changes to the Ontology are eventually consistent and may take
  * some time to be visible.
  *
- * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) are not currently supported by
+ * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) are not currently supported by
  * this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/apply
  */
 export function applyAction(
@@ -145,13 +151,15 @@ const _applyActionBatch: $FoundryPlatformMethod<
  * Up to 20 actions may be applied in one call. Actions that only modify objects in Object Storage v2 and do not
  * call Functions may receive a higher limit.
  *
- * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) and
- * [notifications](/docs/foundry/action-types/notifications/) are not currently supported by this endpoint.
+ * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) and
+ * [notifications](https://www.palantir.com/docs/foundry/action-types/notifications/) are not currently supported by this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyBatch
  */
 export function applyActionBatch(
@@ -178,13 +186,15 @@ const _applyActionAsync: $FoundryPlatformMethod<
  * Applies an action asynchronously using the given parameters. Changes to the Ontology are eventually consistent
  * and may take some time to be visible.
  *
- * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) are not currently
+ * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) are not currently
  * supported by this endpoint.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data api:write-data`.
+ * following operation scopes: `api:ontologies-read api:ontologies-write`.
  *
- * Required Scopes: [api:read-data, api:write-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync
  */
 export function applyActionAsync(
@@ -209,7 +219,9 @@ const _getAsyncActionStatus: $FoundryPlatformMethod<
 > = [0, "/v1/ontologies/{0}/actions/{1}/applyAsync/{2}", 2];
 
 /**
- * Required Scopes: [api:read-data, api:write-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read, api:ontologies-write]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/applyAsync/{actionRid}
  */
 export function getAsyncActionStatus(
@@ -239,13 +251,15 @@ const _validateAction: $FoundryPlatformMethod<
  * that determine if the request is `VALID` or `INVALID`.
  * For performance reasons, validations will not consider existing objects or other data in Foundry.
  * For example, the uniqueness of a primary key or the existence of a user ID will not be checked.
- * Note that [parameter default values](/docs/foundry/action-types/parameters-default-value/) are not currently supported by
+ * Note that [parameter default values](https://www.palantir.com/docs/foundry/action-types/parameters-default-value/) are not currently supported by
  * this endpoint. Unspecified parameters will be given a default value of `null`.
  *
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/actions/{actionType}/validate
  */
 export function validateAction(

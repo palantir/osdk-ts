@@ -26,6 +26,11 @@ export const addUserAgentAndRequestContextHeaders = (
   fetch: createFetchHeaderMutator(
     client.fetch,
     (headers) => {
+      headers.set(
+        "X-OSDK-Request-Context",
+        JSON.stringify(client.requestContext),
+      );
+
       if (withMetadata.osdkMetadata) {
         headers.set(
           "Fetch-User-Agent",

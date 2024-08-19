@@ -1,10 +1,9 @@
 import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
@@ -23,10 +22,19 @@ export type ActionDef$createTodo$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
-export type createTodo$Params =
-  | NOOP<OsdkActionParameters<ActionDef$createTodo$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$createTodo$Params>>[];
+/**
+ * Creates Todo
+ */
+export interface ActionParams$createTodo {
+  readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
+
+  readonly Todo: ActionParam.PrimitiveType<'string'>;
+}
+
+/**
+ * @deprecated Use `ActionParams$createTodo`
+ */
+export type createTodo$Params = ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>;
 
 // Represents a fqn of the action
 export interface createTodo {
@@ -34,10 +42,8 @@ export interface createTodo {
    * Creates Todo
    */
   <
-    P extends createTodo$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$createTodo$Params>>[]
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
+    P extends ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>,
+    OP extends P extends ReadonlyArray<ActionParams$createTodo> ? ApplyBatchActionOptions : ApplyActionOptions,
   >(
     args: P,
     options?: OP,

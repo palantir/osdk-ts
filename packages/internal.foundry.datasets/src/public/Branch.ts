@@ -49,6 +49,8 @@ const _listBranches: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/branches
  */
@@ -75,6 +77,8 @@ const _createBranch: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/branches
  */
@@ -94,6 +98,8 @@ const _getBranch: $FoundryPlatformMethod<
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-read`.
  *
+ * @public
+ *
  * Required Scopes: [api:datasets-read]
  * URL: /v1/datasets/{datasetRid}/branches/{branchId}
  */
@@ -112,6 +118,8 @@ const _deleteBranch: $FoundryPlatformMethod<
  * Deletes the Branch with the given BranchId.
  *
  * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:datasets-write`.
+ *
+ * @public
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v1/datasets/{datasetRid}/branches/{branchId}

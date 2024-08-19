@@ -22,7 +22,6 @@ import { copyright } from "./copyright.js";
 import { generateImports, SKIP } from "./generateImports.js";
 import { writeResource2 } from "./generateResource2.js";
 import type * as ir from "./ir/index.js";
-import { isIgnoredNamespace } from "./isIgnoredNamespace.js";
 import { isIgnoredType } from "./isIgnoredType.js";
 import type { Component } from "./model/Component.js";
 import { Model } from "./model/Model.js";

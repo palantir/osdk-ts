@@ -51,9 +51,11 @@ const _listQueryTypes: $FoundryPlatformMethod<
  * Each page may be smaller than the requested page size. However, it is guaranteed that if there are more
  * results available, at least one result will be present in the response.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queryTypes
  */
 export function listQueryTypes(
@@ -82,9 +84,11 @@ const _getQueryType: $FoundryPlatformMethod<
 /**
  * Gets a specific query type with the given API name.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queryTypes/{queryApiName}
  */
 export function getQueryType(
@@ -111,9 +115,11 @@ const _executeQuery: $FoundryPlatformMethod<
 /**
  * Executes a Query using the given parameters. Optional parameters do not need to be supplied.
  * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:read-data`.
+ * following operation scopes: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v1/ontologies/{ontologyRid}/queries/{queryApiName}/execute
  */
 export function executeQuery(

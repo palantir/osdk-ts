@@ -9,34 +9,35 @@
   },
   "exports": {
     ".": {
-      "require": "./build/cjs/index.cjs",
       "browser": "./build/browser/index.js",
       "import": "./build/esm/index.js"
     },
     "./*": {
-      "require": "./build/cjs/public/*.cjs",
       "browser": "./build/browser/public/*.js",
       "import": "./build/esm/public/*.js"
     }
   },
   "scripts": {
-    "check-attw": "monorepo.tool.attw both",
+    "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
+    "codegen": "node ./generateMockOntology.js",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "test": "vitest run --pool=forks",
     "transpile": "monorepo.tool.transpile",
-    "typecheck": "monorepo.tool.typecheck both"
+    "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
     "@osdk/foundry-sdk-generator": "workspace:~",
     "execa": "^9.3.0"
   },
   "devDependencies": {
+    "@osdk/legacy-client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
+    "@osdk/shared.test": "workspace:~",
     "typescript": "^5.5.4"
   },
   "publishConfig": {
@@ -53,6 +54,6 @@
   ],
   "main": "./build/cjs/index.cjs",
   "module": "./build/esm/index.js",
-  "types": "./build/cjs/index.d.cts",
+  "types": "./build/esm/index.d.ts",
   "type": "module"
 }

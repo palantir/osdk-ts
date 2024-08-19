@@ -16,27 +16,35 @@
 
 import * as ts from "typescript";
 import { describe, expect, it } from "vitest";
+import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
-import { generatePerQueryDataFilesV2 as generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
+import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
 
 describe("generatePerQueryDataFiles", () => {
   it("is stable v2", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/queries";
+    const BASE_PATH = "/foo";
 
-    await generatePerQueryDataFiles(
-      TodoWireOntology,
-      helper.minimalFiles,
-      BASE_PATH,
-      ".js",
+    await generatePerQueryDataFilesV2(
+      {
+        fs: helper.minimalFiles,
+        ontology: enhanceOntology(
+          TodoWireOntology,
+          undefined,
+          new Map(),
+          ".js",
+        ),
+        outDir: BASE_PATH,
+        importExt: ".js",
+      },
+      true,
     );
 
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
-        "/foo/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
-
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
       export interface getCount extends QueryDefinition<'getCount', never>, VersionBound<$ExpectedClientVersion> {
@@ -74,15 +82,14 @@ describe("generatePerQueryDataFiles", () => {
         },
       };
       ",
-        "/foo/queries/index.ts": "export * from './getCount.js';
+        "/foo/ontology/queries/index.ts": "export * from './getCount.js';
       export * from './returnsTodo.js';
       ",
-        "/foo/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
-
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      import { Todo } from '../objects.js';
+      import { Todo } from '../objects/Todo.js';
 
       export interface returnsTodo extends QueryDefinition<'returnsTodo', 'Todo'>, VersionBound<$ExpectedClientVersion> {
         apiName: 'returnsTodo';
@@ -133,7 +140,7 @@ describe("generatePerQueryDataFiles", () => {
     await helper.minimalFiles.writeFile(
       "/bar/test.ts",
       `
-      import {returnsTodo} from "/foo/queries/returnsTodo.ts";
+      import {returnsTodo} from "/foo/ontology/queries/returnsTodo.ts";
 
       returnsTodo({someTodo:/*marker*/})
     `,

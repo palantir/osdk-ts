@@ -23,7 +23,7 @@ import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shar
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
 import type {
   Branch,
-  BranchId,
+  BranchName,
   CreateBranchRequest,
   DatasetRid,
   ListBranchesResponse,
@@ -42,6 +42,8 @@ const _createBranch: $FoundryPlatformMethod<
 /**
  * Creates a branch on an existing dataset. A branch may optionally point to a (committed) transaction.
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/branches
  */
@@ -59,22 +61,24 @@ export function createBranch(
 const _deleteBranch: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<void>
 > = [3, "/v2/datasets/{0}/branches/{1}", 2];
 
 /**
- * Deletes the Branch with the given BranchId.
+ * Deletes the Branch with the given BranchName.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-write]
- * URL: /v2/datasets/{datasetRid}/branches/{branchBranchId}
+ * URL: /v2/datasets/{datasetRid}/branches/{branchName}
  */
 export function deleteBranch(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
@@ -95,6 +99,8 @@ const _listBranches: $FoundryPlatformMethod<
 
 /**
  * Lists the Branches of a Dataset.
+ *
+ * @alpha
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/branches
@@ -117,7 +123,7 @@ export function listBranches(
 const _getBranch: $FoundryPlatformMethod<
   (
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
     $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<Branch>
 > = [0, "/v2/datasets/{0}/branches/{1}", 2];
@@ -125,14 +131,16 @@ const _getBranch: $FoundryPlatformMethod<
 /**
  * Get a Branch of a Dataset.
  *
+ * @alpha
+ *
  * Required Scopes: [api:datasets-read]
- * URL: /v2/datasets/{datasetRid}/branches/{branchBranchId}
+ * URL: /v2/datasets/{datasetRid}/branches/{branchName}
  */
 export function getBranch(
   $ctx: $Client | $ClientContext,
   ...args: [
     datasetRid: DatasetRid,
-    branchBranchId: BranchId,
+    branchName: BranchName,
 
     $queryParams?: { preview?: PreviewMode | undefined },
   ]

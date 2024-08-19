@@ -36,9 +36,11 @@ const _listOntologiesV2: $FoundryPlatformMethod<
 /**
  * Lists the Ontologies visible to the current user.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies
  */
 export function listOntologiesV2(
@@ -55,9 +57,11 @@ const _getOntologyV2: $FoundryPlatformMethod<
 /**
  * Gets a specific ontology with the given Ontology RID.
  *
- * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:read-data`.
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
  *
- * Required Scopes: [api:read-data]
+ * @public
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}
  */
 export function getOntologyV2(
@@ -74,7 +78,9 @@ const _getOntologyFullMetadata: $FoundryPlatformMethod<
 /**
  * Get the full Ontology metadata. This includes the objects, links, actions, queries, and interfaces.
  *
- * Required Scopes: [api:read-data]
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
  * URL: /v2/ontologies/{ontology}/fullMetadata
  */
 export function getOntologyFullMetadata(

@@ -16,7 +16,7 @@
 
 export type {
   Branch,
-  BranchId,
+  BranchName,
   CreateBranchRequest,
   CreateDatasetRequest,
   CreateTransactionRequest,

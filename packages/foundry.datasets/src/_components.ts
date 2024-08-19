@@ -24,23 +24,23 @@ export type LooselyBrandedString<T extends string> = string & {
  * Log Safety: UNSAFE
  */
 export interface Branch {
-  branchId: BranchId;
+  name: BranchName;
   transactionRid?: TransactionRid;
 }
 
 /**
- * The identifier (name) of a Branch.
+ * The name of a Branch.
  *
  * Log Safety: UNSAFE
  */
-export type BranchId = LooselyBrandedString<"BranchId">;
+export type BranchName = LooselyBrandedString<"BranchName">;
 
 /**
  * Log Safety: UNSAFE
  */
 export interface CreateBranchRequest {
-  branchId: BranchId;
   transactionRid?: TransactionRid;
+  name: BranchName;
 }
 
 /**

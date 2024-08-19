@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-import type { InterfaceType } from "@osdk/gateway/types";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
 import fastDeepEqual from "fast-deep-equal";
 import invariant from "tiny-invariant";
+import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
+import { propertyJsdoc } from "../shared/propertyJsdoc.js";
+import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
-import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
-import { propertyJsdoc } from "./propertyJsdoc.js";
-import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
-  interfaceDef: InterfaceType,
-  ontology: WireOntologyDefinition,
+  interfaceDef: EnhancedInterfaceType,
+  ontology: EnhancedOntologyDefinition,
   v2: boolean = false,
 ) {
   const definition = deleteUndefineds(
     __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-      interfaceDef,
+      interfaceDef.og,
       v2,
     ),
   );
 
-  const objectDefIdentifier = getObjectDefIdentifier(
-    interfaceDef.apiName,
-    v2,
-  );
+  const objectDefIdentifier = interfaceDef.getObjectDefIdentifier(v2);
 
   const parents = definition.implements?.map(p => {
     invariant(
@@ -50,7 +47,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     const it = deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.interfaceTypes[p],
+        ontology.requireInterfaceType(p).og,
         v2,
       ),
     );
@@ -92,9 +89,21 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     return propertyJsdoc(property, { isInherited, apiName });
   }
 
+  function maybeStripNamespace(q: string) {
+    if (
+      interfaceDef.apiNamespace && q.startsWith(`${interfaceDef.apiNamespace}.`)
+    ) {
+      return q.slice(interfaceDef.apiNamespace.length + 1);
+    } else {
+      return q;
+    }
+  }
+
   function getV2Types() {
     return `
-  export interface ${objectDefIdentifier} extends InterfaceDefinition<"${interfaceDef.apiName}", ${interfaceDef.apiName}>, VersionBound<$ExpectedClientVersion> {
+  export interface ${
+      interfaceDef.getObjectDefIdentifier(true)
+    } extends InterfaceDefinition<"${interfaceDef.shortApiName}", ${interfaceDef.uniqueImportName}>, VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     ${
       stringify(definition, {
@@ -120,7 +129,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
               _,
               key,
             ) => [
-              `${localPropertyJsdoc(key)}${key}`,
+              `${localPropertyJsdoc(key)}"${maybeStripNamespace(key)}"`,
               `PropertyDef<"${propertyDefinition.type}", "${
                 propertyDefinition.nullable ? "nullable" : "non-nullable"
               }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
@@ -143,11 +152,25 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     ${v2 ? getV2Types() : ""}
 
-    export const ${definition.apiName}: ${objectDefIdentifier} = {
+    export const ${interfaceDef.shortApiName}: ${objectDefIdentifier} = {
       osdkMetadata: $osdkMetadata,
       ${
     stringify(definition, {
       osdkMetadata: () => undefined,
+      properties: (properties) => (`{
+        ${
+        stringify(properties, {
+          "*": (
+            propertyDefinition,
+            _,
+            key,
+          ) => [
+            `"${maybeStripNamespace(key)}"`,
+            _(propertyDefinition),
+          ],
+        })
+      }
+      }`),
     })
   }
       

@@ -4,16 +4,12 @@
 
 ```ts
 
-import type { ActionDefinition } from '@osdk/api';
-import type { ActionParameterDefinition } from '@osdk/api';
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
-import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectQueryDataType } from '@osdk/api';
-import type { ObjectSetActionDataType } from '@osdk/api';
 import type { ObjectSetQueryDataType } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
 import type { ObjectTypeLinkDefinition } from '@osdk/api';
@@ -30,20 +26,19 @@ import type { SingleKeyObject } from 'type-fest';
 // @public (undocumented)
 export type ActionEditResponse = ActionResults;
 
+// @public
+export namespace ActionParam {
+    export type ObjectSetType<T extends ObjectTypeDefinition<any>> = BaseObjectSet<T>;
+    export type ObjectType<T extends ObjectTypeDefinition<any>> = OsdkBase<T> | OsdkObjectPrimaryKeyType<T>;
+    export type PrimitiveType<T extends keyof DataValueClientToWire> = DataValueClientToWire[T];
+}
+
 // @public (undocumented)
 export type ActionReturnTypeForOptions<Op extends ApplyActionOptions | ApplyBatchActionOptions> = Op extends {
     $validateOnly: true;
 } ? ActionValidationResponse : Op extends {
     $returnEdits: true;
 } ? ActionEditResponse : undefined;
-
-// @public (undocumented)
-export type ActionSignature<X extends Record<any, ActionParameterDefinition<any, any>>> = <A extends NOOP<OsdkActionParameters<X>> | NOOP<OsdkActionParameters<X>>[], OP extends A extends NOOP<OsdkActionParameters<X>>[] ? ApplyBatchActionOptions : ApplyActionOptions>(args: A, options?: OP) => Promise<ActionReturnTypeForOptions<OP>>;
-
-// @public (undocumented)
-export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> = {
-    applyAction: NonNullable<T["__OsdkActionType"]> extends never ? ActionSignature<T["parameters"]> : NonNullable<T["__OsdkActionType"]>;
-};
 
 // Warning: (ae-forgotten-export) The symbol "ValidateActionResponseV2" needs to be exported by the entry point index.d.ts
 //
@@ -153,7 +148,7 @@ export interface AttachmentMetadata {
 // @public
 export interface AttachmentUpload extends Blob {
     // (undocumented)
-    name: string;
+    readonly name: string;
 }
 
 // @public (undocumented)
@@ -521,14 +516,6 @@ export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, 
     $rid: string;
 } : {});
 
-// Warning: (ae-forgotten-export) The symbol "ActionParametersDefinition" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NullableProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NotOptionalParams" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "PartialBy" needs to be exported by the entry point index.d.ts
-//
-// @public (undocumented)
-export type OsdkActionParameters<X extends ActionParametersDefinition> = NullableProps<X> extends never ? NotOptionalParams<X> : PartialBy<NotOptionalParams<X>, NullableProps<X>>;
-
 // @public (undocumented)
 export type OsdkBase<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>> = {
     $apiName: Q["apiName"] & {
@@ -578,6 +565,9 @@ export interface PageResult<T extends OsdkObject<any>> {
     // (undocumented)
     nextPageToken: string | undefined;
 }
+
+// @public (undocumented)
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 // @public (undocumented)
 export type PossibleWhereClauseFilters = "$gt" | "$eq" | "$ne" | "$isNull" | "$contains" | "$gte" | "$lt" | "$lte" | "$within" | "$intersects" | "$startsWith" | "$containsAllTermsInOrder" | "$containsAnyTerm" | "$containsAllTerms";
@@ -659,11 +649,11 @@ export interface PropertyValueWireToClient {
 }
 
 // Warning: (ae-forgotten-export) The symbol "PartialByNotStrict" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "NotOptionalParams_2" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "NotOptionalParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "OptionalQueryParams" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = PartialByNotStrict<NotOptionalParams_2<T>, OptionalQueryParams<T>>;
+export type QueryParameterType<T extends Record<any, QueryDataTypeDefinition<any, any>>> = PartialByNotStrict<NotOptionalParams<T>, OptionalQueryParams<T>>;
 
 // @public (undocumented)
 export type QueryReturnType<T extends QueryDataTypeDefinition<any, any>> = T extends ObjectQueryDataType<any, infer TTargetType> ? OsdkBase<TTargetType> : T extends ObjectSetQueryDataType<any, infer TTargetType> ? ObjectSet<TTargetType> : T["type"] extends keyof DataValueWireToClient ? DataValueWireToClient[T["type"]] : never;

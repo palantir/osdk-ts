@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
+import type { Root } from "mdast";
+import { remark } from "remark";
+import { visit } from "unist-util-visit";
 import type { Documentation } from "./ir/index.js";
 
-export function getCleanedUpJsdoc(doc?: Documentation): string {
+export async function getCleanedUpJsdoc(doc?: Documentation): Promise<string> {
   if (doc?.description?.includes("*/")) {
     throw "unsupported description";
   }
-  return doc?.description?.replace(/\n/g, "\n * ") ?? "";
+
+  if (!doc?.description) return "";
+
+  const docs = doc.description
+    ? await remark()
+      .use(() => (tree: Root) => {
+        visit(tree, "link", (node, index, parent) => {
+          if (node.url.startsWith("/")) {
+            node.url = `https://www.palantir.com${node.url}`;
+          }
+        });
+      })
+      .process(doc.description)
+    : undefined;
+
+  return String(docs).replace(/\n/g, "\n * ") ?? "";
 }

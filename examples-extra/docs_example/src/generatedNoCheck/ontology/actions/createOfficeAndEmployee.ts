@@ -1,10 +1,9 @@
 import type { ActionDefinition, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
@@ -42,10 +41,36 @@ export type ActionDef$createOfficeAndEmployee$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
+/**
+ * Create an office and employee
+ */
+export interface ActionParams$createOfficeAndEmployee {
+  /**
+   * The office's physical address (not necessarily shipping address)
+   */
+  readonly address?: ActionParam.PrimitiveType<'string'>;
+  /**
+   * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
+   */
+  readonly capacity?: ActionParam.PrimitiveType<'integer'>;
+  /**
+   * New employee Id
+   */
+  readonly employeeId: ActionParam.PrimitiveType<'integer'>;
+
+  readonly officeId: ActionParam.PrimitiveType<'string'>;
+  /**
+   * A list of all office names
+   */
+  readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
+}
+
+/**
+ * @deprecated Use `ActionParams$createOfficeAndEmployee`
+ */
 export type createOfficeAndEmployee$Params =
-  | NOOP<OsdkActionParameters<ActionDef$createOfficeAndEmployee$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$createOfficeAndEmployee$Params>>[];
+  | ActionParams$createOfficeAndEmployee
+  | ReadonlyArray<ActionParams$createOfficeAndEmployee>;
 
 // Represents a fqn of the action
 export interface createOfficeAndEmployee {
@@ -53,8 +78,8 @@ export interface createOfficeAndEmployee {
    * Create an office and employee
    */
   <
-    P extends createOfficeAndEmployee$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$createOfficeAndEmployee$Params>>[]
+    P extends ActionParams$createOfficeAndEmployee | ReadonlyArray<ActionParams$createOfficeAndEmployee>,
+    OP extends P extends ReadonlyArray<ActionParams$createOfficeAndEmployee>
       ? ApplyBatchActionOptions
       : ApplyActionOptions,
   >(

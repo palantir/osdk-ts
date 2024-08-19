@@ -1,14 +1,13 @@
 import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
 import type {
+  ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
   ApplyBatchActionOptions,
-  NOOP,
-  OsdkActionParameters,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
-import type { Todo } from '../objects';
+import type { Todo } from '../objects/Todo';
 
 // Represents the definition of the parameters for the action
 export type ActionDef$completeTodo$Params = {
@@ -25,10 +24,21 @@ export type ActionDef$completeTodo$Params = {
   };
 };
 
-// Represents the runtime arguments for the action
-export type completeTodo$Params =
-  | NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>
-  | NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>[];
+/**
+ * Completes Todo
+ */
+export interface ActionParams$completeTodo {
+  readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
+  /**
+   * A todo Object
+   */
+  readonly Todo: ActionParam.ObjectType<Todo>;
+}
+
+/**
+ * @deprecated Use `ActionParams$completeTodo`
+ */
+export type completeTodo$Params = ActionParams$completeTodo | ReadonlyArray<ActionParams$completeTodo>;
 
 // Represents a fqn of the action
 export interface completeTodo {
@@ -36,10 +46,8 @@ export interface completeTodo {
    * Completes Todo
    */
   <
-    P extends completeTodo$Params,
-    OP extends P extends NOOP<OsdkActionParameters<ActionDef$completeTodo$Params>>[]
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
+    P extends ActionParams$completeTodo | ReadonlyArray<ActionParams$completeTodo>,
+    OP extends P extends ReadonlyArray<ActionParams$completeTodo> ? ApplyBatchActionOptions : ApplyActionOptions,
   >(
     args: P,
     options?: OP,

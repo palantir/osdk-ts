@@ -38,6 +38,8 @@ const _getThirdPartyApplication: $FoundryPlatformMethod<
 /**
  * Get the ThirdPartyApplication
  *
+ * @alpha
+ *
  * Required Scopes: [third-party-application:deploy-application-website]
  * URL: /v2/thirdPartyApplications/{thirdPartyApplicationRid}
  */

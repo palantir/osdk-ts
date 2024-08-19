@@ -129,10 +129,10 @@ export class Model {
     }
 
     for (const ns of ir.namespaces) {
-      if (isIgnoredNamespace(ns.name)) {
-        continue;
-      }
+      if (isIgnoredNamespace(ns.name)) continue;
+
       for (const r of ns.resources) {
+        if (r.staticOperations.length === 0) continue;
         await model.addResource(ns, r);
       }
     }
