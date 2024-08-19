@@ -23,26 +23,22 @@ const ExpectedOsdkVersion = "0.21.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 
 export async function generateOntologyMetadataFile(
-  { sanitizedOntology: ontology, fs, outDir }: GenerateContext,
+  { fs, outDir, ontology, ontologyApiNamespace }: GenerateContext,
   userAgent: string,
 ) {
   fs.writeFile(
     path.join(outDir, "OntologyMetadata.ts"),
     await formatTs(
       `
-      import { OntologyMetadata as OM } from "@osdk/api";
-
       export type $ExpectedClientVersion = "${ExpectedOsdkVersion}";
       export const $osdkMetadata = { extraUserAgent: "${userAgent}" };
-
-      export interface OntologyMetadata extends OM<$ExpectedClientVersion> {};
-
-      export const OntologyMetadata: OntologyMetadata = {
-        expectsClientVersion: "${ExpectedOsdkVersion}",
-        ontologyRid: "${ontology.ontology.rid}",
-        ontologyApiName: "${ontology.ontology.apiName}",
-        userAgent: "${userAgent}",
-      };
+      ${
+        ontologyApiNamespace == null
+          ? `
+        export const $ontologyRid = "${ontology.ontology.rid}";
+        `
+          : ""
+      }
       `,
     ),
   );

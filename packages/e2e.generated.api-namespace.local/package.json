@@ -21,7 +21,7 @@
     "check-attw": "monorepo.tool.attw esm",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal",
+    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --beta true --packageType module --version dev --internal --apiNamespaceMap 'com.example.dep:@osdk/e2e.generated.api-namespace.dep'",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "monorepo.tool.transpile",
@@ -29,7 +29,8 @@
   },
   "dependencies": {
     "@osdk/api": "workspace:~",
-    "@osdk/client.api": "workspace:*"
+    "@osdk/client.api": "workspace:*",
+    "@osdk/e2e.generated.api-namespace.dep": "workspace:~"
   },
   "peerDependencies": {
     "@osdk/api": "workspace:~",

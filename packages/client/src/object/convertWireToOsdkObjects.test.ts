@@ -16,9 +16,10 @@
 
 import type { Attachment, Osdk } from "@osdk/client.api";
 import {
+  $ontologyRid,
   Employee,
   FooInterface,
-  Ontology as MockOntology,
+  objectTypeWithAllPropertyTypes,
 } from "@osdk/client.test.ontology";
 import type { OntologyObjectV2 } from "@osdk/internal.foundry";
 import { symbolClientContext } from "@osdk/shared.client";
@@ -44,7 +45,7 @@ describe("convertWireToOsdkObjects", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });
@@ -78,7 +79,7 @@ describe("convertWireToOsdkObjects", () => {
   });
 
   it("reuses the object prototype across objects", async () => {
-    const employees = await client(MockOntology.objects.Employee).fetchPage();
+    const employees = await client(Employee).fetchPage();
     expect(employees.data.length).toBeGreaterThanOrEqual(2);
     const [a, b] = employees.data;
 
@@ -89,7 +90,7 @@ describe("convertWireToOsdkObjects", () => {
 
   it("converts attachments as expected", async () => {
     const withValues = await client(
-      MockOntology.objects.objectTypeWithAllPropertyTypes,
+      objectTypeWithAllPropertyTypes,
     )
       .where({ id: 1 })
       .fetchPage();
@@ -107,7 +108,7 @@ describe("convertWireToOsdkObjects", () => {
     expectTypeOf(attachmentArray![0]).toMatchTypeOf<Attachment>;
 
     const withoutValues = await client(
-      MockOntology.objects.objectTypeWithAllPropertyTypes,
+      objectTypeWithAllPropertyTypes,
     ).where({ id: 2 }).fetchPage();
 
     const {
@@ -120,7 +121,7 @@ describe("convertWireToOsdkObjects", () => {
 
   it("works even with unknown apiNames", async () => {
     const clientCtx = createMinimalClient(
-      MockOntology.metadata,
+      { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       async () => "myAccessToken",
     );
@@ -150,7 +151,7 @@ describe("convertWireToOsdkObjects", () => {
 
   it("updates interface when underlying changes", async () => {
     const clientCtx = createMinimalClient(
-      MockOntology.metadata,
+      { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       async () => "myAccessToken",
     );
@@ -211,7 +212,7 @@ describe("convertWireToOsdkObjects", () => {
 
   it("reconstitutes interfaces properly without rid", async () => {
     const clientCtx = createMinimalClient(
-      MockOntology.metadata,
+      { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       async () => "myAccessToken",
     );
@@ -256,7 +257,7 @@ describe("convertWireToOsdkObjects", () => {
 
   it("reconstitutes interfaces properly with rid", async () => {
     const clientCtx = createMinimalClient(
-      MockOntology.metadata,
+      { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       async () => "myAccessToken",
     );

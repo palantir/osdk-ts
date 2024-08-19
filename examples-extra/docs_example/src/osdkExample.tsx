@@ -2,7 +2,7 @@ import { createClient } from "@osdk/client";
 import {
   Employee,
   Office,
-  Ontology,
+  $ontologyRid,
   promoteEmployee,
   promoteEmployeeObject,
   Todo,
@@ -10,7 +10,7 @@ import {
 
 export const client = createClient(
   "https://example.com",
-  Ontology.metadata.ontologyRid,
+  $ontologyRid,
   async () => {
     return "";
   },

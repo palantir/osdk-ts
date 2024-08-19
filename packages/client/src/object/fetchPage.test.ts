@@ -31,12 +31,10 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
-import { MockOntology } from "../util/test/mockOntology.js";
+import type { TodoDef } from "../util/test/mockOntology.js";
+import { metadata, Todo } from "../util/test/mockOntology.js";
 
 describe(fetchPage, () => {
-  type Objects = typeof MockOntology["objects"];
-  type TodoDef = Objects["Todo"];
-
   it("infers select properly", () => {
     // this helper lets us get return types of functions that are generic
     class Helper<
@@ -126,11 +124,11 @@ describe(fetchPage, () => {
 
   it("converts interface objectsets to search properly part 2", () => {
     const client = createMinimalClient(
-      MockOntology.metadata,
+      metadata,
       "https://foo",
       async () => "",
     );
-    const objectSet = createObjectSet(MockOntology.objects.Todo, client).where({
+    const objectSet = createObjectSet(Todo, client).where({
       text: "hello",
     }).where({
       id: { $gt: 2 },

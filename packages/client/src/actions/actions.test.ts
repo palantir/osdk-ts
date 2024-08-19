@@ -20,10 +20,10 @@ import type {
   AttachmentUpload,
 } from "@osdk/client.api";
 import {
+  $ontologyRid,
   actionTakesAttachment,
   createOffice,
   moveOffice,
-  Ontology as MockOntology,
 } from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
@@ -46,7 +46,7 @@ describe("actions", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });

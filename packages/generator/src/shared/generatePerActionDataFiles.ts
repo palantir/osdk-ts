@@ -18,6 +18,7 @@ import type { ActionParameterDefinition } from "@osdk/api";
 import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
@@ -90,8 +91,7 @@ export async function generatePerActionDataFiles(
                   } else if (type.type === "object") {
                     const obj = enhancedOntology.requireObjectType(type.object);
                     return `ObjectActionDataType<"${obj.fullApiName}", ${
-                      obj
-                        .getObjectDefIdentifier(v2)
+                      obj.getImportedDefinitionIdentifier(v2)
                     }>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${
@@ -117,12 +117,12 @@ export async function generatePerActionDataFiles(
         } else if (input.type === "object") {
           return `ActionParam.ObjectType<${
             enhancedOntology.requireObjectType(input.object)
-              .getObjectDefIdentifier(v2)
+              .getImportedDefinitionIdentifier(v2)
           }>`;
         } else if (input.type === "objectSet") {
           return `ActionParam.ObjectSetType<${
             enhancedOntology.requireObjectType(input.objectSet)
-              .getObjectDefIdentifier(v2)
+              .getImportedDefinitionIdentifier(v2)
           }>`;
         }
       }
@@ -193,7 +193,7 @@ export async function generatePerActionDataFiles(
         } satisfies ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}>;`;
       }
 
-      const referencedObjectDefs = new Set<EnhancedObjectType>();
+      const referencedObjectDefs = new Set<EnhancedObjectType | ForeignType>();
       for (const p of Object.values(action.parameters)) {
         if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
           if (p.dataType.objectApiName) {

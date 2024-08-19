@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { Ontology as MockOntology } from "@osdk/client.test.ontology";
+import {
+  $ontologyRid,
+  objectTypeWithAllPropertyTypes,
+} from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
@@ -27,7 +30,7 @@ describe("attachments", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });
@@ -38,7 +41,7 @@ describe("attachments", () => {
 
   it("reads attachment metadata successfully", async () => {
     const result = await client(
-      MockOntology.objects.objectTypeWithAllPropertyTypes,
+      objectTypeWithAllPropertyTypes,
     )
       .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
 
@@ -55,9 +58,7 @@ describe("attachments", () => {
   });
 
   it("reads attachment successfully", async () => {
-    const result = await client(
-      MockOntology.objects.objectTypeWithAllPropertyTypes,
-    )
+    const result = await client(objectTypeWithAllPropertyTypes)
       .where({ id: stubData.objectWithAllPropertyTypes1.id }).fetchPage();
 
     const object1 = result.data[0];

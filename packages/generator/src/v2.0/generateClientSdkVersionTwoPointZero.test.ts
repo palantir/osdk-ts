@@ -17,7 +17,7 @@
 import type { ActionParameterType, QueryDataType } from "@osdk/gateway/types";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
-import { describe, expect, it, test, vi } from "vitest";
+import { beforeEach, describe, expect, it, test, vi } from "vitest";
 import { compileThis } from "../util/test/compileThis.js";
 import { createMockMinimalFiles } from "../util/test/createMockMinimalFiles.js";
 import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
@@ -223,11 +223,174 @@ function changeNames(ontology: WireOntologyDefinition, newNames: {
   });
 }
 
-describe("generator", () => {
-  test("should be able to generate a project", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
+const referencedOntology = {
+  "ontology": {
+    "apiName": "dep",
+    "rid": "ri.ontology.main.ontology.dep",
+    "displayName": "",
+    "description": "",
+  },
+  "actionTypes": {},
+  "objectTypes": {
+    "com.example.dep.Task": {
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      sharedPropertyTypeMapping: {},
+      "objectType": {
+        "apiName": "com.example.dep.Task",
+        "primaryKey": "taskId",
 
+        titleProperty: "taskId",
+
+        "properties": {
+          "taskId": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+          "body": {
+            "dataType": {
+              "type": "string",
+            },
+          },
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTask",
+      },
+      "linkTypes": [],
+    },
+  },
+  "queryTypes": {},
+  "interfaceTypes": {
+    "com.example.dep.SomeInterface": {
+      apiName: "com.example.dep.SomeInterface",
+      rid: "idk2",
+      displayName: "Sum Interface",
+      extendsInterfaces: [],
+      properties: {
+        "com.example.dep.spt": {
+          apiName: "com.example.dep.spt",
+          dataType: {
+            type: "string",
+          },
+          displayName: "Some Property",
+          rid: "idk",
+        },
+      },
+      links: {},
+    },
+  },
+  "sharedPropertyTypes": {
+    "com.example.dep.spt": {
+      apiName: "com.example.dep.spt",
+      dataType: {
+        type: "string",
+      },
+      displayName: "Some Property",
+      rid: "idk",
+    },
+  },
+} satisfies WireOntologyDefinition;
+
+const referencingOntology = {
+  ontology: TodoWireOntology.ontology,
+  "actionTypes": {
+    "setTaskBody": {
+      "apiName": "setTaskBody",
+      "parameters": {
+        "task": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "com.example.dep.Task",
+            "objectTypeApiName": "com.example.dep.Task",
+          },
+          "required": true,
+        },
+        "body": {
+          "dataType": {
+            "type": "string",
+          },
+          "required": true,
+        },
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "com.example.dep.Task",
+        },
+      ],
+    },
+  },
+  interfaceTypes: {},
+  objectTypes: {
+    "Thing": {
+      implementsInterfaces: ["com.example.dep.SomeInterface"],
+      implementsInterfaces2: {
+        "com.example.dep.SomeInterface": {
+          properties: {
+            "com.example.dep.spt": "body",
+          },
+        },
+      },
+      linkTypes: [],
+      objectType: {
+        apiName: "Thing",
+        primaryKey: "id",
+        properties: {
+          "id": {
+            dataType: {
+              type: "integer",
+            },
+          },
+          "body": {
+            dataType: {
+              type: "string",
+            },
+          },
+        },
+        rid: "ridForThing",
+        status: "ACTIVE",
+        titleProperty: "id",
+      },
+      sharedPropertyTypeMapping: {},
+    },
+  },
+  queryTypes: {},
+  sharedPropertyTypes: {},
+} satisfies WireOntologyDefinition;
+
+const fooBarTodoWireOntology = changeNames(
+  TodoWireOntology,
+  {
+    objects: { "Todo": "foo.bar.Todo", "Person": "foo.bar.Person" },
+    actions: {
+      markTodoCompleted: "foo.bar.markTodoCompleted",
+      deleteTodos: "foo.bar.deleteTodos",
+    },
+    interfaces: {
+      "SomeInterface": "foo.bar.SomeInterface",
+    },
+    queries: {
+      "getCount": "foo.bar.getCount",
+      "returnsTodo": "foo.bar.returnsTodo",
+    },
+    spts: {
+      "SomeProperty": "foo.bar.SomeProperty",
+    },
+  },
+);
+
+const BASE_PATH = "/foo";
+
+describe("generator", () => {
+  let helper: ReturnType<typeof createMockMinimalFiles>;
+  beforeEach(async () => {
+    helper = createMockMinimalFiles();
+  });
+
+  test("should be able to generate a project", async () => {
     await generateClientSdkVersionTwoPointZero(
       TodoWireOntology,
       "typescript-sdk/0.0.0 osdk-cli/0.0.0",
@@ -239,7 +402,7 @@ describe("generator", () => {
 
     expect(files).toMatchObject({
       [`${BASE_PATH}/index.ts`]: expect.anything(),
-      [`${BASE_PATH}/Ontology.ts`]: expect.anything(),
+      [`${BASE_PATH}/OntologyMetadata.ts`]: expect.anything(),
       [`${BASE_PATH}/ontology/objects/Todo.ts`]: expect.anything(),
     });
 
@@ -256,70 +419,16 @@ describe("generator", () => {
 
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
-        "/foo/Ontology.ts": "import type { OntologyDefinition } from '@osdk/api';
-      import * as Actions from './ontology/actions';
-      import * as Interfaces from './ontology/interfaces';
-      import * as Objects from './ontology/objects';
-      import * as Queries from './ontology/queries';
-      import { OntologyMetadata } from './OntologyMetadata';
-
-      export interface Ontology extends OntologyDefinition<'Person' | 'Todo'> {
-        metadata: OntologyMetadata;
-        objects: {
-          Person: Objects.Person;
-          Todo: Objects.Todo;
-        };
-        actions: {
-          deleteTodos: typeof Actions.deleteTodos;
-          markTodoCompleted: typeof Actions.markTodoCompleted;
-        };
-        queries: {
-          getCount: typeof Queries.getCount;
-          returnsTodo: typeof Queries.returnsTodo;
-        };
-        interfaces: {
-          SomeInterface: Interfaces.SomeInterface;
-        };
-      }
-
-      export const Ontology: Ontology = {
-        metadata: OntologyMetadata,
-        objects: {
-          Person: Objects.Person,
-          Todo: Objects.Todo,
-        },
-        actions: {
-          deleteTodos: Actions.deleteTodos,
-          markTodoCompleted: Actions.markTodoCompleted,
-        },
-        queries: {
-          getCount: Queries.getCount,
-          returnsTodo: Queries.returnsTodo,
-        },
-        interfaces: {
-          SomeInterface: Interfaces.SomeInterface,
-        },
-      };
-      ",
-        "/foo/OntologyMetadata.ts": "import { OntologyMetadata as OM } from '@osdk/api';
-
-      export type $ExpectedClientVersion = '0.21.0';
+        "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
       export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
-      export interface OntologyMetadata extends OM<$ExpectedClientVersion> {}
-
-      export const OntologyMetadata: OntologyMetadata = {
-        expectsClientVersion: '0.21.0',
-        ontologyRid: 'ridHere',
-        ontologyApiName: 'OntologyApiName',
-        userAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0',
-      };
+      export const $ontologyRid = 'ridHere';
       ",
-        "/foo/index.ts": "export { Ontology } from './Ontology';
-      export * from './ontology/actions';
+        "/foo/index.ts": "export * from './ontology/actions';
       export * from './ontology/interfaces';
       export * from './ontology/objects';
       export * from './ontology/queries';
+      export { $ontologyRid } from './OntologyMetadata';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
       export type { ActionParams$deleteTodos } from './actions/deleteTodos';
@@ -805,9 +914,6 @@ describe("generator", () => {
   });
 
   test("throws an error when target destination is not empty", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
-
     helper.minimalFiles.readdir = vi.fn(async (_path: string) => ["file"]);
 
     await expect(async () => {
@@ -821,9 +927,6 @@ describe("generator", () => {
   });
 
   it("throws an error if a namespace is provided that all top levels do not use", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
-
     await expect(
       generateClientSdkVersionTwoPointZero(
         { ...TodoWireOntology },
@@ -839,43 +942,9 @@ describe("generator", () => {
   });
 
   it("does not throw an error if a namespace is provided that all top levels use", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
-
-    const somePropertySpt = {
-      apiName: "foo.bar.SomeProperty",
-      description: "Some property",
-      displayName: "Sum Property",
-      dataType: {
-        type: "string",
-      },
-      rid: "idk2",
-    } as const;
-
-    const sanitizedOntology = changeNames(
-      TodoWireOntology,
-      {
-        objects: { "Todo": "foo.bar.Todo", "Person": "foo.bar.Person" },
-        actions: {
-          markTodoCompleted: "foo.bar.markTodoCompleted",
-          deleteTodos: "foo.bar.deleteTodos",
-        },
-        interfaces: {
-          "SomeInterface": "foo.bar.SomeInterface",
-        },
-        queries: {
-          "getCount": "foo.bar.getCount",
-          "returnsTodo": "foo.bar.returnsTodo",
-        },
-        spts: {
-          "SomeProperty": "foo.bar.SomeProperty",
-        },
-      },
-    );
-
     await expect(
       generateClientSdkVersionTwoPointZero(
-        sanitizedOntology,
+        fooBarTodoWireOntology,
         "",
         helper.minimalFiles,
         BASE_PATH,
@@ -892,67 +961,10 @@ describe("generator", () => {
 
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
-        "/foo/Ontology.ts": "import type { OntologyDefinition } from '@osdk/api';
-      import * as Actions from './ontology/actions.js';
-      import * as Interfaces from './ontology/interfaces.js';
-      import * as Objects from './ontology/objects.js';
-      import * as Queries from './ontology/queries.js';
-      import { OntologyMetadata } from './OntologyMetadata.js';
-
-      export interface Ontology extends OntologyDefinition<'foo.bar.Person' | 'foo.bar.Todo'> {
-        metadata: OntologyMetadata;
-        objects: {
-          Person: Objects.Person;
-          Todo: Objects.Todo;
-        };
-        actions: {
-          deleteTodos: typeof Actions.deleteTodos;
-          markTodoCompleted: typeof Actions.markTodoCompleted;
-        };
-        queries: {
-          getCount: typeof Queries.getCount;
-          returnsTodo: typeof Queries.returnsTodo;
-        };
-        interfaces: {
-          SomeInterface: Interfaces.SomeInterface;
-        };
-      }
-
-      export const Ontology: Ontology = {
-        metadata: OntologyMetadata,
-        objects: {
-          Person: Objects.Person,
-          Todo: Objects.Todo,
-        },
-        actions: {
-          deleteTodos: Actions.deleteTodos,
-          markTodoCompleted: Actions.markTodoCompleted,
-        },
-        queries: {
-          getCount: Queries.getCount,
-          returnsTodo: Queries.returnsTodo,
-        },
-        interfaces: {
-          SomeInterface: Interfaces.SomeInterface,
-        },
-      };
-      ",
-        "/foo/OntologyMetadata.ts": "import { OntologyMetadata as OM } from '@osdk/api';
-
-      export type $ExpectedClientVersion = '0.21.0';
+        "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
       export const $osdkMetadata = { extraUserAgent: '' };
-
-      export interface OntologyMetadata extends OM<$ExpectedClientVersion> {}
-
-      export const OntologyMetadata: OntologyMetadata = {
-        expectsClientVersion: '0.21.0',
-        ontologyRid: 'ridHere',
-        ontologyApiName: 'OntologyApiName',
-        userAgent: '',
-      };
       ",
-        "/foo/index.ts": "export { Ontology } from './Ontology.js';
-      export * from './ontology/actions.js';
+        "/foo/index.ts": "export * from './ontology/actions.js';
       export * from './ontology/interfaces.js';
       export * from './ontology/objects.js';
       export * from './ontology/queries.js';
@@ -1136,7 +1148,7 @@ describe("generator", () => {
       import { $osdkMetadata } from '../../OntologyMetadata.js';
 
       export interface SomeInterface
-        extends InterfaceDefinition<'SomeInterface', SomeInterface>,
+        extends InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface>,
           VersionBound<$ExpectedClientVersion> {
         osdkMetadata: typeof $osdkMetadata;
         description: 'Some interface';
@@ -1171,8 +1183,8 @@ describe("generator", () => {
         type: 'interface',
       };
       ",
-        "/foo/ontology/objects.ts": "export * from './objects/foo.bar.Person.js';
-      export * from './objects/foo.bar.Todo.js';
+        "/foo/ontology/objects.ts": "export * from './objects/Person.js';
+      export * from './objects/Todo.js';
       ",
         "/foo/ontology/objects/Person.ts": "import type { ObjectTypeDefinition, ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -1441,8 +1453,6 @@ describe("generator", () => {
   });
 
   it("guards against empty objects", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo";
     await generateClientSdkVersionTwoPointZero(
       {
         ontology: TodoWireOntology.ontology,
@@ -1482,5 +1492,281 @@ describe("generator", () => {
       },
       `${__dirname}/generated/`,
     );
+  });
+
+  describe("$ontologyRid", () => {
+    it("does not exist when an ontology api name is provided", async () => {
+      const BASE_PATH = "/foo";
+
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          fooBarTodoWireOntology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+          "module",
+          "foo.bar",
+          new Map(),
+        ),
+      ).resolves.toMatchInlineSnapshot(`undefined`);
+
+      expect(helper.getFiles()["/foo/index.ts"]).not.toContain(
+        "$ontologyRid",
+      );
+    });
+
+    it("does exist when an ontology api name is not provided", async () => {
+      const BASE_PATH = "/foo";
+
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          TodoWireOntology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+          "module",
+          undefined,
+          new Map(),
+        ),
+      ).resolves.toMatchInlineSnapshot(`undefined`);
+
+      expect(helper.getFiles()["/foo/index.ts"]).toContain(
+        "$ontologyRid",
+      );
+    });
+  });
+
+  describe("action depends on foreign object", () => {
+    it("stuff", async () => {
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          referencingOntology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+          "module",
+          undefined,
+          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+        ),
+      ).resolves.toMatchInlineSnapshot(`undefined`);
+
+      expect(helper.getFiles()["/foo/ontology/actions/setTaskBody.ts"])
+        .toMatchInlineSnapshot(`
+          "import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+          import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
+          import type {
+            ActionParam,
+            ActionReturnTypeForOptions,
+            ApplyActionOptions,
+            ApplyBatchActionOptions,
+          } from '@osdk/client.api';
+          import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+          // Represents the definition of the parameters for the action
+          export type ActionDef$setTaskBody$Params = {
+            body: {
+              multiplicity: false;
+              nullable: false;
+              type: 'string';
+            };
+            task: {
+              multiplicity: false;
+              nullable: false;
+              type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+            };
+          };
+
+          export interface ActionParams$setTaskBody {
+            readonly body: ActionParam.PrimitiveType<'string'>;
+
+            readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+          }
+
+          /**
+           * @deprecated Use \`ActionParams$setTaskBody\`
+           */
+          export type setTaskBody$Params = ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>;
+
+          // Represents a fqn of the action
+          export interface setTaskBody {
+            <
+              P extends ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>,
+              OP extends P extends ReadonlyArray<ActionParams$setTaskBody> ? ApplyBatchActionOptions : ApplyActionOptions,
+            >(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+          }
+
+          // Represents the definition of the action
+          export interface ActionDef$setTaskBody
+            extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'setTaskBody';
+            modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
+            type: 'action';
+            parameters: ActionDef$setTaskBody$Params;
+            osdkMetadata: typeof $osdkMetadata;
+          }
+
+          export const setTaskBody: ActionDef$setTaskBody = {
+            apiName: 'setTaskBody',
+            modifiedEntities: {
+              'com.example.dep.Task': {
+                created: false,
+                modified: true,
+              },
+            },
+            parameters: {
+              task: {
+                multiplicity: false,
+                type: {
+                  type: 'object',
+                  object: 'com.example.dep.Task',
+                },
+                nullable: false,
+              },
+              body: {
+                multiplicity: false,
+                type: 'string',
+                nullable: false,
+              },
+            },
+            type: 'action',
+            osdkMetadata: $osdkMetadata,
+          };
+          "
+        `);
+    });
+  });
+
+  it("can generate an sdk package that is entirely a library", async () => {
+    await expect(
+      generateClientSdkVersionTwoPointZero(
+        referencedOntology,
+        "",
+        helper.minimalFiles,
+        BASE_PATH,
+        "module",
+        undefined,
+        new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+      ),
+    ).resolves.toMatchInlineSnapshot(`undefined`);
+
+    expect(helper.getFiles())
+      .toMatchInlineSnapshot(`
+        {
+          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
+        export const $osdkMetadata = { extraUserAgent: '' };
+
+        export const $ontologyRid = 'ri.ontology.main.ontology.dep';
+        ",
+          "/foo/index.ts": "export * from './ontology/actions.js';
+        export * from './ontology/interfaces.js';
+        export * from './ontology/objects.js';
+        export * from './ontology/queries.js';
+        export { $ontologyRid } from './OntologyMetadata.js';
+        ",
+          "/foo/ontology/actions.ts": "export {};
+        ",
+          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+        ",
+          "/foo/ontology/interfaces/SomeInterface.ts": "import type { InterfaceDefinition, PropertyDef, VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export interface SomeInterface
+          extends InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface>,
+            VersionBound<$ExpectedClientVersion> {
+          osdkMetadata: typeof $osdkMetadata;
+          displayName: 'Sum Interface';
+          implements: [];
+          links: {};
+          properties: {
+            /**
+             *   display name: 'Some Property'
+             */
+            spt: PropertyDef<'string', 'nullable', 'single'>;
+          };
+        }
+
+        export const SomeInterface: SomeInterface = {
+          osdkMetadata: $osdkMetadata,
+          apiName: 'com.example.dep.SomeInterface',
+          displayName: 'Sum Interface',
+          implements: [],
+          links: {},
+          properties: {
+            spt: {
+              displayName: 'Some Property',
+              multiplicity: false,
+              type: 'string',
+              nullable: true,
+            },
+          },
+          type: 'interface',
+        };
+        ",
+          "/foo/ontology/objects.ts": "export * from './objects/Task.js';
+        ",
+          "/foo/ontology/objects/Task.ts": "import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+        export interface Task
+          extends ObjectTypeDefinition<'com.example.dep.Task', $external$com$example.dep.Task>,
+            VersionBound<$ExpectedClientVersion> {
+          osdkMetadata: typeof $osdkMetadata;
+          implements: [];
+          interfaceMap: {};
+          inverseInterfaceMap: {};
+          inverseSpts: {};
+          links: {};
+          primaryKeyApiName: 'taskId';
+          primaryKeyType: 'string';
+          properties: {
+            /**
+             * (no ontology metadata)
+             */
+            body: PropertyDef<'string', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            taskId: PropertyDef<'string', 'non-nullable', 'single'>;
+          };
+          spts: {};
+        }
+
+        export const Task: Task = {
+          osdkMetadata: $osdkMetadata,
+          apiName: 'com.example.dep.Task',
+          implements: [],
+          interfaceMap: {},
+          inverseInterfaceMap: {},
+          inverseSpts: {},
+          links: {},
+          primaryKeyApiName: 'taskId',
+          primaryKeyType: 'string',
+          properties: {
+            taskId: {
+              multiplicity: false,
+              type: 'string',
+              nullable: false,
+            },
+            body: {
+              multiplicity: false,
+              type: 'string',
+              nullable: true,
+            },
+          },
+          spts: {},
+          type: 'object',
+        };
+        ",
+          "/foo/ontology/queries.ts": "export {};
+        ",
+        }
+      `);
   });
 });

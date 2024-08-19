@@ -15,13 +15,13 @@
  */
 
 import type { ObjectSet } from "@osdk/client.api";
-import type { Employee } from "@osdk/client.test.ontology";
 import {
+  $ontologyRid,
   acceptsThreeDimensionalAggregationFunction,
   acceptsTwoDimensionalAggregationFunction,
   addOne,
+  Employee,
   incrementPersonAge,
-  Ontology as MockOntology,
   queryAcceptsObject,
   queryAcceptsObjectSets,
   returnsDate,
@@ -48,7 +48,7 @@ describe("queries", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });
@@ -63,7 +63,7 @@ describe("queries", () => {
   });
 
   it("accepts objects", async () => {
-    const employee = await client(MockOntology.objects.Employee).fetchOne(
+    const employee = await client(Employee).fetchOne(
       50030,
     );
     const result = await client(queryAcceptsObject).executeFunction({
@@ -87,7 +87,7 @@ describe("queries", () => {
   });
 
   it("accepts objectSets", async () => {
-    const employeeObjectSet = client(MockOntology.objects.Employee);
+    const employeeObjectSet = client(Employee);
     const result = await client(queryAcceptsObjectSets).executeFunction({
       objectSet: employeeObjectSet,
     });

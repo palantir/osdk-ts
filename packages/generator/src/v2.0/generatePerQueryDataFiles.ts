@@ -279,14 +279,14 @@ export function getQueryParamType(
     case "object":
       inner = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
-          .getObjectDefIdentifier(true)
+          .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 
     case "objectSet":
       inner = `Query${type}.ObjectSetType<${
         enhancedOntology.requireObjectType(input.objectSet)
-          .getObjectDefIdentifier(true)
+          .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 

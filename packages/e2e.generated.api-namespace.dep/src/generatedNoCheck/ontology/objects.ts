@@ -1,1 +1,1 @@
-export {};
+export * from './objects/Task.js';

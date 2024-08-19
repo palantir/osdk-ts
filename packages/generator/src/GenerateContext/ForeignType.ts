@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
-import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
-import { EnhancedBase } from "./EnhancedBase.js";
+import { AbstractImportable } from "./EnhancedBase.js";
 
-export class EnhancedInterfaceType extends EnhancedBase<InterfaceType> {
-  constructor(common: EnhanceCommon, public og: InterfaceType) {
-    super(common, og, og.apiName, "./ontology/interfaces");
-  }
-
-  getDefinitionIdentifier(v2: boolean) {
-    return v2 ? this.shortApiName : `${this.shortApiName}Def`;
+export class ForeignType extends AbstractImportable {
+  constructor(
+    public _common: EnhanceCommon,
+    public readonly type: string,
+    apiNamespace: string,
+    shortApiName: string,
+  ) {
+    super(
+      _common,
+      `${apiNamespace}.${shortApiName}`,
+      _common.apiNamespacePackageMap.get(apiNamespace)!,
+    );
   }
 
   getImportedDefinitionIdentifier(v2: boolean) {
-    return this.getDefinitionIdentifier(v2);
+    return `$Imported$${this.type}$${
+      this.apiNamespace!.replace(/\./g, "$")
+    }$${this.shortApiName}`;
   }
 
-  get properties() {
-    return this.og.properties;
+  getDefinitionIdentifier(v2: boolean) {
+    if (this.type === "objectTypes") {
+      return v2 ? this.uniqueImportName : `${this.uniqueImportName}Def`;
+    } else {
+      return this.uniqueImportName;
+    }
   }
 }

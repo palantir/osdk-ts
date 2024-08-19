@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
@@ -24,10 +23,7 @@ import type { ObjectPropertyMapping } from "../__unstable/ConjureSupport.js";
 import { conjureUnionType } from "./conjureUnionType.js";
 
 /** @internal */
-export function toConjureObjectSet<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
->(
+export function toConjureObjectSet(
   objectSet: ObjectSet,
   objectPropertyMapping: ObjectPropertyMapping,
 ): OssObjectSet {

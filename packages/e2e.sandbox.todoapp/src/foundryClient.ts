@@ -1,7 +1,7 @@
 import { createClient } from "@osdk/client/unstable-do-not-use";
 import { createPublicOauthClient } from "@osdk/oauth";
 import invariant from "tiny-invariant";
-import { Ontology } from "./generatedNoCheck2";
+import { $ontologyRid } from "./generatedNoCheck2";
 
 invariant(
   import.meta.env.VITE_FOUNDRY_CLIENT_ID,
@@ -19,6 +19,6 @@ const auth = createPublicOauthClient(
 
 export const $ = createClient(
   "http://localhost:8080",
-  Ontology.metadata.ontologyRid,
+  $ontologyRid,
   auth,
 );

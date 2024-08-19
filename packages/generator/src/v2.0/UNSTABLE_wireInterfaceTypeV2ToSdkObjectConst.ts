@@ -37,7 +37,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     ),
   );
 
-  const objectDefIdentifier = interfaceDef.getObjectDefIdentifier(v2);
+  const objectDefIdentifier = interfaceDef.getDefinitionIdentifier(v2);
 
   const parents = definition.implements?.map(p => {
     invariant(
@@ -47,7 +47,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
     const it = deleteUndefineds(
       __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition(
-        ontology.requireInterfaceType(p).og,
+        ontology.requireInterfaceType(p, true).og,
         v2,
       ),
     );
@@ -102,8 +102,8 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   function getV2Types() {
     return `
   export interface ${
-      interfaceDef.getObjectDefIdentifier(true)
-    } extends InterfaceDefinition<"${interfaceDef.shortApiName}", ${interfaceDef.uniqueImportName}>, VersionBound<$ExpectedClientVersion> {
+      interfaceDef.getDefinitionIdentifier(true)
+    } extends InterfaceDefinition<"${interfaceDef.fullApiName}", ${interfaceDef.shortApiName}>, VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     ${
       stringify(definition, {

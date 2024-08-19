@@ -30,6 +30,8 @@ export async function generateClientSdkPackage(
   minimalFs: MinimalFs,
   dependencyVersions: DependencyVersions,
   cliVersion: string,
+  ontologyApiNamespace: string | undefined,
+  apiNamespacePackageMap: Map<string, string>,
 ) {
   if (!packageName) throw new Error("Package name is require");
 
@@ -46,6 +48,8 @@ export async function generateClientSdkPackage(
         minimalFs,
         outDir,
         packageType,
+        ontologyApiNamespace,
+        apiNamespacePackageMap,
       );
 
     await fs.promises.mkdir(outDir, { recursive: true });

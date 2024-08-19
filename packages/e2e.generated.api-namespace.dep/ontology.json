@@ -5,14 +5,64 @@
     "displayName": "",
     "description": ""
   },
-  "actionTypes": {
-  },
+  "actionTypes": {},
   "objectTypes": {
+    "com.example.dep.Task": {
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "sharedPropertyTypeMapping": {},
+      "objectType": {
+        "apiName": "com.example.dep.Task",
+        "primaryKey": "taskId",
+
+        "titleProperty": "taskId",
+
+        "properties": {
+          "taskId": {
+            "dataType": {
+              "type": "string"
+            }
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "status": "ACTIVE",
+        "rid": "ridForTask"
+      },
+      "linkTypes": []
+    }
   },
-  "queryTypes": {
-  },
+  "queryTypes": {},
   "interfaceTypes": {
+    "com.example.dep.SomeInterface": {
+      "apiName": "com.example.dep.SomeInterface",
+      "rid": "idk2",
+      "displayName": "Sum Interface",
+      "extendsInterfaces": [],
+      "properties": {
+        "com.example.dep.spt": {
+          "apiName": "com.example.dep.spt",
+          "dataType": {
+            "type": "string"
+          },
+          "displayName": "Some Property",
+          "rid": "idk"
+        }
+      },
+      "links": {}
+    }
   },
   "sharedPropertyTypes": {
+    "com.example.dep.spt": {
+      "apiName": "com.example.dep.spt",
+      "dataType": {
+        "type": "string"
+      },
+      "displayName": "Some Property",
+      "rid": "idk"
+    }
   }
 }
