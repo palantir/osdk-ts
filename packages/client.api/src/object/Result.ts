@@ -20,7 +20,7 @@ export type Result<V> = OkResult<V> | ErrorResult;
 
 /**
  * Check if a result was successfully received
- * @param a Result wrapped value
+ * @param a - result wrapped value
  * @returns whether a result has a value in it
  */
 export function isOk<X>(a: Result<X>): a is OkResult<X> {

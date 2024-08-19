@@ -75,9 +75,6 @@ export interface Client extends SharedClient<MinimalClient> {
     <Q extends QueryDefinition<any, any>>(o: CheckVersionBound<Q>): QuerySignatureFromDef<Q>;
 }
 
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-// Warning: (tsdoc-param-tag-missing-hyphen) The @param block should be followed by a parameter name and then a hyphen
-//
 // @public
 export function createAttachmentFromRid(client: MinimalClient, rid: string): Attachment;
 

@@ -78,7 +78,7 @@ export interface TimeSeriesProperty<T extends number | string> {
   getLastPoint(): Promise<TimeSeriesPoint<T>>;
   /**
    * Loads all points, within the given time range if that's provided
-   * @param query a query representing either an absolute or relative range of time
+   * @param query - a query representing either an absolute or relative range of time
    * @example
    *  const points = await employee.employeeStatus?.getAllPoints({
       $after: 1,
@@ -89,7 +89,7 @@ export interface TimeSeriesProperty<T extends number | string> {
   /**
    * Returns an async iterator to load all points
    * within the given time range if that's provided
-   * @param query a query representing either an absolute or relative range of time
+   * @param query - a query representing either an absolute or relative range of time
    * @example
    *  const iterator = employee.employeeStatus?.asyncIter({
       $after: 1,

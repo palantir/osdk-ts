@@ -46,12 +46,12 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 {
   /**
    * Gets a page of objects of this type, with a result wrapper
-   * @param args Args to specify next page token and page size, if applicable
+   * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage({
+   *  const myObjs = await objectSet.fetchPage(\{
       $pageSize: 10,
       $nextPageToken: "nextPage"
-    });
+    \});
      const myObjsResult = myObjs.data;
 
    * @returns a page of objects
@@ -67,12 +67,12 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Gets a page of objects of this type, with a result wrapper
-   * @param args Args to specify next page token and page size, if applicable
+   * @param args - Args to specify next page token and page size, if applicable
    * @example
-   *  const myObjs = await objectSet.fetchPage({
+   *  const myObjs = await objectSet.fetchPage(\{
       $pageSize: 10,
       $nextPageToken: "nextPage"
-    });
+    \});
 
      if(isOk(myObjs)){
      const myObjsResult = myObjs.value.data;
@@ -90,7 +90,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Allows you to filter an object set with a given clause
-   * @param clause Takes a filter clause
+   * @param clause - Takes a filter clause
    * @example
    * await client(Office).where({
       meetingRooms: { $contains: "Grand Central" },
@@ -105,9 +105,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   /**
    * Returns an async iterator to load all objects of this type
    * @example
-   * for await (const obj of myObjectSet.asyncIter())
-     // Handle obj
-    }
+   * for await (const obj of myObjectSet.asyncIter()){
+   * // Handle obj
+   * }
    * @returns an async iterator to load all objects
    */
   asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
@@ -123,7 +123,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 {
   /**
    * Aggregate on a field in an object type
-   * @param req an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
+   * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
    * whether or not you order your results. You can also specify a groupBy field to group your aggregations
    * @example
    * const testAggregateCountWithGroups = await client(BoundariesUsState)
@@ -150,7 +150,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Allows you to filter an object set with a given clause
-   * @param clause Takes a filter clause
+   * @param clause - Takes a filter clause
    * @example
    * await client(Office).where({
       meetingRooms: { $contains: "Grand Central" },
@@ -164,7 +164,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Unions object sets together
-   * @param objectSets objectSets you want to union with
+   * @param objectSets - objectSets you want to union with
    * @example
    * const unionObjectSet = complexFilteredEmployeeObjectSet.union(
     simpleFilteredEmployeeObjectSet,
@@ -177,7 +177,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Computes the intersection of object sets
-   * @param objectSets objectSets you want to intersect with
+   * @param objectSets - objectSets you want to intersect with
    * @example
    * const intersectedObjectSet = complexFilteredEmployeeObjectSet.intersect(
     simpleFilteredEmployeeObjectSet,
@@ -190,7 +190,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Computes the subtraction of object sets
-   * @param objectSets objectSets you want to subtract from
+   * @param objectSets - objectSets you want to subtract from
    * @example
    * const subtractObjectSet = complexFilteredEmployeeObjectSet.subtract(
     simpleFilteredEmployeeObjectSet,
@@ -203,7 +203,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
   /**
    * Pivots the object set over to all its linked objects of the specified type
-   * @param type The linked object type you want to pivot to
+   * @param type - The linked object type you want to pivot to
    * @returns an object set of the specified linked type
    */
   pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;

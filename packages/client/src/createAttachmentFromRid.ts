@@ -20,8 +20,8 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 
 /**
  * Helper function to create an attachment type from a rid
- * @param client
- * @param rid rid of attachment in Foundry
+ * @param client - minimal client
+ * @param rid - rid of attachment in Foundry
  * @returns
  */
 export function createAttachmentFromRid(
