@@ -43,6 +43,9 @@ describe("generatePerQueryDataFiles", () => {
 
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
+        "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
+      export * from './queries/returnsTodo.js';
+      ",
         "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -81,9 +84,6 @@ describe("generatePerQueryDataFiles", () => {
           type: 'integer',
         },
       };
-      ",
-        "/foo/ontology/queries/index.ts": "export * from './getCount.js';
-      export * from './returnsTodo.js';
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';

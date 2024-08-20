@@ -63,14 +63,13 @@ export async function generatePerQueryDataFilesV2(
     }),
   );
 
+  const indexFilePath = `${outDir}.ts`;
   await fs.writeFile(
-    path.join(outDir, "index.ts"),
+    indexFilePath,
     await formatTs(`
     ${
       Object.values(ontology.queryTypes).map(query =>
-        `export * from "${
-          query.getImportPathRelTo(path.join(relOutDir, "index.ts"))
-        }";`
+        `export * from "${query.getImportPathRelTo(relOutDir)}";`
       )
         .join("\n")
     }

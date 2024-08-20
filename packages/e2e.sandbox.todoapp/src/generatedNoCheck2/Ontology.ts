@@ -1,5 +1,5 @@
 import type { OntologyDefinition } from '@osdk/api';
-import * as Actions from './ontology/actions/index';
+import * as Actions from './ontology/actions';
 import * as Objects from './ontology/objects';
 import { OntologyMetadata } from './OntologyMetadata';
 

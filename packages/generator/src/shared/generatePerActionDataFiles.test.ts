@@ -46,18 +46,20 @@ describe(generatePerActionDataFiles, () => {
 
   it("guards against empty actions", async () => {
     const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/ontology/actions";
+    const BASE_PATH = "/foo";
     const sanitizedOntology = { ...TodoWireOntology, actionTypes: {} };
     await generatePerActionDataFiles(
       {
         sanitizedOntology,
         fs: helper.minimalFiles,
-        outDir: path.join(BASE_PATH, "..", ".."),
+        outDir: BASE_PATH,
         ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
       },
       true,
     );
-    expect(helper.getFiles()[`${BASE_PATH}/index.ts`]).toEqual("export {};\n");
+    expect(helper.getFiles()[`${BASE_PATH}/ontology/actions.ts`]).toEqual(
+      "export {};\n",
+    );
   });
 
   it("imports object types correctly with array params in actions", async () => {

@@ -257,7 +257,9 @@ export async function generatePerActionDataFiles(
     }),
   );
 
-  const indexFileRelPath = `${path.join("ontology", "actions", `index.ts`)}`;
+  const indexFileRelPath = v2
+    ? path.join("ontology", "actions.ts")
+    : path.join("ontology", "actions", `index.ts`);
   await fs.writeFile(
     path.join(rootOutDir, indexFileRelPath),
     await formatTs(`

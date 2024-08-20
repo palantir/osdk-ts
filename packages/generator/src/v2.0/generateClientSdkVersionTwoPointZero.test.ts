@@ -257,10 +257,10 @@ describe("generator", () => {
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
         "/foo/Ontology.ts": "import type { OntologyDefinition } from '@osdk/api';
-      import * as Actions from './ontology/actions/index';
+      import * as Actions from './ontology/actions';
       import * as Interfaces from './ontology/interfaces';
       import * as Objects from './ontology/objects';
-      import * as Queries from './ontology/queries/index';
+      import * as Queries from './ontology/queries';
       import { OntologyMetadata } from './OntologyMetadata';
 
       export interface Ontology extends OntologyDefinition<'Person' | 'Todo'> {
@@ -316,10 +316,15 @@ describe("generator", () => {
       };
       ",
         "/foo/index.ts": "export { Ontology } from './Ontology';
-      export * from './ontology/actions/index';
+      export * from './ontology/actions';
       export * from './ontology/interfaces';
       export * from './ontology/objects';
-      export * from './ontology/queries/index';
+      export * from './ontology/queries';
+      ",
+        "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
+      export type { ActionParams$deleteTodos } from './actions/deleteTodos';
+      export { markTodoCompleted } from './actions/markTodoCompleted';
+      export type { ActionParams$markTodoCompleted } from './actions/markTodoCompleted';
       ",
         "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -401,11 +406,6 @@ describe("generator", () => {
         type: 'action',
         osdkMetadata: $osdkMetadata,
       };
-      ",
-        "/foo/ontology/actions/index.ts": "export { deleteTodos } from './deleteTodos';
-      export type { ActionParams$deleteTodos } from './deleteTodos';
-      export { markTodoCompleted } from './markTodoCompleted';
-      export type { ActionParams$markTodoCompleted } from './markTodoCompleted';
       ",
         "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -683,6 +683,9 @@ describe("generator", () => {
         type: 'object',
       };
       ",
+        "/foo/ontology/queries.ts": "export * from './queries/getCount';
+      export * from './queries/returnsTodo';
+      ",
         "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
@@ -721,9 +724,6 @@ describe("generator", () => {
           type: 'integer',
         },
       };
-      ",
-        "/foo/ontology/queries/index.ts": "export * from './getCount';
-      export * from './returnsTodo';
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
@@ -867,10 +867,10 @@ describe("generator", () => {
     expect(helper.getFiles()).toMatchInlineSnapshot(`
       {
         "/foo/Ontology.ts": "import type { OntologyDefinition } from '@osdk/api';
-      import * as Actions from './ontology/actions/index.js';
+      import * as Actions from './ontology/actions.js';
       import * as Interfaces from './ontology/interfaces.js';
       import * as Objects from './ontology/objects.js';
-      import * as Queries from './ontology/queries/index.js';
+      import * as Queries from './ontology/queries.js';
       import { OntologyMetadata } from './OntologyMetadata.js';
 
       export interface Ontology extends OntologyDefinition<'foo.bar.Person' | 'foo.bar.Todo'> {
@@ -926,10 +926,15 @@ describe("generator", () => {
       };
       ",
         "/foo/index.ts": "export { Ontology } from './Ontology.js';
-      export * from './ontology/actions/index.js';
+      export * from './ontology/actions.js';
       export * from './ontology/interfaces.js';
       export * from './ontology/objects.js';
-      export * from './ontology/queries/index.js';
+      export * from './ontology/queries.js';
+      ",
+        "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
+      export type { ActionParams$deleteTodos } from './actions/deleteTodos.js';
+      export { markTodoCompleted } from './actions/markTodoCompleted.js';
+      export type { ActionParams$markTodoCompleted } from './actions/markTodoCompleted.js';
       ",
         "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -1011,11 +1016,6 @@ describe("generator", () => {
         type: 'action',
         osdkMetadata: $osdkMetadata,
       };
-      ",
-        "/foo/ontology/actions/index.ts": "export { deleteTodos } from './deleteTodos.js';
-      export type { ActionParams$deleteTodos } from './deleteTodos.js';
-      export { markTodoCompleted } from './markTodoCompleted.js';
-      export type { ActionParams$markTodoCompleted } from './markTodoCompleted.js';
       ",
         "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -1293,6 +1293,9 @@ describe("generator", () => {
         type: 'object',
       };
       ",
+        "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
+      export * from './queries/returnsTodo.js';
+      ",
         "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
@@ -1331,9 +1334,6 @@ describe("generator", () => {
           type: 'integer',
         },
       };
-      ",
-        "/foo/ontology/queries/index.ts": "export * from './getCount.js';
-      export * from './returnsTodo.js';
       ",
         "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
       import { QueryDefinition } from '@osdk/api';
