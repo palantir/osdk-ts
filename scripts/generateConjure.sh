@@ -18,6 +18,9 @@ function generateConjure() {
     GROUP_ID="$1"
     ARTIFACT_ID="$2"
     PACKAGE_PATH="$3"
+
+    mkdir -p "${PACKAGE_PATH}/src/generated/${ARTIFACT_ID/%-api//}"
+
     OUT_DIR=$("$REALPATH" --relative-to=. "${PACKAGE_PATH}/src/generated/${ARTIFACT_ID/%-api//}")
 
     rm -rf "$OUT_DIR"
@@ -33,6 +36,7 @@ function generateConjure() {
 generateConjure "com.palantir.object-set-service" "object-set-service-api" "${SCRIPT_DIR}/../packages/client.unstable"
 generateConjure "com.palantir.object-set-watcher" "object-set-watcher-api" "${SCRIPT_DIR}/../packages/client.unstable.osw"
 generateConjure "com.palantir.ontology" "ontology-metadata-api" "${SCRIPT_DIR}/../packages/client.unstable"
+generateConjure "com.palantir.foundry.third-party-application-service" "third-party-application-service-api" "${SCRIPT_DIR}/../packages/client.unstable.tpsa"
 
 # Reset git changes if the generated files are only changed by copyright year
 git status --porcelain --untracked-files=no | while read line; do
