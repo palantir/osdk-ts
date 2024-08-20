@@ -75,7 +75,7 @@ export interface Client extends SharedClient<MinimalClient> {
     <Q extends QueryDefinition<any, any>>(o: CheckVersionBound<Q>): QuerySignatureFromDef<Q>;
 }
 
-// @public (undocumented)
+// @public
 export function createAttachmentFromRid(client: MinimalClient, rid: string): Attachment;
 
 // @public (undocumented)

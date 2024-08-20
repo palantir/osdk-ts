@@ -44,6 +44,18 @@ import type { BaseObjectSet } from "./BaseObjectSet.js";
 export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends BaseObjectSet<Q>
 {
+  /**
+   * Gets a page of objects of this type, with a result wrapper
+   * @param args - Args to specify next page token and page size, if applicable
+   * @example
+   *  const myObjs = await objectSet.fetchPage({
+      $pageSize: 10,
+      $nextPageToken: "nextPage"
+    });
+     const myObjsResult = myObjs.data;
+
+   * @returns a page of objects
+   */
   fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
@@ -53,6 +65,20 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<FetchPageResult<Q, L, R, S>>;
 
+  /**
+   * Gets a page of objects of this type, with a result wrapper
+   * @param args - Args to specify next page token and page size, if applicable
+   * @example
+   *  const myObjs = await objectSet.fetchPage({
+      $pageSize: 10,
+      $nextPageToken: "nextPage"
+    });
+
+     if(isOk(myObjs)){
+     const myObjsResult = myObjs.value.data;
+    }
+   * @returns a page of objects, wrapped in a result wrapper
+   */
   fetchPageWithErrors: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
@@ -62,10 +88,28 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     args?: FetchPageArgs<Q, L, R, A, S>,
   ) => Promise<Result<FetchPageResult<Q, L, R, S>>>;
 
+  /**
+   * Allows you to filter an object set with a given clause
+   * @param clause - Takes a filter clause
+   * @example
+   * await client(Office).where({
+      meetingRooms: { $contains: "Grand Central" },
+      meetingRoomCapacities: { $contains: 30 },
+  });
+   * @returns an objectSet
+   */
   where: (
     clause: WhereClause<Q>,
   ) => MinimalObjectSet<Q>;
 
+  /**
+   * Returns an async iterator to load all objects of this type
+   * @example
+   * for await (const obj of myObjectSet.asyncIter()){
+   * // Handle obj
+   * }
+   * @returns an async iterator to load all objects
+   */
   asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
 }
 
@@ -77,28 +121,96 @@ export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends MinimalObjectSet<Q>
 {
+  /**
+   * Aggregate on a field in an object type
+   * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
+   * whether or not you order your results. You can also specify a groupBy field to group your aggregations
+   * @example
+   * const testAggregateCountWithGroups = await client(BoundariesUsState)
+    .aggregate({
+      $select: {
+        $count: "unordered",
+        "latitude:max": "unordered",
+        "latitude:min": "unordered",
+        "latitude:avg": "unordered",
+      },
+      $groupBy: {
+        usState: "exact",
+        longitude: {
+          $fixedWidth: 10,
+        },
+      },
+    });
+
+   * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
+   */
   aggregate: <AO extends AggregateOpts<Q>>(
     req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
+  /**
+   * Allows you to filter an object set with a given clause
+   * @param clause - Takes a filter clause
+   * @example
+   * await client(Office).where({
+      meetingRooms: { $contains: "Grand Central" },
+      meetingRoomCapacities: { $contains: 30 },
+  });
+   * @returns an objectSet
+   */
   where: (
     clause: WhereClause<Q>,
   ) => ObjectSet<Q>;
 
+  /**
+   * Unions object sets together
+   * @param objectSets - objectSets you want to union with
+   * @example
+   * const unionObjectSet = complexFilteredEmployeeObjectSet.union(
+    simpleFilteredEmployeeObjectSet,
+  );
+   * @returns the unioned object set
+   */
   union: (
     ...objectSets: ReadonlyArray<ObjectSet<Q>>
   ) => ObjectSet<Q>;
 
+  /**
+   * Computes the intersection of object sets
+   * @param objectSets - objectSets you want to intersect with
+   * @example
+   * const intersectedObjectSet = complexFilteredEmployeeObjectSet.intersect(
+    simpleFilteredEmployeeObjectSet,
+  );
+   * @returns the intersected object set
+   */
   intersect: (
     ...objectSets: ReadonlyArray<ObjectSet<Q>>
   ) => ObjectSet<Q>;
 
+  /**
+   * Computes the subtraction of object sets
+   * @param objectSets - objectSets you want to subtract from
+   * @example
+   * const subtractObjectSet = complexFilteredEmployeeObjectSet.subtract(
+    simpleFilteredEmployeeObjectSet,
+  );
+   * @returns the subtract object set
+   */
   subtract: (
     ...objectSets: ReadonlyArray<ObjectSet<Q>>
   ) => ObjectSet<Q>;
 
+  /**
+   * Pivots the object set over to all its linked objects of the specified type
+   * @param type - The linked object type you want to pivot to
+   * @returns an object set of the specified linked type
+   */
   pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
 
+  /**
+   * Fetches one object with the specified primary key, without a result wrapper
+   */
   fetchOne: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
@@ -109,6 +221,9 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
     ) => Promise<SingleOsdkResult<Q, L, R, S>>
     : never;
 
+  /**
+   * Fetches one object with the specified primary key, with a result wrapper
+   */
   fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
