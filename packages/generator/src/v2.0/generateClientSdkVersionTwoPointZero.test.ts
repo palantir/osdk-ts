@@ -356,8 +356,55 @@ const referencingOntology = {
       },
       sharedPropertyTypeMapping: {},
     },
+    "UsesForeignSpt": {
+      implementsInterfaces: [],
+      implementsInterfaces2: {},
+      linkTypes: [],
+      objectType: {
+        apiName: "UsesForeignSpt",
+        primaryKey: "id",
+        properties: {
+          "id": {
+            dataType: {
+              type: "integer",
+            },
+          },
+          "body": {
+            dataType: {
+              type: "string",
+            },
+          },
+        },
+        rid: "theRid",
+        status: "ACTIVE",
+        titleProperty: "id",
+      },
+      sharedPropertyTypeMapping: {
+        "com.example.dep.spt": "body",
+      },
+    },
   },
-  queryTypes: {},
+  queryTypes: {
+    getTask: {
+      apiName: "getTask",
+      output: {
+        type: "object",
+        objectApiName: "com.example.dep.Task",
+        objectTypeApiName: "com.example.dep.Task",
+      },
+      parameters: {
+        "a": {
+          dataType: {
+            type: "object",
+            objectApiName: "com.example.dep.Task",
+            objectTypeApiName: "com.example.dep.Task",
+          },
+        },
+      },
+      rid: "ri.a.b.c",
+      version: "0",
+    },
+  },
   sharedPropertyTypes: {},
 } satisfies WireOntologyDefinition;
 
@@ -851,7 +898,7 @@ describe("generator", () => {
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 
-      import { Todo } from '../objects/Todo';
+      import type { Todo } from '../objects/Todo';
 
       export interface returnsTodo {
         (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
@@ -1390,7 +1437,7 @@ describe("generator", () => {
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      import { Todo } from '../objects/Todo.js';
+      import type { Todo } from '../objects/Todo.js';
 
       export interface returnsTodo {
         (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
@@ -1418,14 +1465,14 @@ describe("generator", () => {
             nullable: false;
             object: 'foo.bar.Todo';
             type: 'object';
-            __OsdkTargetType?: foo.bar.Todo;
+            __OsdkTargetType?: Todo;
           };
         };
         output: {
           nullable: false;
           object: 'foo.bar.Todo';
           type: 'object';
-          __OsdkTargetType?: foo.bar.Todo;
+          __OsdkTargetType?: Todo;
         };
       }
 
@@ -1533,6 +1580,168 @@ describe("generator", () => {
       expect(helper.getFiles()["/foo/index.ts"]).toContain(
         "$ontologyRid",
       );
+    });
+  });
+
+  describe("query depends on foreign object", () => {
+    it("generates the correct code", async () => {
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          referencingOntology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+          "module",
+          undefined,
+          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+        ),
+      ).resolves.toMatchInlineSnapshot(`undefined`);
+
+      expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
+        .toMatchInlineSnapshot(`
+          "import type { QueryDefinition, VersionBound } from '@osdk/api';
+          import type { QueryParam, QueryResult } from '@osdk/client.api';
+          import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+
+          import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+
+          export interface getTask {
+            (query: QueryParams$getTask): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
+          }
+
+          export interface QueryParams$getTask {
+            /**
+             * (no ontology metadata)
+             */
+            readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+          }
+
+          export interface QueryDef$getTask
+            extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'getTask';
+            type: 'query';
+            version: '0';
+            parameters: {
+              /**
+               * (no ontology metadata)
+               */
+              a: {
+                nullable: false;
+                object: 'com.example.dep.Task';
+                type: 'object';
+                __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+              };
+            };
+            output: {
+              nullable: false;
+              object: 'com.example.dep.Task';
+              type: 'object';
+              __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+            };
+          }
+
+          export const getTask: QueryDef$getTask = {
+            apiName: 'getTask',
+            type: 'query',
+            version: '0',
+            parameters: {
+              a: {
+                type: 'object',
+                object: 'com.example.dep.Task',
+                nullable: false,
+              },
+            },
+            output: {
+              nullable: false,
+              object: 'com.example.dep.Task',
+              type: 'object',
+            },
+          };
+          "
+        `);
+    });
+  });
+
+  describe("object uses on foreign spt", () => {
+    it("stuff", async () => {
+      await expect(
+        generateClientSdkVersionTwoPointZero(
+          referencingOntology,
+          "",
+          helper.minimalFiles,
+          BASE_PATH,
+          "module",
+          undefined,
+          new Map([["com.example.dep", "@com.example.dep/osdk"]]),
+        ),
+      ).resolves.toMatchInlineSnapshot(`undefined`);
+
+      expect(helper.getFiles()["/foo/ontology/objects/UsesForeignSpt.ts"])
+        .toMatchInlineSnapshot(`
+          "import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+          import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          import { $osdkMetadata } from '../../OntologyMetadata.js';
+
+          export interface UsesForeignSpt
+            extends ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt>,
+              VersionBound<$ExpectedClientVersion> {
+            osdkMetadata: typeof $osdkMetadata;
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            inverseSpts: {
+              body: 'com.example.dep.spt';
+            };
+            links: {};
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              body: PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              id: PropertyDef<'integer', 'non-nullable', 'single'>;
+            };
+            spts: {
+              'com.example.dep.spt': 'body';
+            };
+          }
+
+          export const UsesForeignSpt: UsesForeignSpt = {
+            osdkMetadata: $osdkMetadata,
+            apiName: 'UsesForeignSpt',
+            implements: [],
+            interfaceMap: {},
+            inverseInterfaceMap: {},
+            inverseSpts: {
+              body: 'com.example.dep.spt',
+            },
+            links: {},
+            primaryKeyApiName: 'id',
+            primaryKeyType: 'integer',
+            properties: {
+              id: {
+                multiplicity: false,
+                type: 'integer',
+                nullable: false,
+              },
+              body: {
+                multiplicity: false,
+                type: 'string',
+                nullable: true,
+              },
+            },
+            spts: {
+              'com.example.dep.spt': 'body',
+            },
+            type: 'object',
+          };
+          "
+        `);
     });
   });
 
@@ -1714,9 +1923,7 @@ describe("generator", () => {
         import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-        export interface Task
-          extends ObjectTypeDefinition<'com.example.dep.Task', $external$com$example.dep.Task>,
-            VersionBound<$ExpectedClientVersion> {
+        export interface Task extends ObjectTypeDefinition<'com.example.dep.Task', Task>, VersionBound<$ExpectedClientVersion> {
           osdkMetadata: typeof $osdkMetadata;
           implements: [];
           interfaceMap: {};

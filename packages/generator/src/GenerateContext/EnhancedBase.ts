@@ -55,9 +55,7 @@ export abstract class AbstractImportable {
     this.importPath = this.isLocal
       ? `${basePath}/${this.shortApiName}${importExt}`
       : this.sourcePackage!;
-    this.uniqueImportName = this.isLocal
-      ? this.shortApiName
-      : `$external$${this.fullApiName.replace(".", "$")}`;
+    this.uniqueImportName = this.shortApiName;
   }
 
   getImportPathRelTo = (filePath: string) => {

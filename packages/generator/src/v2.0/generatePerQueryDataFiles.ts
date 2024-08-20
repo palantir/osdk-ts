@@ -22,7 +22,6 @@ import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
 import {
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
@@ -164,11 +163,11 @@ async function generateV2QueryFile(
         >, VersionBound<$ExpectedClientVersion>{
             ${stringify(baseProps)},
             parameters: {
-            ${parameterDefsForType(query)}
+            ${parameterDefsForType(ontology, query)}
             };
             output: {
             ${stringify(outputBase)},
-            ${getLineFor__OsdkTargetType(query.output)}
+            ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
         }
 
@@ -192,22 +191,30 @@ function parametersForConst(query: EnhancedQuery) {
   });
 }
 
-function parameterDefsForType(query: EnhancedQuery) {
+function parameterDefsForType(
+  ontology: EnhancedOntologyDefinition,
+  query: EnhancedQuery,
+) {
   return stringify(query.parameters, {
     "*": (parameter, valueFormatter, apiName) => [
       `${queryParamJsDoc(paramToDef(parameter), { apiName })} ${apiName}`,
       ` {
           ${stringify(deleteUndefineds(paramToDef(parameter)))},
-          ${getLineFor__OsdkTargetType(parameter.dataType)}
+          ${getLineFor__OsdkTargetType(ontology, parameter.dataType)}
         }`,
     ],
   });
 }
 
-function getLineFor__OsdkTargetType(qdt: QueryDataType) {
+function getLineFor__OsdkTargetType(
+  ontology: EnhancedOntologyDefinition,
+  qdt: QueryDataType,
+) {
   if (qdt.type === "object" || qdt.type === "objectSet") {
     return `__OsdkTargetType?: ${
-      getObjectDefIdentifier(qdt.objectTypeApiName!, true)
+      ontology.requireObjectType(
+        qdt.objectTypeApiName!,
+      ).getImportedDefinitionIdentifier(true)
     }`;
   }
   return "";
@@ -240,9 +247,9 @@ function getObjectImports(
 
   for (const fqObjectApiName of objectTypes) {
     const obj = enhancedOntology.requireObjectType(fqObjectApiName);
-    ret += `import { ${obj.shortApiName} } from "${
-      obj.getImportPathRelTo(filePath)
-    }";\n`;
+    ret += `import type { ${obj.getDefinitionIdentifier(true)} as ${
+      obj.getImportedDefinitionIdentifier(true)
+    } } from "${obj.getImportPathRelTo(filePath)}";\n`;
   }
 
   return ret;

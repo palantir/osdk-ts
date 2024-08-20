@@ -66,8 +66,55 @@
         "titleProperty": "id"
       },
       "sharedPropertyTypeMapping": {}
+    },
+    "UsesForeignSpt": {
+      "implementsInterfaces": [],
+      "implementsInterfaces2": {},
+      "linkTypes": [],
+      "objectType": {
+        "apiName": "UsesForeignSpt",
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "theRid",
+        "status": "ACTIVE",
+        "titleProperty": "id"
+      },
+      "sharedPropertyTypeMapping": {
+        "com.example.dep.spt": "body"
+      }
     }
   },
-  "queryTypes": {},
+  "queryTypes": {
+    "getTask": {
+      "apiName": "getTask",
+      "output": {
+        "type": "object",
+        "objectApiName": "com.example.dep.Task",
+        "objectTypeApiName": "com.example.dep.Task"
+      },
+      "parameters": {
+        "a": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "com.example.dep.Task",
+            "objectTypeApiName": "com.example.dep.Task"
+          }
+        }
+      },
+      "rid": "ri.a.b.c",
+      "version": "0"
+    }
+  },
   "sharedPropertyTypes": {}
 }
