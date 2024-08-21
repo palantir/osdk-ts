@@ -44,7 +44,7 @@ jobs:
           PRETEND_BRANCH: main
           FORCE_PUSH: true
         run: |
-          git remote add fork https://ericanderson-bot:${GITHUB_TOKEN}github.com/ericanderson-bot/osdk-ts.git
+          git remote add fork https://ericanderson-bot:${GITHUB_TOKEN}@github.com/ericanderson-bot/osdk-ts.git
           node ./packages/tool.release/build/esm/index.js --repo ericanderson-bot/osdk-ts --setupGitUser --remote fork
 
   cspell:
