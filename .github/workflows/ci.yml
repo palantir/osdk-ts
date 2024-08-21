@@ -33,11 +33,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       
-      # - name: Change origin to the automation user
-      #   run: |
-      #     git remote rename origin upstream
-      #     git remote add origin https://github.com/ericanderson-bot/osdk-ts.git
-      
       - name: Build release tool
         run: pnpm exec turbo transpile --filter "./packages/tool.release"
       
