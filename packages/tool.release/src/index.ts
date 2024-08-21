@@ -67,7 +67,7 @@ async function getStdoutOrThrow(...args: Parameters<typeof getExecOutput>) {
 }
 
 async function getContext(
-  args: { repo: string; branch?: string },
+  args: { repo: string; branch?: string; remote: string },
 ): Promise<GithubContext> {
   const parts = args.repo.split("/");
 
@@ -84,6 +84,7 @@ async function getContext(
         "",
       ).trim(),
     octokit: setupOctokit(await getGithubTokenOrFail()),
+    remoteToPush: args.remote,
   };
 }
 
@@ -115,6 +116,11 @@ async function getContext(
         type: "boolean",
         description: "Setup git user",
         default: false,
+      },
+      remote: {
+        type: "string",
+        description: "Remote to push to",
+        default: "origin",
       },
     })
     .check((argv) => {

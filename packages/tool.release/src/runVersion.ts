@@ -75,6 +75,7 @@ export interface GithubContext {
   sha: string;
   branch: string;
   octokit: Octokit;
+  remoteToPush: string;
 }
 
 // GitHub Issues/PRs messages have a max size limit on the
@@ -216,7 +217,10 @@ export async function runVersion({
     }
 
     consola.info("Pushing changes");
-    await gitUtils.push(versionBranch, { force: true });
+    await gitUtils.push(versionBranch, {
+      force: true,
+      remote: context.remoteToPush,
+    });
 
     const prBody = await getVersionPrBody({
       hasPublishScript,

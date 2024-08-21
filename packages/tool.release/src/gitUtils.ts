@@ -67,11 +67,13 @@ export const pullBranch = async (branch: string): Promise<void> => {
 
 export const push = async (
   branch: string,
-  { force }: { force?: boolean } = {},
+  { force, remote }: { force?: boolean; remote?: string } = {
+    remote: "origin",
+  },
 ): Promise<void> => {
   await exec(
     "git",
-    ["push", "origin", `HEAD:${branch}`, force && "--force"].filter<string>(
+    ["push", remote, `HEAD:${branch}`, force && "--force"].filter<string>(
       Boolean as any,
     ),
   );
