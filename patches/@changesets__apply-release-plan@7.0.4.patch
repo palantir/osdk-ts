@@ -1,0 +1,72 @@
+diff --git a/src/index.ts b/src/index.ts
+index b7c2445f318c5c7ed4678c27f66e69e5a7335438..10c80f33de842e2bbe4542ea59dbe44fc0b89cd8 100644
+--- a/src/index.ts
++++ b/src/index.ts
+@@ -74,6 +74,8 @@ export default async function applyReleasePlan(
+ 
+   let touchedFiles = [];
+ 
++  console.log("[applyReleasePlan]: 1");
++
+   const packagesByName = new Map(
+     packages.packages.map((x) => [x.packageJson.name, x])
+   );
+@@ -92,6 +94,8 @@ export default async function applyReleasePlan(
+     };
+   });
+ 
++  console.log("[applyReleasePlan]: 2");
++
+   // I think this might be the wrong place to do this, but gotta do it somewhere -  add changelog entries to releases
+   let releaseWithChangelogs = await getNewChangelogEntry(
+     releasesWithPackage,
+@@ -100,6 +104,8 @@ export default async function applyReleasePlan(
+     cwd
+   );
+ 
++  console.log("[applyReleasePlan]: 3");
++
+   if (releasePlan.preState !== undefined && snapshot === undefined) {
+     if (releasePlan.preState.mode === "exit") {
+       await fs.remove(path.join(cwd, ".changeset", "pre.json"));
+@@ -117,6 +123,8 @@ export default async function applyReleasePlan(
+     type,
+   }));
+ 
++  console.log("[applyReleasePlan]: 4");
++
+   // iterate over releases updating packages
+   let finalisedRelease = releaseWithChangelogs.map((release) => {
+     return versionPackage(release, versionsToUpdate, {
+@@ -132,6 +140,8 @@ export default async function applyReleasePlan(
+ 
+   let prettierInstance = getPrettierInstance(cwd);
+ 
++  console.log("[applyReleasePlan]: 5");
++
+   for (let release of finalisedRelease) {
+     let { changelog, packageJson, dir, name } = release;
+ 
+@@ -146,10 +156,13 @@ export default async function applyReleasePlan(
+     }
+   }
+ 
++  console.log("[applyReleasePlan]: 6");
++
+   if (
+     releasePlan.preState === undefined ||
+     releasePlan.preState.mode === "exit"
+   ) {
++    console.log("[applyReleasePlan]: 7");
+     let changesetFolder = path.resolve(cwd, ".changeset");
+     await Promise.all(
+       changesets.map(async (changeset) => {
+@@ -180,7 +193,7 @@ export default async function applyReleasePlan(
+       })
+     );
+   }
+-
++  console.log("[applyReleasePlan]: 8");
+   // We return the touched files to be committed in the cli
+   return touchedFiles;
+ }
