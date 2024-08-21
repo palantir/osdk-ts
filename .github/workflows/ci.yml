@@ -46,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.EANDERSON_BOT_GH_TOKEN }}
           PRETEND_BRANCH: main
           FORCE_PUSH: true
-        run: node ./packages/tool.release/build/esm/index.js --repo ericanderson-bot/osdk-ts
+        run: node ./packages/tool.release/build/esm/index.js --repo ericanderson-bot/osdk-ts --setupGitUser
 
   cspell:
     name: Check spelling
