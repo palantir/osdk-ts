@@ -19,6 +19,9 @@ jobs:
     timeout-minutes: 15
     permissions:
       issues: write
+      contents: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
