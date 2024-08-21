@@ -157,6 +157,14 @@ async function getContext(
   }
 
   const context = await getContext(args);
+  await context.octokit.rest.issues.createComment({
+    body: "hi",
+    issue_number: 0 + Number(process.env.PR_NUMBER),
+    owner: context.repo.owner,
+    repo: context.repo.repo,
+  });
+
+  return;
 
   const { changesets } = await readChangesetState();
 

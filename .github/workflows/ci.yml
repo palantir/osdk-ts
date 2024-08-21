@@ -17,6 +17,8 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      issues: write
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -40,13 +42,12 @@ jobs:
       
       - name: Create release branch
         env:
-          GITHUB_TOKEN: ${{ secrets.EANDERSON_BOT_GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PRETEND_BRANCH: main
           FORCE_PUSH: true
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          git remote add fork https://ericanderson-bot:${GITHUB_TOKEN}@github.com/ericanderson-bot/osdk-ts.git
-          git config --unset-all http.https://github.com/.extraheader
-          node ./packages/tool.release/build/esm/index.js --repo ericanderson-bot/osdk-ts --setupGitUser --remote fork
+          node ./packages/tool.release/build/esm/index.js --repo palantir/osdk-ts
 
   cspell:
     name: Check spelling
