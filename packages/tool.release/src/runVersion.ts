@@ -217,7 +217,7 @@ export async function runVersion({
     }
 
     consola.info("Pushing changes");
-    await gitUtils.push(versionBranch, {
+    await gitUtils.push(`refs/heads/${versionBranch}`, {
       force: true,
       remote: context.remoteToPush,
     });
