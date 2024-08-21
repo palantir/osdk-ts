@@ -13,6 +13,45 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/') }}
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install
+      
+      - name: Change origin to the automation user
+        run: |
+          git remote rename origin upstream
+          git remote add origin https://github.com/ericanderson-bot/osdk-ts.git
+      
+      - name: Build release tool
+        run: pnpm exec turbo transpile --filter "./packages/tool.release"
+      
+      - name: Create release branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.EANDERSON_BOT_GH_TOKEN }}
+          PRETEND_BRANCH: main
+          FORCE_PUSH: true
+        run: node ./packages/tool.release/build/esm/index.js --repo ericanderson-bot/osdk-ts
+
   cspell:
     name: Check spelling
     timeout-minutes: 5

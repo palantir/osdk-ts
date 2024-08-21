@@ -117,6 +117,7 @@ export async function runVersion({
     || process.env.PRETEND_BRANCH?.startsWith("release/");
 
   const runGitCommands = !process.env.PRETEND_BRANCH;
+  const runPush = runGitCommands || process.env.FORCE_PUSH === "true";
 
   if (!isMainBranch && !isReleaseBranch) {
     throw new FailedWithUserMessage(
@@ -189,7 +190,7 @@ export async function runVersion({
 
   const finalPrTitle = `${prTitle}${!!preState ? ` (${preState.tag})` : ""}`;
 
-  if (!runGitCommands) {
+  if (!runPush) {
     consola.warn("Skipping: commit, push, createPr");
   } else {
     // project with `commit: true` setting could have already committed files
