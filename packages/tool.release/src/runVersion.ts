@@ -134,11 +134,16 @@ export async function runVersion({
     await gitUtils.reset(context.sha);
   }
 
+  consola.info(`Getting versions`);
   const originalVersionsByDirectory = await getVersionsByDirectory(cwd);
 
+  consola.info("Getting packages");
   const packages = await getPackages(cwd);
+
+  consola.info("Reading changeset config");
   const config = await readChangesetConfig(cwd, packages);
 
+  consola.info("Reading changesets and preState");
   const [changesets, preState] = await Promise.all([
     readChangesets(cwd),
     readPreState(cwd),
@@ -151,6 +156,7 @@ export async function runVersion({
     changelog: ["@changesets/changelog-git", null],
   };
 
+  consola.info("Assembling release plan");
   const releasePlan = assembleReleasePlan(
     changesets,
     packages,
@@ -166,8 +172,10 @@ export async function runVersion({
       : undefined,
   );
 
+  consola.info("Mutating release plan");
   mutateReleasePlan(releasePlan, isMainBranch ? "main" : "patch");
 
+  consola.info("Applying release plan");
   const touchedFiles = await applyReleasePlan(
     releasePlan,
     packages,
@@ -181,8 +189,10 @@ export async function runVersion({
     );
   }
 
+  consola.info("Running postVersionCmd");
   await exec("pnpm", ["run", "postVersionCmd"], { cwd });
 
+  consola.info("Getting changed packages info");
   const changedPackagesInfo = await getSortedChangedPackagesInfo(
     cwd,
     originalVersionsByDirectory,
@@ -205,6 +215,7 @@ export async function runVersion({
       await gitUtils.commitAll(finalCommitMessage);
     }
 
+    consola.info("Pushing changes");
     await gitUtils.push(versionBranch, { force: true });
 
     const prBody = await getVersionPrBody({
@@ -215,6 +226,7 @@ export async function runVersion({
       prBodyMaxCharacters,
     });
 
+    consola.info("Creating PR");
     await createOrUpdatePr(
       context,
       finalPrTitle,
