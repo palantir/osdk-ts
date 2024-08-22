@@ -22,10 +22,28 @@ export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
   constructor(common: EnhanceCommon, public og: QueryTypeV2) {
     super(common, og, og.apiName, "./ontology/queries");
   }
+
+  get description() {
+    return this.og.description;
+  }
+
   get parameters() {
     return this.og.parameters;
   }
+
   get output() {
     return this.og.output;
+  }
+
+  get paramsIdentifier() {
+    return `QueryParams$${this.shortApiName}`;
+  }
+
+  get definitionIdentifier() {
+    return `QueryDef$${this.shortApiName}`;
+  }
+
+  get definitionParamsIdentifier() {
+    return `${this.definitionIdentifier}$Params`;
   }
 }

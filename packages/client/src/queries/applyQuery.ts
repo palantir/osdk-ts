@@ -27,21 +27,16 @@ import type {
   AllowedBucketTypes,
   OsdkBase,
   OsdkObjectPrimaryKeyType,
-  QueryParameterType,
-  QueryReturnType,
 } from "@osdk/client.api";
-import type {
-  DataValue,
-  ObjectSet as WireObjectSet,
-} from "@osdk/internal.foundry";
+import type { DataValue } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
-import { toDataValue } from "../util/toDataValue.js";
 import { toDataValueQueries } from "../util/toDataValueQueries.js";
+import type { QueryParameterType, QueryReturnType } from "./types.js";
 
 export async function applyQuery<
   QD extends QueryDefinition<any, any>,

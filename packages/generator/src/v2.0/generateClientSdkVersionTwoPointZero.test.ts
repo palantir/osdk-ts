@@ -686,11 +686,24 @@ describe("generator", () => {
         "/foo/ontology/queries.ts": "export * from './queries/getCount';
       export * from './queries/returnsTodo';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
-      import { QueryDefinition } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+      import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 
-      export interface getCount extends QueryDefinition<'getCount', never>, VersionBound<$ExpectedClientVersion> {
+      export interface getCount {
+        (query: QueryParams$getCount): Promise<QueryResult.PrimitiveType<'integer'>>;
+      }
+
+      export interface QueryParams$getCount {
+        /**
+         * (no ontology metadata)
+         */
+        readonly completed: QueryParam.PrimitiveType<'boolean'>;
+      }
+
+      export interface QueryDef$getCount
+        extends QueryDefinition<'getCount', never, getCount>,
+          VersionBound<$ExpectedClientVersion> {
         apiName: 'getCount';
         type: 'query';
         version: '0';
@@ -709,7 +722,7 @@ describe("generator", () => {
         };
       }
 
-      export const getCount: getCount = {
+      export const getCount: QueryDef$getCount = {
         apiName: 'getCount',
         type: 'query',
         version: '0',
@@ -725,13 +738,26 @@ describe("generator", () => {
         },
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
-      import { QueryDefinition } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+      import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 
       import { Todo } from '../objects/Todo';
 
-      export interface returnsTodo extends QueryDefinition<'returnsTodo', 'Todo'>, VersionBound<$ExpectedClientVersion> {
+      export interface returnsTodo {
+        (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
+      }
+
+      export interface QueryParams$returnsTodo {
+        /**
+         *   description: Random desc so we test jsdoc
+         */
+        readonly someTodo: QueryParam.ObjectType<Todo>;
+      }
+
+      export interface QueryDef$returnsTodo
+        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo>,
+          VersionBound<$ExpectedClientVersion> {
         apiName: 'returnsTodo';
         type: 'query';
         version: '0';
@@ -755,7 +781,7 @@ describe("generator", () => {
         };
       }
 
-      export const returnsTodo: returnsTodo = {
+      export const returnsTodo: QueryDef$returnsTodo = {
         apiName: 'returnsTodo',
         type: 'query',
         version: '0',
@@ -1296,11 +1322,24 @@ describe("generator", () => {
         "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
       export * from './queries/returnsTodo.js';
       ",
-        "/foo/ontology/queries/getCount.ts": "import type { VersionBound } from '@osdk/api';
-      import { QueryDefinition } from '@osdk/api';
+        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+      import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      export interface getCount extends QueryDefinition<'foo.bar.getCount', never>, VersionBound<$ExpectedClientVersion> {
+      export interface getCount {
+        (query: QueryParams$getCount): Promise<QueryResult.PrimitiveType<'integer'>>;
+      }
+
+      export interface QueryParams$getCount {
+        /**
+         * (no ontology metadata)
+         */
+        readonly completed: QueryParam.PrimitiveType<'boolean'>;
+      }
+
+      export interface QueryDef$getCount
+        extends QueryDefinition<'foo.bar.getCount', never, getCount>,
+          VersionBound<$ExpectedClientVersion> {
         apiName: 'foo.bar.getCount';
         type: 'query';
         version: '0';
@@ -1319,7 +1358,7 @@ describe("generator", () => {
         };
       }
 
-      export const getCount: getCount = {
+      export const getCount: QueryDef$getCount = {
         apiName: 'foo.bar.getCount',
         type: 'query',
         version: '0',
@@ -1335,12 +1374,25 @@ describe("generator", () => {
         },
       };
       ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { VersionBound } from '@osdk/api';
-      import { QueryDefinition } from '@osdk/api';
+        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+      import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      export interface returnsTodo
-        extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo'>,
+      import { Todo } from '../objects/Todo.js';
+
+      export interface returnsTodo {
+        (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
+      }
+
+      export interface QueryParams$returnsTodo {
+        /**
+         *   description: Random desc so we test jsdoc
+         */
+        readonly someTodo: QueryParam.ObjectType<Todo>;
+      }
+
+      export interface QueryDef$returnsTodo
+        extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo>,
           VersionBound<$ExpectedClientVersion> {
         apiName: 'foo.bar.returnsTodo';
         type: 'query';
@@ -1365,7 +1417,7 @@ describe("generator", () => {
         };
       }
 
-      export const returnsTodo: returnsTodo = {
+      export const returnsTodo: QueryDef$returnsTodo = {
         apiName: 'foo.bar.returnsTodo',
         type: 'query',
         version: '0',

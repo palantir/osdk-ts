@@ -21,11 +21,7 @@ import type {
   ObjectTypeDefinition,
   QueryDefinition,
 } from "@osdk/api";
-import type {
-  MinimalObjectSet,
-  ObjectSet,
-  QuerySignatureFromDef,
-} from "@osdk/client.api";
+import type { MinimalObjectSet, ObjectSet } from "@osdk/client.api";
 import { symbolClientContext } from "@osdk/shared.client";
 import type { Logger } from "pino";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
@@ -36,6 +32,7 @@ import type { MinimalClient } from "./MinimalClientContext.js";
 import { createObjectSet } from "./objectSet/createObjectSet.js";
 import type { ObjectSetFactory } from "./objectSet/ObjectSetFactory.js";
 import { applyQuery } from "./queries/applyQuery.js";
+import type { QuerySignatureFromDef } from "./queries/types.js";
 
 class ActionInvoker<Q extends ActionDefinition<any, any, any>>
   implements ActionSignatureFromDef<Q>

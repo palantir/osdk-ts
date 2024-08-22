@@ -21,7 +21,6 @@ export type {
   ApplyActionOptions,
   ApplyBatchActionOptions,
   InterfaceObjectSet,
-  NOOP,
   ObjectSet,
   Osdk,
   OsdkObject,
