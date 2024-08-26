@@ -103,7 +103,9 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     return `
   export interface ${
       interfaceDef.getDefinitionIdentifier(true)
-    } extends InterfaceDefinition<"${interfaceDef.fullApiName}", ${interfaceDef.shortApiName}>, VersionBound<$ExpectedClientVersion> {
+    } extends InterfaceDefinition<"${interfaceDef.fullApiName}", ${
+      interfaceDef.getImportedDefinitionIdentifier(true)
+    }>, VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     ${
       stringify(definition, {
