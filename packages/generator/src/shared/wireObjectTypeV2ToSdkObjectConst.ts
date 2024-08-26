@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
-import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
+import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
@@ -88,189 +91,6 @@ export function wireObjectTypeV2ToSdkObjectConst(
   const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
-  const linkNames = Object.keys(definition.links).length === 0
-    ? "string" // should probably be never
-    : `LinkNames<${objectDefIdentifier}>`;
-
-  function createProps(identifier: string, strict: boolean) {
-    return `export interface ${identifier} {
-  ${
-      stringify(definition.properties, {
-        "*": (propertyDefinition, _, apiName) => {
-          return [
-            `/*readonly*/ ${apiName}${
-              // after we convert everything over we can do this:
-              // !strict || propertyDefinition.nullable ? "?" : ""
-              ""}`,
-            `$PropType[${JSON.stringify(propertyDefinition.type)}]${
-              propertyDefinition.multiplicity ? "[]" : ""
-            }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
-            // `OsdkObjectPropertyType<${JSON.stringify(propertyDefinition)},
-            //   ${strict}
-            //   >`,
-          ];
-        },
-      })
-    }
-      }`;
-  }
-
-  function createDefinition(identifier: string) {
-    return `
-      export interface ${identifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${objectDefIdentifier}>, VersionBound<$ExpectedClientVersion> {
-        osdkMetadata: typeof $osdkMetadata;
-        objectSet: ${objectSetIdentifier};
-        props: ${osdkObjectPropsIdentifier};
-        strictProps: ${osdkObjectStrictPropsIdentifier};
-        ${
-      stringify(definition, {
-        osdkMetadata: () => undefined, // we are going to reference another object instead
-        type: () => undefined,
-        apiName: () => undefined,
-        links: (_value) =>
-          `{
-          ${
-            stringify(definition.links, {
-              "*": (definition) =>
-                `ObjectTypeLinkDefinition<${
-                  ontology.requireObjectType(definition.targetType)
-                    .getImportedDefinitionIdentifier(v2)
-                }, ${definition.multiplicity}>`,
-            })
-          }
-        }`,
-        properties: (_value) => (`{
-          ${
-          stringify(definition.properties, {
-            "*": (propertyDefinition, _, apiName) => [
-              `${propertyJsdoc(propertyDefinition, { apiName })}${apiName}`,
-              `PropertyDef<"${propertyDefinition.type}", "${
-                propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ],
-          })
-        }
-        }`),
-      })
-    }
-  }
-    `;
-  }
-
-  function createOsdkObject(identifier: string) {
-    return `
-    export type ${identifier}<
-        K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
-        S extends boolean = true
-    > 
-      = Osdk<
-          ${objectDefIdentifier}, 
-          K | (S extends false ? "$notStrict": "$strict")
-        > & Pick<
-          // ${osdkObjectPropsIdentifier}
-          S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
-          , K
-  > & {
-      $link: ${osdkObjectLinksIdentifier};
-      $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<${
-      JSON.stringify(definition.properties[definition.primaryKeyApiName])
-    },${true}>;
-      
-      $as: <NEW_Q extends ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => Osdk<
-    NEW_Q,
-    ConvertProps<${objectDefIdentifier}, NEW_Q, K>
-  >;
-  } & $OsdkObject<"${object.fullApiName}">;`;
-  }
-
-  function createObjectSet() {
-    return `
-export interface ObjectSet extends 
-$ObjectSet<${objectDefIdentifier},
-
-${objectSetIdentifier}
->
-{
-  aggregate: <AO extends AggregateOpts<${objectDefIdentifier}>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
-  ) => Promise<AggregationsResults<${objectDefIdentifier}, AO>>;
-
-  where: (
-    clause: WhereClause<${objectDefIdentifier}>,
-  ) => ${objectSetIdentifier};
-
-
-  union: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  intersect: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  subtract: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  pivotTo: <L extends LinkNames<${objectDefIdentifier}>>(type: L) => LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
-
-  fetchOne: <
-      L extends ${propertyKeysIdentifier},
-      R extends boolean,
-      S extends false | "throw" = NullabilityAdherenceDefault,
-    >(
-      primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
-      options?: SelectArg<${objectDefIdentifier}, L, R, S>,
-    ) => Promise<
-     ${osdkObjectIdentifier}<L, S extends false ? false : true>
-    //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
-     >
-    ;
-
-  fetchOneWithErrors: <
-      L extends ${propertyKeysIdentifier},
-      R extends boolean,
-      S extends false | "throw" = NullabilityAdherenceDefault,
-    >(
-      primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
-      options?: SelectArg<${objectDefIdentifier}, L, R, S>,
-    ) => Promise<Result<
-          ${osdkObjectIdentifier}<L, S extends false ? false : true>
-    //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
-     >> 
-    
-;
-
-  fetchPage: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
-  >(
-    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-  ) => Promise<
-    PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-  // FetchPageResult<${objectDefIdentifier}, L, R, S>
-  >;
-
-  fetchPageWithErrors: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
-  >(
-    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-  ) => Promise<Result<
-   PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-  //  FetchPageResult<${objectDefIdentifier}, L, R, S>
-   >>;
-
-  asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
-}
-  `;
-  }
-
   function getV2Types() {
     return `
     import {
@@ -320,13 +140,43 @@ ${
 
     export namespace ${object.shortApiName} {
 
-      ${createProps("Props", false)}
-      ${createProps("StrictProps", true)}
+      ${createProps(object, "Props", false)}
+      ${createProps(object, "StrictProps", true)}
 
-      ${createObjectSet()}
+      ${
+      createObjectSet(object, {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
 
-      ${createDefinition("Definition")}
-      ${createOsdkObject("OsdkObject")}
+      ${
+      createDefinition(object, ontology, "Definition", {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
+      ${
+      createOsdkObject(object, "OsdkObject", {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
     }    
 
 
@@ -378,4 +228,262 @@ export function getObjectImports(
         obj.getImportedDefinitionIdentifier(v2)
       } } from "${obj.getImportPathRelTo("./" + currentFilePath)}";`;
     }).join("\n");
+}
+
+export interface Identifiers extends
+  Record<
+    | "osdkObjectIdentifier"
+    | "propertyKeysIdentifier"
+    | "osdkObjectPropsIdentifier"
+    | "objectDefIdentifier"
+    | "osdkObjectLinksIdentifier"
+    | "osdkObjectStrictPropsIdentifier"
+    | "objectSetIdentifier",
+    string
+  >
+{}
+
+export function createOsdkObject(
+  object: EnhancedObjectType | EnhancedInterfaceType,
+  identifier: string,
+  {
+    osdkObjectPropsIdentifier,
+    objectDefIdentifier,
+    osdkObjectStrictPropsIdentifier,
+    osdkObjectLinksIdentifier,
+  }: Identifiers,
+) {
+  const definition = object.getCleanedUpDefinition(true);
+  return `
+  export type ${identifier}<
+      K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
+      S extends boolean = true
+  > 
+    = Osdk<
+        ${objectDefIdentifier}, 
+        K | (S extends false ? "$notStrict": "$strict")
+      > & Pick<
+        // ${osdkObjectPropsIdentifier /* FIXME */}
+        S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
+        , K
+> & {
+    $link: ${osdkObjectLinksIdentifier};
+    $title: string | undefined; // FIXME
+    $primaryKey: ${
+    "primaryKeyApiName" in definition
+      ? `
+      OsdkObjectPropertyType<${
+        JSON.stringify(definition.properties[definition.primaryKeyApiName])
+      },${true}>`
+      : "string | number"
+  }
+  ;
+    
+    $as: <NEW_Q extends ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => Osdk<
+  NEW_Q,
+  ConvertProps<${objectDefIdentifier}, NEW_Q, K>
+>;
+} & $OsdkObject<"${object.fullApiName}">;`;
+}
+
+export function createObjectSet(
+  object: EnhancedObjectType | EnhancedInterfaceType,
+  {
+    objectDefIdentifier,
+    objectSetIdentifier,
+    propertyKeysIdentifier,
+    osdkObjectIdentifier,
+  }: Identifiers,
+) {
+  return `
+export interface ObjectSet extends 
+$ObjectSet<${objectDefIdentifier},
+
+${objectSetIdentifier}
+>
+{
+aggregate: <AO extends AggregateOpts<${objectDefIdentifier}>>(
+  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
+) => Promise<AggregationsResults<${objectDefIdentifier}, AO>>;
+
+where: (
+  clause: WhereClause<${objectDefIdentifier}>,
+) => ${objectSetIdentifier};
+
+
+union: (
+  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+) => ${objectSetIdentifier};
+
+intersect: (
+  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+) => ${objectSetIdentifier};
+
+subtract: (
+  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+) => ${objectSetIdentifier};
+
+pivotTo: <L extends LinkNames<${objectDefIdentifier}>>(type: L) => LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
+ ${
+    object instanceof EnhancedObjectType
+      ? ` 
+fetchOne: <
+    L extends ${propertyKeysIdentifier},
+    R extends boolean,
+    S extends false | "throw" = NullabilityAdherenceDefault,
+  >(
+    primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
+    options?: SelectArg<${objectDefIdentifier}, L, R, S>,
+  ) => Promise<
+   ${osdkObjectIdentifier}<L, S extends false ? false : true>
+  //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+   >
+  ;
+
+fetchOneWithErrors: <
+    L extends ${propertyKeysIdentifier},
+    R extends boolean,
+    S extends false | "throw" = NullabilityAdherenceDefault,
+  >(
+    primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
+    options?: SelectArg<${objectDefIdentifier}, L, R, S>,
+  ) => Promise<Result<
+        ${osdkObjectIdentifier}<L, S extends false ? false : true>
+  //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+   >> 
+  
+;
+
+`
+      : ""
+  }
+
+fetchPage: <
+  L extends ${propertyKeysIdentifier},
+  R extends boolean,
+  const A extends Augments,
+  S extends NullabilityAdherence = NullabilityAdherenceDefault,
+>(
+  args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
+) => Promise<
+  PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
+// FetchPageResult<${objectDefIdentifier}, L, R, S>
+>;
+
+fetchPageWithErrors: <
+  L extends ${propertyKeysIdentifier},
+  R extends boolean,
+  const A extends Augments,
+  S extends NullabilityAdherence = NullabilityAdherenceDefault,
+>(
+  args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
+) => Promise<Result<
+ PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
+//  FetchPageResult<${objectDefIdentifier}, L, R, S>
+ >>;
+
+asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
+}
+`;
+}
+
+function maybeStripNamespace(
+  type: EnhancedInterfaceType | EnhancedObjectType,
+  q: string,
+) {
+  if (
+    type.apiNamespace && q.startsWith(`${type.apiNamespace}.`)
+  ) {
+    return q.slice(type.apiNamespace.length + 1);
+  } else {
+    return q;
+  }
+}
+
+export function createProps(
+  type: EnhancedInterfaceType | EnhancedObjectType,
+  identifier: string,
+  strict: boolean,
+) {
+  const definition = type.getCleanedUpDefinition(true);
+  return `export interface ${identifier} {
+${
+    stringify(definition.properties, {
+      "*": (propertyDefinition, _, apiName) => {
+        return [
+          `/*readonly*/ "${maybeStripNamespace(type, apiName)}"${
+            // after we convert everything over we can do this:
+            // !strict || propertyDefinition.nullable ? "?" : ""
+            ""}`,
+          `$PropType[${JSON.stringify(propertyDefinition.type)}]${
+            propertyDefinition.multiplicity ? "[]" : ""
+          }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
+          // `OsdkObjectPropertyType<${JSON.stringify(propertyDefinition)},
+          //   ${strict}
+          //   >`,
+        ] as [string, string];
+      },
+    })
+  }
+    }`;
+}
+
+export function createDefinition(
+  object: EnhancedObjectType | EnhancedInterfaceType,
+  ontology: EnhancedOntologyDefinition,
+  identifier: string,
+  {
+    objectDefIdentifier,
+    objectSetIdentifier,
+    osdkObjectPropsIdentifier,
+    osdkObjectStrictPropsIdentifier,
+  }: Identifiers,
+) {
+  const definition = object.getCleanedUpDefinition(true);
+  return `
+    export interface ${identifier} extends ${
+    object instanceof EnhancedObjectType
+      ? `ObjectTypeDefinition`
+      : `InterfaceDefinition`
+  }<"${object.fullApiName}", ${objectDefIdentifier}>, VersionBound<$ExpectedClientVersion> {
+      osdkMetadata: typeof $osdkMetadata;
+      objectSet: ${objectSetIdentifier};
+      props: ${osdkObjectPropsIdentifier};
+      strictProps: ${osdkObjectStrictPropsIdentifier};
+      ${
+    stringify(definition, {
+      osdkMetadata: () => undefined, // we are going to reference another object instead
+      type: () => undefined,
+      apiName: () => undefined,
+      links: (_value) =>
+        `{
+        ${
+          stringify(definition.links, {
+            "*": (definition) =>
+              `ObjectTypeLinkDefinition<${
+                ontology.requireObjectType(definition.targetType)
+                  .getImportedDefinitionIdentifier(true)
+              }, ${definition.multiplicity}>`,
+          })
+        }
+      }`,
+      properties: (_value) => (`{
+        ${
+        stringify(definition.properties, {
+          "*": (propertyDefinition, _, apiName) =>
+            [
+              `${propertyJsdoc(propertyDefinition, { apiName })}"${
+                maybeStripNamespace(object, apiName)
+              }"`,
+              `PropertyDef<"${propertyDefinition.type}", "${
+                propertyDefinition.nullable ? "nullable" : "non-nullable"
+              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
+            ] as [string, string],
+        })
+      }
+      }`),
+    })
+  }
+}
+  `;
 }

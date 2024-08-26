@@ -108,7 +108,7 @@ export namespace SomeInterface {
     > & {
       $link: OsdkObjectLinks$SomeInterface;
       $title: string | undefined; // FIXME
-      $primaryKey: string | number; // deviation from object
+      $primaryKey: string | number;
 
       $as: <NEW_Q extends ValidToFrom<SomeInterface>>(
         type: NEW_Q | string,

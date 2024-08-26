@@ -20,7 +20,13 @@ import invariant from "tiny-invariant";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
+import {
+  createDefinition,
+  createObjectSet,
+  createOsdkObject,
+  createProps,
+  getObjectDefIdentifier,
+} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 
@@ -108,159 +114,6 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
-  function createProps(identifier: string, strict: boolean) {
-    return `export interface ${identifier} {
-  ${
-      stringify(definition.properties, {
-        "*": (propertyDefinition, _, apiName) => {
-          return [
-            `/*readonly*/ "${maybeStripNamespace(apiName)}"${
-              // after we convert everything over we can do this:
-              // !strict || propertyDefinition.nullable ? "?" : ""
-              ""}`,
-            `$PropType[${JSON.stringify(propertyDefinition.type)}]${
-              propertyDefinition.multiplicity ? "[]" : ""
-            }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
-          ];
-        },
-      })
-    }
-      }`;
-  }
-
-  function createDefinition(identifier: string) {
-    return `
-      export interface ${identifier} extends InterfaceDefinition<"${interfaceDef.fullApiName}", ${objectDefIdentifier}>, VersionBound<$ExpectedClientVersion> {
-        osdkMetadata: typeof $osdkMetadata;
-        objectSet: ${objectSetIdentifier};
-        props: ${osdkObjectPropsIdentifier};
-        strictProps: ${osdkObjectStrictPropsIdentifier};
-        ${
-      stringify(definition, {
-        osdkMetadata: () => undefined, // we are going to reference another object instead
-        type: () => undefined,
-        apiName: () => undefined,
-        links: (_value) =>
-          `{
-          ${
-            stringify(definition.links, {
-              "*": (definition) =>
-                `ObjectTypeLinkDefinition<${
-                  ontology.requireObjectType(definition.targetType)
-                    .getImportedDefinitionIdentifier(v2)
-                }, ${definition.multiplicity}>`,
-            })
-          }
-        }`,
-        properties: (_value) => (`{
-          ${
-          stringify(definition.properties, {
-            "*": (propertyDefinition, _, apiName) => [
-              `${propertyJsdoc(propertyDefinition, { apiName })}"${
-                maybeStripNamespace(apiName)
-              }"`,
-              `PropertyDef<"${propertyDefinition.type}", "${
-                propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ],
-          })
-        }
-        }`),
-      })
-    }
-  }
-    `;
-  }
-
-  function createOsdkObject(identifier: string) {
-    return `
-    export type ${identifier}<
-        K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
-        S extends boolean = true
-    > 
-      = Osdk<
-          ${objectDefIdentifier}, 
-          K | (S extends false ? "$notStrict": "$strict")
-        > &  Pick<
-          // ${osdkObjectPropsIdentifier}
-          S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
-          , K
-  > & {
-      $link: ${osdkObjectLinksIdentifier};
-      $title: string | undefined; // FIXME
-      $primaryKey: string| number; // deviation from object
-      
-      $as: <NEW_Q extends ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => Osdk<
-    NEW_Q,
-    ConvertProps<${objectDefIdentifier}, NEW_Q, K>
-  >;
-  } & $OsdkObject<"${interfaceDef.fullApiName}">;`;
-  }
-
-  function createObjectSet() {
-    return `
-export interface ObjectSet extends 
-$ObjectSet<${objectDefIdentifier},
-
-${objectSetIdentifier}
->
-{
-  aggregate: <AO extends AggregateOpts<${objectDefIdentifier}>>(
-    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
-  ) => Promise<AggregationsResults<${objectDefIdentifier}, AO>>;
-
-  where: (
-    clause: WhereClause<${objectDefIdentifier}>,
-  ) => ${objectSetIdentifier};
-
-
-  union: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  intersect: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  subtract: (
-    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-  ) => ${objectSetIdentifier};
-
-  pivotTo: <L extends LinkNames<${objectDefIdentifier}>>(type: L) => LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
-
-
-    
-
-
-  fetchPage: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
-  >(
-    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-  ) => Promise<
-    PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-  // FetchPageResult<${objectDefIdentifier}, L, R, S>
-  >;
-
-  fetchPageWithErrors: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    const A extends Augments,
-    S extends NullabilityAdherence = NullabilityAdherenceDefault,
-  >(
-    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-  ) => Promise<Result<
-   PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-  //  FetchPageResult<${objectDefIdentifier}, L, R, S>
-   >>;
-
-  asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
-}
-  `;
-  }
-
   function getV2Types() {
     return `
         import {
@@ -314,13 +167,49 @@ ${
 
         export namespace ${interfaceDef.shortApiName} {
 
-      ${createProps("Props", false)}
-      ${createProps("StrictProps", true)}
 
-      ${createObjectSet()}
 
-      ${createDefinition("Definition")}
-      ${createOsdkObject("OsdkObject")}
+      ${createProps(interfaceDef, "Props", false)}
+      ${createProps(interfaceDef, "StrictProps", true)}
+
+
+      ${
+      createObjectSet(interfaceDef, {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
+
+
+        ${
+      createDefinition(interfaceDef, ontology, "Definition", {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
+
+      ${
+      createOsdkObject(interfaceDef, "OsdkObject", {
+        objectDefIdentifier,
+        osdkObjectLinksIdentifier,
+        osdkObjectPropsIdentifier,
+        osdkObjectStrictPropsIdentifier,
+        objectSetIdentifier,
+        osdkObjectIdentifier,
+        propertyKeysIdentifier,
+      })
+    }
+      
     }    
 
 

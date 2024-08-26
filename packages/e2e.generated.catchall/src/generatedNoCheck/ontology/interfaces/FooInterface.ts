@@ -116,7 +116,7 @@ export namespace FooInterface {
     > & {
       $link: OsdkObjectLinks$FooInterface;
       $title: string | undefined; // FIXME
-      $primaryKey: string | number; // deviation from object
+      $primaryKey: string | number;
 
       $as: <NEW_Q extends ValidToFrom<FooInterface>>(
         type: NEW_Q | string,
