@@ -145,7 +145,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
       });
     },
 
-    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q, "$all">> {
+    asyncIter: async function*(): AsyncIterableIterator<Osdk<Q>> {
       let $nextPageToken: string | undefined = undefined;
       do {
         const result: FetchPageResult<
@@ -165,7 +165,7 @@ export function createObjectSet<Q extends ObjectOrInterfaceDefinition>(
         $nextPageToken = result.nextPageToken;
 
         for (const obj of result.data) {
-          yield obj as Osdk<Q, "$all">;
+          yield obj as Osdk<Q>;
         }
       } while ($nextPageToken != null);
     },

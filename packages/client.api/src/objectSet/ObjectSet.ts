@@ -110,7 +110,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * }
    * @returns an async iterator to load all objects
    */
-  asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+  asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
 }
 
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
@@ -118,9 +118,10 @@ export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
 {
 }
 
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends MinimalObjectSet<Q>
-{
+export interface ObjectSet<
+  Q extends ObjectOrInterfaceDefinition = any,
+  Z extends ObjectSet<Q, Z> = ObjectSet<Q, any>,
+> extends MinimalObjectSet<Q> {
   /**
    * Aggregate on a field in an object type
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
@@ -160,7 +161,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
    */
   where: (
     clause: WhereClause<Q>,
-  ) => ObjectSet<Q>;
+  ) => Z;
 
   /**
    * Unions object sets together
@@ -172,8 +173,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns the unioned object set
    */
   union: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+    ...objectSets: ReadonlyArray<Z>
+  ) => Z;
 
   /**
    * Computes the intersection of object sets
@@ -185,8 +186,8 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns the intersected object set
    */
   intersect: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+    ...objectSets: ReadonlyArray<Z>
+  ) => Z;
 
   /**
    * Computes the subtraction of object sets
@@ -198,15 +199,17 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
    * @returns the subtract object set
    */
   subtract: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+    ...objectSets: ReadonlyArray<Z>
+  ) => Z;
 
   /**
    * Pivots the object set over to all its linked objects of the specified type
    * @param type - The linked object type you want to pivot to
    * @returns an object set of the specified linked type
    */
-  pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
+  pivotTo: <L extends LinkNames<Q>>(
+    type: L,
+  ) => LinkedType<Q, L>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
 
   /**
    * Fetches one object with the specified primary key, without a result wrapper

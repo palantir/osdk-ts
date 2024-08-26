@@ -28,7 +28,7 @@ import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
 export interface UnstableClient extends Client {
   <Q extends (InterfaceDefinition<any, any> & VersionBound<any>)>(
     o: CheckVersionBound<Q>,
-  ): MinimalObjectSet<Q>;
+  ): Q["objectSet"];
 
   <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(
     o: CheckVersionBound<Q>,

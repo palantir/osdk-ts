@@ -58,7 +58,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
   function getV1Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${object.uniqueImportName}> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${objectDefIdentifier}> {
         ${
       stringify(definition, {
         osdkMetadata: () => undefined, // not used in v1
@@ -80,10 +80,48 @@ export function wireObjectTypeV2ToSdkObjectConst(
     `;
   }
 
-  function getV2Types() {
+  const objectSetIdentifier = `${object.shortApiName}.ObjectSet`;
+  const propertyKeysIdentifier = `PropertyKeys$${objectDefIdentifier}`;
+  // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
+  const osdkObjectPropsIdentifier = `${object.shortApiName}.Props`;
+  const osdkObjectStrictPropsIdentifier = `${object.shortApiName}.StrictProps`;
+  const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
+  const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
+
+  const linkNames = Object.keys(definition.links).length === 0
+    ? "string" // should probably be never
+    : `LinkNames<${objectDefIdentifier}>`;
+
+  function createProps(identifier: string, strict: boolean) {
+    return `export interface ${identifier} {
+  ${
+      stringify(definition.properties, {
+        "*": (propertyDefinition, _, apiName) => {
+          return [
+            `/*readonly*/ ${apiName}${
+              // after we convert everything over we can do this:
+              // !strict || propertyDefinition.nullable ? "?" : ""
+              ""}`,
+            `$PropType[${JSON.stringify(propertyDefinition.type)}]${
+              propertyDefinition.multiplicity ? "[]" : ""
+            }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
+            // `OsdkObjectPropertyType<${JSON.stringify(propertyDefinition)},
+            //   ${strict}
+            //   >`,
+          ];
+        },
+      })
+    }
+      }`;
+  }
+
+  function createDefinition(identifier: string) {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${object.uniqueImportName}>, VersionBound<$ExpectedClientVersion> {
+      export interface ${identifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${objectDefIdentifier}>, VersionBound<$ExpectedClientVersion> {
         osdkMetadata: typeof $osdkMetadata;
+        objectSet: ${objectSetIdentifier};
+        props: ${osdkObjectPropsIdentifier};
+        strictProps: ${osdkObjectStrictPropsIdentifier};
         ${
       stringify(definition, {
         osdkMetadata: () => undefined, // we are going to reference another object instead
@@ -115,8 +153,188 @@ export function wireObjectTypeV2ToSdkObjectConst(
         }`),
       })
     }
+  }
+    `;
+  }
+
+  function createOsdkObject(identifier: string) {
+    return `
+    export type ${identifier}<
+        K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
+        S extends boolean = true
+    > 
+      = Osdk<
+          ${objectDefIdentifier}, 
+          K | (S extends false ? "$notStrict": "$strict")
+        > & Pick<
+          // ${osdkObjectPropsIdentifier}
+          S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
+          , K
+  > & {
+      $link: ${osdkObjectLinksIdentifier};
+      $title: string | undefined; // FIXME
+      $primaryKey: OsdkObjectPropertyType<${
+      JSON.stringify(definition.properties[definition.primaryKeyApiName])
+    },${true}>;
+      
+      $as: <NEW_Q extends ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => Osdk<
+    NEW_Q,
+    ConvertProps<${objectDefIdentifier}, NEW_Q, K>
+  >;
+  } & $OsdkObject<"${object.fullApiName}">;`;
+  }
+
+  function createObjectSet() {
+    return `
+export interface ObjectSet extends 
+$ObjectSet<${objectDefIdentifier},
+
+${objectSetIdentifier}
+>
+{
+  aggregate: <AO extends AggregateOpts<${objectDefIdentifier}>>(
+    req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
+  ) => Promise<AggregationsResults<${objectDefIdentifier}, AO>>;
+
+  where: (
+    clause: WhereClause<${objectDefIdentifier}>,
+  ) => ${objectSetIdentifier};
+
+
+  union: (
+    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+  ) => ${objectSetIdentifier};
+
+  intersect: (
+    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+  ) => ${objectSetIdentifier};
+
+  subtract: (
+    ...objectSets: ReadonlyArray<${objectSetIdentifier}>
+  ) => ${objectSetIdentifier};
+
+  pivotTo: <L extends LinkNames<${objectDefIdentifier}>>(type: L) => LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
+
+  fetchOne: <
+      L extends ${propertyKeysIdentifier},
+      R extends boolean,
+      S extends false | "throw" = NullabilityAdherenceDefault,
+    >(
+      primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
+      options?: SelectArg<${objectDefIdentifier}, L, R, S>,
+    ) => Promise<
+     ${osdkObjectIdentifier}<L, S extends false ? false : true>
+    //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+     >
+    ;
+
+  fetchOneWithErrors: <
+      L extends ${propertyKeysIdentifier},
+      R extends boolean,
+      S extends false | "throw" = NullabilityAdherenceDefault,
+    >(
+      primaryKey: PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
+      options?: SelectArg<${objectDefIdentifier}, L, R, S>,
+    ) => Promise<Result<
+          ${osdkObjectIdentifier}<L, S extends false ? false : true>
+    //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+     >> 
     
-      }
+;
+
+  fetchPage: <
+    L extends ${propertyKeysIdentifier},
+    R extends boolean,
+    const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  >(
+    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
+  ) => Promise<
+    PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
+  // FetchPageResult<${objectDefIdentifier}, L, R, S>
+  >;
+
+  fetchPageWithErrors: <
+    L extends ${propertyKeysIdentifier},
+    R extends boolean,
+    const A extends Augments,
+    S extends NullabilityAdherence = NullabilityAdherenceDefault,
+  >(
+    args?: FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
+  ) => Promise<Result<
+   PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
+  //  FetchPageResult<${objectDefIdentifier}, L, R, S>
+   >>;
+
+  asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
+}
+  `;
+  }
+
+  function getV2Types() {
+    return `
+    import {
+    LinkedType,
+    SingleLinkAccessor,
+    SelectArg,
+SingleOsdkResult,
+PropertyValueWireToClient as $PropType,
+    NullabilityAdherenceDefault,
+    NullabilityAdherence,
+PropertyValueClientToWire,OsdkObjectLinksObject,OsdkObjectLinksEntry,
+Augments,PageResult,
+Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
+,FetchPageResult,
+FetchPageArgs,OsdkObjectPropertyType,
+    MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
+
+    import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
+
+    export type ${propertyKeysIdentifier} = ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
+
+    ${
+      Object.keys(definition.links).length === 0
+        ? `export type ${osdkObjectLinksIdentifier} = never;`
+        : `
+        export interface ${osdkObjectLinksIdentifier}  {
+${
+          stringify(definition.links, {
+            "*": (definition) => {
+              const linkTarget = ontology.requireObjectType(
+                definition.targetType,
+              )
+                .getImportedDefinitionIdentifier(v2);
+
+              return `${
+                definition.multiplicity
+                  ? `${linkTarget}["objectSet"]`
+                  : `SingleLinkAccessor<${linkTarget}>`
+              }
+          `;
+            },
+          })
+        }
+    }
+    `
+    }
+
+    export namespace ${object.shortApiName} {
+
+      ${createProps("Props", false)}
+      ${createProps("StrictProps", true)}
+
+      ${createObjectSet()}
+
+      ${createDefinition("Definition")}
+      ${createOsdkObject("OsdkObject")}
+    }    
+
+
+
+
+  /** @deprecated use ${object.shortApiName}.Definition **/
+  export type ${objectDefIdentifier} = ${object.shortApiName}.Definition;
+
 
     `;
   }
@@ -132,8 +350,13 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
     ${v2 ? getV2Types() : getV1Types()}
 
-    export const ${object.shortApiName}: ${objectDefIdentifier} = {
+    export const ${object.shortApiName}: ${objectDefIdentifier} ${
+    v2 ? " & VersionBound<$ExpectedClientVersion>" : ""
+  }= {
       ${v2 ? `osdkMetadata: $osdkMetadata,` : ""}
+      ${v2 ? `objectSet: undefined as any,` : ""}
+      ${v2 ? `props: undefined as any,` : ""}
+      ${v2 ? `strictProps: undefined as any,` : ""}
       ${
     stringify(definition, {
       osdkMetadata: (value) => undefined,

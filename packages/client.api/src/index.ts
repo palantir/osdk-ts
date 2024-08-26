@@ -55,6 +55,7 @@ export type {
   OsdkObjectLinksObject,
   SingleLinkAccessor,
 } from "./definitions/LinkDefinitions.js";
+
 export { DurationMapping } from "./groupby/GroupByClause.js";
 export type {
   AllGroupByValues,

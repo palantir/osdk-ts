@@ -72,7 +72,7 @@ async function generateEachObjectFile(
     await fs.writeFile(
       outFilePath,
       await formatTs(`
-        import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
+        import type {  VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
         import { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";

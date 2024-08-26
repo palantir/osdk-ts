@@ -20,7 +20,6 @@ import type {
   QueryDefinition,
   VersionBound,
 } from "@osdk/api";
-import type { ObjectSet } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -33,13 +32,14 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
         [ErrorMessage]:
           `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
       }
+    // Q
   )
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(
+  <Q extends ObjectTypeDefinition<any, any>>(
     o: CheckVersionBound<Q>,
-  ): ObjectSet<Q>;
+  ): Q["objectSet"];
 
   <Q extends ActionDefinition<any, any, any>>(
     o: CheckVersionBound<Q>,

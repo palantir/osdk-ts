@@ -16,6 +16,7 @@
 
 import type { Client } from "@osdk/client";
 import type { ObjectSet, Osdk, PageResult } from "@osdk/client.api";
+// import type { ObjectSet$Employee } from "@osdk/e2e.generated.catchall";
 import {
   Employee,
   ObjectTypeWithAllPropertyTypes,
@@ -33,7 +34,7 @@ export async function typeChecks(client: Client) {
   // single link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("lead");
-    expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
+    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(
       true,
     );
   }
@@ -41,7 +42,7 @@ export async function typeChecks(client: Client) {
   // multi link pivot types are correct
   {
     const objectSet = client(Employee).pivotTo("peeps");
-    expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
+    expectType<TypeOf<typeof objectSet, Employee.ObjectSet>>(
       true,
     );
   }

@@ -1,33 +1,173 @@
-import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type { PropertyDef, VersionBound } from '@osdk/api';
+import { Osdk } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export interface DherlihyComplexObject
-  extends ObjectTypeDefinition<'DherlihyComplexObject', DherlihyComplexObject>,
-    VersionBound<$ExpectedClientVersion> {
-  osdkMetadata: typeof $osdkMetadata;
-  description: 'Dherlihy Complex Object';
-  links: {};
-  primaryKeyApiName: 'id';
-  primaryKeyType: 'string';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    id: PropertyDef<'string', 'non-nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    secret: PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    seriesId: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
-  };
+import {
+  ObjectSet as $ObjectSet,
+  OsdkObject as $OsdkObject,
+  PropertyValueWireToClient as $PropType,
+  AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults,
+  Augments,
+  ConvertProps,
+  FetchPageArgs,
+  LinkedType,
+  LinkNames,
+  NullabilityAdherence,
+  NullabilityAdherenceDefault,
+  OsdkObjectPropertyType,
+  PageResult,
+  PropertyValueClientToWire,
+  Result,
+  SelectArg,
+  ValidToFrom,
+  WhereClause,
+} from '@osdk/client.api';
+
+import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
+
+export type PropertyKeys$DherlihyComplexObject = ObjectOrInterfacePropertyKeysFrom2<DherlihyComplexObject>;
+
+export type OsdkObjectLinks$DherlihyComplexObject = never;
+
+export namespace DherlihyComplexObject {
+  export interface Props {
+    /*readonly*/ id: $PropType['string'] | undefined;
+    /*readonly*/ secret: $PropType['string'] | undefined;
+    /*readonly*/ seriesId: $PropType['numericTimeseries'] | undefined;
+  }
+  export interface StrictProps {
+    /*readonly*/ id: $PropType['string'];
+    /*readonly*/ secret: $PropType['string'] | undefined;
+    /*readonly*/ seriesId: $PropType['numericTimeseries'] | undefined;
+  }
+
+  export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {
+    aggregate: <AO extends AggregateOpts<DherlihyComplexObject>>(
+      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<DherlihyComplexObject, AO>,
+    ) => Promise<AggregationsResults<DherlihyComplexObject, AO>>;
+
+    where: (clause: WhereClause<DherlihyComplexObject>) => DherlihyComplexObject.ObjectSet;
+
+    union: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
+
+    intersect: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
+
+    subtract: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
+
+    pivotTo: <L extends LinkNames<DherlihyComplexObject>>(type: L) => LinkedType<DherlihyComplexObject, L>['objectSet']; // ObjectSet<LinkedType<DherlihyComplexObject, L>>;
+
+    fetchOne: <
+      L extends PropertyKeys$DherlihyComplexObject,
+      R extends boolean,
+      S extends false | 'throw' = NullabilityAdherenceDefault,
+    >(
+      primaryKey: PropertyValueClientToWire[DherlihyComplexObject['primaryKeyType']],
+      options?: SelectArg<DherlihyComplexObject, L, R, S>,
+    ) => Promise<
+      DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>
+      //  SingleOsdkResult<DherlihyComplexObject, L, R, S>
+    >;
+
+    fetchOneWithErrors: <
+      L extends PropertyKeys$DherlihyComplexObject,
+      R extends boolean,
+      S extends false | 'throw' = NullabilityAdherenceDefault,
+    >(
+      primaryKey: PropertyValueClientToWire[DherlihyComplexObject['primaryKeyType']],
+      options?: SelectArg<DherlihyComplexObject, L, R, S>,
+    ) => Promise<
+      Result<
+        DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>
+        //  SingleOsdkResult<DherlihyComplexObject, L, R, S>
+      >
+    >;
+
+    fetchPage: <
+      L extends PropertyKeys$DherlihyComplexObject,
+      R extends boolean,
+      const A extends Augments,
+      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    >(
+      args?: FetchPageArgs<DherlihyComplexObject, L, R, A, S>,
+    ) => Promise<
+      PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>>
+      // FetchPageResult<DherlihyComplexObject, L, R, S>
+    >;
+
+    fetchPageWithErrors: <
+      L extends PropertyKeys$DherlihyComplexObject,
+      R extends boolean,
+      const A extends Augments,
+      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+    >(
+      args?: FetchPageArgs<DherlihyComplexObject, L, R, A, S>,
+    ) => Promise<
+      Result<
+        PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>>
+        //  FetchPageResult<DherlihyComplexObject, L, R, S>
+      >
+    >;
+
+    asyncIter: () => AsyncIterableIterator<DherlihyComplexObject.OsdkObject>;
+  }
+
+  export interface Definition
+    extends ObjectTypeDefinition<'DherlihyComplexObject', DherlihyComplexObject>,
+      VersionBound<$ExpectedClientVersion> {
+    osdkMetadata: typeof $osdkMetadata;
+    objectSet: DherlihyComplexObject.ObjectSet;
+    props: DherlihyComplexObject.Props;
+    strictProps: DherlihyComplexObject.StrictProps;
+    description: 'Dherlihy Complex Object';
+    links: {};
+    primaryKeyApiName: 'id';
+    primaryKeyType: 'string';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      id: PropertyDef<'string', 'non-nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      secret: PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      seriesId: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+    };
+  }
+
+  export type OsdkObject<
+    K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
+    S extends boolean = true,
+  > = Osdk<DherlihyComplexObject, K | (S extends false ? '$notStrict' : '$strict')> &
+    Pick<
+      // DherlihyComplexObject.Props
+      S extends false ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps,
+      K
+    > & {
+      $link: OsdkObjectLinks$DherlihyComplexObject;
+      $title: string | undefined; // FIXME
+      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+
+      $as: <NEW_Q extends ValidToFrom<DherlihyComplexObject>>(
+        type: NEW_Q | string,
+      ) => Osdk<NEW_Q, ConvertProps<DherlihyComplexObject, NEW_Q, K>>;
+    } & $OsdkObject<'DherlihyComplexObject'>;
 }
 
-export const DherlihyComplexObject: DherlihyComplexObject = {
+/** @deprecated use DherlihyComplexObject.Definition **/
+export type DherlihyComplexObject = DherlihyComplexObject.Definition;
+
+export const DherlihyComplexObject: DherlihyComplexObject & VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
+  objectSet: undefined as any,
+  props: undefined as any,
+  strictProps: undefined as any,
   apiName: 'DherlihyComplexObject',
   description: 'Dherlihy Complex Object',
   links: {},

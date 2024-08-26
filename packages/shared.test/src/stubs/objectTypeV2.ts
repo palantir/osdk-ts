@@ -345,3 +345,60 @@ export const ObjectTypesV2: ObjectTypeV2[] = [
   officeObjectType,
   equipmentObjectType,
 ];
+
+export const taskObjectType: ObjectTypeV2 = {
+  apiName: "Task",
+  primaryKey: "id",
+  properties: {
+    id: {
+      dataType: {
+        type: "integer",
+      },
+    },
+
+    name: { dataType: { type: "string" } },
+  },
+  status: "ACTIVE",
+  rid: "ri.task",
+  titleProperty: "name",
+};
+
+export const todoObjectType: ObjectTypeV2 = {
+  apiName: "Todo",
+  primaryKey: "id",
+  properties: {
+    id: {
+      dataType: {
+        type: "integer",
+      },
+    },
+    text: {
+      dataType: {
+        type: "string",
+      },
+    },
+  },
+  rid: "ri.todo",
+  status: "ACTIVE",
+  titleProperty: "text",
+};
+
+export const personObjectType: ObjectTypeV2 = {
+  apiName: "Person",
+  primaryKey: "id",
+  properties: {
+    id: {
+      dataType: {
+        type: "integer",
+      },
+    },
+    name: {
+      dataType: {
+        type: "string",
+      },
+    },
+  },
+  rid: "ri.person",
+  status: "ACTIVE",
+  titleProperty: "name",
+};

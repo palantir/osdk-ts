@@ -54,7 +54,6 @@ export async function demoStrictnessInterface() {
   expectType<
     Osdk<
       Employee,
-      "$notStrict" | "firstName" | "email",
       "$notStrict" | "firstName" | "email"
     >
   >(employeeNotStrict);

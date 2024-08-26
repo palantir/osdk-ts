@@ -55,24 +55,56 @@ export type SingleOsdkResult<
   L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
   R extends boolean,
   S extends NullabilityAdherence,
-> = ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
-    [DefaultToFalse<R>, RespectNullability<S>] extends [false, true] ? Osdk<Q>
-      : Osdk<
-        Q,
-        UnionIfTrue<
-          UnionIfFalse<"$all", RespectNullability<S>, "$notStrict">,
-          DefaultToFalse<R>,
-          "$rid"
-        >
-      >
-  )
-  : ([DefaultToFalse<R>, RespectNullability<S>] extends [false, true]
-    ? Osdk<Q, L>
-    : Osdk<
-      Q,
-      UnionIfTrue<
-        UnionIfFalse<L, RespectNullability<S>, "$notStrict">,
-        DefaultToFalse<R>,
-        "$rid"
-      >
-    >);
+> = Osdk<
+  Q,
+  UnionIfTrue<
+    UnionIfTrue<L, R extends false ? false : true, "$rid">, // DefaultToFalse<R>
+    S extends false ? true : false,
+    "$notStrict"
+  >
+>;
+
+// ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
+//     Osdk<Q, L>
+//     // [DefaultToFalse<R>, RespectNullability<S>] extends [false, true] ? Osdk<Q>
+//     //   : Osdk<
+//     //     Q,
+//     //     UnionIfTrue<
+//     //       UnionIfFalse<"$all", RespectNullability<S>, "$notStrict">,
+//     //       DefaultToFalse<R>,
+//     //       "$rid"
+//     //     >
+//     //   >
+//   )
+//   : ([DefaultToFalse<R>, RespectNullability<S>] extends [false, true]
+//     ? Osdk<Q, L>
+//     : Osdk<
+//       Q,
+//       UnionIfTrue<
+//         UnionIfFalse<L, RespectNullability<S>, "$notStrict">,
+//         DefaultToFalse<R>,
+//         "$rid"
+//       >
+//     >);
+
+// = ObjectOrInterfacePropertyKeysFrom2<Q> extends L ? (
+//     [DefaultToFalse<R>, RespectNullability<S>] extends [false, true] ? Osdk<Q>
+//       : Osdk<
+//         Q,
+//         UnionIfTrue<
+//           UnionIfFalse<"$all", RespectNullability<S>, "$notStrict">,
+//           DefaultToFalse<R>,
+//           "$rid"
+//         >
+//       >
+//   )
+//   : ([DefaultToFalse<R>, RespectNullability<S>] extends [false, true]
+//     ? Osdk<Q, L>
+//     : Osdk<
+//       Q,
+//       UnionIfTrue<
+//         UnionIfFalse<L, RespectNullability<S>, "$notStrict">,
+//         DefaultToFalse<R>,
+//         "$rid"
+//       >
+//     >);
