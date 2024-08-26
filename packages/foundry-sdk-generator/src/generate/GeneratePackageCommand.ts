@@ -145,6 +145,12 @@ export class GeneratePackageCommand
         hidden: true,
         default: false,
       })
+      .options("sdkPackages", {
+        array: true,
+        string: true,
+        // experimental for now
+        hidden: true,
+      })
       .strict();
   }
 

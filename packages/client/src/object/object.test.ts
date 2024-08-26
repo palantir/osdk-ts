@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import type { Osdk } from "@osdk/client.api";
-import type { Employee } from "@osdk/client.test.ontology";
-import { Ontology as MockOntology } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
@@ -42,7 +40,7 @@ describe("OsdkObject", () => {
       apiServer.listen();
       client = createClient(
         "https://stack.palantir.com",
-        MockOntology.metadata.ontologyRid,
+        $ontologyRid,
         async () => "myAccessToken",
       );
     });
@@ -52,7 +50,7 @@ describe("OsdkObject", () => {
     });
 
     it("loads an employee", async () => {
-      const result = await client(MockOntology.objects.Employee).where({
+      const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
 
@@ -78,7 +76,7 @@ describe("OsdkObject", () => {
     });
 
     it("traverses the link from an employee to their lead", async () => {
-      const result = await client(MockOntology.objects.Employee).where({
+      const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage();
       const employee = result.data[0];
@@ -95,7 +93,7 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peeps", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client(MockOntology.objects.Employee).where({
+      const employees = await client(Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
@@ -117,7 +115,7 @@ describe("OsdkObject", () => {
 
     it("traverses the link from an lead to their peep by primaryKey with fetchOne", async () => {
       // slightly weird request here to hit the existing mocks for employee2
-      const employees = await client(MockOntology.objects.Employee).where({
+      const employees = await client(Employee).where({
         $and: [
           { "employeeId": { "$gt": 50030 } },
           { "employeeId": { "$lt": 50032 } },
@@ -139,7 +137,7 @@ describe("OsdkObject", () => {
       expect((peep as any).employeeStatus).toBeUndefined();
     });
     it("gives $rid access when requested", async () => {
-      const result = await client(MockOntology.objects.Employee).where({
+      const result = await client(Employee).where({
         employeeId: stubData.employee1.employeeId,
       }).fetchPage(
         {

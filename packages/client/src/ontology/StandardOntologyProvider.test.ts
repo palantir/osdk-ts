@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Ontology as MockOntology } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -33,7 +33,7 @@ describe(createStandardOntologyProviderFactory, () => {
 
   it("doesn't revalidate if not needed", async () => {
     const client = createMinimalClient(
-      MockOntology.metadata,
+      { ontologyRid: $ontologyRid },
       "https://stack.palantir.com",
       async () => "myAccessToken",
     );
@@ -43,7 +43,7 @@ describe(createStandardOntologyProviderFactory, () => {
       loads.push(new URL(request.url).pathname);
     });
 
-    await fetchPage(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, Employee, {});
 
     // first load should lookup employee and its link types
     expect(loads).toEqual([
@@ -54,7 +54,7 @@ describe(createStandardOntologyProviderFactory, () => {
 
     loads = [];
 
-    await fetchPage(client, MockOntology.objects.Employee, {});
+    await fetchPage(client, Employee, {});
     // second load should not need to load ontology info
     expect(loads).toEqual([
       "/api/v2/ontologies/ri.ontology.main.ontology.698267cc-6b48-4d98-beff-29beb24e9361/objectSets/loadObjects",

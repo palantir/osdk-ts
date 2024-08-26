@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectOrInterfaceDefinition,
-  ObjectTypeKeysFrom,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { Osdk } from "@osdk/client.api";
 import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
 import {
@@ -640,14 +636,11 @@ export class ObjectSetListenerWebsocket {
   };
 }
 
-async function convertFoundryToOsdkObjects<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
->(
+async function convertFoundryToOsdkObjects(
   client: MinimalClient,
   ctx: ConjureContext,
   objects: ReadonlyArray<FoundryObject>,
-): Promise<Array<Osdk<O["objects"][K]>>> {
+): Promise<Array<Osdk<any>>> {
   const osdkObjects: OntologyObjectV2[] = await Promise.all(
     objects.map(async object => {
       const propertyMapping = await (await (await metadataCacheClient(client))
@@ -678,7 +671,7 @@ async function convertFoundryToOsdkObjects<
 
   // doesn't care about interfaces
   return await convertWireToOsdkObjects(client, osdkObjects, undefined) as Osdk<
-    O["objects"][K]
+    any
   >[];
 }
 

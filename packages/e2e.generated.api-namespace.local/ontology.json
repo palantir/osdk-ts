@@ -6,13 +6,68 @@
     "description": ""
   },
   "actionTypes": {
+    "setTaskBody": {
+      "apiName": "setTaskBody",
+      "parameters": {
+        "task": {
+          "dataType": {
+            "type": "object",
+            "objectApiName": "com.example.dep.Task",
+            "objectTypeApiName": "com.example.dep.Task"
+          },
+          "required": true
+        },
+        "body": {
+          "dataType": {
+            "type": "string"
+          },
+          "required": true
+        }
+      },
+      "status": "ACTIVE",
+      "rid": "ri.a.b.c.d",
+      "operations": [
+        {
+          "type": "modifyObject",
+          "objectTypeApiName": "com.example.dep.Task"
+        }
+      ]
+    }
   },
+  "interfaceTypes": {},
   "objectTypes": {
+    "Thing": {
+      "implementsInterfaces": ["com.example.dep.SomeInterface"],
+      "implementsInterfaces2": {
+        "com.example.dep.SomeInterface": {
+          "properties": {
+            "com.example.dep.spt": "body"
+          }
+        }
+      },
+      "linkTypes": [],
+      "objectType": {
+        "apiName": "Thing",
+        "primaryKey": "id",
+        "properties": {
+          "id": {
+            "dataType": {
+              "type": "integer"
+            }
+          },
+          "body": {
+            "dataType": {
+              "type": "string"
+            }
+          }
+        },
+        "rid": "ridForThing",
+        "status": "ACTIVE",
+        "titleProperty": "id"
+      },
+      "sharedPropertyTypeMapping": {}
+    }
   },
-  "queryTypes": {
-  },
-  "interfaceTypes": {
-  },
-  "sharedPropertyTypes": {
-  }
+  "queryTypes": {},
+  "sharedPropertyTypes": {}
 }

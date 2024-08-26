@@ -16,8 +16,10 @@
 
 import type { Client } from "@osdk/client";
 import type { ObjectSet, Osdk, PageResult } from "@osdk/client.api";
-import type { Employee } from "@osdk/e2e.generated.catchall";
-import { Ontology } from "@osdk/e2e.generated.catchall";
+import {
+  Employee,
+  ObjectTypeWithAllPropertyTypes,
+} from "@osdk/e2e.generated.catchall";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 
@@ -30,7 +32,7 @@ import { expectType } from "ts-expect";
 export async function typeChecks(client: Client) {
   // single link pivot types are correct
   {
-    const objectSet = client(Ontology.objects.Employee).pivotTo("lead");
+    const objectSet = client(Employee).pivotTo("lead");
     expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
       true,
     );
@@ -38,7 +40,7 @@ export async function typeChecks(client: Client) {
 
   // multi link pivot types are correct
   {
-    const objectSet = client(Ontology.objects.Employee).pivotTo("peeps");
+    const objectSet = client(Employee).pivotTo("peeps");
     expectType<TypeOf<typeof objectSet, ObjectSet<Employee>>>(
       true,
     );
@@ -46,7 +48,7 @@ export async function typeChecks(client: Client) {
 
   // just a demo of aggregations
   {
-    const q = await client(Ontology.objects.ObjectTypeWithAllPropertyTypes)
+    const q = await client(ObjectTypeWithAllPropertyTypes)
       .aggregate({
         $select: {
           "integer:sum": "unordered",
@@ -67,16 +69,14 @@ export async function typeChecks(client: Client) {
 
   // object $link examples
   {
-    const page = await client(Ontology.objects.Employee).where({
+    const page = await client(Employee).where({
       adUsername: "adUsername",
     }).fetchPage();
     const employee = page.data[0];
 
     // lead is an employee
     const lead = await employee.$link.lead.fetchOne();
-    expectType<
-      TypeOf<typeof lead, Osdk<Ontology["objects"]["Employee"]>>
-    >(true);
+    expectType<TypeOf<typeof lead, Osdk<Employee>>>(true);
 
     // lead is an employee but we downselect to just their adUsername
 
@@ -96,10 +96,7 @@ export async function typeChecks(client: Client) {
       TypeOf<
         typeof peeps,
         PageResult<
-          Osdk<
-            Ontology["objects"]["Employee"],
-            "adUsername" | "employeeNumber"
-          >
+          Osdk<Employee, "adUsername" | "employeeNumber">
         >
       >
     >(true);
@@ -113,13 +110,8 @@ export async function typeChecks(client: Client) {
       $select: ["adUsername"],
     });
     expectType<
-      TypeOf<
-        typeof peepById,
-        Osdk<Ontology["objects"]["Employee"], "adUsername">
-      >
-    >(
-      true,
-    );
+      TypeOf<typeof peepById, Osdk<Employee, "adUsername">>
+    >(true);
 
     // employeeNumber is not part of the selected peep
     expectType<TypeOf<{ employeeNumber: any }, typeof peepById>>(false);

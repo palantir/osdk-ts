@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import type {
-  ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
-  OntologyDefinition,
-} from "@osdk/api";
+import type { ObjectTypeDefinition, ObjectTypeLinkDefinition } from "@osdk/api";
 
-const Task: TaskDef = {
+export const Task: TaskDef = {
   type: "object",
   apiName: "Task",
   primaryKeyApiName: "id",
@@ -41,7 +37,7 @@ const Task: TaskDef = {
   },
 };
 
-interface TaskDef extends ObjectTypeDefinition<"Task"> {
+export interface TaskDef extends ObjectTypeDefinition<"Task"> {
   type: "object";
   apiName: "Task";
   primaryKeyApiName: "id";
@@ -56,7 +52,7 @@ interface TaskDef extends ObjectTypeDefinition<"Task"> {
   };
 }
 
-const Todo: TodoDef = {
+export const Todo: TodoDef = {
   type: "object",
   apiName: "Todo",
   primaryKeyApiName: "id",
@@ -68,7 +64,7 @@ const Todo: TodoDef = {
   links: {},
 };
 
-interface TodoDef extends ObjectTypeDefinition<"Todo"> {
+export interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   type: "object";
   apiName: "Todo";
   primaryKeyApiName: "id";
@@ -80,7 +76,7 @@ interface TodoDef extends ObjectTypeDefinition<"Todo"> {
   links: {};
 }
 
-const Person: PersonDef = {
+export const Person: PersonDef = {
   type: "object",
   apiName: "Person",
   primaryKeyApiName: "id",
@@ -92,7 +88,7 @@ const Person: PersonDef = {
   links: {},
 };
 
-interface PersonDef extends ObjectTypeDefinition<"Person"> {
+export interface PersonDef extends ObjectTypeDefinition<"Person"> {
   type: "object";
   apiName: "Person";
   primaryKeyApiName: "id";
@@ -104,18 +100,9 @@ interface PersonDef extends ObjectTypeDefinition<"Person"> {
   links: {};
 }
 
-export const MockOntology = {
-  metadata: {
-    expectsClientVersion: "0.0.0",
-    ontologyRid: "ontologyRid",
-    ontologyApiName: "ontologyApiName",
-    userAgent: "userAgent",
-  },
-  objects: {
-    Task,
-    Todo,
-    Person,
-  },
-  actions: {},
-  queries: {},
-} satisfies OntologyDefinition<"Task" | "Todo" | "Person">;
+export const metadata = {
+  expectsClientVersion: "0.0.0",
+  ontologyRid: "ontologyRid",
+  ontologyApiName: "ontologyApiName",
+  userAgent: "userAgent",
+};

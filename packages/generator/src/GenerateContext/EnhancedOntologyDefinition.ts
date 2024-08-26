@@ -24,10 +24,12 @@ import type {
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
+import { extractNamespace } from "./EnhancedBase.js";
 import { EnhancedInterfaceType } from "./EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "./EnhancedObjectType.js";
 import { EnhancedQuery } from "./EnhancedQuery.js";
 import { EnhancedSharedPropertyType } from "./EnhancedSharedPropertyType.js";
+import { ForeignType } from "./ForeignType.js";
 
 export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
@@ -41,32 +43,45 @@ export class EnhancedOntologyDefinition {
   >;
 
   og: WireOntologyDefinition;
+  common: EnhanceCommon;
 
   constructor(
-    sanitized: WireOntologyDefinition,
+    original: WireOntologyDefinition,
     ontologyApiNamespace: string | undefined,
     apiNamespacePackageMap: Map<string, string>,
     importExt: string,
   ) {
-    const common = {
+    this.common = {
       apiNamespacePackageMap,
       enhancedOntology: this,
       importExt,
       ontologyApiNamespace,
     };
-    this.og = sanitized;
-    this.ontology = sanitized.ontology;
-    this.objectTypes = remap(sanitized.objectTypes, common, EnhancedObjectType);
-    this.actionTypes = remap(sanitized.actionTypes, common, EnhancedAction);
-    this.queryTypes = remap(sanitized.queryTypes, common, EnhancedQuery);
+    this.og = original;
+    this.ontology = original.ontology;
+    this.objectTypes = remap(
+      original.objectTypes,
+      this.common,
+      EnhancedObjectType,
+    );
+    this.actionTypes = remap(
+      original.actionTypes,
+      this.common,
+      EnhancedAction,
+    );
+    this.queryTypes = remap(
+      original.queryTypes,
+      this.common,
+      EnhancedQuery,
+    );
     this.interfaceTypes = remap(
-      sanitized.interfaceTypes,
-      common,
+      original.interfaceTypes,
+      this.common,
       EnhancedInterfaceType,
     );
     this.sharedPropertyTypes = remap(
-      sanitized.sharedPropertyTypes,
-      common,
+      original.sharedPropertyTypes,
+      this.common,
       EnhancedSharedPropertyType,
     );
   }
@@ -79,14 +94,37 @@ export class EnhancedOntologyDefinition {
       | "queryTypes"
       | "sharedPropertyTypes",
   >(
-    key: K & keyof this,
+    type: K & keyof this,
   ) => {
-    return (fullApiName: string): this[K][string] => {
-      const ret = this[key][fullApiName];
+    return <L extends boolean = false>(
+      fullApiName: string,
+      localOnly?: L,
+    ): L extends true ? this[K][string] : ForeignType => {
+      const ret = this[type][fullApiName];
       if (!ret) {
-        throw new Error(`Unable to find ${key} '${fullApiName}`);
+        const [apiNamespace, shortApiName] = extractNamespace(fullApiName);
+
+        if (localOnly || !apiNamespace) {
+          throw new Error(
+            `Unable to find ${type}: No entry for '${fullApiName}`,
+          );
+        }
+
+        if (!this.common.apiNamespacePackageMap.has(apiNamespace)) {
+          throw new Error(
+            `Unable to find ${type}: Unknown namespace '${apiNamespace}'`,
+          );
+        }
+
+        return new ForeignType(
+          this.common,
+          type,
+          apiNamespace,
+          shortApiName,
+        ) as L extends true ? this[K][string] : ForeignType;
       }
-      return ret as this[K][string];
+      return ret as this[K][string] as L extends true ? this[K][string]
+        : ForeignType;
     };
   };
 

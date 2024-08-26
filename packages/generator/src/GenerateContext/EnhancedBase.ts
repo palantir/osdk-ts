@@ -17,10 +17,9 @@
 import * as path from "node:path";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 
-export abstract class EnhancedBase<T> {
+export abstract class AbstractImportable {
   protected _common: EnhanceCommon;
 
-  og: T;
   shortApiName: string;
   fullApiName: string;
   apiNamespace: string | undefined;
@@ -32,14 +31,15 @@ export abstract class EnhancedBase<T> {
   importPath: string;
   uniqueImportName: string;
 
+  readonly isLocal: boolean;
+  readonly sourcePackage: string | undefined;
+
   constructor(
     common: EnhanceCommon,
-    og: T,
     fullApiName: string,
     basePath: string,
   ) {
     this._common = common;
-    this.og = og;
     this.fullApiName = fullApiName;
 
     [this.apiNamespace, this.shortApiName] = extractNamespace(
@@ -47,22 +47,15 @@ export abstract class EnhancedBase<T> {
     );
 
     const { ontologyApiNamespace, apiNamespacePackageMap, importExt } = common;
-
-    const isLocal = ontologyApiNamespace === this.apiNamespace;
-    const sourcePackage = this.apiNamespace
-        && !isLocal
+    this.isLocal = ontologyApiNamespace === this.apiNamespace;
+    this.sourcePackage = this.apiNamespace && !this.isLocal
       ? apiNamespacePackageMap.get(this.apiNamespace)
       : undefined;
-    if (!isLocal && !sourcePackage) {
-      throw new Error(
-        `Expected { ns:'${this.apiNamespace}', shortName: '${this.shortApiName}'} to be in namespace '${ontologyApiNamespace}' or in a provided package mapping`,
-      );
-    }
 
-    this.importPath = isLocal
+    this.importPath = this.isLocal
       ? `${basePath}/${this.shortApiName}${importExt}`
-      : sourcePackage!;
-    this.uniqueImportName = isLocal
+      : this.sourcePackage!;
+    this.uniqueImportName = this.isLocal
       ? this.shortApiName
       : `$external$${this.fullApiName.replace(".", "$")}`;
   }
@@ -82,7 +75,29 @@ export abstract class EnhancedBase<T> {
   };
 }
 
-function extractNamespace(fqApiName: string): [string | undefined, string] {
+export abstract class EnhancedBase<T> extends AbstractImportable {
+  og: T;
+
+  constructor(
+    common: EnhanceCommon,
+    og: T,
+    fullApiName: string,
+    basePath: string,
+  ) {
+    super(common, fullApiName, basePath);
+    this.og = og;
+
+    if (!this.isLocal && !this.sourcePackage) {
+      throw new Error(
+        `Expected { ns:'${this.apiNamespace}', shortName: '${this.shortApiName}'} to be in namespace '${common.ontologyApiNamespace}' or in a provided package mapping`,
+      );
+    }
+  }
+}
+
+export function extractNamespace(
+  fqApiName: string,
+): [string | undefined, string] {
   const last = fqApiName.lastIndexOf(".");
   if (last === -1) return [undefined, fqApiName];
   return [fqApiName.slice(0, last), fqApiName.slice(last + 1)];

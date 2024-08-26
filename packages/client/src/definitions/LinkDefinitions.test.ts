@@ -24,19 +24,12 @@ import type {
   SingleLinkAccessor,
 } from "@osdk/client.api";
 import { describe, expectTypeOf, it } from "vitest";
-import type { MockOntology } from "../util/test/mockOntology.js";
+import type { PersonDef, TaskDef, TodoDef } from "../util/test/mockOntology.js";
 
 describe("LinkDefinitions", () => {
-  type Objects = typeof MockOntology["objects"];
-  type TaskDef = Objects["Task"];
-  type PersonDef = Objects["Person"];
-  type TodoDef = Objects["Todo"];
-
   describe("OsdkObjectLinkObject", () => {
     it("is correctly absent on types with no links", () => {
-      expectTypeOf<
-        OsdkObjectLinksObject<typeof MockOntology["objects"]["Todo"]>
-      >()
+      expectTypeOf<OsdkObjectLinksObject<TodoDef>>()
         .toEqualTypeOf<never>();
     });
 

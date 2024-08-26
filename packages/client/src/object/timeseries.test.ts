@@ -14,24 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectOrInterfacePropertyKeysFrom2 } from "@osdk/api";
-import type { Osdk, Result, TimeSeriesPoint } from "@osdk/client.api";
-import { isOk } from "@osdk/client.api";
-import {
-  Employee,
-  FooInterface,
-  Ontology as MockOntology,
-} from "@osdk/client.test.ontology";
-import { apiServer, stubData } from "@osdk/shared.test";
-import {
-  afterAll,
-  beforeAll,
-  describe,
-  expect,
-  expectTypeOf,
-  it,
-} from "vitest";
-import type { InterfaceDefinition } from "../../../api/build/cjs/index.cjs";
+import type { TimeSeriesPoint } from "@osdk/client.api";
+import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import { apiServer } from "@osdk/shared.test";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -42,7 +28,7 @@ describe("Timeseries", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });

@@ -1266,6 +1266,9 @@ importers:
       '@osdk/client.api':
         specifier: workspace:*
         version: link:../client.api
+      '@osdk/e2e.generated.api-namespace.dep':
+        specifier: workspace:~
+        version: link:../e2e.generated.api-namespace.dep
     devDependencies:
       '@osdk/cli.cmd.typescript':
         specifier: workspace:~

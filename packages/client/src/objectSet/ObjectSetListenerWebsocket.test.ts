@@ -15,7 +15,7 @@
  */
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
-import { Ontology } from "@osdk/client.test.ontology";
+import { $ontologyRid, Employee, Office } from "@osdk/client.test.ontology";
 import type {
   ObjectSetSubscribeRequests,
   StreamMessage_subscribeResponses,
@@ -111,7 +111,7 @@ describe("ObjectSetListenerWebsocket", async () => {
 
     beforeEach(() => {
       minimalClient = createMinimalClient(
-        Ontology.metadata,
+        { ontologyRid: $ontologyRid },
         STACK,
         async () => "myAccessToken",
         { logger: rootLogger },
@@ -241,7 +241,7 @@ describe("ObjectSetListenerWebsocket", async () => {
             [unsubscribe2, subReq2] = await Promise.all([
               client.subscribe({
                 type: "base",
-                objectType: Ontology.objects.Office.apiName,
+                objectType: Office.apiName,
               }, listener),
 
               expectSingleSubscribeMessage(ws),
@@ -366,7 +366,7 @@ async function subscribeAndExpectWebSocket(
     expectWebSocketConstructed(),
     client.subscribe({
       type: "base",
-      objectType: Ontology.objects.Employee.apiName,
+      objectType: Employee.apiName,
     }, listener),
   ]);
 

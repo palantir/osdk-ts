@@ -21,9 +21,10 @@ import type {
 import type { Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
 import {
+  $ontologyRid,
   Employee,
   FooInterface,
-  Ontology as MockOntology,
+  Office,
 } from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
@@ -44,7 +45,7 @@ describe("ObjectSet", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });
@@ -54,8 +55,8 @@ describe("ObjectSet", () => {
   });
 
   it("does not allow intersect/union/subtract with different object types", () => {
-    const employeeObjectSet = client(MockOntology.objects.Employee);
-    const officeObjectSet = client(MockOntology.objects.Office);
+    const employeeObjectSet = client(Employee);
+    const officeObjectSet = client(Office);
 
     // @ts-expect-error
     employeeObjectSet.union(officeObjectSet);
@@ -68,7 +69,7 @@ describe("ObjectSet", () => {
   });
 
   it("objects set union", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
+    const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);
     let iter = 0;
     const { data: employees } = await unionedObjectSet.fetchPage();
@@ -80,8 +81,8 @@ describe("ObjectSet", () => {
   });
 
   it("objects set subtract", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
-    const objectSet2 = client(MockOntology.objects.Employee).where({
+    const objectSet = client(Employee);
+    const objectSet2 = client(Employee).where({
       employeeId: 50030,
     });
     const subtractedObjectSet = objectSet.subtract(objectSet2);
@@ -95,7 +96,7 @@ describe("ObjectSet", () => {
   });
 
   it("objects set intersect", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
+    const objectSet = client(Employee);
     const intersectedObjectSet = objectSet.intersect(objectSet);
     let iter = 0;
     const { data: employees } = await intersectedObjectSet.fetchPage();
@@ -107,7 +108,7 @@ describe("ObjectSet", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
-    const { data: employees } = await client(MockOntology.objects.Employee)
+    const { data: employees } = await client(Employee)
       .fetchPage({
         $orderBy: { "employeeId": "asc" },
       });
@@ -152,7 +153,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).fetchOne(
+    const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
@@ -162,7 +163,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
       );
@@ -177,7 +178,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).fetchOne(
+    const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
       { $select: ["fullName"] },
     );
@@ -188,7 +189,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
         { $select: ["fullName"] },
@@ -204,12 +205,12 @@ describe("ObjectSet", () => {
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOne", async () => {
-    await expect(client(MockOntology.objects.Employee).fetchOne(-1)).rejects
+    await expect(client(Employee).fetchOne(-1)).rejects
       .toThrow();
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(-1);
 
     expectTypeOf<typeof employeeResult>().toEqualTypeOf<
@@ -220,7 +221,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).where({
+    const employee = await client(Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
       .pivotTo("peeps").fetchOne(stubData.employee1.employeeId);
@@ -229,7 +230,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee).where({
+    const employeeResult = await client(Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
       .pivotTo("peeps").fetchOneWithErrors(stubData.employee1.employeeId);

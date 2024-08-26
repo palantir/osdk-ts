@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition, OntologyDefinition } from "@osdk/api";
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type {
   AggregateOpts,
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
@@ -25,7 +25,6 @@ import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {
   beforeAll,
-  beforeEach,
   describe,
   expect,
   expectTypeOf,
@@ -129,21 +128,12 @@ const Todo: TodoDef = {
   },
 };
 
-const mockOntology = {
-  metadata: {
-    expectsClientVersion: "0.0.0",
-    ontologyRid: "ri.a.b.c.d",
-    ontologyApiName: "apiName",
-    userAgent: "",
-  },
-  objects: {
-    Todo,
-  },
-  actions: {},
-  queries: {},
-} satisfies OntologyDefinition<"Todo">;
-type mockOntology = typeof mockOntology;
-interface MockOntology extends mockOntology {}
+const metadata = {
+  expectsClientVersion: "0.0.0",
+  ontologyRid: "ri.a.b.c.d",
+  ontologyApiName: "apiName",
+  userAgent: "",
+};
 
 let mockFetch: Mock;
 let clientCtx: MinimalClient;
@@ -158,7 +148,7 @@ beforeAll(() => {
   });
 
   clientCtx = createMinimalClient(
-    mockOntology.metadata,
+    metadata,
     "https://host.com",
     async () => "",
     {},
