@@ -20,18 +20,16 @@ import invariant from "tiny-invariant";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import type {
-  Identifiers,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
+import { stringify } from "../util/stringify.js";
+import type { Identifiers } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 import {
   createDefinition,
   createObjectSet,
   createOsdkObject,
   createPropertyKeys,
   createProps,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
-import { deleteUndefineds } from "../util/deleteUndefineds.js";
-import { stringify } from "../util/stringify.js";
+} from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(

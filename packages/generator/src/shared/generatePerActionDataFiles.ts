@@ -25,11 +25,9 @@ import { stringify } from "../util/stringify.js";
 import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
+import { getObjectDefIdentifier } from "../v2.0/wireObjectTypeV2ToSdkObjectConstV2.js";
+import { getObjectImports } from "./getObjectImports.js";
 import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition.js";
-import {
-  getObjectDefIdentifier,
-  getObjectImports,
-} from "./wireObjectTypeV2ToSdkObjectConst.js";
 
 export async function generatePerActionDataFiles(
   {

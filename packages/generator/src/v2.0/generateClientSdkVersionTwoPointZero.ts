@@ -20,15 +20,15 @@ import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
-import {
-  wireObjectTypeV2ToSdkObjectConst,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
+import {
+  wireObjectTypeV2ToSdkObjectConstV2,
+} from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 async function generateRootIndexTsFile(
   { fs, outDir, importExt, ontologyApiNamespace }: GenerateContext,
@@ -76,7 +76,7 @@ async function generateEachObjectFile(
         import type { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-        ${wireObjectTypeV2ToSdkObjectConst(obj.og, ctx, relPath, true)}
+        ${wireObjectTypeV2ToSdkObjectConstV2(obj.og, ctx, relPath)}
       `),
     );
   }

@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
-import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
+import { propertyJsdoc } from "../shared/propertyJsdoc.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
-import { propertyJsdoc } from "./propertyJsdoc.js";
 
 export function getObjectDefIdentifier(name: string, v2: boolean) {
   return v2 ? name : `${name}Def`;
 }
 
 /** @internal */
-export function wireObjectTypeV2ToSdkObjectConst(
+export function wireObjectTypeV2ToSdkObjectConstV2(
   wireObject: ObjectTypeFullMetadata,
   { ontology }: Pick<
     GenerateContext,
     "ontology"
   >,
   currentFilePath: string,
-  v2: boolean = false,
 ) {
   const object = ontology.requireObjectType(
     wireObject.objectType.apiName,
@@ -53,35 +51,11 @@ export function wireObjectTypeV2ToSdkObjectConst(
   const definition = deleteUndefineds(
     wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
       object.og,
-      v2,
+      true,
     ),
   );
 
-  const objectDefIdentifier = object.getDefinitionIdentifier(v2);
-
-  function getV1Types() {
-    return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${object.uniqueImportName}> {
-        ${
-      stringify(definition, {
-        osdkMetadata: () => undefined, // not used in v1
-        links: (_value) =>
-          `{
-          ${
-            stringify(definition.links, {
-              "*": (definition) =>
-                `ObjectTypeLinkDefinition<${
-                  ontology.requireObjectType(definition.targetType)
-                    .getImportedDefinitionIdentifier(v2)
-                }, ${definition.multiplicity}>`,
-            })
-          }
-        }`,
-      })
-    }
-      }
-    `;
-  }
+  const objectDefIdentifier = object.getDefinitionIdentifier(true);
 
   const objectSetIdentifier = `${object.shortApiName}.ObjectSet`;
   const propertyKeysIdentifier = `${object.shortApiName}.PropertyKeys`;
@@ -169,18 +143,17 @@ export function wireObjectTypeV2ToSdkObjectConst(
     uniqueLinkTargetTypes,
     definition.apiName,
     currentFilePath,
-    v2,
+    true,
   );
 
-  return `${imports}${v2 ? getV2Types() : getV1Types()}
+  return `${imports}${getV2Types()}
 
-    export const ${object.shortApiName}: ${objectDefIdentifier} ${
-    v2 ? " & $VersionBound<$ExpectedClientVersion>" : ""
-  }= {
-      ${v2 ? `osdkMetadata: $osdkMetadata,` : ""}
-      ${v2 ? `objectSet: undefined as any,` : ""}
-      ${v2 ? `props: undefined as any,` : ""}
-      ${v2 ? `strictProps: undefined as any,` : ""}
+    export const ${object.shortApiName}: ${objectDefIdentifier}  & $VersionBound<$ExpectedClientVersion>
+    = {
+      osdkMetadata: $osdkMetadata,
+      objectSet: undefined as any,
+      props: undefined as any,
+      strictProps: undefined as any,
       ${
     stringify(definition, {
       osdkMetadata: (value) => undefined,
@@ -188,20 +161,6 @@ export function wireObjectTypeV2ToSdkObjectConst(
   }
     
     };`;
-}
-
-export function getObjectImports(
-  objects: Set<EnhancedObjectType | ForeignType>,
-  curApiName: string | undefined,
-  currentFilePath: string,
-  v2: boolean,
-) {
-  return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
-    .map(obj => {
-      return `import type { ${obj.getDefinitionIdentifier(v2)} as ${
-        obj.getImportedDefinitionIdentifier(v2)
-      } } from "${obj.getImportPathRelTo("./" + currentFilePath)}";`;
-    }).join("\n");
 }
 
 export interface Identifiers extends
