@@ -31,7 +31,7 @@ import type {
   Result,
   SelectArg,
 } from "@osdk/client.api";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import { modernToLegacyWhereClause } from "../internal/conversions/modernToLegacyWhereClause.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { aggregate } from "../object/aggregate.js";

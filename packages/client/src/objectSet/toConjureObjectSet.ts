@@ -18,7 +18,7 @@ import type {
   ObjectSet as OssObjectSet,
   ObjectSetFilter,
 } from "@osdk/client.unstable";
-import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/internal.foundry";
+import type { ObjectSet, SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import type { ObjectPropertyMapping } from "../__unstable/ConjureSupport.js";
 import { conjureUnionType } from "./conjureUnionType.js";
 

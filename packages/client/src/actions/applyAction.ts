@@ -27,8 +27,8 @@ import type {
   ApplyBatchActionOptions,
   DataValueClientToWire,
 } from "@osdk/client.api";
-import type { DataValue } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { DataValue } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";

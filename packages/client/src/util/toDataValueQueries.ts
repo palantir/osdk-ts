@@ -15,7 +15,8 @@
  */
 
 import type { QueryDataTypeDefinition } from "@osdk/api";
-import { type DataValue, Ontologies } from "@osdk/internal.foundry";
+import { Ontologies } from "@osdk/internal.foundry";
+import { type DataValue } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { isAttachmentUpload } from "../object/AttachmentUpload.js";
 import { getWireObjectSet, isObjectSet } from "../objectSet/createObjectSet.js";

@@ -22,7 +22,7 @@ import type {
   StringAggregateOption,
   UnorderedAggregationClause,
 } from "@osdk/client.api";
-import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
+import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { ArrayElement } from "../../util/ArrayElement.js";
 

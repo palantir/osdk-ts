@@ -20,7 +20,7 @@ import type {
   ObjectTypeDefinition,
 } from "@osdk/api";
 import type { NullabilityAdherence, Osdk } from "@osdk/client.api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import {

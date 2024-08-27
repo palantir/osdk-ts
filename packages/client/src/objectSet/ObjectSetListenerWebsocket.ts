@@ -36,11 +36,11 @@ import type {
   SubscriptionClosed,
 } from "@osdk/client.unstable.osw";
 import { batchEnableWatcher } from "@osdk/client.unstable.osw";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import {
   type ObjectSet,
-  OntologiesV2,
   type OntologyObjectV2,
-} from "@osdk/internal.foundry";
+} from "@osdk/internal.foundry.core";
 import type { ConjureContext } from "conjure-lite";
 import WebSocket from "isomorphic-ws";
 import type { Logger } from "pino";

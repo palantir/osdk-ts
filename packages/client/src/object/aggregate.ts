@@ -21,12 +21,12 @@ import type {
   AggregationResultsWithGroups,
   AggregationsResults,
 } from "@osdk/client.api";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   AggregateObjectsRequestV2,
   AggregateObjectsResponseV2,
   ObjectSet,
-} from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+} from "@osdk/internal.foundry.core";
 import invariant from "tiny-invariant";
 import { legacyToModernSingleAggregationResult } from "../internal/conversions/legacyToModernSingleAggregationResult.js";
 import { modernToLegacyAggregationClause } from "../internal/conversions/modernToLegacyAggregationClause.js";

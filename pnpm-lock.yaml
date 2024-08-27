@@ -673,6 +673,9 @@ importers:
       '@osdk/internal.foundry':
         specifier: workspace:~
         version: link:../internal.foundry
+      '@osdk/internal.foundry.core':
+        specifier: workspace:~
+        version: link:../internal.foundry.core
       '@osdk/monorepo.api-extractor':
         specifier: workspace:~
         version: link:../monorepo.api-extractor
@@ -1753,8 +1756,17 @@ importers:
         specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.5.4
         version: 5.5.4
 
   packages/foundry.orchestration:
@@ -1800,8 +1812,17 @@ importers:
         specifier: workspace:~
         version: link:../shared.net.platformapi
     devDependencies:
+      '@osdk/monorepo.api-extractor':
+        specifier: workspace:~
+        version: link:../monorepo.api-extractor
+      '@osdk/monorepo.tsconfig':
+        specifier: workspace:~
+        version: link:../monorepo.tsconfig
+      '@osdk/monorepo.tsup':
+        specifier: workspace:~
+        version: link:../monorepo.tsup
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.5.4
         version: 5.5.4
 
   packages/foundry.thirdpartyapplications:

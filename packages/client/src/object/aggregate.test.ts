@@ -20,7 +20,7 @@ import type {
   AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
   GroupByClause,
 } from "@osdk/client.api";
-import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry";
+import type { AggregateObjectsResponseV2 } from "@osdk/internal.foundry.core";
 import type { TypeOf } from "ts-expect";
 import { expectType } from "ts-expect";
 import {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 
 /** @internal */
 export function isOntologyObjectV2(o: any): o is OntologyObjectV2 {
