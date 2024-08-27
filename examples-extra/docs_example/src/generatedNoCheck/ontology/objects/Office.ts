@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Office = ObjectOrInterfacePropertyKeysFrom2<Office>;
 
-export type OsdkObjectLinks$Office = never;
-
 export namespace Office {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ entrance: $PropType['geopoint'] | undefined;
     /*readonly*/ meetingRoomCapacities: $PropType['integer'][] | undefined;
@@ -157,7 +157,7 @@ export namespace Office {
       S extends false ? Office.Props : Office.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Office;
+      $link: Office.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

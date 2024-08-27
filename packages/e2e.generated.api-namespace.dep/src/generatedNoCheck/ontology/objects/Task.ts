@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Task = ObjectOrInterfacePropertyKeysFrom2<Task>;
 
-export type OsdkObjectLinks$Task = never;
-
 export namespace Task {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ body: $PropType['string'] | undefined;
     /*readonly*/ taskId: $PropType['string'] | undefined;
@@ -135,7 +135,7 @@ export namespace Task {
       S extends false ? Task.Props : Task.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Task;
+      $link: Task.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

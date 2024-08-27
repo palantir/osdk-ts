@@ -88,8 +88,18 @@ export function wireObjectTypeV2ToSdkObjectConst(
   // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
   const osdkObjectPropsIdentifier = `${object.shortApiName}.Props`;
   const osdkObjectStrictPropsIdentifier = `${object.shortApiName}.StrictProps`;
-  const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
+  const osdkObjectLinksIdentifier = `${object.shortApiName}.Links`;
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
+
+  const identifiers: Identifiers = {
+    objectDefIdentifier,
+    osdkObjectLinksIdentifier,
+    osdkObjectPropsIdentifier,
+    osdkObjectStrictPropsIdentifier,
+    objectSetIdentifier,
+    osdkObjectIdentifier,
+    propertyKeysIdentifier,
+  };
 
   function getV2Types() {
     return `
@@ -112,71 +122,18 @@ FetchPageArgs,OsdkObjectPropertyType,
 
     export type ${propertyKeysIdentifier} = ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
 
-    ${
-      Object.keys(definition.links).length === 0
-        ? `export type ${osdkObjectLinksIdentifier} = never;`
-        : `
-        export interface ${osdkObjectLinksIdentifier}  {
-${
-          stringify(definition.links, {
-            "*": (definition) => {
-              const linkTarget = ontology.requireObjectType(
-                definition.targetType,
-              )
-                .getImportedDefinitionIdentifier(v2);
-
-              return `${
-                definition.multiplicity
-                  ? `${linkTarget}["objectSet"]`
-                  : `SingleLinkAccessor<${linkTarget}>`
-              }
-          `;
-            },
-          })
-        }
-    }
-    `
-    }
 
     export namespace ${object.shortApiName} {
+
+      ${createLinks(ontology, object, "Links", identifiers)}
 
       ${createProps(object, "Props", false)}
       ${createProps(object, "StrictProps", true)}
 
-      ${
-      createObjectSet(object, {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
+      ${createObjectSet(object, identifiers)}
 
-      ${
-      createDefinition(object, ontology, "Definition", {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
-      ${
-      createOsdkObject(object, "OsdkObject", {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
+      ${createDefinition(object, ontology, "Definition", identifiers)}
+      ${createOsdkObject(object, "OsdkObject", identifiers)}
     }    
 
 
@@ -470,4 +427,40 @@ export function createDefinition(
   }
 }
   `;
+}
+
+function createLinks(
+  ontology: EnhancedOntologyDefinition,
+  object: EnhancedObjectType | EnhancedInterfaceType,
+  identifier: string,
+  ids: Identifiers,
+) {
+  const definition = object.getCleanedUpDefinition(true);
+
+  return `
+    ${
+    Object.keys(definition.links).length === 0
+      ? `export type ${identifier} = never;`
+      : `
+        export interface ${identifier}  {
+${
+        stringify(definition.links, {
+          "*": (definition) => {
+            const linkTarget = ontology.requireObjectType(
+              definition.targetType,
+            )
+              .getImportedDefinitionIdentifier(true);
+
+            return `${
+              definition.multiplicity
+                ? `${linkTarget}.ObjectSet`
+                : `SingleLinkAccessor<${linkTarget}>`
+            }
+          `;
+          },
+        })
+      }
+    }
+    `
+  }`;
 }

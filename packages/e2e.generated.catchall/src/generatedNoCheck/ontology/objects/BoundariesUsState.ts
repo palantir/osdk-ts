@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$BoundariesUsState = ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
 
-export type OsdkObjectLinks$BoundariesUsState = never;
-
 export namespace BoundariesUsState {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ geometry10M: $PropType['geoshape'] | undefined;
     /*readonly*/ latitude: $PropType['double'] | undefined;
@@ -148,7 +148,7 @@ export namespace BoundariesUsState {
       S extends false ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$BoundariesUsState;
+      $link: BoundariesUsState.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

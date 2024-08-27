@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$DherlihyComplexObject = ObjectOrInterfacePropertyKeysFrom2<DherlihyComplexObject>;
 
-export type OsdkObjectLinks$DherlihyComplexObject = never;
-
 export namespace DherlihyComplexObject {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ id: $PropType['string'] | undefined;
     /*readonly*/ secret: $PropType['string'] | undefined;
@@ -141,7 +141,7 @@ export namespace DherlihyComplexObject {
       S extends false ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$DherlihyComplexObject;
+      $link: DherlihyComplexObject.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

@@ -30,9 +30,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 export type PropertyKeys$ObjectTypeWithAllPropertyTypes =
   ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
 
-export type OsdkObjectLinks$ObjectTypeWithAllPropertyTypes = never;
-
 export namespace ObjectTypeWithAllPropertyTypes {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ attachment: $PropType['attachment'] | undefined;
     /*readonly*/ attachmentArray: $PropType['attachment'][] | undefined;
@@ -313,7 +313,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       S extends false ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$ObjectTypeWithAllPropertyTypes;
+      $link: ObjectTypeWithAllPropertyTypes.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 

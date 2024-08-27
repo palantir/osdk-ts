@@ -31,12 +31,12 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Person = ObjectOrInterfacePropertyKeysFrom2<Person>;
 
-export interface OsdkObjectLinks$Person {
-  Friends: Person['objectSet'];
-  Todos: Todo['objectSet'];
-}
-
 export namespace Person {
+  export interface Links {
+    Friends: Person.ObjectSet;
+    Todos: Todo.ObjectSet;
+  }
+
   export interface Props {
     /*readonly*/ email: $PropType['string'] | undefined;
   }
@@ -135,7 +135,7 @@ export namespace Person {
       S extends false ? Person.Props : Person.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Person;
+      $link: Person.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

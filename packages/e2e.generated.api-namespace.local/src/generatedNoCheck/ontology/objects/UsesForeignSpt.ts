@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$UsesForeignSpt = ObjectOrInterfacePropertyKeysFrom2<UsesForeignSpt>;
 
-export type OsdkObjectLinks$UsesForeignSpt = never;
-
 export namespace UsesForeignSpt {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ body: $PropType['string'] | undefined;
     /*readonly*/ id: $PropType['integer'] | undefined;
@@ -143,7 +143,7 @@ export namespace UsesForeignSpt {
       S extends false ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$UsesForeignSpt;
+      $link: UsesForeignSpt.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 

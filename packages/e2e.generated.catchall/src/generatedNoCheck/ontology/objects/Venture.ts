@@ -31,11 +31,11 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Venture = ObjectOrInterfacePropertyKeysFrom2<Venture>;
 
-export interface OsdkObjectLinks$Venture {
-  employees: Employee['objectSet'];
-}
-
 export namespace Venture {
+  export interface Links {
+    employees: Employee.ObjectSet;
+  }
+
   export interface Props {
     /*readonly*/ ventureId: $PropType['string'] | undefined;
     /*readonly*/ ventureName: $PropType['string'] | undefined;
@@ -145,7 +145,7 @@ export namespace Venture {
       S extends false ? Venture.Props : Venture.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Venture;
+      $link: Venture.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$BuilderDeploymentState = ObjectOrInterfacePropertyKeysFrom2<BuilderDeploymentState>;
 
-export type OsdkObjectLinks$BuilderDeploymentState = never;
-
 export namespace BuilderDeploymentState {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ currentTimestamp: $PropType['timestamp'] | undefined;
     /*readonly*/ date: $PropType['datetime'] | undefined;
@@ -143,7 +143,7 @@ export namespace BuilderDeploymentState {
       S extends false ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$BuilderDeploymentState;
+      $link: BuilderDeploymentState.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 

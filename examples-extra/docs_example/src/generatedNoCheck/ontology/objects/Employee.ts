@@ -30,12 +30,12 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Employee = ObjectOrInterfacePropertyKeysFrom2<Employee>;
 
-export interface OsdkObjectLinks$Employee {
-  lead: SingleLinkAccessor<Employee>;
-  peeps: Employee['objectSet'];
-}
-
 export namespace Employee {
+  export interface Links {
+    lead: SingleLinkAccessor<Employee>;
+    peeps: Employee.ObjectSet;
+  }
+
   export interface Props {
     /*readonly*/ class: $PropType['string'] | undefined;
     /*readonly*/ employeeId: $PropType['integer'] | undefined;
@@ -164,7 +164,7 @@ export namespace Employee {
       S extends false ? Employee.Props : Employee.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Employee;
+      $link: Employee.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 

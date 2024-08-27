@@ -32,11 +32,11 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Todo = ObjectOrInterfacePropertyKeysFrom2<Todo>;
 
-export interface OsdkObjectLinks$Todo {
-  Assignee: SingleLinkAccessor<Person>;
-}
-
 export namespace Todo {
+  export interface Links {
+    Assignee: SingleLinkAccessor<Person>;
+  }
+
   export interface Props {
     /*readonly*/ body: $PropType['string'] | undefined;
     /*readonly*/ complete: $PropType['boolean'] | undefined;
@@ -155,7 +155,7 @@ export namespace Todo {
       S extends false ? Todo.Props : Todo.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Todo;
+      $link: Todo.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 

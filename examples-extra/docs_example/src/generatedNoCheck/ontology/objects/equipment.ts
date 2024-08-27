@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$equipment = ObjectOrInterfacePropertyKeysFrom2<equipment>;
 
-export type OsdkObjectLinks$equipment = never;
-
 export namespace equipment {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ equipmentId: $PropType['string'] | undefined;
     /*readonly*/ type: $PropType['string'] | undefined;
@@ -134,7 +134,7 @@ export namespace equipment {
       S extends false ? equipment.Props : equipment.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$equipment;
+      $link: equipment.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<
         { multiplicity: false; description: 'The id of an equipment'; type: 'string'; nullable: false },

@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$Thing = ObjectOrInterfacePropertyKeysFrom2<Thing>;
 
-export type OsdkObjectLinks$Thing = never;
-
 export namespace Thing {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ body: $PropType['string'] | undefined;
     /*readonly*/ id: $PropType['integer'] | undefined;
@@ -145,7 +145,7 @@ export namespace Thing {
       S extends false ? Thing.Props : Thing.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$Thing;
+      $link: Thing.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 

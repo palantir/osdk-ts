@@ -29,9 +29,9 @@ import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/
 
 export type PropertyKeys$WeatherStation = ObjectOrInterfacePropertyKeysFrom2<WeatherStation>;
 
-export type OsdkObjectLinks$WeatherStation = never;
-
 export namespace WeatherStation {
+  export type Links = never;
+
   export interface Props {
     /*readonly*/ geohash: $PropType['geopoint'] | undefined;
     /*readonly*/ stationId: $PropType['string'] | undefined;
@@ -136,7 +136,7 @@ export namespace WeatherStation {
       S extends false ? WeatherStation.Props : WeatherStation.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$WeatherStation;
+      $link: WeatherStation.Links;
       $title: string | undefined; // FIXME
       $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
