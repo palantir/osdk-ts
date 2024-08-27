@@ -56,7 +56,7 @@ export namespace Venture {
 
     readonly pivotTo: <L extends $LinkNames<Venture.Definition>>(
       type: L,
-    ) => $LinkedType<Venture.Definition, L>['objectSet']; // ObjectSet<LinkedType<Venture.Definition, L>>;
+    ) => $LinkedType<Venture.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Venture.PropertyKeys,

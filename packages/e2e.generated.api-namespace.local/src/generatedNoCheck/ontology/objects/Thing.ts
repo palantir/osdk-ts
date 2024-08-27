@@ -50,7 +50,7 @@ export namespace Thing {
 
     readonly pivotTo: <L extends $LinkNames<Thing.Definition>>(
       type: L,
-    ) => $LinkedType<Thing.Definition, L>['objectSet']; // ObjectSet<LinkedType<Thing.Definition, L>>;
+    ) => $LinkedType<Thing.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Thing.PropertyKeys,

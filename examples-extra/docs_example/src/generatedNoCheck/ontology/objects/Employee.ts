@@ -63,7 +63,7 @@ export namespace Employee {
 
     readonly pivotTo: <L extends $LinkNames<Employee.Definition>>(
       type: L,
-    ) => $LinkedType<Employee.Definition, L>['objectSet']; // ObjectSet<LinkedType<Employee.Definition, L>>;
+    ) => $LinkedType<Employee.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Employee.PropertyKeys,

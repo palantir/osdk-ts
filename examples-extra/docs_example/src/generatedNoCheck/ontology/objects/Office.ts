@@ -64,7 +64,7 @@ export namespace Office {
 
     readonly pivotTo: <L extends $LinkNames<Office.Definition>>(
       type: L,
-    ) => $LinkedType<Office.Definition, L>['objectSet']; // ObjectSet<LinkedType<Office.Definition, L>>;
+    ) => $LinkedType<Office.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Office.PropertyKeys,

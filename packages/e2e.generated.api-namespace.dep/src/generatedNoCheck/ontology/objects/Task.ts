@@ -48,7 +48,7 @@ export namespace Task {
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
     ) => Promise<$AggregationsResults<Task.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet']; // ObjectSet<LinkedType<Task.Definition, L>>;
+    readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Task.PropertyKeys,

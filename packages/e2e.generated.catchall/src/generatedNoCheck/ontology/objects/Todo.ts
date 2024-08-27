@@ -59,7 +59,7 @@ export namespace Todo {
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
     ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet']; // ObjectSet<LinkedType<Todo.Definition, L>>;
+    readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Todo.PropertyKeys,

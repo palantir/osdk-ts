@@ -52,7 +52,7 @@ export namespace DherlihyComplexObject {
 
     readonly pivotTo: <L extends $LinkNames<DherlihyComplexObject.Definition>>(
       type: L,
-    ) => $LinkedType<DherlihyComplexObject.Definition, L>['objectSet']; // ObjectSet<LinkedType<DherlihyComplexObject.Definition, L>>;
+    ) => $LinkedType<DherlihyComplexObject.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends DherlihyComplexObject.PropertyKeys,

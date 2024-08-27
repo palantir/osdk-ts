@@ -53,7 +53,7 @@ export namespace Person {
 
     readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
       type: L,
-    ) => $LinkedType<Person.Definition, L>['objectSet']; // ObjectSet<LinkedType<Person.Definition, L>>;
+    ) => $LinkedType<Person.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends Person.PropertyKeys,

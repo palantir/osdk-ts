@@ -52,7 +52,7 @@ export namespace BuilderDeploymentState {
 
     readonly pivotTo: <L extends $LinkNames<BuilderDeploymentState.Definition>>(
       type: L,
-    ) => $LinkedType<BuilderDeploymentState.Definition, L>['objectSet']; // ObjectSet<LinkedType<BuilderDeploymentState.Definition, L>>;
+    ) => $LinkedType<BuilderDeploymentState.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends BuilderDeploymentState.PropertyKeys,

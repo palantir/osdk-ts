@@ -281,7 +281,7 @@ readonly aggregate: <AO extends $AggregateOpts<${objectDefIdentifier}>>(
 ) => Promise<$AggregationsResults<${objectDefIdentifier}, AO>>;
 
 
-readonly pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
+readonly pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
  ${
     object instanceof EnhancedObjectType
       ? ` 

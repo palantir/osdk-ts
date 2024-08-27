@@ -143,7 +143,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
 
     readonly pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
       type: L,
-    ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>>;
+    ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,

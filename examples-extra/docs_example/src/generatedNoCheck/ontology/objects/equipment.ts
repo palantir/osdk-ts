@@ -50,7 +50,7 @@ export namespace equipment {
 
     readonly pivotTo: <L extends $LinkNames<equipment.Definition>>(
       type: L,
-    ) => $LinkedType<equipment.Definition, L>['objectSet']; // ObjectSet<LinkedType<equipment.Definition, L>>;
+    ) => $LinkedType<equipment.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends equipment.PropertyKeys,

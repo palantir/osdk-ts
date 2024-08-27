@@ -50,7 +50,7 @@ export namespace UsesForeignSpt {
 
     readonly pivotTo: <L extends $LinkNames<UsesForeignSpt.Definition>>(
       type: L,
-    ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt.Definition, L>>;
+    ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends UsesForeignSpt.PropertyKeys,

@@ -54,7 +54,7 @@ export namespace BoundariesUsState {
 
     readonly pivotTo: <L extends $LinkNames<BoundariesUsState.Definition>>(
       type: L,
-    ) => $LinkedType<BoundariesUsState.Definition, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState.Definition, L>>;
+    ) => $LinkedType<BoundariesUsState.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends BoundariesUsState.PropertyKeys,

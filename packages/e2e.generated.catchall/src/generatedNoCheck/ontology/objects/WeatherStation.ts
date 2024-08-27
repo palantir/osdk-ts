@@ -50,7 +50,7 @@ export namespace WeatherStation {
 
     readonly pivotTo: <L extends $LinkNames<WeatherStation.Definition>>(
       type: L,
-    ) => $LinkedType<WeatherStation.Definition, L>['objectSet']; // ObjectSet<LinkedType<WeatherStation.Definition, L>>;
+    ) => $LinkedType<WeatherStation.Definition, L>['objectSet'];
 
     readonly fetchOne: <
       L extends WeatherStation.PropertyKeys,

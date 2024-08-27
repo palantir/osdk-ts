@@ -45,7 +45,7 @@ export namespace FooInterface {
 
     readonly pivotTo: <L extends $LinkNames<FooInterface.Definition>>(
       type: L,
-    ) => $LinkedType<FooInterface.Definition, L>['objectSet']; // ObjectSet<LinkedType<FooInterface.Definition, L>>;
+    ) => $LinkedType<FooInterface.Definition, L>['objectSet'];
 
     readonly fetchPage: <
       L extends FooInterface.PropertyKeys,
