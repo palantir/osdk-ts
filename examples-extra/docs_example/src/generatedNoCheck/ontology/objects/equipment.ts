@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace equipment {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<equipment>;
+  export type PropertyKeys = 'equipmentId' | 'type';
 
   export type Links = never;
 
@@ -44,20 +43,22 @@ export namespace equipment {
     readonly type: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<equipment>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment, AO>,
-    ) => Promise<$AggregationsResults<equipment, AO>>;
+  export interface ObjectSet extends $ObjectSet<equipment.Definition, equipment.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<equipment.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment.Definition, AO>,
+    ) => Promise<$AggregationsResults<equipment.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<equipment>>(type: L) => $LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
+    readonly pivotTo: <L extends $LinkNames<equipment.Definition>>(
+      type: L,
+    ) => $LinkedType<equipment.Definition, L>['objectSet']; // ObjectSet<LinkedType<equipment.Definition, L>>;
 
     readonly fetchOne: <
       L extends equipment.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
-      options?: $SelectArg<equipment, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[equipment.Definition['primaryKeyType']],
+      options?: $SelectArg<equipment.Definition, L, R, S>,
     ) => Promise<
       equipment.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -70,8 +71,8 @@ export namespace equipment {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
-      options?: $SelectArg<equipment, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[equipment.Definition['primaryKeyType']],
+      options?: $SelectArg<equipment.Definition, L, R, S>,
     ) => Promise<
       $Result<
         equipment.OsdkObject<
@@ -87,7 +88,7 @@ export namespace equipment {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<equipment, L, R, A, S>,
+      args?: $FetchPageArgs<equipment.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         equipment.OsdkObject<
@@ -103,7 +104,7 @@ export namespace equipment {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<equipment, L, R, A, S>,
+      args?: $FetchPageArgs<equipment.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -119,7 +120,7 @@ export namespace equipment {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'equipment', equipment>,
+    extends $ObjectTypeDefinition<'equipment', equipment.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: equipment.ObjectSet;
@@ -143,12 +144,8 @@ export namespace equipment {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof equipment.Props = keyof equipment.Props,
-  > = $Osdk<equipment, K | OPTIONS> &
-    Pick<
-      // equipment.Props
-      OPTIONS extends '$notStrict' ? equipment.Props : equipment.StrictProps,
-      K
-    > & {
+  > = $Osdk<equipment.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? equipment.Props : equipment.StrictProps, K> & {
       readonly $link: equipment.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<
@@ -156,9 +153,9 @@ export namespace equipment {
         true
       >;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<equipment>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<equipment.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<equipment, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<equipment.Definition, NEW_Q, K>>;
     } & $OsdkObject<'equipment'>;
 }
 

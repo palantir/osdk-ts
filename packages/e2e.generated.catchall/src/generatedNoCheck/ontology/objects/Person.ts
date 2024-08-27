@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
   PropertyDef as $PropertyDef,
@@ -33,7 +32,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Todo } from './Todo.js';
 
 export namespace Person {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Person>;
+  export type PropertyKeys = 'email';
 
   export interface Links {
     readonly Friends: Person.ObjectSet;
@@ -47,20 +46,22 @@ export namespace Person {
     readonly email: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Person>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person, AO>,
-    ) => Promise<$AggregationsResults<Person, AO>>;
+  export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
+    ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Person>>(type: L) => $LinkedType<Person, L>['objectSet']; // ObjectSet<LinkedType<Person, L>>;
+    readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+      type: L,
+    ) => $LinkedType<Person.Definition, L>['objectSet']; // ObjectSet<LinkedType<Person.Definition, L>>;
 
     readonly fetchOne: <
       L extends Person.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Person['primaryKeyType']],
-      options?: $SelectArg<Person, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
+      options?: $SelectArg<Person.Definition, L, R, S>,
     ) => Promise<
       Person.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -73,8 +74,8 @@ export namespace Person {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Person['primaryKeyType']],
-      options?: $SelectArg<Person, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
+      options?: $SelectArg<Person.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Person.OsdkObject<
@@ -90,7 +91,7 @@ export namespace Person {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Person, L, R, A, S>,
+      args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Person.OsdkObject<
@@ -106,7 +107,7 @@ export namespace Person {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Person, L, R, A, S>,
+      args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -121,7 +122,9 @@ export namespace Person {
     readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
   }
 
-  export interface Definition extends $ObjectTypeDefinition<'Person', Person>, $VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Person', Person.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Person.ObjectSet;
     props: Person.Props;
@@ -144,19 +147,15 @@ export namespace Person {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Person.Props = keyof Person.Props,
-  > = $Osdk<Person, K | OPTIONS> &
-    Pick<
-      // Person.Props
-      OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
-      K
-    > & {
+  > = $Osdk<Person.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
       readonly $link: Person.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Person>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Person.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Person, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Person.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Person'>;
 }
 

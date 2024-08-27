@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
   PropertyDef as $PropertyDef,
@@ -34,10 +33,22 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Venture } from './Venture.js';
 
 export namespace Employee {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Employee>;
+  export type PropertyKeys =
+    | 'id'
+    | 'firstName'
+    | 'email'
+    | 'adUsername'
+    | 'locationName'
+    | 'locationCity'
+    | 'firstFullTimeStartDate'
+    | 'businessTitle'
+    | 'employeeNumber'
+    | 'jobProfile'
+    | 'locationType'
+    | 'favPlace';
 
   export interface Links {
-    readonly lead: $SingleLinkAccessor<Employee>;
+    readonly lead: $SingleLinkAccessor<Employee.Definition>;
     readonly peeps: Employee.ObjectSet;
     readonly ventures: Venture.ObjectSet;
   }
@@ -71,20 +82,22 @@ export namespace Employee {
     readonly locationType: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Employee>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee, AO>,
-    ) => Promise<$AggregationsResults<Employee, AO>>;
+  export interface ObjectSet extends $ObjectSet<Employee.Definition, Employee.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Employee.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee.Definition, AO>,
+    ) => Promise<$AggregationsResults<Employee.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Employee>>(type: L) => $LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
+    readonly pivotTo: <L extends $LinkNames<Employee.Definition>>(
+      type: L,
+    ) => $LinkedType<Employee.Definition, L>['objectSet']; // ObjectSet<LinkedType<Employee.Definition, L>>;
 
     readonly fetchOne: <
       L extends Employee.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Employee['primaryKeyType']],
-      options?: $SelectArg<Employee, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Employee.Definition['primaryKeyType']],
+      options?: $SelectArg<Employee.Definition, L, R, S>,
     ) => Promise<
       Employee.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -97,8 +110,8 @@ export namespace Employee {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Employee['primaryKeyType']],
-      options?: $SelectArg<Employee, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Employee.Definition['primaryKeyType']],
+      options?: $SelectArg<Employee.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Employee.OsdkObject<
@@ -114,7 +127,7 @@ export namespace Employee {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Employee, L, R, A, S>,
+      args?: $FetchPageArgs<Employee.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Employee.OsdkObject<
@@ -130,7 +143,7 @@ export namespace Employee {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Employee, L, R, A, S>,
+      args?: $FetchPageArgs<Employee.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -146,7 +159,7 @@ export namespace Employee {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'Employee', Employee>,
+    extends $ObjectTypeDefinition<'Employee', Employee.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Employee.ObjectSet;
@@ -236,19 +249,15 @@ export namespace Employee {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Employee.Props = keyof Employee.Props,
-  > = $Osdk<Employee, K | OPTIONS> &
-    Pick<
-      // Employee.Props
-      OPTIONS extends '$notStrict' ? Employee.Props : Employee.StrictProps,
-      K
-    > & {
+  > = $Osdk<Employee.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Employee.Props : Employee.StrictProps, K> & {
       readonly $link: Employee.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Employee>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Employee.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Employee, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Employee.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Employee'>;
 }
 

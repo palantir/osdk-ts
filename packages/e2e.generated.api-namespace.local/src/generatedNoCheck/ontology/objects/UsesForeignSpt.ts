@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace UsesForeignSpt {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<UsesForeignSpt>;
+  export type PropertyKeys = 'id' | 'body';
 
   export type Links = never;
 
@@ -44,20 +43,22 @@ export namespace UsesForeignSpt {
     readonly id: $PropType['integer'];
   }
 
-  export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt, AO>,
-    ) => Promise<$AggregationsResults<UsesForeignSpt, AO>>;
+  export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt.Definition, AO>,
+    ) => Promise<$AggregationsResults<UsesForeignSpt.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<UsesForeignSpt>>(type: L) => $LinkedType<UsesForeignSpt, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt, L>>;
+    readonly pivotTo: <L extends $LinkNames<UsesForeignSpt.Definition>>(
+      type: L,
+    ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt.Definition, L>>;
 
     readonly fetchOne: <
       L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[UsesForeignSpt['primaryKeyType']],
-      options?: $SelectArg<UsesForeignSpt, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
+      options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
     ) => Promise<
       UsesForeignSpt.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -70,8 +71,8 @@ export namespace UsesForeignSpt {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[UsesForeignSpt['primaryKeyType']],
-      options?: $SelectArg<UsesForeignSpt, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
+      options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
     ) => Promise<
       $Result<
         UsesForeignSpt.OsdkObject<
@@ -87,7 +88,7 @@ export namespace UsesForeignSpt {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<UsesForeignSpt, L, R, A, S>,
+      args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         UsesForeignSpt.OsdkObject<
@@ -103,7 +104,7 @@ export namespace UsesForeignSpt {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<UsesForeignSpt, L, R, A, S>,
+      args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -119,7 +120,7 @@ export namespace UsesForeignSpt {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt>,
+    extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: UsesForeignSpt.ObjectSet;
@@ -152,19 +153,15 @@ export namespace UsesForeignSpt {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-  > = $Osdk<UsesForeignSpt, K | OPTIONS> &
-    Pick<
-      // UsesForeignSpt.Props
-      OPTIONS extends '$notStrict' ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps,
-      K
-    > & {
+  > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps, K> & {
       readonly $link: UsesForeignSpt.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<UsesForeignSpt>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<UsesForeignSpt.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<UsesForeignSpt, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<UsesForeignSpt.Definition, NEW_Q, K>>;
     } & $OsdkObject<'UsesForeignSpt'>;
 }
 

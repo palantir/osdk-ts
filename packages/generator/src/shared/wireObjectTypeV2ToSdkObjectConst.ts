@@ -92,7 +92,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
   const osdkObjectIdentifier = `${object.shortApiName}.OsdkObject`;
 
   const identifiers: Identifiers = {
-    objectDefIdentifier,
+    objectDefIdentifier: `${object.shortApiName}.Definition`,
     osdkObjectLinksIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
@@ -141,7 +141,8 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
     export namespace ${object.shortApiName} {
 
-      export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
+      ${createPropertyKeys(object)}
+
 
       ${createLinks(ontology, object, "Links")}
 
@@ -237,7 +238,6 @@ export function createOsdkObject(
         ${objectDefIdentifier}, 
         K | OPTIONS
       > & Pick<
-        // ${osdkObjectPropsIdentifier /* FIXME */}
         OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
         , K
 > & {
@@ -475,7 +475,7 @@ ${
               `${
                 definition.multiplicity
                   ? `${linkTarget}.ObjectSet`
-                  : `$SingleLinkAccessor<${linkTarget}>`
+                  : `$SingleLinkAccessor<${linkTarget}.Definition>`
               }
           `,
             ];
@@ -485,4 +485,14 @@ ${
     }
     `
   }`;
+}
+
+export function createPropertyKeys(
+  type: EnhancedObjectType | EnhancedInterfaceType,
+) {
+  return `export type PropertyKeys = ${
+    Object.keys(type.getCleanedUpDefinition(true).properties).map(
+      (a) => maybeStripNamespace(type, a),
+    ).map(a => `"${a}"`).join("|")
+  };`;
 }

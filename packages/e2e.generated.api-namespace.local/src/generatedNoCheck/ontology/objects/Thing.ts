@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace Thing {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Thing>;
+  export type PropertyKeys = 'id' | 'body';
 
   export type Links = never;
 
@@ -44,20 +43,22 @@ export namespace Thing {
     readonly id: $PropType['integer'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Thing>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Thing, AO>,
-    ) => Promise<$AggregationsResults<Thing, AO>>;
+  export interface ObjectSet extends $ObjectSet<Thing.Definition, Thing.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Thing.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Thing.Definition, AO>,
+    ) => Promise<$AggregationsResults<Thing.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Thing>>(type: L) => $LinkedType<Thing, L>['objectSet']; // ObjectSet<LinkedType<Thing, L>>;
+    readonly pivotTo: <L extends $LinkNames<Thing.Definition>>(
+      type: L,
+    ) => $LinkedType<Thing.Definition, L>['objectSet']; // ObjectSet<LinkedType<Thing.Definition, L>>;
 
     readonly fetchOne: <
       L extends Thing.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
-      options?: $SelectArg<Thing, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Thing.Definition['primaryKeyType']],
+      options?: $SelectArg<Thing.Definition, L, R, S>,
     ) => Promise<
       Thing.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -70,8 +71,8 @@ export namespace Thing {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
-      options?: $SelectArg<Thing, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Thing.Definition['primaryKeyType']],
+      options?: $SelectArg<Thing.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Thing.OsdkObject<
@@ -87,7 +88,7 @@ export namespace Thing {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Thing, L, R, A, S>,
+      args?: $FetchPageArgs<Thing.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Thing.OsdkObject<
@@ -103,7 +104,7 @@ export namespace Thing {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Thing, L, R, A, S>,
+      args?: $FetchPageArgs<Thing.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -118,7 +119,9 @@ export namespace Thing {
     readonly asyncIter: () => AsyncIterableIterator<Thing.OsdkObject>;
   }
 
-  export interface Definition extends $ObjectTypeDefinition<'Thing', Thing>, $VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Thing', Thing.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Thing.ObjectSet;
     props: Thing.Props;
@@ -154,19 +157,15 @@ export namespace Thing {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Thing.Props = keyof Thing.Props,
-  > = $Osdk<Thing, K | OPTIONS> &
-    Pick<
-      // Thing.Props
-      OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps,
-      K
-    > & {
+  > = $Osdk<Thing.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps, K> & {
       readonly $link: Thing.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Thing>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Thing.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Thing, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Thing.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Thing'>;
 }
 

@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
   PropertyDef as $PropertyDef,
@@ -33,7 +32,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
 
 export namespace Venture {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Venture>;
+  export type PropertyKeys = 'ventureId' | 'ventureName' | 'ventureStart';
 
   export interface Links {
     readonly employees: Employee.ObjectSet;
@@ -50,20 +49,22 @@ export namespace Venture {
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Venture>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture, AO>,
-    ) => Promise<$AggregationsResults<Venture, AO>>;
+  export interface ObjectSet extends $ObjectSet<Venture.Definition, Venture.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Venture.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture.Definition, AO>,
+    ) => Promise<$AggregationsResults<Venture.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Venture>>(type: L) => $LinkedType<Venture, L>['objectSet']; // ObjectSet<LinkedType<Venture, L>>;
+    readonly pivotTo: <L extends $LinkNames<Venture.Definition>>(
+      type: L,
+    ) => $LinkedType<Venture.Definition, L>['objectSet']; // ObjectSet<LinkedType<Venture.Definition, L>>;
 
     readonly fetchOne: <
       L extends Venture.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
-      options?: $SelectArg<Venture, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
+      options?: $SelectArg<Venture.Definition, L, R, S>,
     ) => Promise<
       Venture.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -76,8 +77,8 @@ export namespace Venture {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
-      options?: $SelectArg<Venture, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
+      options?: $SelectArg<Venture.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Venture.OsdkObject<
@@ -93,7 +94,7 @@ export namespace Venture {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Venture, L, R, A, S>,
+      args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Venture.OsdkObject<
@@ -109,7 +110,7 @@ export namespace Venture {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Venture, L, R, A, S>,
+      args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -124,7 +125,9 @@ export namespace Venture {
     readonly asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
   }
 
-  export interface Definition extends $ObjectTypeDefinition<'Venture', Venture>, $VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Venture', Venture.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Venture.ObjectSet;
     props: Venture.Props;
@@ -154,19 +157,15 @@ export namespace Venture {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Venture.Props = keyof Venture.Props,
-  > = $Osdk<Venture, K | OPTIONS> &
-    Pick<
-      // Venture.Props
-      OPTIONS extends '$notStrict' ? Venture.Props : Venture.StrictProps,
-      K
-    > & {
+  > = $Osdk<Venture.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Venture.Props : Venture.StrictProps, K> & {
       readonly $link: Venture.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Venture>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Venture.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Venture, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Venture.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Venture'>;
 }
 

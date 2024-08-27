@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
   PropertyDef as $PropertyDef,
@@ -34,10 +33,10 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Person } from './Person.js';
 
 export namespace Todo {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Todo>;
+  export type PropertyKeys = 'id' | 'body' | 'text' | 'priority' | 'complete';
 
   export interface Links {
-    readonly Assignee: $SingleLinkAccessor<Person>;
+    readonly Assignee: $SingleLinkAccessor<Person.Definition>;
   }
 
   export interface Props {
@@ -55,20 +54,20 @@ export namespace Todo {
     readonly text: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Todo>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo, AO>,
-    ) => Promise<$AggregationsResults<Todo, AO>>;
+  export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
+    ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Todo>>(type: L) => $LinkedType<Todo, L>['objectSet']; // ObjectSet<LinkedType<Todo, L>>;
+    readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet']; // ObjectSet<LinkedType<Todo.Definition, L>>;
 
     readonly fetchOne: <
       L extends Todo.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Todo['primaryKeyType']],
-      options?: $SelectArg<Todo, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
+      options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
       Todo.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -81,8 +80,8 @@ export namespace Todo {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Todo['primaryKeyType']],
-      options?: $SelectArg<Todo, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
+      options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Todo.OsdkObject<
@@ -98,7 +97,7 @@ export namespace Todo {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Todo, L, R, A, S>,
+      args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Todo.OsdkObject<
@@ -114,7 +113,7 @@ export namespace Todo {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Todo, L, R, A, S>,
+      args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -129,7 +128,9 @@ export namespace Todo {
     readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
   }
 
-  export interface Definition extends $ObjectTypeDefinition<'Todo', Todo>, $VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Todo', Todo.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
@@ -168,19 +169,15 @@ export namespace Todo {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Todo.Props = keyof Todo.Props,
-  > = $Osdk<Todo, K | OPTIONS> &
-    Pick<
-      // Todo.Props
-      OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
-      K
-    > & {
+  > = $Osdk<Todo.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
       readonly $link: Todo.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Todo>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Todo, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Todo'>;
 }
 

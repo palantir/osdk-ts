@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,38 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace ObjectTypeWithAllPropertyTypes {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
+  export type PropertyKeys =
+    | 'id'
+    | 'string'
+    | 'boolean'
+    | 'date'
+    | 'dateTime'
+    | 'decimal'
+    | 'integer'
+    | 'long'
+    | 'short'
+    | 'float'
+    | 'double'
+    | 'byte'
+    | 'attachment'
+    | 'geoPoint'
+    | 'geoShape'
+    | 'stringArray'
+    | 'booleanArray'
+    | 'dateArray'
+    | 'dateTimeArray'
+    | 'decimalArray'
+    | 'integerArray'
+    | 'longArray'
+    | 'shortArray'
+    | 'floatArray'
+    | 'doubleArray'
+    | 'byteArray'
+    | 'attachmentArray'
+    | 'geoPointArray'
+    | 'geoShapeArray'
+    | 'numericTimeseries'
+    | 'stringTimeseries';
 
   export type Links = never;
 
@@ -103,22 +133,25 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export interface ObjectSet
-    extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<ObjectTypeWithAllPropertyTypes, AO>,
-    ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes, AO>>;
+    extends $ObjectSet<ObjectTypeWithAllPropertyTypes.Definition, ObjectTypeWithAllPropertyTypes.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+        ObjectTypeWithAllPropertyTypes.Definition,
+        AO
+      >,
+    ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes>>(
+    readonly pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
       type: L,
-    ) => $LinkedType<ObjectTypeWithAllPropertyTypes, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes, L>>;
+    ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>>;
 
     readonly fetchOne: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
-      options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
     ) => Promise<
       ObjectTypeWithAllPropertyTypes.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -131,8 +164,8 @@ export namespace ObjectTypeWithAllPropertyTypes {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
-      options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
     ) => Promise<
       $Result<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
@@ -148,7 +181,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
@@ -164,7 +197,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -180,7 +213,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
+    extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
@@ -321,9 +354,8 @@ export namespace ObjectTypeWithAllPropertyTypes {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
-  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS> &
+  > = $Osdk<ObjectTypeWithAllPropertyTypes.Definition, K | OPTIONS> &
     Pick<
-      // ObjectTypeWithAllPropertyTypes.Props
       OPTIONS extends '$notStrict' ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
       K
     > & {
@@ -331,9 +363,9 @@ export namespace ObjectTypeWithAllPropertyTypes {
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes.Definition, NEW_Q, K>>;
     } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;
 }
 

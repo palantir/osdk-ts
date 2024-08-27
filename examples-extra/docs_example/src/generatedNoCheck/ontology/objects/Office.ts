@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,13 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace Office {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Office>;
+  export type PropertyKeys =
+    | 'officeId'
+    | 'entrance'
+    | 'occupiedArea'
+    | 'name'
+    | 'meetingRooms'
+    | 'meetingRoomCapacities';
 
   export type Links = never;
 
@@ -52,20 +57,22 @@ export namespace Office {
     readonly officeId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Office>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office, AO>,
-    ) => Promise<$AggregationsResults<Office, AO>>;
+  export interface ObjectSet extends $ObjectSet<Office.Definition, Office.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Office.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office.Definition, AO>,
+    ) => Promise<$AggregationsResults<Office.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Office>>(type: L) => $LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
+    readonly pivotTo: <L extends $LinkNames<Office.Definition>>(
+      type: L,
+    ) => $LinkedType<Office.Definition, L>['objectSet']; // ObjectSet<LinkedType<Office.Definition, L>>;
 
     readonly fetchOne: <
       L extends Office.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
-      options?: $SelectArg<Office, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
+      options?: $SelectArg<Office.Definition, L, R, S>,
     ) => Promise<
       Office.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -78,8 +85,8 @@ export namespace Office {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
-      options?: $SelectArg<Office, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
+      options?: $SelectArg<Office.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Office.OsdkObject<
@@ -95,7 +102,7 @@ export namespace Office {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Office, L, R, A, S>,
+      args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Office.OsdkObject<
@@ -111,7 +118,7 @@ export namespace Office {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Office, L, R, A, S>,
+      args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -126,7 +133,9 @@ export namespace Office {
     readonly asyncIter: () => AsyncIterableIterator<Office.OsdkObject>;
   }
 
-  export interface Definition extends $ObjectTypeDefinition<'Office', Office>, $VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Office', Office.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -166,19 +175,15 @@ export namespace Office {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Office.Props = keyof Office.Props,
-  > = $Osdk<Office, K | OPTIONS> &
-    Pick<
-      // Office.Props
-      OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps,
-      K
-    > & {
+  > = $Osdk<Office.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps, K> & {
       readonly $link: Office.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Office>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Office.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Office, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Office.Definition, NEW_Q, K>>;
     } & $OsdkObject<'Office'>;
 }
 

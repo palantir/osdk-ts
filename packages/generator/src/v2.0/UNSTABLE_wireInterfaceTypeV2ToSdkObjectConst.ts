@@ -20,10 +20,14 @@ import invariant from "tiny-invariant";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
+import type {
+  Identifiers,
+} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import {
   createDefinition,
   createObjectSet,
   createOsdkObject,
+  createPropertyKeys,
   createProps,
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
@@ -113,6 +117,16 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
+  const ids: Identifiers = {
+    objectDefIdentifier: `${interfaceDef.shortApiName}.Definition`,
+    osdkObjectLinksIdentifier,
+    osdkObjectPropsIdentifier,
+    osdkObjectStrictPropsIdentifier,
+    objectSetIdentifier,
+    osdkObjectIdentifier,
+    propertyKeysIdentifier,
+  };
+
   function getV2Types() {
     return `import type {
       AggregateOpts as $AggregateOpts,
@@ -179,55 +193,20 @@ ${
     `
     }
 
-        export namespace ${interfaceDef.shortApiName} {
+    export namespace ${interfaceDef.shortApiName} {
 
-export type PropertyKeys = ${
-      Object.keys(definition.properties).map(maybeStripNamespace).map(a =>
-        `"${a}"`
-      ).join("|")
-    };
+      ${createPropertyKeys(interfaceDef)}
 
 
       ${createProps(interfaceDef, "Props", false)}
       ${createProps(interfaceDef, "StrictProps", true)}
 
 
-      ${
-      createObjectSet(interfaceDef, {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
+      ${createObjectSet(interfaceDef, ids)}
 
+      ${createDefinition(interfaceDef, ontology, "Definition", ids)}
 
-        ${
-      createDefinition(interfaceDef, ontology, "Definition", {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
-
-      ${
-      createOsdkObject(interfaceDef, "OsdkObject", {
-        objectDefIdentifier,
-        osdkObjectLinksIdentifier,
-        osdkObjectPropsIdentifier,
-        osdkObjectStrictPropsIdentifier,
-        objectSetIdentifier,
-        osdkObjectIdentifier,
-        propertyKeysIdentifier,
-      })
-    }
+      ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
       
     }    
 
@@ -250,7 +229,7 @@ export type PropertyKeys = ${
   return `${imports.join("\n")}
     ${v2 ? getV2Types() : ""}
 
-    export const ${interfaceDef.shortApiName}: ${objectDefIdentifier} = {
+    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName}.Definition = {
       osdkMetadata: $osdkMetadata,
       objectSet: undefined as any,
       props: undefined as any,

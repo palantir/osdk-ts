@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace Task {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Task>;
+  export type PropertyKeys = 'taskId' | 'body';
 
   export type Links = never;
 
@@ -44,20 +43,20 @@ export namespace Task {
     readonly taskId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Task>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task, AO>,
-    ) => Promise<$AggregationsResults<Task, AO>>;
+  export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<Task.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
+    ) => Promise<$AggregationsResults<Task.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Task>>(type: L) => $LinkedType<Task, L>['objectSet']; // ObjectSet<LinkedType<Task, L>>;
+    readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet']; // ObjectSet<LinkedType<Task.Definition, L>>;
 
     readonly fetchOne: <
       L extends Task.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Task['primaryKeyType']],
-      options?: $SelectArg<Task, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
+      options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
       Task.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -70,8 +69,8 @@ export namespace Task {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[Task['primaryKeyType']],
-      options?: $SelectArg<Task, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
+      options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Task.OsdkObject<
@@ -87,7 +86,7 @@ export namespace Task {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Task, L, R, A, S>,
+      args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Task.OsdkObject<
@@ -103,7 +102,7 @@ export namespace Task {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<Task, L, R, A, S>,
+      args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -119,7 +118,7 @@ export namespace Task {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'com.example.dep.Task', Task>,
+    extends $ObjectTypeDefinition<'com.example.dep.Task', Task.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Task.ObjectSet;
@@ -148,19 +147,15 @@ export namespace Task {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Task.Props = keyof Task.Props,
-  > = $Osdk<Task, K | OPTIONS> &
-    Pick<
-      // Task.Props
-      OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
-      K
-    > & {
+  > = $Osdk<Task.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps, K> & {
       readonly $link: Task.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<Task>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Task.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Task, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<Task.Definition, NEW_Q, K>>;
     } & $OsdkObject<'com.example.dep.Task'>;
 }
 

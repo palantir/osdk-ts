@@ -1,5 +1,4 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
   ObjectTypeDefinition as $ObjectTypeDefinition,
   PropertyDef as $PropertyDef,
   VersionBound as $VersionBound,
@@ -31,7 +30,7 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace BoundariesUsState {
-  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
+  export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';
 
   export type Links = never;
 
@@ -48,22 +47,22 @@ export namespace BoundariesUsState {
     readonly usState: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<BoundariesUsState>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState, AO>,
-    ) => Promise<$AggregationsResults<BoundariesUsState, AO>>;
+  export interface ObjectSet extends $ObjectSet<BoundariesUsState.Definition, BoundariesUsState.ObjectSet> {
+    readonly aggregate: <AO extends $AggregateOpts<BoundariesUsState.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState.Definition, AO>,
+    ) => Promise<$AggregationsResults<BoundariesUsState.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<BoundariesUsState>>(
+    readonly pivotTo: <L extends $LinkNames<BoundariesUsState.Definition>>(
       type: L,
-    ) => $LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
+    ) => $LinkedType<BoundariesUsState.Definition, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState.Definition, L>>;
 
     readonly fetchOne: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
-      options?: $SelectArg<BoundariesUsState, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
+      options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
     ) => Promise<
       BoundariesUsState.OsdkObject<
         (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
@@ -76,8 +75,8 @@ export namespace BoundariesUsState {
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
-      options?: $SelectArg<BoundariesUsState, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
+      options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
     ) => Promise<
       $Result<
         BoundariesUsState.OsdkObject<
@@ -93,7 +92,7 @@ export namespace BoundariesUsState {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
+      args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         BoundariesUsState.OsdkObject<
@@ -109,7 +108,7 @@ export namespace BoundariesUsState {
       const A extends $Augments,
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
+      args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
@@ -125,7 +124,7 @@ export namespace BoundariesUsState {
   }
 
   export interface Definition
-    extends $ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState>,
+    extends $ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState.Definition>,
       $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: BoundariesUsState.ObjectSet;
@@ -159,19 +158,15 @@ export namespace BoundariesUsState {
   export type OsdkObject<
     OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
-  > = $Osdk<BoundariesUsState, K | OPTIONS> &
-    Pick<
-      // BoundariesUsState.Props
-      OPTIONS extends '$notStrict' ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
-      K
-    > & {
+  > = $Osdk<BoundariesUsState.Definition, K | OPTIONS> &
+    Pick<OPTIONS extends '$notStrict' ? BoundariesUsState.Props : BoundariesUsState.StrictProps, K> & {
       readonly $link: BoundariesUsState.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      readonly $as: <NEW_Q extends $ValidToFrom<BoundariesUsState>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<BoundariesUsState.Definition>>(
         type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<BoundariesUsState, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<BoundariesUsState.Definition, NEW_Q, K>>;
     } & $OsdkObject<'BoundariesUsState'>;
 }
 
