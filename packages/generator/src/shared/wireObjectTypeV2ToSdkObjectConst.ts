@@ -117,14 +117,14 @@ Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
 ,FetchPageResult,
 FetchPageArgs,OsdkObjectPropertyType,
     MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
-    
+
     import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
 
     export namespace ${object.shortApiName} {
 
       export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
 
-      ${createLinks(ontology, object, "Links", identifiers)}
+      ${createLinks(ontology, object, "Links")}
 
       ${createProps(object, "Props", false)}
       ${createProps(object, "StrictProps", true)}
@@ -428,11 +428,10 @@ export function createDefinition(
   `;
 }
 
-function createLinks(
+export function createLinks(
   ontology: EnhancedOntologyDefinition,
   object: EnhancedObjectType | EnhancedInterfaceType,
   identifier: string,
-  ids: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
 

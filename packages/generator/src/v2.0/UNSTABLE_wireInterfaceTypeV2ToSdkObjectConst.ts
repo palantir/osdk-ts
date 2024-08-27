@@ -25,7 +25,6 @@ import {
   createObjectSet,
   createOsdkObject,
   createProps,
-  getObjectDefIdentifier,
 } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
@@ -168,7 +167,6 @@ export type PropertyKeys = ${
         `"${a}"`
       ).join("|")
     };
-
 
 
       ${createProps(interfaceDef, "Props", false)}
