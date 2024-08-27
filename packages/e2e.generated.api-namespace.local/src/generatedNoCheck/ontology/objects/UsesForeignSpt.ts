@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -57,10 +58,7 @@ export namespace UsesForeignSpt {
     >(
       primaryKey: $PropertyValueClientToWire[UsesForeignSpt['primaryKeyType']],
       options?: $SelectArg<UsesForeignSpt, L, R, S>,
-    ) => Promise<
-      UsesForeignSpt.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<UsesForeignSpt, L, R, S>
-    >;
+    ) => Promise<UsesForeignSpt.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends UsesForeignSpt.PropertyKeys,
@@ -69,12 +67,7 @@ export namespace UsesForeignSpt {
     >(
       primaryKey: $PropertyValueClientToWire[UsesForeignSpt['primaryKeyType']],
       options?: $SelectArg<UsesForeignSpt, L, R, S>,
-    ) => Promise<
-      $Result<
-        UsesForeignSpt.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<UsesForeignSpt, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<UsesForeignSpt.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends UsesForeignSpt.PropertyKeys,
@@ -83,10 +76,7 @@ export namespace UsesForeignSpt {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<UsesForeignSpt, L, R, A, S>,
-    ) => Promise<
-      $PageResult<UsesForeignSpt.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<UsesForeignSpt, L, R, S>
-    >;
+    ) => Promise<$PageResult<UsesForeignSpt.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends UsesForeignSpt.PropertyKeys,
@@ -95,12 +85,7 @@ export namespace UsesForeignSpt {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<UsesForeignSpt, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<UsesForeignSpt.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<UsesForeignSpt, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<UsesForeignSpt.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<UsesForeignSpt.OsdkObject>;
   }
@@ -139,7 +124,11 @@ export namespace UsesForeignSpt {
   export type OsdkObject<
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
     S extends boolean = true,
-  > = $Osdk<UsesForeignSpt, K | (S extends false ? '$notStrict' : '$strict')> &
+    R extends boolean = false,
+  > = $Osdk<
+    UsesForeignSpt,
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
+  > &
     Pick<
       // UsesForeignSpt.Props
       S extends false ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps,

@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -118,10 +119,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
-    ) => Promise<
-      ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<ObjectTypeWithAllPropertyTypes, L, R, S>
-    >;
+    ) => Promise<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -130,12 +128,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
-    ) => Promise<
-      $Result<
-        ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<ObjectTypeWithAllPropertyTypes, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -144,10 +137,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
-    ) => Promise<
-      $PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<ObjectTypeWithAllPropertyTypes, L, R, S>
-    >;
+    ) => Promise<$PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -156,12 +146,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<ObjectTypeWithAllPropertyTypes, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
   }
@@ -308,7 +293,11 @@ export namespace ObjectTypeWithAllPropertyTypes {
   export type OsdkObject<
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
     S extends boolean = true,
-  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | (S extends false ? '$notStrict' : '$strict')> &
+    R extends boolean = false,
+  > = $Osdk<
+    ObjectTypeWithAllPropertyTypes,
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
+  > &
     Pick<
       // ObjectTypeWithAllPropertyTypes.Props
       S extends false ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,

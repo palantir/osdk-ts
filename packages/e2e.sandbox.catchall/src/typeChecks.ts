@@ -93,6 +93,7 @@ export async function typeChecks(client: Client) {
     const peeps = await employee.$link.peeps.fetchPage({
       $select: ["adUsername", "employeeNumber"],
     });
+
     expectType<
       TypeOf<
         typeof peeps,

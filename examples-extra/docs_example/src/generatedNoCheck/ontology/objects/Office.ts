@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -65,10 +66,7 @@ export namespace Office {
     >(
       primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
       options?: $SelectArg<Office, L, R, S>,
-    ) => Promise<
-      Office.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<Office, L, R, S>
-    >;
+    ) => Promise<Office.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends Office.PropertyKeys,
@@ -77,12 +75,7 @@ export namespace Office {
     >(
       primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
       options?: $SelectArg<Office, L, R, S>,
-    ) => Promise<
-      $Result<
-        Office.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<Office, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<Office.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends Office.PropertyKeys,
@@ -91,10 +84,7 @@ export namespace Office {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office, L, R, A, S>,
-    ) => Promise<
-      $PageResult<Office.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<Office, L, R, S>
-    >;
+    ) => Promise<$PageResult<Office.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends Office.PropertyKeys,
@@ -103,12 +93,7 @@ export namespace Office {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<Office.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<Office, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<Office.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<Office.OsdkObject>;
   }
@@ -150,9 +135,13 @@ export namespace Office {
     };
   }
 
-  export type OsdkObject<K extends keyof Office.Props = keyof Office.Props, S extends boolean = true> = $Osdk<
+  export type OsdkObject<
+    K extends keyof Office.Props = keyof Office.Props,
+    S extends boolean = true,
+    R extends boolean = false,
+  > = $Osdk<
     Office,
-    K | (S extends false ? '$notStrict' : '$strict')
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
   > &
     Pick<
       // Office.Props

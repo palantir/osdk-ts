@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -61,10 +62,7 @@ export namespace DherlihyComplexObject {
     >(
       primaryKey: $PropertyValueClientToWire[DherlihyComplexObject['primaryKeyType']],
       options?: $SelectArg<DherlihyComplexObject, L, R, S>,
-    ) => Promise<
-      DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<DherlihyComplexObject, L, R, S>
-    >;
+    ) => Promise<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends DherlihyComplexObject.PropertyKeys,
@@ -73,12 +71,7 @@ export namespace DherlihyComplexObject {
     >(
       primaryKey: $PropertyValueClientToWire[DherlihyComplexObject['primaryKeyType']],
       options?: $SelectArg<DherlihyComplexObject, L, R, S>,
-    ) => Promise<
-      $Result<
-        DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<DherlihyComplexObject, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends DherlihyComplexObject.PropertyKeys,
@@ -87,10 +80,7 @@ export namespace DherlihyComplexObject {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<DherlihyComplexObject, L, R, A, S>,
-    ) => Promise<
-      $PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<DherlihyComplexObject, L, R, S>
-    >;
+    ) => Promise<$PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends DherlihyComplexObject.PropertyKeys,
@@ -99,12 +89,7 @@ export namespace DherlihyComplexObject {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<DherlihyComplexObject, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<DherlihyComplexObject, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<DherlihyComplexObject.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<DherlihyComplexObject.OsdkObject>;
   }
@@ -139,7 +124,11 @@ export namespace DherlihyComplexObject {
   export type OsdkObject<
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
     S extends boolean = true,
-  > = $Osdk<DherlihyComplexObject, K | (S extends false ? '$notStrict' : '$strict')> &
+    R extends boolean = false,
+  > = $Osdk<
+    DherlihyComplexObject,
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
+  > &
     Pick<
       // DherlihyComplexObject.Props
       S extends false ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps,

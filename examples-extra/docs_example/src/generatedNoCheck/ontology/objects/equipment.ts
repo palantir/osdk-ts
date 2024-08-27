@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -57,10 +58,7 @@ export namespace equipment {
     >(
       primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
       options?: $SelectArg<equipment, L, R, S>,
-    ) => Promise<
-      equipment.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<equipment, L, R, S>
-    >;
+    ) => Promise<equipment.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends equipment.PropertyKeys,
@@ -69,12 +67,7 @@ export namespace equipment {
     >(
       primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
       options?: $SelectArg<equipment, L, R, S>,
-    ) => Promise<
-      $Result<
-        equipment.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<equipment, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<equipment.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends equipment.PropertyKeys,
@@ -83,10 +76,7 @@ export namespace equipment {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment, L, R, A, S>,
-    ) => Promise<
-      $PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<equipment, L, R, S>
-    >;
+    ) => Promise<$PageResult<equipment.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends equipment.PropertyKeys,
@@ -95,12 +85,7 @@ export namespace equipment {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<equipment, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<equipment.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<equipment.OsdkObject>;
   }
@@ -127,9 +112,13 @@ export namespace equipment {
     };
   }
 
-  export type OsdkObject<K extends keyof equipment.Props = keyof equipment.Props, S extends boolean = true> = $Osdk<
+  export type OsdkObject<
+    K extends keyof equipment.Props = keyof equipment.Props,
+    S extends boolean = true,
+    R extends boolean = false,
+  > = $Osdk<
     equipment,
-    K | (S extends false ? '$notStrict' : '$strict')
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
   > &
     Pick<
       // equipment.Props

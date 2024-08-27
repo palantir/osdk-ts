@@ -11,6 +11,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -63,10 +64,7 @@ export namespace Venture {
     >(
       primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
       options?: $SelectArg<Venture, L, R, S>,
-    ) => Promise<
-      Venture.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<Venture, L, R, S>
-    >;
+    ) => Promise<Venture.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends Venture.PropertyKeys,
@@ -75,12 +73,7 @@ export namespace Venture {
     >(
       primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
       options?: $SelectArg<Venture, L, R, S>,
-    ) => Promise<
-      $Result<
-        Venture.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<Venture, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<Venture.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends Venture.PropertyKeys,
@@ -89,10 +82,7 @@ export namespace Venture {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture, L, R, A, S>,
-    ) => Promise<
-      $PageResult<Venture.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<Venture, L, R, S>
-    >;
+    ) => Promise<$PageResult<Venture.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends Venture.PropertyKeys,
@@ -101,12 +91,7 @@ export namespace Venture {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<Venture.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<Venture, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<Venture.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
   }
@@ -138,9 +123,13 @@ export namespace Venture {
     };
   }
 
-  export type OsdkObject<K extends keyof Venture.Props = keyof Venture.Props, S extends boolean = true> = $Osdk<
+  export type OsdkObject<
+    K extends keyof Venture.Props = keyof Venture.Props,
+    S extends boolean = true,
+    R extends boolean = false,
+  > = $Osdk<
     Venture,
-    K | (S extends false ? '$notStrict' : '$strict')
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
   > &
     Pick<
       // Venture.Props

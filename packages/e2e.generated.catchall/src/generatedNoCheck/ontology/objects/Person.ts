@@ -11,6 +11,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -60,10 +61,7 @@ export namespace Person {
     >(
       primaryKey: $PropertyValueClientToWire[Person['primaryKeyType']],
       options?: $SelectArg<Person, L, R, S>,
-    ) => Promise<
-      Person.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<Person, L, R, S>
-    >;
+    ) => Promise<Person.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends Person.PropertyKeys,
@@ -72,12 +70,7 @@ export namespace Person {
     >(
       primaryKey: $PropertyValueClientToWire[Person['primaryKeyType']],
       options?: $SelectArg<Person, L, R, S>,
-    ) => Promise<
-      $Result<
-        Person.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<Person, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<Person.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends Person.PropertyKeys,
@@ -86,10 +79,7 @@ export namespace Person {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Person, L, R, A, S>,
-    ) => Promise<
-      $PageResult<Person.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<Person, L, R, S>
-    >;
+    ) => Promise<$PageResult<Person.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends Person.PropertyKeys,
@@ -98,12 +88,7 @@ export namespace Person {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Person, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<Person.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<Person, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<Person.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
   }
@@ -128,9 +113,13 @@ export namespace Person {
     };
   }
 
-  export type OsdkObject<K extends keyof Person.Props = keyof Person.Props, S extends boolean = true> = $Osdk<
+  export type OsdkObject<
+    K extends keyof Person.Props = keyof Person.Props,
+    S extends boolean = true,
+    R extends boolean = false,
+  > = $Osdk<
     Person,
-    K | (S extends false ? '$notStrict' : '$strict')
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
   > &
     Pick<
       // Person.Props

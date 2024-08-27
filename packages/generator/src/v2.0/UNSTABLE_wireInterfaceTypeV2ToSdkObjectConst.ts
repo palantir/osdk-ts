@@ -120,6 +120,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
       AggregationsResults as $AggregationsResults, 
       Augments as $Augments,
       ConvertProps as $ConvertProps,
+      DefaultToFalse as $DefaultToFalse,
       FetchPageArgs as $FetchPageArgs,
       FetchPageResult as $FetchPageResult,
       LinkedType as $LinkedType,

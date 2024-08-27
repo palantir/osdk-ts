@@ -9,6 +9,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -49,10 +50,7 @@ export namespace SomeInterface {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<SomeInterface, L, R, A, S>,
-    ) => Promise<
-      $PageResult<SomeInterface.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<SomeInterface, L, R, S>
-    >;
+    ) => Promise<$PageResult<SomeInterface.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends SomeInterface.PropertyKeys,
@@ -61,12 +59,7 @@ export namespace SomeInterface {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<SomeInterface, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<SomeInterface.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<SomeInterface, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<SomeInterface.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
   }
@@ -92,7 +85,11 @@ export namespace SomeInterface {
   export type OsdkObject<
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
     S extends boolean = true,
-  > = $Osdk<SomeInterface, K | (S extends false ? '$notStrict' : '$strict')> &
+    R extends boolean = false,
+  > = $Osdk<
+    SomeInterface,
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
+  > &
     Pick<
       // SomeInterface.Props
       S extends false ? SomeInterface.Props : SomeInterface.StrictProps,

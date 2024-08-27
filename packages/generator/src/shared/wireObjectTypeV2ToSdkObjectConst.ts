@@ -108,6 +108,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
       AggregationsResults as $AggregationsResults, 
       Augments as $Augments,
       ConvertProps as $ConvertProps,
+      DefaultToFalse as $DefaultToFalse,
       FetchPageArgs as $FetchPageArgs,
       FetchPageResult as $FetchPageResult,
       LinkedType as $LinkedType,
@@ -229,11 +230,13 @@ export function createOsdkObject(
   return `
   export type ${identifier}<
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
-      S extends boolean = true
+      S extends boolean = true,
+      R extends boolean = false
+
   > 
     = $Osdk<
         ${objectDefIdentifier}, 
-        K | (S extends false ? "$notStrict": "$strict")
+        K | (S extends false ? "$notStrict": "$strict") | ($DefaultToFalse<R> extends true ? "$rid" : never)
       > & Pick<
         // ${osdkObjectPropsIdentifier /* FIXME */}
         S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
@@ -291,8 +294,7 @@ fetchOne: <
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<
-   ${osdkObjectIdentifier}<L, S extends false ? false : true>
-  //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+   ${osdkObjectIdentifier}<L, S extends false ? false : true, R>
    >
   ;
 
@@ -304,8 +306,7 @@ fetchOneWithErrors: <
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<$Result<
-        ${osdkObjectIdentifier}<L, S extends false ? false : true>
-  //  SingleOsdkResult<${objectDefIdentifier}, L, R, S>
+        ${osdkObjectIdentifier}<L, S extends false ? false : true, R>
    >> 
   
 ;
@@ -322,8 +323,7 @@ fetchPage: <
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<
-  $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-// FetchPageResult<${objectDefIdentifier}, L, R, S>
+  $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true, R>>
 >;
 
 fetchPageWithErrors: <
@@ -334,8 +334,7 @@ fetchPageWithErrors: <
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<$Result<
- $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true>>
-//  FetchPageResult<${objectDefIdentifier}, L, R, S>
+ $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true, R>>
  >>;
 
 asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
@@ -374,9 +373,6 @@ ${
           `$PropType[${JSON.stringify(propertyDefinition.type)}]${
             propertyDefinition.multiplicity ? "[]" : ""
           }${propertyDefinition.nullable || !strict ? `| undefined` : ""}`,
-          // `OsdkObjectPropertyType<${JSON.stringify(propertyDefinition)},
-          //   ${strict}
-          //   >`,
         ] as [string, string];
       },
     })

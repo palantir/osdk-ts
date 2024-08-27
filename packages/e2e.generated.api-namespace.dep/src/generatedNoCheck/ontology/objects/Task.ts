@@ -10,6 +10,7 @@ import type {
   AggregationsResults as $AggregationsResults,
   Augments as $Augments,
   ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
@@ -57,10 +58,7 @@ export namespace Task {
     >(
       primaryKey: $PropertyValueClientToWire[Task['primaryKeyType']],
       options?: $SelectArg<Task, L, R, S>,
-    ) => Promise<
-      Task.OsdkObject<L, S extends false ? false : true>
-      //  SingleOsdkResult<Task, L, R, S>
-    >;
+    ) => Promise<Task.OsdkObject<L, S extends false ? false : true, R>>;
 
     fetchOneWithErrors: <
       L extends Task.PropertyKeys,
@@ -69,12 +67,7 @@ export namespace Task {
     >(
       primaryKey: $PropertyValueClientToWire[Task['primaryKeyType']],
       options?: $SelectArg<Task, L, R, S>,
-    ) => Promise<
-      $Result<
-        Task.OsdkObject<L, S extends false ? false : true>
-        //  SingleOsdkResult<Task, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<Task.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPage: <
       L extends Task.PropertyKeys,
@@ -83,10 +76,7 @@ export namespace Task {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Task, L, R, A, S>,
-    ) => Promise<
-      $PageResult<Task.OsdkObject<L, S extends false ? false : true>>
-      // FetchPageResult<Task, L, R, S>
-    >;
+    ) => Promise<$PageResult<Task.OsdkObject<L, S extends false ? false : true, R>>>;
 
     fetchPageWithErrors: <
       L extends Task.PropertyKeys,
@@ -95,12 +85,7 @@ export namespace Task {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Task, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<Task.OsdkObject<L, S extends false ? false : true>>
-        //  FetchPageResult<Task, L, R, S>
-      >
-    >;
+    ) => Promise<$Result<$PageResult<Task.OsdkObject<L, S extends false ? false : true, R>>>>;
 
     asyncIter: () => AsyncIterableIterator<Task.OsdkObject>;
   }
@@ -132,9 +117,13 @@ export namespace Task {
     spts: {};
   }
 
-  export type OsdkObject<K extends keyof Task.Props = keyof Task.Props, S extends boolean = true> = $Osdk<
+  export type OsdkObject<
+    K extends keyof Task.Props = keyof Task.Props,
+    S extends boolean = true,
+    R extends boolean = false,
+  > = $Osdk<
     Task,
-    K | (S extends false ? '$notStrict' : '$strict')
+    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
   > &
     Pick<
       // Task.Props

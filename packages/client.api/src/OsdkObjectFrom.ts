@@ -139,8 +139,12 @@ export type Osdk<
       NEW_Q,
       ConvertProps<Q, NEW_Q, P>
     >;
-    $rid: string | undefined;
-  };
+  }
+  // We are hiding the $rid field if it wasn't requested as we want to discourage its use
+  & (IsNever<P> extends true ? {}
+    : string extends P ? {}
+    : "$rid" extends P ? { $rid: string }
+    : {});
 // & {
 //   [
 //     PP in keyof Q["properties"] as (
@@ -194,16 +198,7 @@ export type Osdk<
 // & {
 //   // $uniqueId: string; // will be dynamic
 
-//   // $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
-//   //   : never;
-
-//   $as: any;
 // };
-// We are hiding the $rid field if it wasn't requested as we want to discourage its use
-// & (IsNever<P> extends true ? {}
-//   : string extends P ? {}
-//   : "$rid" extends P ? { $rid: string }
-//   : {});
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,

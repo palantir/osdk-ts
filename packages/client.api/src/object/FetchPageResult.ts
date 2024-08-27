@@ -58,7 +58,7 @@ export type SingleOsdkResult<
 > = Osdk<
   Q,
   UnionIfTrue<
-    UnionIfTrue<L, R extends false ? false : true, "$rid">, // DefaultToFalse<R>
+    UnionIfTrue<L, DefaultToFalse<R>, "$rid">,
     S extends false ? true : false,
     "$notStrict"
   >
