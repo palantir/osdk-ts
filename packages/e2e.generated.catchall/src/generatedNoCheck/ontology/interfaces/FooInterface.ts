@@ -52,7 +52,14 @@ export namespace FooInterface {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<FooInterface, L, R, A, S>,
-    ) => Promise<$PageResult<FooInterface.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        FooInterface.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends FooInterface.PropertyKeys,
@@ -61,7 +68,16 @@ export namespace FooInterface {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<FooInterface, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<FooInterface.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          FooInterface.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<FooInterface.OsdkObject>;
   }
@@ -91,16 +107,12 @@ export namespace FooInterface {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof FooInterface.Props = keyof FooInterface.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    FooInterface,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<FooInterface, K | OPTIONS> &
     Pick<
       // FooInterface.Props
-      S extends false ? FooInterface.Props : FooInterface.StrictProps,
+      OPTIONS extends '$notStrict' ? FooInterface.Props : FooInterface.StrictProps,
       K
     > & {
       $link: OsdkObjectLinks$FooInterface;

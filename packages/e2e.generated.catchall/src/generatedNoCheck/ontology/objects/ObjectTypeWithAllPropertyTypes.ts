@@ -119,7 +119,12 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
-    ) => Promise<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      ObjectTypeWithAllPropertyTypes.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -128,7 +133,14 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
-    ) => Promise<$Result<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        ObjectTypeWithAllPropertyTypes.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -137,7 +149,14 @@ export namespace ObjectTypeWithAllPropertyTypes {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
-    ) => Promise<$PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        ObjectTypeWithAllPropertyTypes.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
@@ -146,7 +165,16 @@ export namespace ObjectTypeWithAllPropertyTypes {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          ObjectTypeWithAllPropertyTypes.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
   }
@@ -291,16 +319,12 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    ObjectTypeWithAllPropertyTypes,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | OPTIONS> &
     Pick<
       // ObjectTypeWithAllPropertyTypes.Props
-      S extends false ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
+      OPTIONS extends '$notStrict' ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
       K
     > & {
       $link: ObjectTypeWithAllPropertyTypes.Links;

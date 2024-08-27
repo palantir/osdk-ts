@@ -58,7 +58,12 @@ export namespace equipment {
     >(
       primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
       options?: $SelectArg<equipment, L, R, S>,
-    ) => Promise<equipment.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      equipment.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends equipment.PropertyKeys,
@@ -67,7 +72,14 @@ export namespace equipment {
     >(
       primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
       options?: $SelectArg<equipment, L, R, S>,
-    ) => Promise<$Result<equipment.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        equipment.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends equipment.PropertyKeys,
@@ -76,7 +88,14 @@ export namespace equipment {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment, L, R, A, S>,
-    ) => Promise<$PageResult<equipment.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        equipment.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends equipment.PropertyKeys,
@@ -85,7 +104,16 @@ export namespace equipment {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<equipment.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          equipment.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<equipment.OsdkObject>;
   }
@@ -113,16 +141,12 @@ export namespace equipment {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof equipment.Props = keyof equipment.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    equipment,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<equipment, K | OPTIONS> &
     Pick<
       // equipment.Props
-      S extends false ? equipment.Props : equipment.StrictProps,
+      OPTIONS extends '$notStrict' ? equipment.Props : equipment.StrictProps,
       K
     > & {
       $link: equipment.Links;

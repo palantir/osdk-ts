@@ -64,7 +64,12 @@ export namespace Venture {
     >(
       primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
       options?: $SelectArg<Venture, L, R, S>,
-    ) => Promise<Venture.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      Venture.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends Venture.PropertyKeys,
@@ -73,7 +78,14 @@ export namespace Venture {
     >(
       primaryKey: $PropertyValueClientToWire[Venture['primaryKeyType']],
       options?: $SelectArg<Venture, L, R, S>,
-    ) => Promise<$Result<Venture.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        Venture.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends Venture.PropertyKeys,
@@ -82,7 +94,14 @@ export namespace Venture {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture, L, R, A, S>,
-    ) => Promise<$PageResult<Venture.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        Venture.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends Venture.PropertyKeys,
@@ -91,7 +110,16 @@ export namespace Venture {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<Venture.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          Venture.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
   }
@@ -124,16 +152,12 @@ export namespace Venture {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Venture.Props = keyof Venture.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    Venture,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<Venture, K | OPTIONS> &
     Pick<
       // Venture.Props
-      S extends false ? Venture.Props : Venture.StrictProps,
+      OPTIONS extends '$notStrict' ? Venture.Props : Venture.StrictProps,
       K
     > & {
       $link: Venture.Links;

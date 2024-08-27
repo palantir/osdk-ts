@@ -62,7 +62,12 @@ export namespace BuilderDeploymentState {
     >(
       primaryKey: $PropertyValueClientToWire[BuilderDeploymentState['primaryKeyType']],
       options?: $SelectArg<BuilderDeploymentState, L, R, S>,
-    ) => Promise<BuilderDeploymentState.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      BuilderDeploymentState.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends BuilderDeploymentState.PropertyKeys,
@@ -71,7 +76,14 @@ export namespace BuilderDeploymentState {
     >(
       primaryKey: $PropertyValueClientToWire[BuilderDeploymentState['primaryKeyType']],
       options?: $SelectArg<BuilderDeploymentState, L, R, S>,
-    ) => Promise<$Result<BuilderDeploymentState.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        BuilderDeploymentState.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends BuilderDeploymentState.PropertyKeys,
@@ -80,7 +92,14 @@ export namespace BuilderDeploymentState {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BuilderDeploymentState, L, R, A, S>,
-    ) => Promise<$PageResult<BuilderDeploymentState.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        BuilderDeploymentState.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends BuilderDeploymentState.PropertyKeys,
@@ -89,7 +108,16 @@ export namespace BuilderDeploymentState {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BuilderDeploymentState, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<BuilderDeploymentState.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          BuilderDeploymentState.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<BuilderDeploymentState.OsdkObject>;
   }
@@ -122,16 +150,12 @@ export namespace BuilderDeploymentState {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    BuilderDeploymentState,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<BuilderDeploymentState, K | OPTIONS> &
     Pick<
       // BuilderDeploymentState.Props
-      S extends false ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps,
+      OPTIONS extends '$notStrict' ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps,
       K
     > & {
       $link: BuilderDeploymentState.Links;

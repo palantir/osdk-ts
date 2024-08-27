@@ -229,17 +229,16 @@ export function createOsdkObject(
   const definition = object.getCleanedUpDefinition(true);
   return `
   export type ${identifier}<
+      OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
-      S extends boolean = true,
-      R extends boolean = false
 
   > 
     = $Osdk<
         ${objectDefIdentifier}, 
-        K | (S extends false ? "$notStrict": "$strict") | ($DefaultToFalse<R> extends true ? "$rid" : never)
+        K | OPTIONS
       > & Pick<
         // ${osdkObjectPropsIdentifier /* FIXME */}
-        S extends false ?  ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
+        OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
         , K
 > & {
     $link: ${osdkObjectLinksIdentifier};
@@ -294,8 +293,10 @@ fetchOne: <
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<
-   ${osdkObjectIdentifier}<L, S extends false ? false : true, R>
-   >
+   ${osdkObjectIdentifier}<
+    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never:  "$rid" ),
+    L
+   >>
   ;
 
 fetchOneWithErrors: <
@@ -306,7 +307,10 @@ fetchOneWithErrors: <
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<$Result<
-        ${osdkObjectIdentifier}<L, S extends false ? false : true, R>
+        ${osdkObjectIdentifier}<
+        (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false?never: "$rid"),
+        L
+      >
    >> 
   
 ;
@@ -323,7 +327,10 @@ fetchPage: <
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<
-  $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true, R>>
+  $PageResult<${osdkObjectIdentifier}<
+    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never: "$rid"),
+    L
+  >>
 >;
 
 fetchPageWithErrors: <
@@ -334,7 +341,9 @@ fetchPageWithErrors: <
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<$Result<
- $PageResult<${osdkObjectIdentifier}<L, S extends false ? false : true, R>>
+ $PageResult<${osdkObjectIdentifier}<
+ (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never : "$rid"),
+ L>>
  >>;
 
 asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;

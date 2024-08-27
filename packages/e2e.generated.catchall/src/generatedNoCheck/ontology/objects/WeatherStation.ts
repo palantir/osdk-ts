@@ -58,7 +58,12 @@ export namespace WeatherStation {
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation['primaryKeyType']],
       options?: $SelectArg<WeatherStation, L, R, S>,
-    ) => Promise<WeatherStation.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      WeatherStation.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends WeatherStation.PropertyKeys,
@@ -67,7 +72,14 @@ export namespace WeatherStation {
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation['primaryKeyType']],
       options?: $SelectArg<WeatherStation, L, R, S>,
-    ) => Promise<$Result<WeatherStation.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        WeatherStation.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends WeatherStation.PropertyKeys,
@@ -76,7 +88,14 @@ export namespace WeatherStation {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation, L, R, A, S>,
-    ) => Promise<$PageResult<WeatherStation.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        WeatherStation.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends WeatherStation.PropertyKeys,
@@ -85,7 +104,16 @@ export namespace WeatherStation {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<WeatherStation.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          WeatherStation.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<WeatherStation.OsdkObject>;
   }
@@ -115,16 +143,12 @@ export namespace WeatherStation {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    WeatherStation,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<WeatherStation, K | OPTIONS> &
     Pick<
       // WeatherStation.Props
-      S extends false ? WeatherStation.Props : WeatherStation.StrictProps,
+      OPTIONS extends '$notStrict' ? WeatherStation.Props : WeatherStation.StrictProps,
       K
     > & {
       $link: WeatherStation.Links;

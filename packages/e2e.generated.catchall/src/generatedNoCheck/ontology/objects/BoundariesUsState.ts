@@ -62,7 +62,12 @@ export namespace BoundariesUsState {
     >(
       primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
       options?: $SelectArg<BoundariesUsState, L, R, S>,
-    ) => Promise<BoundariesUsState.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      BoundariesUsState.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
@@ -71,7 +76,14 @@ export namespace BoundariesUsState {
     >(
       primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
       options?: $SelectArg<BoundariesUsState, L, R, S>,
-    ) => Promise<$Result<BoundariesUsState.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        BoundariesUsState.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends BoundariesUsState.PropertyKeys,
@@ -80,7 +92,14 @@ export namespace BoundariesUsState {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
-    ) => Promise<$PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        BoundariesUsState.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
@@ -89,7 +108,16 @@ export namespace BoundariesUsState {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          BoundariesUsState.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<BoundariesUsState.OsdkObject>;
   }
@@ -127,16 +155,12 @@ export namespace BoundariesUsState {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    BoundariesUsState,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<BoundariesUsState, K | OPTIONS> &
     Pick<
       // BoundariesUsState.Props
-      S extends false ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
+      OPTIONS extends '$notStrict' ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
       K
     > & {
       $link: BoundariesUsState.Links;

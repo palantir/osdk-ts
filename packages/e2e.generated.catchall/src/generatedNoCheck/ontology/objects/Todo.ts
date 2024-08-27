@@ -69,7 +69,12 @@ export namespace Todo {
     >(
       primaryKey: $PropertyValueClientToWire[Todo['primaryKeyType']],
       options?: $SelectArg<Todo, L, R, S>,
-    ) => Promise<Todo.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      Todo.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends Todo.PropertyKeys,
@@ -78,7 +83,14 @@ export namespace Todo {
     >(
       primaryKey: $PropertyValueClientToWire[Todo['primaryKeyType']],
       options?: $SelectArg<Todo, L, R, S>,
-    ) => Promise<$Result<Todo.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        Todo.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends Todo.PropertyKeys,
@@ -87,7 +99,14 @@ export namespace Todo {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo, L, R, A, S>,
-    ) => Promise<$PageResult<Todo.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        Todo.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends Todo.PropertyKeys,
@@ -96,7 +115,16 @@ export namespace Todo {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<Todo.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          Todo.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
   }
@@ -138,16 +166,12 @@ export namespace Todo {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Todo.Props = keyof Todo.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    Todo,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<Todo, K | OPTIONS> &
     Pick<
       // Todo.Props
-      S extends false ? Todo.Props : Todo.StrictProps,
+      OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
       K
     > & {
       $link: Todo.Links;

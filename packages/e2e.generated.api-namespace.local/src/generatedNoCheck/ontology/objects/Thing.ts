@@ -58,7 +58,12 @@ export namespace Thing {
     >(
       primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
       options?: $SelectArg<Thing, L, R, S>,
-    ) => Promise<Thing.OsdkObject<L, S extends false ? false : true, R>>;
+    ) => Promise<
+      Thing.OsdkObject<
+        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
 
     fetchOneWithErrors: <
       L extends Thing.PropertyKeys,
@@ -67,7 +72,14 @@ export namespace Thing {
     >(
       primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
       options?: $SelectArg<Thing, L, R, S>,
-    ) => Promise<$Result<Thing.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $Result<
+        Thing.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPage: <
       L extends Thing.PropertyKeys,
@@ -76,7 +88,14 @@ export namespace Thing {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Thing, L, R, A, S>,
-    ) => Promise<$PageResult<Thing.OsdkObject<L, S extends false ? false : true, R>>>;
+    ) => Promise<
+      $PageResult<
+        Thing.OsdkObject<
+          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
 
     fetchPageWithErrors: <
       L extends Thing.PropertyKeys,
@@ -85,7 +104,16 @@ export namespace Thing {
       S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Thing, L, R, A, S>,
-    ) => Promise<$Result<$PageResult<Thing.OsdkObject<L, S extends false ? false : true, R>>>>;
+    ) => Promise<
+      $Result<
+        $PageResult<
+          Thing.OsdkObject<
+            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
 
     asyncIter: () => AsyncIterableIterator<Thing.OsdkObject>;
   }
@@ -124,16 +152,12 @@ export namespace Thing {
   }
 
   export type OsdkObject<
+    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
     K extends keyof Thing.Props = keyof Thing.Props,
-    S extends boolean = true,
-    R extends boolean = false,
-  > = $Osdk<
-    Thing,
-    K | (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends true ? '$rid' : never)
-  > &
+  > = $Osdk<Thing, K | OPTIONS> &
     Pick<
       // Thing.Props
-      S extends false ? Thing.Props : Thing.StrictProps,
+      OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps,
       K
     > & {
       $link: Thing.Links;
