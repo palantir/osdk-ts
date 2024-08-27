@@ -22,28 +22,6 @@ import { TodoWireOntology } from "../util/test/TodoWireOntology.js";
 import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 
 describe(generatePerActionDataFiles, () => {
-  it("generates per action metadata", async () => {
-    const helper = createMockMinimalFiles();
-    const BASE_PATH = "/foo/ontology/actions";
-    const sanitizedOntology = TodoWireOntology;
-
-    await generatePerActionDataFiles(
-      {
-        sanitizedOntology,
-        fs: helper.minimalFiles,
-        outDir: path.join(BASE_PATH, "..", ".."),
-        ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
-      },
-      false,
-    );
-
-    expect(helper.minimalFiles.writeFile).toBeCalled();
-    expect(helper.getFiles()).toMatchObject({
-      [`${BASE_PATH}/markTodoCompleted.ts`]: expect.anything(),
-      [`${BASE_PATH}/index.ts`]: expect.anything(),
-    });
-  });
-
   it("guards against empty actions", async () => {
     const helper = createMockMinimalFiles();
     const BASE_PATH = "/foo";
@@ -55,7 +33,6 @@ describe(generatePerActionDataFiles, () => {
         outDir: BASE_PATH,
         ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
       },
-      true,
     );
     expect(helper.getFiles()[`${BASE_PATH}/ontology/actions.ts`]).toEqual(
       "export {};\n",
@@ -73,7 +50,6 @@ describe(generatePerActionDataFiles, () => {
         outDir: path.join(BASE_PATH, "..", ".."),
         ontology: enhanceOntology(sanitizedOntology, undefined, new Map(), ""),
       },
-      true,
     );
 
     expect(helper.getFiles()[`${BASE_PATH}/deleteTodos.ts`]).toContain(

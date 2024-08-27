@@ -20,14 +20,14 @@ import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
+import { getObjectImports } from "../shared/getObjectImports.js";
+import { wireActionTypeV2ToSdkActionDefinition } from "../shared/wireActionTypeV2ToSdkActionDefinition.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
-import { getObjectDefIdentifier } from "../v2.0/wireObjectTypeV2ToSdkObjectConstV2.js";
-import { getObjectImports } from "./getObjectImports.js";
-import { wireActionTypeV2ToSdkActionDefinition } from "./wireActionTypeV2ToSdkActionDefinition.js";
+import { getObjectDefIdentifier } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 export async function generatePerActionDataFiles(
   {
@@ -44,7 +44,6 @@ export async function generatePerActionDataFiles(
     | "importExt"
     | "ontology"
   >,
-  v2: boolean,
 ) {
   const outDir = path.join(rootOutDir, "ontology", "actions");
 
@@ -89,11 +88,11 @@ export async function generatePerActionDataFiles(
                   } else if (type.type === "object") {
                     const obj = enhancedOntology.requireObjectType(type.object);
                     return `ObjectActionDataType<"${obj.fullApiName}", ${
-                      obj.getImportedDefinitionIdentifier(v2)
+                      obj.getImportedDefinitionIdentifier(true)
                     }>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${
-                      getObjectDefIdentifier(type.objectSet, v2)
+                      getObjectDefIdentifier(type.objectSet, true)
                     }>`;
                   }
                   return undefined;
@@ -115,12 +114,12 @@ export async function generatePerActionDataFiles(
         } else if (input.type === "object") {
           return `ActionParam.ObjectType<${
             enhancedOntology.requireObjectType(input.object)
-              .getImportedDefinitionIdentifier(v2)
+              .getImportedDefinitionIdentifier(true)
           }>`;
         } else if (input.type === "objectSet") {
           return `ActionParam.ObjectSetType<${
             enhancedOntology.requireObjectType(input.objectSet)
-              .getImportedDefinitionIdentifier(v2)
+              .getImportedDefinitionIdentifier(true)
           }>`;
         }
       }
@@ -185,12 +184,6 @@ export async function generatePerActionDataFiles(
         `;
       }
 
-      function createV1Object() {
-        return `  export const ${action.shortApiName} = ${
-          JSON.stringify(fullActionDef, null, 2)
-        } satisfies ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}>;`;
-      }
-
       const referencedObjectDefs = new Set<EnhancedObjectType | ForeignType>();
       for (const p of Object.values(action.parameters)) {
         if (p.dataType.type === "object" || p.dataType.type === "objectSet") {
@@ -231,7 +224,7 @@ export async function generatePerActionDataFiles(
         referencedObjectDefs,
         undefined,
         currentFilePath,
-        v2,
+        true,
       );
 
       await fs.writeFile(
@@ -244,17 +237,16 @@ export async function generatePerActionDataFiles(
           ${imports}
 
         
-          ${v2 ? createV2Types() : ""}
+          ${createV2Types()}
 
-          ${v2 ? createV2Object() : createV1Object()}
+          ${createV2Object()}
         `),
       );
     }),
   );
 
-  const indexFileRelPath = v2
-    ? path.join("ontology", "actions.ts")
-    : path.join("ontology", "actions", `index.ts`);
+  const indexFileRelPath = path.join("ontology", "actions.ts");
+
   await fs.writeFile(
     path.join(rootOutDir, indexFileRelPath),
     await formatTs(`
@@ -268,11 +260,7 @@ export async function generatePerActionDataFiles(
             action.getImportPathRelTo(indexFileRelPath)
           }";`;
 
-        if (v2) {
-          return exportConstLine + "\n" + exportTypeLine;
-        } else {
-          return exportConstLine;
-        }
+        return exportConstLine + "\n" + exportTypeLine;
       })
         .join("\n")
     }

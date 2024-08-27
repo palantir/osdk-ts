@@ -18,12 +18,12 @@ import path from "node:path";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
+import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
 import {
@@ -122,7 +122,7 @@ export async function generateClientSdkVersionTwoPointZero(
 
   const actionsDir = path.join(outDir, "ontology", "actions");
   await fs.mkdir(actionsDir, { recursive: true });
-  await generatePerActionDataFiles(ctx, true);
+  await generatePerActionDataFiles(ctx);
 
   await fs.writeFile(
     path.join(outDir, "ontology", "objects.ts"),
