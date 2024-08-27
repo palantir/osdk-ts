@@ -8,61 +8,66 @@ import type {
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$createTodo$Params = {
-  is_complete: {
-    multiplicity: false;
-    nullable: false;
-    type: 'boolean';
+export namespace createTodo {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    is_complete: {
+      multiplicity: false;
+      nullable: false;
+      type: 'boolean';
+    };
+    Todo: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
   };
-  Todo: {
-    multiplicity: false;
-    nullable: false;
-    type: 'string';
-  };
-};
 
-/**
- * Creates Todo
- */
-export interface ActionParams$createTodo {
-  readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
-
-  readonly Todo: ActionParam.PrimitiveType<'string'>;
-}
-
-/**
- * @deprecated Use `ActionParams$createTodo`
- */
-export type createTodo$Params = ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>;
-
-// Represents a fqn of the action
-export interface createTodo {
   /**
    * Creates Todo
    */
-  <
-    P extends ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>,
-    OP extends P extends ReadonlyArray<ActionParams$createTodo> ? ApplyBatchActionOptions : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Parameters {
+    readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
+
+    readonly Todo: ActionParam.PrimitiveType<'string'>;
+  }
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'createTodo', 'Todo', createTodo>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'createTodo';
+    description: 'Creates Todo';
+    modifiedEntities: { Todo: { created: true; modified: false } };
+    type: 'action';
+    parameters: createTodo.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signature {
+    /**
+     * Creates Todo
+     */
+    <
+      P extends createTodo.Parameters | ReadonlyArray<createTodo.Parameters>,
+      OP extends P extends ReadonlyArray<createTodo.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+    >(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$createTodo
-  extends ActionDefinition<'createTodo', 'Todo', createTodo>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'createTodo';
-  description: 'Creates Todo';
-  modifiedEntities: { Todo: { created: true; modified: false } };
-  type: 'action';
-  parameters: ActionDef$createTodo$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `createTodo.Parameters`
+ */
+export type createTodo$Params = createTodo.Parameters | ReadonlyArray<createTodo.Parameters>;
 
-export const createTodo: ActionDef$createTodo = {
+/** @deprecated Use `createTodo.Definition` **/
+export type createTodo = createTodo.Signature;
+
+export const createTodo: createTodo.Definition = {
   apiName: 'createTodo',
   description: 'Creates Todo',
   modifiedEntities: {

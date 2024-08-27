@@ -8,68 +8,73 @@ import type {
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$promoteEmployee$Params = {
-  employeeId: {
-    multiplicity: false;
-    nullable: false;
-    type: 'integer';
+export namespace promoteEmployee {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    employeeId: {
+      multiplicity: false;
+      nullable: false;
+      type: 'integer';
+    };
+    newCompensation: {
+      multiplicity: false;
+      nullable: false;
+      type: 'double';
+    };
+    newTitle: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
   };
-  newCompensation: {
-    multiplicity: false;
-    nullable: false;
-    type: 'double';
-  };
-  newTitle: {
-    multiplicity: false;
-    nullable: false;
-    type: 'string';
-  };
-};
 
-/**
- * Update an employee's title and compensation
- */
-export interface ActionParams$promoteEmployee {
-  readonly employeeId: ActionParam.PrimitiveType<'integer'>;
-
-  readonly newCompensation: ActionParam.PrimitiveType<'double'>;
-
-  readonly newTitle: ActionParam.PrimitiveType<'string'>;
-}
-
-/**
- * @deprecated Use `ActionParams$promoteEmployee`
- */
-export type promoteEmployee$Params = ActionParams$promoteEmployee | ReadonlyArray<ActionParams$promoteEmployee>;
-
-// Represents a fqn of the action
-export interface promoteEmployee {
   /**
    * Update an employee's title and compensation
    */
-  <
-    P extends ActionParams$promoteEmployee | ReadonlyArray<ActionParams$promoteEmployee>,
-    OP extends P extends ReadonlyArray<ActionParams$promoteEmployee> ? ApplyBatchActionOptions : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Parameters {
+    readonly employeeId: ActionParam.PrimitiveType<'integer'>;
+
+    readonly newCompensation: ActionParam.PrimitiveType<'double'>;
+
+    readonly newTitle: ActionParam.PrimitiveType<'string'>;
+  }
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'promoteEmployee';
+    description: "Update an employee's title and compensation";
+    modifiedEntities: { Employee: { created: false; modified: true } };
+    type: 'action';
+    parameters: promoteEmployee.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signature {
+    /**
+     * Update an employee's title and compensation
+     */
+    <
+      P extends promoteEmployee.Parameters | ReadonlyArray<promoteEmployee.Parameters>,
+      OP extends P extends ReadonlyArray<promoteEmployee.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+    >(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$promoteEmployee
-  extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'promoteEmployee';
-  description: "Update an employee's title and compensation";
-  modifiedEntities: { Employee: { created: false; modified: true } };
-  type: 'action';
-  parameters: ActionDef$promoteEmployee$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `promoteEmployee.Parameters`
+ */
+export type promoteEmployee$Params = promoteEmployee.Parameters | ReadonlyArray<promoteEmployee.Parameters>;
 
-export const promoteEmployee: ActionDef$promoteEmployee = {
+/** @deprecated Use `promoteEmployee.Definition` **/
+export type promoteEmployee = promoteEmployee.Signature;
+
+export const promoteEmployee: promoteEmployee.Definition = {
   apiName: 'promoteEmployee',
   description: "Update an employee's title and compensation",
   modifiedEntities: {

@@ -71,11 +71,11 @@ export async function generatePerActionDataFiles(
 
         if (entries.length === 0) {
           return `// Represents the definition of the parameters for the action
-          export type ${action.definitionParamsIdentifier} = Record<string, never>;`;
+          export type ParamsDefinition = Record<string, never>;`;
         }
 
         return `// Represents the definition of the parameters for the action
-        export type ${action.definitionParamsIdentifier} = {
+        export type ParamsDefinition = {
           ${
           entries.map(([key, value]) => {
             return `"${key}": {
@@ -130,15 +130,16 @@ export async function generatePerActionDataFiles(
         // this way we can generate a strict type for the function itself and reference it from the Action Definition
         return `
         
-          ${createParamsDef()}
+          export namespace ${action.shortApiName}{
+            ${createParamsDef()}
 
-          ${getDescriptionIfPresent(action.description)}
-          export interface ${action.paramsIdentifier} {
-            ${
+            ${getDescriptionIfPresent(action.description)}
+            export interface Parameters {
+              ${
           stringify(parameters, {
             "*": (ogValue, _, ogKey) => {
               const key = `${getDescriptionIfPresent(ogValue.description)}
-                readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
+                  readonly "${ogKey}"${ogValue.nullable ? "?" : ""}`;
 
               const value = ogValue.multiplicity
                 ? `ReadonlyArray<${getActionParamType(ogValue.type)}>`
@@ -147,6 +148,28 @@ export async function generatePerActionDataFiles(
             },
           })
         }
+            }
+
+
+              // Represents the definition of the action
+              export interface Definition extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
+              ${
+          Object.entries(actionDefSansParameters).sort((a, b) =>
+            a[0].localeCompare(b[0])
+          ).map(([key, value]) => {
+            return `${key}: ${JSON.stringify(value)};`;
+          }).join("\n")
+        }
+              parameters: ${action.definitionParamsIdentifier};
+              osdkMetadata: typeof $osdkMetadata;
+            }
+
+            // Represents a fqn of the action
+            export interface Signature {
+              ${getDescriptionIfPresent(action.description)}
+               <P extends ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>, OP extends (P extends  ReadonlyArray<${action.paramsIdentifier}> ? ApplyBatchActionOptions: ApplyActionOptions)>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+            }
+  
           }
 
           /**
@@ -154,25 +177,9 @@ export async function generatePerActionDataFiles(
            */
           export type ${oldParamsIdentifier} = ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>;
 
-          // Represents a fqn of the action
-          export interface ${action.shortApiName} {
-            ${getDescriptionIfPresent(action.description)}
-             <P extends ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>, OP extends (P extends  ReadonlyArray<${action.paramsIdentifier}> ? ApplyBatchActionOptions: ApplyActionOptions)>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
-          }
-
-          
-          // Represents the definition of the action
-          export interface ${action.definitionIdentifier} extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
-          ${
-          Object.entries(actionDefSansParameters).sort((a, b) =>
-            a[0].localeCompare(b[0])
-          ).map(([key, value]) => {
-            return `${key}: ${JSON.stringify(value)};`;
-          }).join("\n")
-        }
-          parameters: ${action.definitionParamsIdentifier};
-          osdkMetadata: typeof $osdkMetadata;
-        }`;
+          /** @deprecated Use \`${action.definitionIdentifier}\` **/
+          export type ${action.shortApiName} = ${action.shortApiName}.Signature;
+          `;
       }
 
       function createV2Object() {
@@ -255,12 +262,8 @@ export async function generatePerActionDataFiles(
         const exportConstLine = `export {${action.shortApiName} } from "${
           action.getImportPathRelTo(indexFileRelPath)
         }";`;
-        const exportTypeLine =
-          `export type { ${action.paramsIdentifier} } from "${
-            action.getImportPathRelTo(indexFileRelPath)
-          }";`;
 
-        return exportConstLine + "\n" + exportTypeLine;
+        return exportConstLine;
       })
         .join("\n")
     }

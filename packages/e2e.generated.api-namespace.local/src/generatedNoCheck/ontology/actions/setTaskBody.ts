@@ -9,54 +9,59 @@ import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$setTaskBody$Params = {
-  body: {
-    multiplicity: false;
-    nullable: false;
-    type: 'string';
+export namespace setTaskBody {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    body: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
+    task: {
+      multiplicity: false;
+      nullable: false;
+      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+    };
   };
-  task: {
-    multiplicity: false;
-    nullable: false;
-    type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
-  };
-};
 
-export interface ActionParams$setTaskBody {
-  readonly body: ActionParam.PrimitiveType<'string'>;
+  export interface Parameters {
+    readonly body: ActionParam.PrimitiveType<'string'>;
 
-  readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+  }
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'setTaskBody';
+    modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
+    type: 'action';
+    parameters: setTaskBody.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signature {
+    <
+      P extends setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>,
+      OP extends P extends ReadonlyArray<setTaskBody.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+    >(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
 /**
- * @deprecated Use `ActionParams$setTaskBody`
+ * @deprecated Use `setTaskBody.Parameters`
  */
-export type setTaskBody$Params = ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>;
+export type setTaskBody$Params = setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>;
 
-// Represents a fqn of the action
-export interface setTaskBody {
-  <
-    P extends ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>,
-    OP extends P extends ReadonlyArray<ActionParams$setTaskBody> ? ApplyBatchActionOptions : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
-}
+/** @deprecated Use `setTaskBody.Definition` **/
+export type setTaskBody = setTaskBody.Signature;
 
-// Represents the definition of the action
-export interface ActionDef$setTaskBody
-  extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'setTaskBody';
-  modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
-  type: 'action';
-  parameters: ActionDef$setTaskBody$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
-
-export const setTaskBody: ActionDef$setTaskBody = {
+export const setTaskBody: setTaskBody.Definition = {
   apiName: 'setTaskBody',
   modifiedEntities: {
     'com.example.dep.Task': {
