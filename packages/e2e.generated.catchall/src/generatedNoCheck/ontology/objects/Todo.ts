@@ -37,7 +37,7 @@ export namespace Todo {
   export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Todo>;
 
   export interface Links {
-    Assignee: $SingleLinkAccessor<Person>;
+    readonly Assignee: $SingleLinkAccessor<Person>;
   }
 
   export interface Props {

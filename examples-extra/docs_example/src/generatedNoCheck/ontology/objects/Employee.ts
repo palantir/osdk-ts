@@ -36,8 +36,8 @@ export namespace Employee {
   export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Employee>;
 
   export interface Links {
-    lead: $SingleLinkAccessor<Employee>;
-    peeps: Employee.ObjectSet;
+    readonly lead: $SingleLinkAccessor<Employee>;
+    readonly peeps: Employee.ObjectSet;
   }
 
   export interface Props {

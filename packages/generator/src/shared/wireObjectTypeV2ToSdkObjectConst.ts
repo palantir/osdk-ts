@@ -464,18 +464,21 @@ export function createLinks(
         export interface ${identifier}  {
 ${
         stringify(definition.links, {
-          "*": (definition) => {
+          "*": (definition, _, key) => {
             const linkTarget = ontology.requireObjectType(
               definition.targetType,
             )
               .getImportedDefinitionIdentifier(true);
 
-            return `${
-              definition.multiplicity
-                ? `${linkTarget}.ObjectSet`
-                : `$SingleLinkAccessor<${linkTarget}>`
-            }
-          `;
+            return [
+              `readonly ${key}`,
+              `${
+                definition.multiplicity
+                  ? `${linkTarget}.ObjectSet`
+                  : `$SingleLinkAccessor<${linkTarget}>`
+              }
+          `,
+            ];
           },
         })
       }

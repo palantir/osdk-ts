@@ -36,8 +36,8 @@ export namespace Person {
   export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Person>;
 
   export interface Links {
-    Friends: Person.ObjectSet;
-    Todos: Todo.ObjectSet;
+    readonly Friends: Person.ObjectSet;
+    readonly Todos: Todo.ObjectSet;
   }
 
   export interface Props {

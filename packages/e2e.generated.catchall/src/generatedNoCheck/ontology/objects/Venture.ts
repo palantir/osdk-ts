@@ -36,7 +36,7 @@ export namespace Venture {
   export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Venture>;
 
   export interface Links {
-    employees: Employee.ObjectSet;
+    readonly employees: Employee.ObjectSet;
   }
 
   export interface Props {

@@ -42,9 +42,9 @@ describe("LinkDefinitions", () => {
       expectTypeOf<OsdkObjectLinksObject<Employee>>()
         .toEqualTypeOf<
           {
-            lead: SingleLinkAccessor<Employee.Definition>;
-            officeLink: SingleLinkAccessor<Office.Definition>;
-            peeps: ObjectSet<Employee.Definition>;
+            readonly lead: SingleLinkAccessor<Employee.Definition>;
+            readonly officeLink: SingleLinkAccessor<Office.Definition>;
+            readonly peeps: ObjectSet<Employee.Definition>;
           }
         >();
     });
