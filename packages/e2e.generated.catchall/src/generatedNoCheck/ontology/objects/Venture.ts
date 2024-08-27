@@ -40,14 +40,14 @@ export namespace Venture {
   }
 
   export interface Props {
-    /*readonly*/ ventureId: $PropType['string'] | undefined;
-    /*readonly*/ ventureName: $PropType['string'] | undefined;
-    /*readonly*/ ventureStart: $PropType['datetime'] | undefined;
+    readonly ventureId: $PropType['string'] | undefined;
+    readonly ventureName: $PropType['string'] | undefined;
+    readonly ventureStart: $PropType['datetime'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ ventureId: $PropType['string'];
-    /*readonly*/ ventureName: $PropType['string'] | undefined;
-    /*readonly*/ ventureStart: $PropType['datetime'] | undefined;
+    readonly ventureId: $PropType['string'];
+    readonly ventureName: $PropType['string'] | undefined;
+    readonly ventureStart: $PropType['datetime'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {

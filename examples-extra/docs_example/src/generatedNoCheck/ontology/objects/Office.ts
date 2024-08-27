@@ -36,20 +36,20 @@ export namespace Office {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ entrance: $PropType['geopoint'] | undefined;
-    /*readonly*/ meetingRoomCapacities: $PropType['integer'][] | undefined;
-    /*readonly*/ meetingRooms: $PropType['string'][] | undefined;
-    /*readonly*/ name: $PropType['string'] | undefined;
-    /*readonly*/ occupiedArea: $PropType['geoshape'] | undefined;
-    /*readonly*/ officeId: $PropType['string'] | undefined;
+    readonly entrance: $PropType['geopoint'] | undefined;
+    readonly meetingRoomCapacities: $PropType['integer'][] | undefined;
+    readonly meetingRooms: $PropType['string'][] | undefined;
+    readonly name: $PropType['string'] | undefined;
+    readonly occupiedArea: $PropType['geoshape'] | undefined;
+    readonly officeId: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ entrance: $PropType['geopoint'] | undefined;
-    /*readonly*/ meetingRoomCapacities: $PropType['integer'][] | undefined;
-    /*readonly*/ meetingRooms: $PropType['string'][] | undefined;
-    /*readonly*/ name: $PropType['string'] | undefined;
-    /*readonly*/ occupiedArea: $PropType['geoshape'] | undefined;
-    /*readonly*/ officeId: $PropType['string'];
+    readonly entrance: $PropType['geopoint'] | undefined;
+    readonly meetingRoomCapacities: $PropType['integer'][] | undefined;
+    readonly meetingRooms: $PropType['string'][] | undefined;
+    readonly name: $PropType['string'] | undefined;
+    readonly occupiedArea: $PropType['geoshape'] | undefined;
+    readonly officeId: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {

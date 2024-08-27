@@ -36,14 +36,14 @@ export namespace BuilderDeploymentState {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ currentTimestamp: $PropType['timestamp'] | undefined;
-    /*readonly*/ date: $PropType['datetime'] | undefined;
-    /*readonly*/ skuId: $PropType['string'] | undefined;
+    readonly currentTimestamp: $PropType['timestamp'] | undefined;
+    readonly date: $PropType['datetime'] | undefined;
+    readonly skuId: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ currentTimestamp: $PropType['timestamp'] | undefined;
-    /*readonly*/ date: $PropType['datetime'] | undefined;
-    /*readonly*/ skuId: $PropType['string'];
+    readonly currentTimestamp: $PropType['timestamp'] | undefined;
+    readonly date: $PropType['datetime'] | undefined;
+    readonly skuId: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {

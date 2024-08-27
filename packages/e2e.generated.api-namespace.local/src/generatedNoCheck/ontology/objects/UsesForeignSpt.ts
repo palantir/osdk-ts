@@ -36,12 +36,12 @@ export namespace UsesForeignSpt {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ id: $PropType['integer'] | undefined;
+    readonly body: $PropType['string'] | undefined;
+    readonly id: $PropType['integer'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ id: $PropType['integer'];
+    readonly body: $PropType['string'] | undefined;
+    readonly id: $PropType['integer'];
   }
 
   export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {

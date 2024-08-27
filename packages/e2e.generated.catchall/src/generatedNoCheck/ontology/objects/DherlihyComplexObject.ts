@@ -36,14 +36,14 @@ export namespace DherlihyComplexObject {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ id: $PropType['string'] | undefined;
-    /*readonly*/ secret: $PropType['string'] | undefined;
-    /*readonly*/ seriesId: $PropType['numericTimeseries'] | undefined;
+    readonly id: $PropType['string'] | undefined;
+    readonly secret: $PropType['string'] | undefined;
+    readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ id: $PropType['string'];
-    /*readonly*/ secret: $PropType['string'] | undefined;
-    /*readonly*/ seriesId: $PropType['numericTimeseries'] | undefined;
+    readonly id: $PropType['string'];
+    readonly secret: $PropType['string'] | undefined;
+    readonly seriesId: $PropType['numericTimeseries'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {

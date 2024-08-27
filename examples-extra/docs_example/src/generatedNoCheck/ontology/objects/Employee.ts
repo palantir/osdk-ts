@@ -41,20 +41,20 @@ export namespace Employee {
   }
 
   export interface Props {
-    /*readonly*/ class: $PropType['string'] | undefined;
-    /*readonly*/ employeeId: $PropType['integer'] | undefined;
-    /*readonly*/ employeeStatus: $PropType['numericTimeseries'] | undefined;
-    /*readonly*/ fullName: $PropType['string'] | undefined;
-    /*readonly*/ office: $PropType['integer'] | undefined;
-    /*readonly*/ startDate: $PropType['datetime'] | undefined;
+    readonly class: $PropType['string'] | undefined;
+    readonly employeeId: $PropType['integer'] | undefined;
+    readonly employeeStatus: $PropType['numericTimeseries'] | undefined;
+    readonly fullName: $PropType['string'] | undefined;
+    readonly office: $PropType['integer'] | undefined;
+    readonly startDate: $PropType['datetime'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ class: $PropType['string'] | undefined;
-    /*readonly*/ employeeId: $PropType['integer'];
-    /*readonly*/ employeeStatus: $PropType['numericTimeseries'] | undefined;
-    /*readonly*/ fullName: $PropType['string'] | undefined;
-    /*readonly*/ office: $PropType['integer'] | undefined;
-    /*readonly*/ startDate: $PropType['datetime'] | undefined;
+    readonly class: $PropType['string'] | undefined;
+    readonly employeeId: $PropType['integer'];
+    readonly employeeStatus: $PropType['numericTimeseries'] | undefined;
+    readonly fullName: $PropType['string'] | undefined;
+    readonly office: $PropType['integer'] | undefined;
+    readonly startDate: $PropType['datetime'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {

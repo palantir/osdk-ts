@@ -36,14 +36,14 @@ export namespace Todo {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ id: $PropType['string'] | undefined;
-    /*readonly*/ isComplete: $PropType['boolean'] | undefined;
-    /*readonly*/ title: $PropType['string'] | undefined;
+    readonly id: $PropType['string'] | undefined;
+    readonly isComplete: $PropType['boolean'] | undefined;
+    readonly title: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ id: $PropType['string'];
-    /*readonly*/ isComplete: $PropType['boolean'] | undefined;
-    /*readonly*/ title: $PropType['string'] | undefined;
+    readonly id: $PropType['string'];
+    readonly isComplete: $PropType['boolean'] | undefined;
+    readonly title: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {

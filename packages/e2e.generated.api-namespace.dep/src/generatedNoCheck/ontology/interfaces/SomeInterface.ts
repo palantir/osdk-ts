@@ -30,10 +30,10 @@ export namespace SomeInterface {
   export type PropertyKeys = 'spt';
 
   export interface Props {
-    /*readonly*/ spt: $PropType['string'] | undefined;
+    readonly spt: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ spt: $PropType['string'] | undefined;
+    readonly spt: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {

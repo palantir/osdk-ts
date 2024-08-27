@@ -36,12 +36,12 @@ export namespace equipment {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ equipmentId: $PropType['string'] | undefined;
-    /*readonly*/ type: $PropType['string'] | undefined;
+    readonly equipmentId: $PropType['string'] | undefined;
+    readonly type: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ equipmentId: $PropType['string'];
-    /*readonly*/ type: $PropType['string'] | undefined;
+    readonly equipmentId: $PropType['string'];
+    readonly type: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {

@@ -375,7 +375,7 @@ ${
     stringify(definition.properties, {
       "*": (propertyDefinition, _, apiName) => {
         return [
-          `/*readonly*/ "${maybeStripNamespace(type, apiName)}"${
+          `readonly "${maybeStripNamespace(type, apiName)}"${
             // after we convert everything over we can do this:
             // !strict || propertyDefinition.nullable ? "?" : ""
             ""}`,

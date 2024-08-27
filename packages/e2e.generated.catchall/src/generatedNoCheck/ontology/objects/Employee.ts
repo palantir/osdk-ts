@@ -43,32 +43,32 @@ export namespace Employee {
   }
 
   export interface Props {
-    /*readonly*/ adUsername: $PropType['string'] | undefined;
-    /*readonly*/ businessTitle: $PropType['string'] | undefined;
-    /*readonly*/ email: $PropType['string'] | undefined;
-    /*readonly*/ employeeNumber: $PropType['double'] | undefined;
-    /*readonly*/ favPlace: $PropType['geopoint'] | undefined;
-    /*readonly*/ firstFullTimeStartDate: $PropType['datetime'] | undefined;
-    /*readonly*/ firstName: $PropType['string'] | undefined;
-    /*readonly*/ id: $PropType['string'] | undefined;
-    /*readonly*/ jobProfile: $PropType['string'] | undefined;
-    /*readonly*/ locationCity: $PropType['string'] | undefined;
-    /*readonly*/ locationName: $PropType['string'] | undefined;
-    /*readonly*/ locationType: $PropType['string'] | undefined;
+    readonly adUsername: $PropType['string'] | undefined;
+    readonly businessTitle: $PropType['string'] | undefined;
+    readonly email: $PropType['string'] | undefined;
+    readonly employeeNumber: $PropType['double'] | undefined;
+    readonly favPlace: $PropType['geopoint'] | undefined;
+    readonly firstFullTimeStartDate: $PropType['datetime'] | undefined;
+    readonly firstName: $PropType['string'] | undefined;
+    readonly id: $PropType['string'] | undefined;
+    readonly jobProfile: $PropType['string'] | undefined;
+    readonly locationCity: $PropType['string'] | undefined;
+    readonly locationName: $PropType['string'] | undefined;
+    readonly locationType: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ adUsername: $PropType['string'] | undefined;
-    /*readonly*/ businessTitle: $PropType['string'] | undefined;
-    /*readonly*/ email: $PropType['string'] | undefined;
-    /*readonly*/ employeeNumber: $PropType['double'] | undefined;
-    /*readonly*/ favPlace: $PropType['geopoint'] | undefined;
-    /*readonly*/ firstFullTimeStartDate: $PropType['datetime'] | undefined;
-    /*readonly*/ firstName: $PropType['string'] | undefined;
-    /*readonly*/ id: $PropType['string'];
-    /*readonly*/ jobProfile: $PropType['string'] | undefined;
-    /*readonly*/ locationCity: $PropType['string'] | undefined;
-    /*readonly*/ locationName: $PropType['string'] | undefined;
-    /*readonly*/ locationType: $PropType['string'] | undefined;
+    readonly adUsername: $PropType['string'] | undefined;
+    readonly businessTitle: $PropType['string'] | undefined;
+    readonly email: $PropType['string'] | undefined;
+    readonly employeeNumber: $PropType['double'] | undefined;
+    readonly favPlace: $PropType['geopoint'] | undefined;
+    readonly firstFullTimeStartDate: $PropType['datetime'] | undefined;
+    readonly firstName: $PropType['string'] | undefined;
+    readonly id: $PropType['string'];
+    readonly jobProfile: $PropType['string'] | undefined;
+    readonly locationCity: $PropType['string'] | undefined;
+    readonly locationName: $PropType['string'] | undefined;
+    readonly locationType: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {

@@ -30,12 +30,12 @@ export namespace FooInterface {
   export type PropertyKeys = 'name' | 'description';
 
   export interface Props {
-    /*readonly*/ description: $PropType['string'] | undefined;
-    /*readonly*/ name: $PropType['string'] | undefined;
+    readonly description: $PropType['string'] | undefined;
+    readonly name: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ description: $PropType['string'] | undefined;
-    /*readonly*/ name: $PropType['string'] | undefined;
+    readonly description: $PropType['string'] | undefined;
+    readonly name: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<FooInterface, FooInterface.ObjectSet> {

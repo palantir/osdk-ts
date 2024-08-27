@@ -41,18 +41,18 @@ export namespace Todo {
   }
 
   export interface Props {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ complete: $PropType['boolean'] | undefined;
-    /*readonly*/ id: $PropType['integer'] | undefined;
-    /*readonly*/ priority: $PropType['integer'] | undefined;
-    /*readonly*/ text: $PropType['string'] | undefined;
+    readonly body: $PropType['string'] | undefined;
+    readonly complete: $PropType['boolean'] | undefined;
+    readonly id: $PropType['integer'] | undefined;
+    readonly priority: $PropType['integer'] | undefined;
+    readonly text: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ complete: $PropType['boolean'] | undefined;
-    /*readonly*/ id: $PropType['integer'];
-    /*readonly*/ priority: $PropType['integer'] | undefined;
-    /*readonly*/ text: $PropType['string'] | undefined;
+    readonly body: $PropType['string'] | undefined;
+    readonly complete: $PropType['boolean'] | undefined;
+    readonly id: $PropType['integer'];
+    readonly priority: $PropType['integer'] | undefined;
+    readonly text: $PropType['string'] | undefined;
   }
 
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {

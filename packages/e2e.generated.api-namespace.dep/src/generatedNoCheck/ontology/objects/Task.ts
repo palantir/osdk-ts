@@ -36,12 +36,12 @@ export namespace Task {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ taskId: $PropType['string'] | undefined;
+    readonly body: $PropType['string'] | undefined;
+    readonly taskId: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ body: $PropType['string'] | undefined;
-    /*readonly*/ taskId: $PropType['string'];
+    readonly body: $PropType['string'] | undefined;
+    readonly taskId: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {

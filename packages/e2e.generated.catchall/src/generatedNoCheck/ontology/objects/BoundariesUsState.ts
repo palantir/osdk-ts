@@ -36,16 +36,16 @@ export namespace BoundariesUsState {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ geometry10M: $PropType['geoshape'] | undefined;
-    /*readonly*/ latitude: $PropType['double'] | undefined;
-    /*readonly*/ longitude: $PropType['double'] | undefined;
-    /*readonly*/ usState: $PropType['string'] | undefined;
+    readonly geometry10M: $PropType['geoshape'] | undefined;
+    readonly latitude: $PropType['double'] | undefined;
+    readonly longitude: $PropType['double'] | undefined;
+    readonly usState: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ geometry10M: $PropType['geoshape'] | undefined;
-    /*readonly*/ latitude: $PropType['double'] | undefined;
-    /*readonly*/ longitude: $PropType['double'] | undefined;
-    /*readonly*/ usState: $PropType['string'];
+    readonly geometry10M: $PropType['geoshape'] | undefined;
+    readonly latitude: $PropType['double'] | undefined;
+    readonly longitude: $PropType['double'] | undefined;
+    readonly usState: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {

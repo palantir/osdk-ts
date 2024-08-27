@@ -41,10 +41,10 @@ export namespace Person {
   }
 
   export interface Props {
-    /*readonly*/ email: $PropType['string'] | undefined;
+    readonly email: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ email: $PropType['string'];
+    readonly email: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {

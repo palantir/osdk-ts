@@ -36,12 +36,12 @@ export namespace WeatherStation {
   export type Links = never;
 
   export interface Props {
-    /*readonly*/ geohash: $PropType['geopoint'] | undefined;
-    /*readonly*/ stationId: $PropType['string'] | undefined;
+    readonly geohash: $PropType['geopoint'] | undefined;
+    readonly stationId: $PropType['string'] | undefined;
   }
   export interface StrictProps {
-    /*readonly*/ geohash: $PropType['geopoint'] | undefined;
-    /*readonly*/ stationId: $PropType['string'];
+    readonly geohash: $PropType['geopoint'] | undefined;
+    readonly stationId: $PropType['string'];
   }
 
   export interface ObjectSet extends $ObjectSet<WeatherStation, WeatherStation.ObjectSet> {
