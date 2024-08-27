@@ -63,7 +63,7 @@ const _deleteFile: $FoundryPlatformMethod<
  * single transaction. See [createTransaction](https://www.palantir.com/docs/foundry/api/datasets-resources/transactions/create-transaction/) to
  * open a transaction.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/files/{filePath}
@@ -120,7 +120,7 @@ const _listFiles: $FoundryPlatformMethod<
  * `startTransactionRid` and `endTransactionRid`. This will include only files that were modified as part of that
  * Transaction.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/files
@@ -176,7 +176,7 @@ const _getFile: $FoundryPlatformMethod<
  * To **get a file's metadata from a specific transaction** specify the Transaction's resource identifier as both the
  * `startTransactionRid` and `endTransactionRid`.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/files/{filePath}
@@ -229,7 +229,7 @@ const _uploadFile: $FoundryPlatformMethod<
  * `transactionRid`. This is useful for uploading multiple files in a single transaction.
  * See [createTransaction](https://www.palantir.com/docs/foundry/api/datasets-resources/transactions/create-transaction/) to open a transaction.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/files/{filePath}/upload
@@ -285,7 +285,7 @@ const _getFileContent: $FoundryPlatformMethod<
  * To **get a file's content from a specific transaction** specify the Transaction's resource identifier as both the
  * `startTransactionRid` and `endTransactionRid`.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/files/{filePath}/content

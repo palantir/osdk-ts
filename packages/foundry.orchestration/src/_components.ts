@@ -19,11 +19,11 @@ import type {
   CreatedTime,
   Duration,
   MediaSetRid,
-  ProjectRid,
   UpdatedBy,
   UpdatedTime,
 } from "@osdk/foundry.core";
 import type { BranchName, DatasetRid } from "@osdk/foundry.datasets";
+import type { ProjectRid } from "@osdk/foundry.filesystem";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;
@@ -59,6 +59,26 @@ export interface Action {
 export interface AndTrigger {
   triggers: Array<Trigger>;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export interface Build {
+  rid: BuildRid;
+  createdTime: CreatedTime;
+  createdBy: CreatedBy;
+  retryCount: RetryCount;
+  retryBackoffDuration: RetryBackoffDuration;
+  abortOnFailure: AbortOnFailure;
+  status: BuildStatus;
+}
+
+/**
+ * The RID of a build
+ *
+ * Log Safety: SAFE
+ */
+export type BuildRid = LooselyBrandedString<"BuildRid">;
 
 /**
  * The status of the build.
@@ -193,19 +213,19 @@ export interface ProjectScope {
 }
 
 /**
- * The duration to wait between job retries. Defaults to 0.
+ * The duration to wait before retrying after a Job fails.
  *
  * Log Safety: SAFE
  */
-export interface RetryBackoffDuration {
-  duration: Duration;
-}
+export type RetryBackoffDuration = Duration;
 
 /**
- * The number of run attempts for failed jobs.
- *
- * Log Safety: SAFE
- */
+   * The number of retry attempts for failed Jobs within the Build. A Job's failure is not considered final until
+all retries have been attempted or an error occurs indicating that retries cannot be performed. Be aware,
+not all types of failures can be retried.
+   *
+   * Log Safety: SAFE
+   */
 export type RetryCount = number;
 
 /**

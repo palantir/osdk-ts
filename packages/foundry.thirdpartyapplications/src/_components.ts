@@ -66,6 +66,8 @@ export interface Version {
 }
 
 /**
+ * The semantic version of the Website.
+ *
  * Log Safety: UNSAFE
  */
 export type VersionVersion = LooselyBrandedString<"VersionVersion">;

@@ -121,6 +121,8 @@ export interface GroupMembership {
 export type GroupMembershipExpiration = string;
 
 /**
+ * The name of the Group.
+ *
  * Log Safety: UNSAFE
  */
 export type GroupName = LooselyBrandedString<"GroupName">;
@@ -234,6 +236,8 @@ export interface UserSearchFilter {
 }
 
 /**
+ * The Foundry username of the User. This is unique within the realm.
+ *
  * Log Safety: UNSAFE
  */
 export type UserUsername = LooselyBrandedString<"UserUsername">;
