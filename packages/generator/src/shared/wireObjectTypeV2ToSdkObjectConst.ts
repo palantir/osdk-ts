@@ -102,8 +102,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
   };
 
   function getV2Types() {
-    return `
-    import {
+    return `import type {
     LinkedType,
     SingleLinkAccessor,
     SelectArg,
@@ -117,8 +116,8 @@ Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
 ,FetchPageResult,
 FetchPageArgs,OsdkObjectPropertyType,
     MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
-
-    import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
+    import type * as $clientApi from "@osdk/client.api";
+    import type {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
 
     export namespace ${object.shortApiName} {
 
@@ -152,9 +151,7 @@ FetchPageArgs,OsdkObjectPropertyType,
     v2,
   );
 
-  return `${imports}
-
-    ${v2 ? getV2Types() : getV1Types()}
+  return `${imports}${v2 ? getV2Types() : getV1Types()}
 
     export const ${object.shortApiName}: ${objectDefIdentifier} ${
     v2 ? " & VersionBound<$ExpectedClientVersion>" : ""

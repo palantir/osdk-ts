@@ -1,9 +1,11 @@
-import type { ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
-import { Osdk } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata';
-import { $osdkMetadata } from '../../OntologyMetadata';
-
-import {
+import type {
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  PropertyDef,
+  VersionBound,
+} from '@osdk/api';
+import type {
   ObjectSet as $ObjectSet,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
@@ -17,6 +19,7 @@ import {
   LinkNames,
   NullabilityAdherence,
   NullabilityAdherenceDefault,
+  Osdk,
   OsdkObjectPropertyType,
   PageResult,
   PropertyValueClientToWire,
@@ -25,8 +28,8 @@ import {
   SingleLinkAccessor,
   ValidToFrom,
 } from '@osdk/client.api';
-
-import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace Employee {
   export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Employee>;

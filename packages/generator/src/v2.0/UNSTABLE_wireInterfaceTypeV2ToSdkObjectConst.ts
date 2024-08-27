@@ -114,8 +114,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
 
   function getV2Types() {
-    return `
-        import {
+    return `import type {
     LinkedType,
     SingleLinkAccessor,
     SelectArg,
@@ -129,8 +128,8 @@ Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
 ,FetchPageResult, Osdk,
 FetchPageArgs,OsdkObjectPropertyType,
     MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
-
-    import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
+    import type * as $clientApi from "@osdk/client.api";
+    import type {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
 
     
 
@@ -229,7 +228,6 @@ export type PropertyKeys = ${
   const imports: string[] = [];
 
   return `${imports.join("\n")}
-
     ${v2 ? getV2Types() : ""}
 
     export const ${interfaceDef.shortApiName}: ${objectDefIdentifier} = {

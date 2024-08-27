@@ -73,10 +73,9 @@ async function generateEachObjectFile(
       outFilePath,
       await formatTs(`
         import type {  VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
-        import { Osdk } from "@osdk/client.api";
+        import type { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
         ${wireObjectTypeV2ToSdkObjectConst(obj.og, ctx, relPath, true)}
       `),
     );
@@ -157,7 +156,6 @@ async function generateOntologyInterfaces(
       import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
       import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
       ${
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
           obj,

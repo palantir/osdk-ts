@@ -1,11 +1,11 @@
-import type { ObjectTypeLinkDefinition, PropertyDef, VersionBound } from '@osdk/api';
-import { Osdk } from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-import { $osdkMetadata } from '../../OntologyMetadata.js';
-
-import type { Todo } from './Todo.js';
-
-import {
+import type {
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
+  ObjectTypeLinkDefinition,
+  PropertyDef,
+  VersionBound,
+} from '@osdk/api';
+import type {
   ObjectSet as $ObjectSet,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
@@ -19,6 +19,7 @@ import {
   LinkNames,
   NullabilityAdherence,
   NullabilityAdherenceDefault,
+  Osdk,
   OsdkObjectPropertyType,
   PageResult,
   PropertyValueClientToWire,
@@ -26,8 +27,9 @@ import {
   SelectArg,
   ValidToFrom,
 } from '@osdk/client.api';
-
-import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
+import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import { $osdkMetadata } from '../../OntologyMetadata.js';
+import type { Todo } from './Todo.js';
 
 export namespace Person {
   export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Person>;

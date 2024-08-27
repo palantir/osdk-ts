@@ -2,7 +2,7 @@ import type { InterfaceDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-import {
+import type {
   ObjectSet as $ObjectSet,
   OsdkObject as $OsdkObject,
   PropertyValueWireToClient as $PropType,
