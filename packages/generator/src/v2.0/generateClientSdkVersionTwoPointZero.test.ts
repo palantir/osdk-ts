@@ -478,9 +478,7 @@ describe("generator", () => {
       export { $ontologyRid } from './OntologyMetadata';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
-      export type { ActionParams$deleteTodos } from './actions/deleteTodos';
       export { markTodoCompleted } from './actions/markTodoCompleted';
-      export type { ActionParams$markTodoCompleted } from './actions/markTodoCompleted';
       ",
         "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -493,58 +491,63 @@ describe("generator", () => {
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
-      // Represents the definition of the parameters for the action
-      export type ActionDef$deleteTodos$Params = {
-        object: {
-          description: 'Todo(s) to be deleted';
-          multiplicity: true;
-          nullable: true;
-          type: ObjectActionDataType<'Todo', Todo>;
+      export namespace deleteTodos {
+        // Represents the definition of the parameters for the action
+        export type ParamsDefinition = {
+          object: {
+            description: 'Todo(s) to be deleted';
+            multiplicity: true;
+            nullable: true;
+            type: ObjectActionDataType<'Todo', Todo>;
+          };
         };
-      };
 
-      /**
-       * An action which takes in an array of objects
-       */
-      export interface ActionParams$deleteTodos {
-        /**
-         * Todo(s) to be deleted
-         */
-        readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
-      }
-
-      /**
-       * @deprecated Use \`ActionParams$deleteTodos\`
-       */
-      export type deleteTodos$Params = ActionParams$deleteTodos | ReadonlyArray<ActionParams$deleteTodos>;
-
-      // Represents a fqn of the action
-      export interface deleteTodos {
         /**
          * An action which takes in an array of objects
          */
-        <
-          P extends ActionParams$deleteTodos | ReadonlyArray<ActionParams$deleteTodos>,
-          OP extends P extends ReadonlyArray<ActionParams$deleteTodos> ? ApplyBatchActionOptions : ApplyActionOptions,
-        >(
-          args: P,
-          options?: OP,
-        ): Promise<ActionReturnTypeForOptions<OP>>;
+        export interface Parameters {
+          /**
+           * Todo(s) to be deleted
+           */
+          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+        }
+
+        // Represents the definition of the action
+        export interface Definition
+          extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'deleteTodos';
+          description: 'An action which takes in an array of objects';
+          modifiedEntities: {};
+          type: 'action';
+          parameters: deleteTodos.ParamsDefinition;
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        // Represents a fqn of the action
+        export interface Signature {
+          /**
+           * An action which takes in an array of objects
+           */
+          <
+            P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
+            OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+          >(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+        }
       }
 
-      // Represents the definition of the action
-      export interface ActionDef$deleteTodos
-        extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'deleteTodos';
-        description: 'An action which takes in an array of objects';
-        modifiedEntities: {};
-        type: 'action';
-        parameters: ActionDef$deleteTodos$Params;
-        osdkMetadata: typeof $osdkMetadata;
-      }
+      /**
+       * @deprecated Use \`deleteTodos.Parameters\`
+       */
+      export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
 
-      export const deleteTodos: ActionDef$deleteTodos = {
+      /** @deprecated Use \`deleteTodos.Definition\` **/
+      export type deleteTodos = deleteTodos.Signature;
+
+      export const deleteTodos: deleteTodos.Definition = {
         apiName: 'deleteTodos',
         description: 'An action which takes in an array of objects',
         modifiedEntities: {},
@@ -574,58 +577,63 @@ describe("generator", () => {
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from '../objects/Todo';
 
-      // Represents the definition of the parameters for the action
-      export type ActionDef$markTodoCompleted$Params = {
-        object: {
-          description: 'A Todo to mark completed';
-          multiplicity: false;
-          nullable: true;
-          type: ObjectActionDataType<'Todo', Todo>;
+      export namespace markTodoCompleted {
+        // Represents the definition of the parameters for the action
+        export type ParamsDefinition = {
+          object: {
+            description: 'A Todo to mark completed';
+            multiplicity: false;
+            nullable: true;
+            type: ObjectActionDataType<'Todo', Todo>;
+          };
         };
-      };
 
-      /**
-       * An action which takes different types of parameters
-       */
-      export interface ActionParams$markTodoCompleted {
-        /**
-         * A Todo to mark completed
-         */
-        readonly object?: ActionParam.ObjectType<Todo>;
-      }
-
-      /**
-       * @deprecated Use \`ActionParams$markTodoCompleted\`
-       */
-      export type markTodoCompleted$Params = ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>;
-
-      // Represents a fqn of the action
-      export interface markTodoCompleted {
         /**
          * An action which takes different types of parameters
          */
-        <
-          P extends ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>,
-          OP extends P extends ReadonlyArray<ActionParams$markTodoCompleted> ? ApplyBatchActionOptions : ApplyActionOptions,
-        >(
-          args: P,
-          options?: OP,
-        ): Promise<ActionReturnTypeForOptions<OP>>;
+        export interface Parameters {
+          /**
+           * A Todo to mark completed
+           */
+          readonly object?: ActionParam.ObjectType<Todo>;
+        }
+
+        // Represents the definition of the action
+        export interface Definition
+          extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'markTodoCompleted';
+          description: 'An action which takes different types of parameters';
+          modifiedEntities: { Todo: { created: false; modified: true } };
+          type: 'action';
+          parameters: markTodoCompleted.ParamsDefinition;
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        // Represents a fqn of the action
+        export interface Signature {
+          /**
+           * An action which takes different types of parameters
+           */
+          <
+            P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
+            OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+          >(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+        }
       }
 
-      // Represents the definition of the action
-      export interface ActionDef$markTodoCompleted
-        extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'markTodoCompleted';
-        description: 'An action which takes different types of parameters';
-        modifiedEntities: { Todo: { created: false; modified: true } };
-        type: 'action';
-        parameters: ActionDef$markTodoCompleted$Params;
-        osdkMetadata: typeof $osdkMetadata;
-      }
+      /**
+       * @deprecated Use \`markTodoCompleted.Parameters\`
+       */
+      export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
 
-      export const markTodoCompleted: ActionDef$markTodoCompleted = {
+      /** @deprecated Use \`markTodoCompleted.Definition\` **/
+      export type markTodoCompleted = markTodoCompleted.Signature;
+
+      export const markTodoCompleted: markTodoCompleted.Definition = {
         apiName: 'markTodoCompleted',
         description: 'An action which takes different types of parameters',
         modifiedEntities: {
@@ -1239,39 +1247,44 @@ describe("generator", () => {
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 
-      export interface getCount {
-        (query: QueryParams$getCount): Promise<QueryResult.PrimitiveType<'integer'>>;
-      }
+      export namespace getCount {
+        export interface Signature {
+          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+        }
 
-      export interface QueryParams$getCount {
-        /**
-         * (no ontology metadata)
-         */
-        readonly completed: QueryParam.PrimitiveType<'boolean'>;
-      }
-
-      export interface QueryDef$getCount
-        extends QueryDefinition<'getCount', never, getCount>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'getCount';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            * (no ontology metadata)
            */
-          completed: {
-            nullable: false;
-            type: 'boolean';
+          readonly completed: QueryParam.PrimitiveType<'boolean'>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'getCount', never, getCount.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'getCount';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             * (no ontology metadata)
+             */
+            completed: {
+              nullable: false;
+              type: 'boolean';
+            };
           };
-        };
-        output: {
-          nullable: false;
-          type: 'integer';
-        };
+          output: {
+            nullable: false;
+            type: 'integer';
+          };
+        }
       }
 
-      export const getCount: QueryDef$getCount = {
+      /** @deprecated use \`getCount.Signature' instead */
+      export type getCount = getCount.Signature;
+
+      export const getCount: getCount.Definition = {
         apiName: 'getCount',
         type: 'query',
         version: '0',
@@ -1290,47 +1303,51 @@ describe("generator", () => {
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata';
-
       import type { Todo } from '../objects/Todo';
 
-      export interface returnsTodo {
-        (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
-      }
+      export namespace returnsTodo {
+        export interface Signature {
+          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+        }
 
-      export interface QueryParams$returnsTodo {
-        /**
-         *   description: Random desc so we test jsdoc
-         */
-        readonly someTodo: QueryParam.ObjectType<Todo>;
-      }
-
-      export interface QueryDef$returnsTodo
-        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'returnsTodo';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            *   description: Random desc so we test jsdoc
            */
-          someTodo: {
-            description: 'Random desc so we test jsdoc';
+          readonly someTodo: QueryParam.ObjectType<Todo>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'returnsTodo';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             *   description: Random desc so we test jsdoc
+             */
+            someTodo: {
+              description: 'Random desc so we test jsdoc';
+              nullable: false;
+              object: 'Todo';
+              type: 'object';
+              __OsdkTargetType?: Todo;
+            };
+          };
+          output: {
             nullable: false;
             object: 'Todo';
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        };
-        output: {
-          nullable: false;
-          object: 'Todo';
-          type: 'object';
-          __OsdkTargetType?: Todo;
-        };
+        }
       }
 
-      export const returnsTodo: QueryDef$returnsTodo = {
+      /** @deprecated use \`returnsTodo.Signature' instead */
+      export type returnsTodo = returnsTodo.Signature;
+
+      export const returnsTodo: returnsTodo.Definition = {
         apiName: 'returnsTodo',
         type: 'query',
         version: '0',
@@ -1410,9 +1427,7 @@ describe("generator", () => {
       export * from './ontology/queries.js';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
-      export type { ActionParams$deleteTodos } from './actions/deleteTodos.js';
       export { markTodoCompleted } from './actions/markTodoCompleted.js';
-      export type { ActionParams$markTodoCompleted } from './actions/markTodoCompleted.js';
       ",
         "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
       import type {
@@ -1425,58 +1440,63 @@ describe("generator", () => {
       import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
 
-      // Represents the definition of the parameters for the action
-      export type ActionDef$deleteTodos$Params = {
-        object: {
-          description: 'Todo(s) to be deleted';
-          multiplicity: true;
-          nullable: true;
-          type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+      export namespace deleteTodos {
+        // Represents the definition of the parameters for the action
+        export type ParamsDefinition = {
+          object: {
+            description: 'Todo(s) to be deleted';
+            multiplicity: true;
+            nullable: true;
+            type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+          };
         };
-      };
 
-      /**
-       * An action which takes in an array of objects
-       */
-      export interface ActionParams$deleteTodos {
-        /**
-         * Todo(s) to be deleted
-         */
-        readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
-      }
-
-      /**
-       * @deprecated Use \`ActionParams$deleteTodos\`
-       */
-      export type deleteTodos$Params = ActionParams$deleteTodos | ReadonlyArray<ActionParams$deleteTodos>;
-
-      // Represents a fqn of the action
-      export interface deleteTodos {
         /**
          * An action which takes in an array of objects
          */
-        <
-          P extends ActionParams$deleteTodos | ReadonlyArray<ActionParams$deleteTodos>,
-          OP extends P extends ReadonlyArray<ActionParams$deleteTodos> ? ApplyBatchActionOptions : ApplyActionOptions,
-        >(
-          args: P,
-          options?: OP,
-        ): Promise<ActionReturnTypeForOptions<OP>>;
+        export interface Parameters {
+          /**
+           * Todo(s) to be deleted
+           */
+          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+        }
+
+        // Represents the definition of the action
+        export interface Definition
+          extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'foo.bar.deleteTodos';
+          description: 'An action which takes in an array of objects';
+          modifiedEntities: {};
+          type: 'action';
+          parameters: deleteTodos.ParamsDefinition;
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        // Represents a fqn of the action
+        export interface Signature {
+          /**
+           * An action which takes in an array of objects
+           */
+          <
+            P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
+            OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+          >(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+        }
       }
 
-      // Represents the definition of the action
-      export interface ActionDef$deleteTodos
-        extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'foo.bar.deleteTodos';
-        description: 'An action which takes in an array of objects';
-        modifiedEntities: {};
-        type: 'action';
-        parameters: ActionDef$deleteTodos$Params;
-        osdkMetadata: typeof $osdkMetadata;
-      }
+      /**
+       * @deprecated Use \`deleteTodos.Parameters\`
+       */
+      export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
 
-      export const deleteTodos: ActionDef$deleteTodos = {
+      /** @deprecated Use \`deleteTodos.Definition\` **/
+      export type deleteTodos = deleteTodos.Signature;
+
+      export const deleteTodos: deleteTodos.Definition = {
         apiName: 'foo.bar.deleteTodos',
         description: 'An action which takes in an array of objects',
         modifiedEntities: {},
@@ -1506,58 +1526,63 @@ describe("generator", () => {
       import { $osdkMetadata } from '../../OntologyMetadata.js';
       import type { Todo } from '../objects/Todo.js';
 
-      // Represents the definition of the parameters for the action
-      export type ActionDef$markTodoCompleted$Params = {
-        object: {
-          description: 'A Todo to mark completed';
-          multiplicity: false;
-          nullable: true;
-          type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+      export namespace markTodoCompleted {
+        // Represents the definition of the parameters for the action
+        export type ParamsDefinition = {
+          object: {
+            description: 'A Todo to mark completed';
+            multiplicity: false;
+            nullable: true;
+            type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+          };
         };
-      };
 
-      /**
-       * An action which takes different types of parameters
-       */
-      export interface ActionParams$markTodoCompleted {
-        /**
-         * A Todo to mark completed
-         */
-        readonly object?: ActionParam.ObjectType<Todo>;
-      }
-
-      /**
-       * @deprecated Use \`ActionParams$markTodoCompleted\`
-       */
-      export type markTodoCompleted$Params = ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>;
-
-      // Represents a fqn of the action
-      export interface markTodoCompleted {
         /**
          * An action which takes different types of parameters
          */
-        <
-          P extends ActionParams$markTodoCompleted | ReadonlyArray<ActionParams$markTodoCompleted>,
-          OP extends P extends ReadonlyArray<ActionParams$markTodoCompleted> ? ApplyBatchActionOptions : ApplyActionOptions,
-        >(
-          args: P,
-          options?: OP,
-        ): Promise<ActionReturnTypeForOptions<OP>>;
+        export interface Parameters {
+          /**
+           * A Todo to mark completed
+           */
+          readonly object?: ActionParam.ObjectType<Todo>;
+        }
+
+        // Represents the definition of the action
+        export interface Definition
+          extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'foo.bar.markTodoCompleted';
+          description: 'An action which takes different types of parameters';
+          modifiedEntities: { 'foo.bar.Todo': { created: false; modified: true } };
+          type: 'action';
+          parameters: markTodoCompleted.ParamsDefinition;
+          osdkMetadata: typeof $osdkMetadata;
+        }
+
+        // Represents a fqn of the action
+        export interface Signature {
+          /**
+           * An action which takes different types of parameters
+           */
+          <
+            P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
+            OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+          >(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+        }
       }
 
-      // Represents the definition of the action
-      export interface ActionDef$markTodoCompleted
-        extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'foo.bar.markTodoCompleted';
-        description: 'An action which takes different types of parameters';
-        modifiedEntities: { 'foo.bar.Todo': { created: false; modified: true } };
-        type: 'action';
-        parameters: ActionDef$markTodoCompleted$Params;
-        osdkMetadata: typeof $osdkMetadata;
-      }
+      /**
+       * @deprecated Use \`markTodoCompleted.Parameters\`
+       */
+      export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
 
-      export const markTodoCompleted: ActionDef$markTodoCompleted = {
+      /** @deprecated Use \`markTodoCompleted.Definition\` **/
+      export type markTodoCompleted = markTodoCompleted.Signature;
+
+      export const markTodoCompleted: markTodoCompleted.Definition = {
         apiName: 'foo.bar.markTodoCompleted',
         description: 'An action which takes different types of parameters',
         modifiedEntities: {
@@ -2171,39 +2196,44 @@ describe("generator", () => {
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      export interface getCount {
-        (query: QueryParams$getCount): Promise<QueryResult.PrimitiveType<'integer'>>;
-      }
+      export namespace getCount {
+        export interface Signature {
+          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+        }
 
-      export interface QueryParams$getCount {
-        /**
-         * (no ontology metadata)
-         */
-        readonly completed: QueryParam.PrimitiveType<'boolean'>;
-      }
-
-      export interface QueryDef$getCount
-        extends QueryDefinition<'foo.bar.getCount', never, getCount>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'foo.bar.getCount';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            * (no ontology metadata)
            */
-          completed: {
-            nullable: false;
-            type: 'boolean';
+          readonly completed: QueryParam.PrimitiveType<'boolean'>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'foo.bar.getCount';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             * (no ontology metadata)
+             */
+            completed: {
+              nullable: false;
+              type: 'boolean';
+            };
           };
-        };
-        output: {
-          nullable: false;
-          type: 'integer';
-        };
+          output: {
+            nullable: false;
+            type: 'integer';
+          };
+        }
       }
 
-      export const getCount: QueryDef$getCount = {
+      /** @deprecated use \`getCount.Signature' instead */
+      export type getCount = getCount.Signature;
+
+      export const getCount: getCount.Definition = {
         apiName: 'foo.bar.getCount',
         type: 'query',
         version: '0',
@@ -2222,47 +2252,51 @@ describe("generator", () => {
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-
       import type { Todo } from '../objects/Todo.js';
 
-      export interface returnsTodo {
-        (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
-      }
+      export namespace returnsTodo {
+        export interface Signature {
+          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+        }
 
-      export interface QueryParams$returnsTodo {
-        /**
-         *   description: Random desc so we test jsdoc
-         */
-        readonly someTodo: QueryParam.ObjectType<Todo>;
-      }
-
-      export interface QueryDef$returnsTodo
-        extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'foo.bar.returnsTodo';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            *   description: Random desc so we test jsdoc
            */
-          someTodo: {
-            description: 'Random desc so we test jsdoc';
+          readonly someTodo: QueryParam.ObjectType<Todo>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'foo.bar.returnsTodo';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             *   description: Random desc so we test jsdoc
+             */
+            someTodo: {
+              description: 'Random desc so we test jsdoc';
+              nullable: false;
+              object: 'foo.bar.Todo';
+              type: 'object';
+              __OsdkTargetType?: Todo;
+            };
+          };
+          output: {
             nullable: false;
             object: 'foo.bar.Todo';
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        };
-        output: {
-          nullable: false;
-          object: 'foo.bar.Todo';
-          type: 'object';
-          __OsdkTargetType?: Todo;
-        };
+        }
       }
 
-      export const returnsTodo: QueryDef$returnsTodo = {
+      /** @deprecated use \`returnsTodo.Signature' instead */
+      export type returnsTodo = returnsTodo.Signature;
+
+      export const returnsTodo: returnsTodo.Definition = {
         apiName: 'foo.bar.returnsTodo',
         type: 'query',
         version: '0',
@@ -2385,49 +2419,53 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/queries/getTask.ts"])
         .toMatchInlineSnapshot(`
-          "import type { QueryDefinition, VersionBound } from '@osdk/api';
+          "import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+          import type { QueryDefinition, VersionBound } from '@osdk/api';
           import type { QueryParam, QueryResult } from '@osdk/client.api';
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-          import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@com.example.dep/osdk';
+          export namespace getTask {
+            export interface Signature {
+              (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
+            }
 
-          export interface getTask {
-            (query: QueryParams$getTask): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
-          }
-
-          export interface QueryParams$getTask {
-            /**
-             * (no ontology metadata)
-             */
-            readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
-          }
-
-          export interface QueryDef$getTask
-            extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask>,
-              VersionBound<$ExpectedClientVersion> {
-            apiName: 'getTask';
-            type: 'query';
-            version: '0';
-            parameters: {
+            export interface Parameters {
               /**
                * (no ontology metadata)
                */
-              a: {
+              readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+            }
+
+            export interface Definition
+              extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
+                VersionBound<$ExpectedClientVersion> {
+              apiName: 'getTask';
+              type: 'query';
+              version: '0';
+              parameters: {
+                /**
+                 * (no ontology metadata)
+                 */
+                a: {
+                  nullable: false;
+                  object: 'com.example.dep.Task';
+                  type: 'object';
+                  __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+                };
+              };
+              output: {
                 nullable: false;
                 object: 'com.example.dep.Task';
                 type: 'object';
                 __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
               };
-            };
-            output: {
-              nullable: false;
-              object: 'com.example.dep.Task';
-              type: 'object';
-              __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
-            };
+            }
           }
 
-          export const getTask: QueryDef$getTask = {
+          /** @deprecated use \`getTask.Signature' instead */
+          export type getTask = getTask.Signature;
+
+          export const getTask: getTask.Definition = {
             apiName: 'getTask',
             type: 'query',
             version: '0',
@@ -2699,54 +2737,59 @@ describe("generator", () => {
           import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-          // Represents the definition of the parameters for the action
-          export type ActionDef$setTaskBody$Params = {
-            body: {
-              multiplicity: false;
-              nullable: false;
-              type: 'string';
+          export namespace setTaskBody {
+            // Represents the definition of the parameters for the action
+            export type ParamsDefinition = {
+              body: {
+                multiplicity: false;
+                nullable: false;
+                type: 'string';
+              };
+              task: {
+                multiplicity: false;
+                nullable: false;
+                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+              };
             };
-            task: {
-              multiplicity: false;
-              nullable: false;
-              type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
-            };
-          };
 
-          export interface ActionParams$setTaskBody {
-            readonly body: ActionParam.PrimitiveType<'string'>;
+            export interface Parameters {
+              readonly body: ActionParam.PrimitiveType<'string'>;
 
-            readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+            }
+
+            // Represents the definition of the action
+            export interface Definition
+              extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+                VersionBound<$ExpectedClientVersion> {
+              apiName: 'setTaskBody';
+              modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
+              type: 'action';
+              parameters: setTaskBody.ParamsDefinition;
+              osdkMetadata: typeof $osdkMetadata;
+            }
+
+            // Represents a fqn of the action
+            export interface Signature {
+              <
+                P extends setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>,
+                OP extends P extends ReadonlyArray<setTaskBody.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+              >(
+                args: P,
+                options?: OP,
+              ): Promise<ActionReturnTypeForOptions<OP>>;
+            }
           }
 
           /**
-           * @deprecated Use \`ActionParams$setTaskBody\`
+           * @deprecated Use \`setTaskBody.Parameters\`
            */
-          export type setTaskBody$Params = ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>;
+          export type setTaskBody$Params = setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>;
 
-          // Represents a fqn of the action
-          export interface setTaskBody {
-            <
-              P extends ActionParams$setTaskBody | ReadonlyArray<ActionParams$setTaskBody>,
-              OP extends P extends ReadonlyArray<ActionParams$setTaskBody> ? ApplyBatchActionOptions : ApplyActionOptions,
-            >(
-              args: P,
-              options?: OP,
-            ): Promise<ActionReturnTypeForOptions<OP>>;
-          }
+          /** @deprecated Use \`setTaskBody.Definition\` **/
+          export type setTaskBody = setTaskBody.Signature;
 
-          // Represents the definition of the action
-          export interface ActionDef$setTaskBody
-            extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
-              VersionBound<$ExpectedClientVersion> {
-            apiName: 'setTaskBody';
-            modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
-            type: 'action';
-            parameters: ActionDef$setTaskBody$Params;
-            osdkMetadata: typeof $osdkMetadata;
-          }
-
-          export const setTaskBody: ActionDef$setTaskBody = {
+          export const setTaskBody: setTaskBody.Definition = {
             apiName: 'setTaskBody',
             modifiedEntities: {
               'com.example.dep.Task': {
