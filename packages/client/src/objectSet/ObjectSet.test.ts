@@ -427,15 +427,15 @@ describe("ObjectSet", () => {
           number | undefined
         >();
 
-        expectTypeOf<ApiNameAsString<FooInterface>>().toEqualTypeOf<
-          "FooInterface"
-        >();
+        expectTypeOf<ApiNameAsString<FooInterface>>()
+          .toEqualTypeOf<"FooInterface">();
 
-        expectTypeOf<NonNullable<Employee["interfaceMap"]>>().toEqualTypeOf<{
-          FooInterface: {
-            fooSpt: "fullName";
-          };
-        }>();
+        expectTypeOf<NonNullable<Employee["interfaceMap"]>>()
+          .toEqualTypeOf<{
+            FooInterface: {
+              fooSpt: "fullName";
+            };
+          }>();
 
         expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
           .toEqualTypeOf<{ fullName: "fooSpt" }>();
@@ -446,13 +446,14 @@ describe("ObjectSet", () => {
         expectTypeOf<ConvertProps<Employee, FooInterface, "fullName">>()
           .toEqualTypeOf<"fooSpt">();
 
-        expectTypeOf<JustProps<Employee, "$all">>().toEqualTypeOf<
-          | "fullName"
-          | "office"
-          | "employeeId"
-          | "employeeStatus"
-          | "startDate"
-        >();
+        expectTypeOf<JustProps<Employee, "$all">>()
+          .toEqualTypeOf<
+            | "fullName"
+            | "office"
+            | "employeeId"
+            | "employeeStatus"
+            | "startDate"
+          >();
 
         expectTypeOf<
           ConvertProps<Employee, FooInterface, "fullName" | "office">

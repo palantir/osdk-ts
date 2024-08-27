@@ -75,8 +75,8 @@ describe("LinkDefinitions", () => {
         type PersonDef = Person.Definition;
 
         //   // e.g. .lead.fetchOne({});
-        expectTypeOf<Awaited<ReturnType<Helper<Employee, {}>["fetchOne"]>>>()
-          .branded.toEqualTypeOf<Osdk<Employee>>();
+        expectTypeOf<Awaited<ReturnType<Helper<PersonDef, {}>["fetchOne"]>>>()
+          .branded.toEqualTypeOf<Osdk<PersonDef>>();
 
         // e.g. .lead.fetchOne();
         expectTypeOf<

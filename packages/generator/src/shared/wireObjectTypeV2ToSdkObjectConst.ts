@@ -61,7 +61,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
 
   function getV1Types() {
     return `
-      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${objectDefIdentifier}> {
+      export interface ${objectDefIdentifier} extends ObjectTypeDefinition<"${object.fullApiName}", ${object.uniqueImportName}> {
         ${
       stringify(definition, {
         osdkMetadata: () => undefined, // not used in v1
