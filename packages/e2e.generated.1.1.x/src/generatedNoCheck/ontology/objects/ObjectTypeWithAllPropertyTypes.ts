@@ -54,7 +54,7 @@ export interface ObjectTypeWithAllPropertyTypes extends OntologyObject {
 }
 
 export interface ObjectTypeWithAllPropertyTypesDef
-  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypesDef> {
+  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes> {
   apiName: 'ObjectTypeWithAllPropertyTypes';
   description: 'A type with all property types';
   links: {};
