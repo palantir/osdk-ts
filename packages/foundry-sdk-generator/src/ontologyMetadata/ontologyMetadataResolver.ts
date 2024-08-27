@@ -131,7 +131,7 @@ export class OntologyMetadataResolver {
       components.OntologyFullMetadata
     >(
       this.getRequestFunction(),
-      ontology.apiName,
+      ontology.rid,
     );
 
     if ((ontologyFullMetadata as any).errorName != null) {
