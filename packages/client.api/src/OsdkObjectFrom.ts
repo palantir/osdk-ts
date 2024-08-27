@@ -47,10 +47,38 @@ export type PropMapToObject<
   TO extends ObjectTypeDefinition<any>,
 > = NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>];
 
+export type MapPropNamesToObjectType<
+  FROM extends InterfaceDefinition<any> | ObjectTypeDefinition<any>,
+  TO extends ObjectTypeDefinition<any>,
+  P extends
+    | "$rid"
+    | "$strict"
+    | "$notStrict"
+    | "$all"
+    | keyof FROM["properties"],
+> = PropMapToObject<
+  FROM,
+  TO
+>[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
+
 export type PropMapToInterface<
   FROM extends ObjectTypeDefinition<any>,
   TO extends InterfaceDefinition<any>,
 > = NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>];
+
+export type MapPropNamesToInterface<
+  FROM extends ObjectTypeDefinition<any>,
+  TO extends InterfaceDefinition<any>,
+  P extends
+    | "$rid"
+    | "$strict"
+    | "$notStrict"
+    | "$all"
+    | keyof FROM["properties"],
+> = PropMapToInterface<
+  FROM,
+  TO
+>[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>];
 /**
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
@@ -61,27 +89,21 @@ export type ConvertProps<
   TO extends ValidToFrom<FROM>,
   P extends "$rid" | "$all" | "$strict" | "$notStrict" | keyof FROM["props"],
 > = TO extends FROM ? P
-  : TO extends ObjectTypeDefinition<any> ? UnionIfTrue<
-      (
-        PropMapToObject<
-          FROM,
-          TO
-        >[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>]
-      ),
-      P extends "$rid" ? true : false,
-      "$rid"
-    >
-  : TO extends InterfaceDefinition<any>
-    ? FROM extends ObjectTypeDefinition<any> ? UnionIfTrue<
-        (
-          PropMapToInterface<
-            FROM,
-            TO
-          >[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>]
-        ),
+  : TO extends ObjectTypeDefinition<any> ? (
+      UnionIfTrue<
+        MapPropNamesToObjectType<FROM, TO, P>,
         P extends "$rid" ? true : false,
         "$rid"
       >
+    )
+  : TO extends InterfaceDefinition<any>
+    ? FROM extends ObjectTypeDefinition<any> ? (
+        UnionIfTrue<
+          MapPropNamesToInterface<FROM, TO, P>,
+          P extends "$rid" ? true : false,
+          "$rid"
+        >
+      )
     : never
   : never;
 
@@ -125,7 +147,7 @@ export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
   P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] =
     "$all",
-> = // Record<any, any>;
+> =
   & OsdkBase<Q>
   & Pick<
     GetProps<Q, P>,
@@ -202,5 +224,5 @@ export type Osdk<
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends string = string & keyof Q["properties"], // "$all",
+  P extends string = string & keyof Q["properties"],
 > = Osdk<Q, P>;
