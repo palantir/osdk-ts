@@ -37,6 +37,7 @@ export {
   Distance,
   DistanceUnit,
   DoubleType,
+  ExactDistinctCountAggregatableProperty,
   FloatType,
   FoundryApiError,
   GeometryCollection,

@@ -25,6 +25,7 @@ export interface MultipleAggregatableProperty<
   TResult extends MetricValue = Double,
 > {
   type: "MultipleAggregationsProperty";
+  exactDistinct: () => MultipleAggregationsOperations<Double>;
   approximateDistinct: () => MultipleAggregationsOperations<Double>;
   min: () => MultipleAggregationsOperations<TResult>;
   max: () => MultipleAggregationsOperations<TResult>;
@@ -78,6 +79,15 @@ export const MultipleAggregatableProperty = <T extends MetricValue>(
     return {
       type: "MultipleAggregationsOperations",
       operation: "approximateDistinct",
+      metricValueType: propertyType,
+      propertyApiName,
+    };
+  },
+
+  exactDistinct(): MultipleAggregationsOperations<Double> {
+    return {
+      type: "MultipleAggregationsOperations",
+      operation: "exactDistinct",
       metricValueType: propertyType,
       propertyApiName,
     };

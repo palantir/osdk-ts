@@ -84,7 +84,13 @@ export interface MultipleAggregationsOperations<
   type: "MultipleAggregationsOperations";
   propertyApiName: string;
   metricValueType: MetricValueType;
-  operation: "max" | "min" | "avg" | "sum" | "approximateDistinct";
+  operation:
+    | "max"
+    | "min"
+    | "avg"
+    | "sum"
+    | "approximateDistinct"
+    | "exactDistinct";
 }
 
 export type AggregatableProperties = Record<
@@ -221,6 +227,16 @@ export interface GroupedTerminalAggregationOperations<
     ) => AggregatableProperty<any>,
   ): AggregationComputeStep<{}, Double>;
   /**
+   * Computes approximate count of distinct values of the specified property.
+   *
+   * @param propertySelector A function that selects the property to count.
+   */
+  exactDistinct(
+    propertySelector: (
+      obj: TAggregatableProperties,
+    ) => AggregatableProperty<any>,
+  ): AggregationComputeStep<{}, Double>;
+  /**
    * Compute the average of the specified property.
    *
    * @param propertySelector A function that selects the property to calculate the average of.
@@ -338,7 +354,14 @@ export interface BucketedAggregation<
   buckets: Array<BaseBucket<TGroupKey, TValue>>;
 }
 export interface AggregationClause {
-  type: "max" | "min" | "avg" | "sum" | "count" | "approximateDistinct";
+  type:
+    | "max"
+    | "min"
+    | "avg"
+    | "sum"
+    | "count"
+    | "approximateDistinct"
+    | "exactDistinct";
   field?: string;
   name: string;
   metricValueType: MetricValueType;

@@ -45,6 +45,14 @@ export async function generateMetrics(
   );
 
   await fs.writeFile(
+    path.join(metricsDir, "ExactDistinctCountAggregatableProperty.ts"),
+    await formatTs(
+      reexportConsts(["ExactDistinctCountAggregatableProperty"])
+        + reexportTypes(["ExactDistinctCountAggregatableProperty"]),
+    ),
+  );
+
+  await fs.writeFile(
     path.join(metricsDir, "MultipleAggregatableProperty.ts"),
     await formatTs(
       `
@@ -84,6 +92,7 @@ export async function generateMetrics(
       `
       export * from "./ApproximateDistinctCountAggregatableProperty${importExt}";
       export * from "./DefaultAggregatableProperty${importExt}";
+      export * from "./ExactDistinctCountAggregatableProperty${importExt}";
       export * from "./LocalDatePropertyMetric${importExt}";
       export * from "./metrics${importExt}";
       export * from "./MultipleAggregatableProperty${importExt}";

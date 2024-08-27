@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2024 Palantir Technologies, Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-export * from "./ApproximateDistinctCountAggregatableProperty.js";
-export * from "./DefaultAggregatableProperty.js";
-export * from "./ExactDistinctCountAggregatableProperty.js";
-export * from "./LocalDatePropertyMetric.js";
-export * from "./metrics.js";
-export * from "./MultipleAggregatableProperty.js";
-export * from "./NumericPropertyMetric.js";
-export * from "./TimestampPropertyMetric.js";
+import type { AggregationMetricName } from "./AggregationMetricName.js";
+import type { OrderByDirection } from "./OrderByDirection.js";
+import type { PropertyApiName } from "./PropertyApiName.js";
+
+/** Computes an exact number of distinct values for the provided field. */
+export interface ExactDistinctAggregationV2 {
+  field: PropertyApiName;
+  name?: AggregationMetricName;
+  direction?: OrderByDirection;
+}

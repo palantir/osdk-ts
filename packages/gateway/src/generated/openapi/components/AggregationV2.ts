@@ -18,6 +18,7 @@ import type { ApproximateDistinctAggregationV2 } from "./ApproximateDistinctAggr
 import type { ApproximatePercentileAggregationV2 } from "./ApproximatePercentileAggregationV2.js";
 import type { AvgAggregationV2 } from "./AvgAggregationV2.js";
 import type { CountAggregationV2 } from "./CountAggregationV2.js";
+import type { ExactDistinctAggregationV2 } from "./ExactDistinctAggregationV2.js";
 import type { MaxAggregationV2 } from "./MaxAggregationV2.js";
 import type { MinAggregationV2 } from "./MinAggregationV2.js";
 import type { SumAggregationV2 } from "./SumAggregationV2.js";
@@ -48,6 +49,12 @@ export interface AggregationV2_ApproximateDistinct
   type: "approximateDistinct";
 }
 
+export interface AggregationV2_ExactDistinct
+  extends ExactDistinctAggregationV2
+{
+  type: "exactDistinct";
+}
+
 export interface AggregationV2_ApproximatePercentile
   extends ApproximatePercentileAggregationV2
 {
@@ -61,4 +68,5 @@ export type AggregationV2 =
   | AggregationV2_Sum
   | AggregationV2_Count
   | AggregationV2_ApproximateDistinct
-  | AggregationV2_ApproximatePercentile;
+  | AggregationV2_ApproximatePercentile
+  | AggregationV2_ExactDistinct;
