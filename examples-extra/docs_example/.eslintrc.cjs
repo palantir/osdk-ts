@@ -15,5 +15,6 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-namespace": "off",
   },
 };
