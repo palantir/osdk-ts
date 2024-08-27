@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -48,14 +47,6 @@ export namespace BuilderDeploymentState {
     aggregate: <AO extends AggregateOpts<BuilderDeploymentState>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BuilderDeploymentState, AO>,
     ) => Promise<AggregationsResults<BuilderDeploymentState, AO>>;
-
-    where: (clause: WhereClause<BuilderDeploymentState>) => BuilderDeploymentState.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<BuilderDeploymentState.ObjectSet>) => BuilderDeploymentState.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<BuilderDeploymentState.ObjectSet>) => BuilderDeploymentState.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<BuilderDeploymentState.ObjectSet>) => BuilderDeploymentState.ObjectSet;
 
     pivotTo: <L extends LinkNames<BuilderDeploymentState>>(
       type: L,

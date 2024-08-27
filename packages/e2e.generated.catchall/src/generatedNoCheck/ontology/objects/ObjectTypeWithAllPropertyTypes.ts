@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -106,20 +105,6 @@ export namespace ObjectTypeWithAllPropertyTypes {
     aggregate: <AO extends AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<ObjectTypeWithAllPropertyTypes, AO>,
     ) => Promise<AggregationsResults<ObjectTypeWithAllPropertyTypes, AO>>;
-
-    where: (clause: WhereClause<ObjectTypeWithAllPropertyTypes>) => ObjectTypeWithAllPropertyTypes.ObjectSet;
-
-    union: (
-      ...objectSets: ReadonlyArray<ObjectTypeWithAllPropertyTypes.ObjectSet>
-    ) => ObjectTypeWithAllPropertyTypes.ObjectSet;
-
-    intersect: (
-      ...objectSets: ReadonlyArray<ObjectTypeWithAllPropertyTypes.ObjectSet>
-    ) => ObjectTypeWithAllPropertyTypes.ObjectSet;
-
-    subtract: (
-      ...objectSets: ReadonlyArray<ObjectTypeWithAllPropertyTypes.ObjectSet>
-    ) => ObjectTypeWithAllPropertyTypes.ObjectSet;
 
     pivotTo: <L extends LinkNames<ObjectTypeWithAllPropertyTypes>>(
       type: L,

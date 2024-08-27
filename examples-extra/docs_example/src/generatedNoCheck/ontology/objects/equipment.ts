@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -46,14 +45,6 @@ export namespace equipment {
     aggregate: <AO extends AggregateOpts<equipment>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment, AO>,
     ) => Promise<AggregationsResults<equipment, AO>>;
-
-    where: (clause: WhereClause<equipment>) => equipment.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<equipment.ObjectSet>) => equipment.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<equipment.ObjectSet>) => equipment.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<equipment.ObjectSet>) => equipment.ObjectSet;
 
     pivotTo: <L extends LinkNames<equipment>>(type: L) => LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
 

@@ -25,7 +25,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -52,14 +51,6 @@ export namespace Venture {
     aggregate: <AO extends AggregateOpts<Venture>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture, AO>,
     ) => Promise<AggregationsResults<Venture, AO>>;
-
-    where: (clause: WhereClause<Venture>) => Venture.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<Venture.ObjectSet>) => Venture.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<Venture.ObjectSet>) => Venture.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<Venture.ObjectSet>) => Venture.ObjectSet;
 
     pivotTo: <L extends LinkNames<Venture>>(type: L) => LinkedType<Venture, L>['objectSet']; // ObjectSet<LinkedType<Venture, L>>;
 

@@ -29,6 +29,8 @@ export async function runInterfacesTest() {
     const e = first.$as(Employee);
   })();
 
+  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })
     .where({ name: { $ne: "Roth" } })

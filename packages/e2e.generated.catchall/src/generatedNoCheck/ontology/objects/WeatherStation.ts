@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -46,14 +45,6 @@ export namespace WeatherStation {
     aggregate: <AO extends AggregateOpts<WeatherStation>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<WeatherStation, AO>,
     ) => Promise<AggregationsResults<WeatherStation, AO>>;
-
-    where: (clause: WhereClause<WeatherStation>) => WeatherStation.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<WeatherStation.ObjectSet>) => WeatherStation.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<WeatherStation.ObjectSet>) => WeatherStation.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<WeatherStation.ObjectSet>) => WeatherStation.ObjectSet;
 
     pivotTo: <L extends LinkNames<WeatherStation>>(type: L) => LinkedType<WeatherStation, L>['objectSet']; // ObjectSet<LinkedType<WeatherStation, L>>;
 

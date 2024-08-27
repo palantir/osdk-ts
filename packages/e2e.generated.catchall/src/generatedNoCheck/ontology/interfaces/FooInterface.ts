@@ -20,7 +20,6 @@ import {
   PageResult,
   Result,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 export type PropertyKeys$FooInterface = 'name' | 'description';
@@ -41,14 +40,6 @@ export namespace FooInterface {
     aggregate: <AO extends AggregateOpts<FooInterface>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<FooInterface, AO>,
     ) => Promise<AggregationsResults<FooInterface, AO>>;
-
-    where: (clause: WhereClause<FooInterface>) => FooInterface.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<FooInterface.ObjectSet>) => FooInterface.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<FooInterface.ObjectSet>) => FooInterface.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<FooInterface.ObjectSet>) => FooInterface.ObjectSet;
 
     pivotTo: <L extends LinkNames<FooInterface>>(type: L) => LinkedType<FooInterface, L>['objectSet']; // ObjectSet<LinkedType<FooInterface, L>>;
 

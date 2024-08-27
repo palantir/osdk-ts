@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -50,14 +49,6 @@ export namespace BoundariesUsState {
     aggregate: <AO extends AggregateOpts<BoundariesUsState>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState, AO>,
     ) => Promise<AggregationsResults<BoundariesUsState, AO>>;
-
-    where: (clause: WhereClause<BoundariesUsState>) => BoundariesUsState.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<BoundariesUsState.ObjectSet>) => BoundariesUsState.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<BoundariesUsState.ObjectSet>) => BoundariesUsState.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<BoundariesUsState.ObjectSet>) => BoundariesUsState.ObjectSet;
 
     pivotTo: <L extends LinkNames<BoundariesUsState>>(type: L) => LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
 

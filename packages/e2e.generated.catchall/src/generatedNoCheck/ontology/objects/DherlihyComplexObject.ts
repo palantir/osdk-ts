@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -48,14 +47,6 @@ export namespace DherlihyComplexObject {
     aggregate: <AO extends AggregateOpts<DherlihyComplexObject>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<DherlihyComplexObject, AO>,
     ) => Promise<AggregationsResults<DherlihyComplexObject, AO>>;
-
-    where: (clause: WhereClause<DherlihyComplexObject>) => DherlihyComplexObject.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<DherlihyComplexObject.ObjectSet>) => DherlihyComplexObject.ObjectSet;
 
     pivotTo: <L extends LinkNames<DherlihyComplexObject>>(type: L) => LinkedType<DherlihyComplexObject, L>['objectSet']; // ObjectSet<LinkedType<DherlihyComplexObject, L>>;
 

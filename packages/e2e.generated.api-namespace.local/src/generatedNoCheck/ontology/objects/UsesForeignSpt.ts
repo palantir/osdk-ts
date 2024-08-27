@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -46,14 +45,6 @@ export namespace UsesForeignSpt {
     aggregate: <AO extends AggregateOpts<UsesForeignSpt>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt, AO>,
     ) => Promise<AggregationsResults<UsesForeignSpt, AO>>;
-
-    where: (clause: WhereClause<UsesForeignSpt>) => UsesForeignSpt.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<UsesForeignSpt.ObjectSet>) => UsesForeignSpt.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<UsesForeignSpt.ObjectSet>) => UsesForeignSpt.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<UsesForeignSpt.ObjectSet>) => UsesForeignSpt.ObjectSet;
 
     pivotTo: <L extends LinkNames<UsesForeignSpt>>(type: L) => LinkedType<UsesForeignSpt, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt, L>>;
 

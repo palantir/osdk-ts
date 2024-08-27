@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -48,14 +47,6 @@ export namespace Todo {
     aggregate: <AO extends AggregateOpts<Todo>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo, AO>,
     ) => Promise<AggregationsResults<Todo, AO>>;
-
-    where: (clause: WhereClause<Todo>) => Todo.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<Todo.ObjectSet>) => Todo.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<Todo.ObjectSet>) => Todo.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<Todo.ObjectSet>) => Todo.ObjectSet;
 
     pivotTo: <L extends LinkNames<Todo>>(type: L) => LinkedType<Todo, L>['objectSet']; // ObjectSet<LinkedType<Todo, L>>;
 

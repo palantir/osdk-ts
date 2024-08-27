@@ -306,22 +306,6 @@ aggregate: <AO extends AggregateOpts<${objectDefIdentifier}>>(
   req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
 ) => Promise<AggregationsResults<${objectDefIdentifier}, AO>>;
 
-where: (
-  clause: WhereClause<${objectDefIdentifier}>,
-) => ${objectSetIdentifier};
-
-
-union: (
-  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-) => ${objectSetIdentifier};
-
-intersect: (
-  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-) => ${objectSetIdentifier};
-
-subtract: (
-  ...objectSets: ReadonlyArray<${objectSetIdentifier}>
-) => ${objectSetIdentifier};
 
 pivotTo: <L extends LinkNames<${objectDefIdentifier}>>(type: L) => LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
  ${

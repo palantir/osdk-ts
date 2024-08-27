@@ -100,7 +100,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    */
   where: (
     clause: WhereClause<Q>,
-  ) => MinimalObjectSet<Q>;
+  ) => this;
 
   /**
    * Returns an async iterator to load all objects of this type
@@ -150,20 +150,6 @@ export interface ObjectSet<
   ) => Promise<AggregationsResults<Q, AO>>;
 
   /**
-   * Allows you to filter an object set with a given clause
-   * @param clause - Takes a filter clause
-   * @example
-   * await client(Office).where({
-      meetingRooms: { $contains: "Grand Central" },
-      meetingRoomCapacities: { $contains: 30 },
-  });
-   * @returns an objectSet
-   */
-  where: (
-    clause: WhereClause<Q>,
-  ) => Z;
-
-  /**
    * Unions object sets together
    * @param objectSets - objectSets you want to union with
    * @example
@@ -174,7 +160,7 @@ export interface ObjectSet<
    */
   union: (
     ...objectSets: ReadonlyArray<Z>
-  ) => Z;
+  ) => this;
 
   /**
    * Computes the intersection of object sets
@@ -187,7 +173,7 @@ export interface ObjectSet<
    */
   intersect: (
     ...objectSets: ReadonlyArray<Z>
-  ) => Z;
+  ) => this;
 
   /**
    * Computes the subtraction of object sets
@@ -200,7 +186,7 @@ export interface ObjectSet<
    */
   subtract: (
     ...objectSets: ReadonlyArray<Z>
-  ) => Z;
+  ) => this;
 
   /**
    * Pivots the object set over to all its linked objects of the specified type

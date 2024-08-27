@@ -24,7 +24,6 @@ import {
   SelectArg,
   SingleLinkAccessor,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -58,14 +57,6 @@ export namespace Employee {
     aggregate: <AO extends AggregateOpts<Employee>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee, AO>,
     ) => Promise<AggregationsResults<Employee, AO>>;
-
-    where: (clause: WhereClause<Employee>) => Employee.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<Employee.ObjectSet>) => Employee.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<Employee.ObjectSet>) => Employee.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<Employee.ObjectSet>) => Employee.ObjectSet;
 
     pivotTo: <L extends LinkNames<Employee>>(type: L) => LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
 

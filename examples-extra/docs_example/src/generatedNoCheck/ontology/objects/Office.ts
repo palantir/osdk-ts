@@ -23,7 +23,6 @@ import {
   Result,
   SelectArg,
   ValidToFrom,
-  WhereClause,
 } from '@osdk/client.api';
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
@@ -54,14 +53,6 @@ export namespace Office {
     aggregate: <AO extends AggregateOpts<Office>>(
       req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office, AO>,
     ) => Promise<AggregationsResults<Office, AO>>;
-
-    where: (clause: WhereClause<Office>) => Office.ObjectSet;
-
-    union: (...objectSets: ReadonlyArray<Office.ObjectSet>) => Office.ObjectSet;
-
-    intersect: (...objectSets: ReadonlyArray<Office.ObjectSet>) => Office.ObjectSet;
-
-    subtract: (...objectSets: ReadonlyArray<Office.ObjectSet>) => Office.ObjectSet;
 
     pivotTo: <L extends LinkNames<Office>>(type: L) => LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
 
