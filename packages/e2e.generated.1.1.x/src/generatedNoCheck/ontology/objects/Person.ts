@@ -21,7 +21,6 @@ export interface Person extends OntologyObject {
 }
 
 import type { TodoDef } from './Todo.js';
-
 export interface PersonDef extends ObjectTypeDefinition<'Person', Person> {
   apiName: 'Person';
   description: 'A person';

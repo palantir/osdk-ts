@@ -135,8 +135,6 @@ function createFauxTodo(title: string): SimpleTodo {
     id: title,
     title,
     isComplete: false,
-    __primaryKey: title,
-    __apiName: "Todo",
     $title: title,
     $primaryKey: title,
     $apiName: "Todo",
@@ -152,13 +150,13 @@ function updateTodo(
   return updateOne(todos, id, (todo) => ({ ...todo, isComplete })) ?? [];
 }
 
-function updateOne<T extends { __primaryKey: Q }, Q>(
+function updateOne<T extends { $primaryKey: Q }, Q>(
   things: T[] | undefined,
   primaryKey: Q,
   update: (thing: T) => T,
 ) {
   return things?.map((thing) => {
-    if (thing.__primaryKey === primaryKey) {
+    if (thing.$primaryKey === primaryKey) {
       return update(thing);
     } else {
       return thing;

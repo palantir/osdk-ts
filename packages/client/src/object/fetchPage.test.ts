@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeDefinition } from "@osdk/api";
+import type {
+  ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition,
+} from "@osdk/api";
 import type {
   FetchPageArgs,
   FetchPageResult,
@@ -23,6 +26,7 @@ import type {
   SelectArgToKeys,
 } from "@osdk/client.api";
 import type { FooInterface } from "@osdk/client.test.ontology";
+import { Todo } from "@osdk/client.test.ontology";
 import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { createMinimalClient } from "../createMinimalClient.js";
@@ -31,8 +35,11 @@ import {
   createObjectSet,
   getWireObjectSet,
 } from "../objectSet/createObjectSet.js";
-import type { TodoDef } from "../util/test/mockOntology.js";
-import { metadata, Todo } from "../util/test/mockOntology.js";
+
+const metadata = {
+  ontologyRid: "asdf",
+};
+type TodoDef = Todo.Definition;
 
 describe(fetchPage, () => {
   it("infers select properly", () => {
@@ -45,18 +52,24 @@ describe(fetchPage, () => {
         L extends SelectArgToKeys<T, A>,
         R extends A["$includeRid"] extends true ? true : false,
       >() {
-        return fetchPage<T, L, R, "drop">({} as any, {} as any, {} as any);
+        return fetchPage<
+          T,
+          L & ObjectOrInterfacePropertyKeysFrom2<T>,
+          R,
+          "drop"
+        >({} as any, {} as any, {} as any);
       }
     }
 
-    // e.g. fetchPage({});
     expectTypeOf<Awaited<ReturnType<Helper<TodoDef, {}>["fetchPage"]>>>()
+      .branded
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage({ select: [] });
     expectTypeOf<
       Awaited<ReturnType<Helper<TodoDef, { $select: [] }>["fetchPage"]>>
     >()
+      .branded
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage()
@@ -67,6 +80,7 @@ describe(fetchPage, () => {
         >
       >
     >()
+      .branded
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "$all">>>();
 
     // e.g. fetchPage({ $select: ["text"]}
@@ -75,6 +89,7 @@ describe(fetchPage, () => {
         ReturnType<Helper<TodoDef, { $select: ["text"] }>["fetchPage"]>
       >
     >()
+      .branded
       .toEqualTypeOf<PageResult<Osdk<TodoDef, "text">>>();
   });
 
@@ -163,10 +178,8 @@ describe(fetchPage, () => {
           nextPageToken: string | undefined;
         }>();
 
-      const a: Awaited<FetchPageResult<TodoDef, "text", true, false>> =
-        1 as any;
-
       expectTypeOf<Awaited<FetchPageResult<TodoDef, "text", true, false>>>()
+        .branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "text" | "$rid" | "$notStrict">[];
           nextPageToken: string | undefined;
@@ -176,7 +189,7 @@ describe(fetchPage, () => {
     it("works with $all", () => {
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", false, "drop">>
-      >()
+      >().branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef>[];
           nextPageToken: string | undefined;
@@ -185,6 +198,7 @@ describe(fetchPage, () => {
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
       >()
+        .branded
         .toEqualTypeOf<{
           data: Osdk<TodoDef, "$all" | "$rid">[];
           nextPageToken: string | undefined;
@@ -193,22 +207,25 @@ describe(fetchPage, () => {
       expectTypeOf<
         Awaited<FetchPageResult<TodoDef, "text" | "id", true, "drop">>
       >()
+        .branded
         .toEqualTypeOf<{
-          data: Osdk<TodoDef, "$all" | "$rid", "$all" | "$rid">[];
+          data: Osdk<TodoDef, "$all" | "$rid">[];
           nextPageToken: string | undefined;
         }>();
 
       expectTypeOf<
         Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
       >()
+        .branded
         .toEqualTypeOf<{
-          data: Osdk<FooInterface, "$all" | "$rid", never>[];
+          data: Osdk<FooInterface, "$all" | "$rid">[];
           nextPageToken: string | undefined;
         }>();
 
       expectTypeOf<
         Awaited<FetchPageResult<FooInterface, "fooSpt", true, "drop">>
       >()
+        .branded
         .toEqualTypeOf<{
           data: Osdk<FooInterface, "$all" | "$rid">[];
           nextPageToken: string | undefined;

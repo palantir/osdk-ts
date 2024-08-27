@@ -72,7 +72,7 @@ export function createOsdkObject<
   client: MinimalClient,
   objectDef: Q,
   rawObj: OntologyObjectV2,
-): Osdk<Q, string, never> {
+): Osdk<Q, string> {
   // We use multiple layers of prototypes to maximize reuse and also to keep
   // [RawObject] out of `ownKeys`. This keeps the code in the proxy below simpler.
   const objectHolderPrototype = Object.create(

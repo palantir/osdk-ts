@@ -15,15 +15,14 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-
 import type {
-  BaseObjectSet,
   DataValueClientToWire,
   DataValueWireToClient,
-  ObjectSet,
-  OsdkBase,
-  OsdkObjectPrimaryKeyType,
-} from "../index.js";
+} from "../mapping/DataValueMapping.js";
+import type { BaseObjectSet } from "../objectSet/BaseObjectSet.js";
+import type { ObjectSet } from "../objectSet/ObjectSet.js";
+import type { OsdkBase } from "../OsdkBase.js";
+import type { OsdkObjectPrimaryKeyType } from "../OsdkObjectPrimaryKeyType.js";
 
 /**
  * Helper types for converting query definition parameter types to typescript types

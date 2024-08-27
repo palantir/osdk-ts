@@ -32,22 +32,6 @@ export interface UNSTABLE_ObjectSet<Q extends ObjectOrInterfaceDefinition>
 {
   subscribe: (listener: ObjectSetListener<Q>) => () => unknown;
 
-  where: (
-    clause: WhereClause<Q>,
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  union: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  intersect: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  subtract: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
-
   pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => UNSTABLE_ObjectSet<LinkedType<Q, L>>;

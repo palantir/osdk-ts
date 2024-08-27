@@ -56,7 +56,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 
    * @returns a page of objects
    */
-  fetchPage: <
+  readonly fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
@@ -79,7 +79,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  fetchPageWithErrors: <
+  readonly fetchPageWithErrors: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
@@ -98,9 +98,9 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   });
    * @returns an objectSet
    */
-  where: (
+  readonly where: (
     clause: WhereClause<Q>,
-  ) => MinimalObjectSet<Q>;
+  ) => this;
 
   /**
    * Returns an async iterator to load all objects of this type
@@ -110,7 +110,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * }
    * @returns an async iterator to load all objects
    */
-  asyncIter: () => AsyncIterableIterator<Osdk<Q, "$all">>;
+  readonly asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
 }
 
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
@@ -118,9 +118,10 @@ export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
 {
 }
 
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
-  extends MinimalObjectSet<Q>
-{
+export interface ObjectSet<
+  Q extends ObjectOrInterfaceDefinition = any,
+  Z extends ObjectSet<Q, Z> = ObjectSet<Q, any>,
+> extends MinimalObjectSet<Q> {
   /**
    * Aggregate on a field in an object type
    * @param req - an aggregation request where you can select fields and choose how to aggregate, e.g., max, min, avg, and also choose
@@ -144,23 +145,9 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
 
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
-  aggregate: <AO extends AggregateOpts<Q>>(
+  readonly aggregate: <AO extends AggregateOpts<Q>>(
     req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
-
-  /**
-   * Allows you to filter an object set with a given clause
-   * @param clause - Takes a filter clause
-   * @example
-   * await client(Office).where({
-      meetingRooms: { $contains: "Grand Central" },
-      meetingRoomCapacities: { $contains: 30 },
-  });
-   * @returns an objectSet
-   */
-  where: (
-    clause: WhereClause<Q>,
-  ) => ObjectSet<Q>;
 
   /**
    * Unions object sets together
@@ -171,9 +158,9 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   );
    * @returns the unioned object set
    */
-  union: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+  readonly union: (
+    ...objectSets: ReadonlyArray<Z>
+  ) => this;
 
   /**
    * Computes the intersection of object sets
@@ -184,9 +171,9 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   );
    * @returns the intersected object set
    */
-  intersect: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+  readonly intersect: (
+    ...objectSets: ReadonlyArray<Z>
+  ) => this;
 
   /**
    * Computes the subtraction of object sets
@@ -197,21 +184,23 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   );
    * @returns the subtract object set
    */
-  subtract: (
-    ...objectSets: ReadonlyArray<ObjectSet<Q>>
-  ) => ObjectSet<Q>;
+  readonly subtract: (
+    ...objectSets: ReadonlyArray<Z>
+  ) => this;
 
   /**
    * Pivots the object set over to all its linked objects of the specified type
    * @param type - The linked object type you want to pivot to
    * @returns an object set of the specified linked type
    */
-  pivotTo: <L extends LinkNames<Q>>(type: L) => ObjectSet<LinkedType<Q, L>>;
+  readonly pivotTo: <L extends LinkNames<Q>>(
+    type: L,
+  ) => LinkedType<Q, L>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
 
   /**
    * Fetches one object with the specified primary key, without a result wrapper
    */
-  fetchOne: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,
@@ -224,7 +213,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition>
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,

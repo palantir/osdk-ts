@@ -112,12 +112,12 @@ async function generateV2QueryFile(
         import type { QueryDefinition , VersionBound} from "@osdk/api";
         import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
         ${importObjects}
 
-        export interface ${query.shortApiName} {
-          ${getDescriptionIfPresent(query.description)}
-          (${
+        export namespace ${query.shortApiName} {
+          export interface Signature {
+            ${getDescriptionIfPresent(query.description)}
+            (${
       Object.keys(query.parameters).length > 0
         ? `query: ${query.paramsIdentifier}`
         : ""
@@ -128,19 +128,19 @@ async function generateV2QueryFile(
         "Result",
       )
     }>
-        }
+          }
 
         ${
       Object.keys(query.parameters).length > 0
         ? `
-        export interface ${query.paramsIdentifier} {
-        ${
+            export interface Parameters {
+            ${
           stringify(query.parameters, {
             "*": (parameter, formatter, apiName) => {
               const q = paramToDef(parameter);
               return [
                 `
-            ${
+                ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
                 `${getQueryParamType(ontology, q, "Param")}`,
@@ -148,18 +148,16 @@ async function generateV2QueryFile(
             },
           })
         }
-        }
-
-        `
+            }
+    
+            `
         : ""
     }
 
-
-
-        export interface ${query.definitionIdentifier} extends QueryDefinition<
+        export interface Definition extends QueryDefinition<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
-          ${query.shortApiName}
+          ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
             ${stringify(baseProps)},
             parameters: {
@@ -170,6 +168,15 @@ async function generateV2QueryFile(
             ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
         }
+
+        }
+
+        /** @deprecated use \`${query.shortApiName}.Signature\' instead */
+        export type ${query.shortApiName} = ${query.shortApiName}.Signature;
+
+
+
+
 
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${stringify(baseProps)},

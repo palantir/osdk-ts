@@ -29,15 +29,12 @@ export async function runInterfacesTest() {
     const e = first.$as(Employee);
   })();
 
+  const qqq = await client(FooInterface).where({ name: { $ne: "Patti" } });
+
   const r = await client(FooInterface)
     .where({ name: { $ne: "Patti" } })
     .where({ name: { $ne: "Roth" } })
     .fetchPage({ $pageSize: 1, $select: ["name"] });
-
-  // This technically matches because the types are `| undefined`
-  expectType<TypeOf<typeof r, PageResult<Osdk<FooInterface, "$all">>>>(
-    true,
-  );
 
   // const q = client(FooInterface)
   //   .where({ name: { $ne: "Patti" } });

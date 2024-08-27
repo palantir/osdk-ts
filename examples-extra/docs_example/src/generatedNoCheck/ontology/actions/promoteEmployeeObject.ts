@@ -9,72 +9,77 @@ import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 import type { Employee } from '../objects/Employee';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$promoteEmployeeObject$Params = {
-  employee: {
-    multiplicity: false;
-    nullable: false;
-    type: ObjectActionDataType<'Employee', Employee>;
+export namespace promoteEmployeeObject {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    employee: {
+      multiplicity: false;
+      nullable: false;
+      type: ObjectActionDataType<'Employee', Employee>;
+    };
+    newCompensation: {
+      multiplicity: false;
+      nullable: false;
+      type: 'double';
+    };
+    newTitle: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
   };
-  newCompensation: {
-    multiplicity: false;
-    nullable: false;
-    type: 'double';
-  };
-  newTitle: {
-    multiplicity: false;
-    nullable: false;
-    type: 'string';
-  };
-};
 
-/**
- * Update an employee's title and compensation
- */
-export interface ActionParams$promoteEmployeeObject {
-  readonly employee: ActionParam.ObjectType<Employee>;
-
-  readonly newCompensation: ActionParam.PrimitiveType<'double'>;
-
-  readonly newTitle: ActionParam.PrimitiveType<'string'>;
-}
-
-/**
- * @deprecated Use `ActionParams$promoteEmployeeObject`
- */
-export type promoteEmployeeObject$Params =
-  | ActionParams$promoteEmployeeObject
-  | ReadonlyArray<ActionParams$promoteEmployeeObject>;
-
-// Represents a fqn of the action
-export interface promoteEmployeeObject {
   /**
    * Update an employee's title and compensation
    */
-  <
-    P extends ActionParams$promoteEmployeeObject | ReadonlyArray<ActionParams$promoteEmployeeObject>,
-    OP extends P extends ReadonlyArray<ActionParams$promoteEmployeeObject>
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Parameters {
+    readonly employee: ActionParam.ObjectType<Employee>;
+
+    readonly newCompensation: ActionParam.PrimitiveType<'double'>;
+
+    readonly newTitle: ActionParam.PrimitiveType<'string'>;
+  }
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'promoteEmployeeObject';
+    description: "Update an employee's title and compensation";
+    modifiedEntities: { Employee: { created: false; modified: true } };
+    type: 'action';
+    parameters: promoteEmployeeObject.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signature {
+    /**
+     * Update an employee's title and compensation
+     */
+    <
+      P extends promoteEmployeeObject.Parameters | ReadonlyArray<promoteEmployeeObject.Parameters>,
+      OP extends P extends ReadonlyArray<promoteEmployeeObject.Parameters>
+        ? ApplyBatchActionOptions
+        : ApplyActionOptions,
+    >(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$promoteEmployeeObject
-  extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'promoteEmployeeObject';
-  description: "Update an employee's title and compensation";
-  modifiedEntities: { Employee: { created: false; modified: true } };
-  type: 'action';
-  parameters: ActionDef$promoteEmployeeObject$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `promoteEmployeeObject.Parameters`
+ */
+export type promoteEmployeeObject$Params =
+  | promoteEmployeeObject.Parameters
+  | ReadonlyArray<promoteEmployeeObject.Parameters>;
 
-export const promoteEmployeeObject: ActionDef$promoteEmployeeObject = {
+/** @deprecated Use `promoteEmployeeObject.Definition` **/
+export type promoteEmployeeObject = promoteEmployeeObject.Signature;
+
+export const promoteEmployeeObject: promoteEmployeeObject.Definition = {
   apiName: 'promoteEmployeeObject',
   description: "Update an employee's title and compensation",
   modifiedEntities: {

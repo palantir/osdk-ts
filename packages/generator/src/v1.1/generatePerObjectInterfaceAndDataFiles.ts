@@ -17,8 +17,8 @@
 import path from "node:path";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { wireObjectTypeV2ToSdkObjectConst } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { formatTs } from "../util/test/formatTs.js";
+import { wireObjectTypeV2ToSdkObjectConstV1 } from "./wireObjectTypeV2ToSdkObjectConstV1.js";
 import { wireObjectTypeV2ToObjectInterfaceStringV1 } from "./wireObjectTypeV2ToV1ObjectInterfaceString.js";
 
 export async function generatePerObjectInterfaceAndDataFiles(
@@ -49,11 +49,10 @@ export async function generatePerObjectInterfaceAndDataFiles(
         }
 
         ${
-          wireObjectTypeV2ToSdkObjectConst(
+          wireObjectTypeV2ToSdkObjectConstV1(
             object,
             { ontology },
             relPath,
-            false,
           )
         }
         `),

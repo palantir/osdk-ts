@@ -20,5 +20,5 @@ declare const ObjectSetType: unique symbol;
 
 // mostly a marker interface to simplify types that must be exported/shared
 export interface BaseObjectSet<Q extends ObjectOrInterfaceDefinition> {
-  [ObjectSetType]: Q;
+  readonly [ObjectSetType]: Q;
 }

@@ -20,9 +20,16 @@ import invariant from "tiny-invariant";
 import type { EnhancedInterfaceType } from "../GenerateContext/EnhancedInterfaceType.js";
 import type { EnhancedOntologyDefinition } from "../GenerateContext/EnhancedOntologyDefinition.js";
 import { propertyJsdoc } from "../shared/propertyJsdoc.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
+import type { Identifiers } from "./wireObjectTypeV2ToSdkObjectConstV2.js";
+import {
+  createDefinition,
+  createObjectSet,
+  createOsdkObject,
+  createPropertyKeys,
+  createProps,
+} from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 /** @internal */
 export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
@@ -99,49 +106,116 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
     }
   }
 
+  const objectSetIdentifier = `${interfaceDef.shortApiName}.ObjectSet`;
+  const propertyKeysIdentifier = `${interfaceDef.shortApiName}.PropertyKeys`;
+  // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
+  const osdkObjectPropsIdentifier = `${interfaceDef.shortApiName}.Props`;
+  const osdkObjectStrictPropsIdentifier =
+    `${interfaceDef.shortApiName}.StrictProps`;
+  const osdkObjectLinksIdentifier = `OsdkObjectLinks$${objectDefIdentifier}`;
+  const osdkObjectIdentifier = `${interfaceDef.shortApiName}.OsdkObject`;
+
+  const ids: Identifiers = {
+    objectDefIdentifier: `${interfaceDef.shortApiName}.Definition`,
+    osdkObjectLinksIdentifier,
+    osdkObjectPropsIdentifier,
+    osdkObjectStrictPropsIdentifier,
+    objectSetIdentifier,
+    osdkObjectIdentifier,
+    propertyKeysIdentifier,
+  };
+
   function getV2Types() {
-    return `
-  export interface ${
-      interfaceDef.getDefinitionIdentifier(true)
-    } extends InterfaceDefinition<"${interfaceDef.fullApiName}", ${
-      interfaceDef.getImportedDefinitionIdentifier(true)
-    }>, VersionBound<$ExpectedClientVersion> {
-    osdkMetadata: typeof $osdkMetadata;
-    ${
-      stringify(definition, {
-        osdkMetadata: () => undefined,
-        type: () => undefined,
-        apiName: () => undefined,
-        links: (_value) =>
-          `{
-      ${
-            stringify(definition.links, {
-              "*": (definition) =>
-                `ObjectTypeLinkDefinition<${
-                  getObjectDefIdentifier(definition.targetType, v2)
-                }, ${definition.multiplicity}>`,
-            })
-          }
-    }`,
-        properties: (properties) => (`{
-      ${
-          stringify(properties, {
-            "*": (
-              propertyDefinition,
-              _,
-              key,
-            ) => [
-              `${localPropertyJsdoc(key)}"${maybeStripNamespace(key)}"`,
-              `PropertyDef<"${propertyDefinition.type}", "${
-                propertyDefinition.nullable ? "nullable" : "non-nullable"
-              }", "${propertyDefinition.multiplicity ? "array" : "single"}">`,
-            ],
+    return `import type {
+      AggregateOpts as $AggregateOpts,
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+      AggregationsResults as $AggregationsResults, 
+      Augments as $Augments,
+      ConvertProps as $ConvertProps,
+      DefaultToFalse as $DefaultToFalse,
+      FetchPageArgs as $FetchPageArgs,
+      FetchPageResult as $FetchPageResult,
+      LinkedType as $LinkedType,
+      LinkNames as $LinkNames,
+      NullabilityAdherence as $NullabilityAdherence,
+      NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+      ObjectSet as $ObjectSet, 
+      Osdk as $Osdk,
+      OsdkObject as $OsdkObject,
+      OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
+      OsdkObjectLinksObject as $OsdkObjectLinksObject,
+      OsdkObjectPropertyType as $OsdkObjectPropertyType,
+      PageResult as $PageResult,
+      PropertyValueClientToWire as $PropertyValueClientToWire,
+      PropertyValueWireToClient as $PropType,
+      Result as $Result,
+      SelectArg as $SelectArg, 
+      SingleLinkAccessor  as $SingleLinkAccessor,
+      SingleOsdkResult as $SingleOsdkResult,
+      ValidToFrom as $ValidToFrom,
+      WhereClause as $WhereClause,
+    } from "@osdk/client.api";
+    import type * as $clientApi from "@osdk/client.api";
+    import type {
+      ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2, 
+      ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+      ObjectTypeDefinition as $ObjectTypeDefinition,
+      InterfaceDefinition as $InterfaceDefinition,
+    } from "@osdk/api";
+
+    
+
+        ${
+      Object.keys(definition.links).length === 0
+        ? `export type ${osdkObjectLinksIdentifier} = never;`
+        : `
+        export interface ${osdkObjectLinksIdentifier}  {
+${
+          stringify(definition.links, {
+            "*": (definition) => {
+              const linkTarget = ontology.requireObjectType(
+                definition.targetType,
+              )
+                .getImportedDefinitionIdentifier(v2);
+
+              return `${
+                definition.multiplicity
+                  ? `${linkTarget}["objectSet"]`
+                  : `SingleLinkAccessor<${linkTarget}>`
+              }
+          `;
+            },
           })
         }
-    }`),
-      })
     }
-  }
+    `
+    }
+
+    export namespace ${interfaceDef.shortApiName} {
+
+      ${createPropertyKeys(interfaceDef)}
+
+
+      ${createProps(interfaceDef, "Props", false)}
+      ${createProps(interfaceDef, "StrictProps", true)}
+
+
+      ${createObjectSet(interfaceDef, ids)}
+
+      ${createDefinition(interfaceDef, ontology, "Definition", ids)}
+
+      ${createOsdkObject(interfaceDef, "OsdkObject", ids)}
+      
+    }    
+
+
+
+
+  /** @deprecated use ${interfaceDef.shortApiName}.Definition **/
+  export type ${objectDefIdentifier} = ${interfaceDef.shortApiName}.Definition;
+
+
+
 
 `;
   }
@@ -151,11 +225,13 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   const imports: string[] = [];
 
   return `${imports.join("\n")}
-
     ${v2 ? getV2Types() : ""}
 
-    export const ${interfaceDef.shortApiName}: ${objectDefIdentifier} = {
+    export const ${interfaceDef.shortApiName}: ${interfaceDef.shortApiName}.Definition = {
       osdkMetadata: $osdkMetadata,
+      objectSet: undefined as any,
+      props: undefined as any,
+      strictProps: undefined as any,
       ${
     stringify(definition, {
       osdkMetadata: () => undefined,

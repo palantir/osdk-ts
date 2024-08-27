@@ -36,3 +36,4 @@ pnpm-publish-summary.json
 
 api-docs/
 temp/
+tsup.config.bundled_*.mjs

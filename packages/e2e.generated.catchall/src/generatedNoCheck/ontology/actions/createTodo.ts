@@ -3,46 +3,51 @@ import type { ActionReturnTypeForOptions, ApplyActionOptions, ApplyBatchActionOp
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$createTodo$Params = Record<string, never>;
+export namespace createTodo {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = Record<string, never>;
 
-/**
- * Creates a new Todo
- */
-export interface ActionParams$createTodo {}
-
-/**
- * @deprecated Use `ActionParams$createTodo`
- */
-export type createTodo$Params = ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>;
-
-// Represents a fqn of the action
-export interface createTodo {
   /**
    * Creates a new Todo
    */
-  <
-    P extends ActionParams$createTodo | ReadonlyArray<ActionParams$createTodo>,
-    OP extends P extends ReadonlyArray<ActionParams$createTodo> ? ApplyBatchActionOptions : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Parameters {}
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'createTodo', 'Todo', createTodo>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'createTodo';
+    description: 'Creates a new Todo';
+    modifiedEntities: { Todo: { created: true; modified: false } };
+    type: 'action';
+    parameters: createTodo.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signature {
+    /**
+     * Creates a new Todo
+     */
+    <
+      P extends createTodo.Parameters | ReadonlyArray<createTodo.Parameters>,
+      OP extends P extends ReadonlyArray<createTodo.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+    >(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$createTodo
-  extends ActionDefinition<'createTodo', 'Todo', createTodo>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'createTodo';
-  description: 'Creates a new Todo';
-  modifiedEntities: { Todo: { created: true; modified: false } };
-  type: 'action';
-  parameters: ActionDef$createTodo$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `createTodo.Parameters`
+ */
+export type createTodo$Params = createTodo.Parameters | ReadonlyArray<createTodo.Parameters>;
 
-export const createTodo: ActionDef$createTodo = {
+/** @deprecated Use `createTodo.Definition` **/
+export type createTodo = createTodo.Signature;
+
+export const createTodo: createTodo.Definition = {
   apiName: 'createTodo',
   description: 'Creates a new Todo',
   modifiedEntities: {

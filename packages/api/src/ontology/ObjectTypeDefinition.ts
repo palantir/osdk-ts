@@ -61,6 +61,9 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
     ObjectTypeLinkDefinition<any, any>
   >;
   osdkMetadata?: OsdkMetadata;
+  objectSet?: any;
+  props?: any;
+  strictProps?: any;
 
   /**
    * Represents the "super interfaces" of this object.

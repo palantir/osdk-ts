@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import type { ObjectTypeDefinition } from "@osdk/api";
 import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";
 
@@ -24,10 +27,19 @@ export class EnhancedObjectType extends EnhancedBase<ObjectTypeFullMetadata> {
   }
 
   getDefinitionIdentifier(v2: boolean) {
-    return v2 ? this.shortApiName : `${this.shortApiName}Def`;
+    return v2 ? `${this.shortApiName}` : `${this.shortApiName}Def`;
   }
 
   getImportedDefinitionIdentifier(v2: boolean) {
     return this.getDefinitionIdentifier(v2);
+  }
+
+  getCleanedUpDefinition(v2: boolean): ObjectTypeDefinition<any> {
+    return deleteUndefineds(
+      wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
+        this.og,
+        v2,
+      ),
+    );
   }
 }

@@ -50,39 +50,44 @@ describe("generatePerQueryDataFiles", () => {
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      export interface getCount {
-        (query: QueryParams$getCount): Promise<QueryResult.PrimitiveType<'integer'>>;
-      }
+      export namespace getCount {
+        export interface Signature {
+          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+        }
 
-      export interface QueryParams$getCount {
-        /**
-         * (no ontology metadata)
-         */
-        readonly completed: QueryParam.PrimitiveType<'boolean'>;
-      }
-
-      export interface QueryDef$getCount
-        extends QueryDefinition<'getCount', never, getCount>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'getCount';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            * (no ontology metadata)
            */
-          completed: {
-            nullable: false;
-            type: 'boolean';
+          readonly completed: QueryParam.PrimitiveType<'boolean'>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'getCount', never, getCount.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'getCount';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             * (no ontology metadata)
+             */
+            completed: {
+              nullable: false;
+              type: 'boolean';
+            };
           };
-        };
-        output: {
-          nullable: false;
-          type: 'integer';
-        };
+          output: {
+            nullable: false;
+            type: 'integer';
+          };
+        }
       }
 
-      export const getCount: QueryDef$getCount = {
+      /** @deprecated use \`getCount.Signature' instead */
+      export type getCount = getCount.Signature;
+
+      export const getCount: getCount.Definition = {
         apiName: 'getCount',
         type: 'query',
         version: '0',
@@ -101,47 +106,51 @@ describe("generatePerQueryDataFiles", () => {
         "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
       import type { QueryParam, QueryResult } from '@osdk/client.api';
       import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-
       import type { Todo } from '../objects/Todo.js';
 
-      export interface returnsTodo {
-        (query: QueryParams$returnsTodo): Promise<QueryResult.ObjectType<Todo>>;
-      }
+      export namespace returnsTodo {
+        export interface Signature {
+          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+        }
 
-      export interface QueryParams$returnsTodo {
-        /**
-         *   description: Random desc so we test jsdoc
-         */
-        readonly someTodo: QueryParam.ObjectType<Todo>;
-      }
-
-      export interface QueryDef$returnsTodo
-        extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo>,
-          VersionBound<$ExpectedClientVersion> {
-        apiName: 'returnsTodo';
-        type: 'query';
-        version: '0';
-        parameters: {
+        export interface Parameters {
           /**
            *   description: Random desc so we test jsdoc
            */
-          someTodo: {
-            description: 'Random desc so we test jsdoc';
+          readonly someTodo: QueryParam.ObjectType<Todo>;
+        }
+
+        export interface Definition
+          extends QueryDefinition<'returnsTodo', 'Todo', returnsTodo.Signature>,
+            VersionBound<$ExpectedClientVersion> {
+          apiName: 'returnsTodo';
+          type: 'query';
+          version: '0';
+          parameters: {
+            /**
+             *   description: Random desc so we test jsdoc
+             */
+            someTodo: {
+              description: 'Random desc so we test jsdoc';
+              nullable: false;
+              object: 'Todo';
+              type: 'object';
+              __OsdkTargetType?: Todo;
+            };
+          };
+          output: {
             nullable: false;
             object: 'Todo';
             type: 'object';
             __OsdkTargetType?: Todo;
           };
-        };
-        output: {
-          nullable: false;
-          object: 'Todo';
-          type: 'object';
-          __OsdkTargetType?: Todo;
-        };
+        }
       }
 
-      export const returnsTodo: QueryDef$returnsTodo = {
+      /** @deprecated use \`returnsTodo.Signature' instead */
+      export type returnsTodo = returnsTodo.Signature;
+
+      export const returnsTodo: returnsTodo.Definition = {
         apiName: 'returnsTodo',
         type: 'query',
         version: '0',

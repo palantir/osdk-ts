@@ -18,7 +18,7 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
-import type { Osdk, Result } from "@osdk/client.api";
+import type { ConvertProps, Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
 import {
   $ontologyRid,
@@ -35,6 +35,12 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
+import type {
+  ApiNameAsString,
+  JustProps,
+  PropMapToInterface,
+  PropMapToObject,
+} from "../../../client.api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -182,7 +188,7 @@ describe("ObjectSet", () => {
       stubData.employee1.employeeId,
       { $select: ["fullName"] },
     );
-    expectTypeOf<typeof employee>().toEqualTypeOf<
+    expectTypeOf<typeof employee>().branded.toEqualTypeOf<
       Osdk<Employee, "fullName">
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
@@ -194,7 +200,7 @@ describe("ObjectSet", () => {
         stubData.employee1.employeeId,
         { $select: ["fullName"] },
       );
-    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+    expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>
     >;
 
@@ -213,7 +219,7 @@ describe("ObjectSet", () => {
     const employeeResult = await client(Employee)
       .fetchOneWithErrors(-1);
 
-    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+    expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee>>
     >;
 
@@ -269,8 +275,11 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(3);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$rid" | "$all">
+          >();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject<"$rid">
           >();
         });
       });
@@ -286,7 +295,13 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(3);
-          expectTypeOf(result.data[0]).toEqualTypeOf<Osdk<Employee>>();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<Osdk<Employee>>();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject
+          >();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject<"$strict">
+          >();
         });
       });
     });
@@ -303,7 +318,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(4);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
         });
@@ -320,7 +335,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(4);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
@@ -353,7 +368,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
           expect(result).not.toBeUndefined();
-          expectTypeOf(result).toEqualTypeOf<
+          expectTypeOf(result).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
         });
@@ -370,7 +385,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
           expect(result).not.toBeUndefined();
-          expectTypeOf(result).toEqualTypeOf<
+          expectTypeOf(result).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
@@ -398,13 +413,55 @@ describe("ObjectSet", () => {
         });
 
         const empNotStrict = result.data[0];
-
-        expectTypeOf(empNotStrict).toEqualTypeOf<
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
           Osdk<Employee, "$all" | "$notStrict">
         >();
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
+          Employee.OsdkObject<"$notStrict", Employee.PropertyKeys>
+        >();
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
+          Employee.OsdkObject<"$notStrict">
+        >();
+
         expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<
           number | undefined
         >();
+
+        expectTypeOf<ApiNameAsString<FooInterface>>()
+          .toEqualTypeOf<"FooInterface">();
+
+        expectTypeOf<NonNullable<Employee["interfaceMap"]>>()
+          .toEqualTypeOf<{
+            FooInterface: {
+              fooSpt: "fullName";
+            };
+          }>();
+
+        expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
+          .toEqualTypeOf<{ fullName: "fooSpt" }>();
+
+        expectTypeOf<PropMapToObject<FooInterface, Employee>>()
+          .toEqualTypeOf<{ fooSpt: "fullName" }>();
+
+        expectTypeOf<ConvertProps<Employee, FooInterface, "fullName">>()
+          .toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<JustProps<Employee, "$all">>()
+          .toEqualTypeOf<
+            | "fullName"
+            | "office"
+            | "employeeId"
+            | "employeeStatus"
+            | "startDate"
+          >();
+
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "fullName" | "office">
+        >()
+          .toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<ConvertProps<FooInterface, Employee, "fooSpt">>()
+          .toEqualTypeOf<"fullName">();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so
@@ -417,9 +474,11 @@ describe("ObjectSet", () => {
         type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;
         const CheesedFoo: CheesedFoo = FooInterface as CheesedFoo;
 
+        type T = ConvertProps<Employee, CheesedFoo, "fullName">;
+
         const cheesedFooNotStrict = result.data[0].$as(CheesedFoo);
-        expectTypeOf(cheesedFooNotStrict).toEqualTypeOf<
-          Osdk<CheesedFoo, "$all" | "$notStrict", never>
+        expectTypeOf(cheesedFooNotStrict).branded.toEqualTypeOf<
+          Osdk<CheesedFoo, "$all" | "$notStrict">
         >();
 
         cheesedFooNotStrict.fooSpt;

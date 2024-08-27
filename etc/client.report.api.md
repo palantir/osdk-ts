@@ -69,7 +69,7 @@ export interface Client extends SharedClient<MinimalClient> {
     // Warning: (ae-forgotten-export) The symbol "CheckVersionBound" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(o: CheckVersionBound<Q>): ObjectSet<Q>;
+    <Q extends ObjectTypeDefinition<any, any>>(o: CheckVersionBound<Q>): Q["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

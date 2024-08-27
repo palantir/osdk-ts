@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
-import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
+import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
+import type { ForeignType } from "../GenerateContext/ForeignType.js";
 
-export type OsdkBase<
-  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-> = {
-  readonly $apiName: Q["apiName"] & {
-    __OsdkType?: Q["apiName"];
-  };
-
-  readonly $objectType: string;
-
-  readonly $primaryKey: Q extends ObjectTypeDefinition<any>
-    ? OsdkObjectPrimaryKeyType<Q>
-    : (string | number);
-
-  readonly $title: string | undefined;
-};
+export function getObjectImports(
+  objects: Set<EnhancedObjectType | ForeignType>,
+  curApiName: string | undefined,
+  currentFilePath: string,
+  v2: boolean,
+) {
+  return Array.from(objects).filter(obj => obj.fullApiName !== curApiName)
+    .map(obj => {
+      return `import type { ${obj.getDefinitionIdentifier(v2)} as ${
+        obj.getImportedDefinitionIdentifier(v2)
+      } } from "${obj.getImportPathRelTo("./" + currentFilePath)}";`;
+    }).join("\n");
+}
