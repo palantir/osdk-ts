@@ -276,16 +276,16 @@ $ObjectSet<${objectDefIdentifier},
 ${objectSetIdentifier}
 >
 {
-aggregate: <AO extends $AggregateOpts<${objectDefIdentifier}>>(
+readonly aggregate: <AO extends $AggregateOpts<${objectDefIdentifier}>>(
   req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
 ) => Promise<$AggregationsResults<${objectDefIdentifier}, AO>>;
 
 
-pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
+readonly pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"]// ObjectSet<LinkedType<${objectDefIdentifier}, L>>;
  ${
     object instanceof EnhancedObjectType
       ? ` 
-fetchOne: <
+readonly fetchOne: <
     L extends ${propertyKeysIdentifier},
     R extends boolean,
     S extends false | "throw" = $NullabilityAdherenceDefault,
@@ -299,7 +299,7 @@ fetchOne: <
    >>
   ;
 
-fetchOneWithErrors: <
+readonly fetchOneWithErrors: <
     L extends ${propertyKeysIdentifier},
     R extends boolean,
     S extends false | "throw" = $NullabilityAdherenceDefault,
@@ -319,7 +319,7 @@ fetchOneWithErrors: <
       : ""
   }
 
-fetchPage: <
+readonly fetchPage: <
   L extends ${propertyKeysIdentifier},
   R extends boolean,
   const A extends $Augments,
@@ -333,7 +333,7 @@ fetchPage: <
   >>
 >;
 
-fetchPageWithErrors: <
+readonly fetchPageWithErrors: <
   L extends ${propertyKeysIdentifier},
   R extends boolean,
   const A extends $Augments,
@@ -346,7 +346,7 @@ fetchPageWithErrors: <
  L>>
  >>;
 
-asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
+readonly asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
 }
 `;
 }

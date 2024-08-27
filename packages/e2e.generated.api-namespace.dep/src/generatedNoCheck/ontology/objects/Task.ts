@@ -45,13 +45,13 @@ export namespace Task {
   }
 
   export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Task>>(
+    readonly aggregate: <AO extends $AggregateOpts<Task>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task, AO>,
     ) => Promise<$AggregationsResults<Task, AO>>;
 
-    pivotTo: <L extends $LinkNames<Task>>(type: L) => $LinkedType<Task, L>['objectSet']; // ObjectSet<LinkedType<Task, L>>;
+    readonly pivotTo: <L extends $LinkNames<Task>>(type: L) => $LinkedType<Task, L>['objectSet']; // ObjectSet<LinkedType<Task, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Task.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -65,7 +65,7 @@ export namespace Task {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Task.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -81,7 +81,7 @@ export namespace Task {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Task.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -97,7 +97,7 @@ export namespace Task {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Task.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -115,7 +115,7 @@ export namespace Task {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Task.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Task.OsdkObject>;
   }
 
   export interface Definition

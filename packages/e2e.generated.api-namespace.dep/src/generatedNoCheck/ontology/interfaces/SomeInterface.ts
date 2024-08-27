@@ -37,13 +37,13 @@ export namespace SomeInterface {
   }
 
   export interface ObjectSet extends $ObjectSet<SomeInterface, SomeInterface.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<SomeInterface>>(
+    readonly aggregate: <AO extends $AggregateOpts<SomeInterface>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface, AO>,
     ) => Promise<$AggregationsResults<SomeInterface, AO>>;
 
-    pivotTo: <L extends $LinkNames<SomeInterface>>(type: L) => $LinkedType<SomeInterface, L>['objectSet']; // ObjectSet<LinkedType<SomeInterface, L>>;
+    readonly pivotTo: <L extends $LinkNames<SomeInterface>>(type: L) => $LinkedType<SomeInterface, L>['objectSet']; // ObjectSet<LinkedType<SomeInterface, L>>;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends SomeInterface.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -59,7 +59,7 @@ export namespace SomeInterface {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends SomeInterface.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -77,7 +77,7 @@ export namespace SomeInterface {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
   }
 
   export interface Definition

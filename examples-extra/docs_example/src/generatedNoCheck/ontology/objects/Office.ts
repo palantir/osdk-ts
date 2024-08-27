@@ -53,13 +53,13 @@ export namespace Office {
   }
 
   export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Office>>(
+    readonly aggregate: <AO extends $AggregateOpts<Office>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office, AO>,
     ) => Promise<$AggregationsResults<Office, AO>>;
 
-    pivotTo: <L extends $LinkNames<Office>>(type: L) => $LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
+    readonly pivotTo: <L extends $LinkNames<Office>>(type: L) => $LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Office.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -73,7 +73,7 @@ export namespace Office {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Office.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -89,7 +89,7 @@ export namespace Office {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Office.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -105,7 +105,7 @@ export namespace Office {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Office.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -123,7 +123,7 @@ export namespace Office {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Office.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Office.OsdkObject>;
   }
 
   export interface Definition extends $ObjectTypeDefinition<'Office', Office>, $VersionBound<$ExpectedClientVersion> {

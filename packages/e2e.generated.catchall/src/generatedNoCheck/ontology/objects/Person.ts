@@ -48,13 +48,13 @@ export namespace Person {
   }
 
   export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Person>>(
+    readonly aggregate: <AO extends $AggregateOpts<Person>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person, AO>,
     ) => Promise<$AggregationsResults<Person, AO>>;
 
-    pivotTo: <L extends $LinkNames<Person>>(type: L) => $LinkedType<Person, L>['objectSet']; // ObjectSet<LinkedType<Person, L>>;
+    readonly pivotTo: <L extends $LinkNames<Person>>(type: L) => $LinkedType<Person, L>['objectSet']; // ObjectSet<LinkedType<Person, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Person.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -68,7 +68,7 @@ export namespace Person {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Person.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -84,7 +84,7 @@ export namespace Person {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Person.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -100,7 +100,7 @@ export namespace Person {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Person.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -118,7 +118,7 @@ export namespace Person {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
   }
 
   export interface Definition extends $ObjectTypeDefinition<'Person', Person>, $VersionBound<$ExpectedClientVersion> {

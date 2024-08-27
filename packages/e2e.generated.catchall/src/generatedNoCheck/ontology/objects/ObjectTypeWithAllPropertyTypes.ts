@@ -104,15 +104,15 @@ export namespace ObjectTypeWithAllPropertyTypes {
 
   export interface ObjectSet
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
+    readonly aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<ObjectTypeWithAllPropertyTypes, AO>,
     ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes, AO>>;
 
-    pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes>>(
+    readonly pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes>>(
       type: L,
     ) => $LinkedType<ObjectTypeWithAllPropertyTypes, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -126,7 +126,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -142,7 +142,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -158,7 +158,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -176,7 +176,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
   }
 
   export interface Definition

@@ -58,13 +58,13 @@ export namespace Employee {
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Employee>>(
+    readonly aggregate: <AO extends $AggregateOpts<Employee>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee, AO>,
     ) => Promise<$AggregationsResults<Employee, AO>>;
 
-    pivotTo: <L extends $LinkNames<Employee>>(type: L) => $LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
+    readonly pivotTo: <L extends $LinkNames<Employee>>(type: L) => $LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Employee.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -78,7 +78,7 @@ export namespace Employee {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Employee.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -94,7 +94,7 @@ export namespace Employee {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Employee.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -110,7 +110,7 @@ export namespace Employee {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Employee.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -128,7 +128,7 @@ export namespace Employee {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Employee.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Employee.OsdkObject>;
   }
 
   export interface Definition

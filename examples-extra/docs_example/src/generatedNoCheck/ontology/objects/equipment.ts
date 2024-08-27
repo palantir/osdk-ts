@@ -45,13 +45,13 @@ export namespace equipment {
   }
 
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<equipment>>(
+    readonly aggregate: <AO extends $AggregateOpts<equipment>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment, AO>,
     ) => Promise<$AggregationsResults<equipment, AO>>;
 
-    pivotTo: <L extends $LinkNames<equipment>>(type: L) => $LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
+    readonly pivotTo: <L extends $LinkNames<equipment>>(type: L) => $LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends equipment.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -65,7 +65,7 @@ export namespace equipment {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends equipment.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -81,7 +81,7 @@ export namespace equipment {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends equipment.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -97,7 +97,7 @@ export namespace equipment {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends equipment.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -115,7 +115,7 @@ export namespace equipment {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<equipment.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<equipment.OsdkObject>;
   }
 
   export interface Definition

@@ -56,7 +56,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
 
    * @returns a page of objects
    */
-  fetchPage: <
+  readonly fetchPage: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
@@ -79,7 +79,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
     }
    * @returns a page of objects, wrapped in a result wrapper
    */
-  fetchPageWithErrors: <
+  readonly fetchPageWithErrors: <
     L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
     R extends boolean,
     const A extends Augments,
@@ -98,7 +98,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
   });
    * @returns an objectSet
    */
-  where: (
+  readonly where: (
     clause: WhereClause<Q>,
   ) => this;
 
@@ -110,7 +110,7 @@ export interface MinimalObjectSet<Q extends ObjectOrInterfaceDefinition>
    * }
    * @returns an async iterator to load all objects
    */
-  asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
+  readonly asyncIter: () => AsyncIterableIterator<Osdk<Q>>;
 }
 
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
@@ -145,7 +145,7 @@ export interface ObjectSet<
 
    * @returns aggregation results, sorted in the groups based on the groupBy clause (if applicable)
    */
-  aggregate: <AO extends AggregateOpts<Q>>(
+  readonly aggregate: <AO extends AggregateOpts<Q>>(
     req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
   ) => Promise<AggregationsResults<Q, AO>>;
 
@@ -158,7 +158,7 @@ export interface ObjectSet<
   );
    * @returns the unioned object set
    */
-  union: (
+  readonly union: (
     ...objectSets: ReadonlyArray<Z>
   ) => this;
 
@@ -171,7 +171,7 @@ export interface ObjectSet<
   );
    * @returns the intersected object set
    */
-  intersect: (
+  readonly intersect: (
     ...objectSets: ReadonlyArray<Z>
   ) => this;
 
@@ -184,7 +184,7 @@ export interface ObjectSet<
   );
    * @returns the subtract object set
    */
-  subtract: (
+  readonly subtract: (
     ...objectSets: ReadonlyArray<Z>
   ) => this;
 
@@ -193,14 +193,14 @@ export interface ObjectSet<
    * @param type - The linked object type you want to pivot to
    * @returns an object set of the specified linked type
    */
-  pivotTo: <L extends LinkNames<Q>>(
+  readonly pivotTo: <L extends LinkNames<Q>>(
     type: L,
   ) => LinkedType<Q, L>["objectSet"]; // ObjectSet<LinkedType<Q, L>>;
 
   /**
    * Fetches one object with the specified primary key, without a result wrapper
    */
-  fetchOne: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,
@@ -213,7 +213,7 @@ export interface ObjectSet<
   /**
    * Fetches one object with the specified primary key, with a result wrapper
    */
-  fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
+  readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <
       L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
       R extends boolean,
       S extends false | "throw" = NullabilityAdherenceDefault,

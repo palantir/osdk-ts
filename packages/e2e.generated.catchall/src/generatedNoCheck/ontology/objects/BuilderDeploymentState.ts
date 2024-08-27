@@ -47,15 +47,15 @@ export namespace BuilderDeploymentState {
   }
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<BuilderDeploymentState>>(
+    readonly aggregate: <AO extends $AggregateOpts<BuilderDeploymentState>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BuilderDeploymentState, AO>,
     ) => Promise<$AggregationsResults<BuilderDeploymentState, AO>>;
 
-    pivotTo: <L extends $LinkNames<BuilderDeploymentState>>(
+    readonly pivotTo: <L extends $LinkNames<BuilderDeploymentState>>(
       type: L,
     ) => $LinkedType<BuilderDeploymentState, L>['objectSet']; // ObjectSet<LinkedType<BuilderDeploymentState, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -69,7 +69,7 @@ export namespace BuilderDeploymentState {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -85,7 +85,7 @@ export namespace BuilderDeploymentState {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -101,7 +101,7 @@ export namespace BuilderDeploymentState {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -119,7 +119,7 @@ export namespace BuilderDeploymentState {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<BuilderDeploymentState.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<BuilderDeploymentState.OsdkObject>;
   }
 
   export interface Definition

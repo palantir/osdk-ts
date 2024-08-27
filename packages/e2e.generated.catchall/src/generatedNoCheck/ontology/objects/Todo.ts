@@ -56,13 +56,13 @@ export namespace Todo {
   }
 
   export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Todo>>(
+    readonly aggregate: <AO extends $AggregateOpts<Todo>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo, AO>,
     ) => Promise<$AggregationsResults<Todo, AO>>;
 
-    pivotTo: <L extends $LinkNames<Todo>>(type: L) => $LinkedType<Todo, L>['objectSet']; // ObjectSet<LinkedType<Todo, L>>;
+    readonly pivotTo: <L extends $LinkNames<Todo>>(type: L) => $LinkedType<Todo, L>['objectSet']; // ObjectSet<LinkedType<Todo, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Todo.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -76,7 +76,7 @@ export namespace Todo {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Todo.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -92,7 +92,7 @@ export namespace Todo {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Todo.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -108,7 +108,7 @@ export namespace Todo {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Todo.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -126,7 +126,7 @@ export namespace Todo {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
   }
 
   export interface Definition extends $ObjectTypeDefinition<'Todo', Todo>, $VersionBound<$ExpectedClientVersion> {

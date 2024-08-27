@@ -39,13 +39,13 @@ export namespace FooInterface {
   }
 
   export interface ObjectSet extends $ObjectSet<FooInterface, FooInterface.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<FooInterface>>(
+    readonly aggregate: <AO extends $AggregateOpts<FooInterface>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<FooInterface, AO>,
     ) => Promise<$AggregationsResults<FooInterface, AO>>;
 
-    pivotTo: <L extends $LinkNames<FooInterface>>(type: L) => $LinkedType<FooInterface, L>['objectSet']; // ObjectSet<LinkedType<FooInterface, L>>;
+    readonly pivotTo: <L extends $LinkNames<FooInterface>>(type: L) => $LinkedType<FooInterface, L>['objectSet']; // ObjectSet<LinkedType<FooInterface, L>>;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends FooInterface.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -61,7 +61,7 @@ export namespace FooInterface {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends FooInterface.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -79,7 +79,7 @@ export namespace FooInterface {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<FooInterface.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<FooInterface.OsdkObject>;
   }
 
   export interface Definition

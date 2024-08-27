@@ -47,15 +47,15 @@ export namespace DherlihyComplexObject {
   }
 
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject, DherlihyComplexObject.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<DherlihyComplexObject>>(
+    readonly aggregate: <AO extends $AggregateOpts<DherlihyComplexObject>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<DherlihyComplexObject, AO>,
     ) => Promise<$AggregationsResults<DherlihyComplexObject, AO>>;
 
-    pivotTo: <L extends $LinkNames<DherlihyComplexObject>>(
+    readonly pivotTo: <L extends $LinkNames<DherlihyComplexObject>>(
       type: L,
     ) => $LinkedType<DherlihyComplexObject, L>['objectSet']; // ObjectSet<LinkedType<DherlihyComplexObject, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -69,7 +69,7 @@ export namespace DherlihyComplexObject {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -85,7 +85,7 @@ export namespace DherlihyComplexObject {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -101,7 +101,7 @@ export namespace DherlihyComplexObject {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -119,7 +119,7 @@ export namespace DherlihyComplexObject {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<DherlihyComplexObject.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<DherlihyComplexObject.OsdkObject>;
   }
 
   export interface Definition

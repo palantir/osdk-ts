@@ -51,13 +51,13 @@ export namespace Venture {
   }
 
   export interface ObjectSet extends $ObjectSet<Venture, Venture.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<Venture>>(
+    readonly aggregate: <AO extends $AggregateOpts<Venture>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture, AO>,
     ) => Promise<$AggregationsResults<Venture, AO>>;
 
-    pivotTo: <L extends $LinkNames<Venture>>(type: L) => $LinkedType<Venture, L>['objectSet']; // ObjectSet<LinkedType<Venture, L>>;
+    readonly pivotTo: <L extends $LinkNames<Venture>>(type: L) => $LinkedType<Venture, L>['objectSet']; // ObjectSet<LinkedType<Venture, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends Venture.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -71,7 +71,7 @@ export namespace Venture {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends Venture.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export namespace Venture {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends Venture.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -103,7 +103,7 @@ export namespace Venture {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends Venture.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -121,7 +121,7 @@ export namespace Venture {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
   }
 
   export interface Definition extends $ObjectTypeDefinition<'Venture', Venture>, $VersionBound<$ExpectedClientVersion> {

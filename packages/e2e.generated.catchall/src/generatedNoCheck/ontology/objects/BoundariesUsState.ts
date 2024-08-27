@@ -49,13 +49,15 @@ export namespace BoundariesUsState {
   }
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<BoundariesUsState>>(
+    readonly aggregate: <AO extends $AggregateOpts<BoundariesUsState>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState, AO>,
     ) => Promise<$AggregationsResults<BoundariesUsState, AO>>;
 
-    pivotTo: <L extends $LinkNames<BoundariesUsState>>(type: L) => $LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
+    readonly pivotTo: <L extends $LinkNames<BoundariesUsState>>(
+      type: L,
+    ) => $LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -69,7 +71,7 @@ export namespace BoundariesUsState {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -85,7 +87,7 @@ export namespace BoundariesUsState {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -101,7 +103,7 @@ export namespace BoundariesUsState {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -119,7 +121,7 @@ export namespace BoundariesUsState {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<BoundariesUsState.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<BoundariesUsState.OsdkObject>;
   }
 
   export interface Definition

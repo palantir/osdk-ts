@@ -45,13 +45,13 @@ export namespace WeatherStation {
   }
 
   export interface ObjectSet extends $ObjectSet<WeatherStation, WeatherStation.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<WeatherStation>>(
+    readonly aggregate: <AO extends $AggregateOpts<WeatherStation>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<WeatherStation, AO>,
     ) => Promise<$AggregationsResults<WeatherStation, AO>>;
 
-    pivotTo: <L extends $LinkNames<WeatherStation>>(type: L) => $LinkedType<WeatherStation, L>['objectSet']; // ObjectSet<LinkedType<WeatherStation, L>>;
+    readonly pivotTo: <L extends $LinkNames<WeatherStation>>(type: L) => $LinkedType<WeatherStation, L>['objectSet']; // ObjectSet<LinkedType<WeatherStation, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends WeatherStation.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -65,7 +65,7 @@ export namespace WeatherStation {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends WeatherStation.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -81,7 +81,7 @@ export namespace WeatherStation {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends WeatherStation.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -97,7 +97,7 @@ export namespace WeatherStation {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends WeatherStation.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -115,7 +115,7 @@ export namespace WeatherStation {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<WeatherStation.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<WeatherStation.OsdkObject>;
   }
 
   export interface Definition

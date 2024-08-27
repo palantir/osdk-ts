@@ -45,13 +45,13 @@ export namespace UsesForeignSpt {
   }
 
   export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {
-    aggregate: <AO extends $AggregateOpts<UsesForeignSpt>>(
+    readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt, AO>,
     ) => Promise<$AggregationsResults<UsesForeignSpt, AO>>;
 
-    pivotTo: <L extends $LinkNames<UsesForeignSpt>>(type: L) => $LinkedType<UsesForeignSpt, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt, L>>;
+    readonly pivotTo: <L extends $LinkNames<UsesForeignSpt>>(type: L) => $LinkedType<UsesForeignSpt, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt, L>>;
 
-    fetchOne: <
+    readonly fetchOne: <
       L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -65,7 +65,7 @@ export namespace UsesForeignSpt {
       >
     >;
 
-    fetchOneWithErrors: <
+    readonly fetchOneWithErrors: <
       L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = $NullabilityAdherenceDefault,
@@ -81,7 +81,7 @@ export namespace UsesForeignSpt {
       >
     >;
 
-    fetchPage: <
+    readonly fetchPage: <
       L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -97,7 +97,7 @@ export namespace UsesForeignSpt {
       >
     >;
 
-    fetchPageWithErrors: <
+    readonly fetchPageWithErrors: <
       L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       const A extends $Augments,
@@ -115,7 +115,7 @@ export namespace UsesForeignSpt {
       >
     >;
 
-    asyncIter: () => AsyncIterableIterator<UsesForeignSpt.OsdkObject>;
+    readonly asyncIter: () => AsyncIterableIterator<UsesForeignSpt.OsdkObject>;
   }
 
   export interface Definition
