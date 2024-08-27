@@ -107,9 +107,9 @@ export class Model {
     npmOrg: string;
   }): Promise<Model> {
     const model = new Model(opts);
-    // Special "no namespace"
+    // Special "no namespace" for v1
     await model.#addNamespace({
-      name: "",
+      name: "Core",
       resources: [],
     });
 
@@ -149,10 +149,6 @@ export class Model {
     this.#opts = opts;
   }
 
-  get commonNamespace(): Namespace {
-    return this.#namespaces.get("")!;
-  }
-
   get namespaces(): IterableIterator<Namespace> {
     return this.#namespaces.values();
   }
@@ -176,7 +172,7 @@ export class Model {
 
   #addComponent(c: ir.Component) {
     const nsName = (c.namespace == null || c.namespace === "Core")
-      ? ""
+      ? "Core"
       : c.namespace;
     const ns = this.#namespaces.get(nsName);
     if (!ns) {
