@@ -168,60 +168,6 @@ export type Osdk<
     : string extends P ? {}
     : "$rid" extends P ? { readonly $rid: string }
     : {});
-// & {
-//   [
-//     PP in keyof Q["properties"] as (
-//       // when we don't know what properties, we will show all but ensure they are `| undefined`
-//       IsNever<P> extends true ? PP
-//         : P extends "$all" ? PP
-//         : PP extends P ? PP
-//         : never
-//     )
-//   ]: IsNever<P> extends true
-//     // when we don't know what properties, we will show all but ensure they are `| undefined`
-//     ? OsdkObjectPropertyType<
-//       Q["properties"][PP],
-//       false // P is never so we do not have to check for "$notStrict"
-//     >
-//     : OsdkObjectPropertyType<
-//       Q["properties"][PP],
-//       P extends "$notStrict" ? false : true
-//     >;
-// };
-// & Pick<
-//   {
-//     [PP in P]: OsdkObjectPropertyType<
-//       Q["properties"][PP],
-//       false
-//     > // P extends "$notStrict" ? false : true
-//     ;
-//   },
-//   P
-// >;
-// // & {
-// //   [
-// //     PP in keyof Q["properties"] as (
-// //       // when we don't know what properties, we will show all but ensure they are `| undefined`
-// //       IsNever<P> extends true ? PP
-// //         : P extends "$all" ? PP
-// //         : PP extends P ? PP
-// //         : never
-// //     )
-// //   ]: IsNever<P> extends true
-// //     // when we don't know what properties, we will show all but ensure they are `| undefined`
-// //     ? OsdkObjectPropertyType<
-// //       Q["properties"][PP],
-// //       false // P is never so we do not have to check for "$notStrict"
-// //     >
-// //     : OsdkObjectPropertyType<
-// //       Q["properties"][PP],
-// //       P extends "$notStrict" ? false : true
-// //     >;
-// // }
-// & {
-//   // $uniqueId: string; // will be dynamic
-
-// };
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
