@@ -241,9 +241,9 @@ export function createOsdkObject(
         OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
         , K
 > & {
-    $link: ${osdkObjectLinksIdentifier};
-    $title: string | undefined; // FIXME
-    $primaryKey: ${
+    readonly $link: ${osdkObjectLinksIdentifier};
+    readonly $title: string | undefined; // FIXME
+    readonly $primaryKey: ${
     "primaryKeyApiName" in definition
       ? `
       $OsdkObjectPropertyType<${
@@ -253,7 +253,7 @@ export function createOsdkObject(
   }
   ;
     
-    $as: <NEW_Q extends $ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => $Osdk<
+    readonly $as: <NEW_Q extends $ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => $Osdk<
   NEW_Q,
   $ConvertProps<${objectDefIdentifier}, NEW_Q, K>
 >;

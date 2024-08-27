@@ -20,14 +20,15 @@ import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type OsdkBase<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
 > = {
-  $apiName: Q["apiName"] & {
+  readonly $apiName: Q["apiName"] & {
     __OsdkType?: Q["apiName"];
   };
 
-  $objectType: string;
+  readonly $objectType: string;
 
-  $primaryKey: Q extends ObjectTypeDefinition<any> ? OsdkObjectPrimaryKeyType<Q>
+  readonly $primaryKey: Q extends ObjectTypeDefinition<any>
+    ? OsdkObjectPrimaryKeyType<Q>
     : (string | number);
 
-  $title: string | undefined;
+  readonly $title: string | undefined;
 };

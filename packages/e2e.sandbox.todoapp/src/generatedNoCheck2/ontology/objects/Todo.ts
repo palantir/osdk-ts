@@ -155,11 +155,13 @@ export namespace Todo {
       OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
       K
     > & {
-      $link: Todo.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: Todo.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Todo>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Todo, NEW_Q, K>>;
+      readonly $as: <NEW_Q extends $ValidToFrom<Todo>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<Todo, NEW_Q, K>>;
     } & $OsdkObject<'Todo'>;
 }
 

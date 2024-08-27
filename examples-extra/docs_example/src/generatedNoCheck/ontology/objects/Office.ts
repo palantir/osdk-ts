@@ -172,11 +172,13 @@ export namespace Office {
       OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps,
       K
     > & {
-      $link: Office.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: Office.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Office>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Office, NEW_Q, K>>;
+      readonly $as: <NEW_Q extends $ValidToFrom<Office>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<Office, NEW_Q, K>>;
     } & $OsdkObject<'Office'>;
 }
 

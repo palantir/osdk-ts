@@ -149,14 +149,14 @@ export namespace equipment {
       OPTIONS extends '$notStrict' ? equipment.Props : equipment.StrictProps,
       K
     > & {
-      $link: equipment.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<
+      readonly $link: equipment.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<
         { multiplicity: false; description: 'The id of an equipment'; type: 'string'; nullable: false },
         true
       >;
 
-      $as: <NEW_Q extends $ValidToFrom<equipment>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<equipment>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<equipment, NEW_Q, K>>;
     } & $OsdkObject<'equipment'>;

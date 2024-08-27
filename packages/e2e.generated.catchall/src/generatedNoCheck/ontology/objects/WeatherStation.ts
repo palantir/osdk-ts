@@ -151,11 +151,11 @@ export namespace WeatherStation {
       OPTIONS extends '$notStrict' ? WeatherStation.Props : WeatherStation.StrictProps,
       K
     > & {
-      $link: WeatherStation.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: WeatherStation.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<WeatherStation>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<WeatherStation>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<WeatherStation, NEW_Q, K>>;
     } & $OsdkObject<'WeatherStation'>;

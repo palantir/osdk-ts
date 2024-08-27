@@ -160,11 +160,13 @@ export namespace Thing {
       OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps,
       K
     > & {
-      $link: Thing.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+      readonly $link: Thing.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Thing>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Thing, NEW_Q, K>>;
+      readonly $as: <NEW_Q extends $ValidToFrom<Thing>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<Thing, NEW_Q, K>>;
     } & $OsdkObject<'Thing'>;
 }
 

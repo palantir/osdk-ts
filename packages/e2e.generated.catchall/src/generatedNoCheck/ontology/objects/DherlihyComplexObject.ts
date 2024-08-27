@@ -158,11 +158,11 @@ export namespace DherlihyComplexObject {
       OPTIONS extends '$notStrict' ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps,
       K
     > & {
-      $link: DherlihyComplexObject.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: DherlihyComplexObject.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<DherlihyComplexObject>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<DherlihyComplexObject>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<DherlihyComplexObject, NEW_Q, K>>;
     } & $OsdkObject<'DherlihyComplexObject'>;

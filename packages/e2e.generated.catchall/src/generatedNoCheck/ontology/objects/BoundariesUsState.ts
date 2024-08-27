@@ -165,11 +165,11 @@ export namespace BoundariesUsState {
       OPTIONS extends '$notStrict' ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
       K
     > & {
-      $link: BoundariesUsState.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: BoundariesUsState.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<BoundariesUsState>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<BoundariesUsState>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<BoundariesUsState, NEW_Q, K>>;
     } & $OsdkObject<'BoundariesUsState'>;

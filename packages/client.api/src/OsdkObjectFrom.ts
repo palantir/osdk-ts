@@ -154,10 +154,11 @@ export type Osdk<
     GetPropsKeys<Q, P>
   >
   & {
-    $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
+    readonly $link: Q extends ObjectTypeDefinition<any>
+      ? OsdkObjectLinksObject<Q>
       : never;
 
-    $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
+    readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
       NEW_Q,
       ConvertProps<Q, NEW_Q, P>
     >;
@@ -165,7 +166,7 @@ export type Osdk<
   // We are hiding the $rid field if it wasn't requested as we want to discourage its use
   & (IsNever<P> extends true ? {}
     : string extends P ? {}
-    : "$rid" extends P ? { $rid: string }
+    : "$rid" extends P ? { readonly $rid: string }
     : {});
 // & {
 //   [

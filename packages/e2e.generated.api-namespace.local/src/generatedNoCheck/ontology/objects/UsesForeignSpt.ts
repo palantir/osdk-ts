@@ -158,11 +158,11 @@ export namespace UsesForeignSpt {
       OPTIONS extends '$notStrict' ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps,
       K
     > & {
-      $link: UsesForeignSpt.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+      readonly $link: UsesForeignSpt.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<UsesForeignSpt>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<UsesForeignSpt>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<UsesForeignSpt, NEW_Q, K>>;
     } & $OsdkObject<'UsesForeignSpt'>;

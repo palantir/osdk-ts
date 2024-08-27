@@ -242,11 +242,11 @@ export namespace Employee {
       OPTIONS extends '$notStrict' ? Employee.Props : Employee.StrictProps,
       K
     > & {
-      $link: Employee.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: Employee.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Employee>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Employee>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<Employee, NEW_Q, K>>;
     } & $OsdkObject<'Employee'>;

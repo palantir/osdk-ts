@@ -160,11 +160,11 @@ export namespace Venture {
       OPTIONS extends '$notStrict' ? Venture.Props : Venture.StrictProps,
       K
     > & {
-      $link: Venture.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: Venture.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Venture>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<Venture>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<Venture, NEW_Q, K>>;
     } & $OsdkObject<'Venture'>;

@@ -115,11 +115,11 @@ export namespace FooInterface {
       OPTIONS extends '$notStrict' ? FooInterface.Props : FooInterface.StrictProps,
       K
     > & {
-      $link: OsdkObjectLinks$FooInterface;
-      $title: string | undefined; // FIXME
-      $primaryKey: string | number;
+      readonly $link: OsdkObjectLinks$FooInterface;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: string | number;
 
-      $as: <NEW_Q extends $ValidToFrom<FooInterface>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<FooInterface>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<FooInterface, NEW_Q, K>>;
     } & $OsdkObject<'FooInterface'>;

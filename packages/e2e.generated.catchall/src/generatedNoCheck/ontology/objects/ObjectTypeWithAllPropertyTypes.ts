@@ -327,11 +327,11 @@ export namespace ObjectTypeWithAllPropertyTypes {
       OPTIONS extends '$notStrict' ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
       K
     > & {
-      $link: ObjectTypeWithAllPropertyTypes.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+      readonly $link: ObjectTypeWithAllPropertyTypes.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes, NEW_Q, K>>;
     } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;

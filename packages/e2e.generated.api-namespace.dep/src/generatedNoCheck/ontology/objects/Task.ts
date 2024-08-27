@@ -154,11 +154,13 @@ export namespace Task {
       OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
       K
     > & {
-      $link: Task.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: Task.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<Task>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Task, NEW_Q, K>>;
+      readonly $as: <NEW_Q extends $ValidToFrom<Task>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<Task, NEW_Q, K>>;
     } & $OsdkObject<'com.example.dep.Task'>;
 }
 

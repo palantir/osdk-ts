@@ -158,11 +158,11 @@ export namespace BuilderDeploymentState {
       OPTIONS extends '$notStrict' ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps,
       K
     > & {
-      $link: BuilderDeploymentState.Links;
-      $title: string | undefined; // FIXME
-      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      readonly $link: BuilderDeploymentState.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends $ValidToFrom<BuilderDeploymentState>>(
+      readonly $as: <NEW_Q extends $ValidToFrom<BuilderDeploymentState>>(
         type: NEW_Q | string,
       ) => $Osdk<NEW_Q, $ConvertProps<BuilderDeploymentState, NEW_Q, K>>;
     } & $OsdkObject<'BuilderDeploymentState'>;
