@@ -36,11 +36,11 @@ export class EnhancedQuery extends EnhancedBase<QueryTypeV2> {
   }
 
   get paramsIdentifier() {
-    return `QueryParams$${this.shortApiName}`;
+    return `${this.shortApiName}.Parameters`;
   }
 
   get definitionIdentifier() {
-    return `QueryDef$${this.shortApiName}`;
+    return `${this.shortApiName}.Definition`;
   }
 
   get definitionParamsIdentifier() {

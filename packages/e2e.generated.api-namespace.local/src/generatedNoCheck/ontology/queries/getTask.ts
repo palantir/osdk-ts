@@ -1,46 +1,50 @@
 import type { QueryDefinition, VersionBound } from '@osdk/api';
 import type { QueryParam, QueryResult } from '@osdk/client.api';
+import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-import type { Task as $Imported$objectTypes$com$example$dep$Task } from '@osdk/e2e.generated.api-namespace.dep';
+export namespace getTask {
+  export interface Signature {
+    (query: getTask.Parameters): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
+  }
 
-export interface getTask {
-  (query: QueryParams$getTask): Promise<QueryResult.ObjectType<$Imported$objectTypes$com$example$dep$Task>>;
-}
-
-export interface QueryParams$getTask {
-  /**
-   * (no ontology metadata)
-   */
-  readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
-}
-
-export interface QueryDef$getTask
-  extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'getTask';
-  type: 'query';
-  version: '0';
-  parameters: {
+  export interface Parameters {
     /**
      * (no ontology metadata)
      */
-    a: {
+    readonly a: QueryParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+  }
+
+  export interface Definition
+    extends QueryDefinition<'getTask', 'com.example.dep.Task', getTask.Signature>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'getTask';
+    type: 'query';
+    version: '0';
+    parameters: {
+      /**
+       * (no ontology metadata)
+       */
+      a: {
+        nullable: false;
+        object: 'com.example.dep.Task';
+        type: 'object';
+        __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
+      };
+    };
+    output: {
       nullable: false;
       object: 'com.example.dep.Task';
       type: 'object';
       __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
     };
-  };
-  output: {
-    nullable: false;
-    object: 'com.example.dep.Task';
-    type: 'object';
-    __OsdkTargetType?: $Imported$objectTypes$com$example$dep$Task;
-  };
+  }
 }
 
-export const getTask: QueryDef$getTask = {
+/** @deprecated use `getTask.Signature' instead */
+export type getTask = getTask.Signature;
+
+export const getTask: getTask.Definition = {
   apiName: 'getTask',
   type: 'query',
   version: '0',
