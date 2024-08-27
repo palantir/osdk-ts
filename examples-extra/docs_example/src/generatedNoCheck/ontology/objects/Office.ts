@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Office = ObjectOrInterfacePropertyKeysFrom2<Office>;
-
 export namespace Office {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Office>;
+
   export type Links = never;
 
   export interface Props {
@@ -57,7 +57,7 @@ export namespace Office {
     pivotTo: <L extends LinkNames<Office>>(type: L) => LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$Office,
+      L extends Office.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -69,7 +69,7 @@ export namespace Office {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Office,
+      L extends Office.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -83,7 +83,7 @@ export namespace Office {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Office,
+      L extends Office.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -95,7 +95,7 @@ export namespace Office {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Office,
+      L extends Office.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

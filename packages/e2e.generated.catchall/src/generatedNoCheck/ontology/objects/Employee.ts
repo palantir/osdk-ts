@@ -30,9 +30,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Employee = ObjectOrInterfacePropertyKeysFrom2<Employee>;
-
 export namespace Employee {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Employee>;
+
   export interface Links {
     lead: SingleLinkAccessor<Employee>;
     peeps: Employee.ObjectSet;
@@ -76,7 +76,7 @@ export namespace Employee {
     pivotTo: <L extends LinkNames<Employee>>(type: L) => LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$Employee,
+      L extends Employee.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -88,7 +88,7 @@ export namespace Employee {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Employee,
+      L extends Employee.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -102,7 +102,7 @@ export namespace Employee {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Employee,
+      L extends Employee.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -114,7 +114,7 @@ export namespace Employee {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Employee,
+      L extends Employee.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

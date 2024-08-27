@@ -22,11 +22,11 @@ import {
   ValidToFrom,
 } from '@osdk/client.api';
 
-export type PropertyKeys$SomeInterface = 'spt';
-
 export type OsdkObjectLinks$SomeInterface = never;
 
 export namespace SomeInterface {
+  export type PropertyKeys = 'spt';
+
   export interface Props {
     /*readonly*/ spt: $PropType['string'] | undefined;
   }
@@ -42,7 +42,7 @@ export namespace SomeInterface {
     pivotTo: <L extends LinkNames<SomeInterface>>(type: L) => LinkedType<SomeInterface, L>['objectSet']; // ObjectSet<LinkedType<SomeInterface, L>>;
 
     fetchPage: <
-      L extends PropertyKeys$SomeInterface,
+      L extends SomeInterface.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -54,7 +54,7 @@ export namespace SomeInterface {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$SomeInterface,
+      L extends SomeInterface.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Task = ObjectOrInterfacePropertyKeysFrom2<Task>;
-
 export namespace Task {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Task>;
+
   export type Links = never;
 
   export interface Props {
@@ -48,7 +48,7 @@ export namespace Task {
 
     pivotTo: <L extends LinkNames<Task>>(type: L) => LinkedType<Task, L>['objectSet']; // ObjectSet<LinkedType<Task, L>>;
 
-    fetchOne: <L extends PropertyKeys$Task, R extends boolean, S extends false | 'throw' = NullabilityAdherenceDefault>(
+    fetchOne: <L extends Task.PropertyKeys, R extends boolean, S extends false | 'throw' = NullabilityAdherenceDefault>(
       primaryKey: PropertyValueClientToWire[Task['primaryKeyType']],
       options?: SelectArg<Task, L, R, S>,
     ) => Promise<
@@ -57,7 +57,7 @@ export namespace Task {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Task,
+      L extends Task.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -71,7 +71,7 @@ export namespace Task {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Task,
+      L extends Task.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -83,7 +83,7 @@ export namespace Task {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Task,
+      L extends Task.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

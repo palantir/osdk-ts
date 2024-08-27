@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$UsesForeignSpt = ObjectOrInterfacePropertyKeysFrom2<UsesForeignSpt>;
-
 export namespace UsesForeignSpt {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<UsesForeignSpt>;
+
   export type Links = never;
 
   export interface Props {
@@ -49,7 +49,7 @@ export namespace UsesForeignSpt {
     pivotTo: <L extends LinkNames<UsesForeignSpt>>(type: L) => LinkedType<UsesForeignSpt, L>['objectSet']; // ObjectSet<LinkedType<UsesForeignSpt, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$UsesForeignSpt,
+      L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -61,7 +61,7 @@ export namespace UsesForeignSpt {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$UsesForeignSpt,
+      L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -75,7 +75,7 @@ export namespace UsesForeignSpt {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$UsesForeignSpt,
+      L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export namespace UsesForeignSpt {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$UsesForeignSpt,
+      L extends UsesForeignSpt.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

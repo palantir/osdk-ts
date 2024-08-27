@@ -29,9 +29,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Venture = ObjectOrInterfacePropertyKeysFrom2<Venture>;
-
 export namespace Venture {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Venture>;
+
   export interface Links {
     employees: Employee.ObjectSet;
   }
@@ -55,7 +55,7 @@ export namespace Venture {
     pivotTo: <L extends LinkNames<Venture>>(type: L) => LinkedType<Venture, L>['objectSet']; // ObjectSet<LinkedType<Venture, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$Venture,
+      L extends Venture.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -67,7 +67,7 @@ export namespace Venture {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Venture,
+      L extends Venture.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -81,7 +81,7 @@ export namespace Venture {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Venture,
+      L extends Venture.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -93,7 +93,7 @@ export namespace Venture {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Venture,
+      L extends Venture.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

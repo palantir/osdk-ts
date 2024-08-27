@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$BuilderDeploymentState = ObjectOrInterfacePropertyKeysFrom2<BuilderDeploymentState>;
-
 export namespace BuilderDeploymentState {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<BuilderDeploymentState>;
+
   export type Links = never;
 
   export interface Props {
@@ -53,7 +53,7 @@ export namespace BuilderDeploymentState {
     ) => LinkedType<BuilderDeploymentState, L>['objectSet']; // ObjectSet<LinkedType<BuilderDeploymentState, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$BuilderDeploymentState,
+      L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -65,7 +65,7 @@ export namespace BuilderDeploymentState {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$BuilderDeploymentState,
+      L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -79,7 +79,7 @@ export namespace BuilderDeploymentState {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$BuilderDeploymentState,
+      L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -91,7 +91,7 @@ export namespace BuilderDeploymentState {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$BuilderDeploymentState,
+      L extends BuilderDeploymentState.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

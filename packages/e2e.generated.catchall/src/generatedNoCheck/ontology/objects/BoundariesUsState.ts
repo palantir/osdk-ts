@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$BoundariesUsState = ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
-
 export namespace BoundariesUsState {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
+
   export type Links = never;
 
   export interface Props {
@@ -53,7 +53,7 @@ export namespace BoundariesUsState {
     pivotTo: <L extends LinkNames<BoundariesUsState>>(type: L) => LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$BoundariesUsState,
+      L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -65,7 +65,7 @@ export namespace BoundariesUsState {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$BoundariesUsState,
+      L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -79,7 +79,7 @@ export namespace BoundariesUsState {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$BoundariesUsState,
+      L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -91,7 +91,7 @@ export namespace BoundariesUsState {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$BoundariesUsState,
+      L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

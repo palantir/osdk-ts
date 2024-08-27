@@ -84,7 +84,7 @@ export function wireObjectTypeV2ToSdkObjectConst(
   }
 
   const objectSetIdentifier = `${object.shortApiName}.ObjectSet`;
-  const propertyKeysIdentifier = `PropertyKeys$${objectDefIdentifier}`;
+  const propertyKeysIdentifier = `${object.shortApiName}.PropertyKeys`;
   // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
   const osdkObjectPropsIdentifier = `${object.shortApiName}.Props`;
   const osdkObjectStrictPropsIdentifier = `${object.shortApiName}.StrictProps`;
@@ -117,13 +117,12 @@ Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
 ,FetchPageResult,
 FetchPageArgs,OsdkObjectPropertyType,
     MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
-
+    
     import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
 
-    export type ${propertyKeysIdentifier} = ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
-
-
     export namespace ${object.shortApiName} {
+
+      export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<${objectDefIdentifier}>
 
       ${createLinks(ontology, object, "Links", identifiers)}
 

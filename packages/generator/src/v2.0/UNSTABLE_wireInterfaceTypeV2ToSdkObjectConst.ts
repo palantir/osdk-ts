@@ -106,7 +106,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
   }
 
   const objectSetIdentifier = `${interfaceDef.shortApiName}.ObjectSet`;
-  const propertyKeysIdentifier = `PropertyKeys$${objectDefIdentifier}`;
+  const propertyKeysIdentifier = `${interfaceDef.shortApiName}.PropertyKeys`;
   // const osdkObjectPropsIdentifier = `OsdkObjectProps$${objectDefIdentifier}`;
   const osdkObjectPropsIdentifier = `${interfaceDef.shortApiName}.Props`;
   const osdkObjectStrictPropsIdentifier =
@@ -133,11 +133,7 @@ FetchPageArgs,OsdkObjectPropertyType,
 
     import {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
 
-    export type ${propertyKeysIdentifier} = ${
-      Object.keys(definition.properties).map(maybeStripNamespace).map(a =>
-        `"${a}"`
-      ).join("|")
-    };
+    
 
         ${
       Object.keys(definition.links).length === 0
@@ -166,6 +162,12 @@ ${
     }
 
         export namespace ${interfaceDef.shortApiName} {
+
+export type PropertyKeys = ${
+      Object.keys(definition.properties).map(maybeStripNamespace).map(a =>
+        `"${a}"`
+      ).join("|")
+    };
 
 
 

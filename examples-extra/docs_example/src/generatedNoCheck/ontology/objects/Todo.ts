@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Todo = ObjectOrInterfacePropertyKeysFrom2<Todo>;
-
 export namespace Todo {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Todo>;
+
   export type Links = never;
 
   export interface Props {
@@ -50,7 +50,7 @@ export namespace Todo {
 
     pivotTo: <L extends LinkNames<Todo>>(type: L) => LinkedType<Todo, L>['objectSet']; // ObjectSet<LinkedType<Todo, L>>;
 
-    fetchOne: <L extends PropertyKeys$Todo, R extends boolean, S extends false | 'throw' = NullabilityAdherenceDefault>(
+    fetchOne: <L extends Todo.PropertyKeys, R extends boolean, S extends false | 'throw' = NullabilityAdherenceDefault>(
       primaryKey: PropertyValueClientToWire[Todo['primaryKeyType']],
       options?: SelectArg<Todo, L, R, S>,
     ) => Promise<
@@ -59,7 +59,7 @@ export namespace Todo {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Todo,
+      L extends Todo.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -73,7 +73,7 @@ export namespace Todo {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Todo,
+      L extends Todo.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -85,7 +85,7 @@ export namespace Todo {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Todo,
+      L extends Todo.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

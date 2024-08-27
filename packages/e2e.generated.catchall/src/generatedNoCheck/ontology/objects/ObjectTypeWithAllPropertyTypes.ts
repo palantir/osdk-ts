@@ -27,10 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$ObjectTypeWithAllPropertyTypes =
-  ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
-
 export namespace ObjectTypeWithAllPropertyTypes {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
+
   export type Links = never;
 
   export interface Props {
@@ -111,7 +110,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     ) => LinkedType<ObjectTypeWithAllPropertyTypes, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$ObjectTypeWithAllPropertyTypes,
+      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -123,7 +122,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$ObjectTypeWithAllPropertyTypes,
+      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -137,7 +136,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$ObjectTypeWithAllPropertyTypes,
+      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -149,7 +148,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$ObjectTypeWithAllPropertyTypes,
+      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

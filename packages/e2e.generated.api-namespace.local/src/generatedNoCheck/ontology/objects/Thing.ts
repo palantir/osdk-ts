@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$Thing = ObjectOrInterfacePropertyKeysFrom2<Thing>;
-
 export namespace Thing {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Thing>;
+
   export type Links = never;
 
   export interface Props {
@@ -49,7 +49,7 @@ export namespace Thing {
     pivotTo: <L extends LinkNames<Thing>>(type: L) => LinkedType<Thing, L>['objectSet']; // ObjectSet<LinkedType<Thing, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$Thing,
+      L extends Thing.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -61,7 +61,7 @@ export namespace Thing {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$Thing,
+      L extends Thing.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -75,7 +75,7 @@ export namespace Thing {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$Thing,
+      L extends Thing.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export namespace Thing {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$Thing,
+      L extends Thing.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

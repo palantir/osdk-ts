@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$equipment = ObjectOrInterfacePropertyKeysFrom2<equipment>;
-
 export namespace equipment {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<equipment>;
+
   export type Links = never;
 
   export interface Props {
@@ -49,7 +49,7 @@ export namespace equipment {
     pivotTo: <L extends LinkNames<equipment>>(type: L) => LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$equipment,
+      L extends equipment.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -61,7 +61,7 @@ export namespace equipment {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$equipment,
+      L extends equipment.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -75,7 +75,7 @@ export namespace equipment {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$equipment,
+      L extends equipment.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export namespace equipment {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$equipment,
+      L extends equipment.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

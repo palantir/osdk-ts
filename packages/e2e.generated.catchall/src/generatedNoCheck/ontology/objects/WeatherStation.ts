@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$WeatherStation = ObjectOrInterfacePropertyKeysFrom2<WeatherStation>;
-
 export namespace WeatherStation {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<WeatherStation>;
+
   export type Links = never;
 
   export interface Props {
@@ -49,7 +49,7 @@ export namespace WeatherStation {
     pivotTo: <L extends LinkNames<WeatherStation>>(type: L) => LinkedType<WeatherStation, L>['objectSet']; // ObjectSet<LinkedType<WeatherStation, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$WeatherStation,
+      L extends WeatherStation.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -61,7 +61,7 @@ export namespace WeatherStation {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$WeatherStation,
+      L extends WeatherStation.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -75,7 +75,7 @@ export namespace WeatherStation {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$WeatherStation,
+      L extends WeatherStation.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -87,7 +87,7 @@ export namespace WeatherStation {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$WeatherStation,
+      L extends WeatherStation.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,

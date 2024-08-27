@@ -27,9 +27,9 @@ import {
 
 import { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition } from '@osdk/api';
 
-export type PropertyKeys$DherlihyComplexObject = ObjectOrInterfacePropertyKeysFrom2<DherlihyComplexObject>;
-
 export namespace DherlihyComplexObject {
+  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<DherlihyComplexObject>;
+
   export type Links = never;
 
   export interface Props {
@@ -51,7 +51,7 @@ export namespace DherlihyComplexObject {
     pivotTo: <L extends LinkNames<DherlihyComplexObject>>(type: L) => LinkedType<DherlihyComplexObject, L>['objectSet']; // ObjectSet<LinkedType<DherlihyComplexObject, L>>;
 
     fetchOne: <
-      L extends PropertyKeys$DherlihyComplexObject,
+      L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -63,7 +63,7 @@ export namespace DherlihyComplexObject {
     >;
 
     fetchOneWithErrors: <
-      L extends PropertyKeys$DherlihyComplexObject,
+      L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       S extends false | 'throw' = NullabilityAdherenceDefault,
     >(
@@ -77,7 +77,7 @@ export namespace DherlihyComplexObject {
     >;
 
     fetchPage: <
-      L extends PropertyKeys$DherlihyComplexObject,
+      L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
@@ -89,7 +89,7 @@ export namespace DherlihyComplexObject {
     >;
 
     fetchPageWithErrors: <
-      L extends PropertyKeys$DherlihyComplexObject,
+      L extends DherlihyComplexObject.PropertyKeys,
       R extends boolean,
       const A extends Augments,
       S extends NullabilityAdherence = NullabilityAdherenceDefault,
