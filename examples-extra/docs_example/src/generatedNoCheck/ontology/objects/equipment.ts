@@ -1,31 +1,36 @@
-import type { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace equipment {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<equipment>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<equipment>;
 
   export type Links = never;
 
@@ -39,19 +44,19 @@ export namespace equipment {
   }
 
   export interface ObjectSet extends $ObjectSet<equipment, equipment.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<equipment>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment, AO>,
-    ) => Promise<AggregationsResults<equipment, AO>>;
+    aggregate: <AO extends $AggregateOpts<equipment>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment, AO>,
+    ) => Promise<$AggregationsResults<equipment, AO>>;
 
-    pivotTo: <L extends LinkNames<equipment>>(type: L) => LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
+    pivotTo: <L extends $LinkNames<equipment>>(type: L) => $LinkedType<equipment, L>['objectSet']; // ObjectSet<LinkedType<equipment, L>>;
 
     fetchOne: <
       L extends equipment.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[equipment['primaryKeyType']],
-      options?: SelectArg<equipment, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
+      options?: $SelectArg<equipment, L, R, S>,
     ) => Promise<
       equipment.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<equipment, L, R, S>
@@ -60,12 +65,12 @@ export namespace equipment {
     fetchOneWithErrors: <
       L extends equipment.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[equipment['primaryKeyType']],
-      options?: SelectArg<equipment, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[equipment['primaryKeyType']],
+      options?: $SelectArg<equipment, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         equipment.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<equipment, L, R, S>
       >
@@ -74,25 +79,25 @@ export namespace equipment {
     fetchPage: <
       L extends equipment.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<equipment, L, R, A, S>,
+      args?: $FetchPageArgs<equipment, L, R, A, S>,
     ) => Promise<
-      PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<equipment, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends equipment.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<equipment, L, R, A, S>,
+      args?: $FetchPageArgs<equipment, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<equipment.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<equipment, L, R, S>
       >
     >;
@@ -101,8 +106,8 @@ export namespace equipment {
   }
 
   export interface Definition
-    extends ObjectTypeDefinition<'equipment', equipment>,
-      VersionBound<$ExpectedClientVersion> {
+    extends $ObjectTypeDefinition<'equipment', equipment>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: equipment.ObjectSet;
     props: equipment.Props;
@@ -114,15 +119,15 @@ export namespace equipment {
       /**
        *   description: The id of an equipment
        */
-      equipmentId: PropertyDef<'string', 'non-nullable', 'single'>;
+      equipmentId: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      type: PropertyDef<'string', 'nullable', 'single'>;
+      type: $PropertyDef<'string', 'nullable', 'single'>;
     };
   }
 
-  export type OsdkObject<K extends keyof equipment.Props = keyof equipment.Props, S extends boolean = true> = Osdk<
+  export type OsdkObject<K extends keyof equipment.Props = keyof equipment.Props, S extends boolean = true> = $Osdk<
     equipment,
     K | (S extends false ? '$notStrict' : '$strict')
   > &
@@ -133,21 +138,21 @@ export namespace equipment {
     > & {
       $link: equipment.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<
+      $primaryKey: $OsdkObjectPropertyType<
         { multiplicity: false; description: 'The id of an equipment'; type: 'string'; nullable: false },
         true
       >;
 
-      $as: <NEW_Q extends ValidToFrom<equipment>>(
+      $as: <NEW_Q extends $ValidToFrom<equipment>>(
         type: NEW_Q | string,
-      ) => Osdk<NEW_Q, ConvertProps<equipment, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<equipment, NEW_Q, K>>;
     } & $OsdkObject<'equipment'>;
 }
 
 /** @deprecated use equipment.Definition **/
 export type equipment = equipment.Definition;
 
-export const equipment: equipment & VersionBound<$ExpectedClientVersion> = {
+export const equipment: equipment & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

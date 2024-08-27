@@ -1,31 +1,36 @@
-import type { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace Thing {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Thing>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Thing>;
 
   export type Links = never;
 
@@ -39,19 +44,19 @@ export namespace Thing {
   }
 
   export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<Thing>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Thing, AO>,
-    ) => Promise<AggregationsResults<Thing, AO>>;
+    aggregate: <AO extends $AggregateOpts<Thing>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Thing, AO>,
+    ) => Promise<$AggregationsResults<Thing, AO>>;
 
-    pivotTo: <L extends LinkNames<Thing>>(type: L) => LinkedType<Thing, L>['objectSet']; // ObjectSet<LinkedType<Thing, L>>;
+    pivotTo: <L extends $LinkNames<Thing>>(type: L) => $LinkedType<Thing, L>['objectSet']; // ObjectSet<LinkedType<Thing, L>>;
 
     fetchOne: <
       L extends Thing.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Thing['primaryKeyType']],
-      options?: SelectArg<Thing, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
+      options?: $SelectArg<Thing, L, R, S>,
     ) => Promise<
       Thing.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<Thing, L, R, S>
@@ -60,12 +65,12 @@ export namespace Thing {
     fetchOneWithErrors: <
       L extends Thing.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Thing['primaryKeyType']],
-      options?: SelectArg<Thing, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Thing['primaryKeyType']],
+      options?: $SelectArg<Thing, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         Thing.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<Thing, L, R, S>
       >
@@ -74,25 +79,25 @@ export namespace Thing {
     fetchPage: <
       L extends Thing.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Thing, L, R, A, S>,
+      args?: $FetchPageArgs<Thing, L, R, A, S>,
     ) => Promise<
-      PageResult<Thing.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<Thing.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<Thing, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends Thing.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Thing, L, R, A, S>,
+      args?: $FetchPageArgs<Thing, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<Thing.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<Thing.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<Thing, L, R, S>
       >
     >;
@@ -100,7 +105,7 @@ export namespace Thing {
     asyncIter: () => AsyncIterableIterator<Thing.OsdkObject>;
   }
 
-  export interface Definition extends ObjectTypeDefinition<'Thing', Thing>, VersionBound<$ExpectedClientVersion> {
+  export interface Definition extends $ObjectTypeDefinition<'Thing', Thing>, $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Thing.ObjectSet;
     props: Thing.Props;
@@ -124,16 +129,16 @@ export namespace Thing {
       /**
        * (no ontology metadata)
        */
-      body: PropertyDef<'string', 'nullable', 'single'>;
+      body: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      id: PropertyDef<'integer', 'non-nullable', 'single'>;
+      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
     };
     spts: {};
   }
 
-  export type OsdkObject<K extends keyof Thing.Props = keyof Thing.Props, S extends boolean = true> = Osdk<
+  export type OsdkObject<K extends keyof Thing.Props = keyof Thing.Props, S extends boolean = true> = $Osdk<
     Thing,
     K | (S extends false ? '$notStrict' : '$strict')
   > &
@@ -144,16 +149,16 @@ export namespace Thing {
     > & {
       $link: Thing.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      $as: <NEW_Q extends ValidToFrom<Thing>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Thing, NEW_Q, K>>;
+      $as: <NEW_Q extends $ValidToFrom<Thing>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Thing, NEW_Q, K>>;
     } & $OsdkObject<'Thing'>;
 }
 
 /** @deprecated use Thing.Definition **/
 export type Thing = Thing.Definition;
 
-export const Thing: Thing & VersionBound<$ExpectedClientVersion> = {
+export const Thing: Thing & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

@@ -1,31 +1,36 @@
-import type { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace ObjectTypeWithAllPropertyTypes {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<ObjectTypeWithAllPropertyTypes>;
 
   export type Links = never;
 
@@ -98,21 +103,21 @@ export namespace ObjectTypeWithAllPropertyTypes {
 
   export interface ObjectSet
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes, ObjectTypeWithAllPropertyTypes.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<ObjectTypeWithAllPropertyTypes, AO>,
-    ) => Promise<AggregationsResults<ObjectTypeWithAllPropertyTypes, AO>>;
+    aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<ObjectTypeWithAllPropertyTypes, AO>,
+    ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes, AO>>;
 
-    pivotTo: <L extends LinkNames<ObjectTypeWithAllPropertyTypes>>(
+    pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes>>(
       type: L,
-    ) => LinkedType<ObjectTypeWithAllPropertyTypes, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes, L>>;
+    ) => $LinkedType<ObjectTypeWithAllPropertyTypes, L>['objectSet']; // ObjectSet<LinkedType<ObjectTypeWithAllPropertyTypes, L>>;
 
     fetchOne: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
-      options?: SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
     ) => Promise<
       ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<ObjectTypeWithAllPropertyTypes, L, R, S>
@@ -121,12 +126,12 @@ export namespace ObjectTypeWithAllPropertyTypes {
     fetchOneWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
-      options?: SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<ObjectTypeWithAllPropertyTypes, L, R, S>
       >
@@ -135,25 +140,25 @@ export namespace ObjectTypeWithAllPropertyTypes {
     fetchPage: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
     ) => Promise<
-      PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<ObjectTypeWithAllPropertyTypes, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<ObjectTypeWithAllPropertyTypes.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<ObjectTypeWithAllPropertyTypes, L, R, S>
       >
     >;
@@ -162,8 +167,8 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export interface Definition
-    extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
-      VersionBound<$ExpectedClientVersion> {
+    extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
@@ -176,134 +181,134 @@ export namespace ObjectTypeWithAllPropertyTypes {
       /**
        * (no ontology metadata)
        */
-      attachment: PropertyDef<'attachment', 'nullable', 'single'>;
+      attachment: $PropertyDef<'attachment', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      attachmentArray: PropertyDef<'attachment', 'nullable', 'array'>;
+      attachmentArray: $PropertyDef<'attachment', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      boolean: PropertyDef<'boolean', 'nullable', 'single'>;
+      boolean: $PropertyDef<'boolean', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      booleanArray: PropertyDef<'boolean', 'nullable', 'array'>;
+      booleanArray: $PropertyDef<'boolean', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      byte: PropertyDef<'byte', 'nullable', 'single'>;
+      byte: $PropertyDef<'byte', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      byteArray: PropertyDef<'byte', 'nullable', 'array'>;
+      byteArray: $PropertyDef<'byte', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      date: PropertyDef<'datetime', 'nullable', 'single'>;
+      date: $PropertyDef<'datetime', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      dateArray: PropertyDef<'datetime', 'nullable', 'array'>;
+      dateArray: $PropertyDef<'datetime', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      dateTime: PropertyDef<'timestamp', 'nullable', 'single'>;
+      dateTime: $PropertyDef<'timestamp', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      dateTimeArray: PropertyDef<'timestamp', 'nullable', 'array'>;
+      dateTimeArray: $PropertyDef<'timestamp', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      decimal: PropertyDef<'decimal', 'nullable', 'single'>;
+      decimal: $PropertyDef<'decimal', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      decimalArray: PropertyDef<'decimal', 'nullable', 'array'>;
+      decimalArray: $PropertyDef<'decimal', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      double: PropertyDef<'double', 'nullable', 'single'>;
+      double: $PropertyDef<'double', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      doubleArray: PropertyDef<'double', 'nullable', 'array'>;
+      doubleArray: $PropertyDef<'double', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      float: PropertyDef<'float', 'nullable', 'single'>;
+      float: $PropertyDef<'float', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      floatArray: PropertyDef<'float', 'nullable', 'array'>;
+      floatArray: $PropertyDef<'float', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      geoPoint: PropertyDef<'geopoint', 'nullable', 'single'>;
+      geoPoint: $PropertyDef<'geopoint', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      geoPointArray: PropertyDef<'geopoint', 'nullable', 'array'>;
+      geoPointArray: $PropertyDef<'geopoint', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      geoShape: PropertyDef<'geoshape', 'nullable', 'single'>;
+      geoShape: $PropertyDef<'geoshape', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      geoShapeArray: PropertyDef<'geoshape', 'nullable', 'array'>;
+      geoShapeArray: $PropertyDef<'geoshape', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      id: PropertyDef<'integer', 'non-nullable', 'single'>;
+      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      integer: PropertyDef<'integer', 'nullable', 'single'>;
+      integer: $PropertyDef<'integer', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      integerArray: PropertyDef<'integer', 'nullable', 'array'>;
+      integerArray: $PropertyDef<'integer', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      long: PropertyDef<'long', 'nullable', 'single'>;
+      long: $PropertyDef<'long', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      longArray: PropertyDef<'long', 'nullable', 'array'>;
+      longArray: $PropertyDef<'long', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      numericTimeseries: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+      numericTimeseries: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      short: PropertyDef<'short', 'nullable', 'single'>;
+      short: $PropertyDef<'short', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      shortArray: PropertyDef<'short', 'nullable', 'array'>;
+      shortArray: $PropertyDef<'short', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      string: PropertyDef<'string', 'nullable', 'single'>;
+      string: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      stringArray: PropertyDef<'string', 'nullable', 'array'>;
+      stringArray: $PropertyDef<'string', 'nullable', 'array'>;
       /**
        * (no ontology metadata)
        */
-      stringTimeseries: PropertyDef<'stringTimeseries', 'nullable', 'single'>;
+      stringTimeseries: $PropertyDef<'stringTimeseries', 'nullable', 'single'>;
     };
   }
 
   export type OsdkObject<
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
     S extends boolean = true,
-  > = Osdk<ObjectTypeWithAllPropertyTypes, K | (S extends false ? '$notStrict' : '$strict')> &
+  > = $Osdk<ObjectTypeWithAllPropertyTypes, K | (S extends false ? '$notStrict' : '$strict')> &
     Pick<
       // ObjectTypeWithAllPropertyTypes.Props
       S extends false ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
@@ -311,18 +316,18 @@ export namespace ObjectTypeWithAllPropertyTypes {
     > & {
       $link: ObjectTypeWithAllPropertyTypes.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
 
-      $as: <NEW_Q extends ValidToFrom<ObjectTypeWithAllPropertyTypes>>(
+      $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes>>(
         type: NEW_Q | string,
-      ) => Osdk<NEW_Q, ConvertProps<ObjectTypeWithAllPropertyTypes, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes, NEW_Q, K>>;
     } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;
 }
 
 /** @deprecated use ObjectTypeWithAllPropertyTypes.Definition **/
 export type ObjectTypeWithAllPropertyTypes = ObjectTypeWithAllPropertyTypes.Definition;
 
-export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & VersionBound<$ExpectedClientVersion> = {
+export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

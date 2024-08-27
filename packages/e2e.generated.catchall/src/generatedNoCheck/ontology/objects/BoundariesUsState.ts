@@ -1,31 +1,36 @@
-import type { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace BoundariesUsState {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<BoundariesUsState>;
 
   export type Links = never;
 
@@ -43,19 +48,19 @@ export namespace BoundariesUsState {
   }
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState, BoundariesUsState.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<BoundariesUsState>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState, AO>,
-    ) => Promise<AggregationsResults<BoundariesUsState, AO>>;
+    aggregate: <AO extends $AggregateOpts<BoundariesUsState>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState, AO>,
+    ) => Promise<$AggregationsResults<BoundariesUsState, AO>>;
 
-    pivotTo: <L extends LinkNames<BoundariesUsState>>(type: L) => LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
+    pivotTo: <L extends $LinkNames<BoundariesUsState>>(type: L) => $LinkedType<BoundariesUsState, L>['objectSet']; // ObjectSet<LinkedType<BoundariesUsState, L>>;
 
     fetchOne: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
-      options?: SelectArg<BoundariesUsState, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
+      options?: $SelectArg<BoundariesUsState, L, R, S>,
     ) => Promise<
       BoundariesUsState.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<BoundariesUsState, L, R, S>
@@ -64,12 +69,12 @@ export namespace BoundariesUsState {
     fetchOneWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
-      options?: SelectArg<BoundariesUsState, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[BoundariesUsState['primaryKeyType']],
+      options?: $SelectArg<BoundariesUsState, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         BoundariesUsState.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<BoundariesUsState, L, R, S>
       >
@@ -78,25 +83,25 @@ export namespace BoundariesUsState {
     fetchPage: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<BoundariesUsState, L, R, A, S>,
+      args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
     ) => Promise<
-      PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<BoundariesUsState, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends BoundariesUsState.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<BoundariesUsState, L, R, A, S>,
+      args?: $FetchPageArgs<BoundariesUsState, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<BoundariesUsState.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<BoundariesUsState, L, R, S>
       >
     >;
@@ -105,8 +110,8 @@ export namespace BoundariesUsState {
   }
 
   export interface Definition
-    extends ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState>,
-      VersionBound<$ExpectedClientVersion> {
+    extends $ObjectTypeDefinition<'BoundariesUsState', BoundariesUsState>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: BoundariesUsState.ObjectSet;
     props: BoundariesUsState.Props;
@@ -120,26 +125,26 @@ export namespace BoundariesUsState {
        *   display name: 'Geometry10M',
        *   description: geoshape
        */
-      geometry10M: PropertyDef<'geoshape', 'nullable', 'single'>;
+      geometry10M: $PropertyDef<'geoshape', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      latitude: PropertyDef<'double', 'nullable', 'single'>;
+      latitude: $PropertyDef<'double', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      longitude: PropertyDef<'double', 'nullable', 'single'>;
+      longitude: $PropertyDef<'double', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      usState: PropertyDef<'string', 'non-nullable', 'single'>;
+      usState: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
   }
 
   export type OsdkObject<
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
     S extends boolean = true,
-  > = Osdk<BoundariesUsState, K | (S extends false ? '$notStrict' : '$strict')> &
+  > = $Osdk<BoundariesUsState, K | (S extends false ? '$notStrict' : '$strict')> &
     Pick<
       // BoundariesUsState.Props
       S extends false ? BoundariesUsState.Props : BoundariesUsState.StrictProps,
@@ -147,18 +152,18 @@ export namespace BoundariesUsState {
     > & {
       $link: BoundariesUsState.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends ValidToFrom<BoundariesUsState>>(
+      $as: <NEW_Q extends $ValidToFrom<BoundariesUsState>>(
         type: NEW_Q | string,
-      ) => Osdk<NEW_Q, ConvertProps<BoundariesUsState, NEW_Q, K>>;
+      ) => $Osdk<NEW_Q, $ConvertProps<BoundariesUsState, NEW_Q, K>>;
     } & $OsdkObject<'BoundariesUsState'>;
 }
 
 /** @deprecated use BoundariesUsState.Definition **/
 export type BoundariesUsState = BoundariesUsState.Definition;
 
-export const BoundariesUsState: BoundariesUsState & VersionBound<$ExpectedClientVersion> = {
+export const BoundariesUsState: BoundariesUsState & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

@@ -115,21 +115,40 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
   function getV2Types() {
     return `import type {
-    LinkedType,
-    SingleLinkAccessor,
-    SelectArg,
-SingleOsdkResult,
-PropertyValueWireToClient as $PropType,
-    NullabilityAdherenceDefault,
-    NullabilityAdherence,
-PropertyValueClientToWire,OsdkObjectLinksObject,OsdkObjectLinksEntry,
-Augments,PageResult,
-Result,BaseObjectSet,OsdkObject as $OsdkObject,ValidToFrom,ConvertProps
-,FetchPageResult, Osdk,
-FetchPageArgs,OsdkObjectPropertyType,
-    MinimalObjectSet, LinkNames,ObjectSet as $ObjectSet, AggregateOpts,AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,AggregationsResults, WhereClause} from "@osdk/client.api";
+      AggregateOpts as $AggregateOpts,
+      AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+      AggregationsResults as $AggregationsResults, 
+      Augments as $Augments,
+      ConvertProps as $ConvertProps,
+      FetchPageArgs as $FetchPageArgs,
+      FetchPageResult as $FetchPageResult,
+      LinkedType as $LinkedType,
+      LinkNames as $LinkNames,
+      NullabilityAdherence as $NullabilityAdherence,
+      NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+      ObjectSet as $ObjectSet, 
+      Osdk as $Osdk,
+      OsdkObject as $OsdkObject,
+      OsdkObjectLinksEntry as $OsdkObjectLinksEntry,
+      OsdkObjectLinksObject as $OsdkObjectLinksObject,
+      OsdkObjectPropertyType as $OsdkObjectPropertyType,
+      PageResult as $PageResult,
+      PropertyValueClientToWire as $PropertyValueClientToWire,
+      PropertyValueWireToClient as $PropType,
+      Result as $Result,
+      SelectArg as $SelectArg, 
+      SingleLinkAccessor  as $SingleLinkAccessor,
+      SingleOsdkResult as $SingleOsdkResult,
+      ValidToFrom as $ValidToFrom,
+      WhereClause as $WhereClause,
+    } from "@osdk/client.api";
     import type * as $clientApi from "@osdk/client.api";
-    import type {ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition} from "@osdk/api";
+    import type {
+      ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2, 
+      ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+      ObjectTypeDefinition as $ObjectTypeDefinition,
+      InterfaceDefinition as $InterfaceDefinition,
+    } from "@osdk/api";
 
     
 

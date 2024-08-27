@@ -1,42 +1,42 @@
 import type {
-  ObjectOrInterfacePropertyKeysFrom2,
-  ObjectTypeDefinition,
-  ObjectTypeLinkDefinition,
-  PropertyDef,
-  VersionBound,
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
 } from '@osdk/api';
 import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  SingleLinkAccessor,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  SingleLinkAccessor as $SingleLinkAccessor,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Venture } from './Venture.js';
 
 export namespace Employee {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Employee>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Employee>;
 
   export interface Links {
-    lead: SingleLinkAccessor<Employee>;
+    lead: $SingleLinkAccessor<Employee>;
     peeps: Employee.ObjectSet;
     ventures: Venture.ObjectSet;
   }
@@ -71,19 +71,19 @@ export namespace Employee {
   }
 
   export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<Employee>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee, AO>,
-    ) => Promise<AggregationsResults<Employee, AO>>;
+    aggregate: <AO extends $AggregateOpts<Employee>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee, AO>,
+    ) => Promise<$AggregationsResults<Employee, AO>>;
 
-    pivotTo: <L extends LinkNames<Employee>>(type: L) => LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
+    pivotTo: <L extends $LinkNames<Employee>>(type: L) => $LinkedType<Employee, L>['objectSet']; // ObjectSet<LinkedType<Employee, L>>;
 
     fetchOne: <
       L extends Employee.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Employee['primaryKeyType']],
-      options?: SelectArg<Employee, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Employee['primaryKeyType']],
+      options?: $SelectArg<Employee, L, R, S>,
     ) => Promise<
       Employee.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<Employee, L, R, S>
@@ -92,12 +92,12 @@ export namespace Employee {
     fetchOneWithErrors: <
       L extends Employee.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Employee['primaryKeyType']],
-      options?: SelectArg<Employee, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Employee['primaryKeyType']],
+      options?: $SelectArg<Employee, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         Employee.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<Employee, L, R, S>
       >
@@ -106,25 +106,25 @@ export namespace Employee {
     fetchPage: <
       L extends Employee.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Employee, L, R, A, S>,
+      args?: $FetchPageArgs<Employee, L, R, A, S>,
     ) => Promise<
-      PageResult<Employee.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<Employee.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<Employee, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends Employee.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Employee, L, R, A, S>,
+      args?: $FetchPageArgs<Employee, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<Employee.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<Employee.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<Employee, L, R, S>
       >
     >;
@@ -132,7 +132,9 @@ export namespace Employee {
     asyncIter: () => AsyncIterableIterator<Employee.OsdkObject>;
   }
 
-  export interface Definition extends ObjectTypeDefinition<'Employee', Employee>, VersionBound<$ExpectedClientVersion> {
+  export interface Definition
+    extends $ObjectTypeDefinition<'Employee', Employee>,
+      $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
@@ -156,9 +158,9 @@ export namespace Employee {
       email: 'description';
     };
     links: {
-      lead: ObjectTypeLinkDefinition<Employee, false>;
-      peeps: ObjectTypeLinkDefinition<Employee, true>;
-      ventures: ObjectTypeLinkDefinition<Venture, true>;
+      lead: $ObjectTypeLinkDefinition<Employee, false>;
+      peeps: $ObjectTypeLinkDefinition<Employee, true>;
+      ventures: $ObjectTypeLinkDefinition<Venture, true>;
     };
     primaryKeyApiName: 'id';
     primaryKeyType: 'string';
@@ -166,51 +168,51 @@ export namespace Employee {
       /**
        * (no ontology metadata)
        */
-      adUsername: PropertyDef<'string', 'nullable', 'single'>;
+      adUsername: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      businessTitle: PropertyDef<'string', 'nullable', 'single'>;
+      businessTitle: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      email: PropertyDef<'string', 'nullable', 'single'>;
+      email: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      employeeNumber: PropertyDef<'double', 'nullable', 'single'>;
+      employeeNumber: $PropertyDef<'double', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      favPlace: PropertyDef<'geopoint', 'nullable', 'single'>;
+      favPlace: $PropertyDef<'geopoint', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      firstFullTimeStartDate: PropertyDef<'datetime', 'nullable', 'single'>;
+      firstFullTimeStartDate: $PropertyDef<'datetime', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      firstName: PropertyDef<'string', 'nullable', 'single'>;
+      firstName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      id: PropertyDef<'string', 'non-nullable', 'single'>;
+      id: $PropertyDef<'string', 'non-nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      jobProfile: PropertyDef<'string', 'nullable', 'single'>;
+      jobProfile: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      locationCity: PropertyDef<'string', 'nullable', 'single'>;
+      locationCity: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      locationName: PropertyDef<'string', 'nullable', 'single'>;
+      locationName: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      locationType: PropertyDef<'string', 'nullable', 'single'>;
+      locationType: $PropertyDef<'string', 'nullable', 'single'>;
     };
     spts: {
       name: 'firstName';
@@ -218,7 +220,7 @@ export namespace Employee {
     };
   }
 
-  export type OsdkObject<K extends keyof Employee.Props = keyof Employee.Props, S extends boolean = true> = Osdk<
+  export type OsdkObject<K extends keyof Employee.Props = keyof Employee.Props, S extends boolean = true> = $Osdk<
     Employee,
     K | (S extends false ? '$notStrict' : '$strict')
   > &
@@ -229,16 +231,18 @@ export namespace Employee {
     > & {
       $link: Employee.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends ValidToFrom<Employee>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Employee, NEW_Q, K>>;
+      $as: <NEW_Q extends $ValidToFrom<Employee>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<Employee, NEW_Q, K>>;
     } & $OsdkObject<'Employee'>;
 }
 
 /** @deprecated use Employee.Definition **/
 export type Employee = Employee.Definition;
 
-export const Employee: Employee & VersionBound<$ExpectedClientVersion> = {
+export const Employee: Employee & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

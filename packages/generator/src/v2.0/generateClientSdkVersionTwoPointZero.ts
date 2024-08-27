@@ -72,7 +72,7 @@ async function generateEachObjectFile(
     await fs.writeFile(
       outFilePath,
       await formatTs(`
-        import type {  VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
+        import type {  VersionBound as $VersionBound, PropertyDef as $PropertyDef } from "@osdk/api";
         import type { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
@@ -153,7 +153,7 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
+      import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from "@osdk/api";
       import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
       ${

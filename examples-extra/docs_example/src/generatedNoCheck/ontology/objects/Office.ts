@@ -1,31 +1,36 @@
-import type { ObjectOrInterfacePropertyKeysFrom2, ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
 import type {
+  ObjectOrInterfacePropertyKeysFrom2 as $ObjectOrInterfacePropertyKeysFrom2,
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
   ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
   OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
   PropertyValueWireToClient as $PropType,
-  AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults,
-  Augments,
-  ConvertProps,
-  FetchPageArgs,
-  LinkedType,
-  LinkNames,
-  NullabilityAdherence,
-  NullabilityAdherenceDefault,
-  Osdk,
-  OsdkObjectPropertyType,
-  PageResult,
-  PropertyValueClientToWire,
-  Result,
-  SelectArg,
-  ValidToFrom,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
 export namespace Office {
-  export type PropertyKeys = ObjectOrInterfacePropertyKeysFrom2<Office>;
+  export type PropertyKeys = $ObjectOrInterfacePropertyKeysFrom2<Office>;
 
   export type Links = never;
 
@@ -47,19 +52,19 @@ export namespace Office {
   }
 
   export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {
-    aggregate: <AO extends AggregateOpts<Office>>(
-      req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office, AO>,
-    ) => Promise<AggregationsResults<Office, AO>>;
+    aggregate: <AO extends $AggregateOpts<Office>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office, AO>,
+    ) => Promise<$AggregationsResults<Office, AO>>;
 
-    pivotTo: <L extends LinkNames<Office>>(type: L) => LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
+    pivotTo: <L extends $LinkNames<Office>>(type: L) => $LinkedType<Office, L>['objectSet']; // ObjectSet<LinkedType<Office, L>>;
 
     fetchOne: <
       L extends Office.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Office['primaryKeyType']],
-      options?: SelectArg<Office, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
+      options?: $SelectArg<Office, L, R, S>,
     ) => Promise<
       Office.OsdkObject<L, S extends false ? false : true>
       //  SingleOsdkResult<Office, L, R, S>
@@ -68,12 +73,12 @@ export namespace Office {
     fetchOneWithErrors: <
       L extends Office.PropertyKeys,
       R extends boolean,
-      S extends false | 'throw' = NullabilityAdherenceDefault,
+      S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
-      primaryKey: PropertyValueClientToWire[Office['primaryKeyType']],
-      options?: SelectArg<Office, L, R, S>,
+      primaryKey: $PropertyValueClientToWire[Office['primaryKeyType']],
+      options?: $SelectArg<Office, L, R, S>,
     ) => Promise<
-      Result<
+      $Result<
         Office.OsdkObject<L, S extends false ? false : true>
         //  SingleOsdkResult<Office, L, R, S>
       >
@@ -82,25 +87,25 @@ export namespace Office {
     fetchPage: <
       L extends Office.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Office, L, R, A, S>,
+      args?: $FetchPageArgs<Office, L, R, A, S>,
     ) => Promise<
-      PageResult<Office.OsdkObject<L, S extends false ? false : true>>
+      $PageResult<Office.OsdkObject<L, S extends false ? false : true>>
       // FetchPageResult<Office, L, R, S>
     >;
 
     fetchPageWithErrors: <
       L extends Office.PropertyKeys,
       R extends boolean,
-      const A extends Augments,
-      S extends NullabilityAdherence = NullabilityAdherenceDefault,
+      const A extends $Augments,
+      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
-      args?: FetchPageArgs<Office, L, R, A, S>,
+      args?: $FetchPageArgs<Office, L, R, A, S>,
     ) => Promise<
-      Result<
-        PageResult<Office.OsdkObject<L, S extends false ? false : true>>
+      $Result<
+        $PageResult<Office.OsdkObject<L, S extends false ? false : true>>
         //  FetchPageResult<Office, L, R, S>
       >
     >;
@@ -108,7 +113,7 @@ export namespace Office {
     asyncIter: () => AsyncIterableIterator<Office.OsdkObject>;
   }
 
-  export interface Definition extends ObjectTypeDefinition<'Office', Office>, VersionBound<$ExpectedClientVersion> {
+  export interface Definition extends $ObjectTypeDefinition<'Office', Office>, $VersionBound<$ExpectedClientVersion> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Office.ObjectSet;
     props: Office.Props;
@@ -121,31 +126,31 @@ export namespace Office {
       /**
        * (no ontology metadata)
        */
-      entrance: PropertyDef<'geopoint', 'nullable', 'single'>;
+      entrance: $PropertyDef<'geopoint', 'nullable', 'single'>;
       /**
        *   description: The individual capacities of meetings rooms in the office
        */
-      meetingRoomCapacities: PropertyDef<'integer', 'nullable', 'array'>;
+      meetingRoomCapacities: $PropertyDef<'integer', 'nullable', 'array'>;
       /**
        *   description: The Names of meetings rooms in the office
        */
-      meetingRooms: PropertyDef<'string', 'nullable', 'array'>;
+      meetingRooms: $PropertyDef<'string', 'nullable', 'array'>;
       /**
        *   description: The Name of the Office
        */
-      name: PropertyDef<'string', 'nullable', 'single'>;
+      name: $PropertyDef<'string', 'nullable', 'single'>;
       /**
        *   description: The occupied area of the Office
        */
-      occupiedArea: PropertyDef<'geoshape', 'nullable', 'single'>;
+      occupiedArea: $PropertyDef<'geoshape', 'nullable', 'single'>;
       /**
        * (no ontology metadata)
        */
-      officeId: PropertyDef<'string', 'non-nullable', 'single'>;
+      officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
     };
   }
 
-  export type OsdkObject<K extends keyof Office.Props = keyof Office.Props, S extends boolean = true> = Osdk<
+  export type OsdkObject<K extends keyof Office.Props = keyof Office.Props, S extends boolean = true> = $Osdk<
     Office,
     K | (S extends false ? '$notStrict' : '$strict')
   > &
@@ -156,16 +161,16 @@ export namespace Office {
     > & {
       $link: Office.Links;
       $title: string | undefined; // FIXME
-      $primaryKey: OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+      $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
 
-      $as: <NEW_Q extends ValidToFrom<Office>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Office, NEW_Q, K>>;
+      $as: <NEW_Q extends $ValidToFrom<Office>>(type: NEW_Q | string) => $Osdk<NEW_Q, $ConvertProps<Office, NEW_Q, K>>;
     } & $OsdkObject<'Office'>;
 }
 
 /** @deprecated use Office.Definition **/
 export type Office = Office.Definition;
 
-export const Office: Office & VersionBound<$ExpectedClientVersion> = {
+export const Office: Office & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
