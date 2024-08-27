@@ -21,14 +21,14 @@ import {
   type TimeSeriesProperty,
   type TimeSeriesQuery,
 } from "@osdk/client.api";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   AbsoluteTimeRange,
   RelativeTime,
   RelativeTimeRange,
   StreamTimeSeriesPointsRequest,
   TimeRange,
-} from "@osdk/internal.foundry";
-import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
+} from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "./MinimalClientContext.js";
 import {
   iterateReadableStream,
@@ -43,7 +43,7 @@ export function createTimeseriesProperty<T extends number | string>(
 ): TimeSeriesProperty<T> {
   return {
     async getFirstPoint() {
-      return OntologiesV2.OntologyObjectsV2.getFirstPoint(
+      return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
         client,
         await client.ontologyRid,
         objectApiName,
@@ -52,7 +52,7 @@ export function createTimeseriesProperty<T extends number | string>(
       ) as Promise<TimeSeriesPoint<T>>;
     },
     async getLastPoint() {
-      return OntologiesV2.OntologyObjectsV2.getLastPoint(
+      return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
         client,
         await client.ontologyRid,
         objectApiName,
@@ -117,7 +117,7 @@ async function* iterateTimeSeriesPoints<T extends string | number>(
 ): AsyncGenerator<TimeSeriesPoint<T>, any, unknown> {
   const utf8decoder = new TextDecoder("utf-8");
 
-  const streamPointsIterator = await OntologiesV2.OntologyObjectsV2
+  const streamPointsIterator = await OntologiesV2.TimeSeriesPropertiesV2
     .streamPoints(
       client,
       await client.ontologyRid,

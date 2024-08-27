@@ -36,7 +36,7 @@ const _getThirdPartyApplication: $FoundryPlatformMethod<
 > = [0, "/v2/thirdPartyApplications/{0}", 2];
 
 /**
- * Get the ThirdPartyApplication
+ * Get the ThirdPartyApplication with the specified rid.
  *
  * @alpha
  *

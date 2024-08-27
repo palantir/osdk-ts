@@ -15,7 +15,7 @@
  */
 
 import type { Osdk } from "@osdk/client.api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../../createAttachmentFromRid.js";
 import { createTimeseriesProperty } from "../../createTimeseriesProperty.js";
 import type { MinimalClient } from "../../MinimalClientContext.js";

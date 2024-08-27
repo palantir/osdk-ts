@@ -28,6 +28,7 @@ import type {
   NullabilityAdherence,
   Result,
 } from "@osdk/client.api";
+import { OntologiesV2 } from "@osdk/internal.foundry";
 import type {
   LoadObjectSetRequestV2,
   ObjectSet,
@@ -37,8 +38,7 @@ import type {
   SearchJsonQueryV2,
   SearchObjectsForInterfaceRequest,
   SearchOrderByV2,
-} from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+} from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { convertWireToOsdkObjects } from "./convertWireToOsdkObjects.js";
@@ -94,20 +94,21 @@ async function fetchInterfacePage<
   args: FetchPageArgs<Q, L, R, any, S>,
   objectSet: ObjectSet,
 ): Promise<FetchPageResult<Q, L, R, S>> {
-  const result = await OntologiesV2.OntologyObjectsV2.searchObjectsForInterface(
-    addUserAgentAndRequestContextHeaders(client, interfaceType),
-    await client.ontologyRid,
-    interfaceType.apiName,
-    applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
-      augmentedProperties: args.$augment ?? {},
-      augmentedSharedPropertyTypes: {},
-      otherInterfaceTypes: [],
-      selectedObjectTypes: [],
-      selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
-      where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
-    }),
-    { preview: true },
-  );
+  const result = await OntologiesV2.OntologyInterfaces
+    .searchObjectsForInterface(
+      addUserAgentAndRequestContextHeaders(client, interfaceType),
+      await client.ontologyRid,
+      interfaceType.apiName,
+      applyFetchArgs<SearchObjectsForInterfaceRequest>(args, {
+        augmentedProperties: args.$augment ?? {},
+        augmentedSharedPropertyTypes: {},
+        otherInterfaceTypes: [],
+        selectedObjectTypes: [],
+        selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
+        where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
+      }),
+      { preview: true },
+    );
   result.data = await convertWireToOsdkObjects(
     client,
     result.data as OntologyObjectV2[], // drop readonly

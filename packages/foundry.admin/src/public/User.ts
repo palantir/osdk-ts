@@ -45,7 +45,7 @@ const _deleteUser: $FoundryPlatformMethod<
 > = [3, "/v2/admin/users/{0}", 2];
 
 /**
- * Deletes the given User
+ * Delete the User with the specified id.
  *
  * @beta
  *
@@ -72,7 +72,9 @@ const _listUsers: $FoundryPlatformMethod<
 > = [0, "/v2/admin/users", 2];
 
 /**
- * Lists all Users
+ * Lists all Users.
+ *
+ * This is a paged endpoint. Each page may be smaller or larger than the requested page size. However, it is guaranteed that if there are more results available, the `nextPageToken` field will be populated. To get the next page, make the same request again, but set the value of the `pageToken` query parameter to be value of the `nextPageToken` value of the previous response. If there is no `nextPageToken` field in the response, you are on the last page.
  *
  * @beta
  *
@@ -100,7 +102,7 @@ const _getUser: $FoundryPlatformMethod<
 > = [0, "/v2/admin/users/{0}", 2];
 
 /**
- * Get the User
+ * Get the User with the specified id.
  *
  * @beta
  *
@@ -152,7 +154,7 @@ const _getCurrentUser: $FoundryPlatformMethod<
 /**
  * @beta
  *
- * Required Scopes: []
+ * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/getCurrent
  */
 export function getCurrentUser(
@@ -162,7 +164,7 @@ export function getCurrentUser(
   return $foundryPlatformFetch($ctx, _getCurrentUser, ...args);
 }
 
-const _profilePictureUser: $FoundryPlatformMethod<
+const _getProfilePictureOfUser: $FoundryPlatformMethod<
   (
     userId: PrincipalId,
     $queryParams?: { preview?: PreviewMode | undefined },
@@ -172,10 +174,10 @@ const _profilePictureUser: $FoundryPlatformMethod<
 /**
  * @beta
  *
- * Required Scopes: []
+ * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/{userId}/profilePicture
  */
-export function profilePictureUser(
+export function getProfilePictureOfUser(
   $ctx: $Client | $ClientContext,
   ...args: [
     userId: PrincipalId,
@@ -183,7 +185,7 @@ export function profilePictureUser(
     $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<Blob> {
-  return $foundryPlatformFetch($ctx, _profilePictureUser, ...args);
+  return $foundryPlatformFetch($ctx, _getProfilePictureOfUser, ...args);
 }
 
 const _searchUsers: $FoundryPlatformMethod<
@@ -196,7 +198,7 @@ const _searchUsers: $FoundryPlatformMethod<
 /**
  * @beta
  *
- * Required Scopes: []
+ * Required Scopes: [api:admin-read]
  * URL: /v2/admin/users/search
  */
 export function searchUsers(

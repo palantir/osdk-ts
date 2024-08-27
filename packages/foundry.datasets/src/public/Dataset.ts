@@ -42,7 +42,7 @@ const _createDataset: $FoundryPlatformMethod<
 /**
  * Creates a new Dataset. A default branch - `master` for most enrollments - will be created on the Dataset.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets
@@ -65,9 +65,9 @@ const _getDataset: $FoundryPlatformMethod<
 > = [0, "/v2/datasets/{0}", 2];
 
 /**
- * Get the Dataset
+ * Get the Dataset with the specified rid.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}
@@ -103,7 +103,7 @@ const _readTableDataset: $FoundryPlatformMethod<
  *
  * This endpoint currently does not support views (Virtual datasets composed of other datasets).
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/readTable

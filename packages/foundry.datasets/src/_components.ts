@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { FilePath, FolderRid, PageToken } from "@osdk/foundry.core";
+import type { FilePath, PageToken } from "@osdk/foundry.core";
+import type { FolderRid } from "@osdk/foundry.filesystem";
 
 export type LooselyBrandedString<T extends string> = string & {
   __LOOSE_BRAND?: T;

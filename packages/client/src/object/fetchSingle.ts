@@ -21,7 +21,7 @@ import type {
   Result,
   SelectArgToKeys,
 } from "@osdk/client.api";
-import type { ObjectSet } from "@osdk/internal.foundry";
+import type { ObjectSet } from "@osdk/internal.foundry.core";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { fetchPage } from "./fetchPage.js";

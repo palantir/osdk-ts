@@ -18,6 +18,8 @@ export type {
   AbortOnFailure,
   Action,
   AndTrigger,
+  Build,
+  BuildRid,
   BuildStatus,
   BuildTarget,
   ConnectingTarget,
@@ -47,4 +49,5 @@ export type {
   UserScope,
   ZoneId,
 } from "./_components.js";
+export * as Builds from "./public/Build.js";
 export * as Schedules from "./public/Schedule.js";

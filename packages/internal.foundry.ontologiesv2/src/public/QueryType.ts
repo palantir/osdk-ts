@@ -15,16 +15,12 @@
  */
 
 import type {
-  ArtifactRepositoryRid,
-  ExecuteQueryRequest,
-  ExecuteQueryResponse,
   ListQueryTypesResponseV2,
   OntologyIdentifier,
   PageSize,
   PageToken,
   QueryApiName,
   QueryTypeV2,
-  SdkPackageName,
 } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
@@ -94,44 +90,4 @@ export function getQueryTypeV2(
   ...args: [ontology: OntologyIdentifier, queryApiName: QueryApiName]
 ): Promise<QueryTypeV2> {
   return $foundryPlatformFetch($ctx, _getQueryTypeV2, ...args);
-}
-
-const _executeQueryV2: $FoundryPlatformMethod<
-  (
-    ontology: OntologyIdentifier,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
-    },
-  ) => Promise<ExecuteQueryResponse>
-> = [1, "/v2/ontologies/{0}/queries/{1}/execute", 3];
-
-/**
- * Executes a Query using the given parameters.
- *
- * Optional parameters do not need to be supplied.
- *
- * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:ontologies-read`.
- *
- * @public
- *
- * Required Scopes: [api:ontologies-read]
- * URL: /v2/ontologies/{ontology}/queries/{queryApiName}/execute
- */
-export function executeQueryV2(
-  $ctx: $Client | $ClientContext,
-  ...args: [
-    ontology: OntologyIdentifier,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: {
-      artifactRepository?: ArtifactRepositoryRid | undefined;
-      packageName?: SdkPackageName | undefined;
-    },
-  ]
-): Promise<ExecuteQueryResponse> {
-  return $foundryPlatformFetch($ctx, _executeQueryV2, ...args);
 }
