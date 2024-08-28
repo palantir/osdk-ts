@@ -37,18 +37,10 @@ export async function generateMetrics(
   );
 
   await fs.writeFile(
-    path.join(metricsDir, "ApproximateDistinctCountAggregatableProperty.ts"),
+    path.join(metricsDir, "DistinctCountAggregatableProperty.ts"),
     await formatTs(
-      reexportConsts(["ApproximateDistinctCountAggregatableProperty"])
-        + reexportTypes(["ApproximateDistinctCountAggregatableProperty"]),
-    ),
-  );
-
-  await fs.writeFile(
-    path.join(metricsDir, "ExactDistinctCountAggregatableProperty.ts"),
-    await formatTs(
-      reexportConsts(["ExactDistinctCountAggregatableProperty"])
-        + reexportTypes(["ExactDistinctCountAggregatableProperty"]),
+      reexportConsts(["DistinctCountAggregatableProperty"])
+        + reexportTypes(["DistinctCountAggregatableProperty"]),
     ),
   );
 
