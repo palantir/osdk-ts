@@ -1,5 +1,12 @@
 # @osdk/foundry.core
 
+## 2.1.0-beta.0
+
+### Minor Changes
+
+- 5d6d5ab: Updated to latest gateway apis
+- 5d6d5ab: Includes @alpha/@beta/@public jsdoc tags
+
 ## 2.0.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @osdk/platform-sdk-generator
 
+## 0.5.0-beta.0
+
+### Minor Changes
+
+- 0441dab: Generates @alpha/@beta/@public jsdoc tags
+- 1770490: URLs in jsdoc now link to palantir.com
+
 ## 0.4.0
 
 ### Minor Changes

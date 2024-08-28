@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.generated.1.1.x",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0-beta.0",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
