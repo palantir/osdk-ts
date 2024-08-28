@@ -82,9 +82,8 @@ export async function generateMetrics(
     path.join(metricsDir, "index.ts"),
     await formatTs(
       `
-      export * from "./ApproximateDistinctCountAggregatableProperty${importExt}";
       export * from "./DefaultAggregatableProperty${importExt}";
-      export * from "./ExactDistinctCountAggregatableProperty${importExt}";
+      export * from "./DistinctCountAggregatableProperty${importExt}";
       export * from "./LocalDatePropertyMetric${importExt}";
       export * from "./metrics${importExt}";
       export * from "./MultipleAggregatableProperty${importExt}";
