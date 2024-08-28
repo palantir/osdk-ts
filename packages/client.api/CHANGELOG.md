@@ -1,5 +1,12 @@
 # @osdk/client.api
 
+## 0.22.0-beta.0
+
+### Minor Changes
+
+- a2c7b37: Add docs for object sets and attachments.
+- 795777a: Change how queries are executed, now use executeFunction call instead
+
 ## 0.21.0
 
 ### Minor Changes

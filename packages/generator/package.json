@@ -1,6 +1,6 @@
 {
   "name": "@osdk/generator",
-  "version": "1.13.0",
+  "version": "1.14.0-beta.0",
   "description": "",
   "access": "public",
   "license": "Apache-2.0",

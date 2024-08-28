@@ -1,5 +1,19 @@
 # @osdk/generator
 
+## 1.14.0-beta.0
+
+### Minor Changes
+
+- ac4f4fd: Notable changes:
+  - `{{actionApiName}}$Params` is deprecated in favor of `ActionParams${{actionApiName}}`.
+  - All generated `{{actionApiName}}$Params` objects are now exported from generated code.
+  - All `{{actionApiName}}$Params` are marked as `readonly`.
+  - Some types that are now only needed in `@osdk/client` have been moved back out of `@osdk/client.api`.
+  - Generated `ActionParams${{actionApiName}}` are simpler and do not rely on type mapping for the keys, the array'ness, nor multiplicity.
+  - `AttachmentUpload.name` is now `readonly`.
+- 7494995: Internal changes to file paths
+- 1770490: URLs in jsdoc now link to palantir.com
+
 ## 1.13.0
 
 ### Minor Changes

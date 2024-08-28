@@ -1,5 +1,27 @@
 # @osdk/client
 
+## 0.22.0-beta.0
+
+### Minor Changes
+
+- ac4f4fd: Notable changes:
+  - `{{actionApiName}}$Params` is deprecated in favor of `ActionParams${{actionApiName}}`.
+  - All generated `{{actionApiName}}$Params` objects are now exported from generated code.
+  - All `{{actionApiName}}$Params` are marked as `readonly`.
+  - Some types that are now only needed in `@osdk/client` have been moved back out of `@osdk/client.api`.
+  - Generated `ActionParams${{actionApiName}}` are simpler and do not rely on type mapping for the keys, the array'ness, nor multiplicity.
+  - `AttachmentUpload.name` is now `readonly`.
+- f86f8d0: Re-enable X-OSDK-Request-Context header
+- a2c7b37: Add docs for object sets and attachments.
+- 5a41e5e: Adds version compatibility checks to Queries
+- 795777a: Change how queries are executed, now use executeFunction call instead
+
+### Patch Changes
+
+- Updated dependencies [a2c7b37]
+- Updated dependencies [795777a]
+  - @osdk/client.api@0.22.0-beta.0
+
 ## 0.21.0
 
 ### Minor Changes
