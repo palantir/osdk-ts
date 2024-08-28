@@ -40,7 +40,7 @@ describe(mapPropertiesToMultipleAggregationProperties, () => {
         type: "MultipleAggregationsOperations",
         operation: "approximateDistinct",
         metricValueType: MetricValueType.NUMERIC,
-        propertyApiName: "class_",
+        propertyApiName: "class",
       },
     );
     expect(aggregatableProperties.class.exactDistinct()).toMatchObject(

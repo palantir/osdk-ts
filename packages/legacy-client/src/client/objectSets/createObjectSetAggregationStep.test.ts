@@ -153,7 +153,7 @@ describe(createObjectSetAggregationStep, () => {
 
     mockFetchResponse(fetch, aggregationResponse);
     const result = await aggregatableObjectSetStep.aggregate(a => ({
-      max: a.points.max(),
+      exactDistinct: a.points.exactDistinct(),
     })).compute();
     expectFetchToBeCalledWithBody(
       fetch,
