@@ -64,7 +64,7 @@ export namespace Person {
       options?: $SelectArg<Person.Definition, L, R, S>,
     ) => Promise<
       Person.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -79,7 +79,7 @@ export namespace Person {
     ) => Promise<
       $Result<
         Person.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -95,7 +95,7 @@ export namespace Person {
     ) => Promise<
       $PageResult<
         Person.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -112,7 +112,7 @@ export namespace Person {
       $Result<
         $PageResult<
           Person.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -145,10 +145,13 @@ export namespace Person {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Person.Props = keyof Person.Props,
   > = $Osdk<Person.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Person.StrictProps : OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
+      K
+    > & {
       readonly $link: Person.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

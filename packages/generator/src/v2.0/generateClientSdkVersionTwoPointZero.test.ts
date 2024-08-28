@@ -718,7 +718,7 @@ describe("generator", () => {
           ) => Promise<
             $PageResult<
               SomeInterface.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >
@@ -735,7 +735,7 @@ describe("generator", () => {
             $Result<
               $PageResult<
                 SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -766,10 +766,17 @@ describe("generator", () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
         > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? SomeInterface.StrictProps
+              : OPTIONS extends '$notStrict'
+                ? SomeInterface.Props
+                : SomeInterface.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$SomeInterface;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;
@@ -873,7 +880,7 @@ describe("generator", () => {
             options?: $SelectArg<Person.Definition, L, R, S>,
           ) => Promise<
             Person.OsdkObject<
-              (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+              (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
               L
             >
           >;
@@ -888,7 +895,7 @@ describe("generator", () => {
           ) => Promise<
             $Result<
               Person.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >
@@ -904,7 +911,7 @@ describe("generator", () => {
           ) => Promise<
             $PageResult<
               Person.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >
@@ -921,7 +928,7 @@ describe("generator", () => {
             $Result<
               $PageResult<
                 Person.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -958,10 +965,13 @@ describe("generator", () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
         > = $Osdk<Person.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never] ? Person.StrictProps : OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
+            K
+          > & {
             readonly $link: Person.Links;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -1072,10 +1082,7 @@ describe("generator", () => {
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
           ) => Promise<
-            Todo.OsdkObject<
-              (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              L
-            >
+            Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
           >;
 
           readonly fetchOneWithErrors: <
@@ -1088,7 +1095,7 @@ describe("generator", () => {
           ) => Promise<
             $Result<
               Todo.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >
@@ -1104,7 +1111,7 @@ describe("generator", () => {
           ) => Promise<
             $PageResult<
               Todo.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >
@@ -1121,7 +1128,7 @@ describe("generator", () => {
             $Result<
               $PageResult<
                 Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -1175,10 +1182,13 @@ describe("generator", () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+          OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
         > = $Osdk<Todo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
+            K
+          > & {
             readonly $link: Todo.Links;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
@@ -1668,7 +1678,7 @@ describe("generator", () => {
             ) => Promise<
               $PageResult<
                 SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -1685,7 +1695,7 @@ describe("generator", () => {
               $Result<
                 $PageResult<
                   SomeInterface.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -1716,10 +1726,17 @@ describe("generator", () => {
           }
 
           export type OsdkObject<
-            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-            Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+            Pick<
+              [OPTIONS] extends [never]
+                ? SomeInterface.StrictProps
+                : OPTIONS extends '$notStrict'
+                  ? SomeInterface.Props
+                  : SomeInterface.StrictProps,
+              K
+            > & {
               readonly $link: OsdkObjectLinks$SomeInterface;
               readonly $title: string | undefined; // FIXME
               readonly $primaryKey: string | number;
@@ -1823,7 +1840,7 @@ describe("generator", () => {
               options?: $SelectArg<Person.Definition, L, R, S>,
             ) => Promise<
               Person.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
             >;
@@ -1838,7 +1855,7 @@ describe("generator", () => {
             ) => Promise<
               $Result<
                 Person.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -1854,7 +1871,7 @@ describe("generator", () => {
             ) => Promise<
               $PageResult<
                 Person.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -1871,7 +1888,7 @@ describe("generator", () => {
               $Result<
                 $PageResult<
                   Person.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -1908,10 +1925,13 @@ describe("generator", () => {
           }
 
           export type OsdkObject<
-            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
           > = $Osdk<Person.Definition, K | OPTIONS> &
-            Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
+            Pick<
+              [OPTIONS] extends [never] ? Person.StrictProps : OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
+              K
+            > & {
               readonly $link: Person.Links;
               readonly $title: string | undefined; // FIXME
               readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -2022,10 +2042,7 @@ describe("generator", () => {
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
             ) => Promise<
-              Todo.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
-              >
+              Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
             >;
 
             readonly fetchOneWithErrors: <
@@ -2038,7 +2055,7 @@ describe("generator", () => {
             ) => Promise<
               $Result<
                 Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -2054,7 +2071,7 @@ describe("generator", () => {
             ) => Promise<
               $PageResult<
                 Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -2071,7 +2088,7 @@ describe("generator", () => {
               $Result<
                 $PageResult<
                   Todo.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -2125,10 +2142,13 @@ describe("generator", () => {
           }
 
           export type OsdkObject<
-            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
           > = $Osdk<Todo.Definition, K | OPTIONS> &
-            Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
+            Pick<
+              [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
+              K
+            > & {
               readonly $link: Todo.Links;
               readonly $title: string | undefined; // FIXME
               readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
@@ -2569,7 +2589,7 @@ describe("generator", () => {
                 options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
               ) => Promise<
                 UsesForeignSpt.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >;
@@ -2584,7 +2604,7 @@ describe("generator", () => {
               ) => Promise<
                 $Result<
                   UsesForeignSpt.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -2600,7 +2620,7 @@ describe("generator", () => {
               ) => Promise<
                 $PageResult<
                   UsesForeignSpt.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -2617,7 +2637,7 @@ describe("generator", () => {
                 $Result<
                   $PageResult<
                     UsesForeignSpt.OsdkObject<
-                      (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                      (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                       L
                     >
                   >
@@ -2659,10 +2679,17 @@ describe("generator", () => {
             }
 
             export type OsdkObject<
-              OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+              OPTIONS extends never | '$notStrict' | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
             > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS> &
-              Pick<OPTIONS extends '$notStrict' ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps, K> & {
+              Pick<
+                [OPTIONS] extends [never]
+                  ? UsesForeignSpt.StrictProps
+                  : OPTIONS extends '$notStrict'
+                    ? UsesForeignSpt.Props
+                    : UsesForeignSpt.StrictProps,
+                K
+              > & {
                 readonly $link: UsesForeignSpt.Links;
                 readonly $title: string | undefined; // FIXME
                 readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
@@ -2911,7 +2938,7 @@ describe("generator", () => {
             ) => Promise<
               $PageResult<
                 SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -2928,7 +2955,7 @@ describe("generator", () => {
               $Result<
                 $PageResult<
                   SomeInterface.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -2957,10 +2984,17 @@ describe("generator", () => {
           }
 
           export type OsdkObject<
-            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
           > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-            Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+            Pick<
+              [OPTIONS] extends [never]
+                ? SomeInterface.StrictProps
+                : OPTIONS extends '$notStrict'
+                  ? SomeInterface.Props
+                  : SomeInterface.StrictProps,
+              K
+            > & {
               readonly $link: OsdkObjectLinks$SomeInterface;
               readonly $title: string | undefined; // FIXME
               readonly $primaryKey: string | number;
@@ -3056,10 +3090,7 @@ describe("generator", () => {
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
             ) => Promise<
-              Task.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
-              >
+              Task.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
             >;
 
             readonly fetchOneWithErrors: <
@@ -3072,7 +3103,7 @@ describe("generator", () => {
             ) => Promise<
               $Result<
                 Task.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -3088,7 +3119,7 @@ describe("generator", () => {
             ) => Promise<
               $PageResult<
                 Task.OsdkObject<
-                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
@@ -3105,7 +3136,7 @@ describe("generator", () => {
               $Result<
                 $PageResult<
                   Task.OsdkObject<
-                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
                     L
                   >
                 >
@@ -3143,10 +3174,13 @@ describe("generator", () => {
           }
 
           export type OsdkObject<
-            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
           > = $Osdk<Task.Definition, K | OPTIONS> &
-            Pick<OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps, K> & {
+            Pick<
+              [OPTIONS] extends [never] ? Task.StrictProps : OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
+              K
+            > & {
               readonly $link: Task.Links;
               readonly $title: string | undefined; // FIXME
               readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

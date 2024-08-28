@@ -300,7 +300,7 @@ describe("ObjectSet", () => {
             Employee.OsdkObject
           >();
           expectTypeOf(result.data[0]).branded.toEqualTypeOf<
-            Employee.OsdkObject<"$strict">
+            Employee.OsdkObject<never>
           >();
         });
       });
@@ -413,6 +413,8 @@ describe("ObjectSet", () => {
         });
 
         const empNotStrict = result.data[0];
+        const empNotStrict2: Osdk<Employee, "$all" | "$notStrict"> =
+          empNotStrict;
         expectTypeOf(empNotStrict).branded.toEqualTypeOf<
           Osdk<Employee, "$all" | "$notStrict">
         >();
@@ -424,6 +426,10 @@ describe("ObjectSet", () => {
         >();
 
         expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<
+          number | undefined
+        >();
+
+        expectTypeOf(empNotStrict2.employeeId).toEqualTypeOf<
           number | undefined
         >();
 

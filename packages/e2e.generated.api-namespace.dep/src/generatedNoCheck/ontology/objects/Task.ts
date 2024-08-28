@@ -58,10 +58,7 @@ export namespace Task {
       primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
       options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
-      Task.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
-      >
+      Task.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
     >;
 
     readonly fetchOneWithErrors: <
@@ -74,7 +71,7 @@ export namespace Task {
     ) => Promise<
       $Result<
         Task.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -90,7 +87,7 @@ export namespace Task {
     ) => Promise<
       $PageResult<
         Task.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -107,7 +104,7 @@ export namespace Task {
       $Result<
         $PageResult<
           Task.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -145,10 +142,13 @@ export namespace Task {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
   > = $Osdk<Task.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Task.StrictProps : OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
+      K
+    > & {
       readonly $link: Task.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

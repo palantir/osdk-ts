@@ -55,7 +55,7 @@ export namespace SomeInterface {
     ) => Promise<
       $PageResult<
         SomeInterface.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -72,7 +72,7 @@ export namespace SomeInterface {
       $Result<
         $PageResult<
           SomeInterface.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -101,10 +101,17 @@ export namespace SomeInterface {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
   > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? SomeInterface.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? SomeInterface.Props
+          : SomeInterface.StrictProps,
+      K
+    > & {
       readonly $link: OsdkObjectLinks$SomeInterface;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: string | number;

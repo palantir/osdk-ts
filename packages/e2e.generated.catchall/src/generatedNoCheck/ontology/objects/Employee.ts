@@ -100,7 +100,7 @@ export namespace Employee {
       options?: $SelectArg<Employee.Definition, L, R, S>,
     ) => Promise<
       Employee.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -115,7 +115,7 @@ export namespace Employee {
     ) => Promise<
       $Result<
         Employee.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -131,7 +131,7 @@ export namespace Employee {
     ) => Promise<
       $PageResult<
         Employee.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -148,7 +148,7 @@ export namespace Employee {
       $Result<
         $PageResult<
           Employee.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -247,10 +247,17 @@ export namespace Employee {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = $Osdk<Employee.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Employee.Props : Employee.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? Employee.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? Employee.Props
+          : Employee.StrictProps,
+      K
+    > & {
       readonly $link: Employee.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

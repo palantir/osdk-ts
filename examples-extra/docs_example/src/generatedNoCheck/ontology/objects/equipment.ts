@@ -61,7 +61,7 @@ export namespace equipment {
       options?: $SelectArg<equipment.Definition, L, R, S>,
     ) => Promise<
       equipment.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -76,7 +76,7 @@ export namespace equipment {
     ) => Promise<
       $Result<
         equipment.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -92,7 +92,7 @@ export namespace equipment {
     ) => Promise<
       $PageResult<
         equipment.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -109,7 +109,7 @@ export namespace equipment {
       $Result<
         $PageResult<
           equipment.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -142,10 +142,17 @@ export namespace equipment {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof equipment.Props = keyof equipment.Props,
   > = $Osdk<equipment.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? equipment.Props : equipment.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? equipment.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? equipment.Props
+          : equipment.StrictProps,
+      K
+    > & {
       readonly $link: equipment.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<

@@ -154,7 +154,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
     ) => Promise<
       ObjectTypeWithAllPropertyTypes.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -169,7 +169,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     ) => Promise<
       $Result<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -185,7 +185,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     ) => Promise<
       $PageResult<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -202,7 +202,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       $Result<
         $PageResult<
           ObjectTypeWithAllPropertyTypes.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -352,11 +352,15 @@ export namespace ObjectTypeWithAllPropertyTypes {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
   > = $Osdk<ObjectTypeWithAllPropertyTypes.Definition, K | OPTIONS> &
     Pick<
-      OPTIONS extends '$notStrict' ? ObjectTypeWithAllPropertyTypes.Props : ObjectTypeWithAllPropertyTypes.StrictProps,
+      [OPTIONS] extends [never]
+        ? ObjectTypeWithAllPropertyTypes.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? ObjectTypeWithAllPropertyTypes.Props
+          : ObjectTypeWithAllPropertyTypes.StrictProps,
       K
     > & {
       readonly $link: ObjectTypeWithAllPropertyTypes.Links;

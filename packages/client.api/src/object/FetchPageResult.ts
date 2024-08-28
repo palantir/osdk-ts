@@ -57,9 +57,7 @@ export type SingleOsdkResult<
   S extends NullabilityAdherence,
 > = Osdk<
   Q,
-  UnionIfTrue<
-    UnionIfFalse<L, RespectNullability<S>, "$notStrict">,
-    DefaultToFalse<R>,
-    "$rid"
-  >
+  | L
+  | (S extends false ? "$notStrict" : never)
+  | (DefaultToFalse<R> extends false ? never : "$rid")
 >;

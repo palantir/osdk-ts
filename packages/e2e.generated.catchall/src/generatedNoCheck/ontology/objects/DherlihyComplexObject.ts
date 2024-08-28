@@ -63,7 +63,7 @@ export namespace DherlihyComplexObject {
       options?: $SelectArg<DherlihyComplexObject.Definition, L, R, S>,
     ) => Promise<
       DherlihyComplexObject.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -78,7 +78,7 @@ export namespace DherlihyComplexObject {
     ) => Promise<
       $Result<
         DherlihyComplexObject.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -94,7 +94,7 @@ export namespace DherlihyComplexObject {
     ) => Promise<
       $PageResult<
         DherlihyComplexObject.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -111,7 +111,7 @@ export namespace DherlihyComplexObject {
       $Result<
         $PageResult<
           DherlihyComplexObject.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -149,10 +149,17 @@ export namespace DherlihyComplexObject {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
   > = $Osdk<DherlihyComplexObject.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? DherlihyComplexObject.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? DherlihyComplexObject.Props
+          : DherlihyComplexObject.StrictProps,
+      K
+    > & {
       readonly $link: DherlihyComplexObject.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

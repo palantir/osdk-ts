@@ -172,7 +172,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           ) => Promise<
             $PageResult<
               Bar.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -190,7 +190,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
             $Result<
               $PageResult<
                 Bar.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -220,10 +220,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
         > = $Osdk<Bar.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Bar.Props : Bar.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Bar.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Bar.Props
+                : Bar.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Bar;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;
@@ -356,7 +363,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           ) => Promise<
             $PageResult<
               Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -374,7 +381,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
             $Result<
               $PageResult<
                 Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -406,10 +413,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Foo.Props : Foo.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Foo.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Foo.Props
+                : Foo.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Foo;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;
@@ -553,7 +567,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           ) => Promise<
             $PageResult<
               Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -571,7 +585,7 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
             $Result<
               $PageResult<
                 Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -608,10 +622,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Foo.Props : Foo.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Foo.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Foo.Props
+                : Foo.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Foo;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;

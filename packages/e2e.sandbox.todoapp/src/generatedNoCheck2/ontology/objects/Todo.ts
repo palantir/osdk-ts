@@ -60,10 +60,7 @@ export namespace Todo {
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
-      Todo.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
-      >
+      Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
     >;
 
     readonly fetchOneWithErrors: <
@@ -76,7 +73,7 @@ export namespace Todo {
     ) => Promise<
       $Result<
         Todo.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -92,7 +89,7 @@ export namespace Todo {
     ) => Promise<
       $PageResult<
         Todo.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -109,7 +106,7 @@ export namespace Todo {
       $Result<
         $PageResult<
           Todo.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -148,10 +145,13 @@ export namespace Todo {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = $Osdk<Todo.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
+      K
+    > & {
       readonly $link: Todo.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

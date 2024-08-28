@@ -65,7 +65,7 @@ export namespace BoundariesUsState {
       options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
     ) => Promise<
       BoundariesUsState.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -80,7 +80,7 @@ export namespace BoundariesUsState {
     ) => Promise<
       $Result<
         BoundariesUsState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -96,7 +96,7 @@ export namespace BoundariesUsState {
     ) => Promise<
       $PageResult<
         BoundariesUsState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -113,7 +113,7 @@ export namespace BoundariesUsState {
       $Result<
         $PageResult<
           BoundariesUsState.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -156,10 +156,17 @@ export namespace BoundariesUsState {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BoundariesUsState.Props = keyof BoundariesUsState.Props,
   > = $Osdk<BoundariesUsState.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? BoundariesUsState.Props : BoundariesUsState.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? BoundariesUsState.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? BoundariesUsState.Props
+          : BoundariesUsState.StrictProps,
+      K
+    > & {
       readonly $link: BoundariesUsState.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
