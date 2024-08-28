@@ -19,9 +19,9 @@ import { describe, expectTypeOf, it } from "vitest";
 import type { Todo } from "../../util/test/TodoObject.js";
 import type {
   AggregatableProperty,
-  ApproximateDistinctCountAggregatableProperty,
   BooleanGroupBy,
   CountOperation,
+  DistinctCountAggregatableProperty,
   MultipleAggregatableProperty,
   NumericGroupBy,
   StringGroupBy,
@@ -57,11 +57,11 @@ describe("Aggregations", () => {
 
     expectTypeOf<{
       complete: MultipleAggregatableProperty<number>;
-      id: ApproximateDistinctCountAggregatableProperty;
-      body: ApproximateDistinctCountAggregatableProperty;
+      id: DistinctCountAggregatableProperty;
+      body: DistinctCountAggregatableProperty;
       points: MultipleAggregatableProperty<number>;
-      class: ApproximateDistinctCountAggregatableProperty;
-      class_: ApproximateDistinctCountAggregatableProperty;
+      class: DistinctCountAggregatableProperty;
+      class_: DistinctCountAggregatableProperty;
       count: () => CountOperation;
       unixTimestamp: MultipleAggregatableProperty<number>;
     }>().toMatchTypeOf<ObjectSetMultipleAggregateArg<Todo>>();

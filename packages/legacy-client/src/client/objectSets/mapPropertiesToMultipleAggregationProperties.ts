@@ -17,8 +17,8 @@
 import type { ObjectTypeKeysFrom, OntologyDefinition } from "@osdk/api";
 import type { ObjectSetMultipleAggregateArg } from "../interfaces/aggregations.js";
 import {
-  ApproximateDistinctCountAggregatableProperty,
   CountOperation,
+  DistinctCountAggregatableProperty,
   LocalDatePropertyMetric,
   NumericPropertyMetric,
 } from "../objectSets/aggregations/index.js";
@@ -56,7 +56,7 @@ export function mapPropertiesToMultipleAggregationProperties<
         case "geoshape":
         case "string":
         case "marking":
-          acc[property] = ApproximateDistinctCountAggregatableProperty(
+          acc[property] = DistinctCountAggregatableProperty(
             property,
           );
           break;
@@ -77,7 +77,7 @@ export function mapPropertiesToMultipleAggregationProperties<
       & Record<
         string,
         | MultipleAggregatableProperty<any>
-        | ApproximateDistinctCountAggregatableProperty
+        | DistinctCountAggregatableProperty
       >
       & { count: () => typeof CountOperation },
   ) as ObjectSetMultipleAggregateArg<OsdkLegacyObjectFrom<O, K>>;

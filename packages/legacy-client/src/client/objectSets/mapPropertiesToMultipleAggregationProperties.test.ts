@@ -40,7 +40,23 @@ describe(mapPropertiesToMultipleAggregationProperties, () => {
         type: "MultipleAggregationsOperations",
         operation: "approximateDistinct",
         metricValueType: MetricValueType.NUMERIC,
+        propertyApiName: "class_",
+      },
+    );
+    expect(aggregatableProperties.class.exactDistinct()).toMatchObject(
+      {
+        type: "MultipleAggregationsOperations",
+        operation: "exactDistinct",
+        metricValueType: MetricValueType.NUMERIC,
         propertyApiName: "class",
+      },
+    );
+    expect(aggregatableProperties.points.exactDistinct()).toMatchObject(
+      {
+        type: "MultipleAggregationsOperations",
+        operation: "exactDistinct",
+        metricValueType: MetricValueType.NUMERIC,
+        propertyApiName: "points",
       },
     );
   });

@@ -227,7 +227,7 @@ export interface GroupedTerminalAggregationOperations<
     ) => AggregatableProperty<any>,
   ): AggregationComputeStep<{}, Double>;
   /**
-   * Computes approximate count of distinct values of the specified property.
+   * Computes exact count of distinct values of the specified property.
    *
    * @param propertySelector A function that selects the property to count.
    */

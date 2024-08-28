@@ -21,12 +21,12 @@ import type {
 } from "../baseTypes/index.js";
 import type {
   AggregatableProperty,
-  ApproximateDistinctCountAggregatableProperty,
   BooleanGroupBy,
   Bucketing,
   BucketKey,
   BucketValue,
   CountOperation,
+  DistinctCountAggregatableProperty,
   Double,
   LocalDateGroupBy,
   MultipleAggregatableProperty,
@@ -126,4 +126,4 @@ export type MultipleAggregationFromType<T> = NonNullable<T> extends StringLong
   : NonNullable<T> extends boolean ? MultipleAggregatableProperty<Double>
   : NonNullable<T> extends LocalDate ? MultipleAggregatableProperty<LocalDate>
   : NonNullable<T> extends Timestamp ? MultipleAggregatableProperty<Timestamp>
-  : ApproximateDistinctCountAggregatableProperty;
+  : DistinctCountAggregatableProperty;
