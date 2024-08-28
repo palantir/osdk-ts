@@ -17,6 +17,7 @@
 import type { ApproximateDistinctAggregation } from "./ApproximateDistinctAggregation.js";
 import type { AvgAggregation } from "./AvgAggregation.js";
 import type { CountAggregation } from "./CountAggregation.js";
+import type { ExactDistinctAggregation } from "./ExactDistinctAggregation.js";
 import type { MaxAggregation } from "./MaxAggregation.js";
 import type { MinAggregation } from "./MinAggregation.js";
 import type { SumAggregation } from "./SumAggregation.js";
@@ -47,10 +48,15 @@ export interface Aggregation_ApproximateDistinct
   type: "approximateDistinct";
 }
 
+export interface Aggregation_ExactDistinct extends ExactDistinctAggregation {
+  type: "exactDistinct";
+}
+
 export type Aggregation =
   | Aggregation_Max
   | Aggregation_Min
   | Aggregation_Avg
   | Aggregation_Sum
   | Aggregation_Count
-  | Aggregation_ApproximateDistinct;
+  | Aggregation_ApproximateDistinct
+  | Aggregation_ExactDistinct;
