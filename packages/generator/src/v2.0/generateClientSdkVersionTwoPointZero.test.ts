@@ -464,9 +464,11 @@ describe("generator", () => {
     const errors = diagnostics.filter(q => q.code !== 2792);
     expect(errors).toHaveLength(0);
 
-    expect(helper.getFiles()).toMatchInlineSnapshot(`
+    expect(
+      tweakedFilesForSnapshotConsistency(helper.getFiles()),
+    ).toMatchInlineSnapshot(`
       {
-        "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
+        "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
       export const $osdkMetadata = { extraUserAgent: 'typescript-sdk/0.0.0 osdk-cli/0.0.0' };
 
       export const $ontologyRid = 'ridHere';
@@ -1416,907 +1418,908 @@ describe("generator", () => {
     expect(helper.getFiles()["/foo/ontology/objects/Todo.ts"])
       .not.toBeUndefined();
 
-    expect(helper.getFiles()).toMatchInlineSnapshot(`
-      {
-        "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
-      export const $osdkMetadata = { extraUserAgent: '' };
-      ",
-        "/foo/index.ts": "export * from './ontology/actions.js';
-      export * from './ontology/interfaces.js';
-      export * from './ontology/objects.js';
-      export * from './ontology/queries.js';
-      ",
-        "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
-      export { markTodoCompleted } from './actions/markTodoCompleted.js';
-      ",
-        "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
-      import type {
-        ActionParam,
-        ActionReturnTypeForOptions,
-        ApplyActionOptions,
-        ApplyBatchActionOptions,
-      } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import { $osdkMetadata } from '../../OntologyMetadata.js';
-      import type { Todo } from '../objects/Todo.js';
+    expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
+      .toMatchInlineSnapshot(`
+        {
+          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
+        export const $osdkMetadata = { extraUserAgent: '' };
+        ",
+          "/foo/index.ts": "export * from './ontology/actions.js';
+        export * from './ontology/interfaces.js';
+        export * from './ontology/objects.js';
+        export * from './ontology/queries.js';
+        ",
+          "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
+        export { markTodoCompleted } from './actions/markTodoCompleted.js';
+        ",
+          "/foo/ontology/actions/deleteTodos.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
+        import type {
+          ActionParam,
+          ActionReturnTypeForOptions,
+          ApplyActionOptions,
+          ApplyBatchActionOptions,
+        } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { Todo } from '../objects/Todo.js';
 
-      export namespace deleteTodos {
-        // Represents the definition of the parameters for the action
-        export type ParamsDefinition = {
-          object: {
-            description: 'Todo(s) to be deleted';
-            multiplicity: true;
-            nullable: true;
-            type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+        export namespace deleteTodos {
+          // Represents the definition of the parameters for the action
+          export type ParamsDefinition = {
+            object: {
+              description: 'Todo(s) to be deleted';
+              multiplicity: true;
+              nullable: true;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+            };
           };
-        };
 
-        /**
-         * An action which takes in an array of objects
-         */
-        export interface Parameters {
-          /**
-           * Todo(s) to be deleted
-           */
-          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
-        }
-
-        // Represents the definition of the action
-        export interface Definition
-          extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
-            VersionBound<$ExpectedClientVersion> {
-          apiName: 'foo.bar.deleteTodos';
-          description: 'An action which takes in an array of objects';
-          modifiedEntities: {};
-          type: 'action';
-          parameters: deleteTodos.ParamsDefinition;
-          osdkMetadata: typeof $osdkMetadata;
-        }
-
-        // Represents a fqn of the action
-        export interface Signature {
           /**
            * An action which takes in an array of objects
            */
-          <
-            P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
-            OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
-            args: P,
-            options?: OP,
-          ): Promise<ActionReturnTypeForOptions<OP>>;
+          export interface Parameters {
+            /**
+             * Todo(s) to be deleted
+             */
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+          }
+
+          // Represents the definition of the action
+          export interface Definition
+            extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'foo.bar.deleteTodos';
+            description: 'An action which takes in an array of objects';
+            modifiedEntities: {};
+            type: 'action';
+            parameters: deleteTodos.ParamsDefinition;
+            osdkMetadata: typeof $osdkMetadata;
+          }
+
+          // Represents a fqn of the action
+          export interface Signature {
+            /**
+             * An action which takes in an array of objects
+             */
+            <
+              P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
+              OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+            >(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+          }
         }
-      }
-
-      /**
-       * @deprecated Use \`deleteTodos.Parameters\`
-       */
-      export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
-
-      /** @deprecated Use \`deleteTodos.Definition\` **/
-      export type deleteTodos = deleteTodos.Signature;
-
-      export const deleteTodos: deleteTodos.Definition = {
-        apiName: 'foo.bar.deleteTodos',
-        description: 'An action which takes in an array of objects',
-        modifiedEntities: {},
-        parameters: {
-          object: {
-            multiplicity: true,
-            type: {
-              type: 'object',
-              object: 'foo.bar.Todo',
-            },
-            nullable: true,
-            description: 'Todo(s) to be deleted',
-          },
-        },
-        type: 'action',
-        osdkMetadata: $osdkMetadata,
-      };
-      ",
-        "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
-      import type {
-        ActionParam,
-        ActionReturnTypeForOptions,
-        ApplyActionOptions,
-        ApplyBatchActionOptions,
-      } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import { $osdkMetadata } from '../../OntologyMetadata.js';
-      import type { Todo } from '../objects/Todo.js';
-
-      export namespace markTodoCompleted {
-        // Represents the definition of the parameters for the action
-        export type ParamsDefinition = {
-          object: {
-            description: 'A Todo to mark completed';
-            multiplicity: false;
-            nullable: true;
-            type: ObjectActionDataType<'foo.bar.Todo', Todo>;
-          };
-        };
 
         /**
-         * An action which takes different types of parameters
+         * @deprecated Use \`deleteTodos.Parameters\`
          */
-        export interface Parameters {
-          /**
-           * A Todo to mark completed
-           */
-          readonly object?: ActionParam.ObjectType<Todo>;
-        }
+        export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
 
-        // Represents the definition of the action
-        export interface Definition
-          extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
-            VersionBound<$ExpectedClientVersion> {
-          apiName: 'foo.bar.markTodoCompleted';
-          description: 'An action which takes different types of parameters';
-          modifiedEntities: { 'foo.bar.Todo': { created: false; modified: true } };
-          type: 'action';
-          parameters: markTodoCompleted.ParamsDefinition;
-          osdkMetadata: typeof $osdkMetadata;
-        }
+        /** @deprecated Use \`deleteTodos.Definition\` **/
+        export type deleteTodos = deleteTodos.Signature;
 
-        // Represents a fqn of the action
-        export interface Signature {
+        export const deleteTodos: deleteTodos.Definition = {
+          apiName: 'foo.bar.deleteTodos',
+          description: 'An action which takes in an array of objects',
+          modifiedEntities: {},
+          parameters: {
+            object: {
+              multiplicity: true,
+              type: {
+                type: 'object',
+                object: 'foo.bar.Todo',
+              },
+              nullable: true,
+              description: 'Todo(s) to be deleted',
+            },
+          },
+          type: 'action',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/actions/markTodoCompleted.ts": "import type { ActionDefinition, ObjectActionDataType, VersionBound } from '@osdk/api';
+        import type {
+          ActionParam,
+          ActionReturnTypeForOptions,
+          ApplyActionOptions,
+          ApplyBatchActionOptions,
+        } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { Todo } from '../objects/Todo.js';
+
+        export namespace markTodoCompleted {
+          // Represents the definition of the parameters for the action
+          export type ParamsDefinition = {
+            object: {
+              description: 'A Todo to mark completed';
+              multiplicity: false;
+              nullable: true;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+            };
+          };
+
           /**
            * An action which takes different types of parameters
            */
-          <
-            P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
-            OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
-            args: P,
-            options?: OP,
-          ): Promise<ActionReturnTypeForOptions<OP>>;
+          export interface Parameters {
+            /**
+             * A Todo to mark completed
+             */
+            readonly object?: ActionParam.ObjectType<Todo>;
+          }
+
+          // Represents the definition of the action
+          export interface Definition
+            extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'foo.bar.markTodoCompleted';
+            description: 'An action which takes different types of parameters';
+            modifiedEntities: { 'foo.bar.Todo': { created: false; modified: true } };
+            type: 'action';
+            parameters: markTodoCompleted.ParamsDefinition;
+            osdkMetadata: typeof $osdkMetadata;
+          }
+
+          // Represents a fqn of the action
+          export interface Signature {
+            /**
+             * An action which takes different types of parameters
+             */
+            <
+              P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
+              OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
+            >(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+          }
         }
-      }
 
-      /**
-       * @deprecated Use \`markTodoCompleted.Parameters\`
-       */
-      export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
+        /**
+         * @deprecated Use \`markTodoCompleted.Parameters\`
+         */
+        export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
 
-      /** @deprecated Use \`markTodoCompleted.Definition\` **/
-      export type markTodoCompleted = markTodoCompleted.Signature;
+        /** @deprecated Use \`markTodoCompleted.Definition\` **/
+        export type markTodoCompleted = markTodoCompleted.Signature;
 
-      export const markTodoCompleted: markTodoCompleted.Definition = {
-        apiName: 'foo.bar.markTodoCompleted',
-        description: 'An action which takes different types of parameters',
-        modifiedEntities: {
-          'foo.bar.Todo': {
-            created: false,
-            modified: true,
-          },
-        },
-        parameters: {
-          object: {
-            multiplicity: false,
-            type: {
-              type: 'object',
-              object: 'foo.bar.Todo',
+        export const markTodoCompleted: markTodoCompleted.Definition = {
+          apiName: 'foo.bar.markTodoCompleted',
+          description: 'An action which takes different types of parameters',
+          modifiedEntities: {
+            'foo.bar.Todo': {
+              created: false,
+              modified: true,
             },
-            nullable: true,
-            description: 'A Todo to mark completed',
           },
-        },
-        type: 'action',
-        osdkMetadata: $osdkMetadata,
-      };
-      ",
-        "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
-      ",
-        "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import { $osdkMetadata } from '../../OntologyMetadata.js';
+          parameters: {
+            object: {
+              multiplicity: false,
+              type: {
+                type: 'object',
+                object: 'foo.bar.Todo',
+              },
+              nullable: true,
+              description: 'A Todo to mark completed',
+            },
+          },
+          type: 'action',
+          osdkMetadata: $osdkMetadata,
+        };
+        ",
+          "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
+        ",
+          "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-      import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-      import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-        ObjectSet as $ObjectSet,
-        Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        PageResult as $PageResult,
-        PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        ValidToFrom as $ValidToFrom,
-      } from '@osdk/client.api';
+        import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
+        import type {
+          AggregateOpts as $AggregateOpts,
+          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+          AggregationsResults as $AggregationsResults,
+          Augments as $Augments,
+          ConvertProps as $ConvertProps,
+          DefaultToFalse as $DefaultToFalse,
+          FetchPageArgs as $FetchPageArgs,
+          LinkedType as $LinkedType,
+          LinkNames as $LinkNames,
+          NullabilityAdherence as $NullabilityAdherence,
+          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          OsdkObject as $OsdkObject,
+          PageResult as $PageResult,
+          PropertyValueWireToClient as $PropType,
+          Result as $Result,
+          ValidToFrom as $ValidToFrom,
+        } from '@osdk/client.api';
 
-      export type OsdkObjectLinks$SomeInterface = never;
+        export type OsdkObjectLinks$SomeInterface = never;
 
-      export namespace SomeInterface {
-        export type PropertyKeys = 'SomeProperty';
+        export namespace SomeInterface {
+          export type PropertyKeys = 'SomeProperty';
 
-        export interface Props {
-          readonly SomeProperty: $PropType['string'] | undefined;
-        }
-        export interface StrictProps {
-          readonly SomeProperty: $PropType['string'] | undefined;
-        }
+          export interface Props {
+            readonly SomeProperty: $PropType['string'] | undefined;
+          }
+          export interface StrictProps {
+            readonly SomeProperty: $PropType['string'] | undefined;
+          }
 
-        export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
-          ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
+            readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
+            ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
-            type: L,
-          ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
+            readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+              type: L,
+            ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
-          readonly fetchPage: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              SomeInterface.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
+            readonly fetchPage: <
+              L extends SomeInterface.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
+            ) => Promise<
               $PageResult<
                 SomeInterface.OsdkObject<
                   (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
-            >
-          >;
+            >;
 
-          readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
+            readonly fetchPageWithErrors: <
+              L extends SomeInterface.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
+            ) => Promise<
+              $Result<
+                $PageResult<
+                  SomeInterface.OsdkObject<
+                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    L
+                  >
+                >
+              >
+            >;
+
+            readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
+          }
+
+          export interface Definition
+            extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition>,
+              $VersionBound<$ExpectedClientVersion> {
+            osdkMetadata: typeof $osdkMetadata;
+            objectSet: SomeInterface.ObjectSet;
+            props: SomeInterface.Props;
+            strictProps: SomeInterface.StrictProps;
+            description: 'Some interface';
+            displayName: 'Sum Interface';
+            implements: [];
+            links: {};
+            properties: {
+              /**
+               *   display name: 'Sum Property',
+               *   description: Some property
+               */
+              SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
+            };
+          }
+
+          export type OsdkObject<
+            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
+          > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
+            Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+              readonly $link: OsdkObjectLinks$SomeInterface;
+              readonly $title: string | undefined; // FIXME
+              readonly $primaryKey: string | number;
+
+              readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
+                type: NEW_Q | string,
+              ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
+            } & $OsdkObject<'foo.bar.SomeInterface'>;
         }
 
-        export interface Definition
-          extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
-          objectSet: SomeInterface.ObjectSet;
-          props: SomeInterface.Props;
-          strictProps: SomeInterface.StrictProps;
-          description: 'Some interface';
-          displayName: 'Sum Interface';
-          implements: [];
-          links: {};
+        /** @deprecated use SomeInterface.Definition **/
+        export type SomeInterface = SomeInterface.Definition;
+
+        export const SomeInterface: SomeInterface.Definition = {
+          osdkMetadata: $osdkMetadata,
+          objectSet: undefined as any,
+          props: undefined as any,
+          strictProps: undefined as any,
+          apiName: 'foo.bar.SomeInterface',
+          description: 'Some interface',
+          displayName: 'Sum Interface',
+          implements: [],
+          links: {},
           properties: {
-            /**
-             *   display name: 'Sum Property',
-             *   description: Some property
-             */
-            SomeProperty: $PropertyDef<'string', 'nullable', 'single'>;
-          };
-        }
-
-        export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
-          K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
-            readonly $link: OsdkObjectLinks$SomeInterface;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: string | number;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'foo.bar.SomeInterface'>;
-      }
-
-      /** @deprecated use SomeInterface.Definition **/
-      export type SomeInterface = SomeInterface.Definition;
-
-      export const SomeInterface: SomeInterface.Definition = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'foo.bar.SomeInterface',
-        description: 'Some interface',
-        displayName: 'Sum Interface',
-        implements: [],
-        links: {},
-        properties: {
-          SomeProperty: {
-            displayName: 'Sum Property',
-            multiplicity: false,
-            description: 'Some property',
-            type: 'string',
-            nullable: true,
+            SomeProperty: {
+              displayName: 'Sum Property',
+              multiplicity: false,
+              description: 'Some property',
+              type: 'string',
+              nullable: true,
+            },
           },
-        },
-        type: 'interface',
-      };
-      ",
-        "/foo/ontology/objects.ts": "export * from './objects/Person.js';
-      export * from './objects/Todo.js';
-      ",
-        "/foo/ontology/objects/Person.ts": "import type {
-        ObjectTypeDefinition as $ObjectTypeDefinition,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-        PropertyDef as $PropertyDef,
-        VersionBound as $VersionBound,
-      } from '@osdk/api';
-      import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-        ObjectSet as $ObjectSet,
-        Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
-        PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        ValidToFrom as $ValidToFrom,
-      } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import { $osdkMetadata } from '../../OntologyMetadata.js';
-      import type { Todo } from './Todo.js';
+          type: 'interface',
+        };
+        ",
+          "/foo/ontology/objects.ts": "export * from './objects/Person.js';
+        export * from './objects/Todo.js';
+        ",
+          "/foo/ontology/objects/Person.ts": "import type {
+          ObjectTypeDefinition as $ObjectTypeDefinition,
+          ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+          PropertyDef as $PropertyDef,
+          VersionBound as $VersionBound,
+        } from '@osdk/api';
+        import type {
+          AggregateOpts as $AggregateOpts,
+          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+          AggregationsResults as $AggregationsResults,
+          Augments as $Augments,
+          ConvertProps as $ConvertProps,
+          DefaultToFalse as $DefaultToFalse,
+          FetchPageArgs as $FetchPageArgs,
+          LinkedType as $LinkedType,
+          LinkNames as $LinkNames,
+          NullabilityAdherence as $NullabilityAdherence,
+          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          OsdkObject as $OsdkObject,
+          OsdkObjectPropertyType as $OsdkObjectPropertyType,
+          PageResult as $PageResult,
+          PropertyValueClientToWire as $PropertyValueClientToWire,
+          PropertyValueWireToClient as $PropType,
+          Result as $Result,
+          SelectArg as $SelectArg,
+          ValidToFrom as $ValidToFrom,
+        } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { Todo } from './Todo.js';
 
-      export namespace Person {
-        export type PropertyKeys = 'email';
+        export namespace Person {
+          export type PropertyKeys = 'email';
 
-        export interface Links {
-          readonly Todos: Todo.ObjectSet;
-        }
+          export interface Links {
+            readonly Todos: Todo.ObjectSet;
+          }
 
-        export interface Props {
-          readonly email: $PropType['string'] | undefined;
-        }
-        export interface StrictProps {
-          readonly email: $PropType['string'];
-        }
+          export interface Props {
+            readonly email: $PropType['string'] | undefined;
+          }
+          export interface StrictProps {
+            readonly email: $PropType['string'];
+          }
 
-        export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
-          ) => Promise<$AggregationsResults<Person.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
+            readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
+            ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
-            type: L,
-          ) => $LinkedType<Person.Definition, L>['objectSet'];
+            readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+              type: L,
+            ) => $LinkedType<Person.Definition, L>['objectSet'];
 
-          readonly fetchOne: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-            options?: $SelectArg<Person.Definition, L, R, S>,
-          ) => Promise<
-            Person.OsdkObject<
-              (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              L
-            >
-          >;
-
-          readonly fetchOneWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-            options?: $SelectArg<Person.Definition, L, R, S>,
-          ) => Promise<
-            $Result<
+            readonly fetchOne: <
+              L extends Person.PropertyKeys,
+              R extends boolean,
+              S extends false | 'throw' = $NullabilityAdherenceDefault,
+            >(
+              primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
+              options?: $SelectArg<Person.Definition, L, R, S>,
+            ) => Promise<
               Person.OsdkObject<
                 (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
-            >
-          >;
+            >;
 
-          readonly fetchPage: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Person.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+            readonly fetchOneWithErrors: <
+              L extends Person.PropertyKeys,
+              R extends boolean,
+              S extends false | 'throw' = $NullabilityAdherenceDefault,
+            >(
+              primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
+              options?: $SelectArg<Person.Definition, L, R, S>,
+            ) => Promise<
+              $Result<
+                Person.OsdkObject<
+                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  L
+                >
               >
-            >
-          >;
+            >;
 
-          readonly fetchPageWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
+            readonly fetchPage: <
+              L extends Person.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
+            ) => Promise<
               $PageResult<
                 Person.OsdkObject<
                   (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
-            >
-          >;
+            >;
 
-          readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
+            readonly fetchPageWithErrors: <
+              L extends Person.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
+            ) => Promise<
+              $Result<
+                $PageResult<
+                  Person.OsdkObject<
+                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    L
+                  >
+                >
+              >
+            >;
+
+            readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
+          }
+
+          export interface Definition
+            extends $ObjectTypeDefinition<'foo.bar.Person', Person.Definition>,
+              $VersionBound<$ExpectedClientVersion> {
+            osdkMetadata: typeof $osdkMetadata;
+            objectSet: Person.ObjectSet;
+            props: Person.Props;
+            strictProps: Person.StrictProps;
+            description: 'A person';
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            inverseSpts: {};
+            links: {
+              Todos: $ObjectTypeLinkDefinition<Todo, true>;
+            };
+            primaryKeyApiName: 'email';
+            primaryKeyType: 'string';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              email: $PropertyDef<'string', 'non-nullable', 'single'>;
+            };
+            spts: {};
+          }
+
+          export type OsdkObject<
+            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            K extends keyof Person.Props = keyof Person.Props,
+          > = $Osdk<Person.Definition, K | OPTIONS> &
+            Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
+              readonly $link: Person.Links;
+              readonly $title: string | undefined; // FIXME
+              readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
+
+              readonly $as: <NEW_Q extends $ValidToFrom<Person.Definition>>(
+                type: NEW_Q | string,
+              ) => $Osdk<NEW_Q, $ConvertProps<Person.Definition, NEW_Q, K>>;
+            } & $OsdkObject<'foo.bar.Person'>;
         }
 
-        export interface Definition
-          extends $ObjectTypeDefinition<'foo.bar.Person', Person.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
-          objectSet: Person.ObjectSet;
-          props: Person.Props;
-          strictProps: Person.StrictProps;
-          description: 'A person';
-          implements: [];
-          interfaceMap: {};
-          inverseInterfaceMap: {};
-          inverseSpts: {};
+        /** @deprecated use Person.Definition **/
+        export type Person = Person.Definition;
+
+        export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
+          osdkMetadata: $osdkMetadata,
+          objectSet: undefined as any,
+          props: undefined as any,
+          strictProps: undefined as any,
+          apiName: 'foo.bar.Person',
+          description: 'A person',
+          implements: [],
+          interfaceMap: {},
+          inverseInterfaceMap: {},
+          inverseSpts: {},
           links: {
-            Todos: $ObjectTypeLinkDefinition<Todo, true>;
-          };
-          primaryKeyApiName: 'email';
-          primaryKeyType: 'string';
+            Todos: {
+              multiplicity: true,
+              targetType: 'foo.bar.Todo',
+            },
+          },
+          primaryKeyApiName: 'email',
+          primaryKeyType: 'string',
           properties: {
-            /**
-             * (no ontology metadata)
-             */
-            email: $PropertyDef<'string', 'non-nullable', 'single'>;
-          };
-          spts: {};
-        }
-
-        export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
-          K extends keyof Person.Props = keyof Person.Props,
-        > = $Osdk<Person.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps, K> & {
-            readonly $link: Person.Links;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Person.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Person.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'foo.bar.Person'>;
-      }
-
-      /** @deprecated use Person.Definition **/
-      export type Person = Person.Definition;
-
-      export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'foo.bar.Person',
-        description: 'A person',
-        implements: [],
-        interfaceMap: {},
-        inverseInterfaceMap: {},
-        inverseSpts: {},
-        links: {
-          Todos: {
-            multiplicity: true,
-            targetType: 'foo.bar.Todo',
+            email: {
+              multiplicity: false,
+              type: 'string',
+              nullable: false,
+            },
           },
-        },
-        primaryKeyApiName: 'email',
-        primaryKeyType: 'string',
-        properties: {
-          email: {
-            multiplicity: false,
-            type: 'string',
-            nullable: false,
-          },
-        },
-        spts: {},
-        type: 'object',
-      };
-      ",
-        "/foo/ontology/objects/Todo.ts": "import type {
-        ObjectTypeDefinition as $ObjectTypeDefinition,
-        ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
-        PropertyDef as $PropertyDef,
-        VersionBound as $VersionBound,
-      } from '@osdk/api';
-      import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-        ObjectSet as $ObjectSet,
-        Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
-        PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        SingleLinkAccessor as $SingleLinkAccessor,
-        ValidToFrom as $ValidToFrom,
-      } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import { $osdkMetadata } from '../../OntologyMetadata.js';
-      import type { Person } from './Person.js';
+          spts: {},
+          type: 'object',
+        };
+        ",
+          "/foo/ontology/objects/Todo.ts": "import type {
+          ObjectTypeDefinition as $ObjectTypeDefinition,
+          ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
+          PropertyDef as $PropertyDef,
+          VersionBound as $VersionBound,
+        } from '@osdk/api';
+        import type {
+          AggregateOpts as $AggregateOpts,
+          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+          AggregationsResults as $AggregationsResults,
+          Augments as $Augments,
+          ConvertProps as $ConvertProps,
+          DefaultToFalse as $DefaultToFalse,
+          FetchPageArgs as $FetchPageArgs,
+          LinkedType as $LinkedType,
+          LinkNames as $LinkNames,
+          NullabilityAdherence as $NullabilityAdherence,
+          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+          ObjectSet as $ObjectSet,
+          Osdk as $Osdk,
+          OsdkObject as $OsdkObject,
+          OsdkObjectPropertyType as $OsdkObjectPropertyType,
+          PageResult as $PageResult,
+          PropertyValueClientToWire as $PropertyValueClientToWire,
+          PropertyValueWireToClient as $PropType,
+          Result as $Result,
+          SelectArg as $SelectArg,
+          SingleLinkAccessor as $SingleLinkAccessor,
+          ValidToFrom as $ValidToFrom,
+        } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import { $osdkMetadata } from '../../OntologyMetadata.js';
+        import type { Person } from './Person.js';
 
-      export namespace Todo {
-        export type PropertyKeys = 'id' | 'body' | 'complete';
+        export namespace Todo {
+          export type PropertyKeys = 'id' | 'body' | 'complete';
 
-        export interface Links {
-          readonly Assignee: $SingleLinkAccessor<Person.Definition>;
-        }
+          export interface Links {
+            readonly Assignee: $SingleLinkAccessor<Person.Definition>;
+          }
 
-        export interface Props {
-          readonly body: $PropType['string'] | undefined;
-          readonly complete: $PropType['boolean'] | undefined;
-          readonly id: $PropType['integer'] | undefined;
-        }
-        export interface StrictProps {
-          readonly body: $PropType['string'] | undefined;
-          readonly complete: $PropType['boolean'] | undefined;
-          readonly id: $PropType['integer'];
-        }
+          export interface Props {
+            readonly body: $PropType['string'] | undefined;
+            readonly complete: $PropType['boolean'] | undefined;
+            readonly id: $PropType['integer'] | undefined;
+          }
+          export interface StrictProps {
+            readonly body: $PropType['string'] | undefined;
+            readonly complete: $PropType['boolean'] | undefined;
+            readonly id: $PropType['integer'];
+          }
 
-        export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
-          ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
+            readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
+            ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+            readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
 
-          readonly fetchOne: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-            options?: $SelectArg<Todo.Definition, L, R, S>,
-          ) => Promise<
-            Todo.OsdkObject<
-              (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              L
-            >
-          >;
-
-          readonly fetchOneWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-            options?: $SelectArg<Todo.Definition, L, R, S>,
-          ) => Promise<
-            $Result<
+            readonly fetchOne: <
+              L extends Todo.PropertyKeys,
+              R extends boolean,
+              S extends false | 'throw' = $NullabilityAdherenceDefault,
+            >(
+              primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
+              options?: $SelectArg<Todo.Definition, L, R, S>,
+            ) => Promise<
               Todo.OsdkObject<
                 (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
                 L
               >
-            >
-          >;
+            >;
 
-          readonly fetchPage: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Todo.OsdkObject<
-                (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+            readonly fetchOneWithErrors: <
+              L extends Todo.PropertyKeys,
+              R extends boolean,
+              S extends false | 'throw' = $NullabilityAdherenceDefault,
+            >(
+              primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
+              options?: $SelectArg<Todo.Definition, L, R, S>,
+            ) => Promise<
+              $Result<
+                Todo.OsdkObject<
+                  (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                  L
+                >
               >
-            >
-          >;
+            >;
 
-          readonly fetchPageWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
+            readonly fetchPage: <
+              L extends Todo.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
+            ) => Promise<
               $PageResult<
                 Todo.OsdkObject<
                   (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
                   L
                 >
               >
-            >
-          >;
+            >;
 
-          readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
+            readonly fetchPageWithErrors: <
+              L extends Todo.PropertyKeys,
+              R extends boolean,
+              const A extends $Augments,
+              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            >(
+              args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
+            ) => Promise<
+              $Result<
+                $PageResult<
+                  Todo.OsdkObject<
+                    (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                    L
+                  >
+                >
+              >
+            >;
+
+            readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
+          }
+
+          export interface Definition
+            extends $ObjectTypeDefinition<'foo.bar.Todo', Todo.Definition>,
+              $VersionBound<$ExpectedClientVersion> {
+            osdkMetadata: typeof $osdkMetadata;
+            objectSet: Todo.ObjectSet;
+            props: Todo.Props;
+            strictProps: Todo.StrictProps;
+            description: 'Its a todo item.';
+            implements: ['foo.bar.SomeInterface'];
+            interfaceMap: {
+              'foo.bar.SomeInterface': {
+                SomeProperty: 'body';
+              };
+            };
+            inverseInterfaceMap: {
+              'foo.bar.SomeInterface': {
+                body: 'SomeProperty';
+              };
+            };
+            inverseSpts: {};
+            links: {
+              Assignee: $ObjectTypeLinkDefinition<Person, false>;
+            };
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
+            properties: {
+              /**
+               *   display name: 'Body',
+               *   description: The text of the todo
+               */
+              body: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+            };
+            spts: {};
+          }
+
+          export type OsdkObject<
+            OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+            K extends keyof Todo.Props = keyof Todo.Props,
+          > = $Osdk<Todo.Definition, K | OPTIONS> &
+            Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
+              readonly $link: Todo.Links;
+              readonly $title: string | undefined; // FIXME
+              readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+
+              readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
+                type: NEW_Q | string,
+              ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
+            } & $OsdkObject<'foo.bar.Todo'>;
         }
 
-        export interface Definition
-          extends $ObjectTypeDefinition<'foo.bar.Todo', Todo.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
-          osdkMetadata: typeof $osdkMetadata;
-          objectSet: Todo.ObjectSet;
-          props: Todo.Props;
-          strictProps: Todo.StrictProps;
-          description: 'Its a todo item.';
-          implements: ['foo.bar.SomeInterface'];
+        /** @deprecated use Todo.Definition **/
+        export type Todo = Todo.Definition;
+
+        export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
+          osdkMetadata: $osdkMetadata,
+          objectSet: undefined as any,
+          props: undefined as any,
+          strictProps: undefined as any,
+          apiName: 'foo.bar.Todo',
+          description: 'Its a todo item.',
+          implements: ['foo.bar.SomeInterface'],
           interfaceMap: {
             'foo.bar.SomeInterface': {
-              SomeProperty: 'body';
-            };
-          };
+              SomeProperty: 'body',
+            },
+          },
           inverseInterfaceMap: {
             'foo.bar.SomeInterface': {
-              body: 'SomeProperty';
-            };
-          };
-          inverseSpts: {};
+              body: 'SomeProperty',
+            },
+          },
+          inverseSpts: {},
           links: {
-            Assignee: $ObjectTypeLinkDefinition<Person, false>;
-          };
-          primaryKeyApiName: 'id';
-          primaryKeyType: 'integer';
+            Assignee: {
+              multiplicity: false,
+              targetType: 'foo.bar.Person',
+            },
+          },
+          primaryKeyApiName: 'id',
+          primaryKeyType: 'integer',
           properties: {
-            /**
-             *   display name: 'Body',
-             *   description: The text of the todo
-             */
-            body: $PropertyDef<'string', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-          };
-          spts: {};
-        }
-
-        export type OsdkObject<
-          OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
-          K extends keyof Todo.Props = keyof Todo.Props,
-        > = $Osdk<Todo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
-            readonly $link: Todo.Links;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'foo.bar.Todo'>;
-      }
-
-      /** @deprecated use Todo.Definition **/
-      export type Todo = Todo.Definition;
-
-      export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
-        osdkMetadata: $osdkMetadata,
-        objectSet: undefined as any,
-        props: undefined as any,
-        strictProps: undefined as any,
-        apiName: 'foo.bar.Todo',
-        description: 'Its a todo item.',
-        implements: ['foo.bar.SomeInterface'],
-        interfaceMap: {
-          'foo.bar.SomeInterface': {
-            SomeProperty: 'body',
+            id: {
+              multiplicity: false,
+              type: 'integer',
+              nullable: false,
+            },
+            body: {
+              displayName: 'Body',
+              multiplicity: false,
+              description: 'The text of the todo',
+              type: 'string',
+              nullable: true,
+            },
+            complete: {
+              multiplicity: false,
+              type: 'boolean',
+              nullable: true,
+            },
           },
-        },
-        inverseInterfaceMap: {
-          'foo.bar.SomeInterface': {
-            body: 'SomeProperty',
-          },
-        },
-        inverseSpts: {},
-        links: {
-          Assignee: {
-            multiplicity: false,
-            targetType: 'foo.bar.Person',
-          },
-        },
-        primaryKeyApiName: 'id',
-        primaryKeyType: 'integer',
-        properties: {
-          id: {
-            multiplicity: false,
-            type: 'integer',
-            nullable: false,
-          },
-          body: {
-            displayName: 'Body',
-            multiplicity: false,
-            description: 'The text of the todo',
-            type: 'string',
-            nullable: true,
-          },
-          complete: {
-            multiplicity: false,
-            type: 'boolean',
-            nullable: true,
-          },
-        },
-        spts: {},
-        type: 'object',
-      };
-      ",
-        "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
-      export * from './queries/returnsTodo.js';
-      ",
-        "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          spts: {},
+          type: 'object',
+        };
+        ",
+          "/foo/ontology/queries.ts": "export * from './queries/getCount.js';
+        export * from './queries/returnsTodo.js';
+        ",
+          "/foo/ontology/queries/getCount.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+        import type { QueryParam, QueryResult } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 
-      export namespace getCount {
-        export interface Signature {
-          (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
-        }
+        export namespace getCount {
+          export interface Signature {
+            (query: getCount.Parameters): Promise<QueryResult.PrimitiveType<'integer'>>;
+          }
 
-        export interface Parameters {
-          /**
-           * (no ontology metadata)
-           */
-          readonly completed: QueryParam.PrimitiveType<'boolean'>;
-        }
-
-        export interface Definition
-          extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
-            VersionBound<$ExpectedClientVersion> {
-          apiName: 'foo.bar.getCount';
-          type: 'query';
-          version: '0';
-          parameters: {
+          export interface Parameters {
             /**
              * (no ontology metadata)
              */
-            completed: {
-              nullable: false;
-              type: 'boolean';
+            readonly completed: QueryParam.PrimitiveType<'boolean'>;
+          }
+
+          export interface Definition
+            extends QueryDefinition<'foo.bar.getCount', never, getCount.Signature>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'foo.bar.getCount';
+            type: 'query';
+            version: '0';
+            parameters: {
+              /**
+               * (no ontology metadata)
+               */
+              completed: {
+                nullable: false;
+                type: 'boolean';
+              };
             };
-          };
-          output: {
-            nullable: false;
-            type: 'integer';
-          };
-        }
-      }
-
-      /** @deprecated use \`getCount.Signature' instead */
-      export type getCount = getCount.Signature;
-
-      export const getCount: getCount.Definition = {
-        apiName: 'foo.bar.getCount',
-        type: 'query',
-        version: '0',
-        parameters: {
-          completed: {
-            type: 'boolean',
-            nullable: false,
-          },
-        },
-        output: {
-          nullable: false,
-          type: 'integer',
-        },
-      };
-      ",
-        "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
-      import type { QueryParam, QueryResult } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
-      import type { Todo } from '../objects/Todo.js';
-
-      export namespace returnsTodo {
-        export interface Signature {
-          (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+            output: {
+              nullable: false;
+              type: 'integer';
+            };
+          }
         }
 
-        export interface Parameters {
-          /**
-           *   description: Random desc so we test jsdoc
-           */
-          readonly someTodo: QueryParam.ObjectType<Todo>;
-        }
+        /** @deprecated use \`getCount.Signature' instead */
+        export type getCount = getCount.Signature;
 
-        export interface Definition
-          extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
-            VersionBound<$ExpectedClientVersion> {
-          apiName: 'foo.bar.returnsTodo';
-          type: 'query';
-          version: '0';
+        export const getCount: getCount.Definition = {
+          apiName: 'foo.bar.getCount',
+          type: 'query',
+          version: '0',
           parameters: {
+            completed: {
+              type: 'boolean',
+              nullable: false,
+            },
+          },
+          output: {
+            nullable: false,
+            type: 'integer',
+          },
+        };
+        ",
+          "/foo/ontology/queries/returnsTodo.ts": "import type { QueryDefinition, VersionBound } from '@osdk/api';
+        import type { QueryParam, QueryResult } from '@osdk/client.api';
+        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import type { Todo } from '../objects/Todo.js';
+
+        export namespace returnsTodo {
+          export interface Signature {
+            (query: returnsTodo.Parameters): Promise<QueryResult.ObjectType<Todo>>;
+          }
+
+          export interface Parameters {
             /**
              *   description: Random desc so we test jsdoc
              */
-            someTodo: {
-              description: 'Random desc so we test jsdoc';
+            readonly someTodo: QueryParam.ObjectType<Todo>;
+          }
+
+          export interface Definition
+            extends QueryDefinition<'foo.bar.returnsTodo', 'foo.bar.Todo', returnsTodo.Signature>,
+              VersionBound<$ExpectedClientVersion> {
+            apiName: 'foo.bar.returnsTodo';
+            type: 'query';
+            version: '0';
+            parameters: {
+              /**
+               *   description: Random desc so we test jsdoc
+               */
+              someTodo: {
+                description: 'Random desc so we test jsdoc';
+                nullable: false;
+                object: 'foo.bar.Todo';
+                type: 'object';
+                __OsdkTargetType?: Todo;
+              };
+            };
+            output: {
               nullable: false;
               object: 'foo.bar.Todo';
               type: 'object';
               __OsdkTargetType?: Todo;
             };
-          };
-          output: {
-            nullable: false;
-            object: 'foo.bar.Todo';
-            type: 'object';
-            __OsdkTargetType?: Todo;
-          };
+          }
         }
-      }
 
-      /** @deprecated use \`returnsTodo.Signature' instead */
-      export type returnsTodo = returnsTodo.Signature;
+        /** @deprecated use \`returnsTodo.Signature' instead */
+        export type returnsTodo = returnsTodo.Signature;
 
-      export const returnsTodo: returnsTodo.Definition = {
-        apiName: 'foo.bar.returnsTodo',
-        type: 'query',
-        version: '0',
-        parameters: {
-          someTodo: {
-            description: 'Random desc so we test jsdoc',
-            type: 'object',
-            object: 'foo.bar.Todo',
-            nullable: false,
+        export const returnsTodo: returnsTodo.Definition = {
+          apiName: 'foo.bar.returnsTodo',
+          type: 'query',
+          version: '0',
+          parameters: {
+            someTodo: {
+              description: 'Random desc so we test jsdoc',
+              type: 'object',
+              object: 'foo.bar.Todo',
+              nullable: false,
+            },
           },
-        },
-        output: {
-          nullable: false,
-          object: 'foo.bar.Todo',
-          type: 'object',
-        },
-      };
-      ",
-      }
-    `);
+          output: {
+            nullable: false,
+            object: 'foo.bar.Todo',
+            type: 'object',
+          },
+        };
+        ",
+        }
+      `);
   });
 
   it("guards against empty objects", async () => {
@@ -2833,10 +2836,10 @@ describe("generator", () => {
       ),
     ).resolves.toMatchInlineSnapshot(`undefined`);
 
-    expect(helper.getFiles())
+    expect(tweakedFilesForSnapshotConsistency(helper.getFiles()))
       .toMatchInlineSnapshot(`
         {
-          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = '0.21.0';
+          "/foo/OntologyMetadata.ts": "export type $ExpectedClientVersion = 'PLACEHOLDER';
         export const $osdkMetadata = { extraUserAgent: '' };
 
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
@@ -3192,3 +3195,18 @@ describe("generator", () => {
       `);
   });
 });
+
+function tweakedFilesForSnapshotConsistency(
+  files: {
+    [k: string]: string;
+  },
+) {
+  const ret = { ...files };
+
+  ret["/foo/OntologyMetadata.ts"] = ret["/foo/OntologyMetadata.ts"].replace(
+    /export type \$ExpectedClientVersion = '.*?';/,
+    `export type $ExpectedClientVersion = 'PLACEHOLDER';`,
+  );
+
+  return ret;
+}
