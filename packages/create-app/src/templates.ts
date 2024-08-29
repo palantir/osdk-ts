@@ -46,6 +46,16 @@ export const TEMPLATES: readonly Template[] = [
     )).files),
   },
   {
+    id: "template-react-beta",
+    label: "React",
+    envPrefix: "VITE_",
+    buildDirectory: "./dist",
+    hidden: true,
+    getFiles: async () => ((await import(
+      `@osdk/create-app.template.react.2.0`
+    )).files),
+  },
+  {
     id: "template-vue",
     label: "Vue",
     envPrefix: "VITE_",
