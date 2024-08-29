@@ -1,5 +1,16 @@
 # @osdk/client
 
+## 0.22.0-beta.1
+
+### Minor Changes
+
+- 51fe88c: Fix edge case with never in newly generated types
+
+### Patch Changes
+
+- Updated dependencies [51fe88c]
+  - @osdk/client.api@0.22.0-beta.1
+
 ## 0.22.0-beta.0
 
 ### Minor Changes
