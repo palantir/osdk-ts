@@ -189,7 +189,7 @@ export function createOsdkObject(
   const definition = object.getCleanedUpDefinition(true);
   return `
   export type ${identifier}<
-      OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+      OPTIONS extends never | "$notStrict" | "$rid" = never,
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
 
   > 
@@ -197,6 +197,8 @@ export function createOsdkObject(
         ${objectDefIdentifier}, 
         K | OPTIONS
       > & Pick<
+       [OPTIONS] extends [never]
+        ? ${osdkObjectStrictPropsIdentifier} :
         OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
         , K
 > & {
@@ -253,7 +255,7 @@ readonly fetchOne: <
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<
    ${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never:  "$rid" ),
+    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never:  "$rid" ),
     L
    >>
   ;
@@ -267,7 +269,7 @@ readonly fetchOneWithErrors: <
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<$Result<
         ${osdkObjectIdentifier}<
-        (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false?never: "$rid"),
+        (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false?never: "$rid"),
         L
       >
    >> 
@@ -287,7 +289,7 @@ readonly fetchPage: <
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<
   $PageResult<${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never: "$rid"),
+    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never: "$rid"),
     L
   >>
 >;
@@ -301,7 +303,7 @@ readonly fetchPageWithErrors: <
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<$Result<
  $PageResult<${osdkObjectIdentifier}<
- (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never : "$rid"),
+ (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never : "$rid"),
  L>>
  >>;
 

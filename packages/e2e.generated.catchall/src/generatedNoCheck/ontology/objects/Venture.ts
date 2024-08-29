@@ -67,7 +67,7 @@ export namespace Venture {
       options?: $SelectArg<Venture.Definition, L, R, S>,
     ) => Promise<
       Venture.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -82,7 +82,7 @@ export namespace Venture {
     ) => Promise<
       $Result<
         Venture.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -98,7 +98,7 @@ export namespace Venture {
     ) => Promise<
       $PageResult<
         Venture.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -115,7 +115,7 @@ export namespace Venture {
       $Result<
         $PageResult<
           Venture.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -155,10 +155,17 @@ export namespace Venture {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
   > = $Osdk<Venture.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Venture.Props : Venture.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? Venture.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? Venture.Props
+          : Venture.StrictProps,
+      K
+    > & {
       readonly $link: Venture.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

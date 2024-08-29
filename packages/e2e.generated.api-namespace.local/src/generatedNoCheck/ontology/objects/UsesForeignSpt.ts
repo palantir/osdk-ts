@@ -61,7 +61,7 @@ export namespace UsesForeignSpt {
       options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
     ) => Promise<
       UsesForeignSpt.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -76,7 +76,7 @@ export namespace UsesForeignSpt {
     ) => Promise<
       $Result<
         UsesForeignSpt.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -92,7 +92,7 @@ export namespace UsesForeignSpt {
     ) => Promise<
       $PageResult<
         UsesForeignSpt.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -109,7 +109,7 @@ export namespace UsesForeignSpt {
       $Result<
         $PageResult<
           UsesForeignSpt.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -151,10 +151,17 @@ export namespace UsesForeignSpt {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
   > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? UsesForeignSpt.Props : UsesForeignSpt.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? UsesForeignSpt.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? UsesForeignSpt.Props
+          : UsesForeignSpt.StrictProps,
+      K
+    > & {
       readonly $link: UsesForeignSpt.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;

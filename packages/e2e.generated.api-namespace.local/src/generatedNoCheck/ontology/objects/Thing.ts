@@ -61,7 +61,7 @@ export namespace Thing {
       options?: $SelectArg<Thing.Definition, L, R, S>,
     ) => Promise<
       Thing.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -76,7 +76,7 @@ export namespace Thing {
     ) => Promise<
       $Result<
         Thing.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -92,7 +92,7 @@ export namespace Thing {
     ) => Promise<
       $PageResult<
         Thing.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -109,7 +109,7 @@ export namespace Thing {
       $Result<
         $PageResult<
           Thing.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -155,10 +155,13 @@ export namespace Thing {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
   > = $Osdk<Thing.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Thing.StrictProps : OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps,
+      K
+    > & {
       readonly $link: Thing.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;

@@ -658,7 +658,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
 }
 
 // @public (undocumented)
-export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, UnionIfTrue<UnionIfFalse<L, RespectNullability<S>, "$notStrict">, DefaultToFalse<R>, "$rid">>;
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, L | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
 
 // @public (undocumented)
 export type StringAggregateOption = "approximateDistinct";

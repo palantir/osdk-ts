@@ -61,7 +61,7 @@ export namespace WeatherStation {
       options?: $SelectArg<WeatherStation.Definition, L, R, S>,
     ) => Promise<
       WeatherStation.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -76,7 +76,7 @@ export namespace WeatherStation {
     ) => Promise<
       $Result<
         WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -92,7 +92,7 @@ export namespace WeatherStation {
     ) => Promise<
       $PageResult<
         WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -109,7 +109,7 @@ export namespace WeatherStation {
       $Result<
         $PageResult<
           WeatherStation.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -144,10 +144,17 @@ export namespace WeatherStation {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
   > = $Osdk<WeatherStation.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? WeatherStation.Props : WeatherStation.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? WeatherStation.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? WeatherStation.Props
+          : WeatherStation.StrictProps,
+      K
+    > & {
       readonly $link: WeatherStation.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

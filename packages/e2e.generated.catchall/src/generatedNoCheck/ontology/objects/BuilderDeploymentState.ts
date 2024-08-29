@@ -63,7 +63,7 @@ export namespace BuilderDeploymentState {
       options?: $SelectArg<BuilderDeploymentState.Definition, L, R, S>,
     ) => Promise<
       BuilderDeploymentState.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -78,7 +78,7 @@ export namespace BuilderDeploymentState {
     ) => Promise<
       $Result<
         BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -94,7 +94,7 @@ export namespace BuilderDeploymentState {
     ) => Promise<
       $PageResult<
         BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -111,7 +111,7 @@ export namespace BuilderDeploymentState {
       $Result<
         $PageResult<
           BuilderDeploymentState.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -149,10 +149,17 @@ export namespace BuilderDeploymentState {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
   > = $Osdk<BuilderDeploymentState.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? BuilderDeploymentState.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? BuilderDeploymentState.Props
+          : BuilderDeploymentState.StrictProps,
+      K
+    > & {
       readonly $link: BuilderDeploymentState.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;

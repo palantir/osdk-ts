@@ -75,7 +75,7 @@ export namespace Office {
       options?: $SelectArg<Office.Definition, L, R, S>,
     ) => Promise<
       Office.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
@@ -90,7 +90,7 @@ export namespace Office {
     ) => Promise<
       $Result<
         Office.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -106,7 +106,7 @@ export namespace Office {
     ) => Promise<
       $PageResult<
         Office.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
@@ -123,7 +123,7 @@ export namespace Office {
       $Result<
         $PageResult<
           Office.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -173,10 +173,13 @@ export namespace Office {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
   > = $Osdk<Office.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Office.StrictProps : OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps,
+      K
+    > & {
       readonly $link: Office.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
