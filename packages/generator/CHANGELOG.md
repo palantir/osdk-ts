@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 1.14.0-beta.1
+
+### Minor Changes
+
+- 51fe88c: Fix edge case with never in newly generated types
+
 ## 1.14.0-beta.0
 
 ### Minor Changes

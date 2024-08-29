@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.generated.catchall",
   "private": true,
-  "version": "3.0.0-beta.0",
+  "version": "3.0.0-beta.1",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
