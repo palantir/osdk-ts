@@ -1,4 +1,4 @@
-# @osdk/create-app.template.react.2.0
+# @osdk/create-app.template.react.beta
 
 This package contains templates for `@osdk/create-app`.
 

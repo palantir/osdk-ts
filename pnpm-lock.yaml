@@ -279,14 +279,14 @@ importers:
         specifier: ^5.3.4
         version: 5.3.4(@types/node@20.14.10)
 
-  examples/example-react-2.0:
+  examples/example-react-beta:
     dependencies:
       '@osdk/client':
         specifier: latest
         version: 0.21.0(pino@9.1.0)
-      '@osdk/e2e.generated.catchall':
+      '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
-        version: link:../../packages/e2e.generated.catchall
+        version: link:../../packages/e2e.generated.1.1.x
       '@osdk/oauth':
         specifier: latest
         version: 0.3.0
@@ -923,9 +923,9 @@ importers:
       '@osdk/create-app.template.react':
         specifier: workspace:*
         version: link:../create-app.template.react
-      '@osdk/create-app.template.react.2.0':
+      '@osdk/create-app.template.react.beta':
         specifier: workspace:*
-        version: link:../create-app.template.react.2.0
+        version: link:../create-app.template.react.beta
       '@osdk/create-app.template.tutorial-todo-aip-app':
         specifier: workspace:*
         version: link:../create-app.template.tutorial-todo-aip-app
@@ -1098,7 +1098,7 @@ importers:
         specifier: ^5.3.4
         version: 5.3.4(@types/node@20.14.10)
 
-  packages/create-app.template.react.2.0:
+  packages/create-app.template.react.beta:
     dependencies:
       react:
         specifier: ^18
@@ -8694,7 +8694,7 @@ snapshots:
       '@babel/helper-split-export-declaration': 7.24.5
       '@babel/parser': 7.24.5
       '@babel/types': 7.24.5
-      debug: 4.3.4
+      debug: 4.3.5
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -10432,7 +10432,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 6.21.0
       '@typescript-eslint/visitor-keys': 6.21.0
-      debug: 4.3.4
+      debug: 4.3.5
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.3
@@ -10492,7 +10492,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.4
+      debug: 4.3.5
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4
@@ -10507,7 +10507,7 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 7.17.0
       '@typescript-eslint/visitor-keys': 7.17.0
-      debug: 4.3.4
+      debug: 4.3.5
       globby: 11.1.0
       is-glob: 4.0.3
       minimatch: 9.0.4

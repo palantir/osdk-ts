@@ -52,7 +52,7 @@ export const TEMPLATES: readonly Template[] = [
     buildDirectory: "./dist",
     hidden: true,
     getFiles: async () => ((await import(
-      `@osdk/create-app.template.react.2.0`
+      `@osdk/create-app.template.react.beta`
     )).files),
   },
   {
