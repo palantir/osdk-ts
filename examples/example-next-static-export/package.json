@@ -11,7 +11,8 @@
     "build": "next build",
     "dev": "next dev -p 8080",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest"
   },
   "dependencies": {
     "@osdk/e2e.generated.1.1.x": "workspace:*",
@@ -25,6 +26,7 @@
     "@types/react-dom": "^18",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   }
 }
