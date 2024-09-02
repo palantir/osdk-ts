@@ -33,6 +33,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@next/env": "^14.2.7",
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
