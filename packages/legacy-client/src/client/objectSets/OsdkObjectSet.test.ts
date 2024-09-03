@@ -206,6 +206,30 @@ describe("OsdkObjectSet", () => {
     );
   });
 
+  it("creates exact distinct aggregation queries", async () => {
+    const os = createBaseObjectSet(client, "Todo");
+    mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
+    await (os.aggregate(b => ({
+      foo: b.complete.exactDistinct(),
+      bar: b.body.exactDistinct(),
+      baz: b.unixTimestamp.avg(),
+      qux: b.unixTimestamp.exactDistinct(),
+    })).compute());
+    expect(fetch).toHaveBeenCalledOnce();
+    expect(fetch).toHaveBeenCalledWith(
+      ...expectedJestResponse("Ontology/objectSets/aggregate", {
+        objectSet: { type: "base", objectType: "Todo" },
+        groupBy: [],
+        aggregation: [
+          { type: "exactDistinct", name: "foo", field: "complete" },
+          { type: "exactDistinct", name: "bar", field: "body" },
+          { type: "avg", name: "baz", field: "unixTimestamp" },
+          { type: "exactDistinct", name: "qux", field: "unixTimestamp" },
+        ],
+      }),
+    );
+  });
+
   it("creates complex aggregation queries", async () => {
     const os = createBaseObjectSet(client, "Todo");
     mockAggregateResponse({ data: [], accuracy: "ACCURATE" });
