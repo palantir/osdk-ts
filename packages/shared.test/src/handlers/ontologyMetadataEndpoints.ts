@@ -374,4 +374,130 @@ export const ontologyMetadataEndpoint: Array<RequestHandler> = [
       },
     ),
   ),
+
+  rest.post(
+    `https://stack.palantir.com/ontology-metadata/api/ontology/ontology/bulkLoadEntities`,
+    authHandlerMiddleware<
+      {
+        datasourceTypes: never[];
+        objectTypes: {
+          identifier: {
+            type: "objectTypeRid";
+            objectTypeRid: string;
+          };
+          versionReference: {
+            type: "ontologyVersion";
+            ontologyVersion: string;
+          };
+        }[];
+        linkTypes: never[];
+        sharedPropertyTypes: never[];
+        interfaceTypes: never[];
+        typeGroups: never[];
+        loadRedacted: false;
+        includeObjectTypeCount: undefined;
+        includeObjectTypesWithoutSearchableDatasources: true;
+        includeEntityMetadata: undefined;
+      }
+    >(
+      async (
+        { request },
+      ) => {
+        const body = await request.json();
+        invariant(
+          Object.entries(body.linkTypes).length === 0,
+          "Currently don't support loading links via tests",
+        );
+        invariant(body.loadRedacted === false, "unsupported for tests");
+        invariant(
+          body.includeObjectTypesWithoutSearchableDatasources === true,
+          "unsupported for tests",
+        );
+
+        return HttpResponse.json<
+          {
+            objectTypes: Array<{ objectType: ConjureObjectTypeInfo }>;
+            linkTypes: Record<string, unknown>;
+            currentOntologyVersion: string;
+          }
+        >({
+          linkTypes: {},
+          currentOntologyVersion:
+            defaultOntologyForConjure.currentOntologyVersion,
+          objectTypes: body.objectTypes.map<
+            { objectType: ConjureObjectTypeInfo }
+          >(
+            ({ identifier, versionReference }) => {
+              if (
+                defaultOntologyForConjure.currentOntologyVersion
+                  !== versionReference.ontologyVersion
+              ) {
+                throw new OpenApiCallError(
+                  404,
+                  OntologyNotFoundError(versionReference.ontologyVersion),
+                );
+              }
+              const entry = Object.values(fullOntology.objectTypes).find(
+                a => a.objectType.rid === identifier.objectTypeRid,
+              );
+
+              if (!entry) {
+                throw new OpenApiCallError(
+                  404,
+                  OntologyNotFoundError(versionReference.ontologyVersion),
+                );
+              }
+
+              const ret: ConjureObjectTypeInfo = {
+                apiName: entry.objectType.apiName,
+                displayMetadata: {
+                  "description": "...",
+                  "displayName": entry.objectType.displayName!,
+                  "groupDisplayName": null,
+                  "icon": {
+                    "type": "blueprint",
+                    "blueprint": {
+                      "color": "#00B3A4",
+                      "locator": "person",
+                    },
+                  },
+                  "pluralDisplayName": "Employees",
+                  "visibility": "PROMINENT",
+                },
+                id: "we don't track this",
+                primaryKeys: [entry.objectType.primaryKey],
+                propertyTypes: Object.fromEntries(
+                  Object.entries(entry.objectType.properties)
+                    .map(([k, v]) => [k, {
+                      ...v,
+                      rid: k,
+                    }]),
+                ), // don't care right now
+                implementsInterfaces: entry
+                  .implementsInterfaces as string[],
+                implementsInterfaces2: [], // don't care right now
+                rid: entry.objectType.rid,
+                redacted: null,
+                "status": {
+                  "type": "active",
+                  "active": {},
+                },
+                titlePropertyTypeRid: "we don't track this",
+                "traits": {
+                  "eventMetadata": null,
+                  "actionLogMetadata": null,
+                  "timeSeriesMetadata": null,
+                  "sensorTrait": null,
+                  "workflowObjectTypeTraits": {},
+                },
+                typeGroups: [],
+              };
+
+              return { objectType: ret };
+            },
+          ),
+        });
+      },
+    ),
+  ),
 ];
