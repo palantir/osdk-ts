@@ -150,6 +150,8 @@ export * from "./DoubleType.js";
 export * from "./Duration.js";
 export * from "./EqualsQuery.js";
 export * from "./EqualsQueryV2.js";
+export * from "./ExactDistinctAggregation.js";
+export * from "./ExactDistinctAggregationV2.js";
 export * from "./ExecuteQueryRequest.js";
 export * from "./ExecuteQueryResponse.js";
 export * from "./Feature.js";

@@ -122,6 +122,17 @@ export function createObjectSetAggregationStep<
       }]);
     },
 
+    exactDistinct(propertySelector) {
+      const selectedProperty = propertySelector(aggregatableProperties);
+      return new ComputeStep(client, definition, groupByClauses, [{
+        type: "exactDistinct",
+        name: "exactDistinctCount",
+        field: selectedProperty.propertyApiName,
+        metricValueType: selectedProperty.metricValueType,
+        namedAggregation: true,
+      }]);
+    },
+
     groupBy(propertySelector) {
       const groupByClause = propertySelector(groupableProperties);
       assertBucketingInternal(groupByClause);

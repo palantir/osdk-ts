@@ -120,4 +120,46 @@ describe(createObjectSetAggregationStep, () => {
     );
     const aggregationValue = unwrapResultOrThrow(result);
   });
+
+  it("creates exact aggregation with builder", async () => {
+    const aggregatableObjectSetStep = createObjectSetAggregationStep(
+      client,
+      "Todo",
+      { type: "base", objectType: "Todo" },
+      [],
+    );
+
+    const aggregationBody: AggregateObjectSetRequestV2 = {
+      objectSet: { type: "base", objectType: "Todo" },
+      groupBy: [],
+      aggregation: [{
+        type: "exactDistinct",
+        name: "exactDistinct",
+        field: "points",
+      }],
+    };
+
+    const aggregationResponse: AggregateObjectsResponseV2 = {
+      excludedItems: 0,
+      data: [{
+        metrics: [{
+          name: "exactDistinct",
+          value: 10.0,
+        }],
+        group: {},
+      }],
+      accuracy: "ACCURATE",
+    };
+
+    mockFetchResponse(fetch, aggregationResponse);
+    const result = await aggregatableObjectSetStep.aggregate(a => ({
+      exactDistinct: a.points.exactDistinct(),
+    })).compute();
+    expectFetchToBeCalledWithBody(
+      fetch,
+      `Ontology/objectSets/aggregate`,
+      aggregationBody,
+    );
+    const aggregationValue = unwrapResultOrThrow(result);
+  });
 });

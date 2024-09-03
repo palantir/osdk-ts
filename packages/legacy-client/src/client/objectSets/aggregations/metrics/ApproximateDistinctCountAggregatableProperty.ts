@@ -22,6 +22,7 @@ import { MetricValueType } from "./metrics.js";
 
 export interface ApproximateDistinctCountAggregatableProperty {
   type: "ApproximateDistinctCountAggregatableProperty";
+  exactDistinct(): MultipleAggregationsOperations<Double>;
   approximateDistinct(): MultipleAggregationsOperations<Double>;
 }
 
@@ -29,6 +30,15 @@ export const ApproximateDistinctCountAggregatableProperty = (
   propertyApiName: string,
 ): ApproximateDistinctCountAggregatableProperty => ({
   type: "ApproximateDistinctCountAggregatableProperty",
+
+  exactDistinct(): MultipleAggregationsOperations<Double> {
+    return {
+      type: "MultipleAggregationsOperations",
+      operation: "exactDistinct",
+      metricValueType: MetricValueType.NUMERIC,
+      propertyApiName,
+    };
+  },
 
   approximateDistinct(): MultipleAggregationsOperations<Double> {
     return {
