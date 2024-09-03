@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { loadEnvConfig } from "@next/env";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 const ENV_VARS = [
   "NEXT_PUBLIC_FOUNDRY_API_URL",
@@ -22,12 +22,12 @@ for (const envVar of ENV_VARS) {
       const env = loadEnvConfig(process.cwd());
       expect(
         env.combinedEnv[envVar],
-        `${envVar} should be defined`
+        `${envVar} should be defined`,
       ).toBeDefined();
       expect(
         env.combinedEnv[envVar],
-        `${envVar} should not contain placeholder value`
+        `${envVar} should not contain placeholder value`,
       ).not.toMatch(/<.*>/);
-    }
+    },
   );
 }

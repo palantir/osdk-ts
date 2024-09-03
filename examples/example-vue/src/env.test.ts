@@ -1,5 +1,5 @@
-import { expect, test } from "vitest";
 import { loadEnv } from "vite";
+import { expect, test } from "vitest";
 
 const ENV_VARS = [
   "VITE_FOUNDRY_API_URL",
@@ -15,8 +15,8 @@ for (const envVar of ENV_VARS) {
       expect(env[envVar], `${envVar} should be defined`).toBeDefined();
       expect(
         env[envVar],
-        `${envVar} should not contain placeholder value`
+        `${envVar} should not contain placeholder value`,
       ).not.toMatch(/<.*>/);
-    }
+    },
   );
 }
