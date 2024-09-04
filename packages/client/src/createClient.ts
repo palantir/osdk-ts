@@ -46,9 +46,11 @@ class ActionInvoker<Q extends ActionDefinition<any, any, any>>
     // The implements covers us for the most part here as this exact type doesn't
     // escape this file
     this.applyAction = applyAction.bind(undefined, clientCtx, actionDef);
+    this.batchApplyAction = applyAction.bind(undefined, clientCtx, actionDef);
   }
 
   applyAction: (...args: any[]) => any;
+  batchApplyAction: (...args: any[]) => any;
 }
 
 class QueryInvoker<Q extends QueryDefinition<any, any>>

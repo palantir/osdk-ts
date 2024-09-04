@@ -21,24 +21,26 @@ export namespace completeTodo {
       description: 'A todo Object';
       multiplicity: true;
       nullable: false;
-      type: ObjectActionDataType<'Todo', Todo>;
+      type: ObjectActionDataType<'Todo', Todo.Definition>;
     };
   };
 
   /**
    * Completes Todo
    */
-  export interface Parameters {
+  export interface Params {
     readonly is_complete: ActionParam.PrimitiveType<'boolean'>;
     /**
      * A todo Object
      */
-    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+    readonly Todo: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'completeTodo', 'Todo', completeTodo>,
+    extends ActionDefinition<'completeTodo', 'Todo', completeTodo.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'completeTodo';
     description: 'Completes Todo';
@@ -49,14 +51,16 @@ export namespace completeTodo {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Completes Todo
      */
-    <
-      P extends completeTodo.Parameters | ReadonlyArray<completeTodo.Parameters>,
-      OP extends P extends ReadonlyArray<completeTodo.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends completeTodo.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<completeTodo.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -64,12 +68,12 @@ export namespace completeTodo {
 }
 
 /**
- * @deprecated Use `completeTodo.Parameters`
+ * @deprecated Use `completeTodo.Params`
  */
-export type completeTodo$Params = completeTodo.Parameters | ReadonlyArray<completeTodo.Parameters>;
+export type completeTodo$Params = completeTodo.Params | ReadonlyArray<completeTodo.Params>;
 
 /** @deprecated Use `completeTodo.Definition` **/
-export type completeTodo = completeTodo.Signature;
+export type completeTodo = completeTodo.Signatures;
 
 export const completeTodo: completeTodo.Definition = {
   apiName: 'completeTodo',

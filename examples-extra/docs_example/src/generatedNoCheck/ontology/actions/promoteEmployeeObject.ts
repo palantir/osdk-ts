@@ -15,7 +15,7 @@ export namespace promoteEmployeeObject {
     employee: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Employee', Employee>;
+      type: ObjectActionDataType<'Employee', Employee.Definition>;
     };
     newCompensation: {
       multiplicity: false;
@@ -32,17 +32,19 @@ export namespace promoteEmployeeObject {
   /**
    * Update an employee's title and compensation
    */
-  export interface Parameters {
-    readonly employee: ActionParam.ObjectType<Employee>;
+  export interface Params {
+    readonly employee: ActionParam.ObjectType<Employee.Definition>;
 
     readonly newCompensation: ActionParam.PrimitiveType<'double'>;
 
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject>,
+    extends ActionDefinition<'promoteEmployeeObject', 'Employee', promoteEmployeeObject.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'promoteEmployeeObject';
     description: "Update an employee's title and compensation";
@@ -53,16 +55,16 @@ export namespace promoteEmployeeObject {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Update an employee's title and compensation
      */
-    <
-      P extends promoteEmployeeObject.Parameters | ReadonlyArray<promoteEmployeeObject.Parameters>,
-      OP extends P extends ReadonlyArray<promoteEmployeeObject.Parameters>
-        ? ApplyBatchActionOptions
-        : ApplyActionOptions,
-    >(
+    applyAction<P extends promoteEmployeeObject.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<promoteEmployeeObject.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -70,14 +72,12 @@ export namespace promoteEmployeeObject {
 }
 
 /**
- * @deprecated Use `promoteEmployeeObject.Parameters`
+ * @deprecated Use `promoteEmployeeObject.Params`
  */
-export type promoteEmployeeObject$Params =
-  | promoteEmployeeObject.Parameters
-  | ReadonlyArray<promoteEmployeeObject.Parameters>;
+export type promoteEmployeeObject$Params = promoteEmployeeObject.Params | ReadonlyArray<promoteEmployeeObject.Params>;
 
 /** @deprecated Use `promoteEmployeeObject.Definition` **/
-export type promoteEmployeeObject = promoteEmployeeObject.Signature;
+export type promoteEmployeeObject = promoteEmployeeObject.Signatures;
 
 export const promoteEmployeeObject: promoteEmployeeObject.Definition = {
   apiName: 'promoteEmployeeObject',

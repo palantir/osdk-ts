@@ -500,23 +500,25 @@ describe("generator", () => {
             description: 'Todo(s) to be deleted';
             multiplicity: true;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ObjectActionDataType<'Todo', Todo.Definition>;
           };
         };
 
         /**
          * An action which takes in an array of objects
          */
-        export interface Parameters {
+        export interface Params {
           /**
            * Todo(s) to be deleted
            */
-          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
         }
+        /** @deprecated **/
+        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
-          extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos>,
+          extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
@@ -527,14 +529,16 @@ describe("generator", () => {
         }
 
         // Represents a fqn of the action
-        export interface Signature {
+        export interface Signatures {
           /**
            * An action which takes in an array of objects
            */
-          <
-            P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
-            OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
+          applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+
+          batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
             args: P,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -542,12 +546,12 @@ describe("generator", () => {
       }
 
       /**
-       * @deprecated Use \`deleteTodos.Parameters\`
+       * @deprecated Use \`deleteTodos.Params\`
        */
-      export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
+      export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
       /** @deprecated Use \`deleteTodos.Definition\` **/
-      export type deleteTodos = deleteTodos.Signature;
+      export type deleteTodos = deleteTodos.Signatures;
 
       export const deleteTodos: deleteTodos.Definition = {
         apiName: 'deleteTodos',
@@ -586,23 +590,25 @@ describe("generator", () => {
             description: 'A Todo to mark completed';
             multiplicity: false;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ObjectActionDataType<'Todo', Todo.Definition>;
           };
         };
 
         /**
          * An action which takes different types of parameters
          */
-        export interface Parameters {
+        export interface Params {
           /**
            * A Todo to mark completed
            */
-          readonly object?: ActionParam.ObjectType<Todo>;
+          readonly object?: ActionParam.ObjectType<Todo.Definition>;
         }
+        /** @deprecated **/
+        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
-          extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted>,
+          extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -613,14 +619,16 @@ describe("generator", () => {
         }
 
         // Represents a fqn of the action
-        export interface Signature {
+        export interface Signatures {
           /**
            * An action which takes different types of parameters
            */
-          <
-            P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
-            OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
+          applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+
+          batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
             args: P,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -628,12 +636,12 @@ describe("generator", () => {
       }
 
       /**
-       * @deprecated Use \`markTodoCompleted.Parameters\`
+       * @deprecated Use \`markTodoCompleted.Params\`
        */
-      export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
+      export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
       /** @deprecated Use \`markTodoCompleted.Definition\` **/
-      export type markTodoCompleted = markTodoCompleted.Signature;
+      export type markTodoCompleted = markTodoCompleted.Signatures;
 
       export const markTodoCompleted: markTodoCompleted.Definition = {
         apiName: 'markTodoCompleted',
@@ -1460,23 +1468,25 @@ describe("generator", () => {
               description: 'Todo(s) to be deleted';
               multiplicity: true;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
             };
           };
 
           /**
            * An action which takes in an array of objects
            */
-          export interface Parameters {
+          export interface Params {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
           }
+          /** @deprecated **/
+          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
-            extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
+            extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1487,14 +1497,16 @@ describe("generator", () => {
           }
 
           // Represents a fqn of the action
-          export interface Signature {
+          export interface Signatures {
             /**
              * An action which takes in an array of objects
              */
-            <
-              P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
-              OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-            >(
+            applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+
+            batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -1502,12 +1514,12 @@ describe("generator", () => {
         }
 
         /**
-         * @deprecated Use \`deleteTodos.Parameters\`
+         * @deprecated Use \`deleteTodos.Params\`
          */
-        export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
+        export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
         /** @deprecated Use \`deleteTodos.Definition\` **/
-        export type deleteTodos = deleteTodos.Signature;
+        export type deleteTodos = deleteTodos.Signatures;
 
         export const deleteTodos: deleteTodos.Definition = {
           apiName: 'foo.bar.deleteTodos',
@@ -1546,23 +1558,25 @@ describe("generator", () => {
               description: 'A Todo to mark completed';
               multiplicity: false;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
             };
           };
 
           /**
            * An action which takes different types of parameters
            */
-          export interface Parameters {
+          export interface Params {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo.Definition>;
           }
+          /** @deprecated **/
+          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
-            extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
+            extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -1573,14 +1587,16 @@ describe("generator", () => {
           }
 
           // Represents a fqn of the action
-          export interface Signature {
+          export interface Signatures {
             /**
              * An action which takes different types of parameters
              */
-            <
-              P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
-              OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-            >(
+            applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+
+            batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -1588,12 +1604,12 @@ describe("generator", () => {
         }
 
         /**
-         * @deprecated Use \`markTodoCompleted.Parameters\`
+         * @deprecated Use \`markTodoCompleted.Params\`
          */
-        export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
+        export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
         /** @deprecated Use \`markTodoCompleted.Definition\` **/
-        export type markTodoCompleted = markTodoCompleted.Signature;
+        export type markTodoCompleted = markTodoCompleted.Signatures;
 
         export const markTodoCompleted: markTodoCompleted.Definition = {
           apiName: 'foo.bar.markTodoCompleted',
@@ -2778,19 +2794,21 @@ describe("generator", () => {
               task: {
                 multiplicity: false;
                 nullable: false;
-                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
               };
             };
 
-            export interface Parameters {
+            export interface Params {
               readonly body: ActionParam.PrimitiveType<'string'>;
 
-              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
             }
+            /** @deprecated **/
+            export type Parameters = Params;
 
             // Represents the definition of the action
             export interface Definition
-              extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+              extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures>,
                 VersionBound<$ExpectedClientVersion> {
               apiName: 'setTaskBody';
               modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
@@ -2800,11 +2818,13 @@ describe("generator", () => {
             }
 
             // Represents a fqn of the action
-            export interface Signature {
-              <
-                P extends setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>,
-                OP extends P extends ReadonlyArray<setTaskBody.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-              >(
+            export interface Signatures {
+              applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
+                args: P,
+                options?: OP,
+              ): Promise<ActionReturnTypeForOptions<OP>>;
+
+              batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
                 args: P,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -2812,12 +2832,12 @@ describe("generator", () => {
           }
 
           /**
-           * @deprecated Use \`setTaskBody.Parameters\`
+           * @deprecated Use \`setTaskBody.Params\`
            */
-          export type setTaskBody$Params = setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>;
+          export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
 
           /** @deprecated Use \`setTaskBody.Definition\` **/
-          export type setTaskBody = setTaskBody.Signature;
+          export type setTaskBody = setTaskBody.Signatures;
 
           export const setTaskBody: setTaskBody.Definition = {
             apiName: 'setTaskBody',
