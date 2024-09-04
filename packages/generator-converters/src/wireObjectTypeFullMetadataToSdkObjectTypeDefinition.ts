@@ -20,7 +20,9 @@ import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToS
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-  objectTypeWithLink: ObjectTypeFullMetadata,
+  objectTypeWithLink: ObjectTypeFullMetadata & {
+    objectType: { properties: Record<string, { nullable?: boolean }> };
+  },
   v2: boolean,
 ): ObjectTypeDefinition<any> {
   if (
