@@ -38,15 +38,15 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
 
 export interface Client extends SharedClient<MinimalClient> {
   <Q extends ObjectTypeDefinition<any, any>>(
-    o: CheckVersionBound<Q>,
+    o: Q,
   ): Q["objectSet"];
 
   <Q extends ActionDefinition<any, any, any>>(
-    o: CheckVersionBound<Q>,
+    o: Q,
   ): ActionSignatureFromDef<Q>;
 
   <Q extends QueryDefinition<any, any, any>>(
-    o: CheckVersionBound<Q>,
+    o: Q,
   ): QuerySignatureFromDef<Q>;
 }
 
