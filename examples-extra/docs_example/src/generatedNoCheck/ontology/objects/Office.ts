@@ -58,18 +58,18 @@ export namespace Office {
   }
 
   export interface ObjectSet extends $ObjectSet<Office.Definition, Office.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Office.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Office.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office.Definition, AO>,
     ) => Promise<$AggregationsResults<Office.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Office.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Office.Definition>>(
       type: L,
     ) => $LinkedType<Office.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
       options?: $SelectArg<Office.Definition, L, R, S>,
@@ -81,9 +81,9 @@ export namespace Office {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
       options?: $SelectArg<Office.Definition, L, R, S>,
@@ -97,10 +97,10 @@ export namespace Office {
     >;
 
     readonly fetchPage: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
@@ -113,10 +113,10 @@ export namespace Office {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
@@ -190,7 +190,6 @@ export namespace Office {
     } & $OsdkObject<'Office'>;
 }
 
-/** @deprecated use Office.Definition **/
 export type Office = Office.Definition;
 
 export const Office: Office & $VersionBound<$ExpectedClientVersion> = {

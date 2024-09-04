@@ -20,6 +20,7 @@ import type {
   QueryDefinition,
   VersionBound,
 } from "@osdk/api";
+import type { ObjectSet } from "@osdk/client.api";
 import type { SharedClient } from "@osdk/shared.client";
 import type { ActionSignatureFromDef } from "./actions/applyAction.js";
 import type { MinimalClient } from "./MinimalClientContext.js";
@@ -39,7 +40,7 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
 export interface Client extends SharedClient<MinimalClient> {
   <Q extends ObjectTypeDefinition<any, any>>(
     o: Q,
-  ): Q["objectSet"];
+  ): unknown extends Q["objectSet"] ? ObjectSet<Q> : Q["objectSet"];
 
   <Q extends ActionDefinition<any, any, any>>(
     o: Q,

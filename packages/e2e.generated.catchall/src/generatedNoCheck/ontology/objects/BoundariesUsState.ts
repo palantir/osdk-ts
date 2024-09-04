@@ -48,18 +48,18 @@ export namespace BoundariesUsState {
   }
 
   export interface ObjectSet extends $ObjectSet<BoundariesUsState.Definition, BoundariesUsState.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<BoundariesUsState.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<BoundariesUsState.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BoundariesUsState.Definition, AO>,
     ) => Promise<$AggregationsResults<BoundariesUsState.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<BoundariesUsState.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<BoundariesUsState.Definition>>(
       type: L,
     ) => $LinkedType<BoundariesUsState.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends BoundariesUsState.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends BoundariesUsState.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
       options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
@@ -71,9 +71,9 @@ export namespace BoundariesUsState {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends BoundariesUsState.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends BoundariesUsState.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[BoundariesUsState.Definition['primaryKeyType']],
       options?: $SelectArg<BoundariesUsState.Definition, L, R, S>,
@@ -87,10 +87,10 @@ export namespace BoundariesUsState {
     >;
 
     readonly fetchPage: <
-      L extends BoundariesUsState.PropertyKeys,
-      R extends boolean,
+      const L extends BoundariesUsState.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
     ) => Promise<
@@ -103,10 +103,10 @@ export namespace BoundariesUsState {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends BoundariesUsState.PropertyKeys,
-      R extends boolean,
+      const L extends BoundariesUsState.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BoundariesUsState.Definition, L, R, A, S>,
     ) => Promise<
@@ -177,7 +177,6 @@ export namespace BoundariesUsState {
     } & $OsdkObject<'BoundariesUsState'>;
 }
 
-/** @deprecated use BoundariesUsState.Definition **/
 export type BoundariesUsState = BoundariesUsState.Definition;
 
 export const BoundariesUsState: BoundariesUsState & $VersionBound<$ExpectedClientVersion> = {

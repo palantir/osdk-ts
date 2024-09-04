@@ -19,7 +19,7 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectTypeDefinition,
 } from "@osdk/api";
-import type { Osdk } from "@osdk/client.api";
+import type { MinimalObjectSet, Osdk } from "@osdk/client.api";
 import type { Client } from "../Client.js";
 import type { UNSTABLE_ObjectSet } from "../objectSet/createUnstableObjectSet.js";
 import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
@@ -27,7 +27,7 @@ import type { BulkLinkResult } from "./createBulkLinksAsyncIterFactory.js";
 export interface UnstableClient extends Client {
   <Q extends (InterfaceDefinition<any, any>)>(
     o: Q,
-  ): Q["objectSet"];
+  ): unknown extends Q["objectSet"] ? MinimalObjectSet<Q> : Q["objectSet"];
 
   <Q extends (ObjectTypeDefinition<any, any>)>(
     o: Q,

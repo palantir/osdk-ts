@@ -39,19 +39,19 @@ export namespace FooInterface {
   }
 
   export interface ObjectSet extends $ObjectSet<FooInterface.Definition, FooInterface.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<FooInterface.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<FooInterface.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<FooInterface.Definition, AO>,
     ) => Promise<$AggregationsResults<FooInterface.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<FooInterface.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<FooInterface.Definition>>(
       type: L,
     ) => $LinkedType<FooInterface.Definition, L>['objectSet'];
 
     readonly fetchPage: <
-      L extends FooInterface.PropertyKeys,
-      R extends boolean,
+      const L extends FooInterface.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<FooInterface.Definition, L, R, A, S>,
     ) => Promise<
@@ -64,10 +64,10 @@ export namespace FooInterface {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends FooInterface.PropertyKeys,
-      R extends boolean,
+      const L extends FooInterface.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<FooInterface.Definition, L, R, A, S>,
     ) => Promise<
