@@ -89,11 +89,11 @@ export async function generatePerActionDataFiles(
                     const obj = enhancedOntology.requireObjectType(type.object);
                     return `ObjectActionDataType<"${obj.fullApiName}", ${
                       obj.getImportedDefinitionIdentifier(true)
-                    }>`;
+                    }.Definition>`;
                   } else if (type.type === "objectSet") {
                     return `ObjectSetActionDataType<"${type.objectSet}", ${
                       getObjectDefIdentifier(type.objectSet, true)
-                    }>`;
+                    }.Definition>`;
                   }
                   return undefined;
                 },
@@ -115,12 +115,12 @@ export async function generatePerActionDataFiles(
           return `ActionParam.ObjectType<${
             enhancedOntology.requireObjectType(input.object)
               .getImportedDefinitionIdentifier(true)
-          }>`;
+          }.Definition>`;
         } else if (input.type === "objectSet") {
           return `ActionParam.ObjectSetType<${
             enhancedOntology.requireObjectType(input.objectSet)
               .getImportedDefinitionIdentifier(true)
-          }>`;
+          }.Definition>`;
         }
       }
 
@@ -134,7 +134,7 @@ export async function generatePerActionDataFiles(
             ${createParamsDef()}
 
             ${getDescriptionIfPresent(action.description)}
-            export interface Parameters {
+            export interface Params {
               ${
           stringify(parameters, {
             "*": (ogValue, _, ogKey) => {
@@ -149,10 +149,12 @@ export async function generatePerActionDataFiles(
           })
         }
             }
+            /** @deprecated **/
+            export type Parameters = Params;
 
 
               // Represents the definition of the action
-              export interface Definition extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}>, VersionBound<$ExpectedClientVersion> {
+              export interface Definition extends ActionDefinition<"${action.shortApiName}", ${uniqueApiNamesString}, ${action.shortApiName}.Signatures>, VersionBound<$ExpectedClientVersion> {
               ${
           Object.entries(actionDefSansParameters).sort((a, b) =>
             a[0].localeCompare(b[0])
@@ -165,9 +167,11 @@ export async function generatePerActionDataFiles(
             }
 
             // Represents a fqn of the action
-            export interface Signature {
+            export interface Signatures {
               ${getDescriptionIfPresent(action.description)}
-               <P extends ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>, OP extends (P extends  ReadonlyArray<${action.paramsIdentifier}> ? ApplyBatchActionOptions: ApplyActionOptions)>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+              applyAction<P extends ${action.paramsIdentifier}, OP extends ApplyActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
+           
+              batchApplyAction<P extends ReadonlyArray<${action.paramsIdentifier}>, OP extends ApplyBatchActionOptions>(args: P, options?: OP): Promise<ActionReturnTypeForOptions<OP>>;
             }
   
           }
@@ -178,7 +182,7 @@ export async function generatePerActionDataFiles(
           export type ${oldParamsIdentifier} = ${action.paramsIdentifier} | ReadonlyArray<${action.paramsIdentifier}>;
 
           /** @deprecated Use \`${action.definitionIdentifier}\` **/
-          export type ${action.shortApiName} = ${action.shortApiName}.Signature;
+          export type ${action.shortApiName} = ${action.shortApiName}.Signatures;
           `;
       }
 

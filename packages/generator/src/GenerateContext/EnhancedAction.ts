@@ -36,7 +36,7 @@ export class EnhancedAction extends EnhancedBase<ActionTypeV2> {
   }
 
   get paramsIdentifier() {
-    return `${this.shortApiName}.Parameters`;
+    return `${this.shortApiName}.Params`;
   }
 
   get definitionIdentifier() {

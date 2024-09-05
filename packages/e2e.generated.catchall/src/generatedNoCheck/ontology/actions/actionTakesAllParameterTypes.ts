@@ -27,12 +27,12 @@ export namespace actionTakesAllParameterTypes {
       description: 'A person Object';
       multiplicity: false;
       nullable: true;
-      type: ObjectActionDataType<'Person', Person>;
+      type: ObjectActionDataType<'Person', Person.Definition>;
     };
     objectSet: {
       multiplicity: false;
       nullable: false;
-      type: ObjectSetActionDataType<'Todo', Todo>;
+      type: ObjectSetActionDataType<'Todo', Todo.Definition>;
     };
     string: {
       multiplicity: false;
@@ -49,28 +49,30 @@ export namespace actionTakesAllParameterTypes {
   /**
    * An action which takes different types of parameters
    */
-  export interface Parameters {
+  export interface Params {
     readonly attachmentArray: ReadonlyArray<ActionParam.PrimitiveType<'attachment'>>;
 
     readonly dateArray?: ReadonlyArray<ActionParam.PrimitiveType<'datetime'>>;
     /**
      * A person Object
      */
-    readonly object?: ActionParam.ObjectType<Person>;
+    readonly object?: ActionParam.ObjectType<Person.Definition>;
 
-    readonly objectSet: ActionParam.ObjectSetType<Todo>;
+    readonly objectSet: ActionParam.ObjectSetType<Todo.Definition>;
 
     readonly string: ActionParam.PrimitiveType<'string'>;
 
     readonly 'time-stamp': ActionParam.PrimitiveType<'timestamp'>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
     extends ActionDefinition<
         'actionTakesAllParameterTypes',
         'Todo' | 'ObjectTypeWithAllPropertyTypes' | 'Person',
-        actionTakesAllParameterTypes
+        actionTakesAllParameterTypes.Signatures
       >,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'actionTakesAllParameterTypes';
@@ -85,16 +87,16 @@ export namespace actionTakesAllParameterTypes {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * An action which takes different types of parameters
      */
-    <
-      P extends actionTakesAllParameterTypes.Parameters | ReadonlyArray<actionTakesAllParameterTypes.Parameters>,
-      OP extends P extends ReadonlyArray<actionTakesAllParameterTypes.Parameters>
-        ? ApplyBatchActionOptions
-        : ApplyActionOptions,
-    >(
+    applyAction<P extends actionTakesAllParameterTypes.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<actionTakesAllParameterTypes.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -102,14 +104,14 @@ export namespace actionTakesAllParameterTypes {
 }
 
 /**
- * @deprecated Use `actionTakesAllParameterTypes.Parameters`
+ * @deprecated Use `actionTakesAllParameterTypes.Params`
  */
 export type actionTakesAllParameterTypes$Params =
-  | actionTakesAllParameterTypes.Parameters
-  | ReadonlyArray<actionTakesAllParameterTypes.Parameters>;
+  | actionTakesAllParameterTypes.Params
+  | ReadonlyArray<actionTakesAllParameterTypes.Params>;
 
 /** @deprecated Use `actionTakesAllParameterTypes.Definition` **/
-export type actionTakesAllParameterTypes = actionTakesAllParameterTypes.Signature;
+export type actionTakesAllParameterTypes = actionTakesAllParameterTypes.Signatures;
 
 export const actionTakesAllParameterTypes: actionTakesAllParameterTypes.Definition = {
   apiName: 'actionTakesAllParameterTypes',

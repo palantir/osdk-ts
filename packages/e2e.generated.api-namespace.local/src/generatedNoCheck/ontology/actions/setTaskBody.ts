@@ -20,19 +20,21 @@ export namespace setTaskBody {
     task: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
     };
   };
 
-  export interface Parameters {
+  export interface Params {
     readonly body: ActionParam.PrimitiveType<'string'>;
 
-    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+    extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'setTaskBody';
     modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
@@ -42,11 +44,13 @@ export namespace setTaskBody {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
-    <
-      P extends setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>,
-      OP extends P extends ReadonlyArray<setTaskBody.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+  export interface Signatures {
+    applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -54,12 +58,12 @@ export namespace setTaskBody {
 }
 
 /**
- * @deprecated Use `setTaskBody.Parameters`
+ * @deprecated Use `setTaskBody.Params`
  */
-export type setTaskBody$Params = setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>;
+export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
 
 /** @deprecated Use `setTaskBody.Definition` **/
-export type setTaskBody = setTaskBody.Signature;
+export type setTaskBody = setTaskBody.Signatures;
 
 export const setTaskBody: setTaskBody.Definition = {
   apiName: 'setTaskBody',
