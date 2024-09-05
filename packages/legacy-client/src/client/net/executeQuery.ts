@@ -282,7 +282,10 @@ async function remapQueryResponseType<
           return createOsdkObjectSet(
             client,
             definition.objectSet,
-            responseValue as ObjectSetDefinition,
+            {
+              type: "reference",
+              reference: responseValue as string,
+            },
           );
 
         case "union":
