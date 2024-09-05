@@ -28,12 +28,14 @@ import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
+import { promptUseBeta } from "./prompts/promptUseBeta.js";
 import { run } from "./run.js";
 import type { Template } from "./templates.js";
 
 interface CliArgs {
   project?: string;
   overwrite?: boolean;
+  useBeta?: boolean;
   template?: string;
   foundryUrl?: string;
   applicationUrl?: string;
@@ -63,6 +65,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("overwrite", {
             type: "boolean",
             describe: "Overwrite project directory if already exists",
+          })
+          .option("useBeta", {
+            type: "boolean",
+            describe:
+              "Use templates compatible with the Beta version of the SDK",
           })
           .option("template", {
             type: "string",
@@ -108,7 +115,8 @@ export async function cli(args: string[] = process.argv): Promise<void> {
   const parsed: CliArgs = base.parseSync();
   const project: string = await promptProject(parsed);
   const overwrite: boolean = await promptOverwrite({ ...parsed, project });
-  const template: Template = await promptTemplate(parsed);
+  const useBeta: boolean = await promptUseBeta(parsed);
+  const template: Template = await promptTemplate({ ...parsed, useBeta });
   const foundryUrl: string = await promptFoundryUrl(parsed);
   const applicationUrl: string | undefined = await promptApplicationUrl(parsed);
   const application: string = await promptApplicationRid(parsed);

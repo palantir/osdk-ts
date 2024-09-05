@@ -20,6 +20,7 @@ export interface Template {
   envPrefix: string;
   buildDirectory: string;
   hidden?: boolean;
+  isBeta?: boolean;
   getFiles: () => Promise<
     Map<
       string,
@@ -50,7 +51,7 @@ export const TEMPLATES: readonly Template[] = [
     label: "React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
-    hidden: true,
+    isBeta: true,
     getFiles: async () => ((await import(
       `@osdk/create-app.template.react.beta`
     )).files),
