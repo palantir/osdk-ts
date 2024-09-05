@@ -17,6 +17,7 @@
     "**/src/generatedNoCheck2/",
     "pnpm-lock.yaml",
     ".vscode/settings.json",
+    "examples/",
     "examples-extra/**/dist",
     "**/tsup.config.bundled_*",
     "**/api-docs/",
