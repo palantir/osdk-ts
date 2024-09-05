@@ -1,5 +1,17 @@
 # @osdk/client
 
+## 0.22.0-beta.2
+
+### Minor Changes
+
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+- 081114f: Splits batchApplyAction out of applyAction
+
+### Patch Changes
+
+- Updated dependencies [68a8dc7]
+  - @osdk/client.api@0.22.0-beta.2
+
 ## 0.22.0-beta.1
 
 ### Minor Changes
