@@ -1,5 +1,15 @@
 # @osdk/e2e.sandbox.catchall
 
+## 0.2.1
+
+### Patch Changes
+
+- @osdk/api@1.9.1
+- @osdk/e2e.generated.catchall@2.0.1
+- @osdk/client@0.21.1
+- @osdk/client.api@0.21.1
+- @osdk/internal.foundry@0.4.1
+
 ## 0.2.0
 
 ### Patch Changes

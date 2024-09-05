@@ -1,5 +1,13 @@
 # @osdk/e2e.test.foundry-sdk-generator
 
+## 0.2.2
+
+### Patch Changes
+
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+- Updated dependencies [b5870b3]
+  - @osdk/foundry-sdk-generator@1.3.2
+
 ## 0.2.1
 
 ### Patch Changes

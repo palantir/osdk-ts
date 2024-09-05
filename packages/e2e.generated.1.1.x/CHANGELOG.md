@@ -1,5 +1,16 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.2.1
+
+### Patch Changes
+
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+- Updated dependencies [18d251a]
+- Updated dependencies [b5870b3]
+  - @osdk/legacy-client@2.5.1
+  - @osdk/generator@1.13.1
+  - @osdk/api@1.9.1
+
 ## 0.2.0
 
 ### Minor Changes

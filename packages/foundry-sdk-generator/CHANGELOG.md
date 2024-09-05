@@ -1,5 +1,19 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.2
+
+### Patch Changes
+
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+- Updated dependencies [18d251a]
+- Updated dependencies [b5870b3]
+  - @osdk/legacy-client@2.5.1
+  - @osdk/generator@1.13.1
+  - @osdk/gateway@2.4.1
+  - @osdk/api@1.9.1
+  - @osdk/client@0.21.1
+  - @osdk/client.api@0.21.1
+
 ## 1.3.1
 
 ### Patch Changes

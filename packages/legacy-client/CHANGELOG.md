@@ -1,5 +1,16 @@
 # @osdk/legacy-client
 
+## 2.5.1
+
+### Patch Changes
+
+- 18d251a: Fixes object set returned from query causing an error
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+- Updated dependencies [b5870b3]
+  - @osdk/gateway@2.4.1
+  - @osdk/api@1.9.1
+  - @osdk/shared.net@1.12.1
+
 ## 2.5.0
 
 ### Minor Changes

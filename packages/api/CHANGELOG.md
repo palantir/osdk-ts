@@ -1,5 +1,13 @@
 # @osdk/api
 
+## 1.9.1
+
+### Patch Changes
+
+- Updated dependencies [b5870b3]
+  - @osdk/gateway@2.4.1
+  - @osdk/shared.net@1.12.1
+
 ## 1.9.0
 
 ### Minor Changes

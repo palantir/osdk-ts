@@ -1,5 +1,13 @@
 # @osdk/generator-converters
 
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies [b5870b3]
+  - @osdk/gateway@2.4.1
+  - @osdk/api@1.9.1
+
 ## 0.7.0
 
 ### Minor Changes

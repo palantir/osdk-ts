@@ -1,5 +1,13 @@
 # @osdk/shared.test
 
+## 1.6.1
+
+### Patch Changes
+
+- Updated dependencies [b5870b3]
+  - @osdk/gateway@2.4.1
+  - @osdk/api@1.9.1
+
 ## 1.6.0
 
 ### Minor Changes

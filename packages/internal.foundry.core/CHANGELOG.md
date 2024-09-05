@@ -1,5 +1,12 @@
 # @osdk/internal.foundry.core
 
+## 0.1.1
+
+### Patch Changes
+
+- @osdk/api@1.9.1
+- @osdk/shared.net@1.12.1
+
 ## 0.1.0
 
 ### Minor Changes
