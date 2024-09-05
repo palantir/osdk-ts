@@ -16,7 +16,6 @@
 
 import { request } from "@osdk/gateway";
 import {
-  executeQueryV2,
   getAttachment,
   getAttachmentContent,
   getAttachmentContentV2,
@@ -33,7 +32,6 @@ import {
   listObjectTypesV2,
   listOntologies,
   listOutgoingLinkTypes,
-  listQueryTypesV2,
   streamPoints,
   uploadAttachment,
 } from "@osdk/gateway/requests";
@@ -49,7 +47,6 @@ import {
   LinkTypeNotFound,
   ObjectNotFoundError,
   ObjectTypeDoesNotExistError,
-  QueryNotFoundError,
 } from "../errors.js";
 import {
   filterObjectProperties,
@@ -74,12 +71,9 @@ import {
 } from "../stubs/objectTypes.js";
 import { ObjectTypesV2 } from "../stubs/objectTypeV2.js";
 import { defaultOntology } from "../stubs/ontologies.js";
-import { queryRequestHandlers } from "../stubs/queries.js";
-import { queryTypes } from "../stubs/queryTypes.js";
 import {
   firstPointRequestHandlers,
   lastPointRequestHandlers,
-  streamPointsFrom,
   streamPointsRequestHandlers,
 } from "../stubs/timeseriesRequests.js";
 import {
@@ -468,57 +462,6 @@ export const loadObjectsEndpoints: Array<RequestHandler> = [
       new URL(req.request.url),
     );
   }),
-
-  /**
-   * List Queries
-   */
-  handleOpenApiCall(
-    listQueryTypesV2,
-    ["ontologyApiName"],
-    async (req) => {
-      // will throw if bad name
-      getOntology(req.params.ontologyApiName as string);
-
-      return {
-        data: queryTypes,
-      };
-    },
-  ),
-
-  /**
-   * Execute Queries
-   */
-  handleOpenApiCall(
-    executeQueryV2,
-    ["ontologyApiName", "queryApiName"],
-    async (req) => {
-      const body = await req.request.text();
-      const parsedBody = JSON.parse(body);
-      const queryApiName = req.params.queryApiName;
-
-      if (typeof queryApiName !== "string") {
-        throw new OpenApiCallError(
-          400,
-          InvalidRequest("Invalid parameters queryApiName"),
-        );
-      }
-
-      const queryResponses = queryRequestHandlers[queryApiName];
-      if (!queryResponses) {
-        throw new OpenApiCallError(404, QueryNotFoundError(queryApiName));
-      }
-
-      const queryResponse = queryResponses[JSON.stringify(parsedBody)];
-      if (
-        req.params.ontologyApiName === defaultOntology.apiName
-        || req.params.ontologyApiName === defaultOntology.rid
-          && queryResponse
-      ) {
-        return queryResponse;
-      }
-      throw new OpenApiCallError(400, InvalidRequest("Invalid Query Request"));
-    },
-  ),
 
   /**
    * Upload attachment
