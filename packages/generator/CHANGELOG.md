@@ -1,5 +1,15 @@
 # @osdk/generator
 
+## 1.13.1
+
+### Patch Changes
+
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+- Updated dependencies [b5870b3]
+  - @osdk/gateway@2.4.1
+  - @osdk/api@1.9.1
+  - @osdk/generator-converters@0.7.1
+
 ## 1.13.0
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 2.4.1
+
+### Patch Changes
+
+- b5870b3: Added ExactDistinct Aggregations to the TS-OSDK
+
 ## 2.4.0
 
 ### Minor Changes

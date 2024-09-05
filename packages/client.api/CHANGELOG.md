@@ -1,5 +1,11 @@
 # @osdk/client.api
 
+## 0.21.1
+
+### Patch Changes
+
+- @osdk/api@1.9.1
+
 ## 0.21.0
 
 ### Minor Changes
