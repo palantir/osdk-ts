@@ -132,7 +132,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-  /** @deprecated use ${object.shortApiName}.Definition **/
+  
   export type ${objectDefIdentifier} = ${object.shortApiName}.Definition;
 
 
@@ -237,19 +237,19 @@ $ObjectSet<${objectDefIdentifier},
 ${objectSetIdentifier}
 >
 {
-readonly aggregate: <AO extends $AggregateOpts<${objectDefIdentifier}>>(
+readonly aggregate: <const AO extends $AggregateOpts<${objectDefIdentifier}>>(
   req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
 ) => Promise<$AggregationsResults<${objectDefIdentifier}, AO>>;
 
 
-readonly pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
+readonly pivotTo: <const L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
  ${
     object instanceof EnhancedObjectType
       ? ` 
 readonly fetchOne: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    S extends false | "throw" = $NullabilityAdherenceDefault,
+    const L extends ${propertyKeysIdentifier},
+    const R extends boolean,
+    const S extends false | "throw" = $NullabilityAdherenceDefault,
   >(
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
@@ -261,9 +261,9 @@ readonly fetchOne: <
   ;
 
 readonly fetchOneWithErrors: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    S extends false | "throw" = $NullabilityAdherenceDefault,
+    const L extends ${propertyKeysIdentifier},
+    const R extends boolean,
+    const S extends false | "throw" = $NullabilityAdherenceDefault,
   >(
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
@@ -281,10 +281,10 @@ readonly fetchOneWithErrors: <
   }
 
 readonly fetchPage: <
-  L extends ${propertyKeysIdentifier},
-  R extends boolean,
-  const A extends $Augments,
-  S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+  const L extends ${propertyKeysIdentifier},
+  const R extends boolean,
+  const const A extends $Augments,
+  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<
@@ -295,10 +295,10 @@ readonly fetchPage: <
 >;
 
 readonly fetchPageWithErrors: <
-  L extends ${propertyKeysIdentifier},
-  R extends boolean,
+  const L extends ${propertyKeysIdentifier},
+  const R extends boolean,
   const A extends $Augments,
-  S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<$Result<

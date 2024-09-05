@@ -44,18 +44,18 @@ export namespace UsesForeignSpt {
   }
 
   export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt.Definition, AO>,
     ) => Promise<$AggregationsResults<UsesForeignSpt.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<UsesForeignSpt.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<UsesForeignSpt.Definition>>(
       type: L,
     ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends UsesForeignSpt.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends UsesForeignSpt.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
       options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -67,9 +67,9 @@ export namespace UsesForeignSpt {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends UsesForeignSpt.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends UsesForeignSpt.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
       options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -83,10 +83,10 @@ export namespace UsesForeignSpt {
     >;
 
     readonly fetchPage: <
-      L extends UsesForeignSpt.PropertyKeys,
-      R extends boolean,
+      const L extends UsesForeignSpt.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
     ) => Promise<
@@ -99,10 +99,10 @@ export namespace UsesForeignSpt {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends UsesForeignSpt.PropertyKeys,
-      R extends boolean,
+      const L extends UsesForeignSpt.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
     ) => Promise<
@@ -172,7 +172,6 @@ export namespace UsesForeignSpt {
     } & $OsdkObject<'UsesForeignSpt'>;
 }
 
-/** @deprecated use UsesForeignSpt.Definition **/
 export type UsesForeignSpt = UsesForeignSpt.Definition;
 
 export const UsesForeignSpt: UsesForeignSpt & $VersionBound<$ExpectedClientVersion> = {

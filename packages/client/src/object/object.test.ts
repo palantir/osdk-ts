@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { Osdk } from "@osdk/client.api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -152,3 +153,33 @@ describe("OsdkObject", () => {
     });
   });
 });
+
+async function shouldError(client: Client): Promise<Osdk<Employee>> {
+  // @ts-expect-error
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}
+
+async function shouldError2(client: Client): Promise<Employee.OsdkObject> {
+  // @ts-expect-error
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}
+
+async function shouldCompile(
+  client: Client,
+): Promise<Osdk<Employee, "employeeId">> {
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}
+
+async function shouldCompile2(
+  client: Client,
+): Promise<Employee.OsdkObject<never, "employeeId">> {
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}

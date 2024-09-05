@@ -201,9 +201,9 @@ export interface ObjectSet<
    * Fetches one object with the specified primary key, without a result wrapper
    */
   readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <
-      L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
-      R extends boolean,
-      S extends false | "throw" = NullabilityAdherenceDefault,
+      const L extends ObjectOrInterfacePropertyKeysFrom2<Q>,
+      const R extends boolean,
+      const S extends false | "throw" = NullabilityAdherenceDefault,
     >(
       primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]],
       options?: SelectArg<Q, L, R, S>,

@@ -62,7 +62,7 @@ export { ApplyBatchActionOptions }
 // @public (undocumented)
 export interface Client extends SharedClient<MinimalClient> {
     // (undocumented)
-    <Q extends ObjectTypeDefinition<any, any>>(o: Q): Q["objectSet"];
+    <Q extends ObjectTypeDefinition<any, any>>(o: Q): unknown extends Q["objectSet"] ? ObjectSet<Q> : Q["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)

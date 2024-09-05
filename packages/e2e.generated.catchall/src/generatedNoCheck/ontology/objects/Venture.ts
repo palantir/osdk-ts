@@ -50,18 +50,18 @@ export namespace Venture {
   }
 
   export interface ObjectSet extends $ObjectSet<Venture.Definition, Venture.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Venture.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Venture.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture.Definition, AO>,
     ) => Promise<$AggregationsResults<Venture.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Venture.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Venture.Definition>>(
       type: L,
     ) => $LinkedType<Venture.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Venture.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Venture.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
       options?: $SelectArg<Venture.Definition, L, R, S>,
@@ -73,9 +73,9 @@ export namespace Venture {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Venture.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Venture.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
       options?: $SelectArg<Venture.Definition, L, R, S>,
@@ -89,10 +89,10 @@ export namespace Venture {
     >;
 
     readonly fetchPage: <
-      L extends Venture.PropertyKeys,
-      R extends boolean,
+      const L extends Venture.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
     ) => Promise<
@@ -105,10 +105,10 @@ export namespace Venture {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Venture.PropertyKeys,
-      R extends boolean,
+      const L extends Venture.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
     ) => Promise<
@@ -176,7 +176,6 @@ export namespace Venture {
     } & $OsdkObject<'Venture'>;
 }
 
-/** @deprecated use Venture.Definition **/
 export type Venture = Venture.Definition;
 
 export const Venture: Venture & $VersionBound<$ExpectedClientVersion> = {

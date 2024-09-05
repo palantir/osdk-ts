@@ -708,19 +708,19 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
           ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
             type: L,
           ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
           readonly fetchPage: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
+            const L extends SomeInterface.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
           ) => Promise<
@@ -733,10 +733,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
+            const L extends SomeInterface.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
           ) => Promise<
@@ -871,18 +871,18 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
           ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
             type: L,
           ) => $LinkedType<Person.Definition, L>['objectSet'];
 
           readonly fetchOne: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
             options?: $SelectArg<Person.Definition, L, R, S>,
@@ -894,9 +894,9 @@ describe("generator", () => {
           >;
 
           readonly fetchOneWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
             options?: $SelectArg<Person.Definition, L, R, S>,
@@ -910,10 +910,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPage: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
           ) => Promise<
@@ -926,10 +926,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
           ) => Promise<
@@ -990,7 +990,6 @@ describe("generator", () => {
           } & $OsdkObject<'Person'>;
       }
 
-      /** @deprecated use Person.Definition **/
       export type Person = Person.Definition;
 
       export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
@@ -1076,16 +1075,18 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
           ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+          readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+            type: L,
+          ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
           readonly fetchOne: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -1094,9 +1095,9 @@ describe("generator", () => {
           >;
 
           readonly fetchOneWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -1110,10 +1111,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPage: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
           ) => Promise<
@@ -1126,10 +1127,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
           ) => Promise<
@@ -1207,7 +1208,6 @@ describe("generator", () => {
           } & $OsdkObject<'Todo'>;
       }
 
-      /** @deprecated use Todo.Definition **/
       export type Todo = Todo.Definition;
 
       export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
@@ -1676,19 +1676,19 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
             ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
               type: L,
             ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
             readonly fetchPage: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -1701,10 +1701,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -1839,18 +1839,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
             ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
               type: L,
             ) => $LinkedType<Person.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
               options?: $SelectArg<Person.Definition, L, R, S>,
@@ -1862,9 +1862,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
               options?: $SelectArg<Person.Definition, L, R, S>,
@@ -1878,10 +1878,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
             ) => Promise<
@@ -1894,10 +1894,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
             ) => Promise<
@@ -1958,7 +1958,6 @@ describe("generator", () => {
             } & $OsdkObject<'foo.bar.Person'>;
         }
 
-        /** @deprecated use Person.Definition **/
         export type Person = Person.Definition;
 
         export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
@@ -2044,16 +2043,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
             ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+            readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+              type: L,
+            ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -2062,9 +2063,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -2078,10 +2079,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
             ) => Promise<
@@ -2094,10 +2095,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
             ) => Promise<
@@ -2175,7 +2176,6 @@ describe("generator", () => {
             } & $OsdkObject<'foo.bar.Todo'>;
         }
 
-        /** @deprecated use Todo.Definition **/
         export type Todo = Todo.Definition;
 
         export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
@@ -2588,18 +2588,18 @@ describe("generator", () => {
             }
 
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {
-              readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
+              readonly aggregate: <const AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
                 req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt.Definition, AO>,
               ) => Promise<$AggregationsResults<UsesForeignSpt.Definition, AO>>;
 
-              readonly pivotTo: <L extends $LinkNames<UsesForeignSpt.Definition>>(
+              readonly pivotTo: <const L extends $LinkNames<UsesForeignSpt.Definition>>(
                 type: L,
               ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet'];
 
               readonly fetchOne: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
-                S extends false | 'throw' = $NullabilityAdherenceDefault,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
+                const S extends false | 'throw' = $NullabilityAdherenceDefault,
               >(
                 primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
                 options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -2611,9 +2611,9 @@ describe("generator", () => {
               >;
 
               readonly fetchOneWithErrors: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
-                S extends false | 'throw' = $NullabilityAdherenceDefault,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
+                const S extends false | 'throw' = $NullabilityAdherenceDefault,
               >(
                 primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
                 options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -2627,10 +2627,10 @@ describe("generator", () => {
               >;
 
               readonly fetchPage: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
                 const A extends $Augments,
-                S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
               >(
                 args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
               ) => Promise<
@@ -2643,10 +2643,10 @@ describe("generator", () => {
               >;
 
               readonly fetchPageWithErrors: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
                 const A extends $Augments,
-                S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
               >(
                 args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
               ) => Promise<
@@ -2716,7 +2716,6 @@ describe("generator", () => {
               } & $OsdkObject<'UsesForeignSpt'>;
           }
 
-          /** @deprecated use UsesForeignSpt.Definition **/
           export type UsesForeignSpt = UsesForeignSpt.Definition;
 
           export const UsesForeignSpt: UsesForeignSpt & $VersionBound<$ExpectedClientVersion> = {
@@ -2940,19 +2939,19 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
             ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
               type: L,
             ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
             readonly fetchPage: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -2965,10 +2964,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -3096,16 +3095,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Task.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Task.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
             ) => Promise<$AggregationsResults<Task.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet'];
+            readonly pivotTo: <const L extends $LinkNames<Task.Definition>>(
+              type: L,
+            ) => $LinkedType<Task.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
@@ -3114,9 +3115,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
@@ -3130,10 +3131,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
             ) => Promise<
@@ -3146,10 +3147,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
             ) => Promise<
@@ -3211,7 +3212,6 @@ describe("generator", () => {
             } & $OsdkObject<'com.example.dep.Task'>;
         }
 
-        /** @deprecated use Task.Definition **/
         export type Task = Task.Definition;
 
         export const Task: Task & $VersionBound<$ExpectedClientVersion> = {

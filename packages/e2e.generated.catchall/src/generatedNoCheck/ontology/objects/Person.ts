@@ -47,18 +47,18 @@ export namespace Person {
   }
 
   export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
     ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
       type: L,
     ) => $LinkedType<Person.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Person.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Person.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
       options?: $SelectArg<Person.Definition, L, R, S>,
@@ -70,9 +70,9 @@ export namespace Person {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Person.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Person.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
       options?: $SelectArg<Person.Definition, L, R, S>,
@@ -86,10 +86,10 @@ export namespace Person {
     >;
 
     readonly fetchPage: <
-      L extends Person.PropertyKeys,
-      R extends boolean,
+      const L extends Person.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
     ) => Promise<
@@ -102,10 +102,10 @@ export namespace Person {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Person.PropertyKeys,
-      R extends boolean,
+      const L extends Person.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
     ) => Promise<
@@ -162,7 +162,6 @@ export namespace Person {
     } & $OsdkObject<'Person'>;
 }
 
-/** @deprecated use Person.Definition **/
 export type Person = Person.Definition;
 
 export const Person: Person & $VersionBound<$ExpectedClientVersion> = {

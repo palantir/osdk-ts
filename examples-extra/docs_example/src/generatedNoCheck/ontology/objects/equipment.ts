@@ -44,18 +44,18 @@ export namespace equipment {
   }
 
   export interface ObjectSet extends $ObjectSet<equipment.Definition, equipment.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<equipment.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<equipment.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<equipment.Definition, AO>,
     ) => Promise<$AggregationsResults<equipment.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<equipment.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<equipment.Definition>>(
       type: L,
     ) => $LinkedType<equipment.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends equipment.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends equipment.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[equipment.Definition['primaryKeyType']],
       options?: $SelectArg<equipment.Definition, L, R, S>,
@@ -67,9 +67,9 @@ export namespace equipment {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends equipment.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends equipment.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[equipment.Definition['primaryKeyType']],
       options?: $SelectArg<equipment.Definition, L, R, S>,
@@ -83,10 +83,10 @@ export namespace equipment {
     >;
 
     readonly fetchPage: <
-      L extends equipment.PropertyKeys,
-      R extends boolean,
+      const L extends equipment.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment.Definition, L, R, A, S>,
     ) => Promise<
@@ -99,10 +99,10 @@ export namespace equipment {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends equipment.PropertyKeys,
-      R extends boolean,
+      const L extends equipment.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<equipment.Definition, L, R, A, S>,
     ) => Promise<
@@ -166,7 +166,6 @@ export namespace equipment {
     } & $OsdkObject<'equipment'>;
 }
 
-/** @deprecated use equipment.Definition **/
 export type equipment = equipment.Definition;
 
 export const equipment: equipment & $VersionBound<$ExpectedClientVersion> = {
