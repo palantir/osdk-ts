@@ -65,17 +65,19 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
     expect(result).toMatchInlineSnapshot(`
       {
+        "addedLinks": [],
         "addedLinksCount": 0,
         "addedObjectCount": 2,
-        "deletedLinksCount": 0,
-        "deletedObjectsCount": 0,
-        "edits": [
+        "addedObjects": [
           {
             "objectType": "Office",
             "primaryKey": "NYC",
             "type": "addObject",
           },
         ],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "modifiedObjects": [],
         "modifiedObjectsCount": 0,
         "type": "edits",
       }
@@ -218,25 +220,28 @@ describe("actions", () => {
     ], { $returnEdits: true });
 
     expect(result).toMatchInlineSnapshot(` 
-    {
-  "addedLinksCount": 0,
-  "addedObjectCount": 0,
-  "deletedLinksCount": 0,
-  "deletedObjectsCount": 0,
-  "edits": [
-    {
-      "objectType": "Office",
-      "primaryKey": "SEA",
-      "type": "modifyObject",
-    },
-    {
-      "objectType": "Office",
-      "primaryKey": "NYC",
-      "type": "modifyObject",
-    },
-  ],
-  "modifiedObjectsCount": 2,
-  "type": "edits",
-}`);
+      {
+        "addedLinks": [],
+        "addedLinksCount": 0,
+        "addedObjectCount": 0,
+        "addedObjects": [],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "modifiedObjects": [
+          {
+            "objectType": "Office",
+            "primaryKey": "SEA",
+            "type": "modifyObject",
+          },
+          {
+            "objectType": "Office",
+            "primaryKey": "NYC",
+            "type": "modifyObject",
+          },
+        ],
+        "modifiedObjectsCount": 2,
+        "type": "edits",
+      }
+  `);
   });
 });

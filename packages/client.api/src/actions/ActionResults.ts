@@ -20,7 +20,9 @@ export type ActionResults =
   | ({ type: "edits" } & ObjectEdits)
   | ({ type: "largeScaleEdits"; editedObjectTypes: Array<string> });
 interface ObjectEdits {
-  edits: Array<ObjectEdit>;
+  addedObjects: Array<ObjectEdit>;
+  modifiedObjects: Array<ObjectEdit>;
+  addedLinks: Array<ObjectEdit>;
   addedObjectCount: number;
   modifiedObjectsCount: number;
   deletedObjectsCount: number;
