@@ -215,22 +215,31 @@ function remapActionResponse(
 ): ActionEditResponse | undefined {
   const editResponses = response?.edits;
   if (editResponses?.type === "edits") {
-    const { edits, ...editResponse } = editResponses;
     const remappedActionResponse: ActionEditResponse = {
-      ...editResponse,
+      type: editResponses.type,
+      deletedLinksCount: editResponses.deletedLinksCount,
+      deletedObjectsCount: editResponses.deletedObjectsCount,
       addedLinks: [],
       addedObjects: [],
       modifiedObjects: [],
+      editedObjectTypes: [],
     };
+
+    const editedObjectTypesSet = new Set<string>();
     for (const edit of editResponses.edits) {
       if (edit.type === "addLink") {
         remappedActionResponse.addedLinks.push(edit);
+        editedObjectTypesSet.add(edit.aSideObject.objectType);
+        editedObjectTypesSet.add(edit.aSideObject.objectType);
       } else if (edit.type === "addObject") {
         remappedActionResponse.addedObjects.push(edit);
+        editedObjectTypesSet.add(edit.objectType);
       } else if (edit.type === "modifyObject") {
         remappedActionResponse.modifiedObjects.push(edit);
+        editedObjectTypesSet.add(edit.objectType);
       }
     }
+    remappedActionResponse.editedObjectTypes = [...editedObjectTypesSet];
     return remappedActionResponse;
   }
 }

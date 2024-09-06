@@ -66,8 +66,6 @@ describe("actions", () => {
     expect(result).toMatchInlineSnapshot(`
       {
         "addedLinks": [],
-        "addedLinksCount": 0,
-        "addedObjectCount": 2,
         "addedObjects": [
           {
             "objectType": "Office",
@@ -77,8 +75,10 @@ describe("actions", () => {
         ],
         "deletedLinksCount": 0,
         "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Office",
+        ],
         "modifiedObjects": [],
-        "modifiedObjectsCount": 0,
         "type": "edits",
       }
     `);
@@ -222,11 +222,12 @@ describe("actions", () => {
     expect(result).toMatchInlineSnapshot(` 
       {
         "addedLinks": [],
-        "addedLinksCount": 0,
-        "addedObjectCount": 0,
         "addedObjects": [],
         "deletedLinksCount": 0,
         "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Office",
+        ],
         "modifiedObjects": [
           {
             "objectType": "Office",
@@ -239,7 +240,6 @@ describe("actions", () => {
             "type": "modifyObject",
           },
         ],
-        "modifiedObjectsCount": 2,
         "type": "edits",
       }
   `);

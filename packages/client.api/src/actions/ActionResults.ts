@@ -17,18 +17,29 @@
 // These are migrated from @osdk/foundry.internal to avoid coupling the apis
 
 export type ActionResults =
-  | ({ type: "edits" } & ObjectEdits)
-  | ({ type: "largeScaleEdits"; editedObjectTypes: Array<string> });
+  & (
+    | ObjectEdits
+    | LargeScaleObjectEdits
+  )
+  & { editedObjectTypes: Array<String> };
+
 interface ObjectEdits {
+  type: "edits";
   addedObjects: Array<ObjectEdit>;
   modifiedObjects: Array<ObjectEdit>;
   addedLinks: Array<ObjectEdit>;
-  addedObjectCount: number;
-  modifiedObjectsCount: number;
   deletedObjectsCount: number;
-  addedLinksCount: number;
   deletedLinksCount: number;
 }
+interface LargeScaleObjectEdits {
+  type: "largeScaleEdits";
+  addedObjects?: never;
+  modifiedObjects?: never;
+  addedLinks?: never;
+  deletedObjectsCount?: never;
+  deletedLinksCount?: never;
+}
+
 type ObjectEdit =
   | ({ type: "addObject" } & ObjectReference)
   | ({ type: "modifyObject" } & ObjectReference)
