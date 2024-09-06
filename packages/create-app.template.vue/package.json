@@ -39,6 +39,7 @@
     "@vitejs/plugin-vue": "^4.5.0",
     "typescript": "^5.5.4",
     "vite": "^5.3.4",
+    "vitest": "^2.0.5",
     "vue-tsc": "^2"
   },
   "publishConfig": {

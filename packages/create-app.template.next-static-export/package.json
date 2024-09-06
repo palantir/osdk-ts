@@ -33,6 +33,7 @@
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@next/env": "^14.2.7",
     "@osdk/create-app.template-packager": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
@@ -42,7 +43,8 @@
     "@types/react-dom": "^18",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.3",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
   },
   "publishConfig": {
     "access": "public"
