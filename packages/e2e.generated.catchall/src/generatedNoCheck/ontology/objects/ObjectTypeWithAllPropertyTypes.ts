@@ -134,21 +134,21 @@ export namespace ObjectTypeWithAllPropertyTypes {
 
   export interface ObjectSet
     extends $ObjectSet<ObjectTypeWithAllPropertyTypes.Definition, ObjectTypeWithAllPropertyTypes.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
         ObjectTypeWithAllPropertyTypes.Definition,
         AO
       >,
     ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
       type: L,
     ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
@@ -160,9 +160,9 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
       options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
@@ -176,10 +176,10 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     readonly fetchPage: <
-      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      R extends boolean,
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
     ) => Promise<
@@ -192,10 +192,10 @@ export namespace ObjectTypeWithAllPropertyTypes {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
-      R extends boolean,
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
     ) => Promise<
@@ -373,7 +373,6 @@ export namespace ObjectTypeWithAllPropertyTypes {
     } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;
 }
 
-/** @deprecated use ObjectTypeWithAllPropertyTypes.Definition **/
 export type ObjectTypeWithAllPropertyTypes = ObjectTypeWithAllPropertyTypes.Definition;
 
 export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & $VersionBound<$ExpectedClientVersion> = {

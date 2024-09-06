@@ -90,7 +90,7 @@ describe("actions", () => {
     expectTypeOf<typeof undefinedResult>().toEqualTypeOf<undefined>();
     expect(undefinedResult).toBeUndefined();
 
-    const clientCreateOffice = client(createOffice).applyAction;
+    const clientCreateOffice = client(createOffice).batchApplyAction;
     expectTypeOf<typeof clientCreateOffice>().toBeCallableWith([{
       officeId: "NYC",
       address: "123 Main Street",
@@ -152,9 +152,16 @@ describe("actions", () => {
       InferredParamType
     >();
 
+    const clientBoundBatchActionTakesAttachment = client(
+      actionTakesAttachment,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesAttachment
+    >[0];
+
     expectTypeOf<{
       attachment: string | AttachmentUpload;
-    }[]>().toMatchTypeOf<InferredParamType>();
+    }[]>().toMatchTypeOf<InferredBatchParamType>();
 
     const result = await client(actionTakesAttachment).applyAction({
       attachment: "attachment.rid",
@@ -171,11 +178,18 @@ describe("actions", () => {
     type InferredParamType = Parameters<
       typeof clientBoundActionTakesAttachment
     >[0];
+    const clientBoundBatchActionTakesAttachment = client(
+      actionTakesAttachment,
+    ).batchApplyAction;
+    type InferredBatchParamType = Parameters<
+      typeof clientBoundBatchActionTakesAttachment
+    >[0];
+
     expectTypeOf<{ attachment: string | AttachmentUpload }>().toMatchTypeOf<
       InferredParamType
     >();
     expectTypeOf<{ attachment: string | AttachmentUpload }[]>().toMatchTypeOf<
-      InferredParamType
+      InferredBatchParamType
     >();
 
     const blob =
@@ -190,7 +204,7 @@ describe("actions", () => {
     expect(result).toBeUndefined();
   });
   it("conditionally returns edits in batch mode", async () => {
-    const result = await client(moveOffice).applyAction([
+    const result = await client(moveOffice).batchApplyAction([
       {
         officeId: "SEA",
         newAddress: "456 Good Place",

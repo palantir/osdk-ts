@@ -46,16 +46,18 @@ export namespace Todo {
   }
 
   export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
     ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+    readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+      type: L,
+    ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -64,9 +66,9 @@ export namespace Todo {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -80,10 +82,10 @@ export namespace Todo {
     >;
 
     readonly fetchPage: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
@@ -96,10 +98,10 @@ export namespace Todo {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
@@ -162,7 +164,6 @@ export namespace Todo {
     } & $OsdkObject<'Todo'>;
 }
 
-/** @deprecated use Todo.Definition **/
 export type Todo = Todo.Definition;
 
 export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {

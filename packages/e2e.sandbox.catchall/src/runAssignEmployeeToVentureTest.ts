@@ -53,6 +53,15 @@ export async function runAssignEmployeeToVentureTest() {
           $validateOnly: true,
         });
 
+        if (false) {
+          const r = await client(assignEmployee1).batchApplyAction([{
+            "employee-1": emp.id,
+            "venture-1": venture.ventureId,
+          }], {
+            $returnEdits: true,
+          });
+        }
+
         console.log(r);
       }
     } else if (didValidateOnce) {

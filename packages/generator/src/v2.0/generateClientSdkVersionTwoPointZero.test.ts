@@ -500,23 +500,25 @@ describe("generator", () => {
             description: 'Todo(s) to be deleted';
             multiplicity: true;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ObjectActionDataType<'Todo', Todo.Definition>;
           };
         };
 
         /**
          * An action which takes in an array of objects
          */
-        export interface Parameters {
+        export interface Params {
           /**
            * Todo(s) to be deleted
            */
-          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
         }
+        /** @deprecated **/
+        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
-          extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos>,
+          extends ActionDefinition<'deleteTodos', 'Todo', deleteTodos.Signatures>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'deleteTodos';
           description: 'An action which takes in an array of objects';
@@ -527,14 +529,16 @@ describe("generator", () => {
         }
 
         // Represents a fqn of the action
-        export interface Signature {
+        export interface Signatures {
           /**
            * An action which takes in an array of objects
            */
-          <
-            P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
-            OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
+          applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+
+          batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
             args: P,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -542,12 +546,12 @@ describe("generator", () => {
       }
 
       /**
-       * @deprecated Use \`deleteTodos.Parameters\`
+       * @deprecated Use \`deleteTodos.Params\`
        */
-      export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
+      export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
       /** @deprecated Use \`deleteTodos.Definition\` **/
-      export type deleteTodos = deleteTodos.Signature;
+      export type deleteTodos = deleteTodos.Signatures;
 
       export const deleteTodos: deleteTodos.Definition = {
         apiName: 'deleteTodos',
@@ -586,23 +590,25 @@ describe("generator", () => {
             description: 'A Todo to mark completed';
             multiplicity: false;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo>;
+            type: ObjectActionDataType<'Todo', Todo.Definition>;
           };
         };
 
         /**
          * An action which takes different types of parameters
          */
-        export interface Parameters {
+        export interface Params {
           /**
            * A Todo to mark completed
            */
-          readonly object?: ActionParam.ObjectType<Todo>;
+          readonly object?: ActionParam.ObjectType<Todo.Definition>;
         }
+        /** @deprecated **/
+        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
-          extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted>,
+          extends ActionDefinition<'markTodoCompleted', 'Todo', markTodoCompleted.Signatures>,
             VersionBound<$ExpectedClientVersion> {
           apiName: 'markTodoCompleted';
           description: 'An action which takes different types of parameters';
@@ -613,14 +619,16 @@ describe("generator", () => {
         }
 
         // Represents a fqn of the action
-        export interface Signature {
+        export interface Signatures {
           /**
            * An action which takes different types of parameters
            */
-          <
-            P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
-            OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-          >(
+          applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
+            args: P,
+            options?: OP,
+          ): Promise<ActionReturnTypeForOptions<OP>>;
+
+          batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
             args: P,
             options?: OP,
           ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -628,12 +636,12 @@ describe("generator", () => {
       }
 
       /**
-       * @deprecated Use \`markTodoCompleted.Parameters\`
+       * @deprecated Use \`markTodoCompleted.Params\`
        */
-      export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
+      export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
       /** @deprecated Use \`markTodoCompleted.Definition\` **/
-      export type markTodoCompleted = markTodoCompleted.Signature;
+      export type markTodoCompleted = markTodoCompleted.Signatures;
 
       export const markTodoCompleted: markTodoCompleted.Definition = {
         apiName: 'markTodoCompleted',
@@ -700,19 +708,19 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
           ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
             type: L,
           ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
           readonly fetchPage: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
+            const L extends SomeInterface.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
           ) => Promise<
@@ -725,10 +733,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends SomeInterface.PropertyKeys,
-            R extends boolean,
+            const L extends SomeInterface.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
           ) => Promise<
@@ -863,18 +871,18 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
           ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
             type: L,
           ) => $LinkedType<Person.Definition, L>['objectSet'];
 
           readonly fetchOne: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
             options?: $SelectArg<Person.Definition, L, R, S>,
@@ -886,9 +894,9 @@ describe("generator", () => {
           >;
 
           readonly fetchOneWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
             options?: $SelectArg<Person.Definition, L, R, S>,
@@ -902,10 +910,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPage: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
           ) => Promise<
@@ -918,10 +926,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Person.PropertyKeys,
-            R extends boolean,
+            const L extends Person.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
           ) => Promise<
@@ -982,7 +990,6 @@ describe("generator", () => {
           } & $OsdkObject<'Person'>;
       }
 
-      /** @deprecated use Person.Definition **/
       export type Person = Person.Definition;
 
       export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
@@ -1068,16 +1075,18 @@ describe("generator", () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
           ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+          readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+            type: L,
+          ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
           readonly fetchOne: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -1086,9 +1095,9 @@ describe("generator", () => {
           >;
 
           readonly fetchOneWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
-            S extends false | 'throw' = $NullabilityAdherenceDefault,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
+            const S extends false | 'throw' = $NullabilityAdherenceDefault,
           >(
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -1102,10 +1111,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPage: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
           ) => Promise<
@@ -1118,10 +1127,10 @@ describe("generator", () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Todo.PropertyKeys,
-            R extends boolean,
+            const L extends Todo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
           ) => Promise<
@@ -1199,7 +1208,6 @@ describe("generator", () => {
           } & $OsdkObject<'Todo'>;
       }
 
-      /** @deprecated use Todo.Definition **/
       export type Todo = Todo.Definition;
 
       export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
@@ -1460,23 +1468,25 @@ describe("generator", () => {
               description: 'Todo(s) to be deleted';
               multiplicity: true;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
             };
           };
 
           /**
            * An action which takes in an array of objects
            */
-          export interface Parameters {
+          export interface Params {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
           }
+          /** @deprecated **/
+          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
-            extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos>,
+            extends ActionDefinition<'deleteTodos', 'foo.bar.Todo', deleteTodos.Signatures>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.deleteTodos';
             description: 'An action which takes in an array of objects';
@@ -1487,14 +1497,16 @@ describe("generator", () => {
           }
 
           // Represents a fqn of the action
-          export interface Signature {
+          export interface Signatures {
             /**
              * An action which takes in an array of objects
              */
-            <
-              P extends deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>,
-              OP extends P extends ReadonlyArray<deleteTodos.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-            >(
+            applyAction<P extends deleteTodos.Params, OP extends ApplyActionOptions>(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+
+            batchApplyAction<P extends ReadonlyArray<deleteTodos.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -1502,12 +1514,12 @@ describe("generator", () => {
         }
 
         /**
-         * @deprecated Use \`deleteTodos.Parameters\`
+         * @deprecated Use \`deleteTodos.Params\`
          */
-        export type deleteTodos$Params = deleteTodos.Parameters | ReadonlyArray<deleteTodos.Parameters>;
+        export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
         /** @deprecated Use \`deleteTodos.Definition\` **/
-        export type deleteTodos = deleteTodos.Signature;
+        export type deleteTodos = deleteTodos.Signatures;
 
         export const deleteTodos: deleteTodos.Definition = {
           apiName: 'foo.bar.deleteTodos',
@@ -1546,23 +1558,25 @@ describe("generator", () => {
               description: 'A Todo to mark completed';
               multiplicity: false;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
             };
           };
 
           /**
            * An action which takes different types of parameters
            */
-          export interface Parameters {
+          export interface Params {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo>;
+            readonly object?: ActionParam.ObjectType<Todo.Definition>;
           }
+          /** @deprecated **/
+          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
-            extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted>,
+            extends ActionDefinition<'markTodoCompleted', 'foo.bar.Todo', markTodoCompleted.Signatures>,
               VersionBound<$ExpectedClientVersion> {
             apiName: 'foo.bar.markTodoCompleted';
             description: 'An action which takes different types of parameters';
@@ -1573,14 +1587,16 @@ describe("generator", () => {
           }
 
           // Represents a fqn of the action
-          export interface Signature {
+          export interface Signatures {
             /**
              * An action which takes different types of parameters
              */
-            <
-              P extends markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>,
-              OP extends P extends ReadonlyArray<markTodoCompleted.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-            >(
+            applyAction<P extends markTodoCompleted.Params, OP extends ApplyActionOptions>(
+              args: P,
+              options?: OP,
+            ): Promise<ActionReturnTypeForOptions<OP>>;
+
+            batchApplyAction<P extends ReadonlyArray<markTodoCompleted.Params>, OP extends ApplyBatchActionOptions>(
               args: P,
               options?: OP,
             ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -1588,12 +1604,12 @@ describe("generator", () => {
         }
 
         /**
-         * @deprecated Use \`markTodoCompleted.Parameters\`
+         * @deprecated Use \`markTodoCompleted.Params\`
          */
-        export type markTodoCompleted$Params = markTodoCompleted.Parameters | ReadonlyArray<markTodoCompleted.Parameters>;
+        export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
         /** @deprecated Use \`markTodoCompleted.Definition\` **/
-        export type markTodoCompleted = markTodoCompleted.Signature;
+        export type markTodoCompleted = markTodoCompleted.Signatures;
 
         export const markTodoCompleted: markTodoCompleted.Definition = {
           apiName: 'foo.bar.markTodoCompleted',
@@ -1660,19 +1676,19 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
             ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
               type: L,
             ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
             readonly fetchPage: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -1685,10 +1701,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -1823,18 +1839,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Person.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
             ) => Promise<$AggregationsResults<Person.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Person.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
               type: L,
             ) => $LinkedType<Person.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
               options?: $SelectArg<Person.Definition, L, R, S>,
@@ -1846,9 +1862,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
               options?: $SelectArg<Person.Definition, L, R, S>,
@@ -1862,10 +1878,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
             ) => Promise<
@@ -1878,10 +1894,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Person.PropertyKeys,
-              R extends boolean,
+              const L extends Person.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
             ) => Promise<
@@ -1942,7 +1958,6 @@ describe("generator", () => {
             } & $OsdkObject<'foo.bar.Person'>;
         }
 
-        /** @deprecated use Person.Definition **/
         export type Person = Person.Definition;
 
         export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
@@ -2028,16 +2043,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
             ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+            readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+              type: L,
+            ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -2046,9 +2063,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
@@ -2062,10 +2079,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
             ) => Promise<
@@ -2078,10 +2095,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Todo.PropertyKeys,
-              R extends boolean,
+              const L extends Todo.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
             ) => Promise<
@@ -2159,7 +2176,6 @@ describe("generator", () => {
             } & $OsdkObject<'foo.bar.Todo'>;
         }
 
-        /** @deprecated use Todo.Definition **/
         export type Todo = Todo.Definition;
 
         export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
@@ -2572,18 +2588,18 @@ describe("generator", () => {
             }
 
             export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {
-              readonly aggregate: <AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
+              readonly aggregate: <const AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
                 req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt.Definition, AO>,
               ) => Promise<$AggregationsResults<UsesForeignSpt.Definition, AO>>;
 
-              readonly pivotTo: <L extends $LinkNames<UsesForeignSpt.Definition>>(
+              readonly pivotTo: <const L extends $LinkNames<UsesForeignSpt.Definition>>(
                 type: L,
               ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet'];
 
               readonly fetchOne: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
-                S extends false | 'throw' = $NullabilityAdherenceDefault,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
+                const S extends false | 'throw' = $NullabilityAdherenceDefault,
               >(
                 primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
                 options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -2595,9 +2611,9 @@ describe("generator", () => {
               >;
 
               readonly fetchOneWithErrors: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
-                S extends false | 'throw' = $NullabilityAdherenceDefault,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
+                const S extends false | 'throw' = $NullabilityAdherenceDefault,
               >(
                 primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
                 options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
@@ -2611,10 +2627,10 @@ describe("generator", () => {
               >;
 
               readonly fetchPage: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
                 const A extends $Augments,
-                S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
               >(
                 args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
               ) => Promise<
@@ -2627,10 +2643,10 @@ describe("generator", () => {
               >;
 
               readonly fetchPageWithErrors: <
-                L extends UsesForeignSpt.PropertyKeys,
-                R extends boolean,
+                const L extends UsesForeignSpt.PropertyKeys,
+                const R extends boolean,
                 const A extends $Augments,
-                S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
               >(
                 args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
               ) => Promise<
@@ -2700,7 +2716,6 @@ describe("generator", () => {
               } & $OsdkObject<'UsesForeignSpt'>;
           }
 
-          /** @deprecated use UsesForeignSpt.Definition **/
           export type UsesForeignSpt = UsesForeignSpt.Definition;
 
           export const UsesForeignSpt: UsesForeignSpt & $VersionBound<$ExpectedClientVersion> = {
@@ -2778,19 +2793,21 @@ describe("generator", () => {
               task: {
                 multiplicity: false;
                 nullable: false;
-                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
+                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
               };
             };
 
-            export interface Parameters {
+            export interface Params {
               readonly body: ActionParam.PrimitiveType<'string'>;
 
-              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
+              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
             }
+            /** @deprecated **/
+            export type Parameters = Params;
 
             // Represents the definition of the action
             export interface Definition
-              extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody>,
+              extends ActionDefinition<'setTaskBody', 'com.example.dep.Task', setTaskBody.Signatures>,
                 VersionBound<$ExpectedClientVersion> {
               apiName: 'setTaskBody';
               modifiedEntities: { 'com.example.dep.Task': { created: false; modified: true } };
@@ -2800,11 +2817,13 @@ describe("generator", () => {
             }
 
             // Represents a fqn of the action
-            export interface Signature {
-              <
-                P extends setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>,
-                OP extends P extends ReadonlyArray<setTaskBody.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-              >(
+            export interface Signatures {
+              applyAction<P extends setTaskBody.Params, OP extends ApplyActionOptions>(
+                args: P,
+                options?: OP,
+              ): Promise<ActionReturnTypeForOptions<OP>>;
+
+              batchApplyAction<P extends ReadonlyArray<setTaskBody.Params>, OP extends ApplyBatchActionOptions>(
                 args: P,
                 options?: OP,
               ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -2812,12 +2831,12 @@ describe("generator", () => {
           }
 
           /**
-           * @deprecated Use \`setTaskBody.Parameters\`
+           * @deprecated Use \`setTaskBody.Params\`
            */
-          export type setTaskBody$Params = setTaskBody.Parameters | ReadonlyArray<setTaskBody.Parameters>;
+          export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
 
           /** @deprecated Use \`setTaskBody.Definition\` **/
-          export type setTaskBody = setTaskBody.Signature;
+          export type setTaskBody = setTaskBody.Signatures;
 
           export const setTaskBody: setTaskBody.Definition = {
             apiName: 'setTaskBody',
@@ -2920,19 +2939,19 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
             ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
               type: L,
             ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
             readonly fetchPage: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -2945,10 +2964,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends SomeInterface.PropertyKeys,
-              R extends boolean,
+              const L extends SomeInterface.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
             ) => Promise<
@@ -3076,16 +3095,18 @@ describe("generator", () => {
           }
 
           export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {
-            readonly aggregate: <AO extends $AggregateOpts<Task.Definition>>(
+            readonly aggregate: <const AO extends $AggregateOpts<Task.Definition>>(
               req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
             ) => Promise<$AggregationsResults<Task.Definition, AO>>;
 
-            readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet'];
+            readonly pivotTo: <const L extends $LinkNames<Task.Definition>>(
+              type: L,
+            ) => $LinkedType<Task.Definition, L>['objectSet'];
 
             readonly fetchOne: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
@@ -3094,9 +3115,9 @@ describe("generator", () => {
             >;
 
             readonly fetchOneWithErrors: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
-              S extends false | 'throw' = $NullabilityAdherenceDefault,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
+              const S extends false | 'throw' = $NullabilityAdherenceDefault,
             >(
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
@@ -3110,10 +3131,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPage: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
             ) => Promise<
@@ -3126,10 +3147,10 @@ describe("generator", () => {
             >;
 
             readonly fetchPageWithErrors: <
-              L extends Task.PropertyKeys,
-              R extends boolean,
+              const L extends Task.PropertyKeys,
+              const R extends boolean,
               const A extends $Augments,
-              S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
             >(
               args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
             ) => Promise<
@@ -3191,7 +3212,6 @@ describe("generator", () => {
             } & $OsdkObject<'com.example.dep.Task'>;
         }
 
-        /** @deprecated use Task.Definition **/
         export type Task = Task.Definition;
 
         export const Task: Task & $VersionBound<$ExpectedClientVersion> = {

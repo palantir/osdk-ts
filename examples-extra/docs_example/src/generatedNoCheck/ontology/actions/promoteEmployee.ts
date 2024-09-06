@@ -31,17 +31,19 @@ export namespace promoteEmployee {
   /**
    * Update an employee's title and compensation
    */
-  export interface Parameters {
+  export interface Params {
     readonly employeeId: ActionParam.PrimitiveType<'integer'>;
 
     readonly newCompensation: ActionParam.PrimitiveType<'double'>;
 
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee>,
+    extends ActionDefinition<'promoteEmployee', 'Employee', promoteEmployee.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'promoteEmployee';
     description: "Update an employee's title and compensation";
@@ -52,14 +54,16 @@ export namespace promoteEmployee {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Update an employee's title and compensation
      */
-    <
-      P extends promoteEmployee.Parameters | ReadonlyArray<promoteEmployee.Parameters>,
-      OP extends P extends ReadonlyArray<promoteEmployee.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends promoteEmployee.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<promoteEmployee.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -67,12 +71,12 @@ export namespace promoteEmployee {
 }
 
 /**
- * @deprecated Use `promoteEmployee.Parameters`
+ * @deprecated Use `promoteEmployee.Params`
  */
-export type promoteEmployee$Params = promoteEmployee.Parameters | ReadonlyArray<promoteEmployee.Parameters>;
+export type promoteEmployee$Params = promoteEmployee.Params | ReadonlyArray<promoteEmployee.Params>;
 
 /** @deprecated Use `promoteEmployee.Definition` **/
-export type promoteEmployee = promoteEmployee.Signature;
+export type promoteEmployee = promoteEmployee.Signatures;
 
 export const promoteEmployee: promoteEmployee.Definition = {
   apiName: 'promoteEmployee',

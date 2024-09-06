@@ -16,13 +16,9 @@ import type { Attachment } from '@osdk/client.api';
 import type { AttachmentUpload } from '@osdk/client.api';
 import type { DataValueClientToWire } from '@osdk/client.api';
 import type { DataValueWireToClient } from '@osdk/client.api';
-import type { GreaterThan } from 'type-fest';
-import type { GreaterThanOrEqual } from 'type-fest';
 import type { InterfaceDefinition } from '@osdk/api';
 import { InterfaceObjectSet } from '@osdk/client.api';
-import type { IsEqual } from 'type-fest';
 import { isOk } from '@osdk/client.api';
-import type { LessThan } from 'type-fest';
 import type { Logger } from 'pino';
 import type { ObjectActionDataType } from '@osdk/api';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
@@ -42,7 +38,6 @@ import type { QueryResult } from '@osdk/client.api';
 import { Result } from '@osdk/client.api';
 import type { SharedClient } from '@osdk/shared.client';
 import type { SharedClientContext } from '@osdk/shared.client';
-import type { VersionBound } from '@osdk/api';
 import { WhereClause } from '@osdk/client.api';
 
 export { ActionEditResponse }
@@ -66,18 +61,16 @@ export { ApplyBatchActionOptions }
 //
 // @public (undocumented)
 export interface Client extends SharedClient<MinimalClient> {
-    // Warning: (ae-forgotten-export) The symbol "CheckVersionBound" needs to be exported by the entry point index.d.ts
-    //
     // (undocumented)
-    <Q extends ObjectTypeDefinition<any, any>>(o: CheckVersionBound<Q>): Q["objectSet"];
+    <Q extends ObjectTypeDefinition<any, any>>(o: Q): unknown extends Q["objectSet"] ? ObjectSet<Q> : Q["objectSet"];
     // Warning: (ae-forgotten-export) The symbol "ActionSignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends ActionDefinition<any, any, any>>(o: CheckVersionBound<Q>): ActionSignatureFromDef<Q>;
+    <Q extends ActionDefinition<any, any, any>>(o: Q): ActionSignatureFromDef<Q>;
     // Warning: (ae-forgotten-export) The symbol "QuerySignatureFromDef" needs to be exported by the entry point index.d.ts
     //
     // (undocumented)
-    <Q extends QueryDefinition<any, any, any>>(o: CheckVersionBound<Q>): QuerySignatureFromDef<Q>;
+    <Q extends QueryDefinition<any, any, any>>(o: Q): QuerySignatureFromDef<Q>;
 }
 
 // @public

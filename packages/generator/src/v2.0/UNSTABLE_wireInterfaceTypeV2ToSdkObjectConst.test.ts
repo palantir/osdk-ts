@@ -154,19 +154,19 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Bar.Definition, Bar.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Bar.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Bar.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Bar.Definition, AO>,
           ) => Promise<$AggregationsResults<Bar.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Bar.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Bar.Definition>>(
             type: L,
           ) => $LinkedType<Bar.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Bar.PropertyKeys,
-            R extends boolean,
+            const L extends Bar.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
           ) => Promise<
@@ -180,10 +180,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Bar.PropertyKeys,
-            R extends boolean,
+            const L extends Bar.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
           ) => Promise<
@@ -342,22 +342,22 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Foo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
               Foo.Definition,
               AO
             >,
           ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Foo.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
             type: L,
           ) => $LinkedType<Foo.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
@@ -371,10 +371,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
@@ -546,22 +546,22 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Foo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
               Foo.Definition,
               AO
             >,
           ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Foo.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
             type: L,
           ) => $LinkedType<Foo.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
@@ -575,10 +575,10 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<

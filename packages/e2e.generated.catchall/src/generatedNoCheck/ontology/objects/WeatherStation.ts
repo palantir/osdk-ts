@@ -44,18 +44,18 @@ export namespace WeatherStation {
   }
 
   export interface ObjectSet extends $ObjectSet<WeatherStation.Definition, WeatherStation.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<WeatherStation.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<WeatherStation.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<WeatherStation.Definition, AO>,
     ) => Promise<$AggregationsResults<WeatherStation.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<WeatherStation.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<WeatherStation.Definition>>(
       type: L,
     ) => $LinkedType<WeatherStation.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
       options?: $SelectArg<WeatherStation.Definition, L, R, S>,
@@ -67,9 +67,9 @@ export namespace WeatherStation {
     >;
 
     readonly fetchOneWithErrors: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
       options?: $SelectArg<WeatherStation.Definition, L, R, S>,
@@ -83,10 +83,10 @@ export namespace WeatherStation {
     >;
 
     readonly fetchPage: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
     ) => Promise<
@@ -99,10 +99,10 @@ export namespace WeatherStation {
     >;
 
     readonly fetchPageWithErrors: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
     ) => Promise<
@@ -165,7 +165,6 @@ export namespace WeatherStation {
     } & $OsdkObject<'WeatherStation'>;
 }
 
-/** @deprecated use WeatherStation.Definition **/
 export type WeatherStation = WeatherStation.Definition;
 
 export const WeatherStation: WeatherStation & $VersionBound<$ExpectedClientVersion> = {

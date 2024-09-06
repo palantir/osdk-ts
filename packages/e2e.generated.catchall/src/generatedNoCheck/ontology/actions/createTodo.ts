@@ -10,11 +10,13 @@ export namespace createTodo {
   /**
    * Creates a new Todo
    */
-  export interface Parameters {}
+  export interface Params {}
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'createTodo', 'Todo', createTodo>,
+    extends ActionDefinition<'createTodo', 'Todo', createTodo.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'createTodo';
     description: 'Creates a new Todo';
@@ -25,14 +27,16 @@ export namespace createTodo {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Creates a new Todo
      */
-    <
-      P extends createTodo.Parameters | ReadonlyArray<createTodo.Parameters>,
-      OP extends P extends ReadonlyArray<createTodo.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends createTodo.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<createTodo.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -40,12 +44,12 @@ export namespace createTodo {
 }
 
 /**
- * @deprecated Use `createTodo.Parameters`
+ * @deprecated Use `createTodo.Params`
  */
-export type createTodo$Params = createTodo.Parameters | ReadonlyArray<createTodo.Parameters>;
+export type createTodo$Params = createTodo.Params | ReadonlyArray<createTodo.Params>;
 
 /** @deprecated Use `createTodo.Definition` **/
-export type createTodo = createTodo.Signature;
+export type createTodo = createTodo.Signatures;
 
 export const createTodo: createTodo.Definition = {
   apiName: 'createTodo',

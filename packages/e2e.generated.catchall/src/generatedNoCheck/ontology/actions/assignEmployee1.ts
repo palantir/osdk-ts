@@ -16,27 +16,29 @@ export namespace assignEmployee1 {
     'employee-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Employee', Employee>;
+      type: ObjectActionDataType<'Employee', Employee.Definition>;
     };
     'venture-1': {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'Venture', Venture>;
+      type: ObjectActionDataType<'Venture', Venture.Definition>;
     };
   };
 
   /**
    * Assigns an employee to a venture
    */
-  export interface Parameters {
-    readonly 'employee-1': ActionParam.ObjectType<Employee>;
+  export interface Params {
+    readonly 'employee-1': ActionParam.ObjectType<Employee.Definition>;
 
-    readonly 'venture-1': ActionParam.ObjectType<Venture>;
+    readonly 'venture-1': ActionParam.ObjectType<Venture.Definition>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1>,
+    extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'assignEmployee1';
     description: 'Assigns an employee to a venture';
@@ -47,14 +49,16 @@ export namespace assignEmployee1 {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Assigns an employee to a venture
      */
-    <
-      P extends assignEmployee1.Parameters | ReadonlyArray<assignEmployee1.Parameters>,
-      OP extends P extends ReadonlyArray<assignEmployee1.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends assignEmployee1.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<assignEmployee1.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -62,12 +66,12 @@ export namespace assignEmployee1 {
 }
 
 /**
- * @deprecated Use `assignEmployee1.Parameters`
+ * @deprecated Use `assignEmployee1.Params`
  */
-export type assignEmployee1$Params = assignEmployee1.Parameters | ReadonlyArray<assignEmployee1.Parameters>;
+export type assignEmployee1$Params = assignEmployee1.Params | ReadonlyArray<assignEmployee1.Params>;
 
 /** @deprecated Use `assignEmployee1.Definition` **/
-export type assignEmployee1 = assignEmployee1.Signature;
+export type assignEmployee1 = assignEmployee1.Signatures;
 
 export const assignEmployee1: assignEmployee1.Definition = {
   apiName: 'assignEmployee1',
