@@ -229,19 +229,16 @@ const UPDATE_PACKAGE_JSON: Mutator = {
   filePattern: "package.json",
   mutate: (template, content) => ({
     type: "modify",
-    newContent: content.replace(
-      // Use locally generated SDK in the monorepo
-      "\"@osdk/e2e.generated.1.1.x\": \"latest\"",
-      "\"@osdk/e2e.generated.1.1.x\": \"workspace:*\"",
-    ).replace(
-      // Follow monorepo package naming convention
-      `"name": "${templateExampleId(template)}"`,
-      `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
-    ).replace(
-      // Monorepo uses eslint 9 whereas templates are still on eslint 8
-      "\"lint\": \"eslint",
-      "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
-    ),
+    newContent: content
+      .replace(
+        // Follow monorepo package naming convention
+        `"name": "${templateExampleId(template)}"`,
+        `"name": "@osdk/examples.${templateCanonicalId(template)}"`,
+      ).replace(
+        // Monorepo uses eslint 9 whereas templates are still on eslint 8
+        "\"lint\": \"eslint",
+        "\"lint\": \"ESLINT_USE_FLAT_CONFIG=false eslint",
+      ),
   }),
 };
 

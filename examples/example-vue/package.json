@@ -13,7 +13,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@osdk/e2e.generated.1.1.x": "workspace:*",
+    "@osdk/e2e.generated.1.1.x": "latest",
     "vue": "^3.4.27",
     "vue-router": "^4.2.5"
   },

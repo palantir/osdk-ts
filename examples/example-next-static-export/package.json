@@ -14,7 +14,7 @@
     "start": "next start"
   },
   "dependencies": {
-    "@osdk/e2e.generated.1.1.x": "workspace:*",
+    "@osdk/e2e.generated.1.1.x": "latest",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18"
