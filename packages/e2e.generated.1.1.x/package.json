@@ -24,7 +24,6 @@
     "check-attw": "monorepo.tool.attw both",
     "check-spelling": "cspell --quiet .",
     "clean": "rm -rf lib dist types build tsconfig.tsbuildinfo",
-    "codegen": "rm -rf src/generatedNoCheck/* && osdk-unstable-typescript generate --outDir src/generatedNoCheck --ontologyPath ontology.json --version dev --packageType module",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
     "transpile": "monorepo.tool.transpile",
@@ -34,7 +33,7 @@
   "dependencies": {
     "@osdk/api": "workspace:~",
     "@osdk/generator": "workspace:~",
-    "@osdk/legacy-client": "workspace:~"
+    "@osdk/legacy-client": "^2.5.0"
   },
   "peerDependencies": {
     "@osdk/api": "^1.10.0-beta.1",

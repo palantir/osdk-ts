@@ -33,7 +33,6 @@
     "execa": "^9.3.0"
   },
   "devDependencies": {
-    "@osdk/legacy-client": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

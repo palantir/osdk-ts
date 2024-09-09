@@ -35,9 +35,6 @@ export default async (options, ourOptions) => {
         "packages/client.api",
       ),
       PACKAGE_CLI_VERSION: await readPackageVersion("packages/cli"),
-      PACKAGE_LEGACY_CLIENT_VERSION: await readPackageVersion(
-        "packages/legacy-client",
-      ),
       TARGET: "node",
     },
     clean: false, // we do this ourselves so its granular

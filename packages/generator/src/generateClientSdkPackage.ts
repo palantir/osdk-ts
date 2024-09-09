@@ -17,7 +17,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import type { MinimalFs } from "./MinimalFs.js";
-import { generateClientSdkVersionOneDotOne } from "./v1.1/generateClientSdkVersionOneDotOne.js";
 import { generateClientSdkVersionTwoPointZero } from "./v2.0/generateClientSdkVersionTwoPointZero.js";
 import type { WireOntologyDefinition } from "./WireOntologyDefinition.js";
 
@@ -33,24 +32,25 @@ export async function generateClientSdkPackage(
   ontologyApiNamespace: string | undefined,
   apiNamespacePackageMap: Map<string, string>,
 ) {
-  if (!packageName) throw new Error("Package name is require");
+  if (!packageName) throw new Error("Package name is required");
+  if (sdkVersion === "1.1") {
+    throw new Error(
+      "This generator version does not support generating v1 sdks",
+    );
+  }
 
   for (const packageType of ["module", "commonjs"] as const) {
     const outDir = path.join(baseOutDir, "dist", packageType);
 
-    await (sdkVersion === "1.1"
-      ? generateClientSdkVersionOneDotOne
-      : sdkVersion === "2.0"
-      ? generateClientSdkVersionTwoPointZero
-      : undefined!)(
-        ontology,
-        `typescript-sdk/${packageVersion} osdk-cli/${cliVersion}`,
-        minimalFs,
-        outDir,
-        packageType,
-        ontologyApiNamespace,
-        apiNamespacePackageMap,
-      );
+    generateClientSdkVersionTwoPointZero(
+      ontology,
+      `typescript-sdk/${packageVersion} osdk-cli/${cliVersion}`,
+      minimalFs,
+      outDir,
+      packageType,
+      ontologyApiNamespace,
+      apiNamespacePackageMap,
+    );
 
     await fs.promises.mkdir(outDir, { recursive: true });
     await writeJson(
@@ -74,7 +74,6 @@ export async function generateClientSdkPackage(
     await getPackageJsonContents(
       packageName,
       packageVersion,
-      sdkVersion,
       dependencyVersions,
     ),
   );
@@ -129,40 +128,29 @@ export interface DependencyVersions {
   osdkApiVersion: string;
   osdkClientVersion: string;
   osdkClientApiVersion: string;
-  osdkLegacyClientVersion: string;
 }
 
 export function getExpectedDependencies(
-  sdkVersion: "2.0" | "1.1",
   {
     osdkApiVersion,
     osdkClientVersion,
     osdkClientApiVersion,
-    osdkLegacyClientVersion,
   }: DependencyVersions,
 ) {
   return {
     devDependencies: {
       "@osdk/api": osdkApiVersion,
-      ...(sdkVersion
-          === "2.0"
-        ? { "@osdk/client.api": osdkClientApiVersion }
-        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
+      "@osdk/client.api": osdkClientApiVersion,
     },
     peerDependencies: {
       "@osdk/api": osdkApiVersion,
-      ...(sdkVersion === "2.0"
-        ? {
-          "@osdk/client.api": osdkClientApiVersion,
-          "@osdk/client": osdkClientVersion,
-        }
-        : { "@osdk/legacy-client": osdkLegacyClientVersion }),
+      "@osdk/client.api": osdkClientApiVersion,
+      "@osdk/client": osdkClientVersion,
     },
   };
 }
 
 function getExpectedDependenciesFull(
-  sdkVersion: "2.0" | "1.1",
   dependencyVersions: DependencyVersions,
 ) {
   const {
@@ -171,7 +159,7 @@ function getExpectedDependenciesFull(
     areTheTypesWrongVersion,
   } = dependencyVersions;
 
-  const base = getExpectedDependencies(sdkVersion, dependencyVersions);
+  const base = getExpectedDependencies(dependencyVersions);
 
   return {
     devDependencies: {
@@ -189,7 +177,6 @@ function getExpectedDependenciesFull(
 export function getPackageJsonContents(
   name: string,
   version: string,
-  sdkVersion: "2.0" | "1.1",
   dependencyVersions: DependencyVersions,
 ) {
   const esmPrefix = "./dist/module";
@@ -204,21 +191,13 @@ export function getPackageJsonContents(
         import: `${esmPrefix}/index.js`,
         require: `${commonjsPrefix}/index.js`,
       },
-      "./ontology/objects": {
-        import: `${esmPrefix}/ontology/objects${
-          sdkVersion === "2.0" ? "" : "/index"
-        }.js`,
-        require: `${commonjsPrefix}/ontology/objects${
-          sdkVersion === "2.0" ? "" : "/index"
-        }.js`,
-      },
     },
     scripts: {
       prepack:
         `tsc -p ${esmPrefix}/tsconfig.json && tsc -p ${commonjsPrefix}/tsconfig.json`,
       check: "npm exec attw $(npm pack)",
     },
-    ...getExpectedDependenciesFull(sdkVersion, dependencyVersions),
+    ...getExpectedDependenciesFull(dependencyVersions),
     files: [
       "**/*.js",
       "**/*.d.ts",

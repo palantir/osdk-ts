@@ -20,14 +20,6 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    alias: {
-      "consola": join(
-        dirname(fileURLToPath(import.meta.url)),
-        "src",
-        "legacy-client",
-        "consola.ts",
-      ),
-    },
     pool: "forks",
   },
 });
