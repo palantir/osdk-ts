@@ -77,6 +77,7 @@
     "@osdk/foundry.publicapis": "0.0.0"
   },
   "changesets": [
+    "angry-trees-sin",
     "blue-rivers-enjoy",
     "bright-gorillas-draw",
     "bright-panthers-lick",
@@ -95,11 +96,13 @@
     "nasty-seals-camp",
     "olive-crabs-exercise",
     "quiet-mails-attend",
+    "rich-ghosts-do",
     "short-bottles-sniff",
     "small-beans-travel",
     "stale-plants-itch",
     "violet-apples-end",
     "weak-masks-suffer",
+    "wise-files-smash",
     "young-goats-jump"
   ]
 }

@@ -1,5 +1,11 @@
 # @osdk/create-app.template.tutorial-todo-aip-app
 
+## 0.19.0-beta.1
+
+### Minor Changes
+
+- fb533d2: Include default tests for .env.production in templates
+
 ## 0.19.0-beta.0
 
 ### Minor Changes
