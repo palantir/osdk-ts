@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { QueryTypeV2 } from "@osdk/gateway/types";
+import type { QueryTypeV2 } from "@osdk/internal.foundry.core";
 import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import { getObjectTypesFromQueryDataType } from "./getObjectTypesFromQueryDataType.js";
 

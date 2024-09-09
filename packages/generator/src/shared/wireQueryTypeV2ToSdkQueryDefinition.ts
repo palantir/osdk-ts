@@ -15,7 +15,10 @@
  */
 
 import type { QueryDefinition, QueryParameterDefinition } from "@osdk/api";
-import type { QueryParameterV2, QueryTypeV2 } from "@osdk/gateway/types";
+import type {
+  QueryParameterV2,
+  QueryTypeV2,
+} from "@osdk/internal.foundry.core";
 import {
   wireQueryDataTypeToQueryDataTypeDefinition,
 } from "./wireQueryDataTypeToQueryDataTypeDefinition.js";

@@ -15,7 +15,7 @@
  */
 
 import type { PrimaryKeyTypes } from "@osdk/api";
-import type { PropertyV2 } from "@osdk/gateway/types";
+import type { PropertyV2 } from "@osdk/internal.foundry.core";
 
 export function wirePropertyV2ToSdkPrimaryKeyTypeDefinition(
   input: PropertyV2,

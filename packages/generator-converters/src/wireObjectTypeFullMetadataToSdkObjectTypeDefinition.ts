@@ -15,13 +15,19 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import type {
+  ObjectTypeFullMetadata,
+  PropertyApiName,
+  PropertyV2,
+} from "@osdk/internal.foundry.core";
 import { wirePropertyV2ToSdkPrimaryKeyTypeDefinition } from "./wirePropertyV2ToSdkPrimaryKeyTypeDefinition.js";
 import { wirePropertyV2ToSdkPropertyDefinition } from "./wirePropertyV2ToSdkPropertyDefinition.js";
 
 export function wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
   objectTypeWithLink: ObjectTypeFullMetadata & {
-    objectType: { properties: Record<string, { nullable?: boolean }> };
+    objectType: {
+      properties: Record<PropertyApiName, PropertyV2 & { nullable?: boolean }>;
+    };
   },
   v2: boolean,
 ): ObjectTypeDefinition<any> {

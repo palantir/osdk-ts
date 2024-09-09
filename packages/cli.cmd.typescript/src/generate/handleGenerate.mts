@@ -16,16 +16,14 @@
 
 import { ExitProcessError, YargsCheckError } from "@osdk/cli.common";
 import invokeLoginFlow from "@osdk/cli.common/loginFlow";
-import {
-  getOntologyFullMetadata,
-  listOntologiesV2,
-} from "@osdk/gateway/requests";
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
   __UNSTABLE_generateClientSdkPackage,
   generateClientSdkVersionTwoPointZero,
   getExpectedDependencies,
 } from "@osdk/generator";
+import type { OntologyIdentifier } from "@osdk/internal.foundry.core";
+import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createClientContext, createOpenApiRequest } from "@osdk/shared.net";
 import { consola } from "consola";
 import deepEqual from "fast-deep-equal";
@@ -79,7 +77,7 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     foundryUrl,
     verbose: 0,
   });
-  const { fetch } = createClientContext(
+  const ctx = createClientContext(
     {
       metadata: {
         userAgent: USER_AGENT,
@@ -91,8 +89,8 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
   );
 
   try {
-    const ontologies = await listOntologiesV2(
-      createOpenApiRequest(foundryUrl, fetch),
+    const ontologies = await OntologiesV2.listOntologiesV2(
+      ctx,
     );
 
     if (args.ontologyRid) {
@@ -108,9 +106,9 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       return false;
     }
 
-    const ontology = await getOntologyFullMetadata(
-      createOpenApiRequest(foundryUrl, fetch),
-      ontologies.data[0].apiName,
+    const ontology = await OntologiesV2.getOntologyFullMetadata(
+      ctx,
+      ontologies.data[0].apiName as OntologyIdentifier,
     );
 
     function sortKeys<T extends Record<string, any>>(

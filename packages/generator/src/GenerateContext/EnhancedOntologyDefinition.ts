@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import type {
-  ActionTypeApiName,
-  InterfaceTypeApiName,
-  OntologyV2,
-  QueryApiName,
-  SharedPropertyTypeApiName,
-} from "@osdk/gateway/types";
+import type { OntologyV2 } from "@osdk/internal.foundry.core";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedAction } from "./EnhancedAction.js";
@@ -34,11 +28,11 @@ import { ForeignType } from "./ForeignType.js";
 export class EnhancedOntologyDefinition {
   ontology: OntologyV2;
   objectTypes: Record<string, EnhancedObjectType>;
-  actionTypes: Record<ActionTypeApiName, EnhancedAction>;
-  queryTypes: Record<QueryApiName, EnhancedQuery>;
-  interfaceTypes: Record<InterfaceTypeApiName, EnhancedInterfaceType>;
+  actionTypes: Record<string, EnhancedAction>;
+  queryTypes: Record<string, EnhancedQuery>;
+  interfaceTypes: Record<string, EnhancedInterfaceType>;
   sharedPropertyTypes: Record<
-    SharedPropertyTypeApiName,
+    string,
     EnhancedSharedPropertyType
   >;
 

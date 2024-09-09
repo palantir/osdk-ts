@@ -27,6 +27,8 @@ describe(wireObjectTypeFullMetadataToSdkObjectTypeDefinition, () => {
         apiName: "apiName",
         description: "description",
         displayName: "displayName",
+        pluralDisplayName: "displayNames",
+        icon: { type: "blueprint", name: "blueprint", color: "blue" },
         primaryKey: "primaryKey",
         properties: {
           primaryKey: { dataType: { type: "string" } },

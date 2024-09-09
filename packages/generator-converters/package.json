@@ -33,10 +33,10 @@
     "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
-    "@osdk/gateway": "workspace:~"
+    "@osdk/api": "workspace:~"
   },
   "devDependencies": {
+    "@osdk/internal.foundry.core": "workspace:~",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",
