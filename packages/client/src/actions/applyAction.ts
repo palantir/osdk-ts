@@ -230,7 +230,7 @@ function remapActionResponse(
       if (edit.type === "addLink") {
         remappedActionResponse.addedLinks.push(edit);
         editedObjectTypesSet.add(edit.aSideObject.objectType);
-        editedObjectTypesSet.add(edit.aSideObject.objectType);
+        editedObjectTypesSet.add(edit.bSideObject.objectType);
       } else if (edit.type === "addObject") {
         remappedActionResponse.addedObjects.push(edit);
         editedObjectTypesSet.add(edit.objectType);
