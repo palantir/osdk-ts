@@ -11,7 +11,7 @@
     "build": "vue-tsc && vite build",
     "dev": "vite",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@osdk/e2e.generated.1.1.x": "workspace:*",
