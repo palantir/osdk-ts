@@ -4,7 +4,7 @@
   "commit": false,
   "fixed": [
     ["@osdk/foundry.*", "@osdk/foundry"],
-    ["@osdk/client.api", "@osdk/client"],
+    ["@osdk/client.api", "@osdk/client", "@osdk/api", "@osdk/foundry-sdk-generator", "@osdk/generator"],
     ["@osdk/create-app", "@osdk/create-app.template.*"]
   ],
   "linked": [],
@@ -22,5 +22,8 @@
   "snapshot": {
     "useCalculatedVersion": true
   },
-  "prereleaseTemplate": "{tag}-{datetime}-{commit}"
+  "prereleaseTemplate": "{tag}-{datetime}-{commit}",
+  "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
+    "onlyUpdatePeerDependentsWhenOutOfRange": true
+  }
 }

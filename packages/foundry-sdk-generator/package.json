@@ -33,7 +33,6 @@
     "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/client": "workspace:~",
     "@osdk/client.api": "workspace:~",
     "@osdk/gateway": "workspace:~",

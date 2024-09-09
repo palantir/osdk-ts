@@ -144,11 +144,11 @@ async function getContext(
     await setupUser();
   }
 
-  if (!await isGitClean()) {
-    throw new FailedWithUserMessage(
-      "Your working directory is not clean. We are aborting for your protection.",
-    );
-  }
+  // if (!await isGitClean()) {
+  //   throw new FailedWithUserMessage(
+  //     "Your working directory is not clean. We are aborting for your protection.",
+  //   );
+  // }
 
   const context = await getContext(args);
 

@@ -26,7 +26,6 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/shared.client": "workspace:~",
     "@osdk/shared.net": "workspace:~",
