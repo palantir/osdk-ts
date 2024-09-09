@@ -22,6 +22,13 @@ import type {
 import type { InterfaceLinkType } from "./generated/ontology-metadata/api/InterfaceLinkType.js";
 import type { InterfaceType } from "./generated/ontology-metadata/api/InterfaceType.js";
 import type { SharedPropertyType } from "./generated/ontology-metadata/api/SharedPropertyType.js";
+import type { BaseType } from "./generated/type-registry/api/BaseType.js";
+import type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
+import type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
+import type { ValueTypeDataConstraint } from "./generated/type-registry/api/ValueTypeDataConstraint.js";
+import type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
+import type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
+import type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type InterfaceTypeApiName = string;
 export type ObjectTypeFieldApiName = string;
@@ -61,9 +68,16 @@ export interface OntologyIrInterfaceType
     }>
 {}
 
+type ApiNameValueTypeReference = {
+  apiName: ValueTypeApiName
+  version: ValueTypeVersion
+}
+
 export interface OntologyIrSharedPropertyType
-  extends Omit<SharedPropertyType, "rid">
-{}
+  extends Omit<SharedPropertyType, "rid" | "valueType">
+{
+  valueType: ApiNameValueTypeReference
+}
 
 export interface OntologyIrInterfaceLinkType
   extends Omit<InterfaceLinkType, "rid">
@@ -90,3 +104,25 @@ export interface OntologyIrSharedPropertyTypeBlockDataV2 extends
 type ReplaceKeys<T, Z extends { [K in keyof T]?: unknown }> = {
   [K in keyof T]: K extends keyof Z ? Z[K] : T[K];
 };
+
+export type OntologyIrPackagedValueType = {
+  version: ValueTypeVersion,
+  baseType: BaseType,
+  constraints: ValueTypeDataConstraint[],
+  exampleValues: ExampleValue[]
+}
+
+export type OntologyIrPackagedValueTypeMetadata = {
+  apiName: ValueTypeApiName,
+  displayMetadata: ValueTypeDisplayMetadata,
+  status: ValueTypeStatus
+}
+
+export type OntologyIrValueTypeBlockDataEntry = {
+    metadata: OntologyIrPackagedValueTypeMetadata,
+    versions: OntologyIrPackagedValueType[]
+}
+
+export type OntologyIrValueTypeBlockData = {
+    valueTypes: OntologyIrValueTypeBlockDataEntry[]
+}

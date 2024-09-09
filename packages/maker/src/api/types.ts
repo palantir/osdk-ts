@@ -15,6 +15,7 @@
  */
 
 import type { OntologyIrInterfaceType } from "@osdk/client.unstable";
+import { ValueTypeVersionId } from "@osdk/client.unstable/build/esm/generated/ontology-metadata/api/ValueTypeVersionId";
 import type * as Gateway from "@osdk/gateway/types";
 
 export interface Ontology extends
@@ -67,3 +68,11 @@ export type PropertyTypeType =
   | "short"
   | "string"
   | "timestamp";
+
+
+export type OntologyIrPackagedValueType =  {
+  version: ValueTypeVersion
+  baseType: BaseType
+  constraints: list<ValueTypeDataConstraint>
+  exampleValues: list<ExampleValue>
+}

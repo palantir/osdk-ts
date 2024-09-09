@@ -1,0 +1,2 @@
+/**/
+export type DisplayName = string;
