@@ -32,6 +32,7 @@ export default async function main(
     input: string;
     output: string;
     snapshotDir: string;
+    outputValueTypes: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -57,6 +58,13 @@ export default async function main(
         describe: "Snapshot directory",
         type: "string",
         default: "snapshots",
+        coerce: path.resolve,
+      },
+      outputValueTypes: {
+        alias: "ovt",
+        describe: "Value Type Output File",
+        type: "string",
+        default: "value-types.json",
         coerce: path.resolve,
       },
     })

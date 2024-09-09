@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import type { OntologyIrInterfaceType } from "@osdk/client.unstable";
-import { ValueTypeVersionId } from "@osdk/client.unstable/build/esm/generated/ontology-metadata/api/ValueTypeVersionId";
+import type { OntologyIrInterfaceType , OntologyIrValueTypeBlockDataEntry } from "@osdk/client.unstable";
 import type * as Gateway from "@osdk/gateway/types";
 
 export interface Ontology extends
@@ -26,6 +25,7 @@ export interface Ontology extends
 {
   interfaceTypes: Record<string, InterfaceType>;
   sharedPropertyTypes: Record<string, SharedPropertyType>;
+  valueTypes: Record<string, OntologyIrValueTypeBlockDataEntry>
 }
 
 export interface InterfaceType extends
