@@ -1,5 +1,11 @@
 # @osdk/api
 
+## 1.10.0-beta.0
+
+### Minor Changes
+
+- 7c2db00: Updates QueryDefinition to include an optional generic argument
+
 ## 1.9.0
 
 ### Minor Changes

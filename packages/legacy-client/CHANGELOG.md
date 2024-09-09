@@ -1,5 +1,16 @@
 # @osdk/legacy-client
 
+## 2.6.0-beta.0
+
+### Minor Changes
+
+- c983a26: Fixes object set returned from query causing an error
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+
 ## 2.5.0
 
 ### Minor Changes

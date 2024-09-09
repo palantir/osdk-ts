@@ -1,5 +1,16 @@
 # @osdk/shared.test
 
+## 1.7.0-beta.0
+
+### Minor Changes
+
+- c94e4dd: Internal file refactor for query endpoints
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+
 ## 1.6.0
 
 ### Minor Changes
