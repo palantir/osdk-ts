@@ -12,7 +12,7 @@
     "dev": "vite",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "dependencies": {
     "@osdk/e2e.generated.1.1.x": "workspace:*",
