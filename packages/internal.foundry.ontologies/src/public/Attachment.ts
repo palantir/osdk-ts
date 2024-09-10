@@ -30,11 +30,7 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 //
 
 const _uploadAttachment: $FoundryPlatformMethod<
-  (
-    $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams: {},
-  ) => Promise<Attachment>
+  ($body: Blob, $queryParams: { filename: Filename }) => Promise<Attachment>
 > = [1, "/v1/attachments/upload", 7, "*/*"];
 
 /**
@@ -54,17 +50,8 @@ const _uploadAttachment: $FoundryPlatformMethod<
  */
 export function uploadAttachment(
   $ctx: $Client | $ClientContext,
-  ...args: [
-    $body: Blob,
-    $queryParams: { filename: Filename },
-    $headerParams: {},
-  ]
+  ...args: [$body: Blob, $queryParams: { filename: Filename }]
 ): Promise<Attachment> {
-  args[2] = {
-    ...args[2],
-    "Content-Type": args[0].type,
-    "Content-Length": args[0].size.toString(),
-  };
   return $foundryPlatformFetch($ctx, _uploadAttachment, ...args);
 }
 
