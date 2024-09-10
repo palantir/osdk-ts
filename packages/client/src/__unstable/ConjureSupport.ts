@@ -21,9 +21,9 @@ import type {
   ObjectType,
 } from "@osdk/client.unstable";
 import {
+  bulkLoadOntologyEntities,
   getLinkTypesForObjectTypes,
   loadAllOntologies,
-  loadOntologyEntities,
 } from "@osdk/client.unstable";
 import type { ConjureContext } from "conjure-lite";
 import invariant from "tiny-invariant";
@@ -198,19 +198,32 @@ export class MetadataClient {
   #getConjureObjectType = strongMemoAsync(async (objectTypeRid: string) => {
     this.#logger?.debug(`getConjureObjectType(${objectTypeRid})`);
     const body = {
-      objectTypeVersions: {
-        [objectTypeRid]: await this.ontologyVersion(""),
-      },
-      linkTypeVersions: {},
+      datasourceTypes: [],
+      objectTypes: [{
+        identifier: {
+          type: "objectTypeRid" as const,
+          objectTypeRid: objectTypeRid,
+        },
+        versionReference: {
+          type: "ontologyVersion" as const,
+          ontologyVersion: await this.ontologyVersion(""),
+        },
+      }],
+      linkTypes: [],
+      sharedPropertyTypes: [],
+      interfaceTypes: [],
+      typeGroups: [],
       loadRedacted: false,
+      includeObjectTypeCount: undefined,
       includeObjectTypesWithoutSearchableDatasources: true,
+      includeEntityMetadata: undefined,
     };
-    const entities = await loadOntologyEntities(this.#ctx, body);
+    const entities = await bulkLoadOntologyEntities(this.#ctx, undefined, body);
     invariant(
-      entities.objectTypes[objectTypeRid],
+      entities.objectTypes[0]?.objectType,
       "object type should be loaded",
     );
-    return entities.objectTypes[objectTypeRid];
+    return entities.objectTypes[0].objectType;
   });
 
   ontologyVersion = strongMemoAsync(async (_: string) =>

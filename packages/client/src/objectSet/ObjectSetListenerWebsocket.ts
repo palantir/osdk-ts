@@ -18,9 +18,9 @@ import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { Osdk } from "@osdk/client.api";
 import type { LoadAllOntologiesResponse } from "@osdk/client.unstable";
 import {
+  bulkLoadOntologyEntities,
   createTemporaryObjectSet,
   loadAllOntologies,
-  loadOntologyEntities,
 } from "@osdk/client.unstable";
 import type {
   FoundryObject,
@@ -746,21 +746,36 @@ async function getOntologyPropertyMappingForRid(
     const ontologyVersion = await getOntologyVersionForRid(ctx, ontologyRid);
 
     const body = {
-      objectTypeVersions: {
-        // TODO: Undefined drops this in the body
-        [objectRid]: ontologyVersion,
-      },
-      linkTypeVersions: {},
+      datasourceTypes: [],
+      objectTypes: [{
+        identifier: {
+          type: "objectTypeRid" as const,
+          objectTypeRid: objectRid,
+        },
+        versionReference: {
+          type: "ontologyVersion" as const,
+          ontologyVersion: ontologyVersion,
+        },
+      }],
+      linkTypes: [],
+      sharedPropertyTypes: [],
+      interfaceTypes: [],
+      typeGroups: [],
       loadRedacted: false,
+      includeObjectTypeCount: undefined,
       includeObjectTypesWithoutSearchableDatasources: true,
+      includeEntityMetadata: undefined,
     };
-    const entities = await loadOntologyEntities(ctx, body);
+    const entities = await bulkLoadOntologyEntities(ctx, undefined, body);
 
-    invariant(entities.objectTypes[objectRid], "object type should be loaded");
+    invariant(
+      entities.objectTypes[0]?.objectType,
+      "object type should be loaded",
+    );
 
     const propertyIdToApiNameMapping: Record<string, string> = Object
       .fromEntries(
-        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+        Object.values(entities.objectTypes[0].objectType.propertyTypes).map(
           property => {
             return [property.id, property.apiName!];
           },
@@ -769,7 +784,7 @@ async function getOntologyPropertyMappingForRid(
 
     const propertyApiNameToIdMapping: Record<string, string> = Object
       .fromEntries(
-        Object.values(entities.objectTypes[objectRid].propertyTypes).map(
+        Object.values(entities.objectTypes[0].objectType.propertyTypes).map(
           property => {
             return [property.apiName!, property.id];
           },
@@ -777,13 +792,16 @@ async function getOntologyPropertyMappingForRid(
       );
 
     objectTypeMapping.get(ctx)?.set(objectRid, {
-      apiName: entities.objectTypes[objectRid].apiName!,
-      id: entities.objectTypes[objectRid].id,
+      apiName: entities.objectTypes[0].objectType.apiName!,
+      id: entities.objectTypes[0].objectType.id,
       propertyIdToApiNameMapping,
       propertyApiNameToIdMapping,
     });
 
-    objectApiNameToRid.set(entities.objectTypes[objectRid].apiName!, objectRid);
+    objectApiNameToRid.set(
+      entities.objectTypes[0].objectType.apiName!,
+      objectRid,
+    );
   }
 
   return objectTypeMapping.get(ctx)?.get(objectRid);
