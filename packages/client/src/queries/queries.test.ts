@@ -17,6 +17,7 @@
 import type { ObjectSet } from "@osdk/client.api";
 import {
   $ontologyRid,
+  $Queries,
   acceptsThreeDimensionalAggregationFunction,
   acceptsTwoDimensionalAggregationFunction,
   addOne,
@@ -209,6 +210,22 @@ describe("queries", () => {
         key: "Q-AFO",
         groups: [],
       },
+    ]);
+  });
+  it("queries are enumerable", async () => {
+    const queries = Object.keys($Queries);
+    expect(queries).toStrictEqual([
+      "acceptsThreeDimensionalAggregationFunction",
+      "acceptsTwoDimensionalAggregationFunction",
+      "addOne",
+      "incrementPersonAge",
+      "queryAcceptsObject",
+      "queryAcceptsObjectSets",
+      "returnsDate",
+      "returnsObject",
+      "returnsTimestamp",
+      "threeDimensionalAggregationFunction",
+      "twoDimensionalAggregationFunction",
     ]);
   });
 });
