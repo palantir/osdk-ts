@@ -18,14 +18,21 @@ import { copyright } from "./copyright.js";
 import { generateImports } from "./generateImports.js";
 import { generateMethodJsdoc } from "./generateMethodJsdoc.js";
 import { HTTP_VERB_MAP } from "./HTTP_VERB_MAP.js";
+import { BinaryType } from "./model/BinaryType.js";
 import type { Component } from "./model/Component.js";
 import type { Model } from "./model/Model.js";
 import type { Namespace } from "./model/Namespace.js";
 import { OptionalType } from "./model/OptionalType.js";
 import type { Resource } from "./model/Resource.js";
 import type { StaticOperation } from "./model/StaticOperation.js";
+import type { Type } from "./model/Type.js";
 import { addAll } from "./util/addAll.js";
 import { writeCode } from "./writeCode.js";
+
+type ParameterPresence = Record<
+  "pathParamsPresent" | "queryParamsPresent" | "headerParamsPresent",
+  boolean
+>;
 
 export async function writeResource2(
   ns: Namespace,
@@ -66,21 +73,30 @@ async function generateMethods(resource: Resource, model: Model) {
 
     const returnType = `Promise<${innerReturnType}>`;
 
+    const { parameters, parametersIncluded } = generateMethodParameters(method);
+    const requestType = method.requestType;
+
     out += `
-     const _${methodName}: $FoundryPlatformMethod<(${
-      generateMethodParameters(method)
-    }) => ${returnType}> = ${generateOperationArray(method, model)};
+     const _${methodName}: $FoundryPlatformMethod<(${parameters}) => ${returnType}> = ${
+      generateOperationArray(method, model)
+    };
     
 
 
     ${await generateMethodJsdoc(method)}
     export function ${methodName}(
       $ctx: $Client | $ClientContext,
-      ...args: [${generateMethodParameters(method)}]
-    ): ${returnType}{ return $foundryPlatformFetch($ctx, _${methodName}, ...args); }
+      ...args: [${parameters}]
+    ): ${returnType}{${
+      requestType !== "unknown" && requestType instanceof BinaryType
+        && parametersIncluded.headerParamsPresent
+        ? fillBlobHeaders(parametersIncluded)
+        : ""
+    }return $foundryPlatformFetch($ctx, _${methodName}, ...args); }
 
     `;
   }
+
   return { out, referencedTypes };
 }
 
@@ -92,11 +108,26 @@ function generateMethodParameters(method: StaticOperation) {
     ? ""
     : `$body: ${requestType.tsReferenceString},`;
 
-  return `
-    ${getParamsAsSyntaxListString(byType.PATH)}
+  const pathParams = getParamsAsSyntaxListString(byType.PATH);
+  const queryParams = getParamsAsObject("$queryParams", byType.QUERY);
+  const headerParams = getParamsAsObject(
+    "$headerParams",
+    byType.HEADER,
+    requestType === "unknown" ? undefined : requestType,
+  );
+
+  return {
+    parametersIncluded: {
+      pathParamsPresent: pathParams !== "",
+      queryParamsPresent: queryParams !== "",
+      headerParamsPresent: headerParams !== "",
+    },
+    parameters: `
+    ${pathParams}
     ${bodyArg}
-    ${getParamsAsObject("$queryParams", byType.QUERY)}
-    ${getParamsAsObject("$headerParams", byType.HEADER)}`;
+    ${queryParams}
+    ${headerParams}`,
+  };
 }
 
 function generateOperationArray(op: StaticOperation, model: Model) {
@@ -125,24 +156,41 @@ function generateOperationArray(op: StaticOperation, model: Model) {
 function getParamsAsSyntaxListString(
   params: StaticOperation["parameters"] | undefined,
   quoteChar: string = "",
+  requestType?: Type,
 ) {
   if (!params || params.length === 0) return "";
 
-  return params.map((p) =>
-    `${quoteChar}${p.name}${quoteChar}${
+  return params.map((p) => {
+    if (
+      requestType instanceof BinaryType
+      && (p.name === "Content-Length" || p.name === "Content-Type")
+    ) {
+      return "";
+    }
+    return `${quoteChar}${p.name}${quoteChar}${
       p.type instanceof OptionalType ? "?" : ""
-    }: ${p.type.tsReferenceString},`
-  )
-    .join("");
+    }: ${p.type.tsReferenceString},`;
+  }).join("");
 }
 
 function getParamsAsObject(
   prefix: "$queryParams" | "$headerParams",
   params: StaticOperation["parameters"] | undefined,
+  requestType?: Type,
 ) {
-  if (!params || params.length === 0) return "";
+  if ((!params || params.length === 0)) return "";
   const opt = params.every(p => p.type instanceof OptionalType);
   return `${prefix}${opt ? "?" : ""}: { ${
-    getParamsAsSyntaxListString(params, `"`)
+    getParamsAsSyntaxListString(params, `"`, requestType)
   } },`;
+}
+
+function fillBlobHeaders(parametersPresent: ParameterPresence) {
+  let index = 0;
+  const bodyArgIndex = parametersPresent.pathParamsPresent ? ++index : index;
+  index++;
+  const headerArgIndex = parametersPresent.queryParamsPresent
+    ? ++index
+    : index;
+  return `args[${headerArgIndex}] = {...args[${headerArgIndex}], \"Content-Type\": args[${bodyArgIndex}].type, \"Content-Length\": args[${bodyArgIndex}].size.toString()};\n`;
 }
