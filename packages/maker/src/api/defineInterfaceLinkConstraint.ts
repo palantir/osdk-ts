@@ -15,6 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
+import { namespace } from "./defineOntology.js";
 import type { InterfaceType } from "./types.js";
 
 type Meta = { apiName: string; displayName?: string; description?: string };
@@ -65,7 +66,7 @@ function getLinkedType(t: string | InterfaceType) {
 
 function getLinkMeta(meta: One | Many) {
   return typeof meta === "string"
-    ? withDefaults({ apiName: meta })
+    ? withDefaults({ apiName: namespace + meta })
     : withDefaults(meta);
 }
 
@@ -73,7 +74,7 @@ function withDefaults(
   { apiName, description, displayName }: Meta,
 ): Required<Meta> {
   return {
-    apiName,
+    apiName: namespace + apiName,
     displayName: displayName ?? apiName,
     description: description ?? displayName ?? apiName,
   };
