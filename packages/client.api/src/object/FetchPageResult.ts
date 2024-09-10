@@ -18,8 +18,9 @@ import type {
   ObjectOrInterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
+import type { IsAny, IsNever } from "type-fest";
 import type { DefaultToFalse } from "../definitions/LinkDefinitions.js";
-import type { IsNever, Osdk } from "../OsdkObjectFrom.js";
+import type { Osdk } from "../OsdkObjectFrom.js";
 import type { PageResult } from "../PageResult.js";
 import type { NullabilityAdherence } from "./FetchPageArgs.js";
 
@@ -57,7 +58,7 @@ export type SingleOsdkResult<
   S extends NullabilityAdherence,
 > = Osdk<
   Q,
-  | L
+  | (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L)
   | (S extends false ? "$notStrict" : never)
   | (DefaultToFalse<R> extends false ? never : "$rid")
 >;

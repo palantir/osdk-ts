@@ -7,6 +7,8 @@
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
+import type { IsAny } from 'type-fest';
+import type { IsNever } from 'type-fest';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
@@ -477,7 +479,6 @@ export interface OrWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> 
 
 // Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
-// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] = "$all"> = OsdkBase<Q> & Pick<GetProps<Q, P>, GetPropsKeys<Q, P>> & {
@@ -658,7 +659,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
 }
 
 // @public (undocumented)
-export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, L | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L) | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
 
 // @public (undocumented)
 export type StringAggregateOption = "approximateDistinct";
