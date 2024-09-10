@@ -1,5 +1,11 @@
 # @osdk/client.api
 
+## 0.22.0-beta.4
+
+### Minor Changes
+
+- 0ea1a17: Fixes an issue where properties may not be inferred correctly when directly used in a return statement
+
 ## 0.22.0-beta.3
 
 ### Patch Changes
