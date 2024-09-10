@@ -178,7 +178,7 @@ function getParamsAsObject(
   params: StaticOperation["parameters"] | undefined,
   requestType?: Type,
 ) {
-  if ((!params || params.length === 0)) return "";
+  if (!params || params.length === 0) return "";
   const opt = params.every(p => p.type instanceof OptionalType);
   return `${prefix}${opt ? "?" : ""}: { ${
     getParamsAsSyntaxListString(params, `"`, requestType)
