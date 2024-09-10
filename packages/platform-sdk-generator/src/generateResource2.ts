@@ -180,9 +180,10 @@ function getParamsAsObject(
 ) {
   if (!params || params.length === 0) return "";
   const opt = params.every(p => p.type instanceof OptionalType);
-  return `${prefix}${opt ? "?" : ""}: { ${
-    getParamsAsSyntaxListString(params, `"`, requestType)
-  } },`;
+  const parameterString = getParamsAsSyntaxListString(params, `"`, requestType);
+  return parameterString === ""
+    ? ""
+    : `${prefix}${opt ? "?" : ""}: { ${parameterString} },`;
 }
 
 function fillBlobHeaders(parametersPresent: ParameterPresence) {
