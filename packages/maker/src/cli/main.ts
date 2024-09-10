@@ -17,6 +17,7 @@
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import invariant from "tiny-invariant";
 import yargs, { describe } from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
@@ -24,6 +25,8 @@ import { defineLink } from "../api/defineLink.js";
 import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
 import { defineSharedPropertyType } from "../api/defineSpt.js";
+
+const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
 
 export default async function main(
   args: string[] = process.argv,
@@ -67,7 +70,16 @@ export default async function main(
       },
     })
     .parseAsync();
-
+  let apiNamespace = "";
+  if (commandLineOpts["api-namespace"].length !== 0) {
+    apiNamespace = (commandLineOpts["api-namespace"].slice(-1) !== ".")
+      ? commandLineOpts["api-namespace"] + "."
+      : commandLineOpts["api-namespace"];
+    invariant(
+      apiNamespaceRegex.test(apiNamespace),
+      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
+    );
+  }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
   const ontology = await loadOntology(
     commandLineOpts.input,
