@@ -17,7 +17,7 @@
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import yargs from "yargs";
+import yargs, { describe } from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
 import { defineLink } from "../api/defineLink.js";
@@ -31,6 +31,7 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
+    "api-namespace": string;
     snapshotDir: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -52,6 +53,11 @@ export default async function main(
         default: "ontology.json",
         coerce: path.resolve,
       },
+      "api-namespace": {
+        describe: "Api name prefix for namespaced ontology types",
+        type: "string",
+        default: "",
+      },
       snapshotDir: {
         alias: "s",
         describe: "Snapshot directory",
@@ -63,7 +69,10 @@ export default async function main(
     .parseAsync();
 
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
-  const ontology = await loadOntology(commandLineOpts.input);
+  const ontology = await loadOntology(
+    commandLineOpts.input,
+    commandLineOpts["api-namespace"],
+  );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
@@ -110,7 +119,7 @@ async function loadOntologyViaTsNode(input: string) {
   return q;
 }
 
-async function loadOntology(input: string) {
+async function loadOntology(input: string, apiNamespace: string) {
   // Object.assign(globalThis, {
   //   defineInterface,
   //   defineLink,
@@ -118,6 +127,6 @@ async function loadOntology(input: string) {
   //   defineSharedPropertyType,
   // });
 
-  const q = await defineOntology("", async () => await import(input));
+  const q = await defineOntology(apiNamespace, async () => await import(input));
   return q;
 }
