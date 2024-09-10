@@ -32,7 +32,7 @@ export default async function main(
     input: string;
     output: string;
     snapshotDir: string;
-    outputValueTypes: string;
+    valueTypesOutput: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
     .wrap(Math.min(150, yargs().terminalWidth()))
@@ -60,8 +60,7 @@ export default async function main(
         default: "snapshots",
         coerce: path.resolve,
       },
-      outputValueTypes: {
-        alias: "ovt",
+      valueTypesOutput: {
         describe: "Value Type Output File",
         type: "string",
         default: "value-types.json",
@@ -74,7 +73,14 @@ export default async function main(
   const ontology = await loadOntology(commandLineOpts.input);
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
-  await fs.writeFile(commandLineOpts.output, JSON.stringify(ontology, null, 2));
+  await fs.writeFile(
+    commandLineOpts.output,
+    JSON.stringify(ontology.ontology, null, 2),
+  );
+  await fs.writeFile(
+    commandLineOpts.valueTypesOutput,
+    JSON.stringify(ontology.valueType, null, 2),
+  );
 }
 
 async function loadOntologyViaJiti(input: string) {

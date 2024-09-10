@@ -69,14 +69,14 @@ export interface OntologyIrInterfaceType
 {}
 
 export type ApiNameValueTypeReference = {
-  apiName: ValueTypeApiName
-  version: ValueTypeVersion
-}
+  apiName: ValueTypeApiName;
+  version: ValueTypeVersion;
+};
 
 export interface OntologyIrSharedPropertyType
   extends Omit<SharedPropertyType, "rid" | "valueType">
 {
-  valueType: ApiNameValueTypeReference
+  valueType?: ApiNameValueTypeReference;
 }
 
 export interface OntologyIrInterfaceLinkType
@@ -106,23 +106,23 @@ type ReplaceKeys<T, Z extends { [K in keyof T]?: unknown }> = {
 };
 
 export type OntologyIrPackagedValueType = {
-  version: ValueTypeVersion,
-  baseType: BaseType,
-  constraints: ValueTypeDataConstraint[],
-  exampleValues: ExampleValue[]
-}
+  version: ValueTypeVersion;
+  baseType: BaseType;
+  constraints: ValueTypeDataConstraint[];
+  exampleValues: ExampleValue[];
+};
 
 export type OntologyIrPackagedValueTypeMetadata = {
-  apiName: ValueTypeApiName,
-  displayMetadata: ValueTypeDisplayMetadata,
-  status: ValueTypeStatus
-}
+  apiName: ValueTypeApiName;
+  displayMetadata: ValueTypeDisplayMetadata;
+  status: ValueTypeStatus;
+};
 
 export type OntologyIrValueTypeBlockDataEntry = {
-    metadata: OntologyIrPackagedValueTypeMetadata,
-    versions: OntologyIrPackagedValueType[]
-}
+  metadata: OntologyIrPackagedValueTypeMetadata;
+  versions: OntologyIrPackagedValueType[];
+};
 
 export type OntologyIrValueTypeBlockData = {
-    valueTypes: OntologyIrValueTypeBlockDataEntry[]
-}
+  valueTypes: OntologyIrValueTypeBlockDataEntry[];
+};
