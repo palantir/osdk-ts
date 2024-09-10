@@ -233,8 +233,7 @@ export type TimeUnit =
   | "DAYS"
   | "WEEKS"
   | "MONTHS"
-  | "YEARS"
-  | "QUARTERS";
+  | "YEARS";
 
 /**
  * The Foundry user who last updated this resource

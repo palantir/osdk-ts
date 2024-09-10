@@ -23,6 +23,7 @@ export type {
   BuildStatus,
   BuildTarget,
   ConnectingTarget,
+  CreateBuildsRequest,
   CronExpression,
   DatasetUpdatedTrigger,
   FallbackBranches,
