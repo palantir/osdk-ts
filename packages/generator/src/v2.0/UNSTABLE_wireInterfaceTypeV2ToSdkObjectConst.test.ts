@@ -154,25 +154,25 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Bar.Definition, Bar.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Bar.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Bar.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Bar.Definition, AO>,
           ) => Promise<$AggregationsResults<Bar.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Bar.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Bar.Definition>>(
             type: L,
           ) => $LinkedType<Bar.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Bar.PropertyKeys,
-            R extends boolean,
+            const L extends Bar.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
           ) => Promise<
             $PageResult<
               Bar.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -180,17 +180,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Bar.PropertyKeys,
-            R extends boolean,
+            const L extends Bar.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Bar.Definition, L, R, A, S>,
           ) => Promise<
             $Result<
               $PageResult<
                 Bar.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -220,10 +220,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Bar.Props = keyof Bar.Props,
         > = $Osdk<Bar.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Bar.Props : Bar.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Bar.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Bar.Props
+                : Bar.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Bar;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;
@@ -335,28 +342,28 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Foo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
               Foo.Definition,
               AO
             >,
           ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Foo.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
             type: L,
           ) => $LinkedType<Foo.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
             $PageResult<
               Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -364,17 +371,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
             $Result<
               $PageResult<
                 Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -406,10 +413,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Foo.Props : Foo.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Foo.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Foo.Props
+                : Foo.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Foo;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;
@@ -532,28 +546,28 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export interface ObjectSet extends $ObjectSet<Foo.Definition, Foo.ObjectSet> {
-          readonly aggregate: <AO extends $AggregateOpts<Foo.Definition>>(
+          readonly aggregate: <const AO extends $AggregateOpts<Foo.Definition>>(
             req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
               Foo.Definition,
               AO
             >,
           ) => Promise<$AggregationsResults<Foo.Definition, AO>>;
 
-          readonly pivotTo: <L extends $LinkNames<Foo.Definition>>(
+          readonly pivotTo: <const L extends $LinkNames<Foo.Definition>>(
             type: L,
           ) => $LinkedType<Foo.Definition, L>["objectSet"];
 
           readonly fetchPage: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
             $PageResult<
               Foo.OsdkObject<
-                | (S extends false ? "$notStrict" : "$strict")
+                | (S extends false ? "$notStrict" : never)
                 | ($DefaultToFalse<R> extends false ? never : "$rid"),
                 L
               >
@@ -561,17 +575,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
           >;
 
           readonly fetchPageWithErrors: <
-            L extends Foo.PropertyKeys,
-            R extends boolean,
+            const L extends Foo.PropertyKeys,
+            const R extends boolean,
             const A extends $Augments,
-            S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
           >(
             args?: $FetchPageArgs<Foo.Definition, L, R, A, S>,
           ) => Promise<
             $Result<
               $PageResult<
                 Foo.OsdkObject<
-                  | (S extends false ? "$notStrict" : "$strict")
+                  | (S extends false ? "$notStrict" : never)
                   | ($DefaultToFalse<R> extends false ? never : "$rid"),
                   L
                 >
@@ -608,10 +622,17 @@ describe(__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst, () => {
         }
 
         export type OsdkObject<
-          OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+          OPTIONS extends never | "$notStrict" | "$rid" = never,
           K extends keyof Foo.Props = keyof Foo.Props,
         > = $Osdk<Foo.Definition, K | OPTIONS> &
-          Pick<OPTIONS extends "$notStrict" ? Foo.Props : Foo.StrictProps, K> & {
+          Pick<
+            [OPTIONS] extends [never]
+              ? Foo.StrictProps
+              : OPTIONS extends "$notStrict"
+                ? Foo.Props
+                : Foo.StrictProps,
+            K
+          > & {
             readonly $link: OsdkObjectLinks$Foo;
             readonly $title: string | undefined; // FIXME
             readonly $primaryKey: string | number;

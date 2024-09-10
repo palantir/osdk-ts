@@ -37,42 +37,42 @@ export namespace SomeInterface {
   }
 
   export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<SomeInterface.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
     ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<SomeInterface.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
       type: L,
     ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
 
     readonly fetchPage: <
-      L extends SomeInterface.PropertyKeys,
-      R extends boolean,
+      const L extends SomeInterface.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         SomeInterface.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends SomeInterface.PropertyKeys,
-      R extends boolean,
+      const L extends SomeInterface.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           SomeInterface.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -101,10 +101,17 @@ export namespace SomeInterface {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
   > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? SomeInterface.Props : SomeInterface.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? SomeInterface.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? SomeInterface.Props
+          : SomeInterface.StrictProps,
+      K
+    > & {
       readonly $link: OsdkObjectLinks$SomeInterface;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: string | number;

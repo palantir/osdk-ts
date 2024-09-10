@@ -44,72 +44,72 @@ export namespace Thing {
   }
 
   export interface ObjectSet extends $ObjectSet<Thing.Definition, Thing.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Thing.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Thing.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Thing.Definition, AO>,
     ) => Promise<$AggregationsResults<Thing.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Thing.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Thing.Definition>>(
       type: L,
     ) => $LinkedType<Thing.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Thing.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Thing.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Thing.Definition['primaryKeyType']],
       options?: $SelectArg<Thing.Definition, L, R, S>,
     ) => Promise<
       Thing.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Thing.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Thing.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Thing.Definition['primaryKeyType']],
       options?: $SelectArg<Thing.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Thing.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends Thing.PropertyKeys,
-      R extends boolean,
+      const L extends Thing.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Thing.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Thing.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Thing.PropertyKeys,
-      R extends boolean,
+      const L extends Thing.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Thing.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           Thing.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -155,10 +155,13 @@ export namespace Thing {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
   > = $Osdk<Thing.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Thing.StrictProps : OPTIONS extends '$notStrict' ? Thing.Props : Thing.StrictProps,
+      K
+    > & {
       readonly $link: Thing.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
@@ -169,7 +172,6 @@ export namespace Thing {
     } & $OsdkObject<'Thing'>;
 }
 
-/** @deprecated use Thing.Definition **/
 export type Thing = Thing.Definition;
 
 export const Thing: Thing & $VersionBound<$ExpectedClientVersion> = {

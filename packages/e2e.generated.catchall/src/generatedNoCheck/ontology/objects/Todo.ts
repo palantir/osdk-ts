@@ -55,70 +55,69 @@ export namespace Todo {
   }
 
   export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Todo.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
     ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Todo.Definition>>(type: L) => $LinkedType<Todo.Definition, L>['objectSet'];
+    readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
+      type: L,
+    ) => $LinkedType<Todo.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
-      Todo.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
-      >
+      Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Todo.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Todo.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Todo.PropertyKeys,
-      R extends boolean,
+      const L extends Todo.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           Todo.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -167,10 +166,13 @@ export namespace Todo {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
   > = $Osdk<Todo.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
+      K
+    > & {
       readonly $link: Todo.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
@@ -181,7 +183,6 @@ export namespace Todo {
     } & $OsdkObject<'Todo'>;
 }
 
-/** @deprecated use Todo.Definition **/
 export type Todo = Todo.Definition;
 
 export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {

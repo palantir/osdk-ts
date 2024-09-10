@@ -132,7 +132,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
 
 
-  /** @deprecated use ${object.shortApiName}.Definition **/
+  
   export type ${objectDefIdentifier} = ${object.shortApiName}.Definition;
 
 
@@ -189,7 +189,7 @@ export function createOsdkObject(
   const definition = object.getCleanedUpDefinition(true);
   return `
   export type ${identifier}<
-      OPTIONS extends "$strict" | "$notStrict" | "$rid" = "$strict",
+      OPTIONS extends never | "$notStrict" | "$rid" = never,
       K extends keyof ${osdkObjectPropsIdentifier}= keyof ${osdkObjectPropsIdentifier},
 
   > 
@@ -197,6 +197,8 @@ export function createOsdkObject(
         ${objectDefIdentifier}, 
         K | OPTIONS
       > & Pick<
+       [OPTIONS] extends [never]
+        ? ${osdkObjectStrictPropsIdentifier} :
         OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
         , K
 > & {
@@ -235,39 +237,39 @@ $ObjectSet<${objectDefIdentifier},
 ${objectSetIdentifier}
 >
 {
-readonly aggregate: <AO extends $AggregateOpts<${objectDefIdentifier}>>(
+readonly aggregate: <const AO extends $AggregateOpts<${objectDefIdentifier}>>(
   req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
 ) => Promise<$AggregationsResults<${objectDefIdentifier}, AO>>;
 
 
-readonly pivotTo: <L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
+readonly pivotTo: <const L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
  ${
     object instanceof EnhancedObjectType
       ? ` 
 readonly fetchOne: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    S extends false | "throw" = $NullabilityAdherenceDefault,
+    const L extends ${propertyKeysIdentifier},
+    const R extends boolean,
+    const S extends false | "throw" = $NullabilityAdherenceDefault,
   >(
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<
    ${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never:  "$rid" ),
+    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never:  "$rid" ),
     L
    >>
   ;
 
 readonly fetchOneWithErrors: <
-    L extends ${propertyKeysIdentifier},
-    R extends boolean,
-    S extends false | "throw" = $NullabilityAdherenceDefault,
+    const L extends ${propertyKeysIdentifier},
+    const R extends boolean,
+    const S extends false | "throw" = $NullabilityAdherenceDefault,
   >(
     primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
     options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
   ) => Promise<$Result<
         ${osdkObjectIdentifier}<
-        (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false?never: "$rid"),
+        (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false?never: "$rid"),
         L
       >
    >> 
@@ -279,29 +281,29 @@ readonly fetchOneWithErrors: <
   }
 
 readonly fetchPage: <
-  L extends ${propertyKeysIdentifier},
-  R extends boolean,
-  const A extends $Augments,
-  S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+  const L extends ${propertyKeysIdentifier},
+  const R extends boolean,
+  const const A extends $Augments,
+  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<
   $PageResult<${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never: "$rid"),
+    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never: "$rid"),
     L
   >>
 >;
 
 readonly fetchPageWithErrors: <
-  L extends ${propertyKeysIdentifier},
-  R extends boolean,
+  const L extends ${propertyKeysIdentifier},
+  const R extends boolean,
   const A extends $Augments,
-  S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
 >(
   args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
 ) => Promise<$Result<
  $PageResult<${osdkObjectIdentifier}<
- (S extends false ? "$notStrict" : "$strict") | ($DefaultToFalse<R> extends false? never : "$rid"),
+ (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never : "$rid"),
  L>>
  >>;
 

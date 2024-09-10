@@ -46,72 +46,72 @@ export namespace DherlihyComplexObject {
   }
 
   export interface ObjectSet extends $ObjectSet<DherlihyComplexObject.Definition, DherlihyComplexObject.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<DherlihyComplexObject.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<DherlihyComplexObject.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<DherlihyComplexObject.Definition, AO>,
     ) => Promise<$AggregationsResults<DherlihyComplexObject.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<DherlihyComplexObject.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<DherlihyComplexObject.Definition>>(
       type: L,
     ) => $LinkedType<DherlihyComplexObject.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends DherlihyComplexObject.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends DherlihyComplexObject.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[DherlihyComplexObject.Definition['primaryKeyType']],
       options?: $SelectArg<DherlihyComplexObject.Definition, L, R, S>,
     ) => Promise<
       DherlihyComplexObject.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends DherlihyComplexObject.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends DherlihyComplexObject.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[DherlihyComplexObject.Definition['primaryKeyType']],
       options?: $SelectArg<DherlihyComplexObject.Definition, L, R, S>,
     ) => Promise<
       $Result<
         DherlihyComplexObject.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends DherlihyComplexObject.PropertyKeys,
-      R extends boolean,
+      const L extends DherlihyComplexObject.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<DherlihyComplexObject.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         DherlihyComplexObject.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends DherlihyComplexObject.PropertyKeys,
-      R extends boolean,
+      const L extends DherlihyComplexObject.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<DherlihyComplexObject.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           DherlihyComplexObject.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -149,10 +149,17 @@ export namespace DherlihyComplexObject {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof DherlihyComplexObject.Props = keyof DherlihyComplexObject.Props,
   > = $Osdk<DherlihyComplexObject.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? DherlihyComplexObject.Props : DherlihyComplexObject.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? DherlihyComplexObject.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? DherlihyComplexObject.Props
+          : DherlihyComplexObject.StrictProps,
+      K
+    > & {
       readonly $link: DherlihyComplexObject.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -163,7 +170,6 @@ export namespace DherlihyComplexObject {
     } & $OsdkObject<'DherlihyComplexObject'>;
 }
 
-/** @deprecated use DherlihyComplexObject.Definition **/
 export type DherlihyComplexObject = DherlihyComplexObject.Definition;
 
 export const DherlihyComplexObject: DherlihyComplexObject & $VersionBound<$ExpectedClientVersion> = {

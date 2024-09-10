@@ -39,7 +39,7 @@ export namespace moveOffice {
   /**
    * Update an office's physical location
    */
-  export interface Parameters {
+  export interface Params {
     /**
      * The office's new physical address (not necessarily shipping address)
      */
@@ -55,10 +55,12 @@ export namespace moveOffice {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'integer'>>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'moveOffice', 'Office', moveOffice>,
+    extends ActionDefinition<'moveOffice', 'Office', moveOffice.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'moveOffice';
     description: "Update an office's physical location";
@@ -69,14 +71,16 @@ export namespace moveOffice {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Update an office's physical location
      */
-    <
-      P extends moveOffice.Parameters | ReadonlyArray<moveOffice.Parameters>,
-      OP extends P extends ReadonlyArray<moveOffice.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends moveOffice.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<moveOffice.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -84,12 +88,12 @@ export namespace moveOffice {
 }
 
 /**
- * @deprecated Use `moveOffice.Parameters`
+ * @deprecated Use `moveOffice.Params`
  */
-export type moveOffice$Params = moveOffice.Parameters | ReadonlyArray<moveOffice.Parameters>;
+export type moveOffice$Params = moveOffice.Params | ReadonlyArray<moveOffice.Params>;
 
 /** @deprecated Use `moveOffice.Definition` **/
-export type moveOffice = moveOffice.Signature;
+export type moveOffice = moveOffice.Signatures;
 
 export const moveOffice: moveOffice.Definition = {
   apiName: 'moveOffice',

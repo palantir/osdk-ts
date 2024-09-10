@@ -77,6 +77,7 @@
     "@osdk/foundry.publicapis": "0.0.0"
   },
   "changesets": [
+    "angry-trees-sin",
     "blue-rivers-enjoy",
     "bright-gorillas-draw",
     "bright-panthers-lick",
@@ -85,6 +86,8 @@
     "eight-swans-help",
     "five-wasps-design",
     "four-ants-complain",
+    "great-cows-admire",
+    "green-years-shake",
     "late-students-sleep",
     "lemon-schools-develop",
     "lovely-kangaroos-think",
@@ -93,10 +96,15 @@
     "nasty-seals-camp",
     "olive-crabs-exercise",
     "quiet-mails-attend",
+    "rich-ghosts-do",
+    "shiny-lizards-lay",
     "short-bottles-sniff",
     "small-beans-travel",
+    "stale-beans-play",
     "stale-plants-itch",
     "violet-apples-end",
-    "weak-masks-suffer"
+    "weak-masks-suffer",
+    "wise-files-smash",
+    "young-goats-jump"
   ]
 }

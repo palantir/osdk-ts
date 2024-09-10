@@ -142,7 +142,7 @@ export async function osdkObjectSetExample() {
     newCompensation: 1000000,
   }, { $returnEdits: true });
 
-  const actionResults1 = await client(promoteEmployee).applyAction([{
+  const actionResults1 = await client(promoteEmployee).batchApplyAction([{
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,

@@ -39,7 +39,7 @@ export namespace createOffice {
   /**
    * Create an office's
    */
-  export interface Parameters {
+  export interface Params {
     /**
      * The office's physical address (not necessarily shipping address)
      */
@@ -55,10 +55,12 @@ export namespace createOffice {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'createOffice', 'Office', createOffice>,
+    extends ActionDefinition<'createOffice', 'Office', createOffice.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'createOffice';
     description: "Create an office's";
@@ -69,14 +71,16 @@ export namespace createOffice {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Create an office's
      */
-    <
-      P extends createOffice.Parameters | ReadonlyArray<createOffice.Parameters>,
-      OP extends P extends ReadonlyArray<createOffice.Parameters> ? ApplyBatchActionOptions : ApplyActionOptions,
-    >(
+    applyAction<P extends createOffice.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<createOffice.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -84,12 +88,12 @@ export namespace createOffice {
 }
 
 /**
- * @deprecated Use `createOffice.Parameters`
+ * @deprecated Use `createOffice.Params`
  */
-export type createOffice$Params = createOffice.Parameters | ReadonlyArray<createOffice.Parameters>;
+export type createOffice$Params = createOffice.Params | ReadonlyArray<createOffice.Params>;
 
 /** @deprecated Use `createOffice.Definition` **/
-export type createOffice = createOffice.Signature;
+export type createOffice = createOffice.Signatures;
 
 export const createOffice: createOffice.Definition = {
   apiName: 'createOffice',

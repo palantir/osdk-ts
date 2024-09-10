@@ -21,4 +21,5 @@ export * from "./loadObjectsEndpoints.js";
 export * from "./multipassServer.js";
 export * from "./objectSetEndpoints.js";
 export * from "./ontologyMetadataEndpoints.js";
+export * from "./queryEndpoints.js";
 export * from "./unsupportedMetadataHandler.js";

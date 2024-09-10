@@ -44,72 +44,72 @@ export namespace WeatherStation {
   }
 
   export interface ObjectSet extends $ObjectSet<WeatherStation.Definition, WeatherStation.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<WeatherStation.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<WeatherStation.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<WeatherStation.Definition, AO>,
     ) => Promise<$AggregationsResults<WeatherStation.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<WeatherStation.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<WeatherStation.Definition>>(
       type: L,
     ) => $LinkedType<WeatherStation.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
       options?: $SelectArg<WeatherStation.Definition, L, R, S>,
     ) => Promise<
       WeatherStation.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
       options?: $SelectArg<WeatherStation.Definition, L, R, S>,
     ) => Promise<
       $Result<
         WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends WeatherStation.PropertyKeys,
-      R extends boolean,
+      const L extends WeatherStation.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           WeatherStation.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -144,10 +144,17 @@ export namespace WeatherStation {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
   > = $Osdk<WeatherStation.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? WeatherStation.Props : WeatherStation.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? WeatherStation.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? WeatherStation.Props
+          : WeatherStation.StrictProps,
+      K
+    > & {
       readonly $link: WeatherStation.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -158,7 +165,6 @@ export namespace WeatherStation {
     } & $OsdkObject<'WeatherStation'>;
 }
 
-/** @deprecated use WeatherStation.Definition **/
 export type WeatherStation = WeatherStation.Definition;
 
 export const WeatherStation: WeatherStation & $VersionBound<$ExpectedClientVersion> = {

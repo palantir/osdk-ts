@@ -45,7 +45,7 @@ export namespace createOfficeAndEmployee {
   /**
    * Create an office and employee
    */
-  export interface Parameters {
+  export interface Params {
     /**
      * The office's physical address (not necessarily shipping address)
      */
@@ -65,10 +65,12 @@ export namespace createOfficeAndEmployee {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
+  /** @deprecated **/
+  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
-    extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee>,
+    extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee.Signatures>,
       VersionBound<$ExpectedClientVersion> {
     apiName: 'createOfficeAndEmployee';
     description: 'Create an office and employee';
@@ -79,16 +81,16 @@ export namespace createOfficeAndEmployee {
   }
 
   // Represents a fqn of the action
-  export interface Signature {
+  export interface Signatures {
     /**
      * Create an office and employee
      */
-    <
-      P extends createOfficeAndEmployee.Parameters | ReadonlyArray<createOfficeAndEmployee.Parameters>,
-      OP extends P extends ReadonlyArray<createOfficeAndEmployee.Parameters>
-        ? ApplyBatchActionOptions
-        : ApplyActionOptions,
-    >(
+    applyAction<P extends createOfficeAndEmployee.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<createOfficeAndEmployee.Params>, OP extends ApplyBatchActionOptions>(
       args: P,
       options?: OP,
     ): Promise<ActionReturnTypeForOptions<OP>>;
@@ -96,14 +98,14 @@ export namespace createOfficeAndEmployee {
 }
 
 /**
- * @deprecated Use `createOfficeAndEmployee.Parameters`
+ * @deprecated Use `createOfficeAndEmployee.Params`
  */
 export type createOfficeAndEmployee$Params =
-  | createOfficeAndEmployee.Parameters
-  | ReadonlyArray<createOfficeAndEmployee.Parameters>;
+  | createOfficeAndEmployee.Params
+  | ReadonlyArray<createOfficeAndEmployee.Params>;
 
 /** @deprecated Use `createOfficeAndEmployee.Definition` **/
-export type createOfficeAndEmployee = createOfficeAndEmployee.Signature;
+export type createOfficeAndEmployee = createOfficeAndEmployee.Signatures;
 
 export const createOfficeAndEmployee: createOfficeAndEmployee.Definition = {
   apiName: 'createOfficeAndEmployee',

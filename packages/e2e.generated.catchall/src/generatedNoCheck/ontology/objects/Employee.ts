@@ -83,72 +83,72 @@ export namespace Employee {
   }
 
   export interface ObjectSet extends $ObjectSet<Employee.Definition, Employee.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Employee.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Employee.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Employee.Definition, AO>,
     ) => Promise<$AggregationsResults<Employee.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Employee.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Employee.Definition>>(
       type: L,
     ) => $LinkedType<Employee.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Employee.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Employee.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Employee.Definition['primaryKeyType']],
       options?: $SelectArg<Employee.Definition, L, R, S>,
     ) => Promise<
       Employee.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Employee.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Employee.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Employee.Definition['primaryKeyType']],
       options?: $SelectArg<Employee.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Employee.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends Employee.PropertyKeys,
-      R extends boolean,
+      const L extends Employee.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Employee.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Employee.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Employee.PropertyKeys,
-      R extends boolean,
+      const L extends Employee.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Employee.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           Employee.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -247,10 +247,17 @@ export namespace Employee {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
   > = $Osdk<Employee.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Employee.Props : Employee.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? Employee.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? Employee.Props
+          : Employee.StrictProps,
+      K
+    > & {
       readonly $link: Employee.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -261,7 +268,6 @@ export namespace Employee {
     } & $OsdkObject<'Employee'>;
 }
 
-/** @deprecated use Employee.Definition **/
 export type Employee = Employee.Definition;
 
 export const Employee: Employee & $VersionBound<$ExpectedClientVersion> = {

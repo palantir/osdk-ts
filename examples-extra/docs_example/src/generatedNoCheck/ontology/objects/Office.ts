@@ -58,72 +58,72 @@ export namespace Office {
   }
 
   export interface ObjectSet extends $ObjectSet<Office.Definition, Office.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Office.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Office.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Office.Definition, AO>,
     ) => Promise<$AggregationsResults<Office.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Office.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<Office.Definition>>(
       type: L,
     ) => $LinkedType<Office.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
       options?: $SelectArg<Office.Definition, L, R, S>,
     ) => Promise<
       Office.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Office.Definition['primaryKeyType']],
       options?: $SelectArg<Office.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Office.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Office.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Office.PropertyKeys,
-      R extends boolean,
+      const L extends Office.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Office.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           Office.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -173,10 +173,13 @@ export namespace Office {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
   > = $Osdk<Office.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Office.StrictProps : OPTIONS extends '$notStrict' ? Office.Props : Office.StrictProps,
+      K
+    > & {
       readonly $link: Office.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -187,7 +190,6 @@ export namespace Office {
     } & $OsdkObject<'Office'>;
 }
 
-/** @deprecated use Office.Definition **/
 export type Office = Office.Definition;
 
 export const Office: Office & $VersionBound<$ExpectedClientVersion> = {

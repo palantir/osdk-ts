@@ -46,72 +46,72 @@ export namespace BuilderDeploymentState {
   }
 
   export interface ObjectSet extends $ObjectSet<BuilderDeploymentState.Definition, BuilderDeploymentState.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<BuilderDeploymentState.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<BuilderDeploymentState.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<BuilderDeploymentState.Definition, AO>,
     ) => Promise<$AggregationsResults<BuilderDeploymentState.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<BuilderDeploymentState.Definition>>(
+    readonly pivotTo: <const L extends $LinkNames<BuilderDeploymentState.Definition>>(
       type: L,
     ) => $LinkedType<BuilderDeploymentState.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends BuilderDeploymentState.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends BuilderDeploymentState.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[BuilderDeploymentState.Definition['primaryKeyType']],
       options?: $SelectArg<BuilderDeploymentState.Definition, L, R, S>,
     ) => Promise<
       BuilderDeploymentState.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
         L
       >
     >;
 
     readonly fetchOneWithErrors: <
-      L extends BuilderDeploymentState.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends BuilderDeploymentState.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[BuilderDeploymentState.Definition['primaryKeyType']],
       options?: $SelectArg<BuilderDeploymentState.Definition, L, R, S>,
     ) => Promise<
       $Result<
         BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends BuilderDeploymentState.PropertyKeys,
-      R extends boolean,
+      const L extends BuilderDeploymentState.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BuilderDeploymentState.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         BuilderDeploymentState.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends BuilderDeploymentState.PropertyKeys,
-      R extends boolean,
+      const L extends BuilderDeploymentState.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<BuilderDeploymentState.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           BuilderDeploymentState.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -149,10 +149,17 @@ export namespace BuilderDeploymentState {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
   > = $Osdk<BuilderDeploymentState.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? BuilderDeploymentState.Props : BuilderDeploymentState.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never]
+        ? BuilderDeploymentState.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? BuilderDeploymentState.Props
+          : BuilderDeploymentState.StrictProps,
+      K
+    > & {
       readonly $link: BuilderDeploymentState.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -163,7 +170,6 @@ export namespace BuilderDeploymentState {
     } & $OsdkObject<'BuilderDeploymentState'>;
 }
 
-/** @deprecated use BuilderDeploymentState.Definition **/
 export type BuilderDeploymentState = BuilderDeploymentState.Definition;
 
 export const BuilderDeploymentState: BuilderDeploymentState & $VersionBound<$ExpectedClientVersion> = {

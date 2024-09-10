@@ -448,7 +448,7 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, Z extend
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
-    readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
+    readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <const L extends ObjectOrInterfacePropertyKeysFrom2<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
     readonly intersect: (...objectSets: ReadonlyArray<Z>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => LinkedType<Q, L>["objectSet"];
@@ -658,7 +658,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
 }
 
 // @public (undocumented)
-export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, UnionIfTrue<UnionIfFalse<L, RespectNullability<S>, "$notStrict">, DefaultToFalse<R>, "$rid">>;
+export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, L | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
 
 // @public (undocumented)
 export type StringAggregateOption = "approximateDistinct";

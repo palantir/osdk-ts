@@ -1,5 +1,28 @@
 # @osdk/cli
 
+## 0.24.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/generator@1.14.0-beta.3
+
+## 0.24.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [68a8dc7]
+- Updated dependencies [081114f]
+  - @osdk/generator@1.14.0-beta.2
+
+## 0.24.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [51fe88c]
+  - @osdk/generator@1.14.0-beta.1
+
 ## 0.24.0-beta.0
 
 ### Patch Changes

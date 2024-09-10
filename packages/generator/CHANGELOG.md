@@ -1,5 +1,26 @@
 # @osdk/generator
 
+## 1.14.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/generator-converters@0.8.0-beta.0
+
+## 1.14.0-beta.2
+
+### Minor Changes
+
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+- 081114f: Splits batchApplyAction out of applyAction
+
+## 1.14.0-beta.1
+
+### Minor Changes
+
+- 51fe88c: Fix edge case with never in newly generated types
+
 ## 1.14.0-beta.0
 
 ### Minor Changes

@@ -102,9 +102,9 @@ describe(createClient, () => {
         .fetchPage();
     });
 
-    it("doesn't work with a far future version", () => {
+    it.skip("doesn't work with a far future version", () => {
       client(
-        // @ts-expect-error
+        // if we re-enable version bounds checks: // @ts-expect-error
         MockOntology.objects.Task as
           & ObjectTypeDefinition<
             "Task",

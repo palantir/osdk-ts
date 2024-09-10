@@ -44,70 +44,69 @@ export namespace Task {
   }
 
   export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {
-    readonly aggregate: <AO extends $AggregateOpts<Task.Definition>>(
+    readonly aggregate: <const AO extends $AggregateOpts<Task.Definition>>(
       req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
     ) => Promise<$AggregationsResults<Task.Definition, AO>>;
 
-    readonly pivotTo: <L extends $LinkNames<Task.Definition>>(type: L) => $LinkedType<Task.Definition, L>['objectSet'];
+    readonly pivotTo: <const L extends $LinkNames<Task.Definition>>(
+      type: L,
+    ) => $LinkedType<Task.Definition, L>['objectSet'];
 
     readonly fetchOne: <
-      L extends Task.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Task.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
       options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
-      Task.OsdkObject<
-        (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
-      >
+      Task.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
     >;
 
     readonly fetchOneWithErrors: <
-      L extends Task.PropertyKeys,
-      R extends boolean,
-      S extends false | 'throw' = $NullabilityAdherenceDefault,
+      const L extends Task.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
     >(
       primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
       options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
       $Result<
         Task.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPage: <
-      L extends Task.PropertyKeys,
-      R extends boolean,
+      const L extends Task.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
     ) => Promise<
       $PageResult<
         Task.OsdkObject<
-          (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
           L
         >
       >
     >;
 
     readonly fetchPageWithErrors: <
-      L extends Task.PropertyKeys,
-      R extends boolean,
+      const L extends Task.PropertyKeys,
+      const R extends boolean,
       const A extends $Augments,
-      S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
     >(
       args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
     ) => Promise<
       $Result<
         $PageResult<
           Task.OsdkObject<
-            (S extends false ? '$notStrict' : '$strict') | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
             L
           >
         >
@@ -145,10 +144,13 @@ export namespace Task {
   }
 
   export type OsdkObject<
-    OPTIONS extends '$strict' | '$notStrict' | '$rid' = '$strict',
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Task.Props = keyof Task.Props,
   > = $Osdk<Task.Definition, K | OPTIONS> &
-    Pick<OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps, K> & {
+    Pick<
+      [OPTIONS] extends [never] ? Task.StrictProps : OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
+      K
+    > & {
       readonly $link: Task.Links;
       readonly $title: string | undefined; // FIXME
       readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
@@ -159,7 +161,6 @@ export namespace Task {
     } & $OsdkObject<'com.example.dep.Task'>;
 }
 
-/** @deprecated use Task.Definition **/
 export type Task = Task.Definition;
 
 export const Task: Task & $VersionBound<$ExpectedClientVersion> = {
