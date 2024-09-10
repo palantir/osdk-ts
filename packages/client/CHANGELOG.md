@@ -1,5 +1,18 @@
 # @osdk/client
 
+## 0.22.0-beta.5
+
+### Minor Changes
+
+- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/client.api@0.22.0-beta.5
+  - @osdk/api@1.10.0-beta.1
+  - @osdk/generator-converters@0.8.0-beta.1
+
 ## 0.22.0-beta.4
 
 ### Patch Changes

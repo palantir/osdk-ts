@@ -1,5 +1,16 @@
 # @osdk/maker
 
+## 0.8.0-beta.1
+
+### Minor Changes
+
+- 6e3726b: Support namespacing maker generate ontologies
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@1.10.0-beta.1
+
 ## 0.8.0-beta.0
 
 ### Patch Changes

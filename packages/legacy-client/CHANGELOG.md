@@ -1,5 +1,12 @@
 # @osdk/legacy-client
 
+## 2.6.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@1.10.0-beta.1
+
 ## 2.6.0-beta.0
 
 ### Minor Changes

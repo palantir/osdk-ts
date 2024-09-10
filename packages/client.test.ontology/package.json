@@ -1,7 +1,7 @@
 {
   "name": "@osdk/client.test.ontology",
   "private": true,
-  "version": "1.2.0-beta.4",
+  "version": "1.2.0-beta.5",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
