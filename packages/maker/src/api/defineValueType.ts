@@ -18,8 +18,8 @@ import type {
   BaseType,
   DataConstraint,
   DataConstraintWrapper,
+  FailureMessage,
 } from "@osdk/client.unstable";
-import type { FailureMessage } from "@osdk/client.unstable/build/esm/generated/ontology-metadata/api/FailureMessage";
 import invariant from "tiny-invariant";
 import { ontologyDefinition } from "./defineOntology.js";
 import type { ValueTypeDefinitionVersion } from "./types.js";
