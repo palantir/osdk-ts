@@ -1,5 +1,14 @@
 # @osdk/e2e.generated.catchall
 
+## 3.0.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/client.api@0.22.0-beta.5
+  - @osdk/client@0.22.0-beta.5
+  - @osdk/api@1.10.0-beta.1
+
 ## 3.0.0-beta.4
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "@osdk/e2e.generated.1.1.x",
   "private": true,
-  "version": "0.3.0-beta.3",
+  "version": "0.3.0-beta.4",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
@@ -37,14 +37,14 @@
     "@osdk/legacy-client": "workspace:~"
   },
   "peerDependencies": {
-    "@osdk/api": "^1.10.0-beta.0",
-    "@osdk/legacy-client": "^2.6.0-beta.0"
+    "@osdk/api": "^1.10.0-beta.1",
+    "@osdk/legacy-client": "^2.6.0-beta.1"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "^1.10.0-beta.0",
+    "@osdk/api": "^1.10.0-beta.1",
     "@osdk/cli.cmd.typescript": "workspace:~",
-    "@osdk/legacy-client": "^2.6.0-beta.0",
+    "@osdk/legacy-client": "^2.6.0-beta.1",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

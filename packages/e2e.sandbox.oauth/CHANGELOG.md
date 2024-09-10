@@ -1,5 +1,12 @@
 # @osdk/e2e.sandbox.oauth
 
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/client@0.22.0-beta.5
+
 ## 0.3.0-beta.4
 
 ### Patch Changes

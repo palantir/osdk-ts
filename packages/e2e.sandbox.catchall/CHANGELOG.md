@@ -1,5 +1,16 @@
 # @osdk/e2e.sandbox.catchall
 
+## 0.3.0-beta.5
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/client.api@0.22.0-beta.5
+  - @osdk/client@0.22.0-beta.5
+  - @osdk/api@1.10.0-beta.1
+  - @osdk/e2e.generated.catchall@3.0.0-beta.5
+  - @osdk/internal.foundry@0.5.0-beta.2
+
 ## 0.3.0-beta.4
 
 ### Patch Changes
