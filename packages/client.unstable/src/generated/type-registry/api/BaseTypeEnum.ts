@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 /**
  * Filter by Value Type base type
  */

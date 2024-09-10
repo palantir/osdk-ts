@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 /**
  * Maps and Structs are currently unsupported.
  */

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 export type { ValueTypeCreated } from "./ValueTypeCreated.js";
 export type { ValueTypeDeleted } from "./ValueTypeDeleted.js";
 export type { ValueTypeMetadataUpdated } from "./ValueTypeMetadataUpdated.js";
