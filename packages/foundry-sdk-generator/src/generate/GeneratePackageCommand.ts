@@ -34,7 +34,6 @@ export interface generatePackageCommandArgs {
   packageName: string;
   packageVersion: string;
   outputDir: string;
-  beta?: boolean;
 }
 
 export class GeneratePackageCommand
@@ -138,12 +137,6 @@ export class GeneratePackageCommand
         default: undefined,
         defaultDescription:
           `By default, no arguments will not enable any experimental features.`,
-      })
-      .options("beta", {
-        boolean: true,
-        demandOption: false,
-        hidden: true,
-        default: false,
       })
       .strict();
   }

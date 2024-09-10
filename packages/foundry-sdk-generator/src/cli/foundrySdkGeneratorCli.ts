@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import consola from "consola";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { GeneratePackageCommand } from "../generate/index.js";
@@ -29,9 +30,26 @@ export async function cli(args: string[] = process.argv) {
     .version(process.env.npm_package_version!);
 
   try {
-    return base.parseAsync();
+    // When given a callback, yargs will not process.exit on error, allowing us
+    // to inspect the arguments for `--beta` and conditionally run the beta
+    return base.parseAsync(hideBin(args), {}, async (err, argv, output) => {
+      // yargs does its best to process the arguments even if it doesn't know about them
+      // like in the case of `--beta` now. So we can just try again if --beta is set
+      // and we don't have to know what the arguments might be.
+      if (argv.beta) {
+        consola.warn("Beta flag is set, this feature may not be stable");
+
+        // lazy import to avoid loading the beta code path unless necessary
+        const { cli } = await import("@osdk/main-foundry-sdk-generator");
+
+        await cli(args);
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(output);
+        process.exit(1);
+      }
+    });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
+    consola.error(e);
   }
 }
