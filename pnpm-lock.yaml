@@ -287,6 +287,9 @@ importers:
       '@osdk/e2e.generated.1.1.x':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.1.1.x
+      '@osdk/e2e.generated.catchall':
+        specifier: workspace:*
+        version: link:../../packages/e2e.generated.catchall
       '@osdk/oauth':
         specifier: latest
         version: 0.3.0

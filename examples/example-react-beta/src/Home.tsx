@@ -1,10 +1,11 @@
+import { Ontology } from "@osdk/e2e.generated.catchall";
 import css from "./Home.module.css";
 import Layout from "./Layout";
 
 function Home() {
-  const objectApiNames: string[] = [];
-  const actionApiNames:string[] = [];
-  const queryApiNames:string[] = [];
+  const objectApiNames = Object.keys(Ontology.objects);
+  const actionApiNames = Object.keys(Ontology.actions);
+  const queryApiNames = Object.keys(Ontology.queries);
   return (
     <Layout>
       <h1>@osdk/e2e.generated.1.1.x</h1>
