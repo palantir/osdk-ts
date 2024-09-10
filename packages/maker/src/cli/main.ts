@@ -18,7 +18,7 @@ import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import invariant from "tiny-invariant";
-import yargs, { describe } from "yargs";
+import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
 import { defineLink } from "../api/defineLink.js";
