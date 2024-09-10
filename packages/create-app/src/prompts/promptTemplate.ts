@@ -30,7 +30,8 @@ export async function promptTemplate(
       template.hidden !== true
       && (useBeta
         ? template.isBeta === true
-        : (template.isBeta === false || template.isBeta == null))
+        // isBeta could be null
+        : !template.isBeta)
     );
 
     if (availableTemplates.length === 0) {
