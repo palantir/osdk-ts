@@ -19,8 +19,9 @@ import { green } from "../highlight.js";
 import { type Template, TEMPLATES } from "../templates.js";
 
 export async function promptTemplate(
-  parsed: { template?: string },
+  parsed: { template?: string; useBeta?: boolean },
 ): Promise<Template> {
+  let useBeta = parsed.useBeta ?? false;
   let template = TEMPLATES.find((t) =>
     t.id === parsed.template || t.id === `template-${parsed.template}`
   );
@@ -35,7 +36,12 @@ export async function promptTemplate(
         : "Select a framework:",
       {
         type: "select",
-        options: TEMPLATES.filter(template => template.hidden !== true).map((
+        options: TEMPLATES.filter(template =>
+          template.hidden !== true
+          && (useBeta
+            ? template.isBeta === true
+            : (template.isBeta === false || template.isBeta == null))
+        ).map((
           template,
         ) => ({
           value: template.id,

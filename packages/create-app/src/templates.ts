@@ -20,6 +20,7 @@ export interface Template {
   envPrefix: string;
   buildDirectory: string;
   hidden?: boolean;
+  isBeta?: boolean;
   getFiles: () => Promise<
     Map<
       string,
