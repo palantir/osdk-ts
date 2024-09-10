@@ -15,10 +15,10 @@
  */
 
 import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { IsNever } from "type-fest";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { OsdkBase } from "./OsdkBase.js";
-import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -129,8 +129,6 @@ type UnderlyingProps<
   ? NEW_Q extends ObjectTypeDefinition<any> ? ConvertProps<Q, NEW_Q, P>
   : Z
   : Z;
-
-export type IsNever<T> = [T] extends [never] ? true : false;
 
 type GetPropsKeys<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
