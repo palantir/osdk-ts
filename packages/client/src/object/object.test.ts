@@ -18,6 +18,7 @@ import type { Osdk } from "@osdk/client.api";
 import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import type { UnstableClient } from "../__unstable/UnstableClient.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -154,21 +155,23 @@ describe("OsdkObject", () => {
   });
 });
 
-async function shouldError(client: Client): Promise<Osdk<Employee>> {
+export async function shouldError(client: Client): Promise<Osdk<Employee>> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-async function shouldError2(client: Client): Promise<Employee.OsdkObject> {
+export async function shouldError2(
+  client: Client,
+): Promise<Employee.OsdkObject> {
   // @ts-expect-error
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
 }
 
-async function shouldCompile(
+export async function shouldCompile_client_fetchOne_old_select(
   client: Client,
 ): Promise<Osdk<Employee, "employeeId">> {
   return client(Employee).fetchOne(1, {
@@ -176,10 +179,38 @@ async function shouldCompile(
   });
 }
 
-async function shouldCompile2(
+export async function shouldCompile_unstableClient_fetchOne_old_select(
+  client: UnstableClient,
+): Promise<Osdk<Employee, "employeeId">> {
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}
+
+export async function shouldCompile_client_fetchOne_new_select(
   client: Client,
 ): Promise<Employee.OsdkObject<never, "employeeId">> {
   return client(Employee).fetchOne(1, {
     $select: ["employeeId"],
   });
+}
+
+export async function shouldCompile_unstableClient_fetchOne_new_select(
+  client: UnstableClient,
+): Promise<Osdk<Employee, "employeeId">> {
+  return client(Employee).fetchOne(1, {
+    $select: ["employeeId"],
+  });
+}
+
+export async function shouldCompile_client_fetchOne_old_noArgs(
+  client: Client,
+): Promise<Osdk<Employee>> {
+  return client(Employee).fetchOne(1);
+}
+
+export async function shouldCompile_unstableClient_fetchOne_noArgs(
+  client: UnstableClient,
+): Promise<Osdk<Employee>> {
+  return client(Employee).fetchOne(1);
 }

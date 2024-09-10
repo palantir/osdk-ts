@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -24,7 +25,7 @@ import type {
   ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 
-export type OsdkObjectLinks$FooInterface = never;
+export type OsdkObjectLinks$FooInterface = {};
 
 export namespace FooInterface {
   export type PropertyKeys = 'name' | 'description';
@@ -58,7 +59,7 @@ export namespace FooInterface {
       $PageResult<
         FooInterface.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? FooInterface.PropertyKeys : L
         >
       >
     >;
@@ -75,7 +76,7 @@ export namespace FooInterface {
         $PageResult<
           FooInterface.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? FooInterface.PropertyKeys : L
           >
         >
       >
@@ -90,6 +91,7 @@ export namespace FooInterface {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: FooInterface.ObjectSet;
     props: FooInterface.Props;
+    linksType: OsdkObjectLinks$FooInterface;
     strictProps: FooInterface.StrictProps;
     description: 'Its a Foo.';
     displayName: 'Foo interface';
@@ -137,6 +139,7 @@ export const FooInterface: FooInterface.Definition = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'FooInterface',
   description: 'Its a Foo.',

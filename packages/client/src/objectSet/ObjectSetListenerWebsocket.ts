@@ -305,7 +305,7 @@ export class ObjectSetListenerWebsocket {
       requests: readySubs.map<ObjectSetSubscribeRequest>((
         { temporaryObjectSetId },
       ) => ({
-        objectSet: temporaryObjectSetId,
+        objectSet: temporaryObjectSetId!,
         objectSetContext: {
           objectSetFilterContext: { parameterOverrides: {} },
         },

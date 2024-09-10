@@ -12,6 +12,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -68,7 +69,7 @@ export namespace Venture {
     ) => Promise<
       Venture.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? Venture.PropertyKeys : L
       >
     >;
 
@@ -83,7 +84,7 @@ export namespace Venture {
       $Result<
         Venture.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Venture.PropertyKeys : L
         >
       >
     >;
@@ -99,7 +100,7 @@ export namespace Venture {
       $PageResult<
         Venture.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Venture.PropertyKeys : L
         >
       >
     >;
@@ -116,7 +117,7 @@ export namespace Venture {
         $PageResult<
           Venture.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Venture.PropertyKeys : L
           >
         >
       >
@@ -131,6 +132,7 @@ export namespace Venture {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Venture.ObjectSet;
     props: Venture.Props;
+    linksType: Venture.Links;
     strictProps: Venture.StrictProps;
     description: 'A venture';
     links: {
@@ -182,6 +184,7 @@ export const Venture: Venture & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'Venture',
   description: 'A venture',

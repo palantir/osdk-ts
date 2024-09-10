@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace DherlihyComplexObject {
   export type PropertyKeys = 'id' | 'secret' | 'seriesId';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly id: $PropType['string'] | undefined;
@@ -64,7 +65,7 @@ export namespace DherlihyComplexObject {
     ) => Promise<
       DherlihyComplexObject.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? DherlihyComplexObject.PropertyKeys : L
       >
     >;
 
@@ -79,7 +80,7 @@ export namespace DherlihyComplexObject {
       $Result<
         DherlihyComplexObject.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? DherlihyComplexObject.PropertyKeys : L
         >
       >
     >;
@@ -95,7 +96,7 @@ export namespace DherlihyComplexObject {
       $PageResult<
         DherlihyComplexObject.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? DherlihyComplexObject.PropertyKeys : L
         >
       >
     >;
@@ -112,7 +113,7 @@ export namespace DherlihyComplexObject {
         $PageResult<
           DherlihyComplexObject.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? DherlihyComplexObject.PropertyKeys : L
           >
         >
       >
@@ -127,6 +128,7 @@ export namespace DherlihyComplexObject {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: DherlihyComplexObject.ObjectSet;
     props: DherlihyComplexObject.Props;
+    linksType: DherlihyComplexObject.Links;
     strictProps: DherlihyComplexObject.StrictProps;
     description: 'Dherlihy Complex Object';
     links: {};
@@ -176,6 +178,7 @@ export const DherlihyComplexObject: DherlihyComplexObject & $VersionBound<$Expec
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'DherlihyComplexObject',
   description: 'Dherlihy Complex Object',

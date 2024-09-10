@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace Task {
   export type PropertyKeys = 'taskId' | 'body';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly body: $PropType['string'] | undefined;
@@ -60,7 +61,10 @@ export namespace Task {
       primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
       options?: $SelectArg<Task.Definition, L, R, S>,
     ) => Promise<
-      Task.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
+      Task.OsdkObject<
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        $IsAny<L> extends true ? Task.PropertyKeys : L
+      >
     >;
 
     readonly fetchOneWithErrors: <
@@ -74,7 +78,7 @@ export namespace Task {
       $Result<
         Task.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Task.PropertyKeys : L
         >
       >
     >;
@@ -90,7 +94,7 @@ export namespace Task {
       $PageResult<
         Task.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Task.PropertyKeys : L
         >
       >
     >;
@@ -107,7 +111,7 @@ export namespace Task {
         $PageResult<
           Task.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Task.PropertyKeys : L
           >
         >
       >
@@ -122,6 +126,7 @@ export namespace Task {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Task.ObjectSet;
     props: Task.Props;
+    linksType: Task.Links;
     strictProps: Task.StrictProps;
     implements: [];
     interfaceMap: {};
@@ -167,6 +172,7 @@ export const Task: Task & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'com.example.dep.Task',
   implements: [],

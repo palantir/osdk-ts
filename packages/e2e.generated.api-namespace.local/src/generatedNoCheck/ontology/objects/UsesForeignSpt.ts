@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace UsesForeignSpt {
   export type PropertyKeys = 'id' | 'body';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly body: $PropType['string'] | undefined;
@@ -62,7 +63,7 @@ export namespace UsesForeignSpt {
     ) => Promise<
       UsesForeignSpt.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
       >
     >;
 
@@ -77,7 +78,7 @@ export namespace UsesForeignSpt {
       $Result<
         UsesForeignSpt.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
         >
       >
     >;
@@ -93,7 +94,7 @@ export namespace UsesForeignSpt {
       $PageResult<
         UsesForeignSpt.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
         >
       >
     >;
@@ -110,7 +111,7 @@ export namespace UsesForeignSpt {
         $PageResult<
           UsesForeignSpt.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
           >
         >
       >
@@ -125,6 +126,7 @@ export namespace UsesForeignSpt {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: UsesForeignSpt.ObjectSet;
     props: UsesForeignSpt.Props;
+    linksType: UsesForeignSpt.Links;
     strictProps: UsesForeignSpt.StrictProps;
     implements: [];
     interfaceMap: {};
@@ -178,6 +180,7 @@ export const UsesForeignSpt: UsesForeignSpt & $VersionBound<$ExpectedClientVersi
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'UsesForeignSpt',
   implements: [],

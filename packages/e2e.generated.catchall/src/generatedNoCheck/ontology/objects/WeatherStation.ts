@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace WeatherStation {
   export type PropertyKeys = 'stationId' | 'geohash';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly geohash: $PropType['geopoint'] | undefined;
@@ -62,7 +63,7 @@ export namespace WeatherStation {
     ) => Promise<
       WeatherStation.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
       >
     >;
 
@@ -77,7 +78,7 @@ export namespace WeatherStation {
       $Result<
         WeatherStation.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
         >
       >
     >;
@@ -93,7 +94,7 @@ export namespace WeatherStation {
       $PageResult<
         WeatherStation.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
         >
       >
     >;
@@ -110,7 +111,7 @@ export namespace WeatherStation {
         $PageResult<
           WeatherStation.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
           >
         >
       >
@@ -125,6 +126,7 @@ export namespace WeatherStation {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: WeatherStation.ObjectSet;
     props: WeatherStation.Props;
+    linksType: WeatherStation.Links;
     strictProps: WeatherStation.StrictProps;
     description: 'Weather Station';
     links: {};
@@ -171,6 +173,7 @@ export const WeatherStation: WeatherStation & $VersionBound<$ExpectedClientVersi
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'WeatherStation',
   description: 'Weather Station',

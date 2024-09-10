@@ -90,6 +90,7 @@ export type {
 } from "./object/FetchPageArgs.js";
 export type {
   FetchPageResult,
+  IsAny,
   RespectNullability,
   SingleOsdkResult,
   UnionIfFalse,
