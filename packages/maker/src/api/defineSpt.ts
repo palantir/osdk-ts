@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
+import type { ApiNameValueTypeReference } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
 import { ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
-import { ValueTypeApiName } from "@osdk/client.unstable/build/esm/generated/type-registry/api/ValueTypeApiName.js";
-import type { ApiNameValueTypeReference } from "@osdk/client.unstable";
 
 export function defineSharedPropertyType(
   opts: {
@@ -27,7 +26,7 @@ export function defineSharedPropertyType(
     array?: boolean;
     description?: string;
     displayName?: string;
-    valueType?: ApiNameValueTypeReference
+    valueType?: ApiNameValueTypeReference;
   },
 ): SharedPropertyType {
   const { apiName } = opts;

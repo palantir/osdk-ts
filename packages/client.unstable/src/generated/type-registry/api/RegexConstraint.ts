@@ -15,6 +15,6 @@
  */
 
 export interface RegexConstraint {
-regexPattern: string;
-usePartialMatch: boolean | undefined;
+  regexPattern: string;
+  usePartialMatch: boolean | undefined;
 }

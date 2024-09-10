@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * as api from "./api/index.js"
-export * as search from "./search/index.js"
+export * as api from "./api/index.js";
+export * as search from "./search/index.js";

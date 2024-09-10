@@ -10,7 +10,6 @@
 6. Add a changeset
 
    > 📘 Note
-   >
    > **Follow semver rules here.**
    1. Assuming you've run `pnpm install`, run `changeset` (or `pnpm exec changeset`).
    2. The tool will split things into changed vs unchanged packages (which you may need if you decide to add changeset logs in a future PR for past features)
@@ -20,7 +19,6 @@
    6. Enter a change (or press enter on empty to open your editor.)
 
    > Info
-   >
    > Full docs on the `changesets` tool can be found at the [changesets/changesets github repo](https://github.com/changesets/changesets).
 7. If you're curious what the final build output might look like you can run `pnpm build` from root.
 8. Run all lint rules and tests with `pnpm check` from root.

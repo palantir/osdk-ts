@@ -35,24 +35,26 @@ export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/On
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
 export { loadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
 
-export type {BaseType} from "./generated/type-registry/api/BaseType.js";
-export type {ExampleValue} from "./generated/type-registry/api/ExampleValue.js";
-export type {ValueTypeApiName} from "./generated/type-registry/api/ValueTypeApiName.js";
-export type {ValueTypeDataConstraint} from "./generated/type-registry/api/ValueTypeDataConstraint.js";
-export type {ValueTypeDisplayMetadata} from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
-export type {ValueTypeStatus} from "./generated/type-registry/api/ValueTypeStatus.js";
-export type {ValueTypeVersion} from "./generated/type-registry/api/ValueTypeVersion.js";
-
+export type { BaseType } from "./generated/type-registry/api/BaseType.js";
+export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";
+export type { DataConstraintWrapper } from "./generated/type-registry/api/DataConstraintWrapper.js";
+export type { ExampleValue } from "./generated/type-registry/api/ExampleValue.js";
+export type { FailureMessage } from "./generated/type-registry/api/FailureMessage.js";
+export type { ValueTypeApiName } from "./generated/type-registry/api/ValueTypeApiName.js";
+export type { ValueTypeDataConstraint } from "./generated/type-registry/api/ValueTypeDataConstraint.js";
+export type { ValueTypeDisplayMetadata } from "./generated/type-registry/api/ValueTypeDisplayMetadata.js";
+export type { ValueTypeStatus } from "./generated/type-registry/api/ValueTypeStatus.js";
+export type { ValueTypeVersion } from "./generated/type-registry/api/ValueTypeVersion.js";
 
 export type {
+  ApiNameValueTypeReference,
   OntologyIrInterfaceType,
   OntologyIrInterfaceTypeBlockDataV2,
   OntologyIrOntologyBlockDataV2,
-  OntologyIrSharedPropertyType,
-  OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrPackagedValueType,
   OntologyIrPackagedValueTypeMetadata,
-  OntologyIrValueTypeBlockDataEntry,
+  OntologyIrSharedPropertyType,
+  OntologyIrSharedPropertyTypeBlockDataV2,
   OntologyIrValueTypeBlockData,
-  ApiNameValueTypeReference
+  OntologyIrValueTypeBlockDataEntry,
 } from "./blockDataIr.js";

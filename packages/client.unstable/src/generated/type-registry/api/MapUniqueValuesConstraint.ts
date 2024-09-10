@@ -15,5 +15,5 @@
  */
 
 export interface MapUniqueValuesConstraint {
-value: boolean;
+  value: boolean;
 }

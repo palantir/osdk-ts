@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ValueTypeRid } from "./ValueTypeRid.js";
 import type { ValueTypeProvenanceSource } from "./ValueTypeProvenanceSource.js";
+import type { ValueTypeRid } from "./ValueTypeRid.js";
 export interface NonPrivilegedUserCreatingVersionOnMarketplaceOwnedValueTypeError {
-valueTypeRid: ValueTypeRid;
-valueTypeProvenanceSource: ValueTypeProvenanceSource;
+  valueTypeRid: ValueTypeRid;
+  valueTypeProvenanceSource: ValueTypeProvenanceSource;
 }

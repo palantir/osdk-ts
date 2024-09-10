@@ -15,5 +15,5 @@
  */
 
 export interface MarketplaceValueTypeProvenanceSource {
-marketplaceBlockSetInstallationRid: any;
+  marketplaceBlockSetInstallationRid: any;
 }

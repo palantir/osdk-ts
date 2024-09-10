@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-
 /**
  * The specified namespace could not be found.
  */
 export interface MissingNamespaceFailure {
-namespaceRid: string;
+  namespaceRid: string;
 }

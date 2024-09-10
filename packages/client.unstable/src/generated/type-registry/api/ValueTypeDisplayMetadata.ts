@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { DisplayName } from "./DisplayName.js";
 import type { Description } from "./Description.js";
+import type { DisplayName } from "./DisplayName.js";
 export interface ValueTypeDisplayMetadata {
-displayName: DisplayName;
-description: Description | undefined;
+  displayName: DisplayName;
+  description: Description | undefined;
 }

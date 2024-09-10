@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export type BooleanTypeDataConstraintValue = "TRUE_VALUE"|"FALSE_VALUE"|"NULL_VALUE";
+export type BooleanTypeDataConstraintValue =
+  | "TRUE_VALUE"
+  | "FALSE_VALUE"
+  | "NULL_VALUE";

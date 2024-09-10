@@ -15,5 +15,5 @@
  */
 
 export interface FailureMessage {
-message: string;
+  message: string;
 }

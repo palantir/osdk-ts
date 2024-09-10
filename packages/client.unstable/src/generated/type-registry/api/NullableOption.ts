@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export type NullableOption = "NULLABLE"|"NOT_NULLABLE";
+export type NullableOption = "NULLABLE" | "NOT_NULLABLE";

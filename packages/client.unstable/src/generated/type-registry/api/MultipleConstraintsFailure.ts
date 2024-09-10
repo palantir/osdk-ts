@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-
 /**
  * Multiple data constraints are disallowed for now.
  */
 export interface MultipleConstraintsFailure {
-
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import type { ValueTypeMetadata } from "./ValueTypeMetadata.js";
 import type { ValueType } from "./ValueType.js";
+import type { ValueTypeMetadata } from "./ValueTypeMetadata.js";
 export interface GetValueTypeVersionsResponse {
-metadata: ValueTypeMetadata;
-valueTypeVersions: Array<ValueType>;
+  metadata: ValueTypeMetadata;
+  valueTypeVersions: Array<ValueType>;
 }

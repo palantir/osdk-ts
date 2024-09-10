@@ -14,61 +14,77 @@
  * limitations under the License.
  */
 
-import type { BaseType, DataConstraint, DataConstraintWrapper } from "@osdk/client.unstable/build/esm/generated/type-registry/api";
-import { ontologyDefinition } from "./defineOntology.js";
+import type {
+  BaseType,
+  DataConstraint,
+  DataConstraintWrapper,
+} from "@osdk/client.unstable";
 import type { FailureMessage } from "@osdk/client.unstable/build/esm/generated/ontology-metadata/api/FailureMessage";
 import invariant from "tiny-invariant";
+import { ontologyDefinition } from "./defineOntology.js";
 import type { ValueTypeDefinitionVersion } from "./types.js";
 
-
-
 type ZipBaseAndConstraint<Base, Constraint> = {
-    [PropertyType in BaseType["type"]]: Base extends {type: PropertyType} ? {
-        baseType: Omit<Base, "type">, 
-        constraints?: Constraint extends {type: PropertyType} ? {constraint: Omit<Constraint, "type">, failureMessage?: FailureMessage}[] : undefined;
-    } : never
-  };
-
-type MappedZip = ZipBaseAndConstraint<BaseType, DataConstraint>
-
-type TypeAndConstraints = MappedZip[keyof MappedZip]
-export function defineSharedPropertyType(
-    opts: {
-      apiName: string;
-      displayName: string;
-      description?: string;
-      typeAndConstraints: TypeAndConstraints
-      version: string;
-    },
-  ): ValueTypeDefinitionVersion {
-    const { apiName,
-        displayName,
-        description,
-        typeAndConstraints,
-        version 
-    } = opts;
-    const semverValidation = /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/
-    invariant(semverValidation.test(version), "Version is not a valid semver");
-    
-    // These suck but TS doesn't understand the relationship from the key of the base type to the type string
-    const constraints = typeAndConstraints.constraints ? typeAndConstraints.constraints.map(constraint => {
-        return {constraint: {[Object.keys(constraint["constraint"])[0]]: Object.keys(constraint["constraint"])[0], ...constraint} as DataConstraintWrapper}
-    }) : [];
-
-    const baseType = {[Object.keys(typeAndConstraints.baseType)[0]]: Object.keys(typeAndConstraints.baseType)[0], ...typeAndConstraints.baseType} as BaseType;
-
-    const vt: ValueTypeDefinitionVersion = {
-        apiName,
-        displayMetadata: {
-            displayName: displayName,
-            description: description ?? ""
-        },
-        status: {type: "active", active: {}},
-        version: version,
-        baseType: baseType,
-        constraints: constraints,
-        exampleValues: []
+  [PropertyType in BaseType["type"]]: Base extends { type: PropertyType } ? {
+      baseType: Omit<Base, "type">;
+      constraints?: Constraint extends { type: PropertyType } ? {
+          constraint: Omit<Constraint, "type">;
+          failureMessage?: FailureMessage;
+        }[]
+        : undefined;
     }
-    ontologyDefinition.valueTypes[apiName].push(vt);
-    return vt;
-  }
+    : never;
+};
+
+type MappedZip = ZipBaseAndConstraint<BaseType, DataConstraint>;
+
+type TypeAndConstraints = MappedZip[keyof MappedZip];
+export function defineSharedPropertyType(
+  opts: {
+    apiName: string;
+    displayName: string;
+    description?: string;
+    typeAndConstraints: TypeAndConstraints;
+    version: string;
+  },
+): ValueTypeDefinitionVersion {
+  const { apiName, displayName, description, typeAndConstraints, version } =
+    opts;
+  const semverValidation =
+    /^((([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?)$/;
+  invariant(semverValidation.test(version), "Version is not a valid semver");
+
+  // These suck but TS doesn't understand the relationship from the key of the base type to the type string
+  const constraints = typeAndConstraints.constraints
+    ? typeAndConstraints.constraints.map(constraint => {
+      return {
+        constraint: {
+          [Object.keys(constraint["constraint"])[0]]:
+            Object.keys(constraint["constraint"])[0],
+          ...constraint,
+        } as DataConstraintWrapper,
+      };
+    })
+    : [];
+
+  const baseType = {
+    [Object.keys(typeAndConstraints.baseType)[0]]:
+      Object.keys(typeAndConstraints.baseType)[0],
+    ...typeAndConstraints.baseType,
+  } as BaseType;
+
+  const vt: ValueTypeDefinitionVersion = {
+    apiName,
+    displayMetadata: {
+      displayName: displayName,
+      description: description ?? "",
+    },
+    status: { type: "active", active: {} },
+    version: version,
+    baseType: baseType,
+    constraints: constraints,
+    exampleValues: [],
+  };
+  ontologyDefinition.valueTypes[apiName].push(vt);
+  return vt;
+}

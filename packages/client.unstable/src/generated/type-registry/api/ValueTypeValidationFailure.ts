@@ -16,5 +16,5 @@
 
 import type { ValueTypeValidationError } from "./ValueTypeValidationError.js";
 export interface ValueTypeValidationFailure {
-errors: Array<ValueTypeValidationError>;
+  errors: Array<ValueTypeValidationError>;
 }
