@@ -34,7 +34,7 @@ export default async function main(
   const commandLineOpts: {
     input: string;
     output: string;
-    "api-namespace": string;
+    apiNamespace: string;
     snapshotDir: string;
   } = await yargs(hideBin(args))
     .version(process.env.PACKAGE_VERSION ?? "")
@@ -56,7 +56,7 @@ export default async function main(
         default: "ontology.json",
         coerce: path.resolve,
       },
-      "api-namespace": {
+      apiNamespace: {
         describe: "Api name prefix for namespaced ontology types",
         type: "string",
         default: "",
@@ -71,10 +71,11 @@ export default async function main(
     })
     .parseAsync();
   let apiNamespace = "";
-  if (commandLineOpts["api-namespace"].length !== 0) {
-    apiNamespace = (commandLineOpts["api-namespace"].slice(-1) !== ".")
-      ? commandLineOpts["api-namespace"] + "."
-      : commandLineOpts["api-namespace"];
+  if (commandLineOpts.apiNamespace.length !== 0) {
+    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
+      ? commandLineOpts.apiNamespace + "."
+      : commandLineOpts.apiNamespace;
+    invariant(apiNamespace.length > 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
       "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
@@ -83,7 +84,7 @@ export default async function main(
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
   const ontology = await loadOntology(
     commandLineOpts.input,
-    commandLineOpts["api-namespace"],
+    apiNamespace,
   );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
