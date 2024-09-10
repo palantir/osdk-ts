@@ -8,99 +8,106 @@ import type {
 import type { $ExpectedClientVersion } from '../../OntologyMetadata';
 import { $osdkMetadata } from '../../OntologyMetadata';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$createOfficeAndEmployee$Params = {
-  address: {
-    description: "The office's physical address (not necessarily shipping address)";
-    multiplicity: false;
-    nullable: true;
-    type: 'string';
+export namespace createOfficeAndEmployee {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    address: {
+      description: "The office's physical address (not necessarily shipping address)";
+      multiplicity: false;
+      nullable: true;
+      type: 'string';
+    };
+    capacity: {
+      description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)';
+      multiplicity: false;
+      nullable: true;
+      type: 'integer';
+    };
+    employeeId: {
+      description: 'New employee Id';
+      multiplicity: false;
+      nullable: false;
+      type: 'integer';
+    };
+    officeId: {
+      multiplicity: false;
+      nullable: false;
+      type: 'string';
+    };
+    officeNames: {
+      description: 'A list of all office names';
+      multiplicity: true;
+      nullable: true;
+      type: 'string';
+    };
   };
-  capacity: {
-    description: 'The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)';
-    multiplicity: false;
-    nullable: true;
-    type: 'integer';
-  };
-  employeeId: {
-    description: 'New employee Id';
-    multiplicity: false;
-    nullable: false;
-    type: 'integer';
-  };
-  officeId: {
-    multiplicity: false;
-    nullable: false;
-    type: 'string';
-  };
-  officeNames: {
-    description: 'A list of all office names';
-    multiplicity: true;
-    nullable: true;
-    type: 'string';
-  };
-};
 
-/**
- * Create an office and employee
- */
-export interface ActionParams$createOfficeAndEmployee {
-  /**
-   * The office's physical address (not necessarily shipping address)
-   */
-  readonly address?: ActionParam.PrimitiveType<'string'>;
-  /**
-   * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
-   */
-  readonly capacity?: ActionParam.PrimitiveType<'integer'>;
-  /**
-   * New employee Id
-   */
-  readonly employeeId: ActionParam.PrimitiveType<'integer'>;
-
-  readonly officeId: ActionParam.PrimitiveType<'string'>;
-  /**
-   * A list of all office names
-   */
-  readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
-}
-
-/**
- * @deprecated Use `ActionParams$createOfficeAndEmployee`
- */
-export type createOfficeAndEmployee$Params =
-  | ActionParams$createOfficeAndEmployee
-  | ReadonlyArray<ActionParams$createOfficeAndEmployee>;
-
-// Represents a fqn of the action
-export interface createOfficeAndEmployee {
   /**
    * Create an office and employee
    */
-  <
-    P extends ActionParams$createOfficeAndEmployee | ReadonlyArray<ActionParams$createOfficeAndEmployee>,
-    OP extends P extends ReadonlyArray<ActionParams$createOfficeAndEmployee>
-      ? ApplyBatchActionOptions
-      : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Params {
+    /**
+     * The office's physical address (not necessarily shipping address)
+     */
+    readonly address?: ActionParam.PrimitiveType<'string'>;
+    /**
+     * The maximum seated-at-desk capacity of the office (maximum fire-safe capacity may be higher)
+     */
+    readonly capacity?: ActionParam.PrimitiveType<'integer'>;
+    /**
+     * New employee Id
+     */
+    readonly employeeId: ActionParam.PrimitiveType<'integer'>;
+
+    readonly officeId: ActionParam.PrimitiveType<'string'>;
+    /**
+     * A list of all office names
+     */
+    readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
+  }
+  /** @deprecated **/
+  export type Parameters = Params;
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee.Signatures>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'createOfficeAndEmployee';
+    description: 'Create an office and employee';
+    modifiedEntities: { Office: { created: true; modified: false }; Employee: { created: true; modified: false } };
+    type: 'action';
+    parameters: createOfficeAndEmployee.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signatures {
+    /**
+     * Create an office and employee
+     */
+    applyAction<P extends createOfficeAndEmployee.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<createOfficeAndEmployee.Params>, OP extends ApplyBatchActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$createOfficeAndEmployee
-  extends ActionDefinition<'createOfficeAndEmployee', 'Office' | 'Employee', createOfficeAndEmployee>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'createOfficeAndEmployee';
-  description: 'Create an office and employee';
-  modifiedEntities: { Office: { created: true; modified: false }; Employee: { created: true; modified: false } };
-  type: 'action';
-  parameters: ActionDef$createOfficeAndEmployee$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `createOfficeAndEmployee.Params`
+ */
+export type createOfficeAndEmployee$Params =
+  | createOfficeAndEmployee.Params
+  | ReadonlyArray<createOfficeAndEmployee.Params>;
 
-export const createOfficeAndEmployee: ActionDef$createOfficeAndEmployee = {
+/** @deprecated Use `createOfficeAndEmployee.Definition` **/
+export type createOfficeAndEmployee = createOfficeAndEmployee.Signatures;
+
+export const createOfficeAndEmployee: createOfficeAndEmployee.Definition = {
   apiName: 'createOfficeAndEmployee',
   description: 'Create an office and employee',
   modifiedEntities: {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export * from "@osdk/internal.foundry.core";
+export * as Core from "@osdk/internal.foundry.core";
 export * as Datasets from "@osdk/internal.foundry.datasets";
 export * as Models from "@osdk/internal.foundry.models";
 export * as Ontologies from "@osdk/internal.foundry.ontologies";

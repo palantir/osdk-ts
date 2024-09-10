@@ -16,7 +16,7 @@
 
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { ObjectSet } from "@osdk/client.api";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 
 /** @internal */

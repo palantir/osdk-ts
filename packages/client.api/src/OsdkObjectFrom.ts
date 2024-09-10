@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  ObjectOrInterfaceDefinition,
-  ObjectTypeDefinition,
-} from "@osdk/api";
-import type { OsdkObjectPropertyType } from "./Definitions.js";
+import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
+import type { IsNever } from "type-fest";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { OsdkBase } from "./OsdkBase.js";
-import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -35,64 +30,87 @@ type DropDollarAll<T extends string> = Exclude<
   "$all"
 >;
 
-type ApiNameAsString<T extends ObjectOrInterfaceDefinition> = NonNullable<
+export type ApiNameAsString<
+  T extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
+> = NonNullable<
   T["apiName"]["__Unbranded"]
 >;
 
+export type JustProps<
+  T extends ObjectTypeDefinition<any> | InterfaceDefinition<any>,
+  P extends "$rid" | "$strict" | "$notStrict" | "$all" | keyof T["properties"],
+> = P extends "$all" ? keyof T["properties"]
+  : Exclude<P, "$all" | "$rid" | "$strict" | "$notStrict">;
+
+export type PropMapToObject<
+  FROM extends InterfaceDefinition<any> | ObjectTypeDefinition<any>,
+  TO extends ObjectTypeDefinition<any>,
+> = NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>];
+
+export type MapPropNamesToObjectType<
+  FROM extends InterfaceDefinition<any> | ObjectTypeDefinition<any>,
+  TO extends ObjectTypeDefinition<any>,
+  P extends
+    | "$rid"
+    | "$strict"
+    | "$notStrict"
+    | "$all"
+    | keyof FROM["properties"],
+> = PropMapToObject<
+  FROM,
+  TO
+>[JustProps<FROM, P> & keyof PropMapToObject<FROM, TO>];
+
+export type PropMapToInterface<
+  FROM extends ObjectTypeDefinition<any>,
+  TO extends InterfaceDefinition<any>,
+> = NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>];
+
+export type MapPropNamesToInterface<
+  FROM extends ObjectTypeDefinition<any>,
+  TO extends InterfaceDefinition<any>,
+  P extends
+    | "$rid"
+    | "$strict"
+    | "$notStrict"
+    | "$all"
+    | keyof FROM["properties"],
+> = PropMapToInterface<
+  FROM,
+  TO
+>[JustProps<FROM, P> & keyof PropMapToInterface<FROM, TO>];
 /**
  * @param FROM - the interface or object type to convert from
  * @param TO - the interface or object type to convert to
  * @param P - the property(s) to convert
  */
 export type ConvertProps<
-  FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  FROM extends ObjectTypeDefinition<any> | InterfaceDefinition<any>,
   TO extends ValidToFrom<FROM>,
-  P extends string = "$all",
+  P extends "$rid" | "$all" | "$strict" | "$notStrict" | keyof FROM["props"],
 > = TO extends FROM ? P
   : TO extends ObjectTypeDefinition<any> ? (
-      (
+      UnionIfTrue<
+        MapPropNamesToObjectType<FROM, TO, P>,
+        P extends "$rid" ? true : false,
+        "$rid"
+      >
+    )
+  : TO extends InterfaceDefinition<any>
+    ? FROM extends ObjectTypeDefinition<any> ? (
         UnionIfTrue<
-          UnionIfTrue<
-            NonNullable<TO["interfaceMap"]>[ApiNameAsString<FROM>][
-              P extends "$all" ? (
-                  keyof FROM["properties"] extends
-                    NonNullable<keyof TO["interfaceMap"]>[ApiNameAsString<FROM>]
-                    ? keyof FROM["properties"]
-                    : never
-                )
-                : DropDollarOptions<P>
-            ],
-            P extends "$notStrict" ? true : false,
-            "$notStrict"
-          >,
+          MapPropNamesToInterface<FROM, TO, P>,
           P extends "$rid" ? true : false,
           "$rid"
         >
       )
-    )
-  : UnionIfTrue<
-    UnionIfTrue<
-      TO extends InterfaceDefinition<any> ? P extends "$all" ? "$all"
-        : FROM extends ObjectTypeDefinition<any>
-          ? DropDollarOptions<P> extends
-            keyof NonNullable<FROM["inverseInterfaceMap"]>[
-              ApiNameAsString<TO>
-            ] ? NonNullable<FROM["inverseInterfaceMap"]>[ApiNameAsString<TO>][
-              DropDollarOptions<P>
-            ]
-          : never
-        : never
-        : never,
-      P extends "$notStrict" ? true : false,
-      "$notStrict"
-    >,
-    P extends "$rid" ? true : false,
-    "$rid"
-  >;
+    : never
+  : never;
 
 /** DO NOT EXPORT FROM PACKAGE */
-export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
-  InterfaceDefinition<any, any>
+export type ValidToFrom<
+  FROM extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
+> = FROM extends InterfaceDefinition<any, any>
   ? ObjectTypeDefinition<any> | InterfaceDefinition<any, any>
   : InterfaceDefinition<any, any>;
 
@@ -101,7 +119,7 @@ export type ValidToFrom<FROM extends ObjectOrInterfaceDefinition> = FROM extends
  * @param Z The existing underlying properties
  */
 type UnderlyingProps<
-  Q extends ObjectOrInterfaceDefinition,
+  Q extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any>,
   P extends string,
   Z extends string,
   NEW_Q extends ValidToFrom<Q>,
@@ -112,61 +130,44 @@ type UnderlyingProps<
   : Z
   : Z;
 
-export type IsNever<T> = [T] extends [never] ? true : false;
+type GetPropsKeys<
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"],
+> = P extends "$all" ? keyof Q["properties"]
+  : Exclude<P, "$strict" | "$notStrict" | "$rid">;
+
+type GetProps<
+  Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
+  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"],
+> = P extends "$notStrict" ? Q["props"] : Q["strictProps"];
 
 export type Osdk<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends string = "$all",
-  Z extends string = never, // this is the underlying's props
+  P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] =
+    "$all",
 > =
   & OsdkBase<Q>
+  & Pick<
+    GetProps<Q, P>,
+    GetPropsKeys<Q, P>
+  >
   & {
-    [
-      PP in keyof Q["properties"] as (
-        // when we don't know what properties, we will show all but ensure they are `| undefined`
-        IsNever<P> extends true ? PP
-          : P extends "$all" ? PP
-          : PP extends P ? PP
-          : never
-      )
-    ]: IsNever<P> extends true
-      // when we don't know what properties, we will show all but ensure they are `| undefined`
-      ? OsdkObjectPropertyType<
-        Q["properties"][PP],
-        false // P is never so we do not have to check for "$notStrict"
-      >
-      : OsdkObjectPropertyType<
-        Q["properties"][PP],
-        P extends "$notStrict" ? false : true
-      >;
-  }
-  & {
-    /** @deprecated use $apiName */
-    __apiName: Q["apiName"] & { __OsdkType?: Q["apiName"] };
-
-    /** @deprecated use $primaryKey */
-    __primaryKey: Q extends ObjectTypeDefinition<any>
-      ? OsdkObjectPrimaryKeyType<Q>
-      : string | number | boolean;
-
-    // $uniqueId: string; // will be dynamic
-
-    $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
+    readonly $link: Q extends ObjectTypeDefinition<any>
+      ? OsdkObjectLinksObject<Q>
       : never;
 
-    $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
+    readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<
       NEW_Q,
-      ConvertProps<Q, NEW_Q, P>,
-      UnderlyingProps<Q, P, Z, NEW_Q>
+      ConvertProps<Q, NEW_Q, P>
     >;
   }
   // We are hiding the $rid field if it wasn't requested as we want to discourage its use
   & (IsNever<P> extends true ? {}
     : string extends P ? {}
-    : "$rid" extends P ? { $rid: string }
+    : "$rid" extends P ? { readonly $rid: string }
     : {});
 
 export type OsdkObjectOrInterfaceFrom<
   Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>,
-  P extends string = "$all",
+  P extends string = string & keyof Q["properties"],
 > = Osdk<Q, P>;

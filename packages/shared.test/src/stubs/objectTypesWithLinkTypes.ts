@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
+import type { ObjectTypeFullMetadata, ObjectTypeV2 } from "@osdk/gateway/types";
 import {
   leadLinkType,
   occupants,
@@ -27,6 +27,9 @@ import {
   objectTypeWithAllPropertyTypes,
   objectTypeWithTimestampPrimaryKey,
   officeObjectType,
+  personObjectType,
+  taskObjectType,
+  todoObjectType,
 } from "./objectTypeV2.js";
 
 export const employeeObjectWithLinkTypes: ObjectTypeFullMetadata = {
@@ -77,6 +80,45 @@ export const equipmentObjectTypeWithLinkTypes: ObjectTypeFullMetadata = {
   sharedPropertyTypeMapping: {},
 };
 
+export const taskWithLinkTypes: ObjectTypeFullMetadata = {
+  objectType: taskObjectType,
+  linkTypes: [
+    {
+      apiName: "Todos",
+      displayName: "Todos",
+      cardinality: "MANY",
+      objectTypeApiName: "Todo",
+      status: "ACTIVE",
+    },
+    {
+      apiName: "RP",
+      displayName: "RP",
+      cardinality: "ONE",
+      objectTypeApiName: "Person",
+      status: "ACTIVE",
+    },
+  ],
+  implementsInterfaces: [],
+  implementsInterfaces2: {},
+  sharedPropertyTypeMapping: {},
+};
+
+export const todoWithLinkTypes: ObjectTypeFullMetadata = {
+  objectType: todoObjectType,
+  linkTypes: [],
+  implementsInterfaces: [],
+  implementsInterfaces2: {},
+  sharedPropertyTypeMapping: {},
+};
+
+export const personWithLinkTypes: ObjectTypeFullMetadata = {
+  objectType: personObjectType,
+  linkTypes: [],
+  implementsInterfaces: [],
+  implementsInterfaces2: {},
+  sharedPropertyTypeMapping: {},
+};
+
 export const objectTypesWithLinkTypes: {
   [objectTypeApiName: string]: ObjectTypeFullMetadata;
 } = {
@@ -87,4 +129,8 @@ export const objectTypesWithLinkTypes: {
   [objectTypeWithTimestampPrimaryKey.apiName]:
     objectTypeWithTimestampPrimaryKeyWithLinkTypes,
   [equipmentObjectType.apiName]: equipmentObjectTypeWithLinkTypes,
+
+  [todoObjectType.apiName]: todoWithLinkTypes,
+  [taskObjectType.apiName]: taskWithLinkTypes,
+  [personObjectType.apiName]: personWithLinkTypes,
 };

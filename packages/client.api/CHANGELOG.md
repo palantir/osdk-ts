@@ -1,5 +1,31 @@
 # @osdk/client.api
 
+## 0.22.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+
+## 0.22.0-beta.2
+
+### Minor Changes
+
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+
+## 0.22.0-beta.1
+
+### Minor Changes
+
+- 51fe88c: Fix edge case with never in newly generated types
+
+## 0.22.0-beta.0
+
+### Minor Changes
+
+- a2c7b37: Add docs for object sets and attachments.
+- 795777a: Change how queries are executed, now use executeFunction call instead
+
 ## 0.21.0
 
 ### Minor Changes

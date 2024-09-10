@@ -1,5 +1,40 @@
 # @osdk/generator
 
+## 1.14.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/generator-converters@0.8.0-beta.0
+
+## 1.14.0-beta.2
+
+### Minor Changes
+
+- 68a8dc7: Fixes an issue that could cause an object with sub-selection to be assigned as a full object
+- 081114f: Splits batchApplyAction out of applyAction
+
+## 1.14.0-beta.1
+
+### Minor Changes
+
+- 51fe88c: Fix edge case with never in newly generated types
+
+## 1.14.0-beta.0
+
+### Minor Changes
+
+- ac4f4fd: Notable changes:
+  - `{{actionApiName}}$Params` is deprecated in favor of `ActionParams${{actionApiName}}`.
+  - All generated `{{actionApiName}}$Params` objects are now exported from generated code.
+  - All `{{actionApiName}}$Params` are marked as `readonly`.
+  - Some types that are now only needed in `@osdk/client` have been moved back out of `@osdk/client.api`.
+  - Generated `ActionParams${{actionApiName}}` are simpler and do not rely on type mapping for the keys, the array'ness, nor multiplicity.
+  - `AttachmentUpload.name` is now `readonly`.
+- 7494995: Internal changes to file paths
+- 1770490: URLs in jsdoc now link to palantir.com
+
 ## 1.13.0
 
 ### Minor Changes

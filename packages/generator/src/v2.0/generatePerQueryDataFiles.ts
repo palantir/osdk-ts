@@ -22,7 +22,6 @@ import type { EnhancedQuery } from "../GenerateContext/EnhancedQuery.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
 import { getObjectTypeApiNamesFromQuery } from "../shared/getObjectTypeApiNamesFromQuery.js";
-import { getObjectDefIdentifier } from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
 import { wireQueryDataTypeToQueryDataTypeDefinition } from "../shared/wireQueryDataTypeToQueryDataTypeDefinition.js";
 import {
   wireQueryParameterV2ToQueryParameterDefinition as paramToDef,
@@ -113,12 +112,12 @@ async function generateV2QueryFile(
         import type { QueryDefinition , VersionBound} from "@osdk/api";
         import type { QueryParam, QueryResult } from "@osdk/client.api";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
         ${importObjects}
 
-        export interface ${query.shortApiName} {
-          ${getDescriptionIfPresent(query.description)}
-          (${
+        export namespace ${query.shortApiName} {
+          export interface Signature {
+            ${getDescriptionIfPresent(query.description)}
+            (${
       Object.keys(query.parameters).length > 0
         ? `query: ${query.paramsIdentifier}`
         : ""
@@ -129,19 +128,19 @@ async function generateV2QueryFile(
         "Result",
       )
     }>
-        }
+          }
 
         ${
       Object.keys(query.parameters).length > 0
         ? `
-        export interface ${query.paramsIdentifier} {
-        ${
+            export interface Parameters {
+            ${
           stringify(query.parameters, {
             "*": (parameter, formatter, apiName) => {
               const q = paramToDef(parameter);
               return [
                 `
-            ${
+                ${
                   queryParamJsDoc(paramToDef(parameter), { apiName })
                 }readonly "${apiName}"${q.nullable ? "?" : ""}`,
                 `${getQueryParamType(ontology, q, "Param")}`,
@@ -149,28 +148,35 @@ async function generateV2QueryFile(
             },
           })
         }
-        }
-
-        `
+            }
+    
+            `
         : ""
     }
 
-
-
-        export interface ${query.definitionIdentifier} extends QueryDefinition<
+        export interface Definition extends QueryDefinition<
           "${query.fullApiName}", 
           ${referencedObjectTypes},
-          ${query.shortApiName}
+          ${query.shortApiName}.Signature
         >, VersionBound<$ExpectedClientVersion>{
             ${stringify(baseProps)},
             parameters: {
-            ${parameterDefsForType(query)}
+            ${parameterDefsForType(ontology, query)}
             };
             output: {
             ${stringify(outputBase)},
-            ${getLineFor__OsdkTargetType(query.output)}
+            ${getLineFor__OsdkTargetType(ontology, query.output)}
             };
         }
+
+        }
+
+        /** @deprecated use \`${query.shortApiName}.Signature\' instead */
+        export type ${query.shortApiName} = ${query.shortApiName}.Signature;
+
+
+
+
 
         export const ${query.shortApiName}: ${query.definitionIdentifier} = {
             ${stringify(baseProps)},
@@ -192,22 +198,30 @@ function parametersForConst(query: EnhancedQuery) {
   });
 }
 
-function parameterDefsForType(query: EnhancedQuery) {
+function parameterDefsForType(
+  ontology: EnhancedOntologyDefinition,
+  query: EnhancedQuery,
+) {
   return stringify(query.parameters, {
     "*": (parameter, valueFormatter, apiName) => [
       `${queryParamJsDoc(paramToDef(parameter), { apiName })} ${apiName}`,
       ` {
           ${stringify(deleteUndefineds(paramToDef(parameter)))},
-          ${getLineFor__OsdkTargetType(parameter.dataType)}
+          ${getLineFor__OsdkTargetType(ontology, parameter.dataType)}
         }`,
     ],
   });
 }
 
-function getLineFor__OsdkTargetType(qdt: QueryDataType) {
+function getLineFor__OsdkTargetType(
+  ontology: EnhancedOntologyDefinition,
+  qdt: QueryDataType,
+) {
   if (qdt.type === "object" || qdt.type === "objectSet") {
     return `__OsdkTargetType?: ${
-      getObjectDefIdentifier(qdt.objectTypeApiName!, true)
+      ontology.requireObjectType(
+        qdt.objectTypeApiName!,
+      ).getImportedDefinitionIdentifier(true)
     }`;
   }
   return "";
@@ -240,9 +254,9 @@ function getObjectImports(
 
   for (const fqObjectApiName of objectTypes) {
     const obj = enhancedOntology.requireObjectType(fqObjectApiName);
-    ret += `import { ${obj.shortApiName} } from "${
-      obj.getImportPathRelTo(filePath)
-    }";\n`;
+    ret += `import type { ${obj.getDefinitionIdentifier(true)} as ${
+      obj.getImportedDefinitionIdentifier(true)
+    } } from "${obj.getImportPathRelTo(filePath)}";\n`;
   }
 
   return ret;
@@ -279,14 +293,14 @@ export function getQueryParamType(
     case "object":
       inner = `Query${type}.ObjectType<${
         enhancedOntology.requireObjectType(input.object)
-          .getObjectDefIdentifier(true)
+          .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 
     case "objectSet":
       inner = `Query${type}.ObjectSetType<${
         enhancedOntology.requireObjectType(input.objectSet)
-          .getObjectDefIdentifier(true)
+          .getImportedDefinitionIdentifier(true)
       }>`;
       break;
 

@@ -46,7 +46,7 @@ const _createGroup: $FoundryPlatformMethod<
 > = [1, "/v2/admin/groups", 3];
 
 /**
- * Creates a new Group
+ * Creates a new Group.
  *
  * @beta
  *
@@ -71,7 +71,7 @@ const _deleteGroup: $FoundryPlatformMethod<
 > = [3, "/v2/admin/groups/{0}", 2];
 
 /**
- * Deletes the given Group
+ * Delete the Group with the specified id.
  *
  * @beta
  *
@@ -98,7 +98,9 @@ const _listGroups: $FoundryPlatformMethod<
 > = [0, "/v2/admin/groups", 2];
 
 /**
- * Lists all Groups
+ * Lists all Groups.
+ *
+ * This is a paged endpoint. Each page may be smaller or larger than the requested page size. However, it is guaranteed that if there are more results available, the `nextPageToken` field will be populated. To get the next page, make the same request again, but set the value of the `pageToken` query parameter to be value of the `nextPageToken` value of the previous response. If there is no `nextPageToken` field in the response, you are on the last page.
  *
  * @beta
  *
@@ -126,7 +128,7 @@ const _getGroup: $FoundryPlatformMethod<
 > = [0, "/v2/admin/groups/{0}", 2];
 
 /**
- * Get the Group
+ * Get the Group with the specified id.
  *
  * @beta
  *
@@ -181,7 +183,7 @@ const _searchGroups: $FoundryPlatformMethod<
 /**
  * @beta
  *
- * Required Scopes: []
+ * Required Scopes: [api:admin-read]
  * URL: /v2/admin/groups/search
  */
 export function searchGroups(

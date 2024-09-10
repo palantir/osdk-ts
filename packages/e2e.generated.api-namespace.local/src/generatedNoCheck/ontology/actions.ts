@@ -1,1 +1,1 @@
-export {};
+export { setTaskBody } from './actions/setTaskBody.js';

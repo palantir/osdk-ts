@@ -27,8 +27,8 @@ import type {
   ApplyBatchActionOptions,
   DataValueClientToWire,
 } from "@osdk/client.api";
-import type { DataValue } from "@osdk/internal.foundry";
 import { OntologiesV2 } from "@osdk/internal.foundry";
+import type { DataValue } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -62,9 +62,13 @@ export type OsdkActionParameters<
 
 export type ActionSignatureFromDef<T extends ActionDefinition<any, any, any>> =
   {
-    applyAction: NonNullable<T["__OsdkActionType"]> extends never
+    applyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
       ? ActionSignature<T["parameters"]>
-      : NonNullable<T["__OsdkActionType"]>;
+      : NonNullable<T["__OsdkActionType"]>["applyAction"];
+
+    batchApplyAction: [NonNullable<T["__OsdkActionType"]>] extends [never]
+      ? BatchActionSignature<T["parameters"]>
+      : NonNullable<T["__OsdkActionType"]>["batchApplyAction"];
   };
 
 type ActionParametersDefinition = Record<
@@ -75,9 +79,20 @@ type ActionParametersDefinition = Record<
 export type ActionSignature<
   X extends Record<any, ActionParameterDefinition<any, any>>,
 > = <
-  A extends NOOP<OsdkActionParameters<X>> | NOOP<OsdkActionParameters<X>>[],
-  OP extends A extends NOOP<OsdkActionParameters<X>>[] ? ApplyBatchActionOptions
-    : ApplyActionOptions,
+  A extends NOOP<OsdkActionParameters<X>>,
+  OP extends ApplyActionOptions,
+>(
+  args: A,
+  options?: OP,
+) => Promise<
+  ActionReturnTypeForOptions<OP>
+>;
+
+export type BatchActionSignature<
+  X extends Record<any, ActionParameterDefinition<any, any>>,
+> = <
+  A extends NOOP<OsdkActionParameters<X>>[],
+  OP extends ApplyBatchActionOptions,
 >(
   args: A,
   options?: OP,

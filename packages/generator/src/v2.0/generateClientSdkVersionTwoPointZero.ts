@@ -15,101 +15,36 @@
  */
 
 import path from "node:path";
-import type { EnhancedBase } from "../GenerateContext/EnhancedBase.js";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { GenerateContext } from "../GenerateContext/GenerateContext.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
-import {
-  wireObjectTypeV2ToSdkObjectConst,
-} from "../shared/wireObjectTypeV2ToSdkObjectConst.js";
-import { stringUnionFrom } from "../util/stringUnionFrom.js";
 import { formatTs } from "../util/test/formatTs.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
 import { generateOntologyMetadataFile } from "./generateMetadata.js";
+import { generatePerActionDataFiles } from "./generatePerActionDataFiles.js";
 import { generatePerQueryDataFilesV2 } from "./generatePerQueryDataFiles.js";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst } from "./UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst.js";
+import {
+  wireObjectTypeV2ToSdkObjectConstV2,
+} from "./wireObjectTypeV2ToSdkObjectConstV2.js";
 
 async function generateRootIndexTsFile(
-  { fs, outDir, importExt }: GenerateContext,
+  { fs, outDir, importExt, ontologyApiNamespace }: GenerateContext,
 ) {
   fs.writeFile(
     path.join(outDir, "index.ts"),
     await formatTs(
-      `
-        export { Ontology } from "./Ontology${importExt}";
+      `${
+        ontologyApiNamespace == null
+          ? `export { $ontologyRid } from "./OntologyMetadata${importExt}";`
+          : ``
+      }
         export * from "./ontology/actions${importExt}";
         export * from "./ontology/objects${importExt}";
         export * from "./ontology/interfaces${importExt}";
         export * from "./ontology/queries${importExt}";
-    `,
-    ),
-  );
-}
-
-async function generateOntologyTsFile(
-  {
-    fs,
-    outDir,
-    importExt,
-    ontology,
-  }: GenerateContext,
-) {
-  function helper(types: Record<string, EnhancedBase<any>>, prefix: string) {
-    return Object.values(types).map((type) => {
-      return `"${type.shortApiName}": ${prefix}${type.shortApiName}`;
-    }).join(",\n");
-  }
-
-  await fs.writeFile(
-    path.join(outDir, "Ontology.ts"),
-    await formatTs(
-      `
-      import type { OntologyDefinition } from "@osdk/api";
-      import * as Actions from "./ontology/actions${importExt}";
-      import * as Objects from "./ontology/objects${importExt}";
-      import * as Interfaces from "./ontology/interfaces${importExt}";
-      import * as Queries from "./ontology/queries${importExt}";
-      import { OntologyMetadata } from "./OntologyMetadata${importExt}";
-      
-      export interface Ontology extends OntologyDefinition<${
-        stringUnionFrom(
-          Object.values(ontology.objectTypes).map(ot => ot.fullApiName),
-        )
-      }> {
-        metadata: OntologyMetadata,
-        objects: {
-          ${helper(ontology.objectTypes, "Objects.")}
-        },
-        actions: {
-          ${helper(ontology.actionTypes, "typeof Actions.")}
-        },
-        queries: {
-          ${helper(ontology.queryTypes, "typeof Queries.")}
-        },
-        interfaces: {
-          ${helper(ontology.interfaceTypes, "Interfaces.")}
-        }
-      }
-
-      export const Ontology: Ontology = {
-        metadata: OntologyMetadata,
-        objects: {
-          ${helper(ontology.objectTypes, "Objects.")}
-        },
-        actions: {
-          ${helper(ontology.actionTypes, "Actions.")}
-        },
-        queries: {
-          ${helper(ontology.queryTypes, "Queries.")}
-        },
-        interfaces: {
-          ${helper(ontology.interfaceTypes, "Interfaces.")}             
-        }
-      };
-
     `,
     ),
   );
@@ -122,9 +57,7 @@ async function generateEachObjectFile(
     fs,
     outDir,
     ontology,
-    sanitizedOntology,
     importExt,
-    ontologyApiNamespace,
   } = ctx;
   await fs.mkdir(path.join(outDir, "ontology", "objects"), { recursive: true });
   for (const obj of Object.values(ontology.objectTypes)) {
@@ -139,12 +72,11 @@ async function generateEachObjectFile(
     await fs.writeFile(
       outFilePath,
       await formatTs(`
-        import type { ObjectTypeDefinition, VersionBound, ObjectTypeLinkDefinition, PropertyDef } from "@osdk/api";
-        import { Osdk } from "@osdk/client.api";
+        import type {  VersionBound as $VersionBound, PropertyDef as $PropertyDef } from "@osdk/api";
+        import type { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
-        ${wireObjectTypeV2ToSdkObjectConst(obj.og, ctx, relPath, true)}
+        ${wireObjectTypeV2ToSdkObjectConstV2(obj.og, ctx, relPath)}
       `),
     );
   }
@@ -164,23 +96,18 @@ export async function generateClientSdkVersionTwoPointZero(
   await verifyOutDir(outDir, fs);
 
   const sanitizedOntology = sanitizeMetadata(ontology);
+
+  await fs.mkdir(outDir, { recursive: true });
   const enhancedOntology = enhanceOntology(
     sanitizedOntology,
     ontologyApiNamespace,
-    new Map(),
+    apiNamespacePackageMap,
     importExt,
   );
 
-  await fs.mkdir(outDir, { recursive: true });
-
   const ctx: GenerateContext = {
     sanitizedOntology,
-    ontology: enhanceOntology(
-      sanitizedOntology,
-      ontologyApiNamespace,
-      apiNamespacePackageMap,
-      importExt,
-    ),
+    ontology: enhancedOntology,
     importExt,
     fs,
     outDir,
@@ -190,20 +117,19 @@ export async function generateClientSdkVersionTwoPointZero(
 
   await generateRootIndexTsFile(ctx);
   await generateOntologyMetadataFile(ctx, userAgent);
-  await generateOntologyTsFile(ctx);
   await generateEachObjectFile(ctx);
   await generateOntologyInterfaces(ctx);
 
   const actionsDir = path.join(outDir, "ontology", "actions");
   await fs.mkdir(actionsDir, { recursive: true });
-  await generatePerActionDataFiles(ctx, true);
+  await generatePerActionDataFiles(ctx);
 
   await fs.writeFile(
     path.join(outDir, "ontology", "objects.ts"),
     await formatTs(`
     ${
-      Object.keys(ontology.objectTypes).sort((a, b) => a.localeCompare(b)).map(
-        apiName => `export * from "./objects/${apiName}${importExt}";`,
+      Object.values(enhancedOntology.objectTypes).map(objType =>
+        `export * from "./objects/${objType.shortApiName}${importExt}";`
       ).join("\n")
     }
     ${Object.keys(ontology.objectTypes).length === 0 ? "export {};" : ""}
@@ -227,10 +153,9 @@ async function generateOntologyInterfaces(
       path.join(interfacesDir, `${obj.shortApiName}.ts`),
       await formatTs(`
     
-      import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
+      import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from "@osdk/api";
       import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
       import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-
       ${
         __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
           obj,

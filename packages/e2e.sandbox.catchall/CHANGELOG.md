@@ -1,5 +1,52 @@
 # @osdk/e2e.sandbox.catchall
 
+## 0.3.0-beta.3
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/client@0.22.0-beta.3
+  - @osdk/client.api@0.22.0-beta.3
+  - @osdk/e2e.generated.catchall@3.0.0-beta.3
+  - @osdk/internal.foundry@0.5.0-beta.1
+
+## 0.3.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [68a8dc7]
+- Updated dependencies [081114f]
+  - @osdk/client.api@0.22.0-beta.2
+  - @osdk/client@0.22.0-beta.2
+  - @osdk/e2e.generated.catchall@3.0.0-beta.2
+
+## 0.3.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [51fe88c]
+  - @osdk/client.api@0.22.0-beta.1
+  - @osdk/client@0.22.0-beta.1
+  - @osdk/e2e.generated.catchall@3.0.0-beta.1
+
+## 0.3.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies [ac4f4fd]
+- Updated dependencies [f86f8d0]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5a41e5e]
+- Updated dependencies [795777a]
+- Updated dependencies [5d6d5ab]
+  - @osdk/client@0.22.0-beta.0
+  - @osdk/client.api@0.22.0-beta.0
+  - @osdk/internal.foundry@0.5.0-beta.0
+  - @osdk/foundry@2.1.0-beta.0
+  - @osdk/e2e.generated.catchall@3.0.0-beta.0
+
 ## 0.2.0
 
 ### Patch Changes

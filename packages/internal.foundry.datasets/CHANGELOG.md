@@ -1,5 +1,27 @@
 # @osdk/internal.foundry.datasets
 
+## 0.2.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/internal.foundry.core@0.2.0-beta.1
+
+## 0.2.0-beta.0
+
+### Minor Changes
+
+- 1770490: URLs in jsdoc now link to palantir.com
+- 5d6d5ab: Updated to latest gateway apis
+- 5d6d5ab: Includes @alpha/@beta/@public jsdoc tags
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.core@0.2.0-beta.0
+
 ## 0.1.0
 
 ### Minor Changes

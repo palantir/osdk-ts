@@ -42,7 +42,7 @@ const _createBranch: $FoundryPlatformMethod<
 /**
  * Creates a branch on an existing dataset. A branch may optionally point to a (committed) transaction.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/branches
@@ -69,7 +69,7 @@ const _deleteBranch: $FoundryPlatformMethod<
 /**
  * Deletes the Branch with the given BranchName.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-write]
  * URL: /v2/datasets/{datasetRid}/branches/{branchName}
@@ -100,7 +100,7 @@ const _listBranches: $FoundryPlatformMethod<
 /**
  * Lists the Branches of a Dataset.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/branches
@@ -131,7 +131,7 @@ const _getBranch: $FoundryPlatformMethod<
 /**
  * Get a Branch of a Dataset.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:datasets-read]
  * URL: /v2/datasets/{datasetRid}/branches/{branchName}

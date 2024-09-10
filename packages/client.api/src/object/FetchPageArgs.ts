@@ -49,9 +49,9 @@ export interface OrderByArg<
 export type SelectArgToKeys<
   Q extends ObjectOrInterfaceDefinition,
   A extends SelectArg<Q, any, any>,
-> = A extends SelectArg<Q, never> ? "$all"
+> = A extends SelectArg<Q, never> ? keyof Q["props"]
   : A["$select"] extends readonly string[] ? A["$select"][number]
-  : "$all";
+  : keyof Q["props"];
 
 export interface FetchPageArgs<
   Q extends ObjectOrInterfaceDefinition,

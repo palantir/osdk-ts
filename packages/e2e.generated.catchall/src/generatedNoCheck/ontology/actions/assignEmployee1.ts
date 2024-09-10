@@ -10,61 +10,70 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from '../objects/Employee.js';
 import type { Venture } from '../objects/Venture.js';
 
-// Represents the definition of the parameters for the action
-export type ActionDef$assignEmployee1$Params = {
-  'employee-1': {
-    multiplicity: false;
-    nullable: false;
-    type: ObjectActionDataType<'Employee', Employee>;
+export namespace assignEmployee1 {
+  // Represents the definition of the parameters for the action
+  export type ParamsDefinition = {
+    'employee-1': {
+      multiplicity: false;
+      nullable: false;
+      type: ObjectActionDataType<'Employee', Employee.Definition>;
+    };
+    'venture-1': {
+      multiplicity: false;
+      nullable: false;
+      type: ObjectActionDataType<'Venture', Venture.Definition>;
+    };
   };
-  'venture-1': {
-    multiplicity: false;
-    nullable: false;
-    type: ObjectActionDataType<'Venture', Venture>;
-  };
-};
 
-/**
- * Assigns an employee to a venture
- */
-export interface ActionParams$assignEmployee1 {
-  readonly 'employee-1': ActionParam.ObjectType<Employee>;
-
-  readonly 'venture-1': ActionParam.ObjectType<Venture>;
-}
-
-/**
- * @deprecated Use `ActionParams$assignEmployee1`
- */
-export type assignEmployee1$Params = ActionParams$assignEmployee1 | ReadonlyArray<ActionParams$assignEmployee1>;
-
-// Represents a fqn of the action
-export interface assignEmployee1 {
   /**
    * Assigns an employee to a venture
    */
-  <
-    P extends ActionParams$assignEmployee1 | ReadonlyArray<ActionParams$assignEmployee1>,
-    OP extends P extends ReadonlyArray<ActionParams$assignEmployee1> ? ApplyBatchActionOptions : ApplyActionOptions,
-  >(
-    args: P,
-    options?: OP,
-  ): Promise<ActionReturnTypeForOptions<OP>>;
+  export interface Params {
+    readonly 'employee-1': ActionParam.ObjectType<Employee.Definition>;
+
+    readonly 'venture-1': ActionParam.ObjectType<Venture.Definition>;
+  }
+  /** @deprecated **/
+  export type Parameters = Params;
+
+  // Represents the definition of the action
+  export interface Definition
+    extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1.Signatures>,
+      VersionBound<$ExpectedClientVersion> {
+    apiName: 'assignEmployee1';
+    description: 'Assigns an employee to a venture';
+    modifiedEntities: { Employee: { created: false; modified: true } };
+    type: 'action';
+    parameters: assignEmployee1.ParamsDefinition;
+    osdkMetadata: typeof $osdkMetadata;
+  }
+
+  // Represents a fqn of the action
+  export interface Signatures {
+    /**
+     * Assigns an employee to a venture
+     */
+    applyAction<P extends assignEmployee1.Params, OP extends ApplyActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+
+    batchApplyAction<P extends ReadonlyArray<assignEmployee1.Params>, OP extends ApplyBatchActionOptions>(
+      args: P,
+      options?: OP,
+    ): Promise<ActionReturnTypeForOptions<OP>>;
+  }
 }
 
-// Represents the definition of the action
-export interface ActionDef$assignEmployee1
-  extends ActionDefinition<'assignEmployee1', 'Employee' | 'Venture', assignEmployee1>,
-    VersionBound<$ExpectedClientVersion> {
-  apiName: 'assignEmployee1';
-  description: 'Assigns an employee to a venture';
-  modifiedEntities: { Employee: { created: false; modified: true } };
-  type: 'action';
-  parameters: ActionDef$assignEmployee1$Params;
-  osdkMetadata: typeof $osdkMetadata;
-}
+/**
+ * @deprecated Use `assignEmployee1.Params`
+ */
+export type assignEmployee1$Params = assignEmployee1.Params | ReadonlyArray<assignEmployee1.Params>;
 
-export const assignEmployee1: ActionDef$assignEmployee1 = {
+/** @deprecated Use `assignEmployee1.Definition` **/
+export type assignEmployee1 = assignEmployee1.Signatures;
+
+export const assignEmployee1: assignEmployee1.Definition = {
   apiName: 'assignEmployee1',
   description: 'Assigns an employee to a venture',
   modifiedEntities: {

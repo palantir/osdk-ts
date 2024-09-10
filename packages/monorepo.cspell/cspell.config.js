@@ -85,6 +85,7 @@ const cspell = {
     "packages/client.unstable/src/generated/**",
 
     "packages/e2e.test.foundry-sdk-generator/src/generatedNoCheck/**/*",
+    "packages/create-app.template.*/src/generatedNoCheck/**/*",
   ],
   dictionaryDefinitions: [
     ...getDictionaryDefinitions(),

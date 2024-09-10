@@ -17,7 +17,6 @@
 import * as path from "node:path";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";
 import type { MinimalFs } from "../MinimalFs.js";
-import { generatePerActionDataFiles } from "../shared/generatePerActionDataFiles.js";
 import { sanitizeMetadata } from "../shared/sanitizeMetadata.js";
 import { verifyOutDir } from "../util/verifyOutDir.js";
 import type { WireOntologyDefinition } from "../WireOntologyDefinition.js";
@@ -31,6 +30,7 @@ import { generateMetadataFile } from "./generateMetadataFile.js";
 import { generateObjectsInterfaceFile } from "./generateObjectsInterfaceFile.js";
 import { generateObjectsInterfaceSupportFiles } from "./generateObjectsInterfaceSupportFiles.js";
 import { generateOntologyIndexFile } from "./generateOntologyIndexFile.js";
+import { generatePerActionDataFilesV1 } from "./generatePerActionDataFilesV1.js";
 import { generatePerObjectInterfaceAndDataFiles } from "./generatePerObjectInterfaceAndDataFiles.js";
 import { generatePerQueryDataFiles } from "./generatePerQueryDataFiles.js";
 import { generateQueries } from "./generateQueries.js";
@@ -98,7 +98,7 @@ export async function generateClientSdkVersionOneDotOne(
   await generateActions(sanitizedOntology, fs, actionsDir, importExt);
   await generateBatchActions(sanitizedOntology, fs, actionsDir, importExt);
   await generateBulkActions(sanitizedOntology, fs, actionsDir, importExt);
-  await generatePerActionDataFiles(common, false);
+  await generatePerActionDataFilesV1(common);
   await generateQueries(sanitizedOntology, fs, queriesDir, importExt);
   await generatePerQueryDataFiles(common, false);
   await generateIndexFile(fs, outDir, importExt);

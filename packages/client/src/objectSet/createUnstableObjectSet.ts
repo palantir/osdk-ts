@@ -21,7 +21,7 @@ import type {
   ObjectSet as OGObjectSet,
   WhereClause,
 } from "@osdk/client.api";
-import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry";
+import type { ObjectSet as WireObjectSet } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "./createObjectSet.js";
 import type { ObjectSetListener } from "./ObjectSetListener.js";
@@ -31,22 +31,6 @@ export interface UNSTABLE_ObjectSet<Q extends ObjectOrInterfaceDefinition>
   extends OGObjectSet<Q>
 {
   subscribe: (listener: ObjectSetListener<Q>) => () => unknown;
-
-  where: (
-    clause: WhereClause<Q>,
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  union: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  intersect: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
-
-  subtract: (
-    ...objectSets: ReadonlyArray<OGObjectSet<Q>>
-  ) => UNSTABLE_ObjectSet<Q>;
 
   pivotTo: <L extends LinkNames<Q>>(
     type: L,

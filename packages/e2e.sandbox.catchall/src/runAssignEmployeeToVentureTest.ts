@@ -14,16 +14,21 @@
  * limitations under the License.
  */
 
+import type { Client } from "@osdk/client";
 import {
   assignEmployee1,
   Employee,
+  Person,
   Venture,
 } from "@osdk/e2e.generated.catchall";
-import { client } from "./client.js";
+import { client as unstableClient } from "./client.js";
+
+const client: Client = unstableClient;
 
 export async function runAssignEmployeeToVentureTest() {
   let didValidateOnce = false;
   for await (const emp of client(Employee).asyncIter()) {
+    emp.id;
     console.log(`Employee: ${emp.id}`);
 
     let foundVentures = false;
@@ -48,6 +53,15 @@ export async function runAssignEmployeeToVentureTest() {
           $validateOnly: true,
         });
 
+        if (false) {
+          const r = await client(assignEmployee1).batchApplyAction([{
+            "employee-1": emp.id,
+            "venture-1": venture.ventureId,
+          }], {
+            $returnEdits: true,
+          });
+        }
+
         console.log(r);
       }
     } else if (didValidateOnce) {
@@ -55,4 +69,8 @@ export async function runAssignEmployeeToVentureTest() {
       break;
     }
   }
+
+  const foo = (client as Client)(Person);
+
+  const q = (client as Client)(Person).fetchPage();
 }

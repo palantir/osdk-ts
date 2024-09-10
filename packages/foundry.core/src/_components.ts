@@ -86,7 +86,7 @@ export type DistanceUnit =
  * Log Safety: SAFE
  */
 export interface Duration {
-  value: undefined;
+  value: number;
   unit: TimeUnit;
 }
 
@@ -96,11 +96,6 @@ export interface Duration {
  * Log Safety: UNSAFE
  */
 export type FilePath = LooselyBrandedString<"FilePath">;
-
-/**
- * Log Safety: SAFE
- */
-export type FolderRid = LooselyBrandedString<"FolderRid">;
 
 /**
  * The Resource Identifier (RID) of a Media Set
@@ -150,13 +145,6 @@ export type PrincipalId = LooselyBrandedString<"PrincipalId">;
 export type PrincipalType = "USER" | "GROUP";
 
 /**
- * The Resource Identifier (RID) of a Project.
- *
- * Log Safety: SAFE
- */
-export type ProjectRid = LooselyBrandedString<"ProjectRid">;
-
-/**
    * Identifies which Realm a User or Group is a member of.
 The palantir-internal-realm is used for Users or Groups that are created in Foundry by administrators and not associated with any SSO provider.
    *
@@ -170,6 +158,62 @@ export type Realm = LooselyBrandedString<"Realm">;
  * Log Safety: SAFE
  */
 export type ReleaseStatus = "ACTIVE" | "EXPERIMENTAL" | "DEPRECATED";
+
+/**
+ * The type of a resource.
+ *
+ * Log Safety: SAFE
+ */
+export type ResourceType =
+  | "Academy_Tutorial"
+  | "Artifacts_Repository"
+  | "Automate_Automation"
+  | "Builder_Pipeline"
+  | "Carbon_Workspace"
+  | "Cipher_Channel"
+  | "Code_Repository"
+  | "Code_Workbook"
+  | "Code_Workspace"
+  | "Connectivity_Agent"
+  | "Connectivity_Source"
+  | "Connectivity_VirtualTable"
+  | "Contour_Analysis"
+  | "Data_Lineage_Graph"
+  | "Datasets_Dataset"
+  | "Filesystem_Document"
+  | "Filesystem_Folder"
+  | "Filesystem_Image"
+  | "Filesystem_Project"
+  | "Filesystem_Space"
+  | "Filesystem_WebLink"
+  | "Foundry_Form"
+  | "Foundry_Report"
+  | "Foundry_Template"
+  | "FoundryRules_Workflow"
+  | "Fusion_Document"
+  | "Logic_Function"
+  | "Machinery_ProcessGraph"
+  | "Maps_Layer"
+  | "Maps_Map"
+  | "Marketplace_Installation"
+  | "Marketplace_LocalStore"
+  | "Marketplace_RemoteStore"
+  | "Media_Set"
+  | "Modeling_Model"
+  | "Modeling_ModelVersion"
+  | "Modeling_Objective"
+  | "Monitoring_MonitoringView"
+  | "Notepad_Document"
+  | "Notepad_Template"
+  | "ObjectExploration_Exploration"
+  | "ObjectExploration_Layout"
+  | "Quiver_Analysis"
+  | "Slate_Application"
+  | "SolutionDesigner_Diagram"
+  | "ThirdPartyApplication_ThirdPartyApplication"
+  | "Unknown"
+  | "Vertex_Graph"
+  | "Workshop_Module";
 
 /**
  * The size of the file or attachment in bytes.

@@ -1,5 +1,35 @@
 # @osdk/foundry
 
+## 0.5.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [7c2db00]
+  - @osdk/api@1.10.0-beta.0
+  - @osdk/internal.foundry.core@0.2.0-beta.1
+  - @osdk/internal.foundry.datasets@0.2.0-beta.1
+  - @osdk/internal.foundry.models@0.2.0-beta.1
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.1
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.1
+
+## 0.5.0-beta.0
+
+### Minor Changes
+
+- 5d6d5ab: Updated to latest gateway apis
+- 5d6d5ab: Includes @alpha/@beta/@public jsdoc tags
+
+### Patch Changes
+
+- Updated dependencies [1770490]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.0
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.0
+  - @osdk/internal.foundry.datasets@0.2.0-beta.0
+  - @osdk/internal.foundry.models@0.2.0-beta.0
+  - @osdk/internal.foundry.core@0.2.0-beta.0
+
 ## 0.4.0
 
 ### Minor Changes

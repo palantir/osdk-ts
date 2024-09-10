@@ -15,7 +15,7 @@
  */
 
 import type { Osdk } from "@osdk/client.api";
-import type { OntologyObjectV2 } from "@osdk/internal.foundry";
+import type { OntologyObjectV2 } from "@osdk/internal.foundry.core";
 import type { MinimalClient } from "../../MinimalClientContext.js";
 import type { FetchedObjectTypeDefinition } from "../../ontology/OntologyProvider.js";
 import type { DollarAsFn } from "./getDollarAs.js";

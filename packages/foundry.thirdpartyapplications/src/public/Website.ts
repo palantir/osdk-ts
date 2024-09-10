@@ -37,7 +37,7 @@ const _getWebsite: $FoundryPlatformMethod<
 > = [0, "/v2/thirdPartyApplications/{0}/website", 2];
 
 /**
- * Get the Website
+ * Get the Website.
  *
  * @beta
  *
@@ -64,6 +64,8 @@ const _deployWebsite: $FoundryPlatformMethod<
 > = [1, "/v2/thirdPartyApplications/{0}/website/deploy", 3];
 
 /**
+ * Deploy a version of the Website.
+ *
  * @beta
  *
  * Required Scopes: [third-party-application:deploy-application-website]
@@ -88,6 +90,8 @@ const _undeployWebsite: $FoundryPlatformMethod<
 > = [1, "/v2/thirdPartyApplications/{0}/website/undeploy", 2];
 
 /**
+ * Remove the currently deployed version of the Website.
+ *
  * @beta
  *
  * Required Scopes: [third-party-application:deploy-application-website]

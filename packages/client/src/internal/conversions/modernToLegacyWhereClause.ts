@@ -25,7 +25,7 @@ import type {
   PossibleWhereClauseFilters,
   WhereClause,
 } from "@osdk/client.api";
-import type { SearchJsonQueryV2 } from "@osdk/internal.foundry";
+import type { SearchJsonQueryV2 } from "@osdk/internal.foundry.core";
 import type { BBox, Position } from "geojson";
 import invariant from "tiny-invariant";
 

@@ -28,8 +28,8 @@ import type {
   OsdkBase,
   OsdkObjectPrimaryKeyType,
 } from "@osdk/client.api";
-import type { DataValue } from "@osdk/internal.foundry";
-import { OntologiesV2 } from "@osdk/internal.foundry";
+import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
+import type { DataValue } from "@osdk/internal.foundry.core";
 import { createAttachmentFromRid } from "../createAttachmentFromRid.js";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { createObjectSet } from "../objectSet/createObjectSet.js";
@@ -48,7 +48,7 @@ export async function applyQuery<
 ): Promise<
   QueryReturnType<QD["output"]>
 > {
-  const response = await OntologiesV2.QueryTypes.executeQueryV2(
+  const response = await OntologiesV2.Queries.executeQueryV2(
     addUserAgentAndRequestContextHeaders(
       augmentRequestContext(client, _ => ({ finalMethodCall: "applyQuery" })),
       query,

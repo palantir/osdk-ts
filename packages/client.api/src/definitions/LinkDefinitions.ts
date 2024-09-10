@@ -29,7 +29,7 @@ import type { Osdk } from "../OsdkObjectFrom.js";
 export type OsdkObjectLinksObject<
   O extends ObjectTypeDefinition<any>,
 > = ObjectTypeLinkKeysFrom2<O> extends never ? never : {
-  [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
+  readonly [L in ObjectTypeLinkKeysFrom2<O>]: OsdkObjectLinksEntry<O, L>;
 };
 
 export type OsdkObjectLinksEntry<

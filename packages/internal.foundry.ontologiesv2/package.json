@@ -1,6 +1,6 @@
 {
   "name": "@osdk/internal.foundry.ontologiesv2",
-  "version": "0.1.0",
+  "version": "0.2.0-beta.1",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
@@ -57,7 +57,7 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.896.0",
+        "minVersion": "1.908.0",
         "maxVersion": "1.x.x"
       }
     }

@@ -15,8 +15,6 @@
  */
 
 import type {
-  ExecuteQueryRequest,
-  ExecuteQueryResponse,
   ListQueryTypesResponse,
   OntologyRid,
   PageSize,
@@ -101,35 +99,4 @@ export function getQueryType(
   ]
 ): Promise<QueryType> {
   return $foundryPlatformFetch($ctx, _getQueryType, ...args);
-}
-
-const _executeQuery: $FoundryPlatformMethod<
-  (
-    ontologyRid: OntologyRid,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<ExecuteQueryResponse>
-> = [1, "/v1/ontologies/{0}/queries/{1}/execute", 3];
-
-/**
- * Executes a Query using the given parameters. Optional parameters do not need to be supplied.
- * Third-party applications using this endpoint via OAuth2 must request the
- * following operation scopes: `api:ontologies-read`.
- *
- * @public
- *
- * Required Scopes: [api:ontologies-read]
- * URL: /v1/ontologies/{ontologyRid}/queries/{queryApiName}/execute
- */
-export function executeQuery(
-  $ctx: $Client | $ClientContext,
-  ...args: [
-    ontologyRid: OntologyRid,
-    queryApiName: QueryApiName,
-    $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ]
-): Promise<ExecuteQueryResponse> {
-  return $foundryPlatformFetch($ctx, _executeQuery, ...args);
 }

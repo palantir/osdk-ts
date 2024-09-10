@@ -20,7 +20,7 @@ import type {
   StringAggregateOption,
   UnorderedAggregationClause,
 } from "@osdk/client.api";
-import type { AggregationV2 } from "@osdk/internal.foundry";
+import type { AggregationV2 } from "@osdk/internal.foundry.core";
 
 const directionFieldMap = (dir?: "asc" | "desc" | "unordered") =>
   dir === "asc" ? "ASC" : dir === "desc" ? "DESC" : undefined;

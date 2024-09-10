@@ -16,7 +16,7 @@
 
 import type { OsdkObject } from "./OsdkObject.js";
 
-export interface PageResult<T extends OsdkObject<any>> {
+export interface PageResult<T> {
   data: T[];
   nextPageToken: string | undefined;
 }

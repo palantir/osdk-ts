@@ -33,25 +33,26 @@ export type CheckVersionBound<Q> = Q extends VersionBound<infer V> ? (
         [ErrorMessage]:
           `Your SDK requires a semver compatible version with ${V}. You have ${MaxOsdkVersion}. Update your package.json`;
       }
+    // Q
   )
   : Q;
 
 export interface Client extends SharedClient<MinimalClient> {
-  <Q extends (ObjectTypeDefinition<any, any> & VersionBound<any>)>(
-    o: CheckVersionBound<Q>,
-  ): ObjectSet<Q>;
+  <Q extends ObjectTypeDefinition<any, any>>(
+    o: Q,
+  ): unknown extends Q["objectSet"] ? ObjectSet<Q> : Q["objectSet"];
 
   <Q extends ActionDefinition<any, any, any>>(
-    o: CheckVersionBound<Q>,
+    o: Q,
   ): ActionSignatureFromDef<Q>;
 
   <Q extends QueryDefinition<any, any, any>>(
-    o: CheckVersionBound<Q>,
+    o: Q,
   ): QuerySignatureFromDef<Q>;
 }
 
 // BEGIN: THIS IS GENERATED CODE. DO NOT EDIT.
-const MaxOsdkVersion = "0.21.0";
+const MaxOsdkVersion = "0.22.0";
 // END: THIS IS GENERATED CODE. DO NOT EDIT.
 export type MaxOsdkVersion = typeof MaxOsdkVersion;
 const ErrorMessage = Symbol("ErrorMessage");

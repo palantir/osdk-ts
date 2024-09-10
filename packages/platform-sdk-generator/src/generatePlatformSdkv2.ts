@@ -79,7 +79,7 @@ export async function generatePlatformSdkV2(
         `export * as ${resourceName} from "${resourceDirRelToSrc}/${r.component}.js";\n`;
     }
 
-    const deps = new Set<Namespace>([model.commonNamespace]);
+    const deps = new Set<Namespace>();
     for (const r of ns.resources) {
       for (const method of r.operations) {
         for (const rc of method.referencedComponents) {
@@ -88,11 +88,17 @@ export async function generatePlatformSdkV2(
       }
     }
 
+    for (const comp of ns.components) {
+      for (const rc of comp.referencedComponents) {
+        deps.add(rc.namespace);
+      }
+    }
+
     deps.delete(ns);
 
     await addPackagesToPackageJson(
       path.join(ns.paths.packagePath, "package.json"),
-      [...deps].map(n => n.packageName),
+      [...deps].map(n => n.packageName).filter(p => p !== ns.packageName),
     );
 
     nsIndexTsContents += `export type {${

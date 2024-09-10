@@ -15,7 +15,7 @@
  */
 
 export type OsdkObject<N extends string> = {
-  $apiName: N;
-  $objectType: string;
-  $primaryKey: unknown;
+  readonly $apiName: N;
+  readonly $objectType: string;
+  readonly $primaryKey: unknown;
 };

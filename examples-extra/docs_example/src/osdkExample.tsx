@@ -2,7 +2,7 @@ import { createClient } from "@osdk/client";
 import {
   Employee,
   Office,
-  Ontology,
+  $ontologyRid,
   promoteEmployee,
   promoteEmployeeObject,
   Todo,
@@ -10,7 +10,7 @@ import {
 
 export const client = createClient(
   "https://example.com",
-  Ontology.metadata.ontologyRid,
+  $ontologyRid,
   async () => {
     return "";
   },
@@ -142,7 +142,7 @@ export async function osdkObjectSetExample() {
     newCompensation: 1000000,
   }, { $returnEdits: true });
 
-  const actionResults1 = await client(promoteEmployee).applyAction([{
+  const actionResults1 = await client(promoteEmployee).batchApplyAction([{
     employeeId: employeeLead.employeeId,
     newTitle: "Architect",
     newCompensation: 1000000,

@@ -4,7 +4,10 @@
     "codegen": {
       "inputs": ["ontology.json"],
       "outputs": ["src/generatedNoCheck/**/*"],
-      "dependsOn": ["@osdk/cli.cmd.typescript#transpile"]
+      "dependsOn": [
+        "@osdk/cli.cmd.typescript#transpile",
+        "@osdk/e2e.generated.api-namespace.dep#codegen"
+      ]
     }
   }
 }

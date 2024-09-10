@@ -1,145 +1,385 @@
-import type { ObjectTypeDefinition, PropertyDef, VersionBound } from '@osdk/api';
+import type {
+  ObjectTypeDefinition as $ObjectTypeDefinition,
+  PropertyDef as $PropertyDef,
+  VersionBound as $VersionBound,
+} from '@osdk/api';
+import type {
+  AggregateOpts as $AggregateOpts,
+  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
+  AggregationsResults as $AggregationsResults,
+  Augments as $Augments,
+  ConvertProps as $ConvertProps,
+  DefaultToFalse as $DefaultToFalse,
+  FetchPageArgs as $FetchPageArgs,
+  LinkedType as $LinkedType,
+  LinkNames as $LinkNames,
+  NullabilityAdherence as $NullabilityAdherence,
+  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
+  ObjectSet as $ObjectSet,
+  Osdk as $Osdk,
+  OsdkObject as $OsdkObject,
+  OsdkObjectPropertyType as $OsdkObjectPropertyType,
+  PageResult as $PageResult,
+  PropertyValueClientToWire as $PropertyValueClientToWire,
+  PropertyValueWireToClient as $PropType,
+  Result as $Result,
+  SelectArg as $SelectArg,
+  ValidToFrom as $ValidToFrom,
+} from '@osdk/client.api';
 import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
-export interface ObjectTypeWithAllPropertyTypes
-  extends ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes>,
-    VersionBound<$ExpectedClientVersion> {
-  osdkMetadata: typeof $osdkMetadata;
-  description: 'A type with all property types';
-  links: {};
-  primaryKeyApiName: 'id';
-  primaryKeyType: 'integer';
-  properties: {
-    /**
-     * (no ontology metadata)
-     */
-    attachment: PropertyDef<'attachment', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    attachmentArray: PropertyDef<'attachment', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    boolean: PropertyDef<'boolean', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    booleanArray: PropertyDef<'boolean', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    byte: PropertyDef<'byte', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    byteArray: PropertyDef<'byte', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    date: PropertyDef<'datetime', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    dateArray: PropertyDef<'datetime', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    dateTime: PropertyDef<'timestamp', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    dateTimeArray: PropertyDef<'timestamp', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    decimal: PropertyDef<'decimal', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    decimalArray: PropertyDef<'decimal', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    double: PropertyDef<'double', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    doubleArray: PropertyDef<'double', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    float: PropertyDef<'float', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    floatArray: PropertyDef<'float', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    geoPoint: PropertyDef<'geopoint', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    geoPointArray: PropertyDef<'geopoint', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    geoShape: PropertyDef<'geoshape', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    geoShapeArray: PropertyDef<'geoshape', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    id: PropertyDef<'integer', 'non-nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    integer: PropertyDef<'integer', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    integerArray: PropertyDef<'integer', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    long: PropertyDef<'long', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    longArray: PropertyDef<'long', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    numericTimeseries: PropertyDef<'numericTimeseries', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    short: PropertyDef<'short', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    shortArray: PropertyDef<'short', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    string: PropertyDef<'string', 'nullable', 'single'>;
-    /**
-     * (no ontology metadata)
-     */
-    stringArray: PropertyDef<'string', 'nullable', 'array'>;
-    /**
-     * (no ontology metadata)
-     */
-    stringTimeseries: PropertyDef<'stringTimeseries', 'nullable', 'single'>;
-  };
+export namespace ObjectTypeWithAllPropertyTypes {
+  export type PropertyKeys =
+    | 'id'
+    | 'string'
+    | 'boolean'
+    | 'date'
+    | 'dateTime'
+    | 'decimal'
+    | 'integer'
+    | 'long'
+    | 'short'
+    | 'float'
+    | 'double'
+    | 'byte'
+    | 'attachment'
+    | 'geoPoint'
+    | 'geoShape'
+    | 'stringArray'
+    | 'booleanArray'
+    | 'dateArray'
+    | 'dateTimeArray'
+    | 'decimalArray'
+    | 'integerArray'
+    | 'longArray'
+    | 'shortArray'
+    | 'floatArray'
+    | 'doubleArray'
+    | 'byteArray'
+    | 'attachmentArray'
+    | 'geoPointArray'
+    | 'geoShapeArray'
+    | 'numericTimeseries'
+    | 'stringTimeseries';
+
+  export type Links = never;
+
+  export interface Props {
+    readonly attachment: $PropType['attachment'] | undefined;
+    readonly attachmentArray: $PropType['attachment'][] | undefined;
+    readonly boolean: $PropType['boolean'] | undefined;
+    readonly booleanArray: $PropType['boolean'][] | undefined;
+    readonly byte: $PropType['byte'] | undefined;
+    readonly byteArray: $PropType['byte'][] | undefined;
+    readonly date: $PropType['datetime'] | undefined;
+    readonly dateArray: $PropType['datetime'][] | undefined;
+    readonly dateTime: $PropType['timestamp'] | undefined;
+    readonly dateTimeArray: $PropType['timestamp'][] | undefined;
+    readonly decimal: $PropType['decimal'] | undefined;
+    readonly decimalArray: $PropType['decimal'][] | undefined;
+    readonly double: $PropType['double'] | undefined;
+    readonly doubleArray: $PropType['double'][] | undefined;
+    readonly float: $PropType['float'] | undefined;
+    readonly floatArray: $PropType['float'][] | undefined;
+    readonly geoPoint: $PropType['geopoint'] | undefined;
+    readonly geoPointArray: $PropType['geopoint'][] | undefined;
+    readonly geoShape: $PropType['geoshape'] | undefined;
+    readonly geoShapeArray: $PropType['geoshape'][] | undefined;
+    readonly id: $PropType['integer'] | undefined;
+    readonly integer: $PropType['integer'] | undefined;
+    readonly integerArray: $PropType['integer'][] | undefined;
+    readonly long: $PropType['long'] | undefined;
+    readonly longArray: $PropType['long'][] | undefined;
+    readonly numericTimeseries: $PropType['numericTimeseries'] | undefined;
+    readonly short: $PropType['short'] | undefined;
+    readonly shortArray: $PropType['short'][] | undefined;
+    readonly string: $PropType['string'] | undefined;
+    readonly stringArray: $PropType['string'][] | undefined;
+    readonly stringTimeseries: $PropType['stringTimeseries'] | undefined;
+  }
+  export interface StrictProps {
+    readonly attachment: $PropType['attachment'] | undefined;
+    readonly attachmentArray: $PropType['attachment'][] | undefined;
+    readonly boolean: $PropType['boolean'] | undefined;
+    readonly booleanArray: $PropType['boolean'][] | undefined;
+    readonly byte: $PropType['byte'] | undefined;
+    readonly byteArray: $PropType['byte'][] | undefined;
+    readonly date: $PropType['datetime'] | undefined;
+    readonly dateArray: $PropType['datetime'][] | undefined;
+    readonly dateTime: $PropType['timestamp'] | undefined;
+    readonly dateTimeArray: $PropType['timestamp'][] | undefined;
+    readonly decimal: $PropType['decimal'] | undefined;
+    readonly decimalArray: $PropType['decimal'][] | undefined;
+    readonly double: $PropType['double'] | undefined;
+    readonly doubleArray: $PropType['double'][] | undefined;
+    readonly float: $PropType['float'] | undefined;
+    readonly floatArray: $PropType['float'][] | undefined;
+    readonly geoPoint: $PropType['geopoint'] | undefined;
+    readonly geoPointArray: $PropType['geopoint'][] | undefined;
+    readonly geoShape: $PropType['geoshape'] | undefined;
+    readonly geoShapeArray: $PropType['geoshape'][] | undefined;
+    readonly id: $PropType['integer'];
+    readonly integer: $PropType['integer'] | undefined;
+    readonly integerArray: $PropType['integer'][] | undefined;
+    readonly long: $PropType['long'] | undefined;
+    readonly longArray: $PropType['long'][] | undefined;
+    readonly numericTimeseries: $PropType['numericTimeseries'] | undefined;
+    readonly short: $PropType['short'] | undefined;
+    readonly shortArray: $PropType['short'][] | undefined;
+    readonly string: $PropType['string'] | undefined;
+    readonly stringArray: $PropType['string'][] | undefined;
+    readonly stringTimeseries: $PropType['stringTimeseries'] | undefined;
+  }
+
+  export interface ObjectSet
+    extends $ObjectSet<ObjectTypeWithAllPropertyTypes.Definition, ObjectTypeWithAllPropertyTypes.ObjectSet> {
+    readonly aggregate: <const AO extends $AggregateOpts<ObjectTypeWithAllPropertyTypes.Definition>>(
+      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<
+        ObjectTypeWithAllPropertyTypes.Definition,
+        AO
+      >,
+    ) => Promise<$AggregationsResults<ObjectTypeWithAllPropertyTypes.Definition, AO>>;
+
+    readonly pivotTo: <const L extends $LinkNames<ObjectTypeWithAllPropertyTypes.Definition>>(
+      type: L,
+    ) => $LinkedType<ObjectTypeWithAllPropertyTypes.Definition, L>['objectSet'];
+
+    readonly fetchOne: <
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
+    >(
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
+    ) => Promise<
+      ObjectTypeWithAllPropertyTypes.OsdkObject<
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        L
+      >
+    >;
+
+    readonly fetchOneWithErrors: <
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const S extends false | 'throw' = $NullabilityAdherenceDefault,
+    >(
+      primaryKey: $PropertyValueClientToWire[ObjectTypeWithAllPropertyTypes.Definition['primaryKeyType']],
+      options?: $SelectArg<ObjectTypeWithAllPropertyTypes.Definition, L, R, S>,
+    ) => Promise<
+      $Result<
+        ObjectTypeWithAllPropertyTypes.OsdkObject<
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
+
+    readonly fetchPage: <
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const A extends $Augments,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+    >(
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
+    ) => Promise<
+      $PageResult<
+        ObjectTypeWithAllPropertyTypes.OsdkObject<
+          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+          L
+        >
+      >
+    >;
+
+    readonly fetchPageWithErrors: <
+      const L extends ObjectTypeWithAllPropertyTypes.PropertyKeys,
+      const R extends boolean,
+      const A extends $Augments,
+      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
+    >(
+      args?: $FetchPageArgs<ObjectTypeWithAllPropertyTypes.Definition, L, R, A, S>,
+    ) => Promise<
+      $Result<
+        $PageResult<
+          ObjectTypeWithAllPropertyTypes.OsdkObject<
+            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+            L
+          >
+        >
+      >
+    >;
+
+    readonly asyncIter: () => AsyncIterableIterator<ObjectTypeWithAllPropertyTypes.OsdkObject>;
+  }
+
+  export interface Definition
+    extends $ObjectTypeDefinition<'ObjectTypeWithAllPropertyTypes', ObjectTypeWithAllPropertyTypes.Definition>,
+      $VersionBound<$ExpectedClientVersion> {
+    osdkMetadata: typeof $osdkMetadata;
+    objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
+    props: ObjectTypeWithAllPropertyTypes.Props;
+    strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
+    description: 'A type with all property types';
+    links: {};
+    primaryKeyApiName: 'id';
+    primaryKeyType: 'integer';
+    properties: {
+      /**
+       * (no ontology metadata)
+       */
+      attachment: $PropertyDef<'attachment', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      attachmentArray: $PropertyDef<'attachment', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      boolean: $PropertyDef<'boolean', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      booleanArray: $PropertyDef<'boolean', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      byte: $PropertyDef<'byte', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      byteArray: $PropertyDef<'byte', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      date: $PropertyDef<'datetime', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      dateArray: $PropertyDef<'datetime', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      dateTime: $PropertyDef<'timestamp', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      dateTimeArray: $PropertyDef<'timestamp', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      decimal: $PropertyDef<'decimal', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      decimalArray: $PropertyDef<'decimal', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      double: $PropertyDef<'double', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      doubleArray: $PropertyDef<'double', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      float: $PropertyDef<'float', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      floatArray: $PropertyDef<'float', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      geoPoint: $PropertyDef<'geopoint', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      geoPointArray: $PropertyDef<'geopoint', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      geoShape: $PropertyDef<'geoshape', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      geoShapeArray: $PropertyDef<'geoshape', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      integer: $PropertyDef<'integer', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      integerArray: $PropertyDef<'integer', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      long: $PropertyDef<'long', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      longArray: $PropertyDef<'long', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      numericTimeseries: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      short: $PropertyDef<'short', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      shortArray: $PropertyDef<'short', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      string: $PropertyDef<'string', 'nullable', 'single'>;
+      /**
+       * (no ontology metadata)
+       */
+      stringArray: $PropertyDef<'string', 'nullable', 'array'>;
+      /**
+       * (no ontology metadata)
+       */
+      stringTimeseries: $PropertyDef<'stringTimeseries', 'nullable', 'single'>;
+    };
+  }
+
+  export type OsdkObject<
+    OPTIONS extends never | '$notStrict' | '$rid' = never,
+    K extends keyof ObjectTypeWithAllPropertyTypes.Props = keyof ObjectTypeWithAllPropertyTypes.Props,
+  > = $Osdk<ObjectTypeWithAllPropertyTypes.Definition, K | OPTIONS> &
+    Pick<
+      [OPTIONS] extends [never]
+        ? ObjectTypeWithAllPropertyTypes.StrictProps
+        : OPTIONS extends '$notStrict'
+          ? ObjectTypeWithAllPropertyTypes.Props
+          : ObjectTypeWithAllPropertyTypes.StrictProps,
+      K
+    > & {
+      readonly $link: ObjectTypeWithAllPropertyTypes.Links;
+      readonly $title: string | undefined; // FIXME
+      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
+
+      readonly $as: <NEW_Q extends $ValidToFrom<ObjectTypeWithAllPropertyTypes.Definition>>(
+        type: NEW_Q | string,
+      ) => $Osdk<NEW_Q, $ConvertProps<ObjectTypeWithAllPropertyTypes.Definition, NEW_Q, K>>;
+    } & $OsdkObject<'ObjectTypeWithAllPropertyTypes'>;
 }
 
-export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes = {
+export type ObjectTypeWithAllPropertyTypes = ObjectTypeWithAllPropertyTypes.Definition;
+
+export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
+  objectSet: undefined as any,
+  props: undefined as any,
+  strictProps: undefined as any,
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',
   links: {},

@@ -18,12 +18,13 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
-import type { Osdk, Result } from "@osdk/client.api";
+import type { ConvertProps, Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
 import {
+  $ontologyRid,
   Employee,
   FooInterface,
-  Ontology as MockOntology,
+  Office,
 } from "@osdk/client.test.ontology";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
@@ -34,6 +35,12 @@ import {
   expectTypeOf,
   it,
 } from "vitest";
+import type {
+  ApiNameAsString,
+  JustProps,
+  PropMapToInterface,
+  PropMapToObject,
+} from "../../../client.api/build/esm/OsdkObjectFrom.js";
 import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 
@@ -44,7 +51,7 @@ describe("ObjectSet", () => {
     apiServer.listen();
     client = createClient(
       "https://stack.palantir.com",
-      MockOntology.metadata.ontologyRid,
+      $ontologyRid,
       async () => "myAccessToken",
     );
   });
@@ -54,8 +61,8 @@ describe("ObjectSet", () => {
   });
 
   it("does not allow intersect/union/subtract with different object types", () => {
-    const employeeObjectSet = client(MockOntology.objects.Employee);
-    const officeObjectSet = client(MockOntology.objects.Office);
+    const employeeObjectSet = client(Employee);
+    const officeObjectSet = client(Office);
 
     // @ts-expect-error
     employeeObjectSet.union(officeObjectSet);
@@ -68,7 +75,7 @@ describe("ObjectSet", () => {
   });
 
   it("objects set union", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
+    const objectSet = client(Employee);
     const unionedObjectSet = objectSet.union(objectSet);
     let iter = 0;
     const { data: employees } = await unionedObjectSet.fetchPage();
@@ -80,8 +87,8 @@ describe("ObjectSet", () => {
   });
 
   it("objects set subtract", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
-    const objectSet2 = client(MockOntology.objects.Employee).where({
+    const objectSet = client(Employee);
+    const objectSet2 = client(Employee).where({
       employeeId: 50030,
     });
     const subtractedObjectSet = objectSet.subtract(objectSet2);
@@ -95,7 +102,7 @@ describe("ObjectSet", () => {
   });
 
   it("objects set intersect", async () => {
-    const objectSet = client(MockOntology.objects.Employee);
+    const objectSet = client(Employee);
     const intersectedObjectSet = objectSet.intersect(objectSet);
     let iter = 0;
     const { data: employees } = await intersectedObjectSet.fetchPage();
@@ -107,7 +114,7 @@ describe("ObjectSet", () => {
   });
 
   it("orders objects in ascending order without a filter, and returns all results", async () => {
-    const { data: employees } = await client(MockOntology.objects.Employee)
+    const { data: employees } = await client(Employee)
       .fetchPage({
         $orderBy: { "employeeId": "asc" },
       });
@@ -152,7 +159,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).fetchOne(
+    const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
     );
     expectTypeOf<typeof employee>().toMatchTypeOf<
@@ -162,7 +169,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
       );
@@ -177,23 +184,23 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a base object set with selected properties - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).fetchOne(
+    const employee = await client(Employee).fetchOne(
       stubData.employee1.employeeId,
       { $select: ["fullName"] },
     );
-    expectTypeOf<typeof employee>().toEqualTypeOf<
+    expectTypeOf<typeof employee>().branded.toEqualTypeOf<
       Osdk<Employee, "fullName">
     >;
     expect(employee.$primaryKey).toBe(stubData.employee1.employeeId);
   });
 
   it("allows fetching by PK from a base object set with selected properties - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(
         stubData.employee1.employeeId,
         { $select: ["fullName"] },
       );
-    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+    expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee, "fullName">>
     >;
 
@@ -204,15 +211,15 @@ describe("ObjectSet", () => {
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOne", async () => {
-    await expect(client(MockOntology.objects.Employee).fetchOne(-1)).rejects
+    await expect(client(Employee).fetchOne(-1)).rejects
       .toThrow();
   });
 
   it("throws when fetching by PK with an object that does not exist - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee)
+    const employeeResult = await client(Employee)
       .fetchOneWithErrors(-1);
 
-    expectTypeOf<typeof employeeResult>().toEqualTypeOf<
+    expectTypeOf<typeof employeeResult>().branded.toEqualTypeOf<
       Result<Osdk<Employee>>
     >;
 
@@ -220,7 +227,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOne", async () => {
-    const employee = await client(MockOntology.objects.Employee).where({
+    const employee = await client(Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
       .pivotTo("peeps").fetchOne(stubData.employee1.employeeId);
@@ -229,7 +236,7 @@ describe("ObjectSet", () => {
   });
 
   it("allows fetching by PK from a pivoted object set - fetchOneWithErrors", async () => {
-    const employeeResult = await client(MockOntology.objects.Employee).where({
+    const employeeResult = await client(Employee).where({
       employeeId: stubData.employee2.employeeId,
     })
       .pivotTo("peeps").fetchOneWithErrors(stubData.employee1.employeeId);
@@ -268,8 +275,11 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(3);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$rid" | "$all">
+          >();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject<"$rid">
           >();
         });
       });
@@ -285,7 +295,13 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(3);
-          expectTypeOf(result.data[0]).toEqualTypeOf<Osdk<Employee>>();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<Osdk<Employee>>();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject
+          >();
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
+            Employee.OsdkObject<never>
+          >();
         });
       });
     });
@@ -302,7 +318,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(4);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
         });
@@ -319,7 +335,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchPageWithErrors(opts)).value!;
 
           expect(result.data).toHaveLength(4);
-          expectTypeOf(result.data[0]).toEqualTypeOf<
+          expectTypeOf(result.data[0]).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
@@ -352,7 +368,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
           expect(result).not.toBeUndefined();
-          expectTypeOf(result).toEqualTypeOf<
+          expectTypeOf(result).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict" | "$rid">
           >();
         });
@@ -369,7 +385,7 @@ describe("ObjectSet", () => {
             : (await client(Employee).fetchOneWithErrors(50033, opts)).value!;
 
           expect(result).not.toBeUndefined();
-          expectTypeOf(result).toEqualTypeOf<
+          expectTypeOf(result).branded.toEqualTypeOf<
             Osdk<Employee, "$all" | "$notStrict">
           >();
         });
@@ -397,13 +413,61 @@ describe("ObjectSet", () => {
         });
 
         const empNotStrict = result.data[0];
-
-        expectTypeOf(empNotStrict).toEqualTypeOf<
+        const empNotStrict2: Osdk<Employee, "$all" | "$notStrict"> =
+          empNotStrict;
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
           Osdk<Employee, "$all" | "$notStrict">
         >();
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
+          Employee.OsdkObject<"$notStrict", Employee.PropertyKeys>
+        >();
+        expectTypeOf(empNotStrict).branded.toEqualTypeOf<
+          Employee.OsdkObject<"$notStrict">
+        >();
+
         expectTypeOf(empNotStrict.employeeId).toEqualTypeOf<
           number | undefined
         >();
+
+        expectTypeOf(empNotStrict2.employeeId).toEqualTypeOf<
+          number | undefined
+        >();
+
+        expectTypeOf<ApiNameAsString<FooInterface>>()
+          .toEqualTypeOf<"FooInterface">();
+
+        expectTypeOf<NonNullable<Employee["interfaceMap"]>>()
+          .toEqualTypeOf<{
+            FooInterface: {
+              fooSpt: "fullName";
+            };
+          }>();
+
+        expectTypeOf<PropMapToInterface<Employee, FooInterface>>()
+          .toEqualTypeOf<{ fullName: "fooSpt" }>();
+
+        expectTypeOf<PropMapToObject<FooInterface, Employee>>()
+          .toEqualTypeOf<{ fooSpt: "fullName" }>();
+
+        expectTypeOf<ConvertProps<Employee, FooInterface, "fullName">>()
+          .toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<JustProps<Employee, "$all">>()
+          .toEqualTypeOf<
+            | "fullName"
+            | "office"
+            | "employeeId"
+            | "employeeStatus"
+            | "startDate"
+          >();
+
+        expectTypeOf<
+          ConvertProps<Employee, FooInterface, "fullName" | "office">
+        >()
+          .toEqualTypeOf<"fooSpt">();
+
+        expectTypeOf<ConvertProps<FooInterface, Employee, "fooSpt">>()
+          .toEqualTypeOf<"fullName">();
 
         // We don't have a proper definition that has
         // a non-null property on an interface so
@@ -416,9 +480,11 @@ describe("ObjectSet", () => {
         type CheesedFoo = CheesedProp<FooInterface, "fooSpt">;
         const CheesedFoo: CheesedFoo = FooInterface as CheesedFoo;
 
+        type T = ConvertProps<Employee, CheesedFoo, "fullName">;
+
         const cheesedFooNotStrict = result.data[0].$as(CheesedFoo);
-        expectTypeOf(cheesedFooNotStrict).toEqualTypeOf<
-          Osdk<CheesedFoo, "$all" | "$notStrict", never>
+        expectTypeOf(cheesedFooNotStrict).branded.toEqualTypeOf<
+          Osdk<CheesedFoo, "$all" | "$notStrict">
         >();
 
         cheesedFooNotStrict.fooSpt;
