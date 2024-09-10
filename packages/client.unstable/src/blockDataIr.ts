@@ -68,7 +68,7 @@ export interface OntologyIrInterfaceType
     }>
 {}
 
-type ApiNameValueTypeReference = {
+export type ApiNameValueTypeReference = {
   apiName: ValueTypeApiName
   version: ValueTypeVersion
 }

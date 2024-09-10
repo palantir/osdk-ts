@@ -46,6 +46,7 @@ export async function defineOntology(
     queryTypes: {},
     interfaceTypes: {},
     sharedPropertyTypes: {},
+    valueTypes: {}
   };
 
   try {

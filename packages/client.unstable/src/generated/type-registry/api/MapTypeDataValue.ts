@@ -26,19 +26,10 @@ import type { IntegerTypeDataValue } from "./IntegerTypeDataValue.js";
 import type { ShortTypeDataValue } from "./ShortTypeDataValue.js";
 import type { StringTypeDataValue } from "./StringTypeDataValue.js";
 import type { TimestampTypeDataValue } from "./TimestampTypeDataValue.js";
-export interface MapTypeDataValue_binary {
-type: "binary";
-binary: Record<BinaryTypeDataValue, BaseTypeDataValue>
-}
 
 export interface MapTypeDataValue_byte {
 type: "byte";
 byte: Record<ByteTypeDataValue, BaseTypeDataValue>
-}
-
-export interface MapTypeDataValue_boolean {
-type: "boolean";
-boolean: Record<BooleanTypeDataValue, BaseTypeDataValue>
 }
 
 export interface MapTypeDataValue_date {
@@ -79,4 +70,4 @@ string: Record<StringTypeDataValue, BaseTypeDataValue>
 export interface MapTypeDataValue_timestamp {
 type: "timestamp";
 timestamp: Record<TimestampTypeDataValue, BaseTypeDataValue>
-}export type MapTypeDataValue = MapTypeDataValue_binary | MapTypeDataValue_byte | MapTypeDataValue_boolean | MapTypeDataValue_date | MapTypeDataValue_double | MapTypeDataValue_decimal | MapTypeDataValue_float | MapTypeDataValue_integer | MapTypeDataValue_short | MapTypeDataValue_string | MapTypeDataValue_timestamp
+}export type MapTypeDataValue =  MapTypeDataValue_byte | MapTypeDataValue_date | MapTypeDataValue_double | MapTypeDataValue_decimal | MapTypeDataValue_float | MapTypeDataValue_integer | MapTypeDataValue_short | MapTypeDataValue_string | MapTypeDataValue_timestamp

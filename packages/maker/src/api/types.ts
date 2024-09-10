@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
-import type { OntologyIrInterfaceType , OntologyIrValueTypeBlockDataEntry } from "@osdk/client.unstable";
+import type { ApiNameValueTypeReference, 
+  OntologyIrInterfaceType , 
+  OntologyIrPackagedValueType, 
+  OntologyIrPackagedValueTypeMetadata, 
+  OntologyIrValueTypeBlockDataEntry, 
+  BaseType,
+  ExampleValue,
+  ValueTypeApiName,
+  ValueTypeDataConstraint,
+  ValueTypeDisplayMetadata,
+  ValueTypeStatus,
+  ValueTypeVersion } from "@osdk/client.unstable";
+
 import type * as Gateway from "@osdk/gateway/types";
 
 export interface Ontology extends
@@ -25,7 +37,7 @@ export interface Ontology extends
 {
   interfaceTypes: Record<string, InterfaceType>;
   sharedPropertyTypes: Record<string, SharedPropertyType>;
-  valueTypes: Record<string, OntologyIrValueTypeBlockDataEntry>
+  valueTypes: Record<string, ValueTypeDefinitionVersion[]>
 }
 
 export interface InterfaceType extends
@@ -47,6 +59,7 @@ export interface PropertyType {
   array?: boolean;
   description?: string;
   displayName?: string;
+  valueType?: ApiNameValueTypeReference
 }
 
 export interface SharedPropertyType extends PropertyType {
@@ -69,10 +82,12 @@ export type PropertyTypeType =
   | "string"
   | "timestamp";
 
-
-export type OntologyIrPackagedValueType =  {
-  version: ValueTypeVersion
-  baseType: BaseType
-  constraints: list<ValueTypeDataConstraint>
-  exampleValues: list<ExampleValue>
+export type ValueTypeDefinitionVersion = {
+  apiName: ValueTypeApiName,
+  displayMetadata: ValueTypeDisplayMetadata,
+  status: ValueTypeStatus
+  version: ValueTypeVersion,
+  baseType: BaseType,
+  constraints: ValueTypeDataConstraint[],
+  exampleValues: ExampleValue[]
 }
