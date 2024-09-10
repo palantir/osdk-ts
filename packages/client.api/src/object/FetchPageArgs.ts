@@ -67,6 +67,7 @@ export interface FetchPageArgs<
   $nextPageToken?: string;
   $pageSize?: number;
   $augment?: A;
+  $__EXPERIMENTAL_selectedObjectTypes?: string[];
 }
 
 export type Augment<
