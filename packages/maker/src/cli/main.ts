@@ -75,7 +75,7 @@ export default async function main(
     apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
       ? commandLineOpts.apiNamespace + "."
       : commandLineOpts.apiNamespace;
-    invariant(apiNamespace.length > 1024, "API namespace is too long.");
+    invariant(apiNamespace.length < 1024, "API namespace is too long.");
     invariant(
       apiNamespaceRegex.test(apiNamespace),
       "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
