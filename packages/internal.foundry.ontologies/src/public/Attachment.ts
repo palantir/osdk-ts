@@ -17,9 +17,10 @@
 import type {
   Attachment,
   AttachmentRid,
+  ContentType,
   Filename,
 } from "@osdk/internal.foundry.core";
-import { ContentLength, ContentType } from "@osdk/internal.foundry.core";
+import { ContentLength } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
   SharedClientContext as $ClientContext,
@@ -30,7 +31,11 @@ import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.
 //
 
 const _uploadAttachment: $FoundryPlatformMethod<
-  ($body: Blob, $queryParams: { filename: Filename }) => Promise<Attachment>
+  (
+    $body: Blob,
+    $queryParams: { filename: Filename },
+    $headerParams?: { "Content-Type"?: ContentType },
+  ) => Promise<Attachment>
 > = [1, "/v1/attachments/upload", 7, "*/*"];
 
 /**
@@ -50,9 +55,25 @@ const _uploadAttachment: $FoundryPlatformMethod<
  */
 export function uploadAttachment(
   $ctx: $Client | $ClientContext,
-  ...args: [$body: Blob, $queryParams: { filename: Filename }]
+  ...args: [
+    $body: Blob,
+    $queryParams: { filename: Filename },
+    $headerParams?: { "Content-Type"?: ContentType },
+  ]
 ): Promise<Attachment> {
-  return $foundryPlatformFetch($ctx, _uploadAttachment, ...args);
+  const headerParams = {
+    ...args[2],
+    "Content-Type": args[2]?.["Content-Type"] ?? args[0].type,
+    "Content-Length": args[0].size.toString(),
+  };
+
+  return $foundryPlatformFetch(
+    $ctx,
+    _uploadAttachment,
+    args[0],
+    args[1],
+    headerParams,
+  );
 }
 
 const _getAttachmentContent: $FoundryPlatformMethod<

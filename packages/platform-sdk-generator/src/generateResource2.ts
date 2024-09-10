@@ -29,11 +29,6 @@ import type { Type } from "./model/Type.js";
 import { addAll } from "./util/addAll.js";
 import { writeCode } from "./writeCode.js";
 
-type ParameterPresence = Record<
-  "pathParamsPresent" | "queryParamsPresent" | "headerParamsPresent",
-  boolean
->;
-
 export async function writeResource2(
   ns: Namespace,
   resource: Resource,
@@ -73,15 +68,21 @@ async function generateMethods(resource: Resource, model: Model) {
 
     const returnType = `Promise<${innerReturnType}>`;
 
-    const { parameters, parametersIncluded } = generateMethodParameters(method);
+    const parameters = generateMethodParameters(method);
     const requestType = method.requestType;
 
+    const shouldFillBlobHeaders = method.parametersByType.HEADER != null
+      && method.parametersByType.HEADER.find((p) => p.name === "Content-Type")
+        != null;
+    const blobHeaders = fillBlobHeaders(
+      method.parametersByType.QUERY != null
+        && method.parametersByType.QUERY.length > 0,
+      method.parametersByType.PATH != null,
+    );
     out += `
      const _${methodName}: $FoundryPlatformMethod<(${parameters}) => ${returnType}> = ${
       generateOperationArray(method, model)
     };
-    
-
 
     ${await generateMethodJsdoc(method)}
     export function ${methodName}(
@@ -89,10 +90,12 @@ async function generateMethods(resource: Resource, model: Model) {
       ...args: [${parameters}]
     ): ${returnType}{${
       requestType !== "unknown" && requestType instanceof BinaryType
-        && parametersIncluded.headerParamsPresent
-        ? fillBlobHeaders(parametersIncluded)
+        && shouldFillBlobHeaders
+        ? blobHeaders.autofill
         : ""
-    }return $foundryPlatformFetch($ctx, _${methodName}, ...args); }
+    }return $foundryPlatformFetch($ctx, _${methodName}, ${
+      shouldFillBlobHeaders ? blobHeaders.returnArgs : "...args"
+    }); }
 
     `;
   }
@@ -114,20 +117,17 @@ function generateMethodParameters(method: StaticOperation) {
     "$headerParams",
     byType.HEADER,
     requestType === "unknown" ? undefined : requestType,
+    method.parametersByType.HEADER != null
+      && method.parametersByType.HEADER.every((p) =>
+        p.name === "Content-Type" || p.name === "Content-Length"
+      ),
   );
 
-  return {
-    parametersIncluded: {
-      pathParamsPresent: pathParams !== "",
-      queryParamsPresent: queryParams !== "",
-      headerParamsPresent: headerParams !== "",
-    },
-    parameters: `
+  return `
     ${pathParams}
     ${bodyArg}
     ${queryParams}
-    ${headerParams}`,
-  };
+    ${headerParams}`;
 }
 
 function generateOperationArray(op: StaticOperation, model: Model) {
@@ -163,12 +163,16 @@ function getParamsAsSyntaxListString(
   return params.map((p) => {
     if (
       requestType instanceof BinaryType
-      && (p.name === "Content-Length" || p.name === "Content-Type")
+      && (p.name === "Content-Length")
     ) {
       return "";
     }
+
     return `${quoteChar}${p.name}${quoteChar}${
-      p.type instanceof OptionalType ? "?" : ""
+      p.type instanceof OptionalType || (requestType instanceof BinaryType
+          && (p.name === "Content-Type"))
+        ? "?"
+        : ""
     }: ${p.type.tsReferenceString},`;
   }).join("");
 }
@@ -177,21 +181,36 @@ function getParamsAsObject(
   prefix: "$queryParams" | "$headerParams",
   params: StaticOperation["parameters"] | undefined,
   requestType?: Type,
+  shouldMakeHeadersOptional?: boolean,
 ) {
   if (!params || params.length === 0) return "";
-  const opt = params.every(p => p.type instanceof OptionalType);
+  const opt = params.every(p => p.type instanceof OptionalType)
+    || (requestType instanceof BinaryType && shouldMakeHeadersOptional);
   const parameterString = getParamsAsSyntaxListString(params, `"`, requestType);
   return parameterString === ""
     ? ""
     : `${prefix}${opt ? "?" : ""}: { ${parameterString} },`;
 }
 
-function fillBlobHeaders(parametersPresent: ParameterPresence) {
+function fillBlobHeaders(
+  queryParamsPresent: boolean,
+  pathParamsPresent: boolean,
+) {
   let index = 0;
-  const bodyArgIndex = parametersPresent.pathParamsPresent ? ++index : index;
+  const bodyArgIndex = pathParamsPresent ? ++index : index;
   index++;
-  const headerArgIndex = parametersPresent.queryParamsPresent
+  const queryArgIndex = index;
+  const headerArgIndex = queryParamsPresent
     ? ++index
     : index;
-  return `args[${headerArgIndex}] = {...args[${headerArgIndex}], \"Content-Type\": args[${bodyArgIndex}].type, \"Content-Length\": args[${bodyArgIndex}].size.toString()};\n`;
+  return {
+    autofill: `
+    const headerParams =  {...args[${headerArgIndex}], "Content-Type": args[${headerArgIndex}]?.["Content-Type"] ?? args[${bodyArgIndex}].type, "Content-Length": args[${bodyArgIndex}].size.toString()};\n
+    `,
+    returnArgs: `${
+      pathParamsPresent ? "args[0], " : ""
+    }args[${bodyArgIndex}], ${
+      queryParamsPresent ? `args[${queryArgIndex}], ` : ""
+    }headerParams`,
+  };
 }
