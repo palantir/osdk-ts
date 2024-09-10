@@ -703,17 +703,22 @@ export interface TimeSeriesPoint<T extends string | number> {
 }
 
 // @public (undocumented)
-export interface TimeSeriesProperty<T extends number | string> {
+export class TimeSeriesProperty<T extends number | string> {
+    constructor(
+    getFirstPoint: () => Promise<TimeSeriesPoint<T>>,
+    getLastPoint: () => Promise<TimeSeriesPoint<T>>,
+    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>,
+    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>);
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
+    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    getAllPoints(query?: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
-    getFirstPoint(): Promise<TimeSeriesPoint<T>>;
-    getLastPoint(): Promise<TimeSeriesPoint<T>>;
+    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
+    getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
 
 // @public (undocumented)
