@@ -682,6 +682,7 @@ describe("generator", () => {
         ConvertProps as $ConvertProps,
         DefaultToFalse as $DefaultToFalse,
         FetchPageArgs as $FetchPageArgs,
+        IsAny as $IsAny,
         LinkedType as $LinkedType,
         LinkNames as $LinkNames,
         NullabilityAdherence as $NullabilityAdherence,
@@ -695,7 +696,7 @@ describe("generator", () => {
         ValidToFrom as $ValidToFrom,
       } from '@osdk/client.api';
 
-      export type OsdkObjectLinks$SomeInterface = never;
+      export type OsdkObjectLinks$SomeInterface = {};
 
       export namespace SomeInterface {
         export type PropertyKeys = 'SomeProperty';
@@ -727,7 +728,7 @@ describe("generator", () => {
             $PageResult<
               SomeInterface.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
               >
             >
           >;
@@ -744,7 +745,7 @@ describe("generator", () => {
               $PageResult<
                 SomeInterface.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
                 >
               >
             >
@@ -759,6 +760,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: SomeInterface.ObjectSet;
           props: SomeInterface.Props;
+          linksType: OsdkObjectLinks$SomeInterface;
           strictProps: SomeInterface.StrictProps;
           description: 'Some interface';
           displayName: 'Sum Interface';
@@ -802,6 +804,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
         objectSet: undefined as any,
         props: undefined as any,
+        linksType: undefined as any,
         strictProps: undefined as any,
         apiName: 'SomeInterface',
         description: 'Some interface',
@@ -837,6 +840,7 @@ describe("generator", () => {
         ConvertProps as $ConvertProps,
         DefaultToFalse as $DefaultToFalse,
         FetchPageArgs as $FetchPageArgs,
+        IsAny as $IsAny,
         LinkedType as $LinkedType,
         LinkNames as $LinkNames,
         NullabilityAdherence as $NullabilityAdherence,
@@ -889,7 +893,7 @@ describe("generator", () => {
           ) => Promise<
             Person.OsdkObject<
               (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              L
+              $IsAny<L> extends true ? Person.PropertyKeys : L
             >
           >;
 
@@ -904,7 +908,7 @@ describe("generator", () => {
             $Result<
               Person.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? Person.PropertyKeys : L
               >
             >
           >;
@@ -920,7 +924,7 @@ describe("generator", () => {
             $PageResult<
               Person.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? Person.PropertyKeys : L
               >
             >
           >;
@@ -937,7 +941,7 @@ describe("generator", () => {
               $PageResult<
                 Person.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Person.PropertyKeys : L
                 >
               >
             >
@@ -952,6 +956,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: Person.ObjectSet;
           props: Person.Props;
+          linksType: Person.Links;
           strictProps: Person.StrictProps;
           description: 'A person';
           implements: [];
@@ -996,6 +1001,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
         objectSet: undefined as any,
         props: undefined as any,
+        linksType: undefined as any,
         strictProps: undefined as any,
         apiName: 'Person',
         description: 'A person',
@@ -1036,6 +1042,7 @@ describe("generator", () => {
         ConvertProps as $ConvertProps,
         DefaultToFalse as $DefaultToFalse,
         FetchPageArgs as $FetchPageArgs,
+        IsAny as $IsAny,
         LinkedType as $LinkedType,
         LinkNames as $LinkNames,
         NullabilityAdherence as $NullabilityAdherence,
@@ -1091,7 +1098,10 @@ describe("generator", () => {
             primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
             options?: $SelectArg<Todo.Definition, L, R, S>,
           ) => Promise<
-            Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
+            Todo.OsdkObject<
+              (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+              $IsAny<L> extends true ? Todo.PropertyKeys : L
+            >
           >;
 
           readonly fetchOneWithErrors: <
@@ -1105,7 +1115,7 @@ describe("generator", () => {
             $Result<
               Todo.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? Todo.PropertyKeys : L
               >
             >
           >;
@@ -1121,7 +1131,7 @@ describe("generator", () => {
             $PageResult<
               Todo.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? Todo.PropertyKeys : L
               >
             >
           >;
@@ -1138,7 +1148,7 @@ describe("generator", () => {
               $PageResult<
                 Todo.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Todo.PropertyKeys : L
                 >
               >
             >
@@ -1153,6 +1163,7 @@ describe("generator", () => {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: Todo.ObjectSet;
           props: Todo.Props;
+          linksType: Todo.Links;
           strictProps: Todo.StrictProps;
           description: 'Its a todo item.';
           implements: ['SomeInterface'];
@@ -1214,6 +1225,7 @@ describe("generator", () => {
         osdkMetadata: $osdkMetadata,
         objectSet: undefined as any,
         props: undefined as any,
+        linksType: undefined as any,
         strictProps: undefined as any,
         apiName: 'Todo',
         description: 'Its a todo item.',
@@ -1650,6 +1662,7 @@ describe("generator", () => {
           ConvertProps as $ConvertProps,
           DefaultToFalse as $DefaultToFalse,
           FetchPageArgs as $FetchPageArgs,
+          IsAny as $IsAny,
           LinkedType as $LinkedType,
           LinkNames as $LinkNames,
           NullabilityAdherence as $NullabilityAdherence,
@@ -1663,7 +1676,7 @@ describe("generator", () => {
           ValidToFrom as $ValidToFrom,
         } from '@osdk/client.api';
 
-        export type OsdkObjectLinks$SomeInterface = never;
+        export type OsdkObjectLinks$SomeInterface = {};
 
         export namespace SomeInterface {
           export type PropertyKeys = 'SomeProperty';
@@ -1695,7 +1708,7 @@ describe("generator", () => {
               $PageResult<
                 SomeInterface.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
                 >
               >
             >;
@@ -1712,7 +1725,7 @@ describe("generator", () => {
                 $PageResult<
                   SomeInterface.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
                   >
                 >
               >
@@ -1727,6 +1740,7 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
             strictProps: SomeInterface.StrictProps;
             description: 'Some interface';
             displayName: 'Sum Interface';
@@ -1770,6 +1784,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
+          linksType: undefined as any,
           strictProps: undefined as any,
           apiName: 'foo.bar.SomeInterface',
           description: 'Some interface',
@@ -1805,6 +1820,7 @@ describe("generator", () => {
           ConvertProps as $ConvertProps,
           DefaultToFalse as $DefaultToFalse,
           FetchPageArgs as $FetchPageArgs,
+          IsAny as $IsAny,
           LinkedType as $LinkedType,
           LinkNames as $LinkNames,
           NullabilityAdherence as $NullabilityAdherence,
@@ -1857,7 +1873,7 @@ describe("generator", () => {
             ) => Promise<
               Person.OsdkObject<
                 (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                L
+                $IsAny<L> extends true ? Person.PropertyKeys : L
               >
             >;
 
@@ -1872,7 +1888,7 @@ describe("generator", () => {
               $Result<
                 Person.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Person.PropertyKeys : L
                 >
               >
             >;
@@ -1888,7 +1904,7 @@ describe("generator", () => {
               $PageResult<
                 Person.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Person.PropertyKeys : L
                 >
               >
             >;
@@ -1905,7 +1921,7 @@ describe("generator", () => {
                 $PageResult<
                   Person.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? Person.PropertyKeys : L
                   >
                 >
               >
@@ -1920,6 +1936,7 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Person.ObjectSet;
             props: Person.Props;
+            linksType: Person.Links;
             strictProps: Person.StrictProps;
             description: 'A person';
             implements: [];
@@ -1964,6 +1981,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
+          linksType: undefined as any,
           strictProps: undefined as any,
           apiName: 'foo.bar.Person',
           description: 'A person',
@@ -2004,6 +2022,7 @@ describe("generator", () => {
           ConvertProps as $ConvertProps,
           DefaultToFalse as $DefaultToFalse,
           FetchPageArgs as $FetchPageArgs,
+          IsAny as $IsAny,
           LinkedType as $LinkedType,
           LinkNames as $LinkNames,
           NullabilityAdherence as $NullabilityAdherence,
@@ -2059,7 +2078,10 @@ describe("generator", () => {
               primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
               options?: $SelectArg<Todo.Definition, L, R, S>,
             ) => Promise<
-              Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
+              Todo.OsdkObject<
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                $IsAny<L> extends true ? Todo.PropertyKeys : L
+              >
             >;
 
             readonly fetchOneWithErrors: <
@@ -2073,7 +2095,7 @@ describe("generator", () => {
               $Result<
                 Todo.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Todo.PropertyKeys : L
                 >
               >
             >;
@@ -2089,7 +2111,7 @@ describe("generator", () => {
               $PageResult<
                 Todo.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Todo.PropertyKeys : L
                 >
               >
             >;
@@ -2106,7 +2128,7 @@ describe("generator", () => {
                 $PageResult<
                   Todo.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? Todo.PropertyKeys : L
                   >
                 >
               >
@@ -2121,6 +2143,7 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
+            linksType: Todo.Links;
             strictProps: Todo.StrictProps;
             description: 'Its a todo item.';
             implements: ['foo.bar.SomeInterface'];
@@ -2182,6 +2205,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
+          linksType: undefined as any,
           strictProps: undefined as any,
           apiName: 'foo.bar.Todo',
           description: 'Its a todo item.',
@@ -2555,6 +2579,7 @@ describe("generator", () => {
             ConvertProps as $ConvertProps,
             DefaultToFalse as $DefaultToFalse,
             FetchPageArgs as $FetchPageArgs,
+            IsAny as $IsAny,
             LinkedType as $LinkedType,
             LinkNames as $LinkNames,
             NullabilityAdherence as $NullabilityAdherence,
@@ -2576,7 +2601,7 @@ describe("generator", () => {
           export namespace UsesForeignSpt {
             export type PropertyKeys = 'id' | 'body';
 
-            export type Links = never;
+            export type Links = {};
 
             export interface Props {
               readonly body: $PropType['string'] | undefined;
@@ -2606,7 +2631,7 @@ describe("generator", () => {
               ) => Promise<
                 UsesForeignSpt.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
                 >
               >;
 
@@ -2621,7 +2646,7 @@ describe("generator", () => {
                 $Result<
                   UsesForeignSpt.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
                   >
                 >
               >;
@@ -2637,7 +2662,7 @@ describe("generator", () => {
                 $PageResult<
                   UsesForeignSpt.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
                   >
                 >
               >;
@@ -2654,7 +2679,7 @@ describe("generator", () => {
                   $PageResult<
                     UsesForeignSpt.OsdkObject<
                       (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                      L
+                      $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
                     >
                   >
                 >
@@ -2669,6 +2694,7 @@ describe("generator", () => {
               osdkMetadata: typeof $osdkMetadata;
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
+              linksType: UsesForeignSpt.Links;
               strictProps: UsesForeignSpt.StrictProps;
               implements: [];
               interfaceMap: {};
@@ -2722,6 +2748,7 @@ describe("generator", () => {
             osdkMetadata: $osdkMetadata,
             objectSet: undefined as any,
             props: undefined as any,
+            linksType: undefined as any,
             strictProps: undefined as any,
             apiName: 'UsesForeignSpt',
             implements: [],
@@ -2913,6 +2940,7 @@ describe("generator", () => {
           ConvertProps as $ConvertProps,
           DefaultToFalse as $DefaultToFalse,
           FetchPageArgs as $FetchPageArgs,
+          IsAny as $IsAny,
           LinkedType as $LinkedType,
           LinkNames as $LinkNames,
           NullabilityAdherence as $NullabilityAdherence,
@@ -2926,7 +2954,7 @@ describe("generator", () => {
           ValidToFrom as $ValidToFrom,
         } from '@osdk/client.api';
 
-        export type OsdkObjectLinks$SomeInterface = never;
+        export type OsdkObjectLinks$SomeInterface = {};
 
         export namespace SomeInterface {
           export type PropertyKeys = 'spt';
@@ -2958,7 +2986,7 @@ describe("generator", () => {
               $PageResult<
                 SomeInterface.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
                 >
               >
             >;
@@ -2975,7 +3003,7 @@ describe("generator", () => {
                 $PageResult<
                   SomeInterface.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
                   >
                 >
               >
@@ -2990,6 +3018,7 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
+            linksType: OsdkObjectLinks$SomeInterface;
             strictProps: SomeInterface.StrictProps;
             displayName: 'Sum Interface';
             implements: [];
@@ -3031,6 +3060,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
+          linksType: undefined as any,
           strictProps: undefined as any,
           apiName: 'com.example.dep.SomeInterface',
           displayName: 'Sum Interface',
@@ -3062,6 +3092,7 @@ describe("generator", () => {
           ConvertProps as $ConvertProps,
           DefaultToFalse as $DefaultToFalse,
           FetchPageArgs as $FetchPageArgs,
+          IsAny as $IsAny,
           LinkedType as $LinkedType,
           LinkNames as $LinkNames,
           NullabilityAdherence as $NullabilityAdherence,
@@ -3083,7 +3114,7 @@ describe("generator", () => {
         export namespace Task {
           export type PropertyKeys = 'taskId' | 'body';
 
-          export type Links = never;
+          export type Links = {};
 
           export interface Props {
             readonly body: $PropType['string'] | undefined;
@@ -3111,7 +3142,10 @@ describe("generator", () => {
               primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
               options?: $SelectArg<Task.Definition, L, R, S>,
             ) => Promise<
-              Task.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
+              Task.OsdkObject<
+                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+                $IsAny<L> extends true ? Task.PropertyKeys : L
+              >
             >;
 
             readonly fetchOneWithErrors: <
@@ -3125,7 +3159,7 @@ describe("generator", () => {
               $Result<
                 Task.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Task.PropertyKeys : L
                 >
               >
             >;
@@ -3141,7 +3175,7 @@ describe("generator", () => {
               $PageResult<
                 Task.OsdkObject<
                   (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  L
+                  $IsAny<L> extends true ? Task.PropertyKeys : L
                 >
               >
             >;
@@ -3158,7 +3192,7 @@ describe("generator", () => {
                 $PageResult<
                   Task.OsdkObject<
                     (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    L
+                    $IsAny<L> extends true ? Task.PropertyKeys : L
                   >
                 >
               >
@@ -3173,6 +3207,7 @@ describe("generator", () => {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Task.ObjectSet;
             props: Task.Props;
+            linksType: Task.Links;
             strictProps: Task.StrictProps;
             implements: [];
             interfaceMap: {};
@@ -3218,6 +3253,7 @@ describe("generator", () => {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
+          linksType: undefined as any,
           strictProps: undefined as any,
           apiName: 'com.example.dep.Task',
           implements: [],

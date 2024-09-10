@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -63,7 +64,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     | 'numericTimeseries'
     | 'stringTimeseries';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly attachment: $PropType['attachment'] | undefined;
@@ -155,7 +156,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     ) => Promise<
       ObjectTypeWithAllPropertyTypes.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
       >
     >;
 
@@ -170,7 +171,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       $Result<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
         >
       >
     >;
@@ -186,7 +187,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
       $PageResult<
         ObjectTypeWithAllPropertyTypes.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
         >
       >
     >;
@@ -203,7 +204,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
         $PageResult<
           ObjectTypeWithAllPropertyTypes.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? ObjectTypeWithAllPropertyTypes.PropertyKeys : L
           >
         >
       >
@@ -218,6 +219,7 @@ export namespace ObjectTypeWithAllPropertyTypes {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: ObjectTypeWithAllPropertyTypes.ObjectSet;
     props: ObjectTypeWithAllPropertyTypes.Props;
+    linksType: ObjectTypeWithAllPropertyTypes.Links;
     strictProps: ObjectTypeWithAllPropertyTypes.StrictProps;
     description: 'A type with all property types';
     links: {};
@@ -379,6 +381,7 @@ export const ObjectTypeWithAllPropertyTypes: ObjectTypeWithAllPropertyTypes & $V
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'ObjectTypeWithAllPropertyTypes',
   description: 'A type with all property types',

@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace BuilderDeploymentState {
   export type PropertyKeys = 'skuId' | 'date' | 'currentTimestamp';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly currentTimestamp: $PropType['timestamp'] | undefined;
@@ -64,7 +65,7 @@ export namespace BuilderDeploymentState {
     ) => Promise<
       BuilderDeploymentState.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
       >
     >;
 
@@ -79,7 +80,7 @@ export namespace BuilderDeploymentState {
       $Result<
         BuilderDeploymentState.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
         >
       >
     >;
@@ -95,7 +96,7 @@ export namespace BuilderDeploymentState {
       $PageResult<
         BuilderDeploymentState.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
         >
       >
     >;
@@ -112,7 +113,7 @@ export namespace BuilderDeploymentState {
         $PageResult<
           BuilderDeploymentState.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? BuilderDeploymentState.PropertyKeys : L
           >
         >
       >
@@ -127,6 +128,7 @@ export namespace BuilderDeploymentState {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: BuilderDeploymentState.ObjectSet;
     props: BuilderDeploymentState.Props;
+    linksType: BuilderDeploymentState.Links;
     strictProps: BuilderDeploymentState.StrictProps;
     description: 'Builder Deployment State';
     links: {};
@@ -176,6 +178,7 @@ export const BuilderDeploymentState: BuilderDeploymentState & $VersionBound<$Exp
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'BuilderDeploymentState',
   description: 'Builder Deployment State',

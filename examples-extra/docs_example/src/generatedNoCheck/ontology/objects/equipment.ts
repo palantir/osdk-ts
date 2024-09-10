@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata';
 export namespace equipment {
   export type PropertyKeys = 'equipmentId' | 'type';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly equipmentId: $PropType['string'] | undefined;
@@ -62,7 +63,7 @@ export namespace equipment {
     ) => Promise<
       equipment.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? equipment.PropertyKeys : L
       >
     >;
 
@@ -77,7 +78,7 @@ export namespace equipment {
       $Result<
         equipment.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? equipment.PropertyKeys : L
         >
       >
     >;
@@ -93,7 +94,7 @@ export namespace equipment {
       $PageResult<
         equipment.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? equipment.PropertyKeys : L
         >
       >
     >;
@@ -110,7 +111,7 @@ export namespace equipment {
         $PageResult<
           equipment.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? equipment.PropertyKeys : L
           >
         >
       >
@@ -125,6 +126,7 @@ export namespace equipment {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: equipment.ObjectSet;
     props: equipment.Props;
+    linksType: equipment.Links;
     strictProps: equipment.StrictProps;
     links: {};
     primaryKeyApiName: 'equipmentId';
@@ -172,6 +174,7 @@ export const equipment: equipment & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'equipment',
   links: {},

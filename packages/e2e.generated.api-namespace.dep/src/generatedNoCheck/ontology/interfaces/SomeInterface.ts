@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -24,7 +25,7 @@ import type {
   ValidToFrom as $ValidToFrom,
 } from '@osdk/client.api';
 
-export type OsdkObjectLinks$SomeInterface = never;
+export type OsdkObjectLinks$SomeInterface = {};
 
 export namespace SomeInterface {
   export type PropertyKeys = 'spt';
@@ -56,7 +57,7 @@ export namespace SomeInterface {
       $PageResult<
         SomeInterface.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
         >
       >
     >;
@@ -73,7 +74,7 @@ export namespace SomeInterface {
         $PageResult<
           SomeInterface.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
           >
         >
       >
@@ -88,6 +89,7 @@ export namespace SomeInterface {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: SomeInterface.ObjectSet;
     props: SomeInterface.Props;
+    linksType: OsdkObjectLinks$SomeInterface;
     strictProps: SomeInterface.StrictProps;
     displayName: 'Sum Interface';
     implements: [];
@@ -129,6 +131,7 @@ export const SomeInterface: SomeInterface.Definition = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'com.example.dep.SomeInterface',
   displayName: 'Sum Interface',

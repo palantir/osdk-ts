@@ -12,6 +12,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -65,7 +66,7 @@ export namespace Person {
     ) => Promise<
       Person.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? Person.PropertyKeys : L
       >
     >;
 
@@ -80,7 +81,7 @@ export namespace Person {
       $Result<
         Person.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Person.PropertyKeys : L
         >
       >
     >;
@@ -96,7 +97,7 @@ export namespace Person {
       $PageResult<
         Person.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Person.PropertyKeys : L
         >
       >
     >;
@@ -113,7 +114,7 @@ export namespace Person {
         $PageResult<
           Person.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Person.PropertyKeys : L
           >
         >
       >
@@ -128,6 +129,7 @@ export namespace Person {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Person.ObjectSet;
     props: Person.Props;
+    linksType: Person.Links;
     strictProps: Person.StrictProps;
     description: 'A person';
     links: {
@@ -168,6 +170,7 @@ export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'Person',
   description: 'A person',
