@@ -15,7 +15,7 @@
  */
 
 import type { Osdk } from "@osdk/client.api";
-import { $ontologyRid, Employee } from "@osdk/client.test.ontology";
+import { $Objects, $ontologyRid, Employee } from "@osdk/client.test.ontology";
 import { apiServer, stubData, withoutRid } from "@osdk/shared.test";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { UnstableClient } from "../__unstable/UnstableClient.js";
@@ -151,6 +151,19 @@ describe("OsdkObject", () => {
       expect(leadRid).toBe(
         "ri.phonograph2-objects.main.object.88a6fccb-f333-46d6-a07e-7725c5f18b61",
       );
+    });
+    it("objects are enumerable in an sdk", async () => {
+      const objects = Object.keys($Objects);
+      expect(objects).toStrictEqual([
+        "Employee",
+        "ObjectWithTimestampPrimaryKey",
+        "Office",
+        "Person",
+        "Task",
+        "Todo",
+        "equipment",
+        "objectTypeWithAllPropertyTypes",
+      ]);
     });
   });
 });

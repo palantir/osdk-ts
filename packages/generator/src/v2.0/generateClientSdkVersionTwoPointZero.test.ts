@@ -474,9 +474,13 @@ describe("generator", () => {
       export const $ontologyRid = 'ridHere';
       ",
         "/foo/index.ts": "export * from './ontology/actions';
+      export * as $Actions from './ontology/actions';
       export * from './ontology/interfaces';
+      export * as $Interfaces from './ontology/interfaces';
       export * from './ontology/objects';
+      export * as $Objects from './ontology/objects';
       export * from './ontology/queries';
+      export * as $Queries from './ontology/queries';
       export { $ontologyRid } from './OntologyMetadata';
       ",
         "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos';
@@ -1455,9 +1459,13 @@ describe("generator", () => {
         export const $osdkMetadata = { extraUserAgent: '' };
         ",
           "/foo/index.ts": "export * from './ontology/actions.js';
+        export * as $Actions from './ontology/actions.js';
         export * from './ontology/interfaces.js';
+        export * as $Interfaces from './ontology/interfaces.js';
         export * from './ontology/objects.js';
+        export * as $Objects from './ontology/objects.js';
         export * from './ontology/queries.js';
+        export * as $Queries from './ontology/queries.js';
         ",
           "/foo/ontology/actions.ts": "export { deleteTodos } from './actions/deleteTodos.js';
         export { markTodoCompleted } from './actions/markTodoCompleted.js';
@@ -2918,9 +2926,13 @@ describe("generator", () => {
         export const $ontologyRid = 'ri.ontology.main.ontology.dep';
         ",
           "/foo/index.ts": "export * from './ontology/actions.js';
+        export * as $Actions from './ontology/actions.js';
         export * from './ontology/interfaces.js';
+        export * as $Interfaces from './ontology/interfaces.js';
         export * from './ontology/objects.js';
+        export * as $Objects from './ontology/objects.js';
         export * from './ontology/queries.js';
+        export * as $Queries from './ontology/queries.js';
         export { $ontologyRid } from './OntologyMetadata.js';
         ",
           "/foo/ontology/actions.ts": "export {};
