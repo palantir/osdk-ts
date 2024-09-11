@@ -28,12 +28,12 @@ import type { InterfaceType } from "./types.js";
 
 describe("Ontology Defining", () => {
   beforeEach(() => {
-    defineOntology("myNamespace", () => {});
+    defineOntology("", () => {});
   });
 
   describe("ValueTypes", () => {
-    it("Correctly serializes a value type"), () => {
-      defineValueType({
+    it("Correctly serializes a value type", () => {
+      const foo = defineValueType({
         apiName: "apiName",
         displayName: "displayName",
         typeAndConstraints: {
@@ -44,8 +44,49 @@ describe("Ontology Defining", () => {
         },
         version: "0.1.0",
       });
-      expect(dumpValueTypeWireType()).toMatchInlineSnapshot(``);
-    };
+      expect(dumpValueTypeWireType()).toMatchInlineSnapshot(`
+         {
+            "valueTypes": [
+              {
+                "metadata": {
+                  "apiName": "apiName",
+                  "displayMetadata": {
+                    "description": "",
+                    "displayName": "displayName",
+                  },
+                  "status": {
+                    "active": {},
+                    "type": "active",
+                  },
+                },
+                "versions": [
+                  {
+                    "baseType": {
+                      "boolean": {},
+                    },
+                    "constraints": [
+                      {
+                        "constraint": {
+                          "boolean": "boolean",
+                          "constraint": {
+                            "boolean": {
+                              "allowedValues": [
+                                "TRUE_VALUE",
+                              ],
+                            },
+                          },
+                        },
+                      },
+                    ],
+                    "exampleValues": [],
+                    "version": "0.1.0",
+                  },
+                ],
+              },
+            ],
+          }
+        `);
+    });
   });
 
   describe("Interfaces", () => {
@@ -344,7 +385,7 @@ describe("Ontology Defining", () => {
                 "extendsInterfaces": [],
                 "links": [
                   {
-                    "cardinality": "SINGLE",
+                    "cardinality": "MANY",
                     "linkedEntityTypeId": {
                       "interfaceType": "B",
                       "type": "interfaceType",

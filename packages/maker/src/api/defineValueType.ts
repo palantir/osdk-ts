@@ -86,6 +86,9 @@ export function defineValueType(
     constraints: constraints,
     exampleValues: [],
   };
+  if (ontologyDefinition.valueTypes[apiName] === undefined) {
+    ontologyDefinition.valueTypes[apiName] = [];
+  }
   ontologyDefinition.valueTypes[apiName].push(vt);
   return vt;
 }

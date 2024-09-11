@@ -79,7 +79,19 @@ function convertOntologyToValueTypeIr(
   return {
     valueTypes: Object.values(ontology.valueTypes).map<
       OntologyIrValueTypeBlockDataEntry
-    >(definitions => ({ metadata: definitions[0], versions: definitions })),
+    >(definitions => ({
+      metadata: {
+        apiName: definitions[0].apiName,
+        displayMetadata: definitions[0].displayMetadata,
+        status: definitions[0].status,
+      },
+      versions: definitions.map(definition => ({
+        version: definition.version,
+        baseType: definition.baseType,
+        constraints: definition.constraints,
+        exampleValues: definition.exampleValues,
+      })),
+    })),
   };
 }
 
