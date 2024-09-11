@@ -64,6 +64,7 @@ export interface ObjectInterfaceBaseDefinition<K extends string, N = unknown> {
   objectSet?: any;
   props?: any;
   strictProps?: any;
+  linksType?: any;
 
   /**
    * Represents the "super interfaces" of this object.

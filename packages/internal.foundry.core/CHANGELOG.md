@@ -1,5 +1,12 @@
 # @osdk/internal.foundry.core
 
+## 0.2.0-beta.2
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@1.10.0-beta.1
+
 ## 0.2.0-beta.1
 
 ### Patch Changes

@@ -17,6 +17,7 @@
 import { consola } from "consola";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import invariant from "tiny-invariant";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { defineInterface } from "../api/defineInterface.js";
@@ -25,12 +26,15 @@ import { defineObject } from "../api/defineObject.js";
 import { defineOntology } from "../api/defineOntology.js";
 import { defineSharedPropertyType } from "../api/defineSpt.js";
 
+const apiNamespaceRegex = /^[a-z0-9-]+(\.[a-z0-9-]+)*\.$/;
+
 export default async function main(
   args: string[] = process.argv,
 ): Promise<void> {
   const commandLineOpts: {
     input: string;
     output: string;
+    apiNamespace: string;
     snapshotDir: string;
     valueTypesOutput: string;
   } = await yargs(hideBin(args))
@@ -53,6 +57,11 @@ export default async function main(
         default: "ontology.json",
         coerce: path.resolve,
       },
+      apiNamespace: {
+        describe: "Api name prefix for namespaced ontology types",
+        type: "string",
+        default: "",
+      },
       snapshotDir: {
         alias: "s",
         describe: "Snapshot directory",
@@ -68,9 +77,22 @@ export default async function main(
       },
     })
     .parseAsync();
-
+  let apiNamespace = "";
+  if (commandLineOpts.apiNamespace.length !== 0) {
+    apiNamespace = (commandLineOpts.apiNamespace.slice(-1) !== ".")
+      ? commandLineOpts.apiNamespace + "."
+      : commandLineOpts.apiNamespace;
+    invariant(apiNamespace.length < 1024, "API namespace is too long.");
+    invariant(
+      apiNamespaceRegex.test(apiNamespace),
+      "API namespace is invalid! It is expected to conform to ^[a-z0-9-]+(\.[a-z0-9-]+)*\.$",
+    );
+  }
   consola.info(`Loading ontology from ${commandLineOpts.input}`);
-  const ontology = await loadOntology(commandLineOpts.input);
+  const ontology = await loadOntology(
+    commandLineOpts.input,
+    apiNamespace,
+  );
 
   consola.info(`Saving ontology to ${commandLineOpts.output}`);
   await fs.writeFile(
@@ -124,7 +146,7 @@ async function loadOntologyViaTsNode(input: string) {
   return q;
 }
 
-async function loadOntology(input: string) {
+async function loadOntology(input: string, apiNamespace: string) {
   // Object.assign(globalThis, {
   //   defineInterface,
   //   defineLink,
@@ -132,6 +154,6 @@ async function loadOntology(input: string) {
   //   defineSharedPropertyType,
   // });
 
-  const q = await defineOntology("", async () => await import(input));
+  const q = await defineOntology(apiNamespace, async () => await import(input));
   return q;
 }

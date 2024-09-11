@@ -18,7 +18,7 @@ import {
   type Attachment,
   TimeseriesDurationMapping,
   type TimeSeriesPoint,
-  type TimeSeriesProperty,
+  TimeSeriesProperty,
   type TimeSeriesQuery,
 } from "@osdk/client.api";
 import { Ontologies, OntologiesV2 } from "@osdk/internal.foundry";
@@ -41,45 +41,56 @@ export function createTimeseriesProperty<T extends number | string>(
   primaryKey: any,
   propertyName: string,
 ): TimeSeriesProperty<T> {
-  return {
-    async getFirstPoint() {
-      return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
-        client,
-        await client.ontologyRid,
-        objectApiName,
-        primaryKey,
-        propertyName,
-      ) as Promise<TimeSeriesPoint<T>>;
-    },
-    async getLastPoint() {
-      return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
-        client,
-        await client.ontologyRid,
-        objectApiName,
-        primaryKey,
-        propertyName,
-      ) as Promise<TimeSeriesPoint<T>>;
-    },
-    async getAllPoints(query?: TimeSeriesQuery) {
-      return getAllTimeSeriesPoints(
-        client,
-        objectApiName,
-        primaryKey,
-        propertyName,
-        query,
-      );
-    },
-
-    asyncIterPoints(query?: TimeSeriesQuery) {
-      return iterateTimeSeriesPoints(
-        client,
-        objectApiName,
-        primaryKey,
-        propertyName,
-        query,
-      );
-    },
+  const getFirstPoint = async () => {
+    return OntologiesV2.TimeSeriesPropertiesV2.getFirstPoint(
+      client,
+      await client.ontologyRid,
+      objectApiName,
+      primaryKey,
+      propertyName,
+    ) as Promise<TimeSeriesPoint<T>>;
   };
+
+  const getLastPoint = async () => {
+    return OntologiesV2.TimeSeriesPropertiesV2.getLastPoint(
+      client,
+      await client.ontologyRid,
+      objectApiName,
+      primaryKey,
+      propertyName,
+    ) as Promise<TimeSeriesPoint<T>>;
+  };
+
+  const getAllPoints = async (
+    query?: TimeSeriesQuery,
+  ): Promise<Array<TimeSeriesPoint<T>>> => {
+    return getAllTimeSeriesPoints(
+      client,
+      objectApiName,
+      primaryKey,
+      propertyName,
+      query,
+    );
+  };
+
+  const asyncIterPoints = (
+    query?: TimeSeriesQuery,
+  ): AsyncGenerator<TimeSeriesPoint<T>> => {
+    return iterateTimeSeriesPoints(
+      client,
+      objectApiName,
+      primaryKey,
+      propertyName,
+      query,
+    );
+  };
+
+  return new TimeSeriesProperty<T>(
+    getFirstPoint,
+    getLastPoint,
+    getAllPoints,
+    asyncIterPoints,
+  );
 }
 
 async function getAllTimeSeriesPoints<T extends string | number>(

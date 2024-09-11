@@ -15,7 +15,7 @@
  */
 
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
+import { namespace, ontologyDefinition } from "./defineOntology.js";
 import { defineSharedPropertyType } from "./defineSpt.js";
 import type {
   InterfaceType,
@@ -34,7 +34,7 @@ export function defineInterface(
     >;
   },
 ): InterfaceType {
-  const { apiName } = opts;
+  const apiName = namespace + opts.apiName;
   invariant(
     ontologyDefinition.interfaceTypes[apiName] === undefined,
     `Interface ${apiName} already exists`,
@@ -74,8 +74,8 @@ export function defineInterface(
   const a: InterfaceType = {
     apiName,
     displayMetadata: {
-      displayName: opts.displayName ?? apiName,
-      description: opts.description ?? opts.displayName ?? apiName,
+      displayName: opts.displayName ?? opts.apiName,
+      description: opts.description ?? opts.displayName ?? opts.apiName,
       icon: undefined,
     },
     extendsInterfaces: [],
@@ -84,7 +84,7 @@ export function defineInterface(
     status: { type: "active", active: {} },
   };
 
-  return ontologyDefinition.interfaceTypes[apiName] = a;
+  return ontologyDefinition.interfaceTypes[namespace + apiName] = a;
 }
 
 function isSimpleType(

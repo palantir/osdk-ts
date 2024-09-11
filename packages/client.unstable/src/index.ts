@@ -31,9 +31,9 @@ export type { Type } from "./generated/ontology-metadata/api/Type.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";
+export { bulkLoadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/bulkLoadOntologyEntities.js";
 export { getLinkTypesForObjectTypes } from "./generated/ontology-metadata/api/OntologyMetadataService/getLinkTypesForObjectTypes.js";
 export { loadAllOntologies } from "./generated/ontology-metadata/api/OntologyMetadataService/loadAllOntologies.js";
-export { loadOntologyEntities } from "./generated/ontology-metadata/api/OntologyMetadataService/loadOntologyEntities.js";
 
 export type { BaseType } from "./generated/type-registry/api/BaseType.js";
 export type { DataConstraint } from "./generated/type-registry/api/DataConstraint.js";

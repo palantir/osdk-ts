@@ -85,6 +85,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       DefaultToFalse as $DefaultToFalse,
       FetchPageArgs as $FetchPageArgs,
       FetchPageResult as $FetchPageResult,
+      IsAny as $IsAny,
       LinkedType as $LinkedType,
       LinkNames as $LinkNames,
       NullabilityAdherence as $NullabilityAdherence,
@@ -153,6 +154,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
       osdkMetadata: $osdkMetadata,
       objectSet: undefined as any,
       props: undefined as any,
+      linksType: undefined as any,
       strictProps: undefined as any,
       ${
     stringify(definition, {
@@ -256,7 +258,7 @@ readonly fetchOne: <
   ) => Promise<
    ${osdkObjectIdentifier}<
     (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never:  "$rid" ),
-    L
+    $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
    >>
   ;
 
@@ -270,7 +272,7 @@ readonly fetchOneWithErrors: <
   ) => Promise<$Result<
         ${osdkObjectIdentifier}<
         (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false?never: "$rid"),
-        L
+        $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
       >
    >> 
   
@@ -290,7 +292,7 @@ readonly fetchPage: <
 ) => Promise<
   $PageResult<${osdkObjectIdentifier}<
     (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never: "$rid"),
-    L
+    $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
   >>
 >;
 
@@ -304,7 +306,8 @@ readonly fetchPageWithErrors: <
 ) => Promise<$Result<
  $PageResult<${osdkObjectIdentifier}<
  (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never : "$rid"),
- L>>
+ $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
+ >>
  >>;
 
 readonly asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
@@ -359,6 +362,7 @@ export function createDefinition(
     objectSetIdentifier,
     osdkObjectPropsIdentifier,
     osdkObjectStrictPropsIdentifier,
+    osdkObjectLinksIdentifier,
   }: Identifiers,
 ) {
   const definition = object.getCleanedUpDefinition(true);
@@ -371,6 +375,7 @@ export function createDefinition(
       osdkMetadata: typeof $osdkMetadata;
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};
+      linksType: ${osdkObjectLinksIdentifier};
       strictProps: ${osdkObjectStrictPropsIdentifier};
       ${
     stringify(definition, {
@@ -420,7 +425,7 @@ export function createLinks(
   return `
     ${
     Object.keys(definition.links).length === 0
-      ? `export type ${identifier} = never;`
+      ? `export type ${identifier} = {};`
       : `
         export interface ${identifier}  {
 ${

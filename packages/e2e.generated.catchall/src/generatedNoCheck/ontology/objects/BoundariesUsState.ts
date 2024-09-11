@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -32,7 +33,7 @@ import { $osdkMetadata } from '../../OntologyMetadata.js';
 export namespace BoundariesUsState {
   export type PropertyKeys = 'usState' | 'latitude' | 'longitude' | 'geometry10M';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly geometry10M: $PropType['geoshape'] | undefined;
@@ -66,7 +67,7 @@ export namespace BoundariesUsState {
     ) => Promise<
       BoundariesUsState.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
       >
     >;
 
@@ -81,7 +82,7 @@ export namespace BoundariesUsState {
       $Result<
         BoundariesUsState.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
         >
       >
     >;
@@ -97,7 +98,7 @@ export namespace BoundariesUsState {
       $PageResult<
         BoundariesUsState.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
         >
       >
     >;
@@ -114,7 +115,7 @@ export namespace BoundariesUsState {
         $PageResult<
           BoundariesUsState.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? BoundariesUsState.PropertyKeys : L
           >
         >
       >
@@ -129,6 +130,7 @@ export namespace BoundariesUsState {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: BoundariesUsState.ObjectSet;
     props: BoundariesUsState.Props;
+    linksType: BoundariesUsState.Links;
     strictProps: BoundariesUsState.StrictProps;
     description: 'Boundaries US State';
     links: {};
@@ -183,6 +185,7 @@ export const BoundariesUsState: BoundariesUsState & $VersionBound<$ExpectedClien
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'BoundariesUsState',
   description: 'Boundaries US State',

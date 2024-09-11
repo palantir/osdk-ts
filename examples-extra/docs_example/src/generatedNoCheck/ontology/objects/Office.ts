@@ -11,6 +11,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -38,7 +39,7 @@ export namespace Office {
     | 'meetingRooms'
     | 'meetingRoomCapacities';
 
-  export type Links = never;
+  export type Links = {};
 
   export interface Props {
     readonly entrance: $PropType['geopoint'] | undefined;
@@ -76,7 +77,7 @@ export namespace Office {
     ) => Promise<
       Office.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? Office.PropertyKeys : L
       >
     >;
 
@@ -91,7 +92,7 @@ export namespace Office {
       $Result<
         Office.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Office.PropertyKeys : L
         >
       >
     >;
@@ -107,7 +108,7 @@ export namespace Office {
       $PageResult<
         Office.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Office.PropertyKeys : L
         >
       >
     >;
@@ -124,7 +125,7 @@ export namespace Office {
         $PageResult<
           Office.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Office.PropertyKeys : L
           >
         >
       >
@@ -139,6 +140,7 @@ export namespace Office {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Office.ObjectSet;
     props: Office.Props;
+    linksType: Office.Links;
     strictProps: Office.StrictProps;
     description: 'A office in our Company';
     links: {};
@@ -196,6 +198,7 @@ export const Office: Office & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'Office',
   description: 'A office in our Company',

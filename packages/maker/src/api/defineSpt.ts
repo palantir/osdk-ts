@@ -16,7 +16,7 @@
 
 import type { ApiNameValueTypeReference } from "@osdk/client.unstable";
 import invariant from "tiny-invariant";
-import { ontologyDefinition } from "./defineOntology.js";
+import { namespace, ontologyDefinition } from "./defineOntology.js";
 import type { PropertyTypeType, SharedPropertyType } from "./types.js";
 
 export function defineSharedPropertyType(
@@ -29,7 +29,7 @@ export function defineSharedPropertyType(
     valueType?: ApiNameValueTypeReference;
   },
 ): SharedPropertyType {
-  const { apiName } = opts;
+  const apiName = namespace + opts.apiName;
   invariant(
     ontologyDefinition.sharedPropertyTypes[apiName] === undefined,
     `Shared property type ${apiName} already exists`,

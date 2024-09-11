@@ -1,5 +1,12 @@
 # @osdk/shared.test
 
+## 1.7.0-beta.1
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@1.10.0-beta.1
+
 ## 1.7.0-beta.0
 
 ### Minor Changes

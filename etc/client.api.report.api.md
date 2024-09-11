@@ -7,8 +7,6 @@
 import type { BBox } from 'geojson';
 import type { BrandedApiName } from '@osdk/api';
 import type { InterfaceDefinition } from '@osdk/api';
-import type { IsAny } from 'type-fest';
-import type { IsNever } from 'type-fest';
 import type { ObjectOrInterfaceDefinition } from '@osdk/api';
 import type { ObjectOrInterfacePropertyKeysFrom2 } from '@osdk/api';
 import type { ObjectTypeDefinition } from '@osdk/api';
@@ -391,6 +389,9 @@ export type GroupByRange<T> = [T, T];
 export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>> extends MinimalObjectSet<Q> {
 }
 
+// @public (undocumented)
+export type IsAny<T> = unknown extends T ? [keyof T] extends [never] ? false : true : false;
+
 // Warning: (ae-forgotten-export) The symbol "OkResult" needs to be exported by the entry point index.d.ts
 //
 // @public
@@ -479,10 +480,13 @@ export interface OrWhereClause<T extends ObjectOrInterfaceDefinition<any, any>> 
 
 // Warning: (ae-forgotten-export) The symbol "GetProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "GetPropsKeys" needs to be exported by the entry point index.d.ts
+// Warning: (ae-forgotten-export) The symbol "IsNever" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
 export type Osdk<Q extends ObjectTypeDefinition<any> | InterfaceDefinition<any, any>, P extends "$all" | "$rid" | "$strict" | "$notStrict" | keyof Q["properties"] = "$all"> = OsdkBase<Q> & Pick<GetProps<Q, P>, GetPropsKeys<Q, P>> & {
-    readonly $link: Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q> : never;
+    readonly $link: Q extends {
+        linksType?: any;
+    } ? Q["linksType"] : Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q> : never;
     readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<NEW_Q, ConvertProps<Q, NEW_Q, P>>;
 } & (IsNever<P> extends true ? {} : string extends P ? {} : "$rid" extends P ? {
     readonly $rid: string;
@@ -699,17 +703,22 @@ export interface TimeSeriesPoint<T extends string | number> {
 }
 
 // @public (undocumented)
-export interface TimeSeriesProperty<T extends number | string> {
+export class TimeSeriesProperty<T extends number | string> {
+    constructor(
+    getFirstPoint: () => Promise<TimeSeriesPoint<T>>,
+    getLastPoint: () => Promise<TimeSeriesPoint<T>>,
+    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>,
+    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>);
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    asyncIterPoints(query?: TimeSeriesQuery): AsyncGenerator<TimeSeriesPoint<T>>;
+    asyncIterPoints: (query?: TimeSeriesQuery) => AsyncGenerator<TimeSeriesPoint<T>>;
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-    getAllPoints(query?: TimeSeriesQuery): Promise<Array<TimeSeriesPoint<T>>>;
-    getFirstPoint(): Promise<TimeSeriesPoint<T>>;
-    getLastPoint(): Promise<TimeSeriesPoint<T>>;
+    getAllPoints: (query?: TimeSeriesQuery) => Promise<Array<TimeSeriesPoint<T>>>;
+    getFirstPoint: () => Promise<TimeSeriesPoint<T>>;
+    getLastPoint: () => Promise<TimeSeriesPoint<T>>;
 }
 
 // @public (undocumented)

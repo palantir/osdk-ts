@@ -12,6 +12,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -101,7 +102,7 @@ export namespace Employee {
     ) => Promise<
       Employee.OsdkObject<
         (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        L
+        $IsAny<L> extends true ? Employee.PropertyKeys : L
       >
     >;
 
@@ -116,7 +117,7 @@ export namespace Employee {
       $Result<
         Employee.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Employee.PropertyKeys : L
         >
       >
     >;
@@ -132,7 +133,7 @@ export namespace Employee {
       $PageResult<
         Employee.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Employee.PropertyKeys : L
         >
       >
     >;
@@ -149,7 +150,7 @@ export namespace Employee {
         $PageResult<
           Employee.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Employee.PropertyKeys : L
           >
         >
       >
@@ -164,6 +165,7 @@ export namespace Employee {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Employee.ObjectSet;
     props: Employee.Props;
+    linksType: Employee.Links;
     strictProps: Employee.StrictProps;
     description: 'An employee';
     implements: ['FooInterface'];
@@ -274,6 +276,7 @@ export const Employee: Employee & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'Employee',
   description: 'An employee',

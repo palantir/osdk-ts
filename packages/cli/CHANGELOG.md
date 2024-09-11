@@ -1,5 +1,13 @@
 # @osdk/cli
 
+## 0.24.0-beta.4
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/generator@1.14.0-beta.4
+  - @osdk/api@1.10.0-beta.1
+
 ## 0.24.0-beta.3
 
 ### Patch Changes
