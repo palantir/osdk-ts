@@ -120,7 +120,7 @@ export interface InterfaceObjectSet<Q extends InterfaceDefinition<any, any>>
 
 export interface ObjectSet<
   Q extends ObjectOrInterfaceDefinition = any,
-  Z extends ObjectSet<Q, Z> = ObjectSet<Q, any>,
+  _UNUSED = any,
 > extends MinimalObjectSet<Q> {
   /**
    * Aggregate on a field in an object type
@@ -159,7 +159,7 @@ export interface ObjectSet<
    * @returns the unioned object set
    */
   readonly union: (
-    ...objectSets: ReadonlyArray<Z>
+    ...objectSets: ReadonlyArray<Q["objectSet"]>
   ) => this;
 
   /**
@@ -172,7 +172,7 @@ export interface ObjectSet<
    * @returns the intersected object set
    */
   readonly intersect: (
-    ...objectSets: ReadonlyArray<Z>
+    ...objectSets: ReadonlyArray<Q["objectSet"]>
   ) => this;
 
   /**
@@ -185,7 +185,7 @@ export interface ObjectSet<
    * @returns the subtract object set
    */
   readonly subtract: (
-    ...objectSets: ReadonlyArray<Z>
+    ...objectSets: ReadonlyArray<Q["objectSet"]>
   ) => this;
 
   /**

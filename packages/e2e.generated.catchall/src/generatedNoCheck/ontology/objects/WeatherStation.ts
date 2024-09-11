@@ -1,33 +1,5 @@
-import type {
-  ObjectTypeDefinition as $ObjectTypeDefinition,
-  PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
-} from '@osdk/api';
-import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-  ObjectSet as $ObjectSet,
-  Osdk as $Osdk,
-  OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
-  PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { ObjectTypeDefinition as $ObjectTypeDefinition, PropertyDef as $PropertyDef } from '@osdk/api';
+import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 
 export namespace WeatherStation {
@@ -44,85 +16,9 @@ export namespace WeatherStation {
     readonly stationId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<WeatherStation.Definition, WeatherStation.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<WeatherStation.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<WeatherStation.Definition, AO>,
-    ) => Promise<$AggregationsResults<WeatherStation.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<WeatherStation.Definition, WeatherStation.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<WeatherStation.Definition>>(
-      type: L,
-    ) => $LinkedType<WeatherStation.Definition, L>['objectSet'];
-
-    readonly fetchOne: <
-      const L extends WeatherStation.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
-      options?: $SelectArg<WeatherStation.Definition, L, R, S>,
-    ) => Promise<
-      WeatherStation.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends WeatherStation.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[WeatherStation.Definition['primaryKeyType']],
-      options?: $SelectArg<WeatherStation.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends WeatherStation.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        WeatherStation.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends WeatherStation.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<WeatherStation.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          WeatherStation.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? WeatherStation.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<WeatherStation.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'WeatherStation', WeatherStation.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
+  export interface Definition extends $ObjectTypeDefinition<'WeatherStation', WeatherStation.Definition> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: WeatherStation.ObjectSet;
     props: WeatherStation.Props;
@@ -148,28 +44,12 @@ export namespace WeatherStation {
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof WeatherStation.Props = keyof WeatherStation.Props,
-  > = $Osdk<WeatherStation.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? WeatherStation.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? WeatherStation.Props
-          : WeatherStation.StrictProps,
-      K
-    > & {
-      readonly $link: WeatherStation.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<WeatherStation.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<WeatherStation.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'WeatherStation'>;
+  > = $Osdk<WeatherStation.Definition, K | OPTIONS>;
 }
 
 export type WeatherStation = WeatherStation.Definition;
 
-export const WeatherStation: WeatherStation & $VersionBound<$ExpectedClientVersion> = {
+export const WeatherStation: WeatherStation = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

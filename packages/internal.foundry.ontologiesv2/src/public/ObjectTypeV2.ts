@@ -20,10 +20,12 @@ import type {
   ListObjectTypesV2Response,
   ListOutgoingLinkTypesResponseV2,
   ObjectTypeApiName,
+  ObjectTypeFullMetadata,
   ObjectTypeV2,
   OntologyIdentifier,
   PageSize,
   PageToken,
+  PreviewMode,
 } from "@osdk/internal.foundry.core";
 import type {
   SharedClient as $Client,
@@ -94,6 +96,36 @@ export function getObjectTypeV2(
   ...args: [ontology: OntologyIdentifier, objectType: ObjectTypeApiName]
 ): Promise<ObjectTypeV2> {
   return $foundryPlatformFetch($ctx, _getObjectTypeV2, ...args);
+}
+
+const _getObjectTypeFullMetadata: $FoundryPlatformMethod<
+  (
+    ontology: OntologyIdentifier,
+    objectType: ObjectTypeApiName,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<ObjectTypeFullMetadata>
+> = [0, "/v2/ontologies/{0}/objectTypes/{1}/fullMetadata", 2];
+
+/**
+ * Gets the full metadata for a specific object type with the given API name.
+ *
+ * Third-party applications using this endpoint via OAuth2 must request the following operation scope: `api:ontologies-read`.
+ *
+ * @alpha
+ *
+ * Required Scopes: [api:ontologies-read]
+ * URL: /v2/ontologies/{ontology}/objectTypes/{objectType}/fullMetadata
+ */
+export function getObjectTypeFullMetadata(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    ontology: OntologyIdentifier,
+    objectType: ObjectTypeApiName,
+
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<ObjectTypeFullMetadata> {
+  return $foundryPlatformFetch($ctx, _getObjectTypeFullMetadata, ...args);
 }
 
 const _listOutgoingLinkTypesV2: $FoundryPlatformMethod<

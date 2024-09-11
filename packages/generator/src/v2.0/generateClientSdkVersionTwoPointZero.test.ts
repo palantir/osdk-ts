@@ -673,32 +673,11 @@ describe("generator", () => {
       ",
         "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface';
       ",
-        "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+        "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
       import { $osdkMetadata } from '../../OntologyMetadata';
 
       import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-      import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-        ObjectSet as $ObjectSet,
-        Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        PageResult as $PageResult,
-        PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        ValidToFrom as $ValidToFrom,
-      } from '@osdk/client.api';
+      import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
       export type OsdkObjectLinks$SomeInterface = {};
 
@@ -712,55 +691,9 @@ describe("generator", () => {
           readonly SomeProperty: $PropType['string'] | undefined;
         }
 
-        export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
-          ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
-            type: L,
-          ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
-
-          readonly fetchPage: <
-            const L extends SomeInterface.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              SomeInterface.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends SomeInterface.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $InterfaceDefinition<'SomeInterface', SomeInterface.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
+        export interface Definition extends $InterfaceDefinition<'SomeInterface', SomeInterface.Definition> {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: SomeInterface.ObjectSet;
           props: SomeInterface.Props;
@@ -782,23 +715,7 @@ describe("generator", () => {
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-        > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never]
-              ? SomeInterface.StrictProps
-              : OPTIONS extends '$notStrict'
-                ? SomeInterface.Props
-                : SomeInterface.StrictProps,
-            K
-          > & {
-            readonly $link: OsdkObjectLinks$SomeInterface;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: string | number;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'SomeInterface'>;
+        > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
       }
 
       /** @deprecated use SomeInterface.Definition **/
@@ -834,33 +751,8 @@ describe("generator", () => {
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         PropertyDef as $PropertyDef,
-        VersionBound as $VersionBound,
       } from '@osdk/api';
-      import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-        ObjectSet as $ObjectSet,
-        Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
-        PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
-        ValidToFrom as $ValidToFrom,
-      } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata';
+      import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Todo } from './Todo';
 
@@ -878,85 +770,9 @@ describe("generator", () => {
           readonly email: $PropType['string'];
         }
 
-        export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
-          ) => Promise<$AggregationsResults<Person.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
-            type: L,
-          ) => $LinkedType<Person.Definition, L>['objectSet'];
-
-          readonly fetchOne: <
-            const L extends Person.PropertyKeys,
-            const R extends boolean,
-            const S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-            options?: $SelectArg<Person.Definition, L, R, S>,
-          ) => Promise<
-            Person.OsdkObject<
-              (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              $IsAny<L> extends true ? Person.PropertyKeys : L
-            >
-          >;
-
-          readonly fetchOneWithErrors: <
-            const L extends Person.PropertyKeys,
-            const R extends boolean,
-            const S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-            options?: $SelectArg<Person.Definition, L, R, S>,
-          ) => Promise<
-            $Result<
-              Person.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Person.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPage: <
-            const L extends Person.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Person.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Person.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends Person.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                Person.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Person.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $ObjectTypeDefinition<'Person', Person.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
+        export interface Definition extends $ObjectTypeDefinition<'Person', Person.Definition> {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: Person.ObjectSet;
           props: Person.Props;
@@ -984,24 +800,12 @@ describe("generator", () => {
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
-        > = $Osdk<Person.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never] ? Person.StrictProps : OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
-            K
-          > & {
-            readonly $link: Person.Links;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Person.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Person.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'Person'>;
+        > = $Osdk<Person.Definition, K | OPTIONS>;
       }
 
       export type Person = Person.Definition;
 
-      export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
+      export const Person: Person = {
         osdkMetadata: $osdkMetadata,
         objectSet: undefined as any,
         props: undefined as any,
@@ -1036,34 +840,13 @@ describe("generator", () => {
         ObjectTypeDefinition as $ObjectTypeDefinition,
         ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
         PropertyDef as $PropertyDef,
-        VersionBound as $VersionBound,
       } from '@osdk/api';
       import type {
-        AggregateOpts as $AggregateOpts,
-        AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-        AggregationsResults as $AggregationsResults,
-        Augments as $Augments,
-        ConvertProps as $ConvertProps,
-        DefaultToFalse as $DefaultToFalse,
-        FetchPageArgs as $FetchPageArgs,
-        IsAny as $IsAny,
-        LinkedType as $LinkedType,
-        LinkNames as $LinkNames,
-        NullabilityAdherence as $NullabilityAdherence,
-        NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
         ObjectSet as $ObjectSet,
         Osdk as $Osdk,
-        OsdkObject as $OsdkObject,
-        OsdkObjectPropertyType as $OsdkObjectPropertyType,
-        PageResult as $PageResult,
-        PropertyValueClientToWire as $PropertyValueClientToWire,
         PropertyValueWireToClient as $PropType,
-        Result as $Result,
-        SelectArg as $SelectArg,
         SingleLinkAccessor as $SingleLinkAccessor,
-        ValidToFrom as $ValidToFrom,
       } from '@osdk/client.api';
-      import type { $ExpectedClientVersion } from '../../OntologyMetadata';
       import { $osdkMetadata } from '../../OntologyMetadata';
       import type { Person } from './Person';
 
@@ -1085,85 +868,9 @@ describe("generator", () => {
           readonly id: $PropType['integer'];
         }
 
-        export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-          readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
-            req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
-          ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
+        export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
 
-          readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
-            type: L,
-          ) => $LinkedType<Todo.Definition, L>['objectSet'];
-
-          readonly fetchOne: <
-            const L extends Todo.PropertyKeys,
-            const R extends boolean,
-            const S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-            options?: $SelectArg<Todo.Definition, L, R, S>,
-          ) => Promise<
-            Todo.OsdkObject<
-              (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-              $IsAny<L> extends true ? Todo.PropertyKeys : L
-            >
-          >;
-
-          readonly fetchOneWithErrors: <
-            const L extends Todo.PropertyKeys,
-            const R extends boolean,
-            const S extends false | 'throw' = $NullabilityAdherenceDefault,
-          >(
-            primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-            options?: $SelectArg<Todo.Definition, L, R, S>,
-          ) => Promise<
-            $Result<
-              Todo.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Todo.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPage: <
-            const L extends Todo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-          ) => Promise<
-            $PageResult<
-              Todo.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Todo.PropertyKeys : L
-              >
-            >
-          >;
-
-          readonly fetchPageWithErrors: <
-            const L extends Todo.PropertyKeys,
-            const R extends boolean,
-            const A extends $Augments,
-            const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-          >(
-            args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-          ) => Promise<
-            $Result<
-              $PageResult<
-                Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Todo.PropertyKeys : L
-                >
-              >
-            >
-          >;
-
-          readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
-        }
-
-        export interface Definition
-          extends $ObjectTypeDefinition<'Todo', Todo.Definition>,
-            $VersionBound<$ExpectedClientVersion> {
+        export interface Definition extends $ObjectTypeDefinition<'Todo', Todo.Definition> {
           osdkMetadata: typeof $osdkMetadata;
           objectSet: Todo.ObjectSet;
           props: Todo.Props;
@@ -1208,24 +915,12 @@ describe("generator", () => {
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
-        > = $Osdk<Todo.Definition, K | OPTIONS> &
-          Pick<
-            [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
-            K
-          > & {
-            readonly $link: Todo.Links;
-            readonly $title: string | undefined; // FIXME
-            readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-            readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
-              type: NEW_Q | string,
-            ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
-          } & $OsdkObject<'Todo'>;
+        > = $Osdk<Todo.Definition, K | OPTIONS>;
       }
 
       export type Todo = Todo.Definition;
 
-      export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
+      export const Todo: Todo = {
         osdkMetadata: $osdkMetadata,
         objectSet: undefined as any,
         props: undefined as any,
@@ -1657,32 +1352,11 @@ describe("generator", () => {
         ",
           "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
         ",
-          "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
-        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-        import type {
-          AggregateOpts as $AggregateOpts,
-          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-          AggregationsResults as $AggregationsResults,
-          Augments as $Augments,
-          ConvertProps as $ConvertProps,
-          DefaultToFalse as $DefaultToFalse,
-          FetchPageArgs as $FetchPageArgs,
-          IsAny as $IsAny,
-          LinkedType as $LinkedType,
-          LinkNames as $LinkNames,
-          NullabilityAdherence as $NullabilityAdherence,
-          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-          ObjectSet as $ObjectSet,
-          Osdk as $Osdk,
-          OsdkObject as $OsdkObject,
-          PageResult as $PageResult,
-          PropertyValueWireToClient as $PropType,
-          Result as $Result,
-          ValidToFrom as $ValidToFrom,
-        } from '@osdk/client.api';
+        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
 
@@ -1696,55 +1370,9 @@ describe("generator", () => {
             readonly SomeProperty: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
-              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
-            ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
 
-            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
-              type: L,
-            ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
-
-            readonly fetchPage: <
-              const L extends SomeInterface.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-            ) => Promise<
-              $PageResult<
-                SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPageWithErrors: <
-              const L extends SomeInterface.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-            ) => Promise<
-              $Result<
-                $PageResult<
-                  SomeInterface.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-                  >
-                >
-              >
-            >;
-
-            readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
-          }
-
-          export interface Definition
-            extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition>,
-              $VersionBound<$ExpectedClientVersion> {
+          export interface Definition extends $InterfaceDefinition<'foo.bar.SomeInterface', SomeInterface.Definition> {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -1766,23 +1394,7 @@ describe("generator", () => {
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-            Pick<
-              [OPTIONS] extends [never]
-                ? SomeInterface.StrictProps
-                : OPTIONS extends '$notStrict'
-                  ? SomeInterface.Props
-                  : SomeInterface.StrictProps,
-              K
-            > & {
-              readonly $link: OsdkObjectLinks$SomeInterface;
-              readonly $title: string | undefined; // FIXME
-              readonly $primaryKey: string | number;
-
-              readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
-                type: NEW_Q | string,
-              ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
-            } & $OsdkObject<'foo.bar.SomeInterface'>;
+          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
         }
 
         /** @deprecated use SomeInterface.Definition **/
@@ -1818,33 +1430,8 @@ describe("generator", () => {
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           PropertyDef as $PropertyDef,
-          VersionBound as $VersionBound,
         } from '@osdk/api';
-        import type {
-          AggregateOpts as $AggregateOpts,
-          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-          AggregationsResults as $AggregationsResults,
-          Augments as $Augments,
-          ConvertProps as $ConvertProps,
-          DefaultToFalse as $DefaultToFalse,
-          FetchPageArgs as $FetchPageArgs,
-          IsAny as $IsAny,
-          LinkedType as $LinkedType,
-          LinkNames as $LinkNames,
-          NullabilityAdherence as $NullabilityAdherence,
-          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-          ObjectSet as $ObjectSet,
-          Osdk as $Osdk,
-          OsdkObject as $OsdkObject,
-          OsdkObjectPropertyType as $OsdkObjectPropertyType,
-          PageResult as $PageResult,
-          PropertyValueClientToWire as $PropertyValueClientToWire,
-          PropertyValueWireToClient as $PropType,
-          Result as $Result,
-          SelectArg as $SelectArg,
-          ValidToFrom as $ValidToFrom,
-        } from '@osdk/client.api';
-        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Todo } from './Todo.js';
 
@@ -1862,85 +1449,9 @@ describe("generator", () => {
             readonly email: $PropType['string'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {
-            readonly aggregate: <const AO extends $AggregateOpts<Person.Definition>>(
-              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Person.Definition, AO>,
-            ) => Promise<$AggregationsResults<Person.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {}
 
-            readonly pivotTo: <const L extends $LinkNames<Person.Definition>>(
-              type: L,
-            ) => $LinkedType<Person.Definition, L>['objectSet'];
-
-            readonly fetchOne: <
-              const L extends Person.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-              options?: $SelectArg<Person.Definition, L, R, S>,
-            ) => Promise<
-              Person.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Person.PropertyKeys : L
-              >
-            >;
-
-            readonly fetchOneWithErrors: <
-              const L extends Person.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Person.Definition['primaryKeyType']],
-              options?: $SelectArg<Person.Definition, L, R, S>,
-            ) => Promise<
-              $Result<
-                Person.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Person.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPage: <
-              const L extends Person.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-            ) => Promise<
-              $PageResult<
-                Person.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Person.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPageWithErrors: <
-              const L extends Person.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Person.Definition, L, R, A, S>,
-            ) => Promise<
-              $Result<
-                $PageResult<
-                  Person.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? Person.PropertyKeys : L
-                  >
-                >
-              >
-            >;
-
-            readonly asyncIter: () => AsyncIterableIterator<Person.OsdkObject>;
-          }
-
-          export interface Definition
-            extends $ObjectTypeDefinition<'foo.bar.Person', Person.Definition>,
-              $VersionBound<$ExpectedClientVersion> {
+          export interface Definition extends $ObjectTypeDefinition<'foo.bar.Person', Person.Definition> {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Person.ObjectSet;
             props: Person.Props;
@@ -1968,24 +1479,12 @@ describe("generator", () => {
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
-          > = $Osdk<Person.Definition, K | OPTIONS> &
-            Pick<
-              [OPTIONS] extends [never] ? Person.StrictProps : OPTIONS extends '$notStrict' ? Person.Props : Person.StrictProps,
-              K
-            > & {
-              readonly $link: Person.Links;
-              readonly $title: string | undefined; // FIXME
-              readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-              readonly $as: <NEW_Q extends $ValidToFrom<Person.Definition>>(
-                type: NEW_Q | string,
-              ) => $Osdk<NEW_Q, $ConvertProps<Person.Definition, NEW_Q, K>>;
-            } & $OsdkObject<'foo.bar.Person'>;
+          > = $Osdk<Person.Definition, K | OPTIONS>;
         }
 
         export type Person = Person.Definition;
 
-        export const Person: Person & $VersionBound<$ExpectedClientVersion> = {
+        export const Person: Person = {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
@@ -2020,34 +1519,13 @@ describe("generator", () => {
           ObjectTypeDefinition as $ObjectTypeDefinition,
           ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
           PropertyDef as $PropertyDef,
-          VersionBound as $VersionBound,
         } from '@osdk/api';
         import type {
-          AggregateOpts as $AggregateOpts,
-          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-          AggregationsResults as $AggregationsResults,
-          Augments as $Augments,
-          ConvertProps as $ConvertProps,
-          DefaultToFalse as $DefaultToFalse,
-          FetchPageArgs as $FetchPageArgs,
-          IsAny as $IsAny,
-          LinkedType as $LinkedType,
-          LinkNames as $LinkNames,
-          NullabilityAdherence as $NullabilityAdherence,
-          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
           ObjectSet as $ObjectSet,
           Osdk as $Osdk,
-          OsdkObject as $OsdkObject,
-          OsdkObjectPropertyType as $OsdkObjectPropertyType,
-          PageResult as $PageResult,
-          PropertyValueClientToWire as $PropertyValueClientToWire,
           PropertyValueWireToClient as $PropType,
-          Result as $Result,
-          SelectArg as $SelectArg,
           SingleLinkAccessor as $SingleLinkAccessor,
-          ValidToFrom as $ValidToFrom,
         } from '@osdk/client.api';
-        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
         import type { Person } from './Person.js';
 
@@ -2069,85 +1547,9 @@ describe("generator", () => {
             readonly id: $PropType['integer'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {
-            readonly aggregate: <const AO extends $AggregateOpts<Todo.Definition>>(
-              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Todo.Definition, AO>,
-            ) => Promise<$AggregationsResults<Todo.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
 
-            readonly pivotTo: <const L extends $LinkNames<Todo.Definition>>(
-              type: L,
-            ) => $LinkedType<Todo.Definition, L>['objectSet'];
-
-            readonly fetchOne: <
-              const L extends Todo.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-              options?: $SelectArg<Todo.Definition, L, R, S>,
-            ) => Promise<
-              Todo.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Todo.PropertyKeys : L
-              >
-            >;
-
-            readonly fetchOneWithErrors: <
-              const L extends Todo.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
-              options?: $SelectArg<Todo.Definition, L, R, S>,
-            ) => Promise<
-              $Result<
-                Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Todo.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPage: <
-              const L extends Todo.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-            ) => Promise<
-              $PageResult<
-                Todo.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Todo.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPageWithErrors: <
-              const L extends Todo.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Todo.Definition, L, R, A, S>,
-            ) => Promise<
-              $Result<
-                $PageResult<
-                  Todo.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? Todo.PropertyKeys : L
-                  >
-                >
-              >
-            >;
-
-            readonly asyncIter: () => AsyncIterableIterator<Todo.OsdkObject>;
-          }
-
-          export interface Definition
-            extends $ObjectTypeDefinition<'foo.bar.Todo', Todo.Definition>,
-              $VersionBound<$ExpectedClientVersion> {
+          export interface Definition extends $ObjectTypeDefinition<'foo.bar.Todo', Todo.Definition> {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Todo.ObjectSet;
             props: Todo.Props;
@@ -2192,24 +1594,12 @@ describe("generator", () => {
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
-          > = $Osdk<Todo.Definition, K | OPTIONS> &
-            Pick<
-              [OPTIONS] extends [never] ? Todo.StrictProps : OPTIONS extends '$notStrict' ? Todo.Props : Todo.StrictProps,
-              K
-            > & {
-              readonly $link: Todo.Links;
-              readonly $title: string | undefined; // FIXME
-              readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-              readonly $as: <NEW_Q extends $ValidToFrom<Todo.Definition>>(
-                type: NEW_Q | string,
-              ) => $Osdk<NEW_Q, $ConvertProps<Todo.Definition, NEW_Q, K>>;
-            } & $OsdkObject<'foo.bar.Todo'>;
+          > = $Osdk<Todo.Definition, K | OPTIONS>;
         }
 
         export type Todo = Todo.Definition;
 
-        export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
+        export const Todo: Todo = {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,
@@ -2574,36 +1964,8 @@ describe("generator", () => {
 
       expect(helper.getFiles()["/foo/ontology/objects/UsesForeignSpt.ts"])
         .toMatchInlineSnapshot(`
-          "import type {
-            ObjectTypeDefinition as $ObjectTypeDefinition,
-            PropertyDef as $PropertyDef,
-            VersionBound as $VersionBound,
-          } from '@osdk/api';
-          import type {
-            AggregateOpts as $AggregateOpts,
-            AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-            AggregationsResults as $AggregationsResults,
-            Augments as $Augments,
-            ConvertProps as $ConvertProps,
-            DefaultToFalse as $DefaultToFalse,
-            FetchPageArgs as $FetchPageArgs,
-            IsAny as $IsAny,
-            LinkedType as $LinkedType,
-            LinkNames as $LinkNames,
-            NullabilityAdherence as $NullabilityAdherence,
-            NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-            ObjectSet as $ObjectSet,
-            Osdk as $Osdk,
-            OsdkObject as $OsdkObject,
-            OsdkObjectPropertyType as $OsdkObjectPropertyType,
-            PageResult as $PageResult,
-            PropertyValueClientToWire as $PropertyValueClientToWire,
-            PropertyValueWireToClient as $PropType,
-            Result as $Result,
-            SelectArg as $SelectArg,
-            ValidToFrom as $ValidToFrom,
-          } from '@osdk/client.api';
-          import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          "import type { ObjectTypeDefinition as $ObjectTypeDefinition, PropertyDef as $PropertyDef } from '@osdk/api';
+          import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
           import { $osdkMetadata } from '../../OntologyMetadata.js';
 
           export namespace UsesForeignSpt {
@@ -2620,85 +1982,9 @@ describe("generator", () => {
               readonly id: $PropType['integer'];
             }
 
-            export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {
-              readonly aggregate: <const AO extends $AggregateOpts<UsesForeignSpt.Definition>>(
-                req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<UsesForeignSpt.Definition, AO>,
-              ) => Promise<$AggregationsResults<UsesForeignSpt.Definition, AO>>;
+            export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {}
 
-              readonly pivotTo: <const L extends $LinkNames<UsesForeignSpt.Definition>>(
-                type: L,
-              ) => $LinkedType<UsesForeignSpt.Definition, L>['objectSet'];
-
-              readonly fetchOne: <
-                const L extends UsesForeignSpt.PropertyKeys,
-                const R extends boolean,
-                const S extends false | 'throw' = $NullabilityAdherenceDefault,
-              >(
-                primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
-                options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
-              ) => Promise<
-                UsesForeignSpt.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
-                >
-              >;
-
-              readonly fetchOneWithErrors: <
-                const L extends UsesForeignSpt.PropertyKeys,
-                const R extends boolean,
-                const S extends false | 'throw' = $NullabilityAdherenceDefault,
-              >(
-                primaryKey: $PropertyValueClientToWire[UsesForeignSpt.Definition['primaryKeyType']],
-                options?: $SelectArg<UsesForeignSpt.Definition, L, R, S>,
-              ) => Promise<
-                $Result<
-                  UsesForeignSpt.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
-                  >
-                >
-              >;
-
-              readonly fetchPage: <
-                const L extends UsesForeignSpt.PropertyKeys,
-                const R extends boolean,
-                const A extends $Augments,
-                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-              >(
-                args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
-              ) => Promise<
-                $PageResult<
-                  UsesForeignSpt.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
-                  >
-                >
-              >;
-
-              readonly fetchPageWithErrors: <
-                const L extends UsesForeignSpt.PropertyKeys,
-                const R extends boolean,
-                const A extends $Augments,
-                const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-              >(
-                args?: $FetchPageArgs<UsesForeignSpt.Definition, L, R, A, S>,
-              ) => Promise<
-                $Result<
-                  $PageResult<
-                    UsesForeignSpt.OsdkObject<
-                      (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                      $IsAny<L> extends true ? UsesForeignSpt.PropertyKeys : L
-                    >
-                  >
-                >
-              >;
-
-              readonly asyncIter: () => AsyncIterableIterator<UsesForeignSpt.OsdkObject>;
-            }
-
-            export interface Definition
-              extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt.Definition>,
-                $VersionBound<$ExpectedClientVersion> {
+            export interface Definition extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt.Definition> {
               osdkMetadata: typeof $osdkMetadata;
               objectSet: UsesForeignSpt.ObjectSet;
               props: UsesForeignSpt.Props;
@@ -2731,28 +2017,12 @@ describe("generator", () => {
             export type OsdkObject<
               OPTIONS extends never | '$notStrict' | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-            > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS> &
-              Pick<
-                [OPTIONS] extends [never]
-                  ? UsesForeignSpt.StrictProps
-                  : OPTIONS extends '$notStrict'
-                    ? UsesForeignSpt.Props
-                    : UsesForeignSpt.StrictProps,
-                K
-              > & {
-                readonly $link: UsesForeignSpt.Links;
-                readonly $title: string | undefined; // FIXME
-                readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'integer'; nullable: false }, true>;
-
-                readonly $as: <NEW_Q extends $ValidToFrom<UsesForeignSpt.Definition>>(
-                  type: NEW_Q | string,
-                ) => $Osdk<NEW_Q, $ConvertProps<UsesForeignSpt.Definition, NEW_Q, K>>;
-              } & $OsdkObject<'UsesForeignSpt'>;
+            > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS>;
           }
 
           export type UsesForeignSpt = UsesForeignSpt.Definition;
 
-          export const UsesForeignSpt: UsesForeignSpt & $VersionBound<$ExpectedClientVersion> = {
+          export const UsesForeignSpt: UsesForeignSpt = {
             osdkMetadata: $osdkMetadata,
             objectSet: undefined as any,
             props: undefined as any,
@@ -2939,32 +2209,11 @@ describe("generator", () => {
         ",
           "/foo/ontology/interfaces.ts": "export * from './interfaces/SomeInterface.js';
         ",
-          "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef, VersionBound as $VersionBound } from '@osdk/api';
-        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          "/foo/ontology/interfaces/SomeInterface.ts": "import type { PropertyDef as $PropertyDef } from '@osdk/api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         import type { InterfaceDefinition as $InterfaceDefinition } from '@osdk/api';
-        import type {
-          AggregateOpts as $AggregateOpts,
-          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-          AggregationsResults as $AggregationsResults,
-          Augments as $Augments,
-          ConvertProps as $ConvertProps,
-          DefaultToFalse as $DefaultToFalse,
-          FetchPageArgs as $FetchPageArgs,
-          IsAny as $IsAny,
-          LinkedType as $LinkedType,
-          LinkNames as $LinkNames,
-          NullabilityAdherence as $NullabilityAdherence,
-          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-          ObjectSet as $ObjectSet,
-          Osdk as $Osdk,
-          OsdkObject as $OsdkObject,
-          PageResult as $PageResult,
-          PropertyValueWireToClient as $PropType,
-          Result as $Result,
-          ValidToFrom as $ValidToFrom,
-        } from '@osdk/client.api';
+        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 
         export type OsdkObjectLinks$SomeInterface = {};
 
@@ -2978,55 +2227,9 @@ describe("generator", () => {
             readonly spt: $PropType['string'] | undefined;
           }
 
-          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {
-            readonly aggregate: <const AO extends $AggregateOpts<SomeInterface.Definition>>(
-              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<SomeInterface.Definition, AO>,
-            ) => Promise<$AggregationsResults<SomeInterface.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<SomeInterface.Definition, SomeInterface.ObjectSet> {}
 
-            readonly pivotTo: <const L extends $LinkNames<SomeInterface.Definition>>(
-              type: L,
-            ) => $LinkedType<SomeInterface.Definition, L>['objectSet'];
-
-            readonly fetchPage: <
-              const L extends SomeInterface.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-            ) => Promise<
-              $PageResult<
-                SomeInterface.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPageWithErrors: <
-              const L extends SomeInterface.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<SomeInterface.Definition, L, R, A, S>,
-            ) => Promise<
-              $Result<
-                $PageResult<
-                  SomeInterface.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? SomeInterface.PropertyKeys : L
-                  >
-                >
-              >
-            >;
-
-            readonly asyncIter: () => AsyncIterableIterator<SomeInterface.OsdkObject>;
-          }
-
-          export interface Definition
-            extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition>,
-              $VersionBound<$ExpectedClientVersion> {
+          export interface Definition extends $InterfaceDefinition<'com.example.dep.SomeInterface', SomeInterface.Definition> {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: SomeInterface.ObjectSet;
             props: SomeInterface.Props;
@@ -3046,23 +2249,7 @@ describe("generator", () => {
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof SomeInterface.Props = keyof SomeInterface.Props,
-          > = $Osdk<SomeInterface.Definition, K | OPTIONS> &
-            Pick<
-              [OPTIONS] extends [never]
-                ? SomeInterface.StrictProps
-                : OPTIONS extends '$notStrict'
-                  ? SomeInterface.Props
-                  : SomeInterface.StrictProps,
-              K
-            > & {
-              readonly $link: OsdkObjectLinks$SomeInterface;
-              readonly $title: string | undefined; // FIXME
-              readonly $primaryKey: string | number;
-
-              readonly $as: <NEW_Q extends $ValidToFrom<SomeInterface.Definition>>(
-                type: NEW_Q | string,
-              ) => $Osdk<NEW_Q, $ConvertProps<SomeInterface.Definition, NEW_Q, K>>;
-            } & $OsdkObject<'com.example.dep.SomeInterface'>;
+          > = $Osdk<SomeInterface.Definition, K | OPTIONS>;
         }
 
         /** @deprecated use SomeInterface.Definition **/
@@ -3091,36 +2278,8 @@ describe("generator", () => {
         ",
           "/foo/ontology/objects.ts": "export * from './objects/Task.js';
         ",
-          "/foo/ontology/objects/Task.ts": "import type {
-          ObjectTypeDefinition as $ObjectTypeDefinition,
-          PropertyDef as $PropertyDef,
-          VersionBound as $VersionBound,
-        } from '@osdk/api';
-        import type {
-          AggregateOpts as $AggregateOpts,
-          AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-          AggregationsResults as $AggregationsResults,
-          Augments as $Augments,
-          ConvertProps as $ConvertProps,
-          DefaultToFalse as $DefaultToFalse,
-          FetchPageArgs as $FetchPageArgs,
-          IsAny as $IsAny,
-          LinkedType as $LinkedType,
-          LinkNames as $LinkNames,
-          NullabilityAdherence as $NullabilityAdherence,
-          NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-          ObjectSet as $ObjectSet,
-          Osdk as $Osdk,
-          OsdkObject as $OsdkObject,
-          OsdkObjectPropertyType as $OsdkObjectPropertyType,
-          PageResult as $PageResult,
-          PropertyValueClientToWire as $PropertyValueClientToWire,
-          PropertyValueWireToClient as $PropType,
-          Result as $Result,
-          SelectArg as $SelectArg,
-          ValidToFrom as $ValidToFrom,
-        } from '@osdk/client.api';
-        import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+          "/foo/ontology/objects/Task.ts": "import type { ObjectTypeDefinition as $ObjectTypeDefinition, PropertyDef as $PropertyDef } from '@osdk/api';
+        import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
         import { $osdkMetadata } from '../../OntologyMetadata.js';
 
         export namespace Task {
@@ -3137,85 +2296,9 @@ describe("generator", () => {
             readonly taskId: $PropType['string'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {
-            readonly aggregate: <const AO extends $AggregateOpts<Task.Definition>>(
-              req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Task.Definition, AO>,
-            ) => Promise<$AggregationsResults<Task.Definition, AO>>;
+          export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {}
 
-            readonly pivotTo: <const L extends $LinkNames<Task.Definition>>(
-              type: L,
-            ) => $LinkedType<Task.Definition, L>['objectSet'];
-
-            readonly fetchOne: <
-              const L extends Task.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
-              options?: $SelectArg<Task.Definition, L, R, S>,
-            ) => Promise<
-              Task.OsdkObject<
-                (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                $IsAny<L> extends true ? Task.PropertyKeys : L
-              >
-            >;
-
-            readonly fetchOneWithErrors: <
-              const L extends Task.PropertyKeys,
-              const R extends boolean,
-              const S extends false | 'throw' = $NullabilityAdherenceDefault,
-            >(
-              primaryKey: $PropertyValueClientToWire[Task.Definition['primaryKeyType']],
-              options?: $SelectArg<Task.Definition, L, R, S>,
-            ) => Promise<
-              $Result<
-                Task.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Task.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPage: <
-              const L extends Task.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
-            ) => Promise<
-              $PageResult<
-                Task.OsdkObject<
-                  (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                  $IsAny<L> extends true ? Task.PropertyKeys : L
-                >
-              >
-            >;
-
-            readonly fetchPageWithErrors: <
-              const L extends Task.PropertyKeys,
-              const R extends boolean,
-              const A extends $Augments,
-              const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-            >(
-              args?: $FetchPageArgs<Task.Definition, L, R, A, S>,
-            ) => Promise<
-              $Result<
-                $PageResult<
-                  Task.OsdkObject<
-                    (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-                    $IsAny<L> extends true ? Task.PropertyKeys : L
-                  >
-                >
-              >
-            >;
-
-            readonly asyncIter: () => AsyncIterableIterator<Task.OsdkObject>;
-          }
-
-          export interface Definition
-            extends $ObjectTypeDefinition<'com.example.dep.Task', Task.Definition>,
-              $VersionBound<$ExpectedClientVersion> {
+          export interface Definition extends $ObjectTypeDefinition<'com.example.dep.Task', Task.Definition> {
             osdkMetadata: typeof $osdkMetadata;
             objectSet: Task.ObjectSet;
             props: Task.Props;
@@ -3244,24 +2327,12 @@ describe("generator", () => {
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
-          > = $Osdk<Task.Definition, K | OPTIONS> &
-            Pick<
-              [OPTIONS] extends [never] ? Task.StrictProps : OPTIONS extends '$notStrict' ? Task.Props : Task.StrictProps,
-              K
-            > & {
-              readonly $link: Task.Links;
-              readonly $title: string | undefined; // FIXME
-              readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-              readonly $as: <NEW_Q extends $ValidToFrom<Task.Definition>>(
-                type: NEW_Q | string,
-              ) => $Osdk<NEW_Q, $ConvertProps<Task.Definition, NEW_Q, K>>;
-            } & $OsdkObject<'com.example.dep.Task'>;
+          > = $Osdk<Task.Definition, K | OPTIONS>;
         }
 
         export type Task = Task.Definition;
 
-        export const Task: Task & $VersionBound<$ExpectedClientVersion> = {
+        export const Task: Task = {
           osdkMetadata: $osdkMetadata,
           objectSet: undefined as any,
           props: undefined as any,

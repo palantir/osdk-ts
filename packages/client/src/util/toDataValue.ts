@@ -55,10 +55,6 @@ export async function toDataValue(
       {
         filename: value.name,
       },
-      {
-        "Content-Length": value.size.toString(),
-        "Content-Type": value.type,
-      },
     );
     return await toDataValue(attachment.rid, client);
   }

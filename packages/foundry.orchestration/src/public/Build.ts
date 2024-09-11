@@ -21,7 +21,7 @@ import type {
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { Build, BuildRid } from "../_components.js";
+import type { Build, BuildRid, CreateBuildsRequest } from "../_components.js";
 
 //
 
@@ -35,7 +35,7 @@ const _getBuild: $FoundryPlatformMethod<
 /**
  * Get the Build with the specified rid.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/builds/{buildRid}
@@ -49,4 +49,27 @@ export function getBuild(
   ]
 ): Promise<Build> {
   return $foundryPlatformFetch($ctx, _getBuild, ...args);
+}
+
+const _createBuilds: $FoundryPlatformMethod<
+  (
+    $body: CreateBuildsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<Build>
+> = [1, "/v2/orchestration/builds/create", 3];
+
+/**
+ * @beta
+ *
+ * Required Scopes: [api:orchestration-write]
+ * URL: /v2/orchestration/builds/create
+ */
+export function createBuilds(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    $body: CreateBuildsRequest,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<Build> {
+  return $foundryPlatformFetch($ctx, _createBuilds, ...args);
 }

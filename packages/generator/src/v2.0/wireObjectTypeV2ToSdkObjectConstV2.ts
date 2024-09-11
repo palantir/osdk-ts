@@ -149,7 +149,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   return `${imports}${getV2Types()}
 
-    export const ${object.shortApiName}: ${objectDefIdentifier}  & $VersionBound<$ExpectedClientVersion>
+    export const ${object.shortApiName}: ${objectDefIdentifier}
     = {
       osdkMetadata: $osdkMetadata,
       objectSet: undefined as any,
@@ -198,29 +198,10 @@ export function createOsdkObject(
     = $Osdk<
         ${objectDefIdentifier}, 
         K | OPTIONS
-      > & Pick<
-       [OPTIONS] extends [never]
-        ? ${osdkObjectStrictPropsIdentifier} :
-        OPTIONS extends "$notStrict" ? ${osdkObjectPropsIdentifier} : ${osdkObjectStrictPropsIdentifier}
-        , K
-> & {
-    readonly $link: ${osdkObjectLinksIdentifier};
-    readonly $title: string | undefined; // FIXME
-    readonly $primaryKey: ${
-    "primaryKeyApiName" in definition
-      ? `
-      $OsdkObjectPropertyType<${
-        JSON.stringify(definition.properties[definition.primaryKeyApiName])
-      },${true}>`
-      : "string | number"
-  }
+      > 
+   
   ;
-    
-    readonly $as: <NEW_Q extends $ValidToFrom<${objectDefIdentifier}>>(type: NEW_Q | string) => $Osdk<
-  NEW_Q,
-  $ConvertProps<${objectDefIdentifier}, NEW_Q, K>
->;
-} & $OsdkObject<"${object.fullApiName}">;`;
+    `;
 }
 
 export function createObjectSet(
@@ -239,78 +220,7 @@ $ObjectSet<${objectDefIdentifier},
 ${objectSetIdentifier}
 >
 {
-readonly aggregate: <const AO extends $AggregateOpts<${objectDefIdentifier}>>(
-  req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<${objectDefIdentifier}, AO>,
-) => Promise<$AggregationsResults<${objectDefIdentifier}, AO>>;
 
-
-readonly pivotTo: <const L extends $LinkNames<${objectDefIdentifier}>>(type: L) => $LinkedType<${objectDefIdentifier}, L>["objectSet"];
- ${
-    object instanceof EnhancedObjectType
-      ? ` 
-readonly fetchOne: <
-    const L extends ${propertyKeysIdentifier},
-    const R extends boolean,
-    const S extends false | "throw" = $NullabilityAdherenceDefault,
-  >(
-    primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
-    options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
-  ) => Promise<
-   ${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never:  "$rid" ),
-    $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
-   >>
-  ;
-
-readonly fetchOneWithErrors: <
-    const L extends ${propertyKeysIdentifier},
-    const R extends boolean,
-    const S extends false | "throw" = $NullabilityAdherenceDefault,
-  >(
-    primaryKey: $PropertyValueClientToWire[${objectDefIdentifier}["primaryKeyType"]],
-    options?: $SelectArg<${objectDefIdentifier}, L, R, S>,
-  ) => Promise<$Result<
-        ${osdkObjectIdentifier}<
-        (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false?never: "$rid"),
-        $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
-      >
-   >> 
-  
-;
-
-`
-      : ""
-  }
-
-readonly fetchPage: <
-  const L extends ${propertyKeysIdentifier},
-  const R extends boolean,
-  const const A extends $Augments,
-  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
->(
-  args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-) => Promise<
-  $PageResult<${osdkObjectIdentifier}<
-    (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never: "$rid"),
-    $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
-  >>
->;
-
-readonly fetchPageWithErrors: <
-  const L extends ${propertyKeysIdentifier},
-  const R extends boolean,
-  const A extends $Augments,
-  const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
->(
-  args?: $FetchPageArgs<${objectDefIdentifier}, L, R, A, S>,
-) => Promise<$Result<
- $PageResult<${osdkObjectIdentifier}<
- (S extends false ? "$notStrict" : never) | ($DefaultToFalse<R> extends false? never : "$rid"),
- $IsAny<L> extends true ? ${propertyKeysIdentifier} : L
- >>
- >>;
-
-readonly asyncIter: () => AsyncIterableIterator<${osdkObjectIdentifier}>;
 }
 `;
 }
@@ -371,7 +281,7 @@ export function createDefinition(
     object instanceof EnhancedObjectType
       ? `$ObjectTypeDefinition`
       : `$InterfaceDefinition`
-  }<"${object.fullApiName}", ${objectDefIdentifier}>, $VersionBound<$ExpectedClientVersion> {
+  }<"${object.fullApiName}", ${objectDefIdentifier}> {
       osdkMetadata: typeof $osdkMetadata;
       objectSet: ${objectSetIdentifier};
       props: ${osdkObjectPropsIdentifier};

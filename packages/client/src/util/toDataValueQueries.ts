@@ -56,10 +56,6 @@ export async function toDataValueQueries<T extends string>(
           {
             filename: value.name,
           },
-          {
-            "Content-Length": value.size.toString(),
-            "Content-Type": value.type,
-          },
         );
         return attachment.rid;
       }

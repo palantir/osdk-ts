@@ -441,7 +441,7 @@ export type NullabilityAdherenceDefault = "throw";
 export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct";
 
 // @public (undocumented)
-export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, Z extends ObjectSet<Q, Z> = ObjectSet<Q, any>> extends MinimalObjectSet<Q> {
+export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
     // Warning: (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
@@ -453,10 +453,10 @@ export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, Z extend
     readonly aggregate: <AO extends AggregateOpts<Q>>(req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>) => Promise<AggregationsResults<Q, AO>>;
     readonly fetchOne: Q extends ObjectTypeDefinition<any> ? <const L extends ObjectOrInterfacePropertyKeysFrom2<Q>, const R extends boolean, const S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<SingleOsdkResult<Q, L, R, S>> : never;
     readonly fetchOneWithErrors: Q extends ObjectTypeDefinition<any> ? <L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends false | "throw" = NullabilityAdherenceDefault>(primaryKey: PropertyValueClientToWire[Q["primaryKeyType"]], options?: SelectArg<Q, L, R, S>) => Promise<Result<SingleOsdkResult<Q, L, R, S>>> : never;
-    readonly intersect: (...objectSets: ReadonlyArray<Z>) => this;
+    readonly intersect: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
     readonly pivotTo: <L extends LinkNames<Q>>(type: L) => LinkedType<Q, L>["objectSet"];
-    readonly subtract: (...objectSets: ReadonlyArray<Z>) => this;
-    readonly union: (...objectSets: ReadonlyArray<Z>) => this;
+    readonly subtract: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
+    readonly union: (...objectSets: ReadonlyArray<Q["objectSet"]>) => this;
 }
 
 // @public (undocumented)

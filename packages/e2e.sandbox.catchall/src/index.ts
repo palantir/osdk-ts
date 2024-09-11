@@ -19,7 +19,6 @@ import { checkUnstableBulkLinks } from "./public/checkUnstableBulkLinks.js";
 import { runAggregationGroupByDatesTest } from "./runAggregationGroupByDatesTest.js";
 import { runAggregationsTest } from "./runAggregationsTest.js";
 import { runAssignEmployeeToVentureTest } from "./runAssignEmployeeToVentureTest.js";
-import { runFoundryPlatformApiTest } from "./runFoundryPlatformApiTest.js";
 import { runFoundrySdkClientVerificationTest } from "./runFoundrySdkClientVerificationTest.js";
 import { runGeoQueriesTest } from "./runGeoQueriesTest.js";
 import { runInterfacesTest } from "./runInterfacesTest.js";
@@ -33,7 +32,6 @@ const testSubscriptions = false;
 
 async function runTests() {
   try {
-    await runFoundryPlatformApiTest();
     await checkUnstableBulkLinks();
 
     if (runOld) {

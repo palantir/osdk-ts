@@ -2,33 +2,8 @@ import type {
   ObjectTypeDefinition as $ObjectTypeDefinition,
   ObjectTypeLinkDefinition as $ObjectTypeLinkDefinition,
   PropertyDef as $PropertyDef,
-  VersionBound as $VersionBound,
 } from '@osdk/api';
-import type {
-  AggregateOpts as $AggregateOpts,
-  AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy as $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy,
-  AggregationsResults as $AggregationsResults,
-  Augments as $Augments,
-  ConvertProps as $ConvertProps,
-  DefaultToFalse as $DefaultToFalse,
-  FetchPageArgs as $FetchPageArgs,
-  IsAny as $IsAny,
-  LinkedType as $LinkedType,
-  LinkNames as $LinkNames,
-  NullabilityAdherence as $NullabilityAdherence,
-  NullabilityAdherenceDefault as $NullabilityAdherenceDefault,
-  ObjectSet as $ObjectSet,
-  Osdk as $Osdk,
-  OsdkObject as $OsdkObject,
-  OsdkObjectPropertyType as $OsdkObjectPropertyType,
-  PageResult as $PageResult,
-  PropertyValueClientToWire as $PropertyValueClientToWire,
-  PropertyValueWireToClient as $PropType,
-  Result as $Result,
-  SelectArg as $SelectArg,
-  ValidToFrom as $ValidToFrom,
-} from '@osdk/client.api';
-import type { $ExpectedClientVersion } from '../../OntologyMetadata.js';
+import type { ObjectSet as $ObjectSet, Osdk as $Osdk, PropertyValueWireToClient as $PropType } from '@osdk/client.api';
 import { $osdkMetadata } from '../../OntologyMetadata.js';
 import type { Employee } from './Employee.js';
 
@@ -50,85 +25,9 @@ export namespace Venture {
     readonly ventureStart: $PropType['datetime'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Venture.Definition, Venture.ObjectSet> {
-    readonly aggregate: <const AO extends $AggregateOpts<Venture.Definition>>(
-      req: $AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Venture.Definition, AO>,
-    ) => Promise<$AggregationsResults<Venture.Definition, AO>>;
+  export interface ObjectSet extends $ObjectSet<Venture.Definition, Venture.ObjectSet> {}
 
-    readonly pivotTo: <const L extends $LinkNames<Venture.Definition>>(
-      type: L,
-    ) => $LinkedType<Venture.Definition, L>['objectSet'];
-
-    readonly fetchOne: <
-      const L extends Venture.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
-      options?: $SelectArg<Venture.Definition, L, R, S>,
-    ) => Promise<
-      Venture.OsdkObject<
-        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-        $IsAny<L> extends true ? Venture.PropertyKeys : L
-      >
-    >;
-
-    readonly fetchOneWithErrors: <
-      const L extends Venture.PropertyKeys,
-      const R extends boolean,
-      const S extends false | 'throw' = $NullabilityAdherenceDefault,
-    >(
-      primaryKey: $PropertyValueClientToWire[Venture.Definition['primaryKeyType']],
-      options?: $SelectArg<Venture.Definition, L, R, S>,
-    ) => Promise<
-      $Result<
-        Venture.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? Venture.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPage: <
-      const L extends Venture.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
-    ) => Promise<
-      $PageResult<
-        Venture.OsdkObject<
-          (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          $IsAny<L> extends true ? Venture.PropertyKeys : L
-        >
-      >
-    >;
-
-    readonly fetchPageWithErrors: <
-      const L extends Venture.PropertyKeys,
-      const R extends boolean,
-      const A extends $Augments,
-      const S extends $NullabilityAdherence = $NullabilityAdherenceDefault,
-    >(
-      args?: $FetchPageArgs<Venture.Definition, L, R, A, S>,
-    ) => Promise<
-      $Result<
-        $PageResult<
-          Venture.OsdkObject<
-            (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            $IsAny<L> extends true ? Venture.PropertyKeys : L
-          >
-        >
-      >
-    >;
-
-    readonly asyncIter: () => AsyncIterableIterator<Venture.OsdkObject>;
-  }
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'Venture', Venture.Definition>,
-      $VersionBound<$ExpectedClientVersion> {
+  export interface Definition extends $ObjectTypeDefinition<'Venture', Venture.Definition> {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Venture.ObjectSet;
     props: Venture.Props;
@@ -159,28 +58,12 @@ export namespace Venture {
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Venture.Props = keyof Venture.Props,
-  > = $Osdk<Venture.Definition, K | OPTIONS> &
-    Pick<
-      [OPTIONS] extends [never]
-        ? Venture.StrictProps
-        : OPTIONS extends '$notStrict'
-          ? Venture.Props
-          : Venture.StrictProps,
-      K
-    > & {
-      readonly $link: Venture.Links;
-      readonly $title: string | undefined; // FIXME
-      readonly $primaryKey: $OsdkObjectPropertyType<{ multiplicity: false; type: 'string'; nullable: false }, true>;
-
-      readonly $as: <NEW_Q extends $ValidToFrom<Venture.Definition>>(
-        type: NEW_Q | string,
-      ) => $Osdk<NEW_Q, $ConvertProps<Venture.Definition, NEW_Q, K>>;
-    } & $OsdkObject<'Venture'>;
+  > = $Osdk<Venture.Definition, K | OPTIONS>;
 }
 
 export type Venture = Venture.Definition;
 
-export const Venture: Venture & $VersionBound<$ExpectedClientVersion> = {
+export const Venture: Venture = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,

@@ -752,17 +752,6 @@ export interface QueryAggregationRangeType {
 }
 
 /**
- * Computes the average value for the provided field.
- *
- * Log Safety: UNSAFE
- */
-export interface AvgAggregationV2 {
-  field: PropertyApiName;
-  name?: AggregationMetricName;
-  direction?: OrderByDirection;
-}
-
-/**
  * Details about some property of an object.
  *
  * Log Safety: UNSAFE
@@ -786,13 +775,14 @@ export interface OntologyV2 {
 }
 
 /**
- * Returns objects where the specified field is greater than a value.
+ * Computes the average value for the provided field.
  *
  * Log Safety: UNSAFE
  */
-export interface GtQueryV2 {
+export interface AvgAggregationV2 {
   field: PropertyApiName;
-  value: PropertyValue;
+  name?: AggregationMetricName;
+  direction?: OrderByDirection;
 }
 
 /**
@@ -801,6 +791,16 @@ export interface GtQueryV2 {
  * Log Safety: SAFE
  */
 export type InterfaceLinkTypeRid = LooselyBrandedString<"InterfaceLinkTypeRid">;
+
+/**
+ * Returns objects where the specified field is greater than a value.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface GtQueryV2 {
+  field: PropertyApiName;
+  value: PropertyValue;
+}
 
 /**
  * Log Safety: SAFE
@@ -981,11 +981,6 @@ export type StreamMessage =
   | ({ type: "objectSetChanged" } & ObjectSetUpdates)
   | ({ type: "refreshObjectSet" } & RefreshObjectSet)
   | ({ type: "subscriptionClosed" } & SubscriptionClosed);
-
-/**
- * Log Safety: SAFE
- */
-export type LanguageModelSource = "global" | "hosted";
 
 /**
    * The name of the link type in the API. To find the API name for your Link Type, check the Ontology Manager
@@ -1619,6 +1614,19 @@ export interface SearchOrdering {
 }
 
 /**
+   * The parameter value must have a length within the defined range.
+This range is always inclusive.
+   *
+   * Log Safety: UNSAFE
+   */
+export interface StringLengthConstraint {
+  lt?: any;
+  lte?: any;
+  gt?: any;
+  gte?: any;
+}
+
+/**
  * Log Safety: SAFE
  */
 export type DistanceUnit =
@@ -1633,24 +1641,18 @@ export type DistanceUnit =
   | "NAUTICAL_MILES";
 
 /**
-   * The parameter value must have a length within the defined range.
-This range is always inclusive.
-   *
-   * Log Safety: UNSAFE
-   */
-export interface StringLengthConstraint {
-  lt?: any;
-  lte?: any;
-  gt?: any;
-  gte?: any;
-}
-
-/**
  * The name of the Query in the API.
  *
  * Log Safety: UNSAFE
  */
 export type QueryApiName = LooselyBrandedString<"QueryApiName">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryTwoDimensionalAggregation {
+  groups: Array<QueryAggregation>;
+}
 
 /**
  * Returns objects where the specified field contains the provided value as a substring.
@@ -1660,13 +1662,6 @@ export type QueryApiName = LooselyBrandedString<"QueryApiName">;
 export interface PhraseQuery {
   field: FieldNameV1;
   value: string;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface QueryTwoDimensionalAggregation {
-  groups: Array<QueryAggregation>;
 }
 
 /**
@@ -1876,6 +1871,14 @@ export interface QueryStructType {
 export interface FloatType {}
 
 /**
+   * The media type of the file or attachment.
+Examples: application/json, application/pdf, application/octet-stream, image/jpeg
+   *
+   * Log Safety: SAFE
+   */
+export type MediaType = LooselyBrandedString<"MediaType">;
+
+/**
  * Log Safety: SAFE
  */
 export type TimeUnit =
@@ -1890,12 +1893,11 @@ export type TimeUnit =
   | "QUARTERS";
 
 /**
-   * The media type of the file or attachment.
-Examples: application/json, application/pdf, application/octet-stream, image/jpeg
-   *
-   * Log Safety: SAFE
-   */
-export type MediaType = LooselyBrandedString<"MediaType">;
+ * The name of a File within Foundry. Examples: my-file.txt, my-file.jpg, dataframe.snappy.parquet.
+ *
+ * Log Safety: UNSAFE
+ */
+export type Filename = LooselyBrandedString<"Filename">;
 
 /**
    * Represents the value of a property in the following format.
@@ -1921,13 +1923,6 @@ Note that for backwards compatibility, the Boolean, Byte, Double, Float, Integer
    * Log Safety: UNSAFE
    */
 export type PropertyValue = any;
-
-/**
- * The name of a File within Foundry. Examples: my-file.txt, my-file.jpg, dataframe.snappy.parquet.
- *
- * Log Safety: UNSAFE
- */
-export type Filename = LooselyBrandedString<"Filename">;
 
 /**
  * Log Safety: UNSAFE
@@ -2012,6 +2007,11 @@ export interface LocalFilePath {}
 export interface BatchApplyActionResponse {}
 
 /**
+ * Log Safety: SAFE
+ */
+export type AsyncApplyActionOperationV2 = undefined; // {"name":"AsyncApplyActionOperationV2","type":{"type":"asyncOperation","asyncOperation":{"operationType":"applyActionAsyncV2","resultType":"AsyncApplyActionOperationResponseV2","stageType":"AsyncActionStatus"}},"safety":"SAFE","documentation":{}}
+
+/**
  * Log Safety: UNSAFE
  */
 export interface AggregateObjectsRequestV2 {
@@ -2020,11 +2020,6 @@ export interface AggregateObjectsRequestV2 {
   groupBy: Array<AggregationGroupByV2>;
   accuracy?: AggregationAccuracyRequest;
 }
-
-/**
- * Log Safety: SAFE
- */
-export type AsyncApplyActionOperationV2 = undefined; // {"name":"AsyncApplyActionOperationV2","type":{"type":"asyncOperation","asyncOperation":{"operationType":"applyActionAsyncV2","resultType":"AsyncApplyActionOperationResponseV2","stageType":"AsyncActionStatus"}},"safety":"SAFE","documentation":{}}
 
 /**
  * Returns objects based on the existence of the specified field.
@@ -3096,17 +3091,17 @@ export type UpdatedTime = LooselyBrandedString<"UpdatedTime">;
 export type FolderRid = LooselyBrandedString<"FolderRid">;
 
 /**
- * Log Safety: SAFE
- */
-export type ErrorName = LooselyBrandedString<"ErrorName">;
-
-/**
  * Log Safety: UNSAFE
  */
 export interface MultiPoint {
   coordinates: Array<Position>;
   bbox?: BBox;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export type ErrorName = LooselyBrandedString<"ErrorName">;
 
 /**
  * Log Safety: UNSAFE
@@ -3229,6 +3224,11 @@ export interface ContainsAllTermsInOrderQuery {
 }
 
 /**
+ * Log Safety: SAFE
+ */
+export interface AsyncApplyActionOperationResponseV2 {}
+
+/**
    * Returns objects where the specified field contains all of the whitespace separated words in any
 order in the provided value. This query supports fuzzy matching.
    *
@@ -3239,11 +3239,6 @@ export interface ContainsAllTermsQuery {
   value: string;
   fuzzy?: FuzzyV2;
 }
-
-/**
- * Log Safety: SAFE
- */
-export interface AsyncApplyActionOperationResponseV2 {}
 
 /**
  * A union of all the types supported by Ontology Query parameters or outputs.
@@ -3559,13 +3554,6 @@ export interface ActionParameterArrayType {
 }
 
 /**
- * The unique resource identifier of an object type, useful for interacting with other Foundry APIs.
- *
- * Log Safety: SAFE
- */
-export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
-
-/**
  * The unique resource identifier of an shared property type, useful for interacting with other Foundry APIs.
  *
  * Log Safety: SAFE
@@ -3575,6 +3563,20 @@ export type SharedPropertyTypeRid = LooselyBrandedString<
 >;
 
 /**
+ * The unique resource identifier of an object type, useful for interacting with other Foundry APIs.
+ *
+ * Log Safety: SAFE
+ */
+export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ApplyActionRequest {
+  parameters: Record<ParameterId, DataValue | undefined>;
+}
+
+/**
  * Returns objects where the specified field starts with the provided value.
  *
  * Log Safety: UNSAFE
@@ -3582,13 +3584,6 @@ export type SharedPropertyTypeRid = LooselyBrandedString<
 export interface PrefixQuery {
   field: FieldNameV1;
   value: string;
-}
-
-/**
- * Log Safety: UNSAFE
- */
-export interface ApplyActionRequest {
-  parameters: Record<ParameterId, DataValue | undefined>;
 }
 
 /**

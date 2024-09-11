@@ -61,12 +61,14 @@ export interface AndTrigger {
 }
 
 /**
- * Log Safety: SAFE
+ * Log Safety: UNSAFE
  */
 export interface Build {
   rid: BuildRid;
+  branchName: BranchName;
   createdTime: CreatedTime;
   createdBy: CreatedBy;
+  fallbackBranches: FallbackBranches;
   retryCount: RetryCount;
   retryBackoffDuration: RetryBackoffDuration;
   abortOnFailure: AbortOnFailure;
@@ -107,6 +109,20 @@ export interface ConnectingTarget {
   inputDatasetRids: Array<DatasetRid>;
   targetDatasetRids: Array<DatasetRid>;
   ignoredDatasetRids: Array<DatasetRid>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateBuildsRequest {
+  target: BuildTarget;
+  branchName?: BranchName;
+  fallbackBranches: FallbackBranches;
+  forceBuild?: ForceBuild;
+  retryCount?: RetryCount;
+  retryBackoffDuration?: RetryBackoffDuration;
+  abortOnFailure?: AbortOnFailure;
+  notificationsEnabled?: NotificationsEnabled;
 }
 
 /**
@@ -235,7 +251,7 @@ export interface Schedule {
   rid: ScheduleRid;
   displayName?: string;
   description?: string;
-  versionRid: ScheduleVersionRid;
+  currentVersionRid: ScheduleVersionRid;
   createdTime: CreatedTime;
   createdBy: CreatedBy;
   updatedTime: UpdatedTime;
@@ -257,6 +273,74 @@ export type SchedulePaused = boolean;
  * Log Safety: SAFE
  */
 export type ScheduleRid = LooselyBrandedString<"ScheduleRid">;
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ScheduleRun {
+  rid: ScheduleRunRid;
+  scheduleRid: ScheduleRid;
+  scheduleVersionRid: ScheduleVersionRid;
+  createdTime: CreatedTime;
+  createdBy?: CreatedBy;
+  result?: ScheduleRunResult;
+}
+
+/**
+ * An error occurred attempting to run the schedule.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface ScheduleRunError {
+  errorName: ScheduleRunErrorName;
+  description: string;
+}
+
+/**
+ * Log Safety: SAFE
+ */
+export type ScheduleRunErrorName =
+  | "TargetResolutionFailure"
+  | "CyclicDependency"
+  | "IncompatibleTargets"
+  | "PermissionDenied"
+  | "JobSpecNotFound"
+  | "ScheduleOwnerNotFound"
+  | "Internal";
+
+/**
+ * The schedule is not running as all targets are up-to-date.
+ *
+ * Log Safety: SAFE
+ */
+export interface ScheduleRunIgnored {}
+
+/**
+   * The result of attempting to trigger the schedule. The schedule run will either be submitted as a build,
+ignored if all targets are up-to-date or error.
+   *
+   * Log Safety: UNSAFE
+   */
+export type ScheduleRunResult =
+  | ({ type: "submitted" } & ScheduleRunSubmitted)
+  | ({ type: "ignored" } & ScheduleRunIgnored)
+  | ({ type: "error" } & ScheduleRunError);
+
+/**
+ * The RID of a schedule run
+ *
+ * Log Safety: SAFE
+ */
+export type ScheduleRunRid = LooselyBrandedString<"ScheduleRunRid">;
+
+/**
+ * The schedule has been successfully triggered.
+ *
+ * Log Safety: SAFE
+ */
+export interface ScheduleRunSubmitted {
+  buildRid: BuildRid;
+}
 
 /**
    * Trigger whenever the specified schedule completes its action

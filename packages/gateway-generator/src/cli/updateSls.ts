@@ -50,7 +50,10 @@ export async function updateSls(
   const packageJson = JSON.parse(packageJsonRead);
 
   const dependencies:
-    | Record<string, { minVersion: string; maxVersion: string }>
+    | Record<
+      string,
+      { minVersion: string; maxVersion: string; optional: boolean }
+    >
     | undefined = packageJson?.["sls"]?.["dependencies"];
   if (!dependencies) {
     throw new Error("package.json does not have an sls block yet?");
@@ -66,6 +69,7 @@ export async function updateSls(
     const value = {
       minVersion: dep["minimum-version"],
       maxVersion: dep["maximum-version"],
+      optional: true,
     };
     dependencies[key] = value;
   }

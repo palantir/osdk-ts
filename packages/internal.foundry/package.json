@@ -27,10 +27,8 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/internal.foundry.datasets": "workspace:*",
-    "@osdk/internal.foundry.models": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",
     "@osdk/internal.foundry.ontologiesv2": "workspace:*",
     "@osdk/shared.client": "workspace:~",
@@ -60,8 +58,9 @@
   "sls": {
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
-        "minVersion": "1.908.0",
-        "maxVersion": "1.x.x"
+        "minVersion": "1.921.0",
+        "maxVersion": "1.x.x",
+        "optional": true
       }
     }
   },
