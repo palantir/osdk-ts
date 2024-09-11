@@ -99,7 +99,6 @@ async function generateMethods(resource: Resource, model: Model) {
 
     `;
   }
-
   return { out, referencedTypes };
 }
 
