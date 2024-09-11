@@ -133,6 +133,10 @@ export function dumpOntologyFullMetadata(): OntologyIrOntologyBlockDataV2 {
   return convertToWireOntologyIr(ontologyDefinition);
 }
 
+export function dumpValueTypeWireType(): OntologyIrValueTypeBlockData {
+  return convertOntologyToValueTypeIr(ontologyDefinition);
+}
+
 function convertSpt(
   { type, array, description, apiName, displayName, valueType }:
     SharedPropertyType,

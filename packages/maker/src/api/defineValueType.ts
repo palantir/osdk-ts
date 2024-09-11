@@ -25,7 +25,8 @@ import { ontologyDefinition } from "./defineOntology.js";
 import type { ValueTypeDefinitionVersion } from "./types.js";
 
 type ZipBaseAndConstraint<Base, Constraint> = {
-  [PropertyType in BaseType["type"]]: Base extends { type: PropertyType } ? {
+  [PropertyType in (BaseType["type"] & DataConstraint["type"])]: Base extends
+    { type: PropertyType } ? {
       baseType: Omit<Base, "type">;
       constraints?: Constraint extends { type: PropertyType } ? {
           constraint: Omit<Constraint, "type">;
@@ -39,7 +40,7 @@ type ZipBaseAndConstraint<Base, Constraint> = {
 type MappedZip = ZipBaseAndConstraint<BaseType, DataConstraint>;
 
 type TypeAndConstraints = MappedZip[keyof MappedZip];
-export function defineSharedPropertyType(
+export function defineValueType(
   opts: {
     apiName: string;
     displayName: string;
