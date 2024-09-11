@@ -59,7 +59,9 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
     const osdkPackage = template.isBeta
       ? "@osdk/e2e.generated.catchall"
       : "@osdk/e2e.generated.1.1.x";
-    consola.info(`Generating example ${exampleId}`);
+    consola.info(
+      `Generating example ${exampleId} using osdkPackage ${osdkPackage}`,
+    );
     await runCreateApp({
       project: exampleId,
       overwrite: true,

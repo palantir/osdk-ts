@@ -47,7 +47,7 @@ export const TEMPLATES: readonly Template[] = [
     )).files),
   },
   {
-    id: "template-react",
+    id: "template-react-beta",
     label: "React",
     envPrefix: "VITE_",
     buildDirectory: "./dist",
