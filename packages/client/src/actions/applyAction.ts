@@ -34,6 +34,7 @@ import type {
   DataValue,
   SyncApplyActionResponseV2,
 } from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -237,6 +238,8 @@ function remapActionResponse(
       } else if (edit.type === "modifyObject") {
         remappedActionResponse.modifiedObjects.push(edit);
         editedObjectTypesSet.add(edit.objectType);
+      } else {
+        invariant(false, "Unknown edit type");
       }
     }
     remappedActionResponse.editedObjectTypes = [...editedObjectTypesSet];
