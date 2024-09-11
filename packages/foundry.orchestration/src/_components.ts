@@ -61,12 +61,14 @@ export interface AndTrigger {
 }
 
 /**
- * Log Safety: SAFE
+ * Log Safety: UNSAFE
  */
 export interface Build {
   rid: BuildRid;
+  branchName: BranchName;
   createdTime: CreatedTime;
   createdBy: CreatedBy;
+  fallbackBranches: FallbackBranches;
   retryCount: RetryCount;
   retryBackoffDuration: RetryBackoffDuration;
   abortOnFailure: AbortOnFailure;
@@ -107,6 +109,20 @@ export interface ConnectingTarget {
   inputDatasetRids: Array<DatasetRid>;
   targetDatasetRids: Array<DatasetRid>;
   ignoredDatasetRids: Array<DatasetRid>;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface CreateBuildsRequest {
+  target: BuildTarget;
+  branchName?: BranchName;
+  fallbackBranches: FallbackBranches;
+  forceBuild?: ForceBuild;
+  retryCount?: RetryCount;
+  retryBackoffDuration?: RetryBackoffDuration;
+  abortOnFailure?: AbortOnFailure;
+  notificationsEnabled?: NotificationsEnabled;
 }
 
 /**
