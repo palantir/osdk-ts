@@ -21,7 +21,7 @@ import type {
 } from "@osdk/shared.client";
 import type { FoundryPlatformMethod as $FoundryPlatformMethod } from "@osdk/shared.net.platformapi";
 import { foundryPlatformFetch as $foundryPlatformFetch } from "@osdk/shared.net.platformapi";
-import type { Schedule, ScheduleRid } from "../_components.js";
+import type { Schedule, ScheduleRid, ScheduleRun } from "../_components.js";
 
 //
 
@@ -35,7 +35,7 @@ const _getSchedule: $FoundryPlatformMethod<
 /**
  * Get the Schedule with the specified rid.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/schedules/{scheduleRid}
@@ -49,4 +49,76 @@ export function getSchedule(
   ]
 ): Promise<Schedule> {
   return $foundryPlatformFetch($ctx, _getSchedule, ...args);
+}
+
+const _runSchedule: $FoundryPlatformMethod<
+  (
+    scheduleRid: ScheduleRid,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<ScheduleRun>
+> = [1, "/v2/orchestration/schedules/{0}/run", 2];
+
+/**
+ * @beta
+ *
+ * Required Scopes: [api:orchestration-write]
+ * URL: /v2/orchestration/schedules/{scheduleRid}/run
+ */
+export function runSchedule(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    scheduleRid: ScheduleRid,
+
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<ScheduleRun> {
+  return $foundryPlatformFetch($ctx, _runSchedule, ...args);
+}
+
+const _pauseSchedule: $FoundryPlatformMethod<
+  (
+    scheduleRid: ScheduleRid,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/orchestration/schedules/{0}/pause", 2];
+
+/**
+ * @beta
+ *
+ * Required Scopes: [api:orchestration-write]
+ * URL: /v2/orchestration/schedules/{scheduleRid}/pause
+ */
+export function pauseSchedule(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    scheduleRid: ScheduleRid,
+
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _pauseSchedule, ...args);
+}
+
+const _unpauseSchedule: $FoundryPlatformMethod<
+  (
+    scheduleRid: ScheduleRid,
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ) => Promise<void>
+> = [1, "/v2/orchestration/schedules/{0}/unpause", 2];
+
+/**
+ * @beta
+ *
+ * Required Scopes: [api:orchestration-write]
+ * URL: /v2/orchestration/schedules/{scheduleRid}/unpause
+ */
+export function unpauseSchedule(
+  $ctx: $Client | $ClientContext,
+  ...args: [
+    scheduleRid: ScheduleRid,
+
+    $queryParams?: { preview?: PreviewMode | undefined },
+  ]
+): Promise<void> {
+  return $foundryPlatformFetch($ctx, _unpauseSchedule, ...args);
 }

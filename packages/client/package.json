@@ -104,7 +104,8 @@
     "dependencies": {
       "com.palantir.foundry.api:api-gateway": {
         "minVersion": "1.834.0",
-        "maxVersion": "1.x.x"
+        "maxVersion": "1.x.x",
+        "optional": true
       }
     }
   },

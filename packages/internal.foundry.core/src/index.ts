@@ -187,7 +187,6 @@ export type {
   IntersectsPolygonQuery,
   IsNullQuery,
   IsNullQueryV2,
-  LanguageModelSource,
   LinearRing,
   LineString,
   LineStringCoordinates,

@@ -35,7 +35,7 @@ const _getResource: $FoundryPlatformMethod<
 /**
  * Get the Resource with the specified rid.
  *
- * @beta
+ * @alpha
  *
  * Required Scopes: [api:filesystem-read]
  * URL: /v2/filesystem/resources/{resourceRid}
