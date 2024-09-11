@@ -1,14 +1,14 @@
-import { Ontology } from "@osdk/e2e.generated.catchall";
+import { $Objects, $Actions, $Queries } from "@osdk/e2e.generated.catchall";
 import css from "./Home.module.css";
 import Layout from "./Layout";
 
 function Home() {
-  const objectApiNames = Object.keys(Ontology.objects);
-  const actionApiNames = Object.keys(Ontology.actions);
-  const queryApiNames = Object.keys(Ontology.queries);
+  const objectApiNames = Object.keys($Objects);
+  const actionApiNames = Object.keys($Actions);
+  const queryApiNames = Object.keys($Queries);
   return (
     <Layout>
-      <h1>@osdk/e2e.generated.1.1.x</h1>
+      <h1>@osdk/e2e.generated.catchall</h1>
       <p>
         Welcome to your Ontology SDK! Try using any of the following methods
         now.
