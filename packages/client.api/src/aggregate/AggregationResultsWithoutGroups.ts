@@ -37,7 +37,7 @@ export type AggregationResultsWithoutGroups<
     ? number
     : {
       [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]:
-        MetricName extends "approximateDistinct" ? number
+        MetricName extends "approximateDistinct" | "exactDistinct" ? number
           : OsdkObjectPropertyType<Q["properties"][PropName]>;
     };
 };
