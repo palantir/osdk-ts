@@ -91,7 +91,7 @@ export type ResourcePath = LooselyBrandedString<"ResourcePath">;
 /**
  * The unique resource identifier (RID) of a Resource.
  *
- * Log Safety: SAFE
+ * Log Safety: UNSAFE
  */
 export type ResourceRid = LooselyBrandedString<"ResourceRid">;
 

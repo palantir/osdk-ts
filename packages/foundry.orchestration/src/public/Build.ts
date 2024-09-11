@@ -35,7 +35,7 @@ const _getBuild: $FoundryPlatformMethod<
 /**
  * Get the Build with the specified rid.
  *
- * @alpha
+ * @beta
  *
  * Required Scopes: [api:orchestration-read]
  * URL: /v2/orchestration/builds/{buildRid}

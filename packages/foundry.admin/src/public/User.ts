@@ -49,7 +49,7 @@ const _deleteUser: $FoundryPlatformMethod<
  *
  * @beta
  *
- * Required Scopes: [api:admin-read]
+ * Required Scopes: [api:admin-write]
  * URL: /v2/admin/users/{userId}
  */
 export function deleteUser(
