@@ -293,9 +293,6 @@ importers:
       '@osdk/client':
         specifier: latest
         version: 0.21.0(pino@9.1.0)
-      '@osdk/e2e.generated.1.1.x':
-        specifier: workspace:*
-        version: link:../../packages/e2e.generated.1.1.x
       '@osdk/e2e.generated.catchall':
         specifier: workspace:*
         version: link:../../packages/e2e.generated.catchall

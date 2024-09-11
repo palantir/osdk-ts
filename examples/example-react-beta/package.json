@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@osdk/client": "latest",
-    "@osdk/e2e.generated.catchall": "latest",
+    "@osdk/e2e.generated.catchall": "workspace:*",
     "@osdk/oauth": "latest",
     "react": "^18",
     "react-dom": "^18",

@@ -28,7 +28,6 @@ import { promptOsdkRegistryUrl } from "./prompts/promptOsdkRegistryUrl.js";
 import { promptOverwrite } from "./prompts/promptOverwrite.js";
 import { promptProject } from "./prompts/promptProject.js";
 import { promptTemplate } from "./prompts/promptTemplate.js";
-import { promptUseBeta } from "./prompts/promptUseBeta.js";
 import { run } from "./run.js";
 import type { Template } from "./templates.js";
 
