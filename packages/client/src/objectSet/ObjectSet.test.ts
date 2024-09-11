@@ -18,7 +18,7 @@ import type {
   InterfaceDefinition,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "@osdk/api";
-import type { ConvertProps, Osdk, Result } from "@osdk/client.api";
+import type { ConvertProps, ObjectSet, Osdk, Result } from "@osdk/client.api";
 import { isOk } from "@osdk/client.api";
 import {
   $ontologyRid,
@@ -72,6 +72,32 @@ describe("ObjectSet", () => {
 
     // @ts-expect-error
     employeeObjectSet.intersect(officeObjectSet);
+  });
+
+  it("can be cast bidirectionally", () => {
+    function takesOldStyleObjectSet(os: ObjectSet<Employee>) {
+      return os;
+    }
+
+    function takesNewStyleObjectSet(os: Employee.ObjectSet) {
+      return os;
+    }
+
+    function maybe() {
+      const newStyleObjectSet: Employee.ObjectSet = client(Employee);
+      const oldStyleObjectSet: ObjectSet<Employee> = newStyleObjectSet;
+
+      takesOldStyleObjectSet(newStyleObjectSet);
+      takesNewStyleObjectSet(newStyleObjectSet);
+
+      takesOldStyleObjectSet(oldStyleObjectSet);
+      takesNewStyleObjectSet(oldStyleObjectSet);
+    }
+
+    if (false) {
+      // here for a simple type check
+      maybe();
+    }
   });
 
   it("objects set union", async () => {
