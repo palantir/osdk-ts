@@ -454,6 +454,7 @@ describe("aggregate", () => {
       {
         $select: {
           "text:approximateDistinct": "asc",
+          "priority:exactDistinct": "asc",
           "priority:avg": "desc",
           "id:max": "asc",
           "id:avg": "unordered",
@@ -474,6 +475,12 @@ describe("aggregate", () => {
               "name": "text.approximateDistinct",
               direction: "ASC",
               "field": "text",
+            },
+            {
+              "type": "exactDistinct",
+              "name": "priority.exactDistinct",
+              direction: "ASC",
+              "field": "priority",
             },
             {
               "type": "avg",
@@ -497,6 +504,7 @@ describe("aggregate", () => {
     );
 
     expectType<number>(notGrouped.text.approximateDistinct);
+    expectType<number>(notGrouped.priority.exactDistinct);
     expectType<number>(notGrouped.priority.avg);
     expectType<number>(notGrouped.id.max);
     expectType<number>(notGrouped.id.avg);
