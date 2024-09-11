@@ -4,7 +4,7 @@
   "commit": false,
   "fixed": [
     ["@osdk/foundry.*", "@osdk/foundry"],
-    ["@osdk/client.api", "@osdk/client"],
+    ["@osdk/client.api", "@osdk/client", "@osdk/foundry-sdk-generator", "@osdk/generator", "@osdk/api"],
     ["@osdk/create-app", "@osdk/create-app.template.*"]
   ],
   "linked": [],
