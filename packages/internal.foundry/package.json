@@ -27,7 +27,6 @@
     "typecheck": "monorepo.tool.typecheck esm"
   },
   "dependencies": {
-    "@osdk/api": "workspace:~",
     "@osdk/internal.foundry.core": "workspace:*",
     "@osdk/internal.foundry.datasets": "workspace:*",
     "@osdk/internal.foundry.ontologies": "workspace:*",
