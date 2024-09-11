@@ -44,7 +44,6 @@
     "@osdk/internal.foundry": "0.4.0",
     "@osdk/internal.foundry.core": "0.1.0",
     "@osdk/internal.foundry.datasets": "0.1.0",
-    "@osdk/internal.foundry.models": "0.1.0",
     "@osdk/internal.foundry.ontologies": "0.1.0",
     "@osdk/internal.foundry.ontologiesv2": "0.1.0",
     "@osdk/legacy-client": "2.5.0",
