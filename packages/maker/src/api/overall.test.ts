@@ -32,8 +32,25 @@ describe("Ontology Defining", () => {
   });
 
   describe("ValueTypes", () => {
+    it("Fails to define value type with incorrect semver", () => {
+      expect(() =>
+        defineValueType({
+          apiName: "apiName",
+          displayName: "displayName",
+          typeAndConstraints: {
+            baseType: { boolean: {} },
+            constraints: [{
+              constraint: { boolean: { allowedValues: ["TRUE_VALUE"] } },
+            }],
+          },
+          version: "not a version",
+        })
+      ).toThrowErrorMatchingInlineSnapshot(
+        "[Error: Invariant failed: Version is not a valid semver]",
+      );
+    });
     it("Correctly serializes a value type", () => {
-      const foo = defineValueType({
+      defineValueType({
         apiName: "apiName",
         displayName: "displayName",
         typeAndConstraints: {

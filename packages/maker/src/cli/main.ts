@@ -99,10 +99,13 @@ export default async function main(
     commandLineOpts.output,
     JSON.stringify(ontology.ontology, null, 2),
   );
-  await fs.writeFile(
-    commandLineOpts.valueTypesOutput,
-    JSON.stringify(ontology.valueType, null, 2),
-  );
+  // No point in generating block if there aren't any value types
+  if (ontology.valueType.valueTypes.length > 0) {
+    await fs.writeFile(
+      commandLineOpts.valueTypesOutput,
+      JSON.stringify(ontology.valueType, null, 2),
+    );
+  }
 }
 
 async function loadOntologyViaJiti(input: string) {
