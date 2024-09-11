@@ -2109,34 +2109,6 @@ importers:
         specifier: ^5.5.4
         version: 5.5.4
 
-  packages/internal.foundry.models:
-    dependencies:
-      '@osdk/internal.foundry.core':
-        specifier: workspace:*
-        version: link:../internal.foundry.core
-      '@osdk/shared.client':
-        specifier: workspace:~
-        version: link:../shared.client
-      '@osdk/shared.net':
-        specifier: workspace:~
-        version: link:../shared.net
-      '@osdk/shared.net.platformapi':
-        specifier: workspace:~
-        version: link:../shared.net.platformapi
-    devDependencies:
-      '@osdk/monorepo.api-extractor':
-        specifier: workspace:~
-        version: link:../monorepo.api-extractor
-      '@osdk/monorepo.tsconfig':
-        specifier: workspace:~
-        version: link:../monorepo.tsconfig
-      '@osdk/monorepo.tsup':
-        specifier: workspace:~
-        version: link:../monorepo.tsup
-      typescript:
-        specifier: ^5.5.4
-        version: 5.5.4
-
   packages/internal.foundry.ontologies:
     dependencies:
       '@osdk/internal.foundry.core':
