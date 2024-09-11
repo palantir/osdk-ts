@@ -18,7 +18,6 @@ import type { InterfaceDefinition, ObjectTypeDefinition } from "@osdk/api";
 import type { OsdkObjectLinksObject } from "./definitions/LinkDefinitions.js";
 import type { UnionIfTrue } from "./object/FetchPageResult.js";
 import type { OsdkBase } from "./OsdkBase.js";
-import type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 
 type DropDollarOptions<T extends string> = Exclude<
   T,
@@ -154,8 +153,8 @@ export type Osdk<
     GetPropsKeys<Q, P>
   >
   & {
-    readonly $link: Q extends ObjectTypeDefinition<any>
-      ? OsdkObjectLinksObject<Q>
+    readonly $link: Q extends { linksType?: any } ? Q["linksType"]
+      : Q extends ObjectTypeDefinition<any> ? OsdkObjectLinksObject<Q>
       : never;
 
     readonly $as: <NEW_Q extends ValidToFrom<Q>>(type: NEW_Q | string) => Osdk<

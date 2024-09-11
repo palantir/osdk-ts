@@ -12,6 +12,7 @@ import type {
   ConvertProps as $ConvertProps,
   DefaultToFalse as $DefaultToFalse,
   FetchPageArgs as $FetchPageArgs,
+  IsAny as $IsAny,
   LinkedType as $LinkedType,
   LinkNames as $LinkNames,
   NullabilityAdherence as $NullabilityAdherence,
@@ -71,7 +72,10 @@ export namespace Todo {
       primaryKey: $PropertyValueClientToWire[Todo.Definition['primaryKeyType']],
       options?: $SelectArg<Todo.Definition, L, R, S>,
     ) => Promise<
-      Todo.OsdkObject<(S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'), L>
+      Todo.OsdkObject<
+        (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
+        $IsAny<L> extends true ? Todo.PropertyKeys : L
+      >
     >;
 
     readonly fetchOneWithErrors: <
@@ -85,7 +89,7 @@ export namespace Todo {
       $Result<
         Todo.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Todo.PropertyKeys : L
         >
       >
     >;
@@ -101,7 +105,7 @@ export namespace Todo {
       $PageResult<
         Todo.OsdkObject<
           (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-          L
+          $IsAny<L> extends true ? Todo.PropertyKeys : L
         >
       >
     >;
@@ -118,7 +122,7 @@ export namespace Todo {
         $PageResult<
           Todo.OsdkObject<
             (S extends false ? '$notStrict' : never) | ($DefaultToFalse<R> extends false ? never : '$rid'),
-            L
+            $IsAny<L> extends true ? Todo.PropertyKeys : L
           >
         >
       >
@@ -133,6 +137,7 @@ export namespace Todo {
     osdkMetadata: typeof $osdkMetadata;
     objectSet: Todo.ObjectSet;
     props: Todo.Props;
+    linksType: Todo.Links;
     strictProps: Todo.StrictProps;
     description: 'Its a todo item.';
     links: {
@@ -189,6 +194,7 @@ export const Todo: Todo & $VersionBound<$ExpectedClientVersion> = {
   osdkMetadata: $osdkMetadata,
   objectSet: undefined as any,
   props: undefined as any,
+  linksType: undefined as any,
   strictProps: undefined as any,
   apiName: 'Todo',
   description: 'Its a todo item.',

@@ -90,6 +90,7 @@ export type {
 } from "./object/FetchPageArgs.js";
 export type {
   FetchPageResult,
+  IsAny,
   RespectNullability,
   SingleOsdkResult,
   UnionIfFalse,
@@ -115,9 +116,9 @@ export type { OsdkObjectPrimaryKeyType } from "./OsdkObjectPrimaryKeyType.js";
 export type { PageResult } from "./PageResult.js";
 export type { QueryParam, QueryResult } from "./queries/Queries.js";
 export { TimeseriesDurationMapping } from "./timeseries/timeseries.js";
+export { TimeSeriesProperty } from "./timeseries/timeseries.js";
 export type {
   TimeSeriesPoint,
-  TimeSeriesProperty,
   TimeSeriesQuery,
 } from "./timeseries/timeseries.js";
 export type { LinkedType, LinkNames } from "./util/LinkUtils.js";

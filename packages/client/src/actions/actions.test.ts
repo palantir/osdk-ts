@@ -20,6 +20,7 @@ import type {
   AttachmentUpload,
 } from "@osdk/client.api";
 import {
+  $Actions,
   $ontologyRid,
   actionTakesAttachment,
   createOffice,
@@ -238,5 +239,17 @@ describe("actions", () => {
   "modifiedObjectsCount": 2,
   "type": "edits",
 }`);
+  });
+  it("actions are enumerable", async () => {
+    const actions = Object.keys($Actions);
+    expect(actions).toStrictEqual([
+      "actionTakesAttachment",
+      "actionTakesObjectSet",
+      "createOffice",
+      "createOfficeAndEmployee",
+      "moveOffice",
+      "promoteEmployee",
+      "promoteEmployeeObject",
+    ]);
   });
 });

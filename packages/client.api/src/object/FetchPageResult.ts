@@ -57,7 +57,11 @@ export type SingleOsdkResult<
   S extends NullabilityAdherence,
 > = Osdk<
   Q,
-  | L
+  | (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L)
   | (S extends false ? "$notStrict" : never)
   | (DefaultToFalse<R> extends false ? never : "$rid")
 >;
+
+export type IsAny<T> = unknown extends T
+  ? [keyof T] extends [never] ? false : true
+  : false;

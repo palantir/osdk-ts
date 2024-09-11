@@ -1,5 +1,22 @@
 # @osdk/client.api
 
+## 0.22.0-beta.5
+
+### Minor Changes
+
+- dc25fb4: Fixes edge cases in inferred return types especially when changing object types
+
+### Patch Changes
+
+- Updated dependencies [dc25fb4]
+  - @osdk/api@1.10.0-beta.1
+
+## 0.22.0-beta.4
+
+### Minor Changes
+
+- 0ea1a17: Fixes an issue where properties may not be inferred correctly when directly used in a return statement
+
 ## 0.22.0-beta.3
 
 ### Patch Changes

@@ -135,6 +135,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
       DefaultToFalse as $DefaultToFalse,
       FetchPageArgs as $FetchPageArgs,
       FetchPageResult as $FetchPageResult,
+      IsAny as $IsAny,
       LinkedType as $LinkedType,
       LinkNames as $LinkNames,
       NullabilityAdherence as $NullabilityAdherence,
@@ -167,7 +168,7 @@ export function __UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(
 
         ${
       Object.keys(definition.links).length === 0
-        ? `export type ${osdkObjectLinksIdentifier} = never;`
+        ? `export type ${osdkObjectLinksIdentifier} = {};`
         : `
         export interface ${osdkObjectLinksIdentifier}  {
 ${
@@ -231,6 +232,7 @@ ${
       osdkMetadata: $osdkMetadata,
       objectSet: undefined as any,
       props: undefined as any,
+      linksType: undefined as any,
       strictProps: undefined as any,
       ${
     stringify(definition, {

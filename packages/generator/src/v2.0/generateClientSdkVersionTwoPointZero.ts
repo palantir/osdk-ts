@@ -42,9 +42,13 @@ async function generateRootIndexTsFile(
           : ``
       }
         export * from "./ontology/actions${importExt}";
+        export * as $Actions from "./ontology/actions${importExt}";
         export * from "./ontology/objects${importExt}";
+        export * as $Objects from "./ontology/objects${importExt}";
         export * from "./ontology/interfaces${importExt}";
+        export * as $Interfaces from "./ontology/interfaces${importExt}";
         export * from "./ontology/queries${importExt}";
+        export * as $Queries from "./ontology/queries${importExt}";
     `,
     ),
   );
