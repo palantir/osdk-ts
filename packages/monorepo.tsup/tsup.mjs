@@ -36,6 +36,7 @@ export default async (options, ourOptions) => {
       ),
       PACKAGE_CLI_VERSION: await readPackageVersion("packages/cli"),
       TARGET: "node",
+      MODE: process.env.production ? "production" : "development",
     },
     clean: false, // we do this ourselves so its granular
     silent: true,
