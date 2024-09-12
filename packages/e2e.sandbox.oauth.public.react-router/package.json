@@ -24,8 +24,7 @@
     "dev": "vite",
     "fix-lint": "eslint . --fix && dprint fmt --config $(find-up dprint.json)",
     "lint": "eslint . && dprint check  --config $(find-up dprint.json)",
-    "preview": "vite preview",
-    "test": "vitest run"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@osdk/client": "workspace:~",
