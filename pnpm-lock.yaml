@@ -1336,8 +1336,8 @@ importers:
   packages/e2e.generated.1.1.x:
     dependencies:
       '@osdk/api':
-        specifier: ^1.10.0-beta.1
-        version: 1.10.0-beta.1
+        specifier: ^1.9.0
+        version: 1.9.1
       '@osdk/legacy-client':
         specifier: ^2.5.0
         version: 2.5.1
@@ -1744,6 +1744,9 @@ importers:
       '@osdk/client.api':
         specifier: workspace:~
         version: link:../client.api
+      '@osdk/generator':
+        specifier: workspace:~
+        version: link:../generator
       '@osdk/internal.foundry.core':
         specifier: workspace:~
         version: link:../internal.foundry.core
@@ -3963,9 +3966,6 @@ packages:
 
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
-
-  '@osdk/api@1.10.0-beta.1':
-    resolution: {integrity: sha512-q1X+5FVJXWTDmC+ni6kpjHHHDeU88/nUtt0YH5cSTTWpVOsjvaHYIT4Dq32eR4chzXQHeaPotKLzuVIPOBrI2w==}
 
   '@osdk/api@1.9.1':
     resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
@@ -9692,14 +9692,6 @@ snapshots:
       outvariant: 1.4.2
 
   '@open-draft/until@2.1.0': {}
-
-  '@osdk/api@1.10.0-beta.1':
-    dependencies:
-      '@osdk/gateway': 2.4.1
-      '@osdk/shared.net': 1.12.1
-      '@types/geojson': 7946.0.14
-      fetch-retry: 6.0.0
-      tiny-invariant: 1.3.3
 
   '@osdk/api@1.9.1':
     dependencies:
