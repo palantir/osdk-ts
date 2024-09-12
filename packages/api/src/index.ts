@@ -24,39 +24,22 @@ export type {
 } from "./ontology/ActionDefinition.js";
 export type {
   InterfaceDefinition,
-  InterfaceDefinitionFrom,
-  InterfaceKeysFrom,
-  InterfacePropertyDefinitionFrom,
-  InterfacePropertyDefinitionsFrom,
-  InterfacePropertyKeysFrom,
   InterfacePropertyKeysFrom2,
 } from "./ontology/InterfaceDefinition.js";
 export type {
   ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
   ObjectOrInterfacePropertyKeysFrom2,
 } from "./ontology/ObjectOrInterface.js";
 export type {
   BrandedApiName,
   ObjectTypeDefinition,
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
   ObjectTypeLinkDefinition,
-  ObjectTypeLinkDefinitionFrom,
-  ObjectTypeLinkKeysFrom,
   ObjectTypeLinkKeysFrom2,
-  ObjectTypeLinkTargetTypeFrom,
   ObjectTypePropertyDefinition,
-  ObjectTypePropertyDefinitionFrom,
   ObjectTypePropertyDefinitionFrom2,
-  ObjectTypePropertyDefinitionsFrom,
-  ObjectTypePropertyKeysFrom,
   PropertyDef,
   VersionBound,
 } from "./ontology/ObjectTypeDefinition.js";
-export type { OntologyDefinition } from "./ontology/OntologyDefinition.js";
 export type { OntologyMetadata } from "./ontology/OntologyMetadata.js";
 export type { PrimaryKeyTypes } from "./ontology/PrimaryKeyTypes.js";
 export type {

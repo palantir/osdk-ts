@@ -18,7 +18,6 @@ import type {
   ActionDefinition,
   ObjectTypeDefinition,
   ObjectTypeLinkDefinition,
-  OntologyDefinition,
   VersionBound,
 } from "@osdk/api";
 import type { ObjectTypeWithAllPropertyTypesDef } from "./ObjectTypeWithAllPropertyTypes.js";
@@ -385,7 +384,7 @@ export const MockOntology = {
       },
     },
   },
-} as const satisfies OntologyDefinition<any, any, any, any>;
+} as const;
 type capture = typeof MockOntology;
 export interface MockOntology extends capture {
 }
