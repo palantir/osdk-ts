@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { SharedClientContext } from "@osdk/shared.client";
 import { createSharedClientContext } from "@osdk/shared.client.impl";
 import { PalantirApiError } from "@osdk/shared.net.errors";
 import {
@@ -21,21 +22,17 @@ import {
   createFetchOrThrow,
   createRetryingFetch,
 } from "@osdk/shared.net.fetch";
-import type { ClientContext } from "./ClientContext.js";
 
 /**
  * The goal of the thin client is to provide a way to tree shake as much as possible.
  */
 
-export function createClientContext<
-  T extends { metadata: { userAgent: string } },
->(
-  ontology: T,
+export function createClientContext(
   baseUrl: string,
   tokenProvider: () => Promise<string> | string,
   userAgent: string,
   fetchFn: typeof globalThis.fetch = fetch,
-): ClientContext<T> {
+): SharedClientContext {
   if (baseUrl.length === 0) {
     throw new Error("baseUrl cannot be empty");
   }
@@ -50,7 +47,6 @@ export function createClientContext<
         "Fetch-User-Agent",
         [
           headers.get("Fetch-User-Agent"),
-          ontology.metadata.userAgent, // only used by legacy-client
           userAgent,
         ].filter(x => x && x?.length > 0).join(" "),
       );
@@ -82,17 +78,12 @@ export function createClientContext<
     }
   };
 
-  return {
-    ...createSharedClientContext(
-      baseUrl,
-      async () => await tokenProvider(),
-      [
-        ontology.metadata.userAgent, // only used by legacy-client
-        userAgent,
-      ].filter(x => x && x?.length > 0).join(" "),
-      fetchFn,
-    ),
-    ontology,
-    stack: baseUrl, // legacy support
-  };
+  return createSharedClientContext(
+    baseUrl,
+    async () => await tokenProvider(),
+    [
+      userAgent,
+    ].filter(x => x && x?.length > 0).join(" "),
+    fetchFn,
+  );
 }

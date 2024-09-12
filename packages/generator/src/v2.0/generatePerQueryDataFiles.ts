@@ -30,7 +30,7 @@ import {
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import { stringify } from "../util/stringify.js";
 import { formatTs } from "../util/test/formatTs.js";
-import { getDescriptionIfPresent } from "../v1.1/wireObjectTypeV2ToV1ObjectInterfaceString.js";
+import { getDescriptionIfPresent } from "./getDescriptionIfPresent.js";
 
 export async function generatePerQueryDataFilesV2(
   {
