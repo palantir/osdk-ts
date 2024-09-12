@@ -3,4 +3,4 @@
 "@osdk/client": minor
 ---
 
-Add Exact Distinct Aggregations
+Adds exactDistinct to aggregations
