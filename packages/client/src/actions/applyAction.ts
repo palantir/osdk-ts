@@ -211,7 +211,7 @@ async function remapBatchActionParams<
   return remappedParams;
 }
 
-function remapActionResponse(
+export function remapActionResponse(
   response: SyncApplyActionResponseV2 | BatchApplyActionResponseV2,
 ): ActionEditResponse | undefined {
   const editResponses = response?.edits;

@@ -25,6 +25,10 @@ import {
   createOffice,
   moveOffice,
 } from "@osdk/client.test.ontology";
+import type {
+  BatchApplyActionResponseV2,
+  SyncApplyActionResponseV2,
+} from "@osdk/internal.foundry.core";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -38,6 +42,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
+import { remapActionResponse } from "./applyAction.js";
 
 describe("actions", () => {
   let client: Client;
@@ -243,5 +248,150 @@ describe("actions", () => {
         "type": "edits",
       }
   `);
+  });
+});
+
+describe("ActionResponse remapping", () => {
+  const actionResponse: SyncApplyActionResponseV2 = {
+    edits: {
+      type: "edits",
+      edits: [{
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "addObject",
+      }, {
+        "objectType": "Contractor",
+        "primaryKey": "Contractor1",
+        "type": "modifyObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "addLink",
+      }],
+      deletedLinksCount: 0,
+      deletedObjectsCount: 0,
+      addedObjectCount: 1,
+      modifiedObjectsCount: 1,
+      addedLinksCount: 1,
+    },
+  };
+
+  const batchActionResponse: BatchApplyActionResponseV2 = {
+    edits: {
+      type: "edits",
+      edits: [{
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "addObject",
+      }, {
+        "objectType": "Contractor",
+        "primaryKey": "Contractor1",
+        "type": "modifyObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "addLink",
+      }],
+      deletedLinksCount: 0,
+      deletedObjectsCount: 0,
+      addedObjectCount: 1,
+      modifiedObjectsCount: 1,
+      addedLinksCount: 1,
+    },
+  };
+
+  it("Correctly unpacks edits and editedObjectTypes", () => {
+    const remappedActionResponse = remapActionResponse(actionResponse);
+    const remappedBatchActionResponse = remapActionResponse(
+      batchActionResponse,
+    );
+    expect(remappedActionResponse).toMatchInlineSnapshot(`
+      {
+        "addedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+            "type": "addLink",
+          },
+        ],
+        "addedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+            "type": "addObject",
+          },
+        ],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Developer",
+          "Contractor",
+          "Office",
+          "Employee",
+        ],
+        "modifiedObjects": [
+          {
+            "objectType": "Contractor",
+            "primaryKey": "Contractor1",
+            "type": "modifyObject",
+          },
+        ],
+        "type": "edits",
+      }
+    `);
+    expect(remappedBatchActionResponse).toMatchInlineSnapshot(`
+      {
+        "addedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+            "type": "addLink",
+          },
+        ],
+        "addedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+            "type": "addObject",
+          },
+        ],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Developer",
+          "Contractor",
+          "Office",
+          "Employee",
+        ],
+        "modifiedObjects": [
+          {
+            "objectType": "Contractor",
+            "primaryKey": "Contractor1",
+            "type": "modifyObject",
+          },
+        ],
+        "type": "edits",
+      }
+    `);
   });
 });
