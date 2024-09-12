@@ -24,8 +24,6 @@ import type {
   QueryDataType,
   QueryTypeV2,
 } from "@osdk/internal.foundry.core";
-import { Ontologies } from "@osdk/internal.foundry.ontologies";
-import { OntologiesV2 } from "@osdk/internal.foundry.ontologiesv2";
 import { createClientContext } from "@osdk/shared.net";
 import { Result } from "./Result.js";
 
@@ -127,6 +125,12 @@ export class OntologyMetadataResolver {
     },
   ): Promise<Result<WireOntologyDefinition, string[]>> {
     let ontology: Ontology;
+
+    const { Ontologies } = await import("@osdk/internal.foundry.ontologies");
+    const { OntologiesV2 } = await import(
+      "@osdk/internal.foundry.ontologiesv2"
+    );
+
     try {
       ontology = await Ontologies.getOntology(
         this.getClientContext(),
