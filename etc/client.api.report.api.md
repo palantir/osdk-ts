@@ -331,6 +331,8 @@ export interface FetchInterfacePageArgs<Q extends InterfaceDefinition<any, any>,
 // @public (undocumented)
 export interface FetchPageArgs<Q extends ObjectOrInterfaceDefinition, K extends ObjectOrInterfacePropertyKeysFrom2<Q> = ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean = false, A extends Augments = {}, S extends NullabilityAdherence = NullabilityAdherenceDefault> extends SelectArg<Q, K, R, S>, OrderByArg<Q, ObjectOrInterfacePropertyKeysFrom2<Q>> {
     // (undocumented)
+    $__EXPERIMENTAL_selectedObjectTypes?: string[];
+    // (undocumented)
     $augment?: A;
     // (undocumented)
     $nextPageToken?: string;

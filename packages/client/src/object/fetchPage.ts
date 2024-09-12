@@ -103,7 +103,7 @@ async function fetchInterfacePage<
         augmentedProperties: args.$augment ?? {},
         augmentedSharedPropertyTypes: {},
         otherInterfaceTypes: [],
-        selectedObjectTypes: [],
+        selectedObjectTypes: args.$__EXPERIMENTAL_selectedObjectTypes ?? [],
         selectedSharedPropertyTypes: args.$select as undefined | string[] ?? [],
         where: objectSetToSearchJsonV2(objectSet, interfaceType.apiName),
       }),
