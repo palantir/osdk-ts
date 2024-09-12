@@ -169,6 +169,10 @@ const aggregationResponse: AggregateObjectsResponseV2 = {
           value: 1,
         },
         {
+          name: "text.exactDistinct",
+          value: 1,
+        },
+        {
           name: "priority.avg",
           value: 1,
         },
@@ -197,6 +201,7 @@ describe("aggregate", () => {
       {
         $select: {
           "text:approximateDistinct": "unordered",
+          "text:exactDistinct": "unordered",
           "priority:avg": "unordered",
           "id:max": "unordered",
           "id:avg": "unordered",
@@ -217,6 +222,11 @@ describe("aggregate", () => {
               "name": "text.approximateDistinct",
               "field": "text",
             },
+            {
+              "type": "exactDistinct",
+              "name": "text.exactDistinct",
+              "field": "text",
+            },
             { "type": "avg", "name": "priority.avg", "field": "priority" },
             { "type": "max", "name": "id.max", "field": "id" },
             { "type": "avg", "name": "id.avg", "field": "id" },
@@ -229,6 +239,7 @@ describe("aggregate", () => {
     );
 
     expectType<number>(notGrouped.text.approximateDistinct);
+    expectType<number>(notGrouped.text.exactDistinct);
     expectType<number | undefined>(notGrouped.priority.avg);
     expectType<number | undefined>(notGrouped.id.max);
     expectType<number | undefined>(notGrouped.id.avg);
@@ -252,6 +263,7 @@ describe("aggregate", () => {
       {
         $select: {
           "id:approximateDistinct": "unordered",
+          "id:exactDistinct": "unordered",
           "priority:max": "unordered",
           "$count": "unordered",
         },
@@ -272,6 +284,7 @@ describe("aggregate", () => {
     expectType<Array<any>>(grouped);
     expectType<string | undefined>(grouped[0].$group.text);
     expectType<number>(grouped[0].id.approximateDistinct);
+    expectType<number>(grouped[0].id.exactDistinct);
     expectType<number>(grouped[0].$group.priority);
     expectType<number>(grouped[0].$count);
     expectType<{ startValue: number; endValue: number }>(
@@ -441,6 +454,7 @@ describe("aggregate", () => {
       {
         $select: {
           "text:approximateDistinct": "asc",
+          "priority:exactDistinct": "asc",
           "priority:avg": "desc",
           "id:max": "asc",
           "id:avg": "unordered",
@@ -461,6 +475,12 @@ describe("aggregate", () => {
               "name": "text.approximateDistinct",
               direction: "ASC",
               "field": "text",
+            },
+            {
+              "type": "exactDistinct",
+              "name": "priority.exactDistinct",
+              direction: "ASC",
+              "field": "priority",
             },
             {
               "type": "avg",
@@ -484,6 +504,7 @@ describe("aggregate", () => {
     );
 
     expectType<number>(notGrouped.text.approximateDistinct);
+    expectType<number>(notGrouped.priority.exactDistinct);
     expectType<number>(notGrouped.priority.avg);
     expectType<number>(notGrouped.id.max);
     expectType<number>(notGrouped.id.avg);
@@ -512,6 +533,7 @@ describe("aggregate", () => {
           "text:approximateDistinct": "asc",
           "id:avg": "unordered",
           "$count": "unordered",
+          "text:exactDistinct": "desc",
         },
         $groupBy: {
           priority: "exact",
@@ -540,6 +562,12 @@ describe("aggregate", () => {
             },
             { "type": "avg", "name": "id.avg", "field": "id" },
             { "type": "count", "name": "count" },
+            {
+              "type": "exactDistinct",
+              "name": "text.exactDistinct",
+              direction: "DESC",
+              "field": "text",
+            },
           ],
         }),
         method: "POST",
@@ -551,6 +579,7 @@ describe("aggregate", () => {
     expectType<number>(grouped[0].id.max);
     expectType<number>(grouped[0].id.avg);
     expectType<number>(grouped[0].$count);
+    expectType<number>(grouped[0].text.exactDistinct);
     expectType<
       TypeOf<
         {
@@ -575,6 +604,8 @@ describe("aggregate", () => {
           "id:max": "desc",
           // @ts-expect-error
           "text:approximateDistinct": "asc",
+          // @ts-expect-error
+          "text:exactDistinct": "desc",
           "id:avg": "unordered",
           "$count": "unordered",
         },
@@ -648,7 +679,5 @@ describe("aggregate", () => {
         "text:approximateDistinct": "unordered",
       },
     };
-
-    // expectType<"approximateDistinct">(f.select.locationCity);
   });
 });

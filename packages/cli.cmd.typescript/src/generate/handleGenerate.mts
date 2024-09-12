@@ -23,7 +23,6 @@ import {
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
   __UNSTABLE_generateClientSdkPackage,
-  generateClientSdkVersionOneDotOne,
   generateClientSdkVersionTwoPointZero,
   getExpectedDependencies,
 } from "@osdk/generator";
@@ -114,6 +113,58 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       ontologies.data[0].apiName,
     );
 
+    function sortKeys<T extends Record<string, any>>(
+      obj: T,
+      mutateValue?: (
+        x: T extends Record<string, infer Y> ? Y : never,
+      ) => T extends Record<string, infer Y> ? Y : never,
+    ): T {
+      const sorted = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
+      const mutated = mutateValue
+        ? sorted.map(([k, v]) => [k, mutateValue(v)])
+        : sorted;
+      return Object.fromEntries(mutated) as T; //
+    }
+
+    ontology.actionTypes = sortKeys(ontology.actionTypes, (x) => {
+      return {
+        ...x,
+        parameters: sortKeys(x.parameters),
+      };
+    });
+
+    ontology.objectTypes = sortKeys(ontology.objectTypes, (x) => {
+      return {
+        ...x,
+        linkTypes: [...x.linkTypes].sort((a, b) =>
+          a.apiName.localeCompare(b.apiName)
+        ),
+        implementsInterfaces2: sortKeys(x.implementsInterfaces2),
+        sharedPropertyTypeMapping: sortKeys(x.sharedPropertyTypeMapping),
+        objectType: {
+          ...x.objectType,
+          properties: sortKeys(x.objectType.properties),
+        },
+      };
+    });
+
+    ontology.interfaceTypes = sortKeys(ontology.interfaceTypes, (x) => {
+      return {
+        ...x,
+        extendsInterfaces: [...x.extendsInterfaces].sort(),
+        properties: sortKeys(x.properties),
+      };
+    });
+
+    ontology.queryTypes = sortKeys(ontology.queryTypes, (x) => {
+      return {
+        ...x,
+        parameters: sortKeys(x.parameters),
+      };
+    });
+
+    ontology.sharedPropertyTypes = sortKeys(ontology.sharedPropertyTypes);
+
     if (ontologyWritePath) {
       fs.writeFileSync(ontologyWritePath, JSON.stringify(ontology, null, 2));
     }
@@ -163,7 +214,6 @@ async function generateClientSdk(
       }
 
       const expectedDeps = getExpectedDependencies(
-        args.beta ? "2.0" : "1.1",
         dependencyVersions,
       );
 
@@ -256,17 +306,15 @@ async function generateSourceFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
 ) {
-  await (args.beta
-    ? generateClientSdkVersionTwoPointZero
-    : generateClientSdkVersionOneDotOne)(
-      ontology,
-      getUserAgent(args.version),
-      fs,
-      args.outDir,
-      args.packageType,
-      args.ontologyApiNamespace,
-      args.apiNamespaceMap,
-    );
+  await generateClientSdkVersionTwoPointZero(
+    ontology,
+    getUserAgent(args.version),
+    fs,
+    args.outDir,
+    args.packageType,
+    args.ontologyApiNamespace,
+    args.apiNamespaceMap,
+  );
 }
 
 // If the user passed us `dev` as our version, we use that for both our generated package version AND the cli version.

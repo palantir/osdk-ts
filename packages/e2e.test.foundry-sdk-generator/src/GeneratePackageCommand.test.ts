@@ -26,7 +26,7 @@ describe("Generate Package Command", () => {
     const generatedPath = path.join(
       path.dirname(fileURLToPath(import.meta.url)),
       "generatedNoCheck",
-      "@test-app",
+      "@test-app2",
       "osdk",
     );
     const packagePath = path.join(generatedPath, "package.json");
@@ -37,14 +37,11 @@ describe("Generate Package Command", () => {
     expect(scriptsExport).toMatchInlineSnapshot(`
       {
         "default": "./dist/bundle/index.esm.js",
-        "types": "./dist/bundle/index.d.ts",
       }
     `);
 
-    const typesPath = path.join(generatedPath, scriptsExport.types);
     const esmPath = path.join(generatedPath, scriptsExport.default);
 
-    expect(existsSync(typesPath), typesPath).toBe(true);
     expect(existsSync(esmPath), esmPath).toBe(true);
   });
 });

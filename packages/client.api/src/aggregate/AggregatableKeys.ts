@@ -17,13 +17,14 @@
 import type { ObjectOrInterfaceDefinition } from "@osdk/api";
 import type { PropertyValueClientToWire } from "../mapping/PropertyValueMapping.js";
 
-export type StringAggregateOption = "approximateDistinct";
+export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
 export type NumericAggregateOption =
   | "min"
   | "max"
   | "sum"
   | "avg"
-  | "approximateDistinct";
+  | "approximateDistinct"
+  | "exactDistinct";
 
 type AGG_FOR_TYPE<T> = number extends T ? NumericAggregateOption
   : string extends T ? StringAggregateOption
