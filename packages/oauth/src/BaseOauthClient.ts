@@ -25,6 +25,7 @@ export type Events = {
 export interface BaseOauthClient<K extends keyof Events & string> {
   (): Promise<string>;
 
+  getTokenOrUndefined: () => string | undefined;
   signIn: () => Promise<Token>;
   signOut: () => Promise<void>;
 

@@ -29,7 +29,7 @@ import type { Token } from "./Token.js";
 
 // Node 18 is supposed to have a `CustomEvent` but it is not exposed on `globalThis`
 // which creates a problem for making a single codebase for node and browser. This polyfill works around it
-const CustomEvent = process.env.target === "browser"
+const CustomEvent = process.env.TARGET === "browser"
   ? globalThis.CustomEvent
   : globalThis.CustomEvent
     ?? class CustomEvent<T> extends Event {
@@ -194,6 +194,13 @@ export function common<
   eventTarget.addEventListener("signIn", restartRefreshTimer);
   eventTarget.addEventListener("refresh", restartRefreshTimer);
 
+  function getTokenOrUndefined() {
+    if (!token || Date.now() >= token.expires_at) {
+      return undefined;
+    }
+    return token?.access_token;
+  }
+
   const getToken = Object.assign(async function getToken() {
     if (!token || Date.now() >= token.expires_at) {
       token = await signIn();
@@ -204,6 +211,7 @@ export function common<
     refresh,
     signOut,
     rmTimeout,
+    getTokenOrUndefined,
     addEventListener: eventTarget.addEventListener.bind(
       eventTarget,
     ) as typeof eventTarget.addEventListener,

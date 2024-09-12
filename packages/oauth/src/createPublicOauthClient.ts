@@ -59,16 +59,20 @@ export function createPublicOauthClient(
   client_id: string,
   url: string,
   redirectUrl: string,
-  useHistory?: boolean,
+  useHistory: boolean = true,
   loginPage?: string,
   postLoginPage: string = window.location.toString(),
-  scopes: string[] = ["api:read-data", "api:write-data"],
+  scopes: string[] = [],
   fetchFn: typeof globalThis.fetch = globalThis.fetch,
   ctxPath: string = "/multipass",
 ): PublicOauthClient {
   const client: Client = { client_id, token_endpoint_auth_method: "none" };
   const authServer = createAuthorizationServer(ctxPath, url);
   const oauthHttpOptions: HttpRequestOptions = { [customFetch]: fetchFn };
+
+  if (scopes.length === 0) {
+    scopes = ["api:read-data", "api:write-data"];
+  }
 
   const { makeTokenAndSaveRefresh, getToken } = common(
     client,
@@ -98,7 +102,7 @@ export function createPublicOauthClient(
     try {
       // note, we don't use processRefreshTokenResponse because the mp oauth implementation
       // doesn't do refresh tokens quite right and this lets us skip the id check
-      return makeTokenAndSaveRefresh(
+      const result = makeTokenAndSaveRefresh(
         throwIfError(
           await processAuthorizationCodeOAuth2Response(
             authServer,
@@ -113,6 +117,14 @@ export function createPublicOauthClient(
         ),
         "refresh",
       );
+
+      if (
+        result && window.location.pathname === new URL(redirectUrl).pathname
+      ) {
+        const { oldUrl } = readLocal(client);
+        go(oldUrl ?? "/");
+      }
+      return result;
     } catch (e) {
       if (process?.env?.NODE_ENV !== "production") {
         // eslint-disable-next-line no-console
@@ -173,7 +185,11 @@ export function createPublicOauthClient(
   }
 
   async function initiateLoginRedirect(): Promise<void> {
-    if (loginPage && window.location.href !== loginPage) {
+    if (
+      loginPage
+      && window.location.href !== loginPage
+      && window.location.pathname !== loginPage
+    ) {
       saveLocal(client, { oldUrl: postLoginPage });
       return await go(loginPage);
     }
