@@ -1,5 +1,17 @@
 # @osdk/api
 
+## 2.0.0-beta.6
+
+### Major Changes
+
+- 3affe49: Placeholder for breaking changes
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 1.10.0-beta.1
 
 ### Minor Changes

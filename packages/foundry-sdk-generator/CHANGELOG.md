@@ -1,5 +1,29 @@
 # @osdk/foundry-sdk-generator
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 0a374d6: Remove legacy client
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [76a7adb]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ce2858]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [0a374d6]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [6f93c8b]
+- Updated dependencies [a9923f3]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/client@2.0.0-beta.6
+  - @osdk/client.api@2.0.0-beta.6
+  - @osdk/generator@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+
 ## 1.4.0-beta.5
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @osdk/internal.foundry.core
 
+## 0.2.0-beta.3
+
+### Minor Changes
+
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+
+### Patch Changes
+
+- @osdk/shared.net@1.13.0-beta.0
+
 ## 0.2.0-beta.2
 
 ### Patch Changes

@@ -1,5 +1,22 @@
 # @osdk/foundry
 
+## 0.5.0-beta.3
+
+### Minor Changes
+
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [5d6d5ab]
+  - @osdk/internal.foundry.ontologiesv2@0.2.0-beta.3
+  - @osdk/internal.foundry.ontologies@0.2.0-beta.3
+  - @osdk/internal.foundry.datasets@0.2.0-beta.3
+  - @osdk/internal.foundry.core@0.2.0-beta.3
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 0.5.0-beta.2
 
 ### Patch Changes

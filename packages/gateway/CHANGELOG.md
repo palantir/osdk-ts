@@ -1,5 +1,11 @@
 # @osdk/gateway
 
+## 2.5.0-beta.0
+
+### Minor Changes
+
+- 5d6d5ab: SLS dependencies are optional
+
 ## 2.4.0
 
 ### Minor Changes

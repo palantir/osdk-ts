@@ -1,5 +1,21 @@
 # @osdk/cli
 
+## 0.24.0-beta.5
+
+### Minor Changes
+
+- 0a374d6: Remove legacy client
+
+### Patch Changes
+
+- Updated dependencies [0a374d6]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [6f93c8b]
+  - @osdk/generator@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/shared.net@1.13.0-beta.0
+
 ## 0.24.0-beta.4
 
 ### Patch Changes

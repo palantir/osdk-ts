@@ -1,5 +1,12 @@
 # @osdk/shared.net
 
+## 1.13.0-beta.0
+
+### Patch Changes
+
+- Updated dependencies [5d6d5ab]
+  - @osdk/gateway@2.5.0-beta.0
+
 ## 1.12.0
 
 ### Minor Changes

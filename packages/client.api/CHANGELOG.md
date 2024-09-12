@@ -1,5 +1,18 @@
 # @osdk/client.api
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- a2c7b37: Internal refactor for TimeSeriesProperty
+- 0ce2858: Improves casting between Foo.ObjectSet and ObjectSet<Foo>
+- a9923f3: Adds exactDistinct to aggregations
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+  - @osdk/api@2.0.0-beta.6
+
 ## 0.22.0-beta.5
 
 ### Minor Changes
