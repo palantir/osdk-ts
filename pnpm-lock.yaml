@@ -1512,8 +1512,8 @@ importers:
         specifier: workspace:~
         version: link:../legacy-client
       '@osdk/main-foundry-sdk-generator':
-        specifier: npm:@osdk/foundry-sdk-generator@1.4.0-beta.3
-        version: '@osdk/foundry-sdk-generator@1.4.0-beta.3(@types/geojson@7946.0.14)(pino@9.1.0)'
+        specifier: npm:@osdk/foundry-sdk-generator@2.0.0-beta.6
+        version: '@osdk/foundry-sdk-generator@2.0.0-beta.6(@types/geojson@7946.0.14)(pino@9.1.0)'
       '@rollup/plugin-commonjs':
         specifier: ^25.0.4
         version: 25.0.7(rollup@3.29.1)
@@ -3724,43 +3724,49 @@ packages:
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
 
-  '@osdk/api@1.10.0-beta.0':
-    resolution: {integrity: sha512-Kf5aFQfDgD8GF2CF2bPWs7WhMBLDS/plfrU6c3LGoeWKLwIBgLDIbGjb0YGAJYtfV7wnBD1NnkCCAbGurZz+mg==}
+  '@osdk/api@1.9.1':
+    resolution: {integrity: sha512-a67IMGvlLYkGDsO0Dja9J+vTzWfshn6xAICZlv3d12ys71YvMoTA6kKUgiMrec+cC0vp4R3IE3ESlczsfiJ/iQ==}
 
-  '@osdk/client.api@0.22.0-beta.3':
-    resolution: {integrity: sha512-cmCM/A2RXgCq/UDWqzXdlhhWYRnhrpHqcDOJuGTSEVTWMO4UrX7qPk3N4qXP/1q3P6sXEnGdXNlg2nFZ2LDhpg==}
+  '@osdk/api@2.0.0-beta.6':
+    resolution: {integrity: sha512-AhMGhJ1Wqf55Owu8FaUkYUJaLWw/YaMpk37IAhkjGO5u2I6583+d/e2noOSssA5hafNPGvGBPe8t5ufoYfnqgw==}
+
+  '@osdk/client.api@2.0.0-beta.6':
+    resolution: {integrity: sha512-QtiW42nSzeM5CdGKsVBWDuwFQb/zWVytqzT3csnUEwe+P8M5cm5Xgz+6Z7vJvxiogvmAO5DXt/IWz59vNurilA==}
     peerDependencies:
       '@types/geojson': '*'
 
   '@osdk/client.unstable.osw@0.1.0':
     resolution: {integrity: sha512-R0OgiOI0V5nCCT00YSYJfSbaNQKmyZrjCA7fOksysu6ax46te783gH2qDhZYtlebJ2CZSgUy9v7PA//Sia1oow==}
 
-  '@osdk/client.unstable@0.1.0':
-    resolution: {integrity: sha512-YDE+LZqbHSrHSsa8pDW91m68Z28upd/wyef/Y6WbJokeKjyUKscvF6KE1KTUIu1leWzvEyQWv1GbYZDKUn/H+g==}
+  '@osdk/client.unstable@2.0.0-beta.6':
+    resolution: {integrity: sha512-9tj3AvgyflNPlAkZYp70vJa2xWVYjJ2tHGNsYnKhwV6aQ2EMLjeNENhIRDuLcpXwNcKHqtwm2Z99W+7zXk+SvA==}
 
-  '@osdk/client@0.22.0-beta.3':
-    resolution: {integrity: sha512-+0Uo/3CWN9ijjJcsdwGUHivQc/S+HHIwq0km20DEH4BPfG2BOu63dYAUmL3qQLRMEBVP/2Lyb5wGxHl5KfCUUA==}
+  '@osdk/client@2.0.0-beta.6':
+    resolution: {integrity: sha512-Ku73bcDaqjDzJfVyXeUr3PVBFw+wOXa/486i1SZIlShhZfB7g3VWpT1o+CxoKjuUzH2B+ybeqC2Xu7Zz2mxV3Q==}
     peerDependencies:
       pino: ^9.1.0
     peerDependenciesMeta:
       pino:
         optional: true
 
-  '@osdk/foundry-sdk-generator@1.4.0-beta.3':
-    resolution: {integrity: sha512-6LXpEzsbuOuf+IXh0MNfrqYFY6O7IImm+bFGn2UXxKGlItz0C7a3m/vxKt6VcfJZ71grg3UFwY+r3dwYpdlsWA==}
+  '@osdk/foundry-sdk-generator@2.0.0-beta.6':
+    resolution: {integrity: sha512-NfQTs1tVkHtTgcdvgzhemf2chntqD5thoCTQGBTx7CX36escqa3FdDVeW1CWHrugnpKHbQhXEeLwBaojive2ww==}
     hasBin: true
 
   '@osdk/gateway@2.4.1':
     resolution: {integrity: sha512-RHwTFQ2dGKbu25YwjukRKQj9CzoO3xdueSEetIkfCuuHvOLOlIUAJsjj+j7UV96MzsbefAcsQyJC+PqENdU57w==}
 
-  '@osdk/generator-converters@0.8.0-beta.0':
-    resolution: {integrity: sha512-NkpfDMqGZmu476+Z20CObAj9IhW/mJx3we24l1+BPifEBpM8QZW2GLs76qeUo1YCPhppg33dCndtB6ReYKLYnw==}
+  '@osdk/gateway@2.5.0-beta.0':
+    resolution: {integrity: sha512-M/z94TvRjkzc4ur09K4kAuuJQ2Arhbqu79G+uP08jJqvsyhoU5lA/5J5MPOm1t0WPUcoUUWXnH4rqqTgZZDI0w==}
 
-  '@osdk/generator@1.14.0-beta.3':
-    resolution: {integrity: sha512-ElxsrP8eAFaYBL68U7yHnsphaCs+fiF1kj+ulfiNMup8hBBG5bdpMLADZ8AsDDFWTWMGhpK0bMWJMQQBXTe3NQ==}
+  '@osdk/generator-converters@2.0.0-beta.6':
+    resolution: {integrity: sha512-K2UiyANQQJO0HNNeFBKfS933FUJrOJihUPEhsSfMAL6piME8bJh0NE59PEQWNlWSbs/To362OR84vaulPvHz4Q==}
 
-  '@osdk/legacy-client@2.6.0-beta.0':
-    resolution: {integrity: sha512-eXzkzIjP4GCza4TsCFY4vuxwSAvYG4T3FlvYwe82L3/7qoyE1xoRJkyA5ZuNfXn1dFwWzh8aLbt/vaB2jKfqgg==}
+  '@osdk/generator@2.0.0-beta.6':
+    resolution: {integrity: sha512-I+NkSunoFAAkf4QUYHOqn7wSud0Nj2/TN7jKHYkEwuUQDw+AvuPtbGTO/ArD0/TjTsHHIgILDeyWPCW4Jour3g==}
+
+  '@osdk/legacy-client@2.5.1':
+    resolution: {integrity: sha512-vo5mMnnAIoBhQORSlKfbVH7G9UNMxJYiRCUxwdrKMkBaJKT5ClJbLTiv9anpqTFkBaw82vMxd7MA80nt3X8hXg==}
 
   '@osdk/shared.client.impl@0.1.0':
     resolution: {integrity: sha512-mNpUkkwnDuPK3LNgilQ0uaUUstrTZ/gqNejSil0Q7Zd+Nq05sAmuyiC6a+5el6p1zByzv+XthQAnJF5Nwcuoag==}
@@ -3776,6 +3782,9 @@ packages:
 
   '@osdk/shared.net@1.12.1':
     resolution: {integrity: sha512-uJE124K3O21A1Of2TdOqMHBfrIYshcDSLr5em4v1vNZZGSsSCYUYGo5vvkS6vzUVDA2xSn/Uf2FgdzX6BWxIhQ==}
+
+  '@osdk/shared.net@1.13.0-beta.0':
+    resolution: {integrity: sha512-F4lPl0DPvlf0pVbphiyuxz9ge6EiVK2xNFIzwbS/Kp/K6Q3tF6LxJHK++PnrOkHkarRMEcKSrONWBPWjicJuGw==}
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -9274,7 +9283,7 @@ snapshots:
 
   '@open-draft/until@2.1.0': {}
 
-  '@osdk/api@1.10.0-beta.0':
+  '@osdk/api@1.9.1':
     dependencies:
       '@osdk/gateway': 2.4.1
       '@osdk/shared.net': 1.12.1
@@ -9282,9 +9291,17 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/client.api@0.22.0-beta.3(@types/geojson@7946.0.14)':
+  '@osdk/api@2.0.0-beta.6':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
+      '@osdk/gateway': 2.5.0-beta.0
+      '@osdk/shared.net': 1.13.0-beta.0
+      '@types/geojson': 7946.0.14
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
+
+  '@osdk/client.api@2.0.0-beta.6(@types/geojson@7946.0.14)':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.6
       '@types/geojson': 7946.0.14
       type-fest: 4.18.2
 
@@ -9292,17 +9309,17 @@ snapshots:
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client.unstable@0.1.0':
+  '@osdk/client.unstable@2.0.0-beta.6':
     dependencies:
       conjure-lite: 0.4.4
 
-  '@osdk/client@0.22.0-beta.3(pino@9.1.0)':
+  '@osdk/client@2.0.0-beta.6(pino@9.1.0)':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
-      '@osdk/client.api': 0.22.0-beta.3(@types/geojson@7946.0.14)
-      '@osdk/client.unstable': 0.1.0
+      '@osdk/api': 2.0.0-beta.6
+      '@osdk/client.api': 2.0.0-beta.6(@types/geojson@7946.0.14)
+      '@osdk/client.unstable': 2.0.0-beta.6
       '@osdk/client.unstable.osw': 0.1.0
-      '@osdk/generator-converters': 0.8.0-beta.0
+      '@osdk/generator-converters': 2.0.0-beta.6
       '@osdk/shared.client': 0.0.0
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
@@ -9322,14 +9339,14 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@osdk/foundry-sdk-generator@1.4.0-beta.3(@types/geojson@7946.0.14)(pino@9.1.0)':
+  '@osdk/foundry-sdk-generator@2.0.0-beta.6(@types/geojson@7946.0.14)(pino@9.1.0)':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
-      '@osdk/client': 0.22.0-beta.3(pino@9.1.0)
-      '@osdk/client.api': 0.22.0-beta.3(@types/geojson@7946.0.14)
-      '@osdk/gateway': 2.4.1
-      '@osdk/generator': 1.14.0-beta.3(typescript@5.5.4)
-      '@osdk/legacy-client': 2.6.0-beta.0
+      '@osdk/api': 2.0.0-beta.6
+      '@osdk/client': 2.0.0-beta.6(pino@9.1.0)
+      '@osdk/client.api': 2.0.0-beta.6(@types/geojson@7946.0.14)
+      '@osdk/gateway': 2.5.0-beta.0
+      '@osdk/generator': 2.0.0-beta.6(typescript@5.5.4)
+      '@osdk/legacy-client': 2.5.1
       '@rollup/plugin-commonjs': 25.0.7(rollup@3.29.1)
       '@rollup/plugin-node-resolve': 15.2.3(rollup@3.29.1)
       consola: 3.2.3
@@ -9352,16 +9369,21 @@ snapshots:
       fetch-retry: 6.0.0
       tiny-invariant: 1.3.3
 
-  '@osdk/generator-converters@0.8.0-beta.0':
+  '@osdk/gateway@2.5.0-beta.0':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
-      '@osdk/gateway': 2.4.1
+      fetch-retry: 6.0.0
+      tiny-invariant: 1.3.3
 
-  '@osdk/generator@1.14.0-beta.3(typescript@5.5.4)':
+  '@osdk/generator-converters@2.0.0-beta.6':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
-      '@osdk/gateway': 2.4.1
-      '@osdk/generator-converters': 0.8.0-beta.0
+      '@osdk/api': 2.0.0-beta.6
+      '@osdk/gateway': 2.5.0-beta.0
+
+  '@osdk/generator@2.0.0-beta.6(typescript@5.5.4)':
+    dependencies:
+      '@osdk/api': 2.0.0-beta.6
+      '@osdk/gateway': 2.5.0-beta.0
+      '@osdk/generator-converters': 2.0.0-beta.6
       fast-deep-equal: 3.1.3
       fetch-retry: 6.0.0
       prettier: 3.2.5
@@ -9372,9 +9394,9 @@ snapshots:
       - '@volar/vue-typescript'
       - typescript
 
-  '@osdk/legacy-client@2.6.0-beta.0':
+  '@osdk/legacy-client@2.5.1':
     dependencies:
-      '@osdk/api': 1.10.0-beta.0
+      '@osdk/api': 1.9.1
       '@osdk/gateway': 2.4.1
       '@osdk/shared.net': 1.12.1
       fetch-retry: 6.0.0
@@ -9400,6 +9422,14 @@ snapshots:
   '@osdk/shared.net@1.12.1':
     dependencies:
       '@osdk/gateway': 2.4.1
+      '@osdk/shared.client': 0.0.0
+      '@osdk/shared.client.impl': 0.1.0
+      '@osdk/shared.net.errors': 1.1.0
+      '@osdk/shared.net.fetch': 0.1.0
+
+  '@osdk/shared.net@1.13.0-beta.0':
+    dependencies:
+      '@osdk/gateway': 2.5.0-beta.0
       '@osdk/shared.client': 0.0.0
       '@osdk/shared.client.impl': 0.1.0
       '@osdk/shared.net.errors': 1.1.0
