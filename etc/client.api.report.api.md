@@ -80,7 +80,7 @@ export type AggregationResultsWithGroups<Q extends ObjectOrInterfaceDefinition<a
 // @public (undocumented)
 export type AggregationResultsWithoutGroups<Q extends ObjectOrInterfaceDefinition<any, any>, AC extends UnorderedAggregationClause<Q> | OrderedAggregationClause<Q>> = {
     [PropName in ExtractPropName<keyof AC & string>]: PropName extends "$count" ? number : {
-        [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" ? number : OsdkObjectPropertyType<Q["properties"][PropName]>;
+        [MetricName in ExtractMetricNameForPropName<keyof AC & string, PropName>]: MetricName extends "approximateDistinct" | "exactDistinct" ? number : OsdkObjectPropertyType<Q["properties"][PropName]>;
     };
 };
 
@@ -438,7 +438,7 @@ export type NullabilityAdherence = false | "throw" | "drop";
 export type NullabilityAdherenceDefault = "throw";
 
 // @public (undocumented)
-export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct";
+export type NumericAggregateOption = "min" | "max" | "sum" | "avg" | "approximateDistinct" | "exactDistinct";
 
 // @public (undocumented)
 export interface ObjectSet<Q extends ObjectOrInterfaceDefinition = any, _UNUSED = any> extends MinimalObjectSet<Q> {
@@ -666,7 +666,7 @@ export interface SingleLinkAccessor<T extends ObjectTypeDefinition<any>> {
 export type SingleOsdkResult<Q extends ObjectOrInterfaceDefinition, L extends ObjectOrInterfacePropertyKeysFrom2<Q>, R extends boolean, S extends NullabilityAdherence> = Osdk<Q, (IsAny<L> extends true ? ObjectOrInterfacePropertyKeysFrom2<Q> : L) | (S extends false ? "$notStrict" : never) | (DefaultToFalse<R> extends false ? never : "$rid")>;
 
 // @public (undocumented)
-export type StringAggregateOption = "approximateDistinct";
+export type StringAggregateOption = "approximateDistinct" | "exactDistinct";
 
 // @public (undocumented)
 export const TimeseriesDurationMapping: {
