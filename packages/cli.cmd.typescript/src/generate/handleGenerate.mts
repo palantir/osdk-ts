@@ -114,6 +114,58 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
       ontologies.data[0].apiName,
     );
 
+    function sortKeys<T extends Record<string, any>>(
+      obj: T,
+      mutateValue?: (
+        x: T extends Record<string, infer Y> ? Y : never,
+      ) => T extends Record<string, infer Y> ? Y : never,
+    ): T {
+      const sorted = Object.entries(obj).sort(([a], [b]) => a.localeCompare(b));
+      const mutated = mutateValue
+        ? sorted.map(([k, v]) => [k, mutateValue(v)])
+        : sorted;
+      return Object.fromEntries(mutated) as T; //
+    }
+
+    ontology.actionTypes = sortKeys(ontology.actionTypes, (x) => {
+      return {
+        ...x,
+        parameters: sortKeys(x.parameters),
+      };
+    });
+
+    ontology.objectTypes = sortKeys(ontology.objectTypes, (x) => {
+      return {
+        ...x,
+        linkTypes: [...x.linkTypes].sort((a, b) =>
+          a.apiName.localeCompare(b.apiName)
+        ),
+        implementsInterfaces2: sortKeys(x.implementsInterfaces2),
+        sharedPropertyTypeMapping: sortKeys(x.sharedPropertyTypeMapping),
+        objectType: {
+          ...x.objectType,
+          properties: sortKeys(x.objectType.properties),
+        },
+      };
+    });
+
+    ontology.interfaceTypes = sortKeys(ontology.interfaceTypes, (x) => {
+      return {
+        ...x,
+        extendsInterfaces: [...x.extendsInterfaces].sort(),
+        properties: sortKeys(x.properties),
+      };
+    });
+
+    ontology.queryTypes = sortKeys(ontology.queryTypes, (x) => {
+      return {
+        ...x,
+        parameters: sortKeys(x.parameters),
+      };
+    });
+
+    ontology.sharedPropertyTypes = sortKeys(ontology.sharedPropertyTypes);
+
     if (ontologyWritePath) {
       fs.writeFileSync(ontologyWritePath, JSON.stringify(ontology, null, 2));
     }
