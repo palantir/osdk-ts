@@ -1,5 +1,11 @@
 # @osdk/gateway-generator
 
+## 0.5.0-beta.0
+
+### Minor Changes
+
+- 5d6d5ab: SLS dependencies are optional
+
 ## 0.4.0
 
 ### Minor Changes

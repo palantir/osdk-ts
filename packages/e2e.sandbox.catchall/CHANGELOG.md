@@ -1,5 +1,28 @@
 # @osdk/e2e.sandbox.catchall
 
+## 0.3.0-beta.6
+
+### Minor Changes
+
+- 5d6d5ab: SLS dependencies are optional
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [76a7adb]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ce2858]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [96ea876]
+- Updated dependencies [5d6d5ab]
+- Updated dependencies [a9923f3]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/client@2.0.0-beta.6
+  - @osdk/client.api@2.0.0-beta.6
+  - @osdk/internal.foundry@0.5.0-beta.3
+  - @osdk/foundry@2.1.0-beta.1
+  - @osdk/e2e.generated.catchall@3.0.0-beta.6
+
 ## 0.3.0-beta.5
 
 ### Patch Changes

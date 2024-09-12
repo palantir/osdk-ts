@@ -1,5 +1,29 @@
 # @osdk/client
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 76a7adb: Use OntologyMetadataService.bulkLoadOntologyEntities in place of deprecated loadOntologyEntities
+- a2c7b37: Internal refactor for TimeSeriesProperty
+- 0ce2858: Improves casting between Foo.ObjectSet and ObjectSet<Foo>
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 96ea876: Add namespaces for objects,actions,queries so that you can enumerate them.
+- 5d6d5ab: SLS dependencies are optional
+- a9923f3: Adds exactDistinct to aggregations
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [76a7adb]
+- Updated dependencies [a2c7b37]
+- Updated dependencies [0ce2858]
+- Updated dependencies [a9923f3]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/client.unstable@2.0.0-beta.6
+  - @osdk/client.api@2.0.0-beta.6
+  - @osdk/generator-converters@2.0.0-beta.6
+
 ## 0.22.0-beta.5
 
 ### Minor Changes

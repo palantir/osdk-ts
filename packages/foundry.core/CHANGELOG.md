@@ -1,5 +1,12 @@
 # @osdk/foundry.core
 
+## 2.1.0-beta.1
+
+### Minor Changes
+
+- 5d6d5ab: Autofill Content-Length and Content-Type headers in API's that accept Blobs
+- 5d6d5ab: SLS dependencies are optional
+
 ## 2.1.0-beta.0
 
 ### Minor Changes

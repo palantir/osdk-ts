@@ -1,5 +1,21 @@
 # @osdk/generator
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 0a374d6: Remove legacy client
+- 96ea876: Add namespaces for objects,actions,queries so that you can enumerate them.
+- 6f93c8b: Generates fewer overrides to prevent potential failures
+
+### Patch Changes
+
+- Updated dependencies [3affe49]
+- Updated dependencies [5d6d5ab]
+  - @osdk/api@2.0.0-beta.6
+  - @osdk/gateway@2.5.0-beta.0
+  - @osdk/generator-converters@2.0.0-beta.6
+
 ## 1.14.0-beta.4
 
 ### Minor Changes

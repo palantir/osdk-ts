@@ -1,5 +1,11 @@
 # @osdk/client.unstable
 
+## 2.0.0-beta.6
+
+### Minor Changes
+
+- 76a7adb: Use OntologyMetadataService.bulkLoadOntologyEntities in place of deprecated loadOntologyEntities
+
 ## 0.1.0
 
 ### Minor Changes
