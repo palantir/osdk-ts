@@ -34,6 +34,7 @@ import type { Template } from "./templates.js";
 interface CliArgs {
   project?: string;
   overwrite?: boolean;
+  beta?: boolean;
   template?: string;
   foundryUrl?: string;
   applicationUrl?: string;
@@ -63,6 +64,11 @@ export async function cli(args: string[] = process.argv): Promise<void> {
           .option("overwrite", {
             type: "boolean",
             describe: "Overwrite project directory if already exists",
+          })
+          .option("beta", {
+            type: "boolean",
+            describe:
+              "Use templates compatible with the Beta version of the SDK",
           })
           .option("template", {
             type: "string",

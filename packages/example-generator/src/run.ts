@@ -56,7 +56,12 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
   process.chdir(tmpDir.name);
   for (const template of TEMPLATES) {
     const exampleId = templateExampleId(template);
-    consola.info(`Generating example ${exampleId}`);
+    const osdkPackage = template.isBeta
+      ? "@osdk/e2e.generated.catchall"
+      : "@osdk/e2e.generated.1.1.x";
+    consola.info(
+      `Generating example ${exampleId} using osdkPackage ${osdkPackage}`,
+    );
     await runCreateApp({
       project: exampleId,
       overwrite: true,
@@ -65,7 +70,7 @@ async function generateExamples(tmpDir: tmp.DirResult): Promise<void> {
       applicationUrl: "https://example.com",
       application: "ri.third-party-applications.main.application.fake",
       clientId: "123",
-      osdkPackage: "@osdk/e2e.generated.1.1.x",
+      osdkPackage: osdkPackage,
       osdkRegistryUrl:
         "https://fake.palantirfoundry.com/artifacts/api/repositories/ri.artifacts.main.repository.fake/contents/release/npm",
       corsProxy: false,

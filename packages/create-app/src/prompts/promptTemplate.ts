@@ -19,12 +19,24 @@ import { green } from "../highlight.js";
 import { type Template, TEMPLATES } from "../templates.js";
 
 export async function promptTemplate(
-  parsed: { template?: string },
+  parsed: { template?: string; beta?: boolean },
 ): Promise<Template> {
+  let useBeta = parsed.beta ?? false;
   let template = TEMPLATES.find((t) =>
     t.id === parsed.template || t.id === `template-${parsed.template}`
   );
   if (template == null) {
+    const availableTemplates = TEMPLATES.filter(template =>
+      !template.hidden
+      && (useBeta
+        ? template.isBeta === true
+        // isBeta could be null
+        : !template.isBeta)
+    );
+
+    if (availableTemplates.length === 0) {
+      throw new Error("No available templates found for the selected options.");
+    }
     const templateId = (await consola.prompt(
       parsed.template != null
         ? `The provided template ${
@@ -35,7 +47,7 @@ export async function promptTemplate(
         : "Select a framework:",
       {
         type: "select",
-        options: TEMPLATES.filter(template => template.hidden !== true).map((
+        options: availableTemplates.map((
           template,
         ) => ({
           value: template.id,
