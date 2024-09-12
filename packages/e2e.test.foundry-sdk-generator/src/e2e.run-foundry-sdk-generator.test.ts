@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { ExecaError } from "execa";
 import { execa, execaNode } from "execa";
 import { describe, expect, it } from "vitest";
 
@@ -24,9 +25,11 @@ describe("foundry-sdk-generator", () => {
     async () => {
       expect(true).toBe(true);
 
-      const { stdout } = await execa`pnpm exec foundry-sdk-generator --help`;
+      const { stderr, failed } = await execa({
+        reject: false,
+      })`pnpm exec foundry-sdk-generator --help`;
 
-      expect(stdout).toMatchInlineSnapshot(`
+      expect(stderr).toMatchInlineSnapshot(`
       "foundry-sdk-generator.cjs <command>
 
       Commands:
@@ -45,10 +48,13 @@ describe("foundry-sdk-generator", () => {
   }, async () => {
     expect(true).toBe(true);
 
-    const { stdout } =
-      await execaNode`${__dirname}/../bin/simulate-internal-foundry-sdk-generator.cjs --help`;
+    const { stderr, failed } = await execaNode({
+      reject: false,
+    })`${__dirname}/../bin/simulate-internal-foundry-sdk-generator.cjs --help`;
 
-    expect(stdout).toMatchInlineSnapshot(`
+    expect(failed).toBe(true);
+
+    expect(stderr).toMatchInlineSnapshot(`
       "simulate-internal-foundry-sdk-generator.cjs <command>
 
       Commands:
