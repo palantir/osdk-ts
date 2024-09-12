@@ -38,7 +38,7 @@
     "@osdk/client.api": "workspace:~",
     "@osdk/gateway": "workspace:~",
     "@osdk/generator": "workspace:~",
-    "@osdk/legacy-client": "workspace:~",
+    "@osdk/legacy-client": "^2.5.0",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-node-resolve": "^15.2.1",
     "consola": "^3.2.3",

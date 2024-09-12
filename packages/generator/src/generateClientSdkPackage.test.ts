@@ -23,58 +23,14 @@ describe("generateClientSdkPackage", () => {
       osdkApiVersion: "^99.9.9",
       osdkClientVersion: "^88.8.8",
       osdkClientApiVersion: "^66.6.6",
-      osdkLegacyClientVersion: "^77.7.7",
       areTheTypesWrongVersion: "^0.15.2",
       tslibVersion: "^2.6.2",
       typescriptVersion: "^5.4.2",
     } as const;
-    describe("v1", () => {
-      test("returns the package.json contents", async () => {
-        expect(getPackageJsonContents("foo", "1.1.1", "1.1", versions))
-          .toMatchInlineSnapshot(`
-            {
-              "devDependencies": {
-                "@arethetypeswrong/cli": "^0.15.2",
-                "@osdk/api": "^99.9.9",
-                "@osdk/legacy-client": "^77.7.7",
-                "tslib": "^2.6.2",
-                "typescript": "^5.4.2",
-              },
-              "exports": {
-                ".": {
-                  "import": "./dist/module/index.js",
-                  "require": "./dist/commonjs/index.js",
-                },
-                "./ontology/objects": {
-                  "import": "./dist/module/ontology/objects/index.js",
-                  "require": "./dist/commonjs/ontology/objects/index.js",
-                },
-              },
-              "files": [
-                "**/*.js",
-                "**/*.d.ts",
-                "dist/**/package.json",
-              ],
-              "main": "./dist/commonjs/index.js",
-              "module": "./dist/module/index.js",
-              "name": "foo",
-              "peerDependencies": {
-                "@osdk/api": "^99.9.9",
-                "@osdk/legacy-client": "^77.7.7",
-              },
-              "scripts": {
-                "check": "npm exec attw $(npm pack)",
-                "prepack": "tsc -p ./dist/module/tsconfig.json && tsc -p ./dist/commonjs/tsconfig.json",
-              },
-              "version": "1.1.1",
-            }
-          `);
-      });
-    });
 
     describe("v2", () => {
       test("returns the package.json contents", async () => {
-        expect(getPackageJsonContents("foo", "1.2.3", "2.0", versions))
+        expect(getPackageJsonContents("foo", "1.2.3", versions))
           .toMatchInlineSnapshot(`
             {
               "devDependencies": {
@@ -88,10 +44,6 @@ describe("generateClientSdkPackage", () => {
                 ".": {
                   "import": "./dist/module/index.js",
                   "require": "./dist/commonjs/index.js",
-                },
-                "./ontology/objects": {
-                  "import": "./dist/module/ontology/objects.js",
-                  "require": "./dist/commonjs/ontology/objects.js",
                 },
               },
               "files": [

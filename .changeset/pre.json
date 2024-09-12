@@ -46,7 +46,6 @@
     "@osdk/internal.foundry.datasets": "0.1.0",
     "@osdk/internal.foundry.ontologies": "0.1.0",
     "@osdk/internal.foundry.ontologiesv2": "0.1.0",
-    "@osdk/legacy-client": "2.5.0",
     "@osdk/maker": "0.7.0",
     "@osdk/monorepo.api-extractor": "0.0.0",
     "@osdk/monorepo.cspell": "0.0.0",

@@ -23,7 +23,6 @@ import {
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
 import {
   __UNSTABLE_generateClientSdkPackage,
-  generateClientSdkVersionOneDotOne,
   generateClientSdkVersionTwoPointZero,
   getExpectedDependencies,
 } from "@osdk/generator";
@@ -215,7 +214,6 @@ async function generateClientSdk(
       }
 
       const expectedDeps = getExpectedDependencies(
-        args.beta ? "2.0" : "1.1",
         dependencyVersions,
       );
 
@@ -308,17 +306,15 @@ async function generateSourceFiles(
   ontology: WireOntologyDefinition,
   fs: MinimalFs,
 ) {
-  await (args.beta
-    ? generateClientSdkVersionTwoPointZero
-    : generateClientSdkVersionOneDotOne)(
-      ontology,
-      getUserAgent(args.version),
-      fs,
-      args.outDir,
-      args.packageType,
-      args.ontologyApiNamespace,
-      args.apiNamespaceMap,
-    );
+  await generateClientSdkVersionTwoPointZero(
+    ontology,
+    getUserAgent(args.version),
+    fs,
+    args.outDir,
+    args.packageType,
+    args.ontologyApiNamespace,
+    args.apiNamespaceMap,
+  );
 }
 
 // If the user passed us `dev` as our version, we use that for both our generated package version AND the cli version.

@@ -15,27 +15,17 @@
  */
 
 import type { MinimalFs, WireOntologyDefinition } from "@osdk/generator";
-import {
-  generateClientSdkVersionOneDotOne,
-  generateClientSdkVersionTwoPointZero,
-} from "@osdk/generator";
+import { generateClientSdkVersionTwoPointZero } from "@osdk/generator";
 import { mkdir, readdir, readFile, writeFile } from "fs/promises";
-import { fileURLToPath } from "node:url";
-import { dirname, isAbsolute, join, normalize } from "path";
+import { isAbsolute, join, normalize } from "path";
 import { USER_AGENT } from "../../utils/UserAgent.js";
 import { generateBundles } from "../generateBundles.js";
 import { bundleDependencies } from "./bundleDependencies.js";
 import { compileInMemory } from "./compileInMemory.js";
 import { generatePackageJson } from "./generatePackageJson.js";
 
-declare const __OSDK_LEGACY_CLIENT_VERSION__: string | undefined;
 declare const __OSDK_CLIENT_API_VERSION__: string | undefined;
 declare const __OSDK_API_VERSION__: string | undefined;
-const dependencies: { [key: string]: string | undefined } = {
-  "@osdk/legacy-client": typeof __OSDK_LEGACY_CLIENT_VERSION__ !== "undefined"
-    ? __OSDK_LEGACY_CLIENT_VERSION__
-    : undefined,
-};
 
 const betaDependencies: { [key: string]: string | undefined } = {
   "@osdk/client.api": typeof __OSDK_CLIENT_API_VERSION__ !== "undefined"
@@ -59,7 +49,7 @@ export async function generatePackage(
 
   const packagePath = join(options.outputDir, options.packageName);
   const resolvedDependencies = await Promise.all(
-    Object.keys(options.beta ? betaDependencies : dependencies).map(
+    Object.keys(betaDependencies).map(
       async dependency => {
         return {
           dependencyName: dependency,
@@ -82,12 +72,7 @@ export async function generatePackage(
   };
 
   if (!options.beta) {
-    await generateClientSdkVersionOneDotOne(
-      ontology,
-      `typescript-sdk/${options.packageVersion} ${USER_AGENT}`,
-      hostFs,
-      packagePath,
-    );
+    throw new Error("Only beta is supported in this version");
   } else {
     await generateClientSdkVersionTwoPointZero(
       ontology,
@@ -117,18 +102,10 @@ export async function generatePackage(
   if (nodeModulesPath) {
     try {
       bundleDts = await bundleDependencies(
-        options.beta
-          ? []
-          : [
-            join(nodeModulesPath, "@osdk", "legacy-client"),
-            join(nodeModulesPath, "@osdk", "api"),
-            join(nodeModulesPath, "@osdk", "gateway"),
-          ],
+        [],
         options.packageName,
         compilerOutput.files,
-        options.beta
-          ? undefined
-          : `internal/@osdk/legacy-client/index.ts`,
+        undefined,
       );
     } catch (e) {
       consola.error("Failed bundling DTS", e);
@@ -169,9 +146,6 @@ export async function generatePackage(
 }
 
 async function getDependencyVersion(dependency: string): Promise<string> {
-  if (dependencies[dependency] !== undefined) {
-    return dependencies[dependency]!;
-  }
   const { findUp } = await import("find-up");
   const result = await findUp("package.json", {
     cwd: __dirname,
