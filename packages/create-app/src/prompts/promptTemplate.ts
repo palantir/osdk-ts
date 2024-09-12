@@ -27,7 +27,7 @@ export async function promptTemplate(
   );
   if (template == null) {
     const availableTemplates = TEMPLATES.filter(template =>
-      template.hidden !== true
+      !template.hidden
       && (useBeta
         ? template.isBeta === true
         // isBeta could be null
