@@ -253,7 +253,7 @@ const actionResponseCreateOffice: SyncApplyActionResponseV2 = {
       primaryKey: "NYC",
       objectType: officeObjectType.apiName,
     }],
-    addedObjectCount: 2,
+    addedObjectCount: 1,
     addedLinksCount: 0,
     modifiedObjectsCount: 0,
     deletedLinksCount: 0,

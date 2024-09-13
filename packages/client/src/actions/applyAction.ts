@@ -21,6 +21,7 @@ import type {
   ObjectSetActionDataType,
 } from "@osdk/api";
 import type {
+  ActionEditResponse,
   ActionParam,
   ActionReturnTypeForOptions,
   ApplyActionOptions,
@@ -28,7 +29,12 @@ import type {
   DataValueClientToWire,
 } from "@osdk/client.api";
 import { OntologiesV2 } from "@osdk/internal.foundry";
-import type { DataValue } from "@osdk/internal.foundry.core";
+import type {
+  BatchApplyActionResponseV2,
+  DataValue,
+  SyncApplyActionResponseV2,
+} from "@osdk/internal.foundry.core";
+import invariant from "tiny-invariant";
 import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import { augmentRequestContext } from "../util/augmentRequestContext.js";
@@ -136,8 +142,9 @@ export async function applyAction<
       },
     );
 
+    const edits = response.edits;
     return (options?.$returnEdits
-      ? response.edits
+      ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   } else {
     const response = await OntologiesV2.Actions.applyActionV2(
@@ -169,8 +176,9 @@ export async function applyAction<
       throw new ActionValidationError(response.validation);
     }
 
+    const edits = response.edits;
     return (options?.$returnEdits
-      ? response.edits
+      ? edits?.type === "edits" ? remapActionResponse(response) : edits
       : undefined) as ActionReturnTypeForOptions<Op>;
   }
 }
@@ -201,4 +209,40 @@ async function remapBatchActionParams<
   ));
 
   return remappedParams;
+}
+
+export function remapActionResponse(
+  response: SyncApplyActionResponseV2 | BatchApplyActionResponseV2,
+): ActionEditResponse | undefined {
+  const editResponses = response?.edits;
+  if (editResponses?.type === "edits") {
+    const remappedActionResponse: ActionEditResponse = {
+      type: editResponses.type,
+      deletedLinksCount: editResponses.deletedLinksCount,
+      deletedObjectsCount: editResponses.deletedObjectsCount,
+      addedLinks: [],
+      addedObjects: [],
+      modifiedObjects: [],
+      editedObjectTypes: [],
+    };
+
+    const editedObjectTypesSet = new Set<string>();
+    for (const edit of editResponses.edits) {
+      if (edit.type === "addLink") {
+        remappedActionResponse.addedLinks.push(edit);
+        editedObjectTypesSet.add(edit.aSideObject.objectType);
+        editedObjectTypesSet.add(edit.bSideObject.objectType);
+      } else if (edit.type === "addObject") {
+        remappedActionResponse.addedObjects.push(edit);
+        editedObjectTypesSet.add(edit.objectType);
+      } else if (edit.type === "modifyObject") {
+        remappedActionResponse.modifiedObjects.push(edit);
+        editedObjectTypesSet.add(edit.objectType);
+      } else {
+        invariant(false, "Unknown edit type");
+      }
+    }
+    remappedActionResponse.editedObjectTypes = [...editedObjectTypesSet];
+    return remappedActionResponse;
+  }
 }

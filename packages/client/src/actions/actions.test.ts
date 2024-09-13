@@ -26,6 +26,10 @@ import {
   createOffice,
   moveOffice,
 } from "@osdk/client.test.ontology";
+import type {
+  BatchApplyActionResponseV2,
+  SyncApplyActionResponseV2,
+} from "@osdk/internal.foundry.core";
 import { apiServer, stubData } from "@osdk/shared.test";
 import {
   afterAll,
@@ -39,6 +43,7 @@ import type { Client } from "../Client.js";
 import { createClient } from "../createClient.js";
 import { createAttachmentUpload } from "../object/AttachmentUpload.js";
 import { ActionValidationError } from "./ActionValidationError.js";
+import { remapActionResponse } from "./applyAction.js";
 
 describe("actions", () => {
   let client: Client;
@@ -66,18 +71,20 @@ describe("actions", () => {
     expectTypeOf<typeof result>().toEqualTypeOf<ActionEditResponse>();
     expect(result).toMatchInlineSnapshot(`
       {
-        "addedLinksCount": 0,
-        "addedObjectCount": 2,
-        "deletedLinksCount": 0,
-        "deletedObjectsCount": 0,
-        "edits": [
+        "addedLinks": [],
+        "addedObjects": [
           {
             "objectType": "Office",
             "primaryKey": "NYC",
             "type": "addObject",
           },
         ],
-        "modifiedObjectsCount": 0,
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Office",
+        ],
+        "modifiedObjects": [],
         "type": "edits",
       }
     `);
@@ -219,26 +226,174 @@ describe("actions", () => {
     ], { $returnEdits: true });
 
     expect(result).toMatchInlineSnapshot(` 
-    {
-  "addedLinksCount": 0,
-  "addedObjectCount": 0,
-  "deletedLinksCount": 0,
-  "deletedObjectsCount": 0,
-  "edits": [
-    {
-      "objectType": "Office",
-      "primaryKey": "SEA",
-      "type": "modifyObject",
+      {
+        "addedLinks": [],
+        "addedObjects": [],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Office",
+        ],
+        "modifiedObjects": [
+          {
+            "objectType": "Office",
+            "primaryKey": "SEA",
+            "type": "modifyObject",
+          },
+          {
+            "objectType": "Office",
+            "primaryKey": "NYC",
+            "type": "modifyObject",
+          },
+        ],
+        "type": "edits",
+      }
+  `);
+  });
+});
+
+describe("ActionResponse remapping", () => {
+  const actionResponse: SyncApplyActionResponseV2 = {
+    edits: {
+      type: "edits",
+      edits: [{
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "addObject",
+      }, {
+        "objectType": "Contractor",
+        "primaryKey": "Contractor1",
+        "type": "modifyObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "addLink",
+      }],
+      deletedLinksCount: 0,
+      deletedObjectsCount: 0,
+      addedObjectCount: 1,
+      modifiedObjectsCount: 1,
+      addedLinksCount: 1,
     },
-    {
-      "objectType": "Office",
-      "primaryKey": "NYC",
-      "type": "modifyObject",
+  };
+
+  const batchActionResponse: BatchApplyActionResponseV2 = {
+    edits: {
+      type: "edits",
+      edits: [{
+        "objectType": "Developer",
+        "primaryKey": "PalantirDev",
+        "type": "addObject",
+      }, {
+        "objectType": "Contractor",
+        "primaryKey": "Contractor1",
+        "type": "modifyObject",
+      }, {
+        "aSideObject": { "primaryKey": "key1", "objectType": "Office" },
+        "linkTypeApiNameAtoB": "test",
+        "linkTypeApiNameBtoA": "test",
+        "bSideObject": { "primaryKey": "key2", "objectType": "Employee" },
+        "type": "addLink",
+      }],
+      deletedLinksCount: 0,
+      deletedObjectsCount: 0,
+      addedObjectCount: 1,
+      modifiedObjectsCount: 1,
+      addedLinksCount: 1,
     },
-  ],
-  "modifiedObjectsCount": 2,
-  "type": "edits",
-}`);
+  };
+
+  it("Correctly unpacks edits and editedObjectTypes", () => {
+    const remappedActionResponse = remapActionResponse(actionResponse);
+    const remappedBatchActionResponse = remapActionResponse(
+      batchActionResponse,
+    );
+    expect(remappedActionResponse).toMatchInlineSnapshot(`
+      {
+        "addedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+            "type": "addLink",
+          },
+        ],
+        "addedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+            "type": "addObject",
+          },
+        ],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Developer",
+          "Contractor",
+          "Office",
+          "Employee",
+        ],
+        "modifiedObjects": [
+          {
+            "objectType": "Contractor",
+            "primaryKey": "Contractor1",
+            "type": "modifyObject",
+          },
+        ],
+        "type": "edits",
+      }
+    `);
+    expect(remappedBatchActionResponse).toMatchInlineSnapshot(`
+      {
+        "addedLinks": [
+          {
+            "aSideObject": {
+              "objectType": "Office",
+              "primaryKey": "key1",
+            },
+            "bSideObject": {
+              "objectType": "Employee",
+              "primaryKey": "key2",
+            },
+            "linkTypeApiNameAtoB": "test",
+            "linkTypeApiNameBtoA": "test",
+            "type": "addLink",
+          },
+        ],
+        "addedObjects": [
+          {
+            "objectType": "Developer",
+            "primaryKey": "PalantirDev",
+            "type": "addObject",
+          },
+        ],
+        "deletedLinksCount": 0,
+        "deletedObjectsCount": 0,
+        "editedObjectTypes": [
+          "Developer",
+          "Contractor",
+          "Office",
+          "Employee",
+        ],
+        "modifiedObjects": [
+          {
+            "objectType": "Contractor",
+            "primaryKey": "Contractor1",
+            "type": "modifyObject",
+          },
+        ],
+        "type": "edits",
+      }
+    `);
   });
   it("actions are enumerable", async () => {
     const actions = Object.keys($Actions);
