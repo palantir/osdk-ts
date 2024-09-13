@@ -50,7 +50,7 @@ export function wireObjectTypeV2ToSdkObjectConstV2(
 
   const definition = deleteUndefineds(
     wireObjectTypeFullMetadataToSdkObjectTypeDefinition(
-      object.og,
+      object.raw,
       true,
     ),
   );

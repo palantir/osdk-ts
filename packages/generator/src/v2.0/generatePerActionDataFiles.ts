@@ -57,13 +57,15 @@ export async function generatePerActionDataFiles(
         path.join("ontology", "actions", `${action.shortApiName}.ts`)
       }`;
 
-      const uniqueApiNamesArray = extractReferencedObjectsFromAction(action.og);
+      const uniqueApiNamesArray = extractReferencedObjectsFromAction(
+        action.raw,
+      );
       const uniqueApiNames = new Set(uniqueApiNamesArray);
 
       const uniqueApiNamesString = stringUnionFrom([...uniqueApiNames]);
 
       const fullActionDef = deleteUndefineds(
-        wireActionTypeV2ToSdkActionDefinition(action.og),
+        wireActionTypeV2ToSdkActionDefinition(action.raw),
       );
 
       const { parameters, ...actionDefSansParameters } = fullActionDef;

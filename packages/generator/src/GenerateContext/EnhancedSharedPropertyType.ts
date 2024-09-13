@@ -21,7 +21,7 @@ import { EnhancedBase } from "./EnhancedBase.js";
 export class EnhancedSharedPropertyType
   extends EnhancedBase<SharedPropertyType>
 {
-  constructor(common: EnhanceCommon, public og: SharedPropertyType) {
-    super(common, og, og.apiName, "./ontology/interfaces");
+  constructor(common: EnhanceCommon, public raw: SharedPropertyType) {
+    super(common, raw, raw.apiName, "./ontology/interfaces");
   }
 }

@@ -74,16 +74,16 @@ export abstract class AbstractImportable {
 }
 
 export abstract class EnhancedBase<T> extends AbstractImportable {
-  og: T;
+  raw: T;
 
   constructor(
     common: EnhanceCommon,
-    og: T,
+    raw: T,
     fullApiName: string,
     basePath: string,
   ) {
     super(common, fullApiName, basePath);
-    this.og = og;
+    this.raw = raw;
 
     if (!this.isLocal && !this.sourcePackage) {
       throw new Error(

@@ -80,7 +80,7 @@ async function generateEachObjectFile(
         import type { Osdk } from "@osdk/client.api";
         import { $osdkMetadata } from "../../OntologyMetadata${importExt}";
         import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
-        ${wireObjectTypeV2ToSdkObjectConstV2(obj.og, ctx, relPath)}
+        ${wireObjectTypeV2ToSdkObjectConstV2(obj.raw, ctx, relPath)}
       `),
     );
   }
