@@ -33,7 +33,6 @@
     "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
-    "@osdk/gateway": "workspace:~",
     "@osdk/shared.net": "workspace:~",
     "@types/geojson": "^7946.0.13",
     "fetch-retry": "^6.0.0",

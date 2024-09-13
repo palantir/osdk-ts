@@ -100,8 +100,7 @@ async function rmRf(testAppDir) {
   try {
     await fs.rm(testAppDir, { recursive: true });
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.debug("rm error", e);
+    // console.debug("rm error", e);
     // Only needed for regenerations
   }
 }

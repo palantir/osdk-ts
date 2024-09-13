@@ -15,8 +15,8 @@
  */
 
 import type { InterfaceDefinition } from "@osdk/api";
-import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
 import { __UNSTABLE_wireInterfaceTypeV2ToSdkObjectDefinition } from "@osdk/generator-converters";
+import type { InterfaceType } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";

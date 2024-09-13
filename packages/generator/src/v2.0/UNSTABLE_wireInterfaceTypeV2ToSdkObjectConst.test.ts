@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { InterfaceType, SharedPropertyType } from "@osdk/gateway/types";
+import type {
+  InterfaceType,
+  SharedPropertyType,
+} from "@osdk/internal.foundry.core";
 import { format } from "prettier";
 import { describe, expect, it } from "vitest";
 import { enhanceOntology } from "../GenerateContext/enhanceOntology.js";

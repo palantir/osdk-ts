@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { ActionParameterType, QueryDataType } from "@osdk/gateway/types";
+import type {
+  ActionParameterType,
+  QueryDataType,
+} from "@osdk/internal.foundry.core";
 import { mkdir, readdir, rmdir, writeFile } from "fs/promises";
 import * as immer from "immer";
 import { beforeEach, describe, expect, it, test, vi } from "vitest";
@@ -239,6 +242,9 @@ const referencedOntology = {
       "objectType": {
         "apiName": "com.example.dep.Task",
         "primaryKey": "taskId",
+        displayName: "Task",
+        pluralDisplayName: "Tasks",
+        icon: { type: "blueprint", color: "blue", name: "document" },
 
         titleProperty: "taskId",
 
@@ -337,6 +343,9 @@ const referencingOntology = {
       linkTypes: [],
       objectType: {
         apiName: "Thing",
+        displayName: "Thing",
+        pluralDisplayName: "Things",
+        icon: { type: "blueprint", color: "blue", name: "document" },
         primaryKey: "id",
         properties: {
           "id": {
@@ -363,6 +372,9 @@ const referencingOntology = {
       objectType: {
         apiName: "UsesForeignSpt",
         primaryKey: "id",
+        displayName: "Uses Foreign Spt",
+        icon: { type: "blueprint", color: "blue", name: "document" },
+        pluralDisplayName: "Uses Foreign Spts",
         properties: {
           "id": {
             dataType: {

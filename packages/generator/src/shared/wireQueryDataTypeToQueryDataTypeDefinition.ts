@@ -21,12 +21,10 @@ import type {
 } from "@osdk/api";
 import type {
   QueryAggregationKeyType,
-  QueryAggregationKeyType_Boolean,
-  QueryAggregationKeyType_String,
   QueryDataType,
   ThreeDimensionalAggregation,
   TwoDimensionalAggregation,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 import { isNullableQueryDataType } from "./isNullableQueryDataType.js";
 
 export function wireQueryDataTypeToQueryDataTypeDefinition<
@@ -187,6 +185,6 @@ function get3DQueryAggregationProps(
  */
 function guardInvalidKeyTypes(
   key: QueryAggregationKeyType,
-): key is QueryAggregationKeyType_Boolean | QueryAggregationKeyType_String {
+): key is QueryAggregationKeyType & ({ type: "string" | "boolean" }) {
   return key.type === "string" || key.type === "boolean";
 }

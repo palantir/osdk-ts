@@ -15,8 +15,8 @@
  */
 
 import type { ObjectTypeDefinition } from "@osdk/api";
-import type { ObjectTypeFullMetadata } from "@osdk/gateway/types";
 import { wireObjectTypeFullMetadataToSdkObjectTypeDefinition } from "@osdk/generator-converters";
+import type { ObjectTypeFullMetadata } from "@osdk/internal.foundry.core";
 import { deleteUndefineds } from "../util/deleteUndefineds.js";
 import type { EnhanceCommon } from "./EnhanceCommon.js";
 import { EnhancedBase } from "./EnhancedBase.js";

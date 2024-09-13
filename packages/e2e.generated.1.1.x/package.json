@@ -31,7 +31,7 @@
     "typecheck": "monorepo.tool.typecheck both"
   },
   "dependencies": {
-    "@osdk/api": "^1.10.0-beta.1",
+    "@osdk/api": "^1.9.0",
     "@osdk/legacy-client": "^2.5.0"
   },
   "peerDependencies": {
@@ -40,8 +40,8 @@
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.15.2",
-    "@osdk/api": "^1.10.0-beta.1",
-    "@osdk/legacy-client": "^2.6.0-beta.1",
+    "@osdk/api": "^1.9.0",
+    "@osdk/legacy-client": "^2.5.0",
     "@osdk/monorepo.api-extractor": "workspace:~",
     "@osdk/monorepo.tsconfig": "workspace:~",
     "@osdk/monorepo.tsup": "workspace:~",

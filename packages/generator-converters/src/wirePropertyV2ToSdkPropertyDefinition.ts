@@ -22,7 +22,7 @@ import type {
   ObjectPropertyType,
   PropertyV2,
   SharedPropertyType,
-} from "@osdk/gateway/types";
+} from "@osdk/internal.foundry.core";
 
 export function wirePropertyV2ToSdkPropertyDefinition(
   input: (PropertyV2 | SharedPropertyType) & { nullable?: boolean },

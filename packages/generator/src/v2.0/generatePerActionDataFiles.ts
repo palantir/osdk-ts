@@ -15,7 +15,10 @@
  */
 
 import type { ActionParameterDefinition } from "@osdk/api";
-import type { ActionParameterType, ActionTypeV2 } from "@osdk/gateway/types";
+import type {
+  ActionParameterType,
+  ActionTypeV2,
+} from "@osdk/internal.foundry.core";
 import path from "node:path";
 import type { EnhancedObjectType } from "../GenerateContext/EnhancedObjectType.js";
 import type { ForeignType } from "../GenerateContext/ForeignType.js";
