@@ -299,6 +299,7 @@ function extractReferencedObjectsFromAction(
       case "deleteObject":
       case "createLink":
       case "deleteLink":
+      default:
         return [];
     }
   });
