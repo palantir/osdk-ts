@@ -15,11 +15,13 @@
  */
 
 import type { Component } from "./Component.js";
+import type { ErrorType } from "./ErrorType.js";
 import type { Resource } from "./Resource.js";
 
 export interface Namespace {
   name: string;
   components: Component[];
+  errors: ErrorType[];
   resources: Resource[];
   packageName: string;
   paths: {

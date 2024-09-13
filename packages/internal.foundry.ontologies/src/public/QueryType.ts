@@ -19,7 +19,6 @@ import type {
   OntologyRid,
   PageSize,
   PageToken,
-  PreviewMode,
   QueryApiName,
   QueryType,
 } from "@osdk/internal.foundry.core";
@@ -38,7 +37,6 @@ const _listQueryTypes: $FoundryPlatformMethod<
     $queryParams?: {
       pageSize?: PageSize | undefined;
       pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
     },
   ) => Promise<ListQueryTypesResponse>
 > = [0, "/v1/ontologies/{0}/queryTypes", 2];
@@ -64,7 +62,6 @@ export function listQueryTypes(
     $queryParams?: {
       pageSize?: PageSize | undefined;
       pageToken?: PageToken | undefined;
-      preview?: PreviewMode | undefined;
     },
   ]
 ): Promise<ListQueryTypesResponse> {
@@ -72,12 +69,8 @@ export function listQueryTypes(
 }
 
 const _getQueryType: $FoundryPlatformMethod<
-  (
-    ontologyRid: OntologyRid,
-    queryApiName: QueryApiName,
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ) => Promise<QueryType>
-> = [0, "/v1/ontologies/{0}/queryTypes/{1}", 2];
+  (ontologyRid: OntologyRid, queryApiName: QueryApiName) => Promise<QueryType>
+> = [0, "/v1/ontologies/{0}/queryTypes/{1}"];
 
 /**
  * Gets a specific query type with the given API name.
@@ -91,12 +84,7 @@ const _getQueryType: $FoundryPlatformMethod<
  */
 export function getQueryType(
   $ctx: $Client | $ClientContext,
-  ...args: [
-    ontologyRid: OntologyRid,
-    queryApiName: QueryApiName,
-
-    $queryParams?: { preview?: PreviewMode | undefined },
-  ]
+  ...args: [ontologyRid: OntologyRid, queryApiName: QueryApiName]
 ): Promise<QueryType> {
   return $foundryPlatformFetch($ctx, _getQueryType, ...args);
 }

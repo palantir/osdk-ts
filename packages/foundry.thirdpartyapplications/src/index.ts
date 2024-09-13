@@ -24,6 +24,18 @@ export type {
   VersionVersion,
   Website,
 } from "./_components.js";
+export type {
+  CannotDeleteDeployedVersion,
+  DeleteVersionPermissionDenied,
+  DeployWebsitePermissionDenied,
+  InvalidVersion,
+  ThirdPartyApplicationNotFound,
+  UndeployWebsitePermissionDenied,
+  UploadVersionPermissionDenied,
+  VersionAlreadyExists,
+  VersionNotFound,
+  WebsiteNotFound,
+} from "./_errors.js";
 export * as ThirdPartyApplications from "./public/ThirdPartyApplication.js";
 export * as Versions from "./public/Version.js";
 export * as Websites from "./public/Website.js";
