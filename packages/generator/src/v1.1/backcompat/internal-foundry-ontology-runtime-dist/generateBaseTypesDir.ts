@@ -70,7 +70,7 @@ export async function generateBaseTypesDir(
           "ActionExecutionMode",
           "ReturnEditsMode",
           "ActionValidationResult",
-        ])
+        ], true)
         + reexportTypes([
           "ActionExecutionOptions",
           "ValidationResponse",
@@ -106,14 +106,15 @@ export async function generateBaseTypesDir(
   await fs.writeFile(
     path.join(baseTypesDir, "OntologyObject.ts"),
     await formatTs(
-      reexportTypes(["OntologyObject"]) + reexportConsts(["isOntologyObject"]),
+      reexportTypes(["OntologyObject"])
+        + reexportConsts(["isOntologyObject"], true),
     ),
   );
 
   await fs.writeFile(
     path.join(baseTypesDir, "links.ts"),
     await formatTs(
-      `import { OntologyObject } from "./OntologyObject${importExt}`
+      `import { OntologyObject } from "./OntologyObject${importExt}";`
         + reexportTypes(
           ["SingleLink", "MultiLink"],
           "<T extends OntologyObject = OntologyObject>",

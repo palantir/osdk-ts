@@ -16,13 +16,16 @@
 
 export function reexportConsts(
   typesToExport: string[],
+  includeImport: boolean = false,
 ) {
-  return `
-          import  { ${
-    typesToExport.map(q => `${q} as OG_${q}`).join(", ")
-  }} from "@osdk/legacy-client";
-      
-          ${
+  return `${
+    includeImport
+      ? `import  { ${
+        typesToExport.map(q => `${q} as OG_${q}`).join(", ")
+      }} from "@osdk/legacy-client";`
+      : ""
+  }
+      ${
     typesToExport.map(q => `
       /** @deprecated submodule imports aren't public api **/
               export const ${q} = OG_${q};

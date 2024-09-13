@@ -49,7 +49,7 @@ export async function generateMetrics(
     await formatTs(
       `
         import { Double, MetricValue, MultipleAggregationsOperations } from "../Aggregations${importExt}";
-        import { MetricValueType } from "./metrics/index${importExt}";
+        import { MetricValueType } from "./index${importExt}";
       `
         + reexportConsts(["MultipleAggregatableProperty"])
         + reexportTypes(
@@ -73,7 +73,7 @@ export async function generateMetrics(
         `
           import { MultipleAggregatableProperty } from "./MultipleAggregatableProperty${importExt}";
         `
-          + reexportConsts([typeName]),
+          + reexportConsts([typeName], true),
       ),
     );
   }

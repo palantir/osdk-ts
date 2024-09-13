@@ -240,8 +240,7 @@ async function generateOntologyInterfaces(
       await formatTs(`
     
       import type { InterfaceDefinition, PropertyDef, VersionBound } from "@osdk/api";
-      import { $osdkMetadata, $expectedClientVersion } from "../../OntologyMetadata${importExt}";
-      import type { $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
+      import { $osdkMetadata, $ExpectedClientVersion } from "../../OntologyMetadata${importExt}";
 
       ${__UNSTABLE_wireInterfaceTypeV2ToSdkObjectConst(obj, ontology, true)}
     `),

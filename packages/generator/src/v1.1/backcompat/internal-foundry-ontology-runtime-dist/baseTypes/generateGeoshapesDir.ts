@@ -71,7 +71,7 @@ export async function generateGeoshapesDir(
 
   await fs.writeFile(
     path.join(runtimeDistDir, "GeometryCollection.ts"),
-    await formatTs(reexportConsts(["GeometryCollection"])),
+    await formatTs(reexportConsts(["GeometryCollection"], true)),
   );
 
   await fs.writeFile(
@@ -79,10 +79,12 @@ export async function generateGeoshapesDir(
     await formatTs(
       ``
         + reexportConsts([
-          "isGeoPoint",
           "GeoPoint",
-          "mapCoordinatesToGeoPoint",
         ])
+        + reexportConsts([
+          "isGeoPoint",
+          "mapCoordinatesToGeoPoint",
+        ], true)
         + reexportTypes(["GeoHash", "Coordinates", "GeoPoint"]),
     ),
   );

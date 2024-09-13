@@ -78,7 +78,7 @@ export async function generateOAuthClientDistDir(
   await fs.writeFile(
     path.join(oauthDistDir, "OAuthToken.ts"),
     await formatTs(
-      reexportConsts(["OAuthToken"]),
+      reexportConsts(["OAuthToken"], true),
     ),
   );
 
