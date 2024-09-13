@@ -20,17 +20,15 @@ export namespace setTaskBody {
     task: {
       multiplicity: false;
       nullable: false;
-      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
+      type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
     };
   };
 
   export interface Params {
     readonly body: ActionParam.PrimitiveType<'string'>;
 
-    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
+    readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -56,11 +54,6 @@ export namespace setTaskBody {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `setTaskBody.Params`
- */
-export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
 
 /** @deprecated Use `setTaskBody.Definition` **/
 export type setTaskBody = setTaskBody.Signatures;

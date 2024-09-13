@@ -15,7 +15,7 @@ export namespace Employee {
   export type PropertyKeys = 'employeeId' | 'class' | 'fullName' | 'office' | 'startDate' | 'employeeStatus';
 
   export interface Links {
-    readonly lead: $SingleLinkAccessor<Employee.Definition>;
+    readonly lead: $SingleLinkAccessor<Employee>;
     readonly peeps: Employee.ObjectSet;
   }
 
@@ -36,56 +36,54 @@ export namespace Employee {
     readonly startDate: $PropType['datetime'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Employee.Definition, Employee.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Employee', Employee.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Employee.ObjectSet;
-    props: Employee.Props;
-    linksType: Employee.Links;
-    strictProps: Employee.StrictProps;
-    description: 'A full-time or part-time employee of our firm';
-    links: {
-      lead: $ObjectTypeLinkDefinition<Employee, false>;
-      peeps: $ObjectTypeLinkDefinition<Employee, true>;
-    };
-    primaryKeyApiName: 'employeeId';
-    primaryKeyType: 'integer';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      class: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      employeeId: $PropertyDef<'integer', 'non-nullable', 'single'>;
-      /**
-       *   description: TimeSeries of the status of the employee
-       */
-      employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      fullName: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       *   description: The unique of the employee's assigned office. This is some more text.
-       */
-      office: $PropertyDef<'integer', 'nullable', 'single'>;
-      /**
-       *   description: The date the employee was hired (most recently, if they were re-hired)
-       */
-      startDate: $PropertyDef<'datetime', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Employee, Employee.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Employee.Props = keyof Employee.Props,
-  > = $Osdk<Employee.Definition, K | OPTIONS>;
+  > = $Osdk<Employee, K | OPTIONS>;
 }
 
-export type Employee = Employee.Definition;
+export interface Employee extends $ObjectTypeDefinition<'Employee', Employee> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Employee.ObjectSet;
+  props: Employee.Props;
+  linksType: Employee.Links;
+  strictProps: Employee.StrictProps;
+  description: 'A full-time or part-time employee of our firm';
+  links: {
+    lead: $ObjectTypeLinkDefinition<Employee, false>;
+    peeps: $ObjectTypeLinkDefinition<Employee, true>;
+  };
+  primaryKeyApiName: 'employeeId';
+  primaryKeyType: 'integer';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    class: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    employeeId: $PropertyDef<'integer', 'non-nullable', 'single'>;
+    /**
+     *   description: TimeSeries of the status of the employee
+     */
+    employeeStatus: $PropertyDef<'numericTimeseries', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    fullName: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     *   description: The unique of the employee's assigned office. This is some more text.
+     */
+    office: $PropertyDef<'integer', 'nullable', 'single'>;
+    /**
+     *   description: The date the employee was hired (most recently, if they were re-hired)
+     */
+    startDate: $PropertyDef<'datetime', 'nullable', 'single'>;
+  };
+}
 
 export const Employee: Employee = {
   osdkMetadata: $osdkMetadata,

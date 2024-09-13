@@ -16,49 +16,47 @@ export namespace Thing {
     readonly id: $PropType['integer'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Thing.Definition, Thing.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Thing', Thing.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Thing.ObjectSet;
-    props: Thing.Props;
-    linksType: Thing.Links;
-    strictProps: Thing.StrictProps;
-    implements: ['com.example.dep.SomeInterface'];
-    interfaceMap: {
-      'com.example.dep.SomeInterface': {
-        'com.example.dep.spt': 'body';
-      };
-    };
-    inverseInterfaceMap: {
-      'com.example.dep.SomeInterface': {
-        body: 'com.example.dep.spt';
-      };
-    };
-    inverseSpts: {};
-    links: {};
-    primaryKeyApiName: 'id';
-    primaryKeyType: 'integer';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      body: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-    };
-    spts: {};
-  }
+  export interface ObjectSet extends $ObjectSet<Thing, Thing.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Thing.Props = keyof Thing.Props,
-  > = $Osdk<Thing.Definition, K | OPTIONS>;
+  > = $Osdk<Thing, K | OPTIONS>;
 }
 
-export type Thing = Thing.Definition;
+export interface Thing extends $ObjectTypeDefinition<'Thing', Thing> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Thing.ObjectSet;
+  props: Thing.Props;
+  linksType: Thing.Links;
+  strictProps: Thing.StrictProps;
+  implements: ['com.example.dep.SomeInterface'];
+  interfaceMap: {
+    'com.example.dep.SomeInterface': {
+      'com.example.dep.spt': 'body';
+    };
+  };
+  inverseInterfaceMap: {
+    'com.example.dep.SomeInterface': {
+      body: 'com.example.dep.spt';
+    };
+  };
+  inverseSpts: {};
+  links: {};
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    body: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+  };
+  spts: {};
+}
 
 export const Thing: Thing = {
   osdkMetadata: $osdkMetadata,

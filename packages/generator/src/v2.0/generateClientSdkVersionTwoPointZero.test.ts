@@ -516,7 +516,7 @@ describe("generator", () => {
             description: 'Todo(s) to be deleted';
             multiplicity: true;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo.Definition>;
+            type: ObjectActionDataType<'Todo', Todo>;
           };
         };
 
@@ -527,10 +527,8 @@ describe("generator", () => {
           /**
            * Todo(s) to be deleted
            */
-          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
+          readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
         }
-        /** @deprecated **/
-        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
@@ -560,11 +558,6 @@ describe("generator", () => {
           ): Promise<ActionReturnTypeForOptions<OP>>;
         }
       }
-
-      /**
-       * @deprecated Use \`deleteTodos.Params\`
-       */
-      export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
       /** @deprecated Use \`deleteTodos.Definition\` **/
       export type deleteTodos = deleteTodos.Signatures;
@@ -606,7 +599,7 @@ describe("generator", () => {
             description: 'A Todo to mark completed';
             multiplicity: false;
             nullable: true;
-            type: ObjectActionDataType<'Todo', Todo.Definition>;
+            type: ObjectActionDataType<'Todo', Todo>;
           };
         };
 
@@ -617,10 +610,8 @@ describe("generator", () => {
           /**
            * A Todo to mark completed
            */
-          readonly object?: ActionParam.ObjectType<Todo.Definition>;
+          readonly object?: ActionParam.ObjectType<Todo>;
         }
-        /** @deprecated **/
-        export type Parameters = Params;
 
         // Represents the definition of the action
         export interface Definition
@@ -650,11 +641,6 @@ describe("generator", () => {
           ): Promise<ActionReturnTypeForOptions<OP>>;
         }
       }
-
-      /**
-       * @deprecated Use \`markTodoCompleted.Params\`
-       */
-      export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
       /** @deprecated Use \`markTodoCompleted.Definition\` **/
       export type markTodoCompleted = markTodoCompleted.Signatures;
@@ -782,40 +768,38 @@ describe("generator", () => {
           readonly email: $PropType['string'];
         }
 
-        export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {}
-
-        export interface Definition extends $ObjectTypeDefinition<'Person', Person.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          objectSet: Person.ObjectSet;
-          props: Person.Props;
-          linksType: Person.Links;
-          strictProps: Person.StrictProps;
-          description: 'A person';
-          implements: [];
-          interfaceMap: {};
-          inverseInterfaceMap: {};
-          inverseSpts: {};
-          links: {
-            Todos: $ObjectTypeLinkDefinition<Todo, true>;
-          };
-          primaryKeyApiName: 'email';
-          primaryKeyType: 'string';
-          properties: {
-            /**
-             * (no ontology metadata)
-             */
-            email: $PropertyDef<'string', 'non-nullable', 'single'>;
-          };
-          spts: {};
-        }
+        export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Person.Props = keyof Person.Props,
-        > = $Osdk<Person.Definition, K | OPTIONS>;
+        > = $Osdk<Person, K | OPTIONS>;
       }
 
-      export type Person = Person.Definition;
+      export interface Person extends $ObjectTypeDefinition<'Person', Person> {
+        osdkMetadata: typeof $osdkMetadata;
+        objectSet: Person.ObjectSet;
+        props: Person.Props;
+        linksType: Person.Links;
+        strictProps: Person.StrictProps;
+        description: 'A person';
+        implements: [];
+        interfaceMap: {};
+        inverseInterfaceMap: {};
+        inverseSpts: {};
+        links: {
+          Todos: $ObjectTypeLinkDefinition<Todo, true>;
+        };
+        primaryKeyApiName: 'email';
+        primaryKeyType: 'string';
+        properties: {
+          /**
+           * (no ontology metadata)
+           */
+          email: $PropertyDef<'string', 'non-nullable', 'single'>;
+        };
+        spts: {};
+      }
 
       export const Person: Person = {
         osdkMetadata: $osdkMetadata,
@@ -866,7 +850,7 @@ describe("generator", () => {
         export type PropertyKeys = 'id' | 'body' | 'complete';
 
         export interface Links {
-          readonly Assignee: $SingleLinkAccessor<Person.Definition>;
+          readonly Assignee: $SingleLinkAccessor<Person>;
         }
 
         export interface Props {
@@ -880,57 +864,55 @@ describe("generator", () => {
           readonly id: $PropType['integer'];
         }
 
-        export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
-
-        export interface Definition extends $ObjectTypeDefinition<'Todo', Todo.Definition> {
-          osdkMetadata: typeof $osdkMetadata;
-          objectSet: Todo.ObjectSet;
-          props: Todo.Props;
-          linksType: Todo.Links;
-          strictProps: Todo.StrictProps;
-          description: 'Its a todo item.';
-          implements: ['SomeInterface'];
-          interfaceMap: {
-            SomeInterface: {
-              SomeProperty: 'body';
-            };
-          };
-          inverseInterfaceMap: {
-            SomeInterface: {
-              body: 'SomeProperty';
-            };
-          };
-          inverseSpts: {};
-          links: {
-            Assignee: $ObjectTypeLinkDefinition<Person, false>;
-          };
-          primaryKeyApiName: 'id';
-          primaryKeyType: 'integer';
-          properties: {
-            /**
-             *   display name: 'Body',
-             *   description: The text of the todo
-             */
-            body: $PropertyDef<'string', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-            /**
-             * (no ontology metadata)
-             */
-            id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-          };
-          spts: {};
-        }
+        export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
         export type OsdkObject<
           OPTIONS extends never | '$notStrict' | '$rid' = never,
           K extends keyof Todo.Props = keyof Todo.Props,
-        > = $Osdk<Todo.Definition, K | OPTIONS>;
+        > = $Osdk<Todo, K | OPTIONS>;
       }
 
-      export type Todo = Todo.Definition;
+      export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
+        osdkMetadata: typeof $osdkMetadata;
+        objectSet: Todo.ObjectSet;
+        props: Todo.Props;
+        linksType: Todo.Links;
+        strictProps: Todo.StrictProps;
+        description: 'Its a todo item.';
+        implements: ['SomeInterface'];
+        interfaceMap: {
+          SomeInterface: {
+            SomeProperty: 'body';
+          };
+        };
+        inverseInterfaceMap: {
+          SomeInterface: {
+            body: 'SomeProperty';
+          };
+        };
+        inverseSpts: {};
+        links: {
+          Assignee: $ObjectTypeLinkDefinition<Person, false>;
+        };
+        primaryKeyApiName: 'id';
+        primaryKeyType: 'integer';
+        properties: {
+          /**
+           *   display name: 'Body',
+           *   description: The text of the todo
+           */
+          body: $PropertyDef<'string', 'nullable', 'single'>;
+          /**
+           * (no ontology metadata)
+           */
+          complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+          /**
+           * (no ontology metadata)
+           */
+          id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+        };
+        spts: {};
+      }
 
       export const Todo: Todo = {
         osdkMetadata: $osdkMetadata,
@@ -1195,7 +1177,7 @@ describe("generator", () => {
               description: 'Todo(s) to be deleted';
               multiplicity: true;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
             };
           };
 
@@ -1206,10 +1188,8 @@ describe("generator", () => {
             /**
              * Todo(s) to be deleted
              */
-            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo.Definition>>;
+            readonly object?: ReadonlyArray<ActionParam.ObjectType<Todo>>;
           }
-          /** @deprecated **/
-          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
@@ -1239,11 +1219,6 @@ describe("generator", () => {
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
         }
-
-        /**
-         * @deprecated Use \`deleteTodos.Params\`
-         */
-        export type deleteTodos$Params = deleteTodos.Params | ReadonlyArray<deleteTodos.Params>;
 
         /** @deprecated Use \`deleteTodos.Definition\` **/
         export type deleteTodos = deleteTodos.Signatures;
@@ -1285,7 +1260,7 @@ describe("generator", () => {
               description: 'A Todo to mark completed';
               multiplicity: false;
               nullable: true;
-              type: ObjectActionDataType<'foo.bar.Todo', Todo.Definition>;
+              type: ObjectActionDataType<'foo.bar.Todo', Todo>;
             };
           };
 
@@ -1296,10 +1271,8 @@ describe("generator", () => {
             /**
              * A Todo to mark completed
              */
-            readonly object?: ActionParam.ObjectType<Todo.Definition>;
+            readonly object?: ActionParam.ObjectType<Todo>;
           }
-          /** @deprecated **/
-          export type Parameters = Params;
 
           // Represents the definition of the action
           export interface Definition
@@ -1329,11 +1302,6 @@ describe("generator", () => {
             ): Promise<ActionReturnTypeForOptions<OP>>;
           }
         }
-
-        /**
-         * @deprecated Use \`markTodoCompleted.Params\`
-         */
-        export type markTodoCompleted$Params = markTodoCompleted.Params | ReadonlyArray<markTodoCompleted.Params>;
 
         /** @deprecated Use \`markTodoCompleted.Definition\` **/
         export type markTodoCompleted = markTodoCompleted.Signatures;
@@ -1461,40 +1429,38 @@ describe("generator", () => {
             readonly email: $PropType['string'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {}
-
-          export interface Definition extends $ObjectTypeDefinition<'foo.bar.Person', Person.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            objectSet: Person.ObjectSet;
-            props: Person.Props;
-            linksType: Person.Links;
-            strictProps: Person.StrictProps;
-            description: 'A person';
-            implements: [];
-            interfaceMap: {};
-            inverseInterfaceMap: {};
-            inverseSpts: {};
-            links: {
-              Todos: $ObjectTypeLinkDefinition<Todo, true>;
-            };
-            primaryKeyApiName: 'email';
-            primaryKeyType: 'string';
-            properties: {
-              /**
-               * (no ontology metadata)
-               */
-              email: $PropertyDef<'string', 'non-nullable', 'single'>;
-            };
-            spts: {};
-          }
+          export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Person.Props = keyof Person.Props,
-          > = $Osdk<Person.Definition, K | OPTIONS>;
+          > = $Osdk<Person, K | OPTIONS>;
         }
 
-        export type Person = Person.Definition;
+        export interface Person extends $ObjectTypeDefinition<'foo.bar.Person', Person> {
+          osdkMetadata: typeof $osdkMetadata;
+          objectSet: Person.ObjectSet;
+          props: Person.Props;
+          linksType: Person.Links;
+          strictProps: Person.StrictProps;
+          description: 'A person';
+          implements: [];
+          interfaceMap: {};
+          inverseInterfaceMap: {};
+          inverseSpts: {};
+          links: {
+            Todos: $ObjectTypeLinkDefinition<Todo, true>;
+          };
+          primaryKeyApiName: 'email';
+          primaryKeyType: 'string';
+          properties: {
+            /**
+             * (no ontology metadata)
+             */
+            email: $PropertyDef<'string', 'non-nullable', 'single'>;
+          };
+          spts: {};
+        }
 
         export const Person: Person = {
           osdkMetadata: $osdkMetadata,
@@ -1545,7 +1511,7 @@ describe("generator", () => {
           export type PropertyKeys = 'id' | 'body' | 'complete';
 
           export interface Links {
-            readonly Assignee: $SingleLinkAccessor<Person.Definition>;
+            readonly Assignee: $SingleLinkAccessor<Person>;
           }
 
           export interface Props {
@@ -1559,57 +1525,55 @@ describe("generator", () => {
             readonly id: $PropType['integer'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
-
-          export interface Definition extends $ObjectTypeDefinition<'foo.bar.Todo', Todo.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            objectSet: Todo.ObjectSet;
-            props: Todo.Props;
-            linksType: Todo.Links;
-            strictProps: Todo.StrictProps;
-            description: 'Its a todo item.';
-            implements: ['foo.bar.SomeInterface'];
-            interfaceMap: {
-              'foo.bar.SomeInterface': {
-                SomeProperty: 'body';
-              };
-            };
-            inverseInterfaceMap: {
-              'foo.bar.SomeInterface': {
-                body: 'SomeProperty';
-              };
-            };
-            inverseSpts: {};
-            links: {
-              Assignee: $ObjectTypeLinkDefinition<Person, false>;
-            };
-            primaryKeyApiName: 'id';
-            primaryKeyType: 'integer';
-            properties: {
-              /**
-               *   display name: 'Body',
-               *   description: The text of the todo
-               */
-              body: $PropertyDef<'string', 'nullable', 'single'>;
-              /**
-               * (no ontology metadata)
-               */
-              complete: $PropertyDef<'boolean', 'nullable', 'single'>;
-              /**
-               * (no ontology metadata)
-               */
-              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-            };
-            spts: {};
-          }
+          export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Todo.Props = keyof Todo.Props,
-          > = $Osdk<Todo.Definition, K | OPTIONS>;
+          > = $Osdk<Todo, K | OPTIONS>;
         }
 
-        export type Todo = Todo.Definition;
+        export interface Todo extends $ObjectTypeDefinition<'foo.bar.Todo', Todo> {
+          osdkMetadata: typeof $osdkMetadata;
+          objectSet: Todo.ObjectSet;
+          props: Todo.Props;
+          linksType: Todo.Links;
+          strictProps: Todo.StrictProps;
+          description: 'Its a todo item.';
+          implements: ['foo.bar.SomeInterface'];
+          interfaceMap: {
+            'foo.bar.SomeInterface': {
+              SomeProperty: 'body';
+            };
+          };
+          inverseInterfaceMap: {
+            'foo.bar.SomeInterface': {
+              body: 'SomeProperty';
+            };
+          };
+          inverseSpts: {};
+          links: {
+            Assignee: $ObjectTypeLinkDefinition<Person, false>;
+          };
+          primaryKeyApiName: 'id';
+          primaryKeyType: 'integer';
+          properties: {
+            /**
+             *   display name: 'Body',
+             *   description: The text of the todo
+             */
+            body: $PropertyDef<'string', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            complete: $PropertyDef<'boolean', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+          };
+          spts: {};
+        }
 
         export const Todo: Todo = {
           osdkMetadata: $osdkMetadata,
@@ -1994,45 +1958,43 @@ describe("generator", () => {
               readonly id: $PropType['integer'];
             }
 
-            export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {}
-
-            export interface Definition extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt.Definition> {
-              osdkMetadata: typeof $osdkMetadata;
-              objectSet: UsesForeignSpt.ObjectSet;
-              props: UsesForeignSpt.Props;
-              linksType: UsesForeignSpt.Links;
-              strictProps: UsesForeignSpt.StrictProps;
-              implements: [];
-              interfaceMap: {};
-              inverseInterfaceMap: {};
-              inverseSpts: {
-                body: 'com.example.dep.spt';
-              };
-              links: {};
-              primaryKeyApiName: 'id';
-              primaryKeyType: 'integer';
-              properties: {
-                /**
-                 * (no ontology metadata)
-                 */
-                body: $PropertyDef<'string', 'nullable', 'single'>;
-                /**
-                 * (no ontology metadata)
-                 */
-                id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-              };
-              spts: {
-                'com.example.dep.spt': 'body';
-              };
-            }
+            export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
             export type OsdkObject<
               OPTIONS extends never | '$notStrict' | '$rid' = never,
               K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-            > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS>;
+            > = $Osdk<UsesForeignSpt, K | OPTIONS>;
           }
 
-          export type UsesForeignSpt = UsesForeignSpt.Definition;
+          export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt> {
+            osdkMetadata: typeof $osdkMetadata;
+            objectSet: UsesForeignSpt.ObjectSet;
+            props: UsesForeignSpt.Props;
+            linksType: UsesForeignSpt.Links;
+            strictProps: UsesForeignSpt.StrictProps;
+            implements: [];
+            interfaceMap: {};
+            inverseInterfaceMap: {};
+            inverseSpts: {
+              body: 'com.example.dep.spt';
+            };
+            links: {};
+            primaryKeyApiName: 'id';
+            primaryKeyType: 'integer';
+            properties: {
+              /**
+               * (no ontology metadata)
+               */
+              body: $PropertyDef<'string', 'nullable', 'single'>;
+              /**
+               * (no ontology metadata)
+               */
+              id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+            };
+            spts: {
+              'com.example.dep.spt': 'body';
+            };
+          }
 
           export const UsesForeignSpt: UsesForeignSpt = {
             osdkMetadata: $osdkMetadata,
@@ -2110,17 +2072,15 @@ describe("generator", () => {
               task: {
                 multiplicity: false;
                 nullable: false;
-                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task.Definition>;
+                type: ObjectActionDataType<'com.example.dep.Task', $Imported$objectTypes$com$example$dep$Task>;
               };
             };
 
             export interface Params {
               readonly body: ActionParam.PrimitiveType<'string'>;
 
-              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task.Definition>;
+              readonly task: ActionParam.ObjectType<$Imported$objectTypes$com$example$dep$Task>;
             }
-            /** @deprecated **/
-            export type Parameters = Params;
 
             // Represents the definition of the action
             export interface Definition
@@ -2146,11 +2106,6 @@ describe("generator", () => {
               ): Promise<ActionReturnTypeForOptions<OP>>;
             }
           }
-
-          /**
-           * @deprecated Use \`setTaskBody.Params\`
-           */
-          export type setTaskBody$Params = setTaskBody.Params | ReadonlyArray<setTaskBody.Params>;
 
           /** @deprecated Use \`setTaskBody.Definition\` **/
           export type setTaskBody = setTaskBody.Signatures;
@@ -2308,41 +2263,39 @@ describe("generator", () => {
             readonly taskId: $PropType['string'];
           }
 
-          export interface ObjectSet extends $ObjectSet<Task.Definition, Task.ObjectSet> {}
-
-          export interface Definition extends $ObjectTypeDefinition<'com.example.dep.Task', Task.Definition> {
-            osdkMetadata: typeof $osdkMetadata;
-            objectSet: Task.ObjectSet;
-            props: Task.Props;
-            linksType: Task.Links;
-            strictProps: Task.StrictProps;
-            implements: [];
-            interfaceMap: {};
-            inverseInterfaceMap: {};
-            inverseSpts: {};
-            links: {};
-            primaryKeyApiName: 'taskId';
-            primaryKeyType: 'string';
-            properties: {
-              /**
-               * (no ontology metadata)
-               */
-              body: $PropertyDef<'string', 'nullable', 'single'>;
-              /**
-               * (no ontology metadata)
-               */
-              taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
-            };
-            spts: {};
-          }
+          export interface ObjectSet extends $ObjectSet<Task, Task.ObjectSet> {}
 
           export type OsdkObject<
             OPTIONS extends never | '$notStrict' | '$rid' = never,
             K extends keyof Task.Props = keyof Task.Props,
-          > = $Osdk<Task.Definition, K | OPTIONS>;
+          > = $Osdk<Task, K | OPTIONS>;
         }
 
-        export type Task = Task.Definition;
+        export interface Task extends $ObjectTypeDefinition<'com.example.dep.Task', Task> {
+          osdkMetadata: typeof $osdkMetadata;
+          objectSet: Task.ObjectSet;
+          props: Task.Props;
+          linksType: Task.Links;
+          strictProps: Task.StrictProps;
+          implements: [];
+          interfaceMap: {};
+          inverseInterfaceMap: {};
+          inverseSpts: {};
+          links: {};
+          primaryKeyApiName: 'taskId';
+          primaryKeyType: 'string';
+          properties: {
+            /**
+             * (no ontology metadata)
+             */
+            body: $PropertyDef<'string', 'nullable', 'single'>;
+            /**
+             * (no ontology metadata)
+             */
+            taskId: $PropertyDef<'string', 'non-nullable', 'single'>;
+          };
+          spts: {};
+        }
 
         export const Task: Task = {
           osdkMetadata: $osdkMetadata,

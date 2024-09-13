@@ -55,8 +55,6 @@ export namespace createOffice {
      */
     readonly officeNames?: ReadonlyArray<ActionParam.PrimitiveType<'string'>>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -86,11 +84,6 @@ export namespace createOffice {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `createOffice.Params`
- */
-export type createOffice$Params = createOffice.Params | ReadonlyArray<createOffice.Params>;
 
 /** @deprecated Use `createOffice.Definition` **/
 export type createOffice = createOffice.Signatures;

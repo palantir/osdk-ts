@@ -18,42 +18,40 @@ export namespace BuilderDeploymentState {
     readonly skuId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<BuilderDeploymentState.Definition, BuilderDeploymentState.ObjectSet> {}
-
-  export interface Definition
-    extends $ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: BuilderDeploymentState.ObjectSet;
-    props: BuilderDeploymentState.Props;
-    linksType: BuilderDeploymentState.Links;
-    strictProps: BuilderDeploymentState.StrictProps;
-    description: 'Builder Deployment State';
-    links: {};
-    primaryKeyApiName: 'skuId';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      currentTimestamp: $PropertyDef<'timestamp', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      date: $PropertyDef<'datetime', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<BuilderDeploymentState, BuilderDeploymentState.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof BuilderDeploymentState.Props = keyof BuilderDeploymentState.Props,
-  > = $Osdk<BuilderDeploymentState.Definition, K | OPTIONS>;
+  > = $Osdk<BuilderDeploymentState, K | OPTIONS>;
 }
 
-export type BuilderDeploymentState = BuilderDeploymentState.Definition;
+export interface BuilderDeploymentState
+  extends $ObjectTypeDefinition<'BuilderDeploymentState', BuilderDeploymentState> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: BuilderDeploymentState.ObjectSet;
+  props: BuilderDeploymentState.Props;
+  linksType: BuilderDeploymentState.Links;
+  strictProps: BuilderDeploymentState.StrictProps;
+  description: 'Builder Deployment State';
+  links: {};
+  primaryKeyApiName: 'skuId';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    currentTimestamp: $PropertyDef<'timestamp', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    date: $PropertyDef<'datetime', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    skuId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  };
+}
 
 export const BuilderDeploymentState: BuilderDeploymentState = {
   osdkMetadata: $osdkMetadata,

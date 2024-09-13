@@ -18,42 +18,40 @@ export namespace Todo {
     readonly title: $PropType['string'] | undefined;
   }
 
-  export interface ObjectSet extends $ObjectSet<Todo.Definition, Todo.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Todo', Todo.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Todo.ObjectSet;
-    props: Todo.Props;
-    linksType: Todo.Links;
-    strictProps: Todo.StrictProps;
-    description: 'Its a todo item.';
-    links: {};
-    primaryKeyApiName: 'id';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      id: $PropertyDef<'string', 'non-nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
-      /**
-       *   display name: 'Title',
-       *   description: The text of the todo
-       */
-      title: $PropertyDef<'string', 'nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Todo, Todo.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Todo.Props = keyof Todo.Props,
-  > = $Osdk<Todo.Definition, K | OPTIONS>;
+  > = $Osdk<Todo, K | OPTIONS>;
 }
 
-export type Todo = Todo.Definition;
+export interface Todo extends $ObjectTypeDefinition<'Todo', Todo> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Todo.ObjectSet;
+  props: Todo.Props;
+  linksType: Todo.Links;
+  strictProps: Todo.StrictProps;
+  description: 'Its a todo item.';
+  links: {};
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    id: $PropertyDef<'string', 'non-nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    isComplete: $PropertyDef<'boolean', 'nullable', 'single'>;
+    /**
+     *   display name: 'Title',
+     *   description: The text of the todo
+     */
+    title: $PropertyDef<'string', 'nullable', 'single'>;
+  };
+}
 
 export const Todo: Todo = {
   osdkMetadata: $osdkMetadata,

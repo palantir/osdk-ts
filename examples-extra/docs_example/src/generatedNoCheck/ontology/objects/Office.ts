@@ -30,53 +30,51 @@ export namespace Office {
     readonly officeId: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Office.Definition, Office.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Office', Office.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Office.ObjectSet;
-    props: Office.Props;
-    linksType: Office.Links;
-    strictProps: Office.StrictProps;
-    description: 'A office in our Company';
-    links: {};
-    primaryKeyApiName: 'officeId';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      entrance: $PropertyDef<'geopoint', 'nullable', 'single'>;
-      /**
-       *   description: The individual capacities of meetings rooms in the office
-       */
-      meetingRoomCapacities: $PropertyDef<'integer', 'nullable', 'array'>;
-      /**
-       *   description: The Names of meetings rooms in the office
-       */
-      meetingRooms: $PropertyDef<'string', 'nullable', 'array'>;
-      /**
-       *   description: The Name of the Office
-       */
-      name: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       *   description: The occupied area of the Office
-       */
-      occupiedArea: $PropertyDef<'geoshape', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Office, Office.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Office.Props = keyof Office.Props,
-  > = $Osdk<Office.Definition, K | OPTIONS>;
+  > = $Osdk<Office, K | OPTIONS>;
 }
 
-export type Office = Office.Definition;
+export interface Office extends $ObjectTypeDefinition<'Office', Office> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Office.ObjectSet;
+  props: Office.Props;
+  linksType: Office.Links;
+  strictProps: Office.StrictProps;
+  description: 'A office in our Company';
+  links: {};
+  primaryKeyApiName: 'officeId';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    entrance: $PropertyDef<'geopoint', 'nullable', 'single'>;
+    /**
+     *   description: The individual capacities of meetings rooms in the office
+     */
+    meetingRoomCapacities: $PropertyDef<'integer', 'nullable', 'array'>;
+    /**
+     *   description: The Names of meetings rooms in the office
+     */
+    meetingRooms: $PropertyDef<'string', 'nullable', 'array'>;
+    /**
+     *   description: The Name of the Office
+     */
+    name: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     *   description: The occupied area of the Office
+     */
+    occupiedArea: $PropertyDef<'geoshape', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    officeId: $PropertyDef<'string', 'non-nullable', 'single'>;
+  };
+}
 
 export const Office: Office = {
   osdkMetadata: $osdkMetadata,

@@ -22,36 +22,34 @@ export namespace Person {
     readonly email: $PropType['string'];
   }
 
-  export interface ObjectSet extends $ObjectSet<Person.Definition, Person.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'Person', Person.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: Person.ObjectSet;
-    props: Person.Props;
-    linksType: Person.Links;
-    strictProps: Person.StrictProps;
-    description: 'A person';
-    links: {
-      Friends: $ObjectTypeLinkDefinition<Person, true>;
-      Todos: $ObjectTypeLinkDefinition<Todo, true>;
-    };
-    primaryKeyApiName: 'email';
-    primaryKeyType: 'string';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      email: $PropertyDef<'string', 'non-nullable', 'single'>;
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<Person, Person.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof Person.Props = keyof Person.Props,
-  > = $Osdk<Person.Definition, K | OPTIONS>;
+  > = $Osdk<Person, K | OPTIONS>;
 }
 
-export type Person = Person.Definition;
+export interface Person extends $ObjectTypeDefinition<'Person', Person> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: Person.ObjectSet;
+  props: Person.Props;
+  linksType: Person.Links;
+  strictProps: Person.StrictProps;
+  description: 'A person';
+  links: {
+    Friends: $ObjectTypeLinkDefinition<Person, true>;
+    Todos: $ObjectTypeLinkDefinition<Todo, true>;
+  };
+  primaryKeyApiName: 'email';
+  primaryKeyType: 'string';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    email: $PropertyDef<'string', 'non-nullable', 'single'>;
+  };
+}
 
 export const Person: Person = {
   osdkMetadata: $osdkMetadata,

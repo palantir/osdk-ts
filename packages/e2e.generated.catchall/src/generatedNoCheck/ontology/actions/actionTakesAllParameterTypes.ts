@@ -27,12 +27,12 @@ export namespace actionTakesAllParameterTypes {
       description: 'A person Object';
       multiplicity: false;
       nullable: true;
-      type: ObjectActionDataType<'Person', Person.Definition>;
+      type: ObjectActionDataType<'Person', Person>;
     };
     objectSet: {
       multiplicity: false;
       nullable: false;
-      type: ObjectSetActionDataType<'Todo', Todo.Definition>;
+      type: ObjectSetActionDataType<'Todo', Todo>;
     };
     string: {
       multiplicity: false;
@@ -56,16 +56,14 @@ export namespace actionTakesAllParameterTypes {
     /**
      * A person Object
      */
-    readonly object?: ActionParam.ObjectType<Person.Definition>;
+    readonly object?: ActionParam.ObjectType<Person>;
 
-    readonly objectSet: ActionParam.ObjectSetType<Todo.Definition>;
+    readonly objectSet: ActionParam.ObjectSetType<Todo>;
 
     readonly string: ActionParam.PrimitiveType<'string'>;
 
     readonly 'time-stamp': ActionParam.PrimitiveType<'timestamp'>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -102,13 +100,6 @@ export namespace actionTakesAllParameterTypes {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `actionTakesAllParameterTypes.Params`
- */
-export type actionTakesAllParameterTypes$Params =
-  | actionTakesAllParameterTypes.Params
-  | ReadonlyArray<actionTakesAllParameterTypes.Params>;
 
 /** @deprecated Use `actionTakesAllParameterTypes.Definition` **/
 export type actionTakesAllParameterTypes = actionTakesAllParameterTypes.Signatures;

@@ -38,8 +38,6 @@ export namespace promoteEmployee {
 
     readonly newTitle: ActionParam.PrimitiveType<'string'>;
   }
-  /** @deprecated **/
-  export type Parameters = Params;
 
   // Represents the definition of the action
   export interface Definition
@@ -69,11 +67,6 @@ export namespace promoteEmployee {
     ): Promise<ActionReturnTypeForOptions<OP>>;
   }
 }
-
-/**
- * @deprecated Use `promoteEmployee.Params`
- */
-export type promoteEmployee$Params = promoteEmployee.Params | ReadonlyArray<promoteEmployee.Params>;
 
 /** @deprecated Use `promoteEmployee.Definition` **/
 export type promoteEmployee = promoteEmployee.Signatures;

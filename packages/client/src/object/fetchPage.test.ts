@@ -39,7 +39,7 @@ import {
 const metadata = {
   ontologyRid: "asdf",
 };
-type TodoDef = Todo.Definition;
+type TodoDef = Todo;
 
 describe(fetchPage, () => {
   it("infers select properly", () => {

@@ -16,45 +16,43 @@ export namespace UsesForeignSpt {
     readonly id: $PropType['integer'];
   }
 
-  export interface ObjectSet extends $ObjectSet<UsesForeignSpt.Definition, UsesForeignSpt.ObjectSet> {}
-
-  export interface Definition extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt.Definition> {
-    osdkMetadata: typeof $osdkMetadata;
-    objectSet: UsesForeignSpt.ObjectSet;
-    props: UsesForeignSpt.Props;
-    linksType: UsesForeignSpt.Links;
-    strictProps: UsesForeignSpt.StrictProps;
-    implements: [];
-    interfaceMap: {};
-    inverseInterfaceMap: {};
-    inverseSpts: {
-      body: 'com.example.dep.spt';
-    };
-    links: {};
-    primaryKeyApiName: 'id';
-    primaryKeyType: 'integer';
-    properties: {
-      /**
-       * (no ontology metadata)
-       */
-      body: $PropertyDef<'string', 'nullable', 'single'>;
-      /**
-       * (no ontology metadata)
-       */
-      id: $PropertyDef<'integer', 'non-nullable', 'single'>;
-    };
-    spts: {
-      'com.example.dep.spt': 'body';
-    };
-  }
+  export interface ObjectSet extends $ObjectSet<UsesForeignSpt, UsesForeignSpt.ObjectSet> {}
 
   export type OsdkObject<
     OPTIONS extends never | '$notStrict' | '$rid' = never,
     K extends keyof UsesForeignSpt.Props = keyof UsesForeignSpt.Props,
-  > = $Osdk<UsesForeignSpt.Definition, K | OPTIONS>;
+  > = $Osdk<UsesForeignSpt, K | OPTIONS>;
 }
 
-export type UsesForeignSpt = UsesForeignSpt.Definition;
+export interface UsesForeignSpt extends $ObjectTypeDefinition<'UsesForeignSpt', UsesForeignSpt> {
+  osdkMetadata: typeof $osdkMetadata;
+  objectSet: UsesForeignSpt.ObjectSet;
+  props: UsesForeignSpt.Props;
+  linksType: UsesForeignSpt.Links;
+  strictProps: UsesForeignSpt.StrictProps;
+  implements: [];
+  interfaceMap: {};
+  inverseInterfaceMap: {};
+  inverseSpts: {
+    body: 'com.example.dep.spt';
+  };
+  links: {};
+  primaryKeyApiName: 'id';
+  primaryKeyType: 'integer';
+  properties: {
+    /**
+     * (no ontology metadata)
+     */
+    body: $PropertyDef<'string', 'nullable', 'single'>;
+    /**
+     * (no ontology metadata)
+     */
+    id: $PropertyDef<'integer', 'non-nullable', 'single'>;
+  };
+  spts: {
+    'com.example.dep.spt': 'body';
+  };
+}
 
 export const UsesForeignSpt: UsesForeignSpt = {
   osdkMetadata: $osdkMetadata,
