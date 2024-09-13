@@ -1,8 +1,8 @@
-import type {
+import {
   ObjectTypeFilterFunction as OG_ObjectTypeFilterFunction,
   ObjectTypeOrderByFunction as OG_ObjectTypeOrderByFunction,
+  OntologyObject,
 } from '@osdk/legacy-client';
-import { OntologyObject } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ObjectTypeFilterFunction<T extends OntologyObject> = OG_ObjectTypeFilterFunction<T>;
@@ -10,7 +10,7 @@ export type ObjectTypeFilterFunction<T extends OntologyObject> = OG_ObjectTypeFi
 /** @deprecated submodule imports aren't public api **/
 export type ObjectTypeOrderByFunction<T extends OntologyObject> = OG_ObjectTypeOrderByFunction<T>;
 
-import type {
+import {
   AndWhereClause as OG_AndWhereClause,
   BoundingBoxFilter as OG_BoundingBoxFilter,
   ContainsAllTermsInOrderWhereClause as OG_ContainsAllTermsInOrderWhereClause,
@@ -117,7 +117,7 @@ export type WhereClause = OG_WhereClause;
 /** @deprecated submodule imports aren't public api **/
 export type OrderByClause = OG_OrderByClause;
 
-import type { FilterType as OG_FilterType } from '@osdk/legacy-client';
+import { FilterType as OG_FilterType } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type FilterType<T extends string | number> = OG_FilterType<T>;

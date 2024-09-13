@@ -1,9 +1,7 @@
-import { GeoPointFilter as OG_GeoPointFilter } from '@osdk/legacy-client';
-
 /** @deprecated submodule imports aren't public api **/
 export const GeoPointFilter = OG_GeoPointFilter;
 
-import type { BoundingBox as OG_BoundingBox } from '@osdk/legacy-client';
+import { BoundingBox as OG_BoundingBox, GeoPointFilter as OG_GeoPointFilter } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type GeoPointFilter = OG_GeoPointFilter;

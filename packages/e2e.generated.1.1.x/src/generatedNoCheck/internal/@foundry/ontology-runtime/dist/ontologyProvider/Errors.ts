@@ -1,4 +1,4 @@
-import type {
+import {
   ActionEditedPropertiesNotFound as OG_ActionEditedPropertiesNotFound,
   ActionNotFound as OG_ActionNotFound,
   ActionParameterObjectNotFound as OG_ActionParameterObjectNotFound,

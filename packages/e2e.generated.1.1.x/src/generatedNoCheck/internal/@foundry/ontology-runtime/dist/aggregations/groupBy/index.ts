@@ -1,10 +1,3 @@
-import {
-  BooleanGroupBy as OG_BooleanGroupBy,
-  LocalDateGroupBy as OG_LocalDateGroupBy,
-  NumericGroupBy as OG_NumericGroupBy,
-  StringGroupBy as OG_StringGroupBy,
-  TimestampGroupBy as OG_TimestampGroupBy,
-} from '@osdk/legacy-client';
 import { BucketKey } from '../Aggregations.js';
 
 /** @deprecated submodule imports aren't public api **/
@@ -21,6 +14,14 @@ export const StringGroupBy = OG_StringGroupBy;
 
 /** @deprecated submodule imports aren't public api **/
 export const TimestampGroupBy = OG_TimestampGroupBy;
+
+import {
+  BooleanGroupBy as OG_BooleanGroupBy,
+  LocalDateGroupBy as OG_LocalDateGroupBy,
+  NumericGroupBy as OG_NumericGroupBy,
+  StringGroupBy as OG_StringGroupBy,
+  TimestampGroupBy as OG_TimestampGroupBy,
+} from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type BooleanGroupBy<T extends BucketKey> = OG_BooleanGroupBy<T>;

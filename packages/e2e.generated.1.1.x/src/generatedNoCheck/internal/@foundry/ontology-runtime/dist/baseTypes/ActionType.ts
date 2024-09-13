@@ -1,10 +1,9 @@
-import { OntologyObject } from './OntologyObject.js';
-
 import {
   ActionExecutionMode as OG_ActionExecutionMode,
   ActionValidationResult as OG_ActionValidationResult,
   ReturnEditsMode as OG_ReturnEditsMode,
 } from '@osdk/legacy-client';
+import { OntologyObject } from './OntologyObject.js';
 
 /** @deprecated submodule imports aren't public api **/
 export const ActionExecutionMode = OG_ActionExecutionMode;
@@ -15,7 +14,7 @@ export const ReturnEditsMode = OG_ReturnEditsMode;
 /** @deprecated submodule imports aren't public api **/
 export const ActionValidationResult = OG_ActionValidationResult;
 
-import type {
+import {
   ActionExecutionOptions as OG_ActionExecutionOptions,
   BulkEdits as OG_BulkEdits,
   ValidationResponse as OG_ValidationResponse,
@@ -30,7 +29,7 @@ export type ValidationResponse = OG_ValidationResponse;
 /** @deprecated submodule imports aren't public api **/
 export type BulkEdits = OG_BulkEdits;
 
-import type {
+import {
   CreatedObjectEdits as OG_CreatedObjectEdits,
   ModifiedObjectEdits as OG_ModifiedObjectEdits,
 } from '@osdk/legacy-client';
@@ -41,7 +40,7 @@ export type CreatedObjectEdits<T extends OntologyObject> = OG_CreatedObjectEdits
 /** @deprecated submodule imports aren't public api **/
 export type ModifiedObjectEdits<T extends OntologyObject> = OG_ModifiedObjectEdits<T>;
 
-import type { Edits as OG_Edits } from '@osdk/legacy-client';
+import { Edits as OG_Edits } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type Edits<
@@ -49,12 +48,12 @@ export type Edits<
   TModifiedObjects extends OntologyObject | void,
 > = OG_Edits<TAddedObjects, TModifiedObjects>;
 
-import type { ActionResponse as OG_ActionResponse } from '@osdk/legacy-client';
+import { ActionResponse as OG_ActionResponse } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ActionResponse<TEdits extends Edits<any, any> | undefined = undefined> = OG_ActionResponse<TEdits>;
 
-import type { ActionResponseFromOptions as OG_ActionResponseFromOptions } from '@osdk/legacy-client';
+import { ActionResponseFromOptions as OG_ActionResponseFromOptions } from '@osdk/legacy-client';
 
 /** @deprecated submodule imports aren't public api **/
 export type ActionResponseFromOptions<
