@@ -16,34 +16,9 @@
 
 import type { ObjectOrInterfaceDefinition } from "../index.js";
 import type { OsdkMetadata } from "../OsdkMetadata.js";
-import type { OntologyDefinition } from "./OntologyDefinition.js";
 import type { PrimaryKeyTypes } from "./PrimaryKeyTypes.js";
 import type { VersionString } from "./VersionString.js";
 import type { WirePropertyTypes } from "./WirePropertyTypes.js";
-
-export type ObjectTypeDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> = O["objects"][K];
-
-export type ObjectTypeKeysFrom<O extends OntologyDefinition<string>> =
-  keyof O["objects"];
-
-export type ObjectTypePropertyKeysFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> = keyof ObjectTypeDefinitionFrom<O, K>["properties"] & string;
-
-export type ObjectTypePropertyDefinitionsFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> = ObjectTypeDefinitionFrom<O, K>["properties"];
-
-export type ObjectTypePropertyDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  P extends ObjectTypePropertyKeysFrom<O, K>,
-> = ObjectTypePropertyDefinitionsFrom<O, K>[P];
 
 export type ObjectTypePropertyDefinitionFrom2<
   Q extends ObjectOrInterfaceDefinition<any, any>,
@@ -115,11 +90,6 @@ export interface ObjectTypeDefinition<
   inverseSpts?: Record<string, string>;
 }
 
-export type ObjectTypeLinkKeysFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-> = keyof ObjectTypeDefinitionFrom<O, K>["links"];
-
 export type ObjectTypeLinkKeysFrom2<O extends ObjectTypeDefinition<any>> =
   & keyof O["links"]
   & string;
@@ -132,18 +102,6 @@ export interface ObjectTypeLinkDefinition<
   targetType: O["apiName"];
   multiplicity: M;
 }
-
-export type ObjectTypeLinkDefinitionFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  L extends ObjectTypeLinkKeysFrom<O, K>,
-> = ObjectTypeDefinitionFrom<O, K>["links"][L];
-
-export type ObjectTypeLinkTargetTypeFrom<
-  O extends OntologyDefinition<any>,
-  K extends ObjectTypeKeysFrom<O>,
-  L extends ObjectTypeLinkKeysFrom<O, K>,
-> = ObjectTypeLinkDefinitionFrom<O, K, L>["targetType"];
 
 export type BrandedApiName<
   K extends string,

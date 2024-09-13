@@ -78,11 +78,6 @@ async function generateFromStack(args: TypescriptGenerateArgs) {
     verbose: 0,
   });
   const ctx = createClientContext(
-    {
-      metadata: {
-        userAgent: USER_AGENT,
-      },
-    },
     args.foundryUrl!,
     () => token.access_token,
     USER_AGENT,

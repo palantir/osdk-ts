@@ -36,22 +36,6 @@ import type { MinimalClient } from "../MinimalClientContext.js";
 import { addUserAgentAndRequestContextHeaders } from "../util/addUserAgentAndRequestContextHeaders.js";
 import type { ArrayElement } from "../util/ArrayElement.js";
 
-/** @deprecated use `aggregate` @internal */
-export async function aggregateOrThrow<
-  Q extends ObjectOrInterfaceDefinition,
-  AO extends AggregateOpts<Q>,
->(
-  clientCtx: MinimalClient,
-  objectType: Q,
-  objectSet: ObjectSet = {
-    type: "base",
-    objectType: objectType["apiName"] as string,
-  },
-  req: AggregateOptsThatErrorsAndDisallowsOrderingWithMultipleGroupBy<Q, AO>,
-): Promise<AggregationsResults<Q, AO>> {
-  return aggregate<Q, AO>(clientCtx, objectType, objectSet, req);
-}
-
 /** @internal */
 export async function aggregate<
   Q extends ObjectOrInterfaceDefinition,

@@ -25,33 +25,14 @@ export type {
 } from "./ActionDefinition.js";
 export type {
   InterfaceDefinition,
-  InterfaceDefinitionFrom,
-  InterfaceKeysFrom,
-  InterfacePropertyDefinitionFrom,
-  InterfacePropertyDefinitionsFrom,
-  InterfacePropertyKeysFrom,
   InterfacePropertyKeysFrom2,
 } from "./InterfaceDefinition.js";
-export type {
-  ObjectOrInterfaceDefinition,
-  ObjectOrInterfaceDefinitionFrom,
-  ObjectOrInterfaceKeysFrom,
-  ObjectOrInterfacePropertyKeysFrom,
-} from "./ObjectOrInterface.js";
+export type { ObjectOrInterfaceDefinition } from "./ObjectOrInterface.js";
 export type {
   ObjectTypeDefinition,
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom as ObjectTypeKeysFrom,
   ObjectTypeLinkDefinition,
-  ObjectTypeLinkDefinitionFrom,
-  ObjectTypeLinkKeysFrom,
-  ObjectTypeLinkTargetTypeFrom,
   ObjectTypePropertyDefinition,
-  ObjectTypePropertyDefinitionFrom,
-  ObjectTypePropertyDefinitionsFrom,
-  ObjectTypePropertyKeysFrom,
 } from "./ObjectTypeDefinition.js";
-export type { OntologyDefinition } from "./OntologyDefinition.js";
 export type { OntologyMetadata } from "./OntologyMetadata.js";
 export type {
   AggregationKeyDataType,

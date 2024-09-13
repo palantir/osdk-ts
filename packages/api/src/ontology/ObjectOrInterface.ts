@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-import type {
-  InterfaceDefinition,
-  InterfaceDefinitionFrom,
-  InterfaceKeysFrom,
-  InterfacePropertyKeysFrom,
-} from "./InterfaceDefinition.js";
-import type {
-  ObjectTypeDefinition,
-  ObjectTypeDefinitionFrom,
-  ObjectTypeKeysFrom,
-  ObjectTypePropertyKeysFrom,
-} from "./ObjectTypeDefinition.js";
-import type { OntologyDefinition } from "./OntologyDefinition.js";
-
-export type ObjectOrInterfaceKeysFrom<O extends OntologyDefinition<any, any>> =
-  | ObjectTypeKeysFrom<O>
-  | InterfaceKeysFrom<O>;
+import type { InterfaceDefinition } from "./InterfaceDefinition.js";
+import type { ObjectTypeDefinition } from "./ObjectTypeDefinition.js";
 
 export type ObjectOrInterfaceDefinition<
   K extends string = any,
@@ -39,19 +24,6 @@ export type ObjectOrInterfaceDefinition<
   | ObjectTypeDefinition<K>
   | InterfaceDefinition<K, L>;
 
-/** @deprecated */
-export type ObjectOrInterfacePropertyKeysFrom<
-  O extends OntologyDefinition<any, any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> = K extends InterfaceKeysFrom<O> ? InterfacePropertyKeysFrom<O, K>
-  : ObjectTypePropertyKeysFrom<O, K>;
-
 export type ObjectOrInterfacePropertyKeysFrom2<
   O extends ObjectTypeDefinition<any, any> | InterfaceDefinition<any, any>,
 > = keyof O["properties"] & string;
-
-export type ObjectOrInterfaceDefinitionFrom<
-  O extends OntologyDefinition<any, any>,
-  K extends ObjectOrInterfaceKeysFrom<O>,
-> = K extends InterfaceKeysFrom<O> ? InterfaceDefinitionFrom<O, K>
-  : ObjectTypeDefinitionFrom<O, K>;

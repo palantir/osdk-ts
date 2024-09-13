@@ -35,12 +35,6 @@ export class OntologyMetadataResolver {
 
   private getClientContext() {
     return createClientContext(
-      {
-        metadata: {
-          userAgent: `foundry-typescript-osdk-generator/${process.env
-            .npm_package_version!}`,
-        },
-      },
       this.stackName,
       () => this.#authToken,
       `foundry-typescript-osdk-generator/${process.env.npm_package_version!}`,
