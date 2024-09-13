@@ -28,6 +28,7 @@ export type { LinkTypeMetadata } from "./generated/ontology-metadata/api/LinkTyp
 export type { LoadAllOntologiesResponse } from "./generated/ontology-metadata/api/LoadAllOntologiesResponse.js";
 export type { ObjectType } from "./generated/ontology-metadata/api/ObjectType.js";
 export type { Type } from "./generated/ontology-metadata/api/Type.js";
+export type { SharedPropertyTypeGothamMapping } from "./generated/ontology-metadata/api/typemapping/SharedPropertyTypeGothamMapping.js";
 
 export { createTemporaryObjectSet } from "./generated/object-set-service/api/ObjectSetService.js";
 export { getBulkLinksPage } from "./generated/object-set-service/api/ObjectSetServiceV2/getBulkLinksPage.js";

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import type { OntologyIrInterfaceType } from "@osdk/client.unstable";
+import type {
+  OntologyIrInterfaceType,
+  SharedPropertyTypeGothamMapping,
+} from "@osdk/client.unstable";
 import type * as Gateway from "@osdk/gateway/types";
 
 export interface Ontology extends
@@ -50,6 +53,7 @@ export interface PropertyType {
 
 export interface SharedPropertyType extends PropertyType {
   apiName: string;
+  gothamMapping?: SharedPropertyTypeGothamMapping;
 }
 
 export type PropertyTypeType =

@@ -19,3 +19,4 @@ uncapitalize
 unevaluable
 unioned
 webapi
+typemapping
