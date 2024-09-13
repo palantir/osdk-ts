@@ -44,6 +44,26 @@ export type {
   UserSearchFilter,
   UserUsername,
 } from "./_components.js";
+export type {
+  AddGroupMembersPermissionDenied,
+  CreateGroupPermissionDenied,
+  DeleteGroupPermissionDenied,
+  DeleteUserPermissionDenied,
+  GetCurrentUserPermissionDenied,
+  GetProfilePictureOfUserPermissionDenied,
+  GroupNameAlreadyExists,
+  GroupNotFound,
+  InvalidGroupMembershipExpiration,
+  InvalidGroupOrganizations,
+  InvalidProfilePicture,
+  OrganizationNotFound,
+  PrincipalNotFound,
+  ProfilePictureNotFound,
+  RemoveGroupMembersPermissionDenied,
+  SearchGroupsPermissionDenied,
+  SearchUsersPermissionDenied,
+  UserNotFound,
+} from "./_errors.js";
 export * as Groups from "./public/Group.js";
 export * as GroupMembers from "./public/GroupMember.js";
 export * as GroupMemberships from "./public/GroupMembership.js";

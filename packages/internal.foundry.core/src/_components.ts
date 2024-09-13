@@ -73,11 +73,6 @@ export type SearchJsonQuery =
   | ({ type: "allTerms" } & AllTermsQuery);
 
 /**
- * Log Safety: SAFE
- */
-export interface ByteType {}
-
-/**
  * The top left and bottom right coordinate points that make up the bounding box.
  *
  * Log Safety: UNSAFE
@@ -86,6 +81,11 @@ export interface BoundingBoxValue {
   topLeft: WithinBoundingBoxPoint;
   bottomRight: WithinBoundingBoxPoint;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ByteType {}
 
 /**
  * Returns objects where the specified field is less than or equal to a value.
@@ -105,13 +105,6 @@ export type ObjectPrimaryKey = Record<PropertyApiName, PropertyValue>;
 /**
  * Log Safety: UNSAFE
  */
-export interface TimeseriesType {
-  itemType: TimeSeriesItemType;
-}
-
-/**
- * Log Safety: UNSAFE
- */
 export interface DeleteLinkRule {
   linkTypeApiNameAtoB: LinkTypeApiName;
   linkTypeApiNameBtoA: LinkTypeApiName;
@@ -124,6 +117,13 @@ export interface DeleteLinkRule {
  */
 export interface BatchApplyActionResponseV2 {
   edits?: ActionResults;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface TimeseriesType {
+  itemType: TimeSeriesItemType;
 }
 
 /**
@@ -752,6 +752,17 @@ export interface QueryAggregationRangeType {
 }
 
 /**
+ * Computes the average value for the provided field.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface AvgAggregationV2 {
+  field: PropertyApiName;
+  name?: AggregationMetricName;
+  direction?: OrderByDirection;
+}
+
+/**
  * Details about some property of an object.
  *
  * Log Safety: UNSAFE
@@ -775,24 +786,6 @@ export interface OntologyV2 {
 }
 
 /**
- * Computes the average value for the provided field.
- *
- * Log Safety: UNSAFE
- */
-export interface AvgAggregationV2 {
-  field: PropertyApiName;
-  name?: AggregationMetricName;
-  direction?: OrderByDirection;
-}
-
-/**
- * The unique resource identifier of an interface link type, useful for interacting with other Foundry APIs.
- *
- * Log Safety: SAFE
- */
-export type InterfaceLinkTypeRid = LooselyBrandedString<"InterfaceLinkTypeRid">;
-
-/**
  * Returns objects where the specified field is greater than a value.
  *
  * Log Safety: UNSAFE
@@ -801,6 +794,13 @@ export interface GtQueryV2 {
   field: PropertyApiName;
   value: PropertyValue;
 }
+
+/**
+ * The unique resource identifier of an interface link type, useful for interacting with other Foundry APIs.
+ *
+ * Log Safety: SAFE
+ */
+export type InterfaceLinkTypeRid = LooselyBrandedString<"InterfaceLinkTypeRid">;
 
 /**
  * Log Safety: SAFE
@@ -1539,6 +1539,11 @@ export type TimeSeriesItemType =
 /**
  * Log Safety: SAFE
  */
+export interface CreateInterfaceObjectRule {}
+
+/**
+ * Log Safety: SAFE
+ */
 export type ApplyActionMode = "VALIDATE_ONLY" | "VALIDATE_AND_EXECUTE";
 
 /**
@@ -1648,13 +1653,6 @@ export type DistanceUnit =
 export type QueryApiName = LooselyBrandedString<"QueryApiName">;
 
 /**
- * Log Safety: UNSAFE
- */
-export interface QueryTwoDimensionalAggregation {
-  groups: Array<QueryAggregation>;
-}
-
-/**
  * Returns objects where the specified field contains the provided value as a substring.
  *
  * Log Safety: UNSAFE
@@ -1662,6 +1660,13 @@ export interface QueryTwoDimensionalAggregation {
 export interface PhraseQuery {
   field: FieldNameV1;
   value: string;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface QueryTwoDimensionalAggregation {
+  groups: Array<QueryAggregation>;
 }
 
 /**
@@ -1847,6 +1852,11 @@ export interface MinAggregation {
 }
 
 /**
+ * Log Safety: SAFE
+ */
+export interface ModifyInterfaceObjectRule {}
+
+/**
  * GeoJSon 'Feature' object
  *
  * Log Safety: UNSAFE
@@ -1871,14 +1881,6 @@ export interface QueryStructType {
 export interface FloatType {}
 
 /**
-   * The media type of the file or attachment.
-Examples: application/json, application/pdf, application/octet-stream, image/jpeg
-   *
-   * Log Safety: SAFE
-   */
-export type MediaType = LooselyBrandedString<"MediaType">;
-
-/**
  * Log Safety: SAFE
  */
 export type TimeUnit =
@@ -1893,11 +1895,12 @@ export type TimeUnit =
   | "QUARTERS";
 
 /**
- * The name of a File within Foundry. Examples: my-file.txt, my-file.jpg, dataframe.snappy.parquet.
- *
- * Log Safety: UNSAFE
- */
-export type Filename = LooselyBrandedString<"Filename">;
+   * The media type of the file or attachment.
+Examples: application/json, application/pdf, application/octet-stream, image/jpeg
+   *
+   * Log Safety: SAFE
+   */
+export type MediaType = LooselyBrandedString<"MediaType">;
 
 /**
    * Represents the value of a property in the following format.
@@ -1923,6 +1926,13 @@ Note that for backwards compatibility, the Boolean, Byte, Double, Float, Integer
    * Log Safety: UNSAFE
    */
 export type PropertyValue = any;
+
+/**
+ * The name of a File within Foundry. Examples: my-file.txt, my-file.jpg, dataframe.snappy.parquet.
+ *
+ * Log Safety: UNSAFE
+ */
+export type Filename = LooselyBrandedString<"Filename">;
 
 /**
  * Log Safety: UNSAFE
@@ -2007,11 +2017,6 @@ export interface LocalFilePath {}
 export interface BatchApplyActionResponse {}
 
 /**
- * Log Safety: SAFE
- */
-export type AsyncApplyActionOperationV2 = undefined; // {"name":"AsyncApplyActionOperationV2","type":{"type":"asyncOperation","asyncOperation":{"operationType":"applyActionAsyncV2","resultType":"AsyncApplyActionOperationResponseV2","stageType":"AsyncActionStatus"}},"safety":"SAFE","documentation":{}}
-
-/**
  * Log Safety: UNSAFE
  */
 export interface AggregateObjectsRequestV2 {
@@ -2020,6 +2025,11 @@ export interface AggregateObjectsRequestV2 {
   groupBy: Array<AggregationGroupByV2>;
   accuracy?: AggregationAccuracyRequest;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export type AsyncApplyActionOperationV2 = undefined; // {"name":"AsyncApplyActionOperationV2","type":{"type":"asyncOperation","asyncOperation":{"operationType":"applyActionAsyncV2","resultType":"AsyncApplyActionOperationResponseV2","stageType":"AsyncActionStatus"}},"safety":"SAFE","documentation":{}}
 
 /**
  * Returns objects based on the existence of the specified field.
@@ -2636,7 +2646,9 @@ export type LogicRule =
   | ({ type: "modifyObject" } & ModifyObjectRule)
   | ({ type: "deleteObject" } & DeleteObjectRule)
   | ({ type: "createLink" } & CreateLinkRule)
-  | ({ type: "deleteLink" } & DeleteLinkRule);
+  | ({ type: "deleteLink" } & DeleteLinkRule)
+  | ({ type: "createInterfaceObject" } & CreateInterfaceObjectRule)
+  | ({ type: "modifyInterfaceObject" } & ModifyInterfaceObjectRule);
 
 /**
  * The parameter value must match a predefined regular expression.
@@ -2649,6 +2661,13 @@ export interface StringRegexMatchConstraint {
 }
 
 /**
+ * Log Safety: UNSAFE
+ */
+export type ActionResults =
+  | ({ type: "edits" } & ObjectEdits)
+  | ({ type: "largeScaleEdits" } & ObjectTypeEdits);
+
+/**
    * The page token indicates where to start paging. This should be omitted from the first page's request.
 To fetch the next page, clients should take the value from the nextPageToken field of the previous response
 and populate the next request's pageToken field with it.
@@ -2656,13 +2675,6 @@ and populate the next request's pageToken field with it.
    * Log Safety: UNSAFE
    */
 export type PageToken = LooselyBrandedString<"PageToken">;
-
-/**
- * Log Safety: UNSAFE
- */
-export type ActionResults =
-  | ({ type: "edits" } & ObjectEdits)
-  | ({ type: "largeScaleEdits" } & ObjectTypeEdits);
 
 /**
  * Log Safety: UNSAFE
@@ -2764,11 +2776,6 @@ export type AsyncActionOperation = undefined; // {"name":"AsyncActionOperation",
 export type RequestId = string;
 
 /**
- * Log Safety: SAFE
- */
-export interface ShortType {}
-
-/**
  * Returns objects where the specified field starts with the provided value.
  *
  * Log Safety: UNSAFE
@@ -2777,6 +2784,11 @@ export interface StartsWithQuery {
   field: PropertyApiName;
   value: string;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export interface ShortType {}
 
 /**
  * Log Safety: SAFE
@@ -3091,6 +3103,11 @@ export type UpdatedTime = LooselyBrandedString<"UpdatedTime">;
 export type FolderRid = LooselyBrandedString<"FolderRid">;
 
 /**
+ * Log Safety: SAFE
+ */
+export type ErrorName = LooselyBrandedString<"ErrorName">;
+
+/**
  * Log Safety: UNSAFE
  */
 export interface MultiPoint {
@@ -3099,23 +3116,11 @@ export interface MultiPoint {
 }
 
 /**
- * Log Safety: SAFE
- */
-export type ErrorName = LooselyBrandedString<"ErrorName">;
-
-/**
  * Log Safety: UNSAFE
  */
 export interface OntologyStructType {
   fields: Array<OntologyStructField>;
 }
-
-/**
- * The time at which the resource was created.
- *
- * Log Safety: SAFE
- */
-export type CreatedTime = LooselyBrandedString<"CreatedTime">;
 
 /**
  * Represents an action type in the Ontology.
@@ -3136,6 +3141,13 @@ export interface ActionType {
  * Log Safety: SAFE
  */
 export type ReturnEditsMode = "ALL" | "NONE";
+
+/**
+ * The time at which the resource was created.
+ *
+ * Log Safety: SAFE
+ */
+export type CreatedTime = LooselyBrandedString<"CreatedTime">;
 
 /**
  * Resolved data values pointed to by a reference.
@@ -3162,13 +3174,6 @@ export interface NestedQueryAggregation {
 }
 
 /**
- * The name of a field in a Struct.
- *
- * Log Safety: UNSAFE
- */
-export type StructFieldName = LooselyBrandedString<"StructFieldName">;
-
-/**
  * The parameter expects an array of values and the size of the array must fall within the defined range.
  *
  * Log Safety: UNSAFE
@@ -3186,6 +3191,13 @@ export interface ArraySizeConstraint {
  * Log Safety: SAFE
  */
 export type FuzzyV2 = boolean;
+
+/**
+ * The name of a field in a Struct.
+ *
+ * Log Safety: UNSAFE
+ */
+export type StructFieldName = LooselyBrandedString<"StructFieldName">;
 
 /**
  * Log Safety: UNSAFE
@@ -3224,11 +3236,6 @@ export interface ContainsAllTermsInOrderQuery {
 }
 
 /**
- * Log Safety: SAFE
- */
-export interface AsyncApplyActionOperationResponseV2 {}
-
-/**
    * Returns objects where the specified field contains all of the whitespace separated words in any
 order in the provided value. This query supports fuzzy matching.
    *
@@ -3239,6 +3246,11 @@ export interface ContainsAllTermsQuery {
   value: string;
   fuzzy?: FuzzyV2;
 }
+
+/**
+ * Log Safety: SAFE
+ */
+export interface AsyncApplyActionOperationResponseV2 {}
 
 /**
  * A union of all the types supported by Ontology Query parameters or outputs.
@@ -3489,11 +3501,6 @@ export type QueryRuntimeErrorParameter = LooselyBrandedString<
 >;
 
 /**
- * Log Safety: SAFE
- */
-export interface AnyType {}
-
-/**
    * A constraint that an action parameter value must satisfy in order to be considered valid.
 Constraints can be configured on action parameters in the Ontology Manager.
 Applicable constraints are determined dynamically based on parameter inputs.
@@ -3525,6 +3532,11 @@ export type ParameterEvaluatedConstraint =
   | ({ type: "unevaluable" } & UnevaluableConstraint);
 
 /**
+ * Log Safety: SAFE
+ */
+export interface AnyType {}
+
+/**
  * The path to a File within Foundry. Examples: my-file.txt, path/to/my-file.jpg, dataframe.snappy.parquet.
  *
  * Log Safety: UNSAFE
@@ -3554,6 +3566,13 @@ export interface ActionParameterArrayType {
 }
 
 /**
+ * The unique resource identifier of an object type, useful for interacting with other Foundry APIs.
+ *
+ * Log Safety: SAFE
+ */
+export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
+
+/**
  * The unique resource identifier of an shared property type, useful for interacting with other Foundry APIs.
  *
  * Log Safety: SAFE
@@ -3563,20 +3582,6 @@ export type SharedPropertyTypeRid = LooselyBrandedString<
 >;
 
 /**
- * The unique resource identifier of an object type, useful for interacting with other Foundry APIs.
- *
- * Log Safety: SAFE
- */
-export type ObjectTypeRid = LooselyBrandedString<"ObjectTypeRid">;
-
-/**
- * Log Safety: UNSAFE
- */
-export interface ApplyActionRequest {
-  parameters: Record<ParameterId, DataValue | undefined>;
-}
-
-/**
  * Returns objects where the specified field starts with the provided value.
  *
  * Log Safety: UNSAFE
@@ -3584,6 +3589,13 @@ export interface ApplyActionRequest {
 export interface PrefixQuery {
   field: FieldNameV1;
   value: string;
+}
+
+/**
+ * Log Safety: UNSAFE
+ */
+export interface ApplyActionRequest {
+  parameters: Record<ParameterId, DataValue | undefined>;
 }
 
 /**

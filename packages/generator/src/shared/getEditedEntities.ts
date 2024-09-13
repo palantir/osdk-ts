@@ -37,6 +37,8 @@ export function getModifiedEntityTypes(
       case "deleteObject":
       case "createLink":
       case "deleteLink":
+      case "createInterfaceObject":
+      case "modifyInterfaceObject":
         break;
       default:
         const _: never = operation;

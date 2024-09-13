@@ -24,6 +24,7 @@ import { BinaryType } from "./BinaryType.js";
 import { BuiltinType } from "./BuiltinType.js";
 import { Component } from "./Component.js";
 import { EnumType } from "./EnumType.js";
+import { ErrorType } from "./ErrorType.js";
 import { ListType } from "./ListType.js";
 import { MapType } from "./MapType.js";
 import type { Namespace } from "./Namespace.js";
@@ -37,6 +38,7 @@ import { UnionType } from "./UnionType.js";
 export class Model {
   #typeCache = new Map<string, Type>();
   #components = new Map<string, Component>();
+  #errors = new Map<string, ErrorType>();
   #opts: { outputDir: string; packagePrefix: string; npmOrg: string };
 
   getType(dt: ir.DataType): Type {
@@ -128,6 +130,12 @@ export class Model {
       await model.#addComponent(c);
     }
 
+    for (const e of ir.errors) {
+      if (isIgnoredType(e)) continue;
+
+      await model.#addError(e);
+    }
+
     for (const ns of ir.namespaces) {
       if (isIgnoredNamespace(ns.name)) continue;
 
@@ -163,6 +171,7 @@ export class Model {
     const packageName = `${this.#opts.npmOrg}/${dir}`;
     this.#namespaces.set(ns.name, {
       components: [],
+      errors: [],
       resources: [],
       packageName,
       paths: await ensurePackageSetup(packagePath, packageName, []),
@@ -189,6 +198,27 @@ export class Model {
 
     ns.components.push(component);
     this.#components.set(c.name, component);
+  }
+
+  #addError(e: ir.Error) {
+    const nsName = (e.namespace == null)
+      ? "Core"
+      : e.namespace;
+    const ns = this.#namespaces.get(nsName);
+    if (!ns) {
+      throw new Error(`Namespace not found for ${e.namespace} in ${e.name}`);
+    }
+
+    const error = new ErrorType(
+      this,
+      ns,
+      path.join(ns.paths.srcDir, `_errors.ts`),
+      ns.packageName,
+      e,
+    );
+
+    ns.errors.push(error);
+    this.#errors.set(e.name, error);
   }
 
   addResource(ns: ir.Namespace, r: ir.Resource): void {

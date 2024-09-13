@@ -57,5 +57,19 @@ export type {
   UserScope,
   ZoneId,
 } from "./_components.js";
+export type {
+  BuildInputsNotFound,
+  BuildInputsPermissionDenied,
+  BuildNotFound,
+  BuildTargetsMissingJobSpecs,
+  BuildTargetsNotFound,
+  BuildTargetsPermissionDenied,
+  CreateBuildsPermissionDenied,
+  PauseSchedulePermissionDenied,
+  RunSchedulePermissionDenied,
+  ScheduleNotFound,
+  TargetNotSupported,
+  UnpauseSchedulePermissionDenied,
+} from "./_errors.js";
 export * as Builds from "./public/Build.js";
 export * as Schedules from "./public/Schedule.js";

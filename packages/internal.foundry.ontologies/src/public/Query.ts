@@ -18,7 +18,6 @@ import type {
   ExecuteQueryRequest,
   ExecuteQueryResponse,
   OntologyRid,
-  PreviewMode,
   QueryApiName,
 } from "@osdk/internal.foundry.core";
 import type {
@@ -35,9 +34,8 @@ const _executeQuery: $FoundryPlatformMethod<
     ontologyRid: OntologyRid,
     queryApiName: QueryApiName,
     $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
   ) => Promise<ExecuteQueryResponse>
-> = [1, "/v1/ontologies/{0}/queries/{1}/execute", 3];
+> = [1, "/v1/ontologies/{0}/queries/{1}/execute", 1];
 
 /**
  * Executes a Query using the given parameters. Optional parameters do not need to be supplied.
@@ -55,7 +53,6 @@ export function executeQuery(
     ontologyRid: OntologyRid,
     queryApiName: QueryApiName,
     $body: ExecuteQueryRequest,
-    $queryParams?: { preview?: PreviewMode | undefined },
   ]
 ): Promise<ExecuteQueryResponse> {
   return $foundryPlatformFetch($ctx, _executeQuery, ...args);

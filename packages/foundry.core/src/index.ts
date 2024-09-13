@@ -41,3 +41,16 @@ export type {
   UpdatedTime,
   UserId,
 } from "./_components.js";
+export type {
+  BatchRequestSizeExceededLimit,
+  FolderNotFound,
+  GetHiddenResourceNotSupported,
+  GetRootFolderNotSupported,
+  GetServiceResourceNotSupported,
+  GetSpaceResourceNotSupported,
+  InvalidPageSize,
+  InvalidPageToken,
+  InvalidParameterCombination,
+  MissingBatchRequest,
+  ResourceNameAlreadyExists,
+} from "./_errors.js";

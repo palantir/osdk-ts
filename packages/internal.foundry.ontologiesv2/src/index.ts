@@ -15,6 +15,7 @@
  */
 
 export type {} from "./_components.js";
+export type {} from "./_errors.js";
 export * as Actions from "./public/Action.js";
 export * as ActionTypesV2 from "./public/ActionTypeV2.js";
 export * as Attachments from "./public/Attachment.js";

@@ -21,4 +21,5 @@ export type {
   ApiDefinitionRid,
   IrVersion,
 } from "./_components.js";
+export type { ApiDefinitionNotFound } from "./_errors.js";
 export * as ApiDefinitions from "./public/ApiDefinition.js";

@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-export type {
-  Folder,
-  FolderRid,
-  Project,
-  ProjectRid,
-  Resource,
-  ResourceDisplayName,
-  ResourcePath,
-  ResourceRid,
-  Space,
-  SpaceRid,
-  TrashedStatus,
-} from "./_components.js";
-export type { ResourceNotFound } from "./_errors.js";
-export * as Resources from "./public/Resource.js";
+export type LooselyBrandedString<T extends string> = string & {
+  __LOOSE_BRAND?: T;
+};
+
+/**
+ * The given Resource could not be found.
+ *
+ * Log Safety: UNSAFE
+ */
+export interface ResourceNotFound {
+  errorCode: "NOT_FOUND";
+  errorName: "ResourceNotFound";
+  errorInstanceId: string;
+  parameters: {
+    resourceRid: unknown;
+  };
+}
