@@ -1,5 +1,11 @@
 # @osdk/generator
 
+## 1.13.2
+
+### Patch Changes
+
+- ef2018e: Fixed an edge case where generation caused compile errors
+
 ## 1.13.1
 
 ### Patch Changes

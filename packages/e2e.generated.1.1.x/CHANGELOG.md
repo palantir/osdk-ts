@@ -1,5 +1,13 @@
 # @osdk/e2e.generated.1.1.x
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies [ef2018e]
+  - @osdk/generator@1.13.2
+  - @osdk/legacy-client@2.5.1
+
 ## 0.2.1
 
 ### Patch Changes

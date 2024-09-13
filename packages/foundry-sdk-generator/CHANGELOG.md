@@ -1,5 +1,15 @@
 # @osdk/foundry-sdk-generator
 
+## 1.3.3
+
+### Patch Changes
+
+- ef2018e: Fixed an edge case where generation caused compile errors
+- bf5d49e: --beta now loads from the beta package
+- Updated dependencies [ef2018e]
+  - @osdk/generator@1.13.2
+  - @osdk/legacy-client@2.5.1
+
 ## 1.3.2
 
 ### Patch Changes
