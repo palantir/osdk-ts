@@ -36,7 +36,7 @@ export async function generateSharedObjectCodeDir(
   await fs.writeFile(
     path.join(sharedObjectCodeDir, "FilteredPropertiesTerminalOperations.ts"),
     await formatTs(
-      `import { OntologyObject } from "../OntologyObject${importExt}`
+      `import { OntologyObject } from "../OntologyObject${importExt}";`
         + reexportTypes([
           "FilteredPropertiesTerminalOperations",
           "FilteredPropertiesTerminalOperationsWithGet",

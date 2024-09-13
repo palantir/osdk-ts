@@ -1732,11 +1732,11 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0
       prettier:
-        specifier: ^3.0.3
-        version: 3.2.5
+        specifier: 3.0.3
+        version: 3.0.3
       prettier-plugin-organize-imports:
         specifier: ^3.2.4
-        version: 3.2.4(prettier@3.2.5)(typescript@5.5.4)
+        version: 3.2.4(prettier@3.0.3)(typescript@5.5.4)
       tiny-invariant:
         specifier: ^1.3.1
         version: 1.3.3
@@ -6759,8 +6759,18 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
+  prettier@3.0.3:
+    resolution: {integrity: sha512-L/4pUDMxcNa8R/EthV08Zt42WBO4h1rarVtK0K+QJG0X187OLo7l699jWw0GKuwzkPQ//jMFA/8Xm6Fh3J/DAg==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   prettier@3.2.5:
     resolution: {integrity: sha512-3/GWa9aOC0YeD7LUfvOG2NiDyhOWRvt1k+rcKhOuYnMY24iiCphgneUfJDyFXd6rZCAnuLBv6UeAULtrhT/F4A==}
+    engines: {node: '>=14'}
+    hasBin: true
+
+  prettier@3.3.3:
+    resolution: {integrity: sha512-i2tDNA0O5IrMO757lfrdQZCc2jPNDVntV0m/+4whiDfWaTKfMNgR7Qz0NAeGz/nRqF4m5/6CLzbP4/liHt12Ew==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -9386,8 +9396,8 @@ snapshots:
       '@osdk/generator-converters': 2.0.0-beta.6
       fast-deep-equal: 3.1.3
       fetch-retry: 6.0.0
-      prettier: 3.2.5
-      prettier-plugin-organize-imports: 3.2.4(prettier@3.2.5)(typescript@5.5.4)
+      prettier: 3.3.3
+      prettier-plugin-organize-imports: 3.2.4(prettier@3.3.3)(typescript@5.5.4)
       tiny-invariant: 1.3.3
     transitivePeerDependencies:
       - '@volar/vue-language-plugin-pug'
@@ -12887,14 +12897,23 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-organize-imports@3.2.4(prettier@3.2.5)(typescript@5.5.4):
+  prettier-plugin-organize-imports@3.2.4(prettier@3.0.3)(typescript@5.5.4):
     dependencies:
-      prettier: 3.2.5
+      prettier: 3.0.3
+      typescript: 5.5.4
+
+  prettier-plugin-organize-imports@3.2.4(prettier@3.3.3)(typescript@5.5.4):
+    dependencies:
+      prettier: 3.3.3
       typescript: 5.5.4
 
   prettier@2.8.8: {}
 
+  prettier@3.0.3: {}
+
   prettier@3.2.5: {}
+
+  prettier@3.3.3: {}
 
   pretty-format@29.7.0:
     dependencies:
