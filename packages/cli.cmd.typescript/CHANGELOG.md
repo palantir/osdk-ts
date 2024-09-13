@@ -1,5 +1,12 @@
 # @osdk/cli.cmd.typescript
 
+## 0.5.2
+
+### Patch Changes
+
+- Updated dependencies [ef2018e]
+  - @osdk/generator@1.13.2
+
 ## 0.5.1
 
 ### Patch Changes
